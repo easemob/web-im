@@ -1,0 +1,725 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>WEBIM-DEMO</title>
+<script type="text/javascript" src="jquery-1.11.1.js"></script>
+<script type='text/javascript' src='strophe.js'></script>
+<script type='text/javascript' src='json2.js'></script>
+<script type="text/javascript" src="easemob.xmpp.js"></script>
+<script type="text/javascript" src="bootstrap.js"></script>
+<link rel="stylesheet" type="text/css" href="css/chat.css" />
+<link rel="stylesheet" type="text/css" href="css/login.css" />
+<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+<script type="text/javascript">
+	var curUserId = null;
+	var curChatUserId = null;
+	var conn = null;
+	var msgCardDivId = "chat01";
+	var talkToDivId = "talkTo";
+	var talkInputId = "talkInputId";
+	var fileInputId = "fileInput";
+
+	var getLoginInfo = function() {
+		return {
+			isLogin : false
+		};
+	};
+	var showLoginUI = function() {
+		$('#loginmodal').modal('show');
+		$('#username').focus();
+	};
+	var hiddenLoginUI = function() {
+		$('#loginmodal').modal('hide');
+	};
+	var showWaitLoginedUI = function() {
+		$('#waitLoginmodal').modal('show');
+	};
+	var hiddenWaitLoginedUI = function() {
+		$('#waitLoginmodal').modal('hide');
+	};
+	var showChatUI = function() {
+		document.getElementById("content").style.display = "";
+		document.getElementById("logoutButton").innerHTML = curUserId+"退出";
+	};
+	//登录之前不显示wab对话框
+	var hiddenChatUI = function() {
+		document.getElementById("content").style.display = "none";
+	};
+	//登录处理
+	$(document).ready(function() {
+		conn = new Easemob.xmpp.Connection();
+		conn.init({
+			onOpened : function() {
+				curUserId = conn.context.userId;
+				conn.getRoster(function(roster) {
+					hiddenWaitLoginedUI();
+					showChatUI();
+					if (roster) {
+						buildContactDiv("contractlist", roster);
+						if (roster.length > 0) {
+							setCurrentContact(roster[0].name);
+						}
+					}
+					conn.setPresence(null);
+				}, function(e) {
+					hiddenWaitLoginedUI();
+					alert(e.msg + ",请重新登录");
+					showLoginUI();
+				});
+			},
+			onClosed : function() {
+				curUserId = null;
+				curChatUserId = null;
+				hiddenChatUI();
+				clearContactUI("contractlist", msgCardDivId);
+				showLoginUI();
+			},
+			onTextMessage : function(message) {
+				handleTextMessage(message);
+			},
+			onEmotionMessage : function(message) {
+				handleEmotion(message);
+			},
+			onPictureMessage : function(message) {
+				handlePictureMessage(message);
+			},
+			onAudioMessage : function(message) {
+				handleAudioMessage(message);
+			},
+			onError : function(e) {
+				if (curUserId == null) {
+					hiddenWaitLoginedUI();
+					alert(e.msg + ",请重新登录");
+					showLoginUI();
+				} else {
+					alert(e.msg);
+				}
+			}
+		});
+		var loginInfo = getLoginInfo();
+		if (loginInfo.isLogin) {
+			showWaitLoginedUI();
+			conn.attach({
+				resource : 'mychat'
+			});
+		} else {
+			showLoginUI();
+		}
+		$('#fileModal').on('hidden.bs.modal', function(e) {
+			var ele = document.getElementById(fileInputId);
+			ele.value = "";
+			if (!window.addEventListener) {
+				ele.outerHTML = ele.outerHTML;
+			}
+			document.getElementById("fileSend").disabled = false;
+			document.getElementById("cancelfileSend").disabled = false;
+		});
+		$('#password').keypress(function(e) {
+			var key = e.which;
+			if (key == 13) {
+				login();
+			}
+		});
+	});
+
+	var login = function() {
+		var user = document.getElementById("username").value;
+		var pass = document.getElementById("password").value;
+		var appkey = document.getElementById("appkey").value;
+		var resource = document.getElementById("resource").value;
+		if (user == '' || pass == '') {
+			alert("请输入用户名和密码");
+			return;
+		}
+		hiddenLoginUI();
+		showWaitLoginedUI();
+		//document.getElementById("password").value = "";
+		conn.open({
+			user : user,
+			pwd : pass,
+			appKey : appkey,//'easemob-demo#chatdemoui',
+			resource : resource
+		//'mychat'
+		});
+		return false;
+	};
+	var logout = function() {
+		conn.close();
+	};
+	var setCurrentContact = function(defaultUserId) {
+		showContactChatDiv(defaultUserId);
+		if (curChatUserId != null) {
+			hiddenContactChatDiv(curChatUserId);
+		} else {
+			document.getElementById("null-nouser").style.display = "none";
+		}
+		curChatUserId = defaultUserId;
+	};
+	//构造联系人列表
+	var buildContactDiv = function(contactlistDivId, roster) {
+		var uielem = document.createElement("ul");
+		var cache = {};
+		for (i = 0; i < roster.length; i++) {
+			var jid = roster[i].jid;
+			var userName = jid.substring(jid.indexOf("_") + 1).split("@")[0];
+			if (userName in cache) {
+				continue;
+			}
+			cache[userName] = true;
+			var lielem = document.createElement("li");
+			lielem.setAttribute("id", userName);
+			lielem.setAttribute("class", "offline");
+			lielem.setAttribute("className", "offline");
+			lielem.onclick = function() {
+				chooseContactDivClick(this);
+			};
+			var imgelem = document.createElement("img");
+			imgelem.setAttribute("src", "img/head/2016.jpg");
+			lielem.appendChild(imgelem);
+
+			var spanelem = document.createElement("span");
+			spanelem.innerHTML = userName;
+			lielem.appendChild(spanelem);
+
+			uielem.appendChild(lielem);
+		}
+		var contactlist = document.getElementById(contactlistDivId);
+		var children = contactlist.children;
+		if (children.length > 0) {
+			contactlist.removeChild(children[0]);
+		}
+		contactlist.appendChild(uielem);
+	};
+
+	var getContactLi = function(chatUserId) {
+		var li = document.getElementById(chatUserId);
+		return li;
+	};
+
+	var getContactChatDiv = function(chatUserId) {
+		var msgContentDivId = curUserId + "-" + chatUserId;
+		var contentDiv = document.getElementById(msgContentDivId);
+		return contentDiv;
+	};
+
+	var createContactChatDiv = function(chatUserId) {
+		var msgContentDivId = curUserId + "-" + chatUserId;
+		var newContent = document.createElement("div");
+		newContent.setAttribute("id", msgContentDivId);
+		newContent.setAttribute("class", "chat01_content");
+		newContent.setAttribute("className", "chat01_content");
+		newContent.setAttribute("style", "display:none");
+		return newContent;
+	};
+
+	var showContactChatDiv = function(chatUserId) {
+		var contentDiv = getContactChatDiv(chatUserId);
+		if (contentDiv == null) {
+			contentDiv = createContactChatDiv(chatUserId);
+			document.getElementById(msgCardDivId).appendChild(contentDiv);
+		}
+		contentDiv.style.display = "";
+		var contactLi = document.getElementById(chatUserId);
+		if (contactLi == null) {
+			return;
+		}
+		contactLi.style.backgroundColor = "blue";
+		document.getElementById(talkToDivId).innerHTML = chatUserId;//聊天窗口显示当前对话人名称
+
+	};
+	var hiddenContactChatDiv = function(chatUserId) {
+		var contactLi = document.getElementById(chatUserId);
+		if (contactLi) {
+			contactLi.style.backgroundColor = "";
+		}
+		var contentDiv = getContactChatDiv(chatUserId);
+		if (contentDiv) {
+			contentDiv.style.display = "none";
+		}
+
+	};
+	var chooseContactDivClick = function(li) {
+		var chatUserId = li.id;
+		if (chatUserId != curChatUserId) {
+			if (curChatUserId == null) {
+				showContactChatDiv(chatUserId);
+			} else {
+				showContactChatDiv(chatUserId);
+				hiddenContactChatDiv(curChatUserId);
+			}
+			curChatUserId = chatUserId;
+		}
+	};
+	var clearContactUI = function(contactInfoDiv, contactChatDiv) {
+		document.getElementById(talkToDivId).innerHTML = "";
+		var contactlist = document.getElementById(contactInfoDiv);
+		var children = contactlist.children;
+		if (children.length > 0) {
+			contactlist.removeChild(children[0]);
+		}
+		var chatRootDiv = document.getElementById(contactChatDiv);
+		var children = chatRootDiv.children;
+		for ( var i = children.length - 1; i > 1; i--) {
+			chatRootDiv.removeChild(children[i]);
+		}
+		document.getElementById("null-nouser").style.display = "";
+	};
+	var emotionFlag = false;
+	var showEmotionDialog = function() {
+		var wl_faces_box_div = document.getElementById("wl_faces_box");
+		if (emotionFlag) {
+			wl_faces_box_div.style.display = 'block';
+			return;
+		}
+		;
+		emotionFlag = true;
+		var sjson = Easemob.xmpp.Helper.EmotionPicData;
+		for ( var key in sjson) {
+			var emotionImgContent = document.createElement("img");
+			emotionImgContent.setAttribute("id", key);
+			emotionImgContent.setAttribute("src", sjson[key]);
+			emotionImgContent.setAttribute("style", "cursor:pointer;");
+			emotionImgContent.onclick = function() {
+				selectEmotionImg(this);
+			};
+			var emotionLi = document.createElement("li");
+			emotionLi.appendChild(emotionImgContent);
+			document.getElementById("emotionUL").appendChild(emotionLi);
+		}
+		wl_faces_box_div.style.display = 'block';
+	};
+	//表情选择div的关闭方法
+	var turnoffFaces_box = function() {
+		document.getElementById("wl_faces_box").style.display = "none";
+	};
+	var selectEmotionImg = function(selImg) {
+		var txt = document.getElementById(talkInputId);
+		txt.value = txt.value + selImg.id;
+		txt.focus();
+	};
+	var showSendPic = function() {
+		$('#fileModal').modal('toggle');
+		var sendfiletype = document.getElementById("sendfiletype");
+		sendfiletype.value = "pic";
+	};
+	var showSendAudio = function() {
+		$('#fileModal').modal('toggle');
+		var sendfiletype = document.getElementById("sendfiletype");
+		sendfiletype.value = "audio";
+	};
+	var sendText = function() {
+		var msgInput = document.getElementById(talkInputId);
+		var msg = msgInput.value;
+		if (msg == null || msg.length == 0) {
+			return;
+		}
+		var to = curChatUserId;
+		if (to == null) {
+			alert("请选择联系人");
+			return;
+		}
+		conn.sendTextMessage({
+			to : to,
+			msg : msg
+		});
+		//当前登录人发送的信息在聊天窗口中原样显示
+		appendMsg(curUserId, to, msg);
+		msgInput.value = "";
+		msgInput.focus();
+	};
+	var pictype = {
+		"jpg" : true,
+		"gif" : true,
+		"png" : true,
+		"bmp" : true
+	};
+	var sendFile = function() {
+		var sendfiletypeele = document.getElementById("sendfiletype");
+		var type = sendfiletypeele.value;
+		if (type == 'pic') {
+			sendPic();
+		} else {
+			sendAudio();
+		}
+	};
+	var sendPic = function() {
+		var to = curChatUserId;
+		if (to == null) {
+			alert("请选择联系人");
+			return;
+		}
+		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+		if (fileObj.url == null || fileObj.url == '') {
+			alert("请选择发送图片");
+			return;
+		}
+		var filetype = fileObj.filetype;
+		var filename = fileObj.filename;
+		if (filetype in pictype) {
+			document.getElementById("fileSend").disabled = true;
+			document.getElementById("cancelfileSend").disabled = true;
+			var opt = {
+				fileInputId : fileInputId,
+				to : to,
+				onFileUploadError : function(error) {
+					$('#fileModal').modal('hide');
+					var messageContent = error.msg + ",发送图片文件失败:" + filename;
+					appendMsg(curUserId, to, messageContent);
+				},
+				onFileUploadComplete : function(data) {
+					$('#fileModal').modal('hide');
+					var messageContent = "发送图片" + filename;
+					appendMsg(curUserId, to, messageContent);
+				}
+			};
+			conn.sendPicture(opt);
+			return;
+		}
+		alert("不支持此图片类型" + filetype);
+	};
+	var audtype = {
+		"mp3" : true,
+		"wma" : true,
+		"wav" : true,
+		"avi" : true
+	};
+	var sendAudio = function() {
+		var to = curChatUserId;
+		if (to == null) {
+			alert("请选择联系人");
+			return;
+		}
+		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+		if (fileObj.url == null || fileObj.url == '') {
+			alert("请选择发送音频");
+			return;
+		}
+		var filetype = fileObj.filetype;
+		var filename = fileObj.filename;
+		if (filetype in audtype) {
+			document.getElementById("fileSend").disabled = true;
+			document.getElementById("cancelfileSend").disabled = true;
+			var opt = {
+				fileInputId : fileInputId,
+				to : to,
+				onFileUploadError : function(error) {
+					$('#fileModal').modal('hide');
+					var messageContent = error.msg + ",发送音频失败:" + filename;
+					appendMsg(curUserId, to, messageContent);
+				},
+				onFileUploadComplete : function(data) {
+					var messageContent = "发送音频" + filename;
+					$('#fileModal').modal('hide');
+					appendMsg(curUserId, to, messageContent);
+				}
+			};
+			conn.sendAudio(opt);
+			return;
+		}
+		alert("不支持此音频类型" + filetype);
+	};
+	//收到文本消息的处理
+	var handleTextMessage = function(message) {
+		var from = message.from;
+		var messageContent = message.data;
+		var ele = appendMsg(from, from, messageContent);
+		return ele;
+	};
+	var handleEmotion = function(message) {
+		var from = message.from;
+		var ele = appendMsg(from, from, message);
+		return ele;
+	};
+	var handlePictureMessage = function(message) {
+		var filename = message.filename;
+		var from = message.from;
+		var ele = appendMsg(from, from, "收到图片" + filename + ",正在处理");
+		if (ele == null) {
+			return;
+		}
+		var options = message;
+		options.onFileDownloadComplete = function(response, xhr) {
+			var objectURL = window.URL.createObjectURL(response);
+			img = document.createElement("img");
+			if (options.width > 200) {
+				img.width = 200;
+			} else {
+				img.width = options.width;
+			}
+			img.onload = function(e) {
+				img.onload = null;
+				window.URL.revokeObjectURL(img.src);
+			};
+			img.onerror = function() {
+				img.onerror = null;
+				if (typeof FileReader == 'undefined') {
+					img.alter = "当前浏览器不支持blob方式";
+					return;
+				}
+				img.onerror = function() {
+					img.alter = "当前浏览器不支持blob方式";
+				};
+				var reader = new FileReader();
+				reader.onload = function(event) {
+					img.src = this.result;
+				};
+				reader.readAsDataURL(response);
+			}
+			img.src = objectURL;
+			appendMsg(from, from, {
+				data : [ {
+					type : 'pic',
+					filename : filename,
+					data : img
+				} ]
+			});
+		};
+		options.onFileDownloadError = function(e) {
+			appendMsg(from, from, e.msg + ",下载图片" + filename + "失败");
+		};
+		Easemob.xmpp.Helper.download(options);
+	};
+
+	var handleAudioMessage = function(message) {
+		var filename = message.filename;
+		var from = message.from;
+		var ele = appendMsg(from, from, "收到音频" + filename + ",正在处理");
+		if (ele == null) {
+			return;
+		}
+		var options = message;
+		options.onFileDownloadComplete = function(response, xhr) {
+			var objectURL = window.URL.createObjectURL(response);
+			var audio = document.createElement("audio");
+			if (("src" in audio) && ("controls" in audio)) {
+				audio.onload = function() {
+					audio.onload = null;
+					window.URL.revokeObjectURL(audio.src);
+				};
+				audio.onerror = function() {
+					audio.onerror = null;
+					appendMsg(from, from, "当前浏览器不支持播放此音频:" + filename);
+				};
+				audio.controls = "controls";
+				audio.src = objectURL;
+				appendMsg(from, from, {
+					data : [ {
+						type : 'audio',
+						filename : filename,
+						data : audio
+					} ]
+				});
+				audio.play();
+				return;
+			}
+			var emb = document.createElement("embed");
+			emb.height = 60;
+			emb.width = 160;
+			emb.src = objectURL;
+			emb.onload = function(e) {
+				emb.onload = null;
+				window.URL.revokeObjectURL(this.src);
+			};
+			emb.onerror = function() {
+				emb.onerror = null;
+				appendMsg(from, from, "当前浏览器不支持播放此音频:" + filename);
+			}
+			appendMsg(from, from, {
+				data : [ {
+					type : 'audio',
+					filename : filename,
+					data : emb
+				} ]
+			});
+		};
+		options.onFileDownloadError = function(e) {
+			appendMsg(from, from, e.msg + ",下载音频" + filename + "失败");
+		};
+		Easemob.xmpp.Helper.download(options);
+	};
+
+	var appendMsg = function(who, contact, message) {
+		var contactLi = getContactLi(contact);
+		if (contactLi == null) {
+			alert("陌生人" + who + "的消息,忽略");
+			return null;
+		}
+
+		// 消息体 {isemotion:true;body:[{type:txt,msg:ssss}{type:emotion,msg:imgdata}]}
+		var localMsg = null;
+		if (typeof message == 'string') {
+			localMsg = Easemob.xmpp.Helper.parseTextMessage(message);
+			localMsg = localMsg.body;
+		} else {
+			localMsg = message.data;
+		}
+		var date = new Date();
+		var time = date.toLocaleTimeString();
+		var headstr = [ "<p1>" + who + "   <span></span>" + "   </p1>",
+				"<p2>" + time + "<b></b><br/></p2>" ];
+		var header = $(headstr.join(''))
+
+		var lineDiv = document.createElement("div");
+		for ( var i = 0; i < header.length; i++) {
+			var ele = header[i];
+			lineDiv.appendChild(ele);
+		}
+
+		var messageContent = localMsg;
+
+		for ( var i = 0; i < messageContent.length; i++) {
+			var msg = messageContent[i];
+			var type = msg.type;
+			var data = msg.data;
+			if (type == "emotion") {
+				var eletext = "<p3><img src='" + data + "'/></p3>";
+				var ele = $(eletext);
+				for ( var j = 0; j < ele.length; j++) {
+					lineDiv.appendChild(ele[j]);
+				}
+			} else if (type == "pic") {
+				var filename = msg.filename;
+				var fileele = $("<p3>" + filename + "</p3><br>");
+				for ( var j = 0; j < fileele.length; j++) {
+					lineDiv.appendChild(fileele[j]);
+				}
+				lineDiv.appendChild(data);
+			} else if (type == 'audio') {
+				var filename = msg.filename;
+				var fileele = $("<p3>" + filename + "</p3><br>");
+				for ( var j = 0; j < fileele.length; j++) {
+					lineDiv.appendChild(fileele[j]);
+				}
+				lineDiv.appendChild(data);
+			} else {
+				var eletext = "<p3>" + data + "</p3>";
+				var ele = $(eletext);
+				for ( var j = 0; j < ele.length; j++) {
+					lineDiv.appendChild(ele[j]);
+				}
+			}
+		}
+		if (contact != curChatUserId) {
+			contactLi.style.backgroundColor = "green";
+		}
+		var msgContentDiv = getContactChatDiv(contact);
+		var create = false;
+		if (msgContentDiv == null) {
+			msgContentDiv = createContactChatDiv(contact);
+			create = true;
+		}
+		msgContentDiv.appendChild(lineDiv);
+		if (create) {
+			document.getElementById(msgCardDivId).appendChild(msgContentDiv);
+		}
+		return lineDiv;
+	};
+</script>
+</head>
+<body>
+	<!-- 欢迎页面 -->
+	<!-- 登录页面 -->
+	<div id="loginmodal" class="modal hide fade in" role="dialog"
+		aria-hidden="true" data-backdrop="static">
+		<div class="modal-header">
+			<h3>用户登陆</h3>
+		</div>
+		<div class="modal-body">
+			<label for="username">用户名:</label><input type="text" name="username"
+				value="web1" id="username" tabindex="1" /> <label for="password">密码:</label>
+			<input type="password" value="123456" name="password" id="password"
+				tabindex="2" /> <label for="appkey">appkey:</label> <input
+				type="text" value="easemob-demo#chatdemoui" name="appkey"
+				id="appkey" tabindex="3" /> <label for="resource">resource:</label>
+			<input type="text" value="mychat" id="resource" tabindex="4" />
+		</div>
+		<div class="modal-footer">
+			<button class="flatbtn-blu" onclick="login()" tabindex="3">Log
+				In</button>
+		</div>
+	</div>
+
+	<div id="waitLoginmodal" class="modal hide fade" data-backdrop="static">
+		<img src="img/waitting.gif">Login......</img>
+	</div>
+	<!-- 聊天页面 -->
+	<div id="content" class="content" style="display: none">
+		<div class="chatBox">
+			<div class="chatLeft">
+				<div id="chat01" class="chat01">
+					<div class="chat01_title">
+						<ul class="talkTo">
+							<li id="talkTo"><a href="javascript:;"></a></li>
+						</ul>
+					</div>
+					<div id="null-nouser" class="chat01_content"></div>
+				</div>
+
+				<div class="chat02">
+					<div class="chat02_title">
+						<a class="chat02_title_btn ctb01" onclick="showEmotionDialog()"
+							href="javascript:;" title="选择表情"></a> <a
+							class="chat02_title_btn ctb03" title="选择图片"
+							onclick="showSendPic()" href="#"> </a> <a
+							class="chat02_title_btn ctb02" onclick="showSendAudio()" href="#"
+							title="选择语音"><span></span></a> <label id="chat02_title_t"></label>
+						<div id="wl_faces_box" class="wl_faces_box">
+							<div class="wl_faces_content">
+								<div class="title">
+									<ul>
+										<li class="title_name">常用表情</li>
+										<li class="wl_faces_close"><span
+											onclick='turnoffFaces_box()'>&nbsp;</span></li>
+									</ul>
+								</div>
+								<div id="wl_faces_main" class="wl_faces_main">
+									<ul id="emotionUL">
+									</ul>
+								</div>
+							</div>
+							<div class="wlf_icon"></div>
+						</div>
+					</div>
+					<div id="input_content" class="chat02_content">
+						<textarea id="talkInputId"></textarea>
+					</div>
+					<div class="chat02_bar">
+						<ul>
+							<li style="right: 5px; top: 5px;"><a href="javascript:;">
+									<img src="img/send_btn.jpg" onclick='sendText()'>
+							</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="chatRight">
+				<div class="chat03">
+					<div class="chat03_title">
+						<button id="logoutButton" class="btn" onclick="logout()"></button>
+					</div>
+					<div id="contractlist" class="chat03_content"></div>
+				</div>
+			</div>
+			<div style="clear: both;"></div>
+		</div>
+		<div id="fileModal" class="modal hide fade" role="dialog"
+			aria-hidden="true" data-backdrop="static">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h3>文件选择框</h3>
+			</div>
+			<div class="modal-body">
+				<input type='file' id="fileInput" /> <input type='hidden'
+					id="sendfiletype" />
+			</div>
+			<div class="modal-footer">
+				<button id="fileSend" class="btn btn-primary" onclick="sendFile()">发送</button>
+				<button id="cancelfileSend" class="btn" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
