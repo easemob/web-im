@@ -174,7 +174,7 @@ layout: docs
 		}
 		alert("不支持此图片类型" + filetype);
 	};
-###5.发送音频消息
+###6.发送音频消息
 sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消息
 
     function sendAudio () {
