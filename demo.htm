@@ -40,7 +40,7 @@
 	};
 	var showChatUI = function() {
 		document.getElementById("content").style.display = "";
-		document.getElementById("logoutButton").innerHTML = curUserId+"退出";
+		document.getElementById("logoutButton").innerHTML = curUserId + "退出";
 	};
 	//登录之前不显示wab对话框
 	var hiddenChatUI = function() {
@@ -126,21 +126,16 @@
 	var login = function() {
 		var user = document.getElementById("username").value;
 		var pass = document.getElementById("password").value;
-		var appkey = document.getElementById("appkey").value;
-		var resource = document.getElementById("resource").value;
 		if (user == '' || pass == '') {
 			alert("请输入用户名和密码");
 			return;
 		}
 		hiddenLoginUI();
 		showWaitLoginedUI();
-		//document.getElementById("password").value = "";
 		conn.open({
 			user : user,
 			pwd : pass,
-			appKey : appkey,//'easemob-demo#chatdemoui',
-			resource : resource
-		//'mychat'
+			appKey : 'easemob-demo#chatdemoui'
 		});
 		return false;
 	};
@@ -618,21 +613,25 @@
 </script>
 </head>
 <body>
-	<!-- 欢迎页面 -->
-	<!-- 登录页面 -->
 	<div id="loginmodal" class="modal hide fade in" role="dialog"
 		aria-hidden="true" data-backdrop="static">
 		<div class="modal-header">
 			<h3>用户登陆</h3>
 		</div>
 		<div class="modal-body">
-			<label for="username">用户名:</label><input type="text" name="username"
-				value="web1" id="username" tabindex="1" /> <label for="password">密码:</label>
-			<input type="password" value="123456" name="password" id="password"
-				tabindex="2" /> <label for="appkey">appkey:</label> <input
-				type="text" value="easemob-demo#chatdemoui" name="appkey"
-				id="appkey" tabindex="3" /> <label for="resource">resource:</label>
-			<input type="text" value="mychat" id="resource" tabindex="4" />
+			<table>
+				<tr>
+					<td width="65%"><label for="username">用户名:</label> <input
+						type="text" name="username" value="web1" id="username"
+						tabindex="1" /> <label for="password">密码:</label> <input
+						type="password" value="123456" name="password" id="password"
+						tabindex="2" /></td>
+					<td align="right"><img id="qixinlogo" src="img/e_logo.png"
+						height="360" width="150" /></td>
+				</tr>
+			</table>
+
+
 		</div>
 		<div class="modal-footer">
 			<button class="flatbtn-blu" onclick="login()" tabindex="3">Log
@@ -687,7 +686,7 @@
 					<div class="chat02_bar">
 						<ul>
 							<li style="right: 5px; top: 5px;"><a href="javascript:;">
-									<img src="img/send_btn.jpg" onclick='sendText()'>
+									<img src="img/send_btn.jpg" onclick='sendText()' />
 							</a></li>
 						</ul>
 					</div>
