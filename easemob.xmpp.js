@@ -1465,24 +1465,34 @@ connection.prototype.getPresence = function() {
 	var conn = this;
 	this.sendCommand(dom.tree());
 };
-connection.prototype.ping = function(suc,error) {
+connection.prototype.ping = function(options) {
+	options = options || {};
+	var jid = getJid(options,this);
+
 	var dom = $iq({
 		from : this.context.jid || '',
-		to: this.domain,
+		to: jid,
 		type: "get"
 	}).c("ping", {xmlns: "urn:xmpp:ping"});
-		
-  if(suc){
-		if(this.isOpened()){
-			this.context.stropheConn.sendIQ(dom.tree(),suc,error);
-		} else {
-			this.onError({
-				type : EASEMOB_XMPP_CONNCTION_OPEN_ERROR,
-				msg : '连接还未建立,请先登录或等待登录处理完毕'
-			});
-		}
-		return;
-  }
+
+	suc = options.success || emptyFn;
+	error = options.error || this.onError;
+	var failFn = function(ele){
+		error({
+			type : EASEMOB_XMPP_CONNCTION_IQ_ERROR,
+			msg : 'ping失败',
+			data : ele
+		});
+	};
+	if(this.isOpened()){
+		this.context.stropheConn.sendIQ(dom.tree(),suc,failFn);
+	} else {
+		error({
+			type : EASEMOB_XMPP_CONNCTION_OPEN_ERROR,
+			msg : '连接还未建立,请先登录或等待登录处理完毕'
+		});
+	}
+	return;
 };
 connection.prototype.getRoster = function(suc,error) {
 	var conn = this;
