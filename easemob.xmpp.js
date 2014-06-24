@@ -139,6 +139,8 @@ EASEMOB_XMPP_CONNCTION_REOPEN_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_CLOSE_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_SERVER_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_IQ_ERROR = tempIndex++;
+EASEMOB_XMPP_CONNCTION_PING_ERROR = tempIndex++;
+EASEMOB_XMPP_CONNCTION_GETROSTER_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_CROSSDOMAIN_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_LISTENING_OUTOF_MAXRETRIES = tempIndex++;
 EASEMOB_XMPP_CONNCTION_RECEIVEMSG_CONTENTERROR = tempIndex++;
@@ -712,6 +714,11 @@ var parseFriendFn = function(queryTag){
 				var n = parseNameFromJidFn(jid);
 				friend.name = n;
 			}
+			var groups = [];
+			Strophe.forEachChild(item, 'group',function(group){
+				groups.push(Strophe.getText(group));
+			});
+			friend.groups = groups;
 			rouster.push(friend);
 		}
 	}
@@ -847,9 +854,16 @@ var login2ImCallback = function (status,msg,conn){
 			conn.handlePing(msginfo);
 			return true;
 		};
+		var handleIq = function(msginfo){
+			conn.handleIq(msginfo);
+			return true;
+		};
+		
 		conn.addHandler(handleMessage, null, 'message', null, null,  null);
 		conn.addHandler(handlePresence, null, 'presence', null, null,  null);
 		conn.addHandler(handlePing, "urn:xmpp:ping", 'iq', "get", null,  null);
+		conn.addHandler(handleIq, "jabber:iq:roster", 'iq', "set", null,  null);
+		
 		conn.context.status = STATUS_OPENED;
 		var supportRecMessage = [
            EASEMOB_XMPP_MESSAGE_REC_TEXT,
@@ -893,6 +907,19 @@ var login2ImCallback = function (status,msg,conn){
 		});
 	}
 };
+var getJid = function(options,conn){
+	var jid = options.toJid || '';
+	if(jid==''){
+		var appKey = conn.context.appKey || '';
+		var toJid = appKey + "_" + options.to + "@"
+				+ conn.domain;
+		if(options.resource){
+			toJid = toJid + "/" + options.resource;
+		}
+		jid = toJid;
+	}
+	return jid;
+};
 
 tempIndex = 0;
 var STATUS_INIT = tempIndex++;
@@ -927,6 +954,7 @@ connection.prototype.init = function(options) {
 	this.onFileMessage = options.onFileMessage || emptyFn;
 	this.onLocationMessage = options.onLocationMessage || emptyFn;
 	this.onPresence = options.onPresence || emptyFn;
+	this.onRoster = options.onRoster || emptyFn;
 	this.onError = options.onError || emptyFn;
 	
 	this.context = {
@@ -1088,19 +1116,18 @@ connection.prototype.handlePresence = function(msginfo){
 	var showTags = msginfo.getElementsByTagName("show");
 	if(showTags && showTags.length>0){
 		var showTag = showTags[0];
-		if(showTag.childNodes.length>0 && showTag.childNodes[0].nodeType==Strophe.ElementType.TEXT){
-			info.show = showTag.childNodes[0].nodeValue || "";
-		}
+		info.show = Strophe.getText(showTag);
 	}
 	var statusTags = msginfo.getElementsByTagName("status");
 	if(statusTags && statusTags.length>0){
 		var statusTag = statusTags[0];
-		if(statusTag.childNodes.length>0 && statusTag.childNodes[0].nodeType==Strophe.ElementType.TEXT){
-			info.status = statusTag.childNodes[0].nodeValue || "";
-		}
+		info.status = Strophe.getText(statusTag);
 	}
-	if(info.type=='subscribe'){
-		info.friend = info.from;
+	
+	var priorityTags = msginfo.getElementsByTagName("priority");
+	if(priorityTags && priorityTags.length>0){
+		var priorityTag = priorityTags[0];
+		info.priority  = Strophe.getText(priorityTag);
 	}
 	this.onPresence(info,msginfo);
 };
@@ -1118,6 +1145,26 @@ connection.prototype.handlePing = function(e) {
 				type : 'result'
 	});
 	this.sendCommand(dom.tree());
+};
+connection.prototype.handleIq = function(e) {
+	var id = e.getAttribute('id');
+	var from = e.getAttribute('from') || '';
+	var name = parseNameFromJidFn(from);
+	var curJid = this.context.jid;
+	var curUser = this.context.userId;
+	if (from !== "" && from != curJid && curUser != name)
+		return true;
+		
+	var iqresult = $iq({type: 'result', id: id, from: curJid});
+	this.sendCommand(iqresult.tree());
+	
+	var msgBodies = e.getElementsByTagName("query");
+	if(msgBodies&&msgBodies.length>0){
+		var queryTag = msgBodies[0];
+		var rouster = parseFriendFn(queryTag);
+		this.onRoster(rouster);
+	}
+	return true;
 };
 connection.prototype.handleMessage = function(msginfo){
 	if(this.isClosed()){
@@ -1155,6 +1202,12 @@ connection.prototype.handleMessage = function(msginfo){
 				});
 			}
 		} else if ("img" == type) {
+			var rwidth = 0;
+			var rheight = 0;
+			if(msgBody.size){
+				rwidth = msgBody.size.width;
+				rheight = msgBody.size.height;
+			}
 			var msg = {
 				from : from,
 				to : too,
@@ -1163,10 +1216,10 @@ connection.prototype.handleMessage = function(msginfo){
 				filename : msgBody.filename,
 				thumb : msgBody.thumb,
 				thumb_secret : msgBody.thumb_secret,
-				file_length : msgBody.file_length,
-				width : msgBody.size.width,
-				height : msgBody.size.height,
-				filetype : msgBody.filetype,
+				file_length : msgBody.file_length||'',
+				width : rwidth,
+				height : rheight,
+				filetype : msgBody.filetype||'',
 				accessToken : this.context.accessToken || ''
 			};
 			this.onPictureMessage(msg);
@@ -1177,9 +1230,9 @@ connection.prototype.handleMessage = function(msginfo){
 				url : msgBody.url,
 				secret : msgBody.secret,
 				filename : msgBody.filename,
-				length : msgBody.length,
-				file_length : msgBody.file_length,
-				filetype : msgBody.filetype,
+				length : msgBody.length||'',
+				file_length : msgBody.file_length||'',
+				filetype : msgBody.filetype||'',
 				accessToken : this.context.accessToken || ''
 			});
 		} else if ("file" == type) {
@@ -1440,12 +1493,108 @@ connection.prototype.setLocation = function(options) {
 	}).c("body").t(jsonstr);
 	this.sendCommand(dom.tree());
 };
-connection.prototype.setUserSatus = function(status) {
+connection.prototype.addRoster = function(options){
+	var jid = getJid(options,this);
+	var name = options.name || '';
+	var groups = options.groups || '';
+
+	var iq = $iq();
+	iq.attrs({type : 'set'});
+	iq.c("query").attrs({xmlns:'jabber:iq:roster'});
+	iq.c("item").attrs({jid: jid ,name : name});
+	
+	if(groups){
+		for (var i = 0; i < groups.length; i++){
+			iq.c('group').t(groups[i]).up();
+		}
+	}
+	var suc = options.success || emptyFn;
+	var error = options.error || emptyFn;
+	this.context.stropheConn.sendIQ(iq.tree(),suc,error);
+};
+connection.prototype.removeRoster = function(options){
+	var jid = getJid(options,this);
+	var iq = $iq({type: 'set'}).c('query', {xmlns : "jabber:iq:roster"}).c('item', {jid: jid,subscription: "remove"});
+	
+	var suc = options.success || emptyFn;
+	var error = options.error || emptyFn;
+	this.context.stropheConn.sendIQ(iq,suc,error);
+};
+connection.prototype.getRoster = function(options) {
+	var conn = this;
+	var dom  = $iq({
+      	type: 'get'
+  }).c('query', {xmlns: 'jabber:iq:roster'});
+
+	options = options || {};
+	suc = options.success || this.onRoster; 
+  var completeFn = function(ele){
+  	var rouster = [];
+		var msgBodies = ele.getElementsByTagName("query");
+		if(msgBodies&&msgBodies.length>0){
+			var queryTag = msgBodies[0];
+			rouster = parseFriendFn(queryTag);
+		}
+  	suc(rouster,ele);
+  };
+  error = options.error || this.onError;
+  var failFn = function(ele){
+		error({
+			type : EASEMOB_XMPP_CONNCTION_GETROSTER_ERROR,
+			msg : '获取联系人信息失败',
+			data : ele
+		});
+  };
+	if(this.isOpened()){
+		this.context.stropheConn.sendIQ(dom.tree(),completeFn,failFn);
+	} else {
+		error({
+			type : EASEMOB_XMPP_CONNCTION_OPEN_ERROR,
+			msg : '连接还未建立,请先登录或等待登录处理完毕'
+		});
+	}
+};
+connection.prototype.subscribe = function(options) {
+	var jid = getJid(options,this);
+	var pres = $pres({to: jid, type: "subscribe"});
+	if (options.message) {
+		pres.c("status").t(options.message).up();
+	}
+	if (options.nick) {
+		pres.c('nick', {'xmlns': "http://jabber.org/protocol/nick"}).t(options.nick);
+	}
+	this.sendCommand(pres.tree());
+};
+connection.prototype.subscribed = function(options) {
+	var jid = getJid(options,this);
+	var pres = $pres({to : jid, type : "subscribed"});
+	if (options.message) {
+		pres.c("status").t(options.message).up();
+	}
+	this.sendCommand(pres.tree());
+};
+connection.prototype.unsubscribe = function(options) {
+	var jid = getJid(options,this);
+	var pres = $pres({to : jid, type : "unsubscribe"});
+	if (options.message) {
+		pres.c("status").t(options.message);
+	}
+	this.sendCommand(pres.tree());
+};
+connection.prototype.unsubscribed = function(options) {
+	var jid = getJid(options,this);
+	var pres = $pres({to : jid, type : "unsubscribed"});
+	if (options.message) {
+		pres.c("status").t(options.message).up();
+	}
+	this.sendCommand(pres.tree());
+};
+connection.prototype.setUserSig = function(desc) {
 	var dom = $pres();
-	status = status || "";
-	dom.attrs({xmlns : 'jabber:client'}).c("status").t(status);
+	desc = desc || "";
+	dom.attrs({xmlns : 'jabber:client'}).c("status").t(desc);
 	this.sendCommand(dom.tree());
-}
+};
 connection.prototype.setPresence = function(type,status) {
 	var dom = $pres();
 	if (type){
@@ -1479,7 +1628,7 @@ connection.prototype.ping = function(options) {
 	error = options.error || this.onError;
 	var failFn = function(ele){
 		error({
-			type : EASEMOB_XMPP_CONNCTION_IQ_ERROR,
+			type : EASEMOB_XMPP_CONNCTION_PING_ERROR,
 			msg : 'ping失败',
 			data : ele
 		});
@@ -1493,41 +1642,6 @@ connection.prototype.ping = function(options) {
 		});
 	}
 	return;
-};
-connection.prototype.getRoster = function(suc,error) {
-	var conn = this;
-	var dom  = $iq({
-      	type: 'get'
-  }).c('query', {xmlns: 'jabber:iq:roster'});
-  	
-  if(suc){
-	  var completeFn = function(ele){
-	  	var rouster = [];
-			var msgBodies = ele.getElementsByTagName("query");
-			if(msgBodies&&msgBodies.length>0){
-				var queryTag = msgBodies[0];
-				rouster = parseFriendFn(queryTag);
-			}
-	  	suc(rouster,ele);
-	  };
-	  var failFn = function(ele){
-	  	var deal = error || conn.onError;
-			deal({
-				type : EASEMOB_XMPP_CONNCTION_IQ_ERROR,
-				msg : '获取好友信息失败',
-				response : ele
-			});
-	  };
-		if(this.isOpened()){
-			this.context.stropheConn.sendIQ(dom.tree(),completeFn,failFn);
-		} else {
-			this.onError({
-				type : EASEMOB_XMPP_CONNCTION_OPEN_ERROR,
-				msg : '连接还未建立,请先登录或等待登录处理完毕'
-			});
-		}
-		return;
-  }
 };
 connection.prototype.isOpened = function() {
 	var status = this.context.status;
