@@ -20,6 +20,7 @@
 	var talkInputId = "talkInputId";
 	var fileInputId = "fileInput";
 
+	
 	var getLoginInfo = function() {
 		return {
 			isLogin : false
@@ -46,47 +47,120 @@
 	var hiddenChatUI = function() {
 		document.getElementById("content").style.display = "none";
 	};
-	//登录处理
+	
+	//处理连接时函数,主要是登录成功后对页面元素做处理
+	var handleOpen = function (conn){
+		//从连接中获取到当前的登录人注册帐号名
+		curUserId = conn.context.userId;
+		//获取当前登录人的联系人列表
+		conn.getRoster({
+			success : function(roster) {
+				hiddenWaitLoginedUI();// 页面处理
+				showChatUI();
+				//要显示的联系人列表
+				var newroster =  [];
+				for(var i in roster){
+					var ros = roster[i];	
+					//ros.subscriptio值为both/to为显示的联系人
+					if(ros.subscription =='both' || ros.subscription=='to'){
+						newroster.push(ros);
+					}
+				}
+				if (newroster) {
+					buildContactDiv("contractlist", newroster);//页面处理
+					if (newroster.length > 0) {
+						setCurrentContact(newroster[0].name);//页面处理将第一个联系人作为当前聊天div
+					}
+				}
+				conn.setPresence(null);
+			},
+			error : function(e) {
+				hiddenWaitLoginedUI();
+				alert(e.msg + ",请重新登录");
+				showLoginUI();
+			}
+			
+		});
+	};
+	
+	
+	//连接中断时的处理，主要是对页面进行处理
+	var handleClosed= function (){
+		curUserId = null;
+		curChatUserId = null;
+		hiddenChatUI();
+		clearContactUI("contractlist", msgCardDivId);
+		showLoginUI();
+	};
+	
+	//注册回调函数列表
 	$(document).ready(function() {
 		conn = new Easemob.xmpp.Connection();
+		//初始化连接
 		conn.init({
+			//当连接成功时的回调方法
 			onOpened : function() {
-				curUserId = conn.context.userId;
-				conn.getRoster(function(roster) {
-					hiddenWaitLoginedUI();
-					showChatUI();
-					if (roster) {
-						buildContactDiv("contractlist", roster);
-						if (roster.length > 0) {
-							setCurrentContact(roster[0].name);
-						}
-					}
-					conn.setPresence(null);
-				}, function(e) {
-					hiddenWaitLoginedUI();
-					alert(e.msg + ",请重新登录");
-					showLoginUI();
-				});
+				handleOpen(conn);
 			},
+			//当连接关闭时的回调方法
 			onClosed : function() {
-				curUserId = null;
-				curChatUserId = null;
-				hiddenChatUI();
-				clearContactUI("contractlist", msgCardDivId);
-				showLoginUI();
+				handleClosed();
 			},
+			//收到文本消息时的回调方法
 			onTextMessage : function(message) {
 				handleTextMessage(message);
 			},
+			//收到表情消息时的回调方法
 			onEmotionMessage : function(message) {
 				handleEmotion(message);
 			},
+			//收到图片消息时的回调方法
 			onPictureMessage : function(message) {
 				handlePictureMessage(message);
 			},
+			//收到音频消息的回调方法
 			onAudioMessage : function(message) {
 				handleAudioMessage(message);
 			},
+			onPresence : function (e){
+				//别人申请添加当前登录人为好友
+				if(e.type=='subscribe'){
+					alert("receive subscribe friend request");
+					var fromJid = e.fromJid;
+					agreeAddFriend(conn,e.from,e.fromJid);
+					return;
+				}
+				//
+				if(e.type=='subscribed'){
+					alert("receive friend subscribed message");
+					return;
+				}
+				if(e.type=='unsubscribe'){
+					alert("receive unsubscribe friend request");
+					delFriend(conn,from,e.fromJid);
+					return;
+				}
+				//unsubscribed 删除好友，撤销添加
+				if(e.type=='unsubscribed'){
+					alert("receive delete friend message");
+					return;
+				}
+				alert("onPresence");
+			},
+			onRoster : function (e){
+				for(var i=0;i<e.length;i++){
+					var contact = e[i];
+					if(contact.ask && contact.ask =='subscribe'){
+						continue;
+					}
+				}
+				if(buildRoster==false){
+					buildRoster = true;
+					conn.setPresence();
+				}
+				alert("onRoster");
+			},
+			//异常时的回调方法
 			onError : function(e) {
 				if (curUserId == null) {
 					hiddenWaitLoginedUI();
@@ -100,12 +174,10 @@
 		var loginInfo = getLoginInfo();
 		if (loginInfo.isLogin) {
 			showWaitLoginedUI();
-			conn.attach({
-				resource : 'mychat'
-			});
 		} else {
 			showLoginUI();
 		}
+		//发送文件的模态窗口
 		$('#fileModal').on('hidden.bs.modal', function(e) {
 			var ele = document.getElementById(fileInputId);
 			ele.value = "";
@@ -115,6 +187,18 @@
 			document.getElementById("fileSend").disabled = false;
 			document.getElementById("cancelfileSend").disabled = false;
 		});
+		
+		$('#addFridentModal').on('hidden.bs.modal', function(e) {
+			var ele = document.getElementById("addfridentId");
+			ele.value = "";
+			if (!window.addEventListener) {
+				ele.outerHTML = ele.outerHTML;
+			}
+			document.getElementById("addFridend").disabled = false;
+			document.getElementById("cancelAddFridend").disabled = false;
+		});
+		
+		//在 密码输入框时的回车登录
 		$('#password').keypress(function(e) {
 			var key = e.which;
 			if (key == 13) {
@@ -123,6 +207,7 @@
 		});
 	});
 
+	//登录系统时的操作方法
 	var login = function() {
 		var user = document.getElementById("username").value;
 		var pass = document.getElementById("password").value;
@@ -132,9 +217,11 @@
 		}
 		hiddenLoginUI();
 		showWaitLoginedUI();
+		//根据用户名密码登录系统
 		conn.open({
 			user : user,
 			pwd : pass,
+			//连接时提供appkey，不应该在login时
 			appKey : 'easemob-demo#chatdemoui'
 		});
 		return false;
@@ -142,6 +229,9 @@
 	var logout = function() {
 		conn.close();
 	};
+
+	
+	//设置当前显示的聊天窗口div，如果有联系人则默认选中联系人中的第一个联系人，如没有联系人则当前div为null-nouser
 	var setCurrentContact = function(defaultUserId) {
 		showContactChatDiv(defaultUserId);
 		if (curChatUserId != null) {
@@ -170,7 +260,7 @@
 				chooseContactDivClick(this);
 			};
 			var imgelem = document.createElement("img");
-			imgelem.setAttribute("src", "img/head/2016.jpg");
+			imgelem.setAttribute("src", "img/head/contact_normal.png");
 			lielem.appendChild(imgelem);
 
 			var spanelem = document.createElement("span");
@@ -187,17 +277,20 @@
 		contactlist.appendChild(uielem);
 	};
 
+	//选择联系人的处理
 	var getContactLi = function(chatUserId) {
 		var li = document.getElementById(chatUserId);
 		return li;
 	};
 
+	//构造当前聊天记录的窗口div
 	var getContactChatDiv = function(chatUserId) {
 		var msgContentDivId = curUserId + "-" + chatUserId;
 		var contentDiv = document.getElementById(msgContentDivId);
 		return contentDiv;
 	};
 
+	//如果当前没有某一个联系人的聊天窗口div就新建一个
 	var createContactChatDiv = function(chatUserId) {
 		var msgContentDivId = curUserId + "-" + chatUserId;
 		var newContent = document.createElement("div");
@@ -208,6 +301,7 @@
 		return newContent;
 	};
 
+	//显示当前选中联系人的聊天窗口div，并将该联系人在联系人列表中背景色置为蓝色
 	var showContactChatDiv = function(chatUserId) {
 		var contentDiv = getContactChatDiv(chatUserId);
 		if (contentDiv == null) {
@@ -223,6 +317,7 @@
 		document.getElementById(talkToDivId).innerHTML = chatUserId;//聊天窗口显示当前对话人名称
 
 	};
+	//对上一个联系人的聊天窗口div做隐藏处理，并将联系人列表中选择的联系人背景色置空
 	var hiddenContactChatDiv = function(chatUserId) {
 		var contactLi = document.getElementById(chatUserId);
 		if (contactLi) {
@@ -234,6 +329,7 @@
 		}
 
 	};
+	//切换联系人聊天窗口div
 	var chooseContactDivClick = function(li) {
 		var chatUserId = li.id;
 		if (chatUserId != curChatUserId) {
@@ -246,6 +342,7 @@
 			curChatUserId = chatUserId;
 		}
 	};
+	
 	var clearContactUI = function(contactInfoDiv, contactChatDiv) {
 		document.getElementById(talkToDivId).innerHTML = "";
 		var contactlist = document.getElementById(contactInfoDiv);
@@ -269,6 +366,7 @@
 		}
 		;
 		emotionFlag = true;
+		// Easemob.xmpp.Helper.EmotionPicData设置表情的json数组
 		var sjson = Easemob.xmpp.Helper.EmotionPicData;
 		for ( var key in sjson) {
 			var emotionImgContent = document.createElement("img");
@@ -314,6 +412,7 @@
 			alert("请选择联系人");
 			return;
 		}
+		//easemob-sdk发送文本消息的方法 to为发送给谁，meg为文本消息对象
 		conn.sendTextMessage({
 			to : to,
 			msg : msg
@@ -338,12 +437,14 @@
 			sendAudio();
 		}
 	};
+	//发送图片消息时调用方法
 	var sendPic = function() {
 		var to = curChatUserId;
 		if (to == null) {
 			alert("请选择联系人");
 			return;
 		}
+		// Easemob.xmpp.Helper.getFileUrl为easemob-sdk获取发送文件对象的方法，fileInputId为 input 标签的id值
 		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
 			alert("请选择发送图片");
@@ -377,14 +478,17 @@
 		"mp3" : true,
 		"wma" : true,
 		"wav" : true,
+		"amr" : true,
 		"avi" : true
 	};
+	//发送音频消息时调用的方法
 	var sendAudio = function() {
 		var to = curChatUserId;
 		if (to == null) {
 			alert("请选择联系人");
 			return;
 		}
+		//利用easemob-sdk提供的方法来构造一个file对象
 		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
 			alert("请选择发送音频");
@@ -397,7 +501,7 @@
 			document.getElementById("cancelfileSend").disabled = true;
 			var opt = {
 				fileInputId : fileInputId,
-				to : to,
+				to : to,//发给谁
 				onFileUploadError : function(error) {
 					$('#fileModal').modal('hide');
 					var messageContent = error.msg + ",发送音频失败:" + filename;
@@ -409,31 +513,36 @@
 					appendMsg(curUserId, to, messageContent);
 				}
 			};
+			//构造完opt对象后调用easemob-sdk中发送音频的方法
 			conn.sendAudio(opt);
 			return;
 		}
 		alert("不支持此音频类型" + filetype);
 	};
-	//收到文本消息的处理
+	//easemob-sdk收到文本消息的回调方法的实现
 	var handleTextMessage = function(message) {
-		var from = message.from;
-		var messageContent = message.data;
+		var from = message.from;//消息的发送者
+		var messageContent = message.data;//文本消息体
 		var ele = appendMsg(from, from, messageContent);
 		return ele;
 	};
+	//easemob-sdk收到表情消息的回调方法的实现，message为表情符号和文本的消息对象，文本和表情符号sdk中做了
+	//统一的处理，不需要用户自己区别字符是文本还是表情符号。
 	var handleEmotion = function(message) {
 		var from = message.from;
 		var ele = appendMsg(from, from, message);
 		return ele;
 	};
+	//easemob-sdk收到图片消息的回调方法的实现
 	var handlePictureMessage = function(message) {
-		var filename = message.filename;
-		var from = message.from;
-		var ele = appendMsg(from, from, "收到图片" + filename + ",正在处理");
+		var filename = message.filename;//文件名称，带文件扩展名
+		var from = message.from;//文件的发送者
+		var ele = appendMsg(from, from, "收到图片" + filename + ",正在处理");//在聊天记录中处理记录显示的统一方法
 		if (ele == null) {
 			return;
 		}
 		var options = message;
+		// 图片消息下载成功后的处理逻辑
 		options.onFileDownloadComplete = function(response, xhr) {
 			var objectURL = window.URL.createObjectURL(response);
 			img = document.createElement("img");
@@ -473,11 +582,13 @@
 		options.onFileDownloadError = function(e) {
 			appendMsg(from, from, e.msg + ",下载图片" + filename + "失败");
 		};
+		//easemob-sdk包装的下载文件对象的统一处理方法。
 		Easemob.xmpp.Helper.download(options);
 	};
-
+	//easemob-sdk收到音频消息回调方法的实现
 	var handleAudioMessage = function(message) {
 		var filename = message.filename;
+		var filetype = message.filetype;
 		var from = message.from;
 		var ele = appendMsg(from, from, "收到音频" + filename + ",正在处理");
 		if (ele == null) {
@@ -485,48 +596,70 @@
 		}
 		var options = message;
 		options.onFileDownloadComplete = function(response, xhr) {
+			//amr 不处理播放，提供下载
+			var index = filename.lastIndexOf("\.");
+			if(index>0){
+				var  fileType=filename.substring(index,filename.length);
+				if(".amr"==fileType.toLowerCase()){
+					var spans="不支持的音频格式:"+filename;
+					var reader  = new FileReader();
+					reader.onload = function(event){
+						spans = spans+",请<a href='"+event.target.result+"'>&nbsp;&nbsp;下载&nbsp;&nbsp;</a>播放";
+						appendMsg(from, from, spans);
+					}
+					reader.readAsDataURL(response);
+					
+					return;
+				}
+			}
+			
 			var objectURL = window.URL.createObjectURL(response);
-			var audio = document.createElement("audio");
-			if (("src" in audio) && ("controls" in audio)) {
-				audio.onload = function() {
-					audio.onload = null;
-					window.URL.revokeObjectURL(audio.src);
+			//FIXME 目前ios-sdk端传过来的消息没有文件名称扩展名，不能进行分类处理。
+			if(1==1){
+				var emb = document.createElement("embed");
+				emb.height = 30;
+				emb.width = 160;
+				emb.src = objectURL;
+				emb.onload = function(e) {
+					emb.onload = null;
+					window.URL.revokeObjectURL(this.src);
 				};
-				audio.onerror = function() {
-					audio.onerror = null;
+				emb.onerror = function() {
+					emb.onerror = null;
 					appendMsg(from, from, "当前浏览器不支持播放此音频:" + filename);
-				};
-				audio.controls = "controls";
-				audio.src = objectURL;
+				}
 				appendMsg(from, from, {
 					data : [ {
 						type : 'audio',
 						filename : filename,
-						data : audio
+						data : emb
 					} ]
 				});
-				audio.play();
 				return;
+			}else{
+				var audio = document.createElement("audio");
+				if (("src" in audio) && ("controls" in audio)) {
+					audio.onload = function() {
+						audio.onload = null;
+						window.URL.revokeObjectURL(audio.src);
+					};
+					audio.onerror = function() {
+						audio.onerror = null;
+						appendMsg(from, from, "当前浏览器不支持播放此音频:" + filename);
+					};
+					audio.controls = "controls";
+					audio.src = objectURL;
+					appendMsg(from, from, {
+						data : [ {
+							type : 'audio',
+							filename : filename,
+							data : audio
+						} ]
+					});
+					audio.play();
+					return;
+				}
 			}
-			var emb = document.createElement("embed");
-			emb.height = 60;
-			emb.width = 160;
-			emb.src = objectURL;
-			emb.onload = function(e) {
-				emb.onload = null;
-				window.URL.revokeObjectURL(this.src);
-			};
-			emb.onerror = function() {
-				emb.onerror = null;
-				appendMsg(from, from, "当前浏览器不支持播放此音频:" + filename);
-			}
-			appendMsg(from, from, {
-				data : [ {
-					type : 'audio',
-					filename : filename,
-					data : emb
-				} ]
-			});
 		};
 		options.onFileDownloadError = function(e) {
 			appendMsg(from, from, e.msg + ",下载音频" + filename + "失败");
@@ -534,6 +667,7 @@
 		Easemob.xmpp.Helper.download(options);
 	};
 
+	//显示聊天记录的统一处理方法
 	var appendMsg = function(who, contact, message) {
 		var contactLi = getContactLi(contact);
 		if (contactLi == null) {
@@ -610,6 +744,97 @@
 		}
 		return lineDiv;
 	};
+	
+	
+	var showAddFriend = function(){
+		$('#addFridentModal').modal('toggle');
+		var addfridentId  = document.getElementById("addfridentId");
+		addfridentId.value = "好友账号";//输入好友账号
+	};
+	
+	function startAddFriend(){
+		var user = document.getElementById("addfridentId").value;
+		conn.addRoster({
+			to : user,
+			name : user,
+			groups : ['default'],
+			success : function(){
+				alert("startAddFriend suc");
+				$('#addFridentModal').modal('hide');
+			},
+			error : function(){
+				alert('addRoster fail');
+				$('#addFridentModal').modal('hide');
+			}
+		});
+		var date = new Date().toLocaleTimeString();
+		conn.subscribe({to : user,message:date});
+		return;
+	}
+	
+	function agreeAddFriend(connection,who,jid){
+		var date = new Date().toLocaleTimeString();
+		conn.addRoster({
+			toJid : jid,
+			name : who,
+			groups : ['default'],
+			success : function(){
+				alert("agreeAddFriend suc");
+			},
+			error : function(){
+				alert('agreeAddFriend fail');
+			}
+		});
+		var date = new Date().toLocaleTimeString();
+		connection.subscribed({
+			toJid : jid,
+			message : date
+		});
+		conn.subscribe({toJid : jid,message:date});
+	}
+	
+	function rejectAddFriend(){
+		var date = new Date().toLocaleTimeString();
+		conn.unsubscribed({
+			toJid : toJid,
+			message : date
+		});
+	}
+	
+	function directDelFriend(){
+		var user = document.getElementById("to").value;
+		conn.removeRoster({
+			to:user,
+			success:function(){
+				conn.unsubscribed({to : user});
+				alert("remove roster suc");
+			},
+			error:function(){
+				alert("remove roster error");
+			}
+		});
+	}
+	
+	function delFriend(connection,who,jid){
+		var date = new Date().toLocaleTimeString();
+		conn.removeRoster({
+			toJid : jid,
+			name : who,
+			groups : ['default'],
+			success : function(){
+				var date = new Date().toLocaleTimeString();
+				connection.unsubscribed({
+					toJid : jid,
+					message : date
+				});
+				conn.subscribe({toJid : jid,message:date});
+			},
+			error : function(){
+				alert('delFriend fail');
+			}
+		});
+	}
+	
 </script>
 </head>
 <body>
@@ -697,6 +922,7 @@
 				<div class="chat03">
 					<div class="chat03_title">
 						<button id="logoutButton" class="btn" onclick="logout()"></button>
+						<button id="addFriendButton" class="btn" onclick="showAddFriend()">加好友</button>
 					</div>
 					<div id="contractlist" class="chat03_content"></div>
 				</div>
@@ -719,6 +945,24 @@
 				<button id="cancelfileSend" class="btn" data-dismiss="modal">取消</button>
 			</div>
 		</div>
+		
+				
+		<div id="addFridentModal" class="modal hide fade" role="dialog"
+			aria-hidden="true" data-backdrop="static">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h3>添加好友</h3>
+			</div>
+			<div class="modal-body">
+				<input id="addfridentId" />
+			</div>
+			<div class="modal-footer">
+				<button id="addFridend" class="btn btn-primary" onclick="startAddFriend()">添加</button>
+				<button id="cancelAddFridend" class="btn" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+		
 	</div>
 </body>
 </html>
