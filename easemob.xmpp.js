@@ -1370,8 +1370,8 @@ connection.prototype.sendPictureMessage = function(options) {
 						url : options.url + '/' + options.uuid,
 						secret : options.secret,
 						filename : options.filename,
-						thumb : 'thumb',
-						thumb_secret : 'thumb_secret',
+						thumb : options.url + '/' + options.uuid,
+						thumb_secret : '',
 						size : {
 							width : options.width,
 							height : options.height
