@@ -307,6 +307,6 @@ sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消�
 		pwd : '123456'  //default ''
 	};
 	Easemob.xmpp.Helper.login2UserGrid(options);
-##7.内置空函数-Method
+##8.内置空函数-Method
 当所有需要回调的地方接受到函数时，默认采用此函数
 var emptyFn = function() {};
