@@ -174,7 +174,7 @@ layout: docs
 		}
 		alert("不支持此图片类型" + filetype);
 	};
-###6.发送音频消息
+###5.发送音频消息
 sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消息
 
     function sendAudio () {
@@ -224,6 +224,9 @@ sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消�
     var emotion_json = Easemob.xmpp.Helper.EmotionPicData;
 ##2.Base64工具类-object
     var base64  = Easemob.xmpp.Helper.Base64;
+	var srcstr="ssss";
+	var base64str = base64.encode(srcstr);
+	var orgstr = base64.decode(srcstr);
 ##3.文件上传工具类-attribute
 	//是否能上传file
 	var canupload = Easemob.xmpp.Helper.isCanUploadFile;
@@ -255,14 +258,55 @@ sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消�
 			filename : '',
 			filetype : ''
 		}
-    var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+    var fileInfo = Easemob.xmpp.Helper.getFileUrl(fileInputId);
 	//上传
-	Easemob.xmpp.Helper.upload = uploadFn;
+	var options={
+		appName = 'chatdemoui',
+		orgName = 'easemob-demo',
+		accessToken = 'YWMtjPPoovCqEeOQs7myPqqaOwAAAUaqNH0a8rRj4PwJLQju6-S47ZO6wYs3Lwo',
+		onFileUploadComplete:function(data){//upload file success },
+		onFileUploadError:function(e){//upload file error },
+		width:100,//only for pic
+		heght：100//only for pic
+	}
+	Easemob.xmpp.Helper.upload(options);
 	//下载
-	Easemob.xmpp.Helper.download = downloadFn;
-	//文件大小
-	Easemob.xmpp.Helper.getFileSize = getFileSizeFn;
+	var options = {
+		method:'GET',//default GET
+		responseType:'blob',//default blob
+		mimeType:'text/plain; charset=x-user-defined',//default
+		url:'http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae',
+		secret = 'NSgGYPCxEeOou00jZasg9e-GqKUZGdph96EFxJ4WxW-qkxV4',
+		accessToken = 'YWMtjPPoovCqEeOQs7myPqqaOwAAAUaqNH0a8rRj4PwJLQju6-S47ZO6wYs3Lwo',
+		onFileUploadComplete:function(data){//upload file success },
+		onFileUploadError:function(e){//upload file error },
+	}
+	Easemob.xmpp.Helper.download(options);
+	//文件大小 
+	var options={
+		fileInputId:'uploadfileinput'//文件输入框id
+	};
+	var fileSize = getFileSize(options.fileInputId);;
 ##6.发送Ajax请求-Method
-	Easemob.xmpp.Helper.xhr = doAjaxRequest;
+	var options = {
+		dataType:'text',//default
+		success:function(){//handle request success},
+		error :function(){//handle request error},
+		type ： 'post',//default 'post'
+		url : 'http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae',
+		headers:'',//default {}
+		data : '';//default null
+	};
+	Easemob.xmpp.Helper.xhr(options);
 ##7.登录usergrid-Method
-	Easemob.xmpp.Helper.login2UserGrid = login2UserGrid;
+	var options = {
+		appKey:'easemob-demo#chatdemoui',//default ''
+		success:function(data){ //login success },//default emptyFn
+		error : cunction(error){ //login error }, //default emptyFn
+		user : 'test1', //default ''
+		pwd : '123456'  //default ''
+	};
+	Easemob.xmpp.Helper.login2UserGrid(options);
+##7.内置空函数-Method
+当所有需要回调的地方接受到函数时，默认采用此函数
+var emptyFn = function() {};
