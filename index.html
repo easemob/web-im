@@ -614,30 +614,7 @@
 			}
 			
 			var objectURL = window.URL.createObjectURL(response);
-			//FIXME 目前ios-sdk端传过来的消息没有文件名称扩展名，不能进行分类处理。
-			if(1==1){
-				var emb = document.createElement("embed");
-				emb.height = 30;
-				emb.width = 160;
-				emb.src = objectURL;
-				emb.onload = function(e) {
-					emb.onload = null;
-					window.URL.revokeObjectURL(this.src);
-				};
-				emb.onerror = function() {
-					emb.onerror = null;
-					appendMsg(from, from, "当前浏览器不支持播放此音频:" + filename);
-				}
-				appendMsg(from, from, {
-					data : [ {
-						type : 'audio',
-						filename : filename,
-						data : emb
-					} ]
-				});
-				return;
-			}else{
-				var audio = document.createElement("audio");
+			var audio = document.createElement("audio");
 				if (("src" in audio) && ("controls" in audio)) {
 					audio.onload = function() {
 						audio.onload = null;
@@ -659,7 +636,7 @@
 					audio.play();
 					return;
 				}
-			}
+			
 		};
 		options.onFileDownloadError = function(e) {
 			appendMsg(from, from, e.msg + ",下载音频" + filename + "失败");
