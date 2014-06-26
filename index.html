@@ -698,7 +698,9 @@
 					var spans="不支持的音频格式:"+filename;
 					var reader  = new FileReader();
 					reader.onload = function(event){
-						spans = spans+",请<a href='"+event.target.result+"'>&nbsp;&nbsp;下载&nbsp;&nbsp;</a>播放";
+						if(navigator.userAgent.indexOf("MSIE")<0){
+							spans = spans+",请<a href='"+event.target.result+"'>&nbsp;&nbsp;下载&nbsp;&nbsp;</a>播放";
+						}
 						appendMsg(from, from, spans);
 					}
 					reader.readAsDataURL(response);
