@@ -203,7 +203,7 @@ layout: docs
 		alert("不支持此图片类型" + filetype);
 	};
 ###5.发送音频消息
-sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消息
+sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消息，限于浏览器支持，MP3格式语音直接播放，对于amr格式语音Firefox和Chrome支持下载后使用本地播放器进行播放，IE下则暂将不支持下载和播放
 
     function sendAudio () {
 		var to = curChatUserId;
