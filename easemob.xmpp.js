@@ -1266,6 +1266,18 @@ connection.prototype.sendCommand = function(dom) {
 		});
 	}
 };
+connection.prototype.getUniqueId = function (prefix)
+{
+	var cdate = new Date();
+	var offdate = new Date(2010,1,1);
+		var offset = cdate.getTime()-offdate.getTime();
+		var hexd = parseInt(offset).toString(16);
+    if (typeof(prefix) == "string" || typeof(prefix) == "number") {
+        return prefix+"_"+hexd;
+    } else {
+        return 'WEBIM_'+hexd;
+    }
+};
 connection.prototype.sendTextMessage = function(options) {
 	var appKey = this.context.appKey || '';
 	var toJid = appKey + "_" + options.to + "@"
@@ -1286,6 +1298,7 @@ connection.prototype.sendTextMessage = function(options) {
 	var dom = $msg({
 		to:toJid, 
 		type:'chat', 
+		id : this.getUniqueId(),
 		xmlns : "jabber:client"
 	}).c("body").t(jsonstr);
 	this.sendCommand(dom.tree());
@@ -1381,9 +1394,11 @@ connection.prototype.sendPictureMessage = function(options) {
 				}]
 	};
 	var jsonstr = JSON.stringify(json);
+	var date = new Date();
 	var dom = $msg().attrs({
 				type : 'chat',
 				to : toJid,
+				id : this.getUniqueId(),
 				xmlns : "jabber:client"
 	}).c("body").t(jsonstr);
 	this.sendCommand(dom.tree());
@@ -1438,6 +1453,7 @@ connection.prototype.sendAudioMessage = function(options) {
 	var dom = $msg().attrs({
 				type : 'chat',
 				to : toJid,
+				id : this.getUniqueId(),
 				xmlns : "jabber:client"
 	}).c("body").t(jsonstr);
 	this.sendCommand(dom.tree());
@@ -1464,11 +1480,12 @@ connection.prototype.sendFileMessage = function(options) {
 	var dom = $msg().attrs({
 				type : 'chat',
 				to : toJid,
+				id : this.getUniqueId(),
 				xmlns : "jabber:client"
 	}).c("body").t(jsonstr);
 	this.sendCommand(dom.tree());
 };
-connection.prototype.setLocation = function(options) {
+connection.prototype.sendLocationMessage = function(options) {
 	var appKey = this.context.appKey || '';
 	var toJid = appKey + "_" + options.to + "@"
 			+ this.domain;
@@ -1489,6 +1506,7 @@ connection.prototype.setLocation = function(options) {
 	var dom = $msg().attrs({
 				type : 'chat',
 				to : toJid,
+				id : this.getUniqueId(),
 				xmlns : "jabber:client"
 	}).c("body").t(jsonstr);
 	this.sendCommand(dom.tree());
