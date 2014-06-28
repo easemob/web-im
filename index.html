@@ -172,7 +172,7 @@
 		if(e.type=='subscribe'){
 			alert("receive subscribe friend request");
 			var fromJid = e.fromJid;
-			//此处默认为双方互加好友，具体使用时请结合具体业务进行处理
+			//此处默认为双方互加好友，对方请求加我为好友，我自动请求加对方为好友，这样才能互为好友，如果我不申请加对方，我会出现在对方的好友列表中，而对方不会出现在我的好友中，具体使用时请结合具体业务进行处理,
 			agreeAddFriend(conn,e.from,e.fromJid);//e.from用户名，e.fromJid含有appkey用户名
 			return;
 		}
