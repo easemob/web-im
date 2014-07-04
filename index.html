@@ -118,6 +118,16 @@
 			document.getElementById("cancelAddFridend").disabled = false;
 		});
 		
+		$('#delFridentModal').on('hidden.bs.modal', function(e) {
+			var ele = document.getElementById("delfridentId");
+			ele.value = "";
+			if (!window.addEventListener) {
+				ele.outerHTML = ele.outerHTML;
+			}
+			document.getElementById("delFridend").disabled = false;
+			document.getElementById("canceldelFridend").disabled = false;
+		});
+		
 		//在 密码输入框时的回车登录
 		$('#password').keypress(function(e) {
 			var key = e.which;
@@ -169,7 +179,7 @@
 	var handlePresence = function (e){
 		//（发送者希望订阅接收者的出席信息）通俗可理解为，别人申请加你为好友
 		if(e.type=='subscribe'){
-			alert("receive subscribe friend request");
+			//alert("receive subscribe friend request");
 			var fromJid = e.fromJid;
 			//此处默认为双方互加好友，具体使用时请结合具体业务进行处理
 			agreeAddFriend(conn,e.from,e.fromJid);//e.from用户名，e.fromJid含有appkey用户名
@@ -177,19 +187,19 @@
 		}
 		//(发送者允许接收者接收他们的出席信息)通俗可理解为，别人同意你加他为好友
 		if(e.type=='subscribed'){
-			alert("receive friend subscribed message");
+			//alert("receive friend subscribed message");
 			return;
 		}
 		//（发送者取消订阅另一个实体的出席信息）通俗可理解为，你删除现有好友
 		if(e.type=='unsubscribe'){
-			alert("receive unsubscribe friend request");
+			//alert("receive unsubscribe friend request");
 			//单向删除自己的好友信息，具体使用时请结合具体业务进行处理
 			delFriend(conn,from,e.fromJid);
 			return;
 		}
 		//（订阅者的请求被拒绝或以前的订阅被取消）通俗可理解为，对方单向的删除了好友中的你
 		if(e.type=='unsubscribed'){
-			alert("receive delete friend message");
+			//alert("receive delete friend message");
 			return;
 		}
 	};
@@ -317,6 +327,7 @@
 	var buildContactDiv = function(contactlistDivId, roster) {
 		var uielem = document.createElement("ul");
 		uielem.setAttribute("id","contactlistUL");
+		uielem.setAttribute("class","chat03_content_ul");
 		
 		var cache = {};
 		for (i = 0; i < roster.length; i++) {
@@ -458,7 +469,8 @@
 	};
 	//表情选择div的关闭方法
 	var turnoffFaces_box = function() {
-		document.getElementById("wl_faces_box").style.display = "none";
+		$("#wl_faces_box").fadeOut("slow");
+		//document.getElementById("wl_faces_box").style.display = "none";
 	};
 	var selectEmotionImg = function(selImg) {
 		var txt = document.getElementById(talkInputId);
@@ -493,6 +505,7 @@
 		});
 		//当前登录人发送的信息在聊天窗口中原样显示
 		appendMsg(curUserId, to, msg);
+		turnoffFaces_box();
 		msgInput.value = "";
 		msgInput.focus();
 	};
@@ -611,10 +624,11 @@
 	var handlePictureMessage = function(message) {
 		var filename = message.filename;//文件名称，带文件扩展名
 		var from = message.from;//文件的发送者
-		var ele = appendMsg(from, from, "收到图片" + filename + ",正在处理");//在聊天记录中处理记录显示的统一方法
-		if (ele == null) {
-			return;
-		}
+		//测试提出两条消息，注释掉处理消息 0703
+		//var ele = appendMsg(from, from, "收到图片" + filename + ",正在处理");//在聊天记录中处理记录显示的统一方法
+		//if (ele == null) {
+		//	return;
+		//}
 		var options = message;
 		// 图片消息下载成功后的处理逻辑
 		options.onFileDownloadComplete = function(response, xhr) {
@@ -683,10 +697,11 @@
 		var filename = message.filename;
 		var filetype = message.filetype;
 		var from = message.from;
-		var ele = appendMsg(from, from, "收到音频" + filename + ",正在处理");
-		if (ele == null) {
-			return;
-		}
+		//测试提出两条消息，注释掉处理消息0703
+		//var ele = appendMsg(from, from, "收到音频" + filename + ",正在处理");
+		//if (ele == null) {
+		//	return;
+		//}
 		var options = message;
 		options.onFileDownloadComplete = function(response, xhr) {
 			//amr 不处理播放，提供下载
@@ -812,6 +827,7 @@
 		if (create) {
 			document.getElementById(msgCardDivId).appendChild(msgContentDiv);
 		}
+		msgContentDiv.scrollTop = msgContentDiv.scrollHeight;
 		return lineDiv;
 	};
 	
@@ -820,6 +836,12 @@
 		$('#addFridentModal').modal('toggle');
 		var addfridentId  = document.getElementById("addfridentId");
 		addfridentId.value = "好友账号";//输入好友账号
+	};
+	
+	var showDelFriend = function(){
+		$('#delFridentModal').modal('toggle');
+		var delfridentId  = document.getElementById("delfridentId");
+		delfridentId.value = "好友账号";//输入好友账号
 	};
 	
 	//主动添加好友操作的实现方法
@@ -851,7 +873,7 @@
 			name : who,
 			groups : ['default'],
 			success : function(){
-				alert(who+"通过了您添加好友的申请");
+				alert(who+"通过了您的申请并加您为好友");
 			},
 			error : function(){
 				alert('加好友操作失败');
@@ -876,18 +898,17 @@
 	//直接调用删除操作时的调用方法
 	var directDelFriend =function directDelFriend(){
 		//删除操作的复用了加好友的页面元素addfridentId的值
-		var user = document.getElementById("addfridentId").value;
-		//var user = document.getElementById("to").value;
+		var user = document.getElementById("delfridentId").value;
 		conn.removeRoster({
 			to:user,
 			success:function(){
 				conn.unsubscribed({to : user});
 				alert("删除好友"+user+"成功");
-				$('#addFridentModal').modal('hide');
+				$('#delFridentModal').modal('hide');
 			},
 			error:function(){
 				alert("删除联系人失败");
-				$('#addFridentModal').modal('hide');
+				$('#delFridentModal').modal('hide');
 			}
 		});
 	};
@@ -905,15 +926,19 @@
 					message : date
 				});
 				conn.subscribe({toJid : jid,message:date});
-				$('#addFridentModal').modal('hide');
+				$('#delFridentModal').modal('hide');
 			},
 			error : function(){
 				alert('删除联系人失败');
-				$('#addFridentModal').modal('hide');
+				$('#delFridentModal').modal('hide');
 			}
 		});
 	};
-	
+	//清除聊天记录
+	function clearCurrentChat(){
+		var currentDiv = getContactChatDiv(curChatUserId)||createContactChatDiv(curChatUserId);
+		currentDiv.innerHTML="";
+	}
 </script>
 </head>
 <body>
@@ -983,6 +1008,7 @@
 							</div>
 							<div class="wlf_icon"></div>
 						</div>
+						<div style="text-align: right;"><a onclick="clearCurrentChat();">清空聊天记录</a></div>
 					</div>
 					<div id="input_content" class="chat02_content">
 						<textarea id="talkInputId"></textarea>
@@ -998,12 +1024,13 @@
 			</div>
 
 			<div class="chatRight">
-				<div class="chat03">
+				<div class="chat03_content">
 					<div class="chat03_title">
-						<button id="logoutButton" class="btn" onclick="logout()"></button>
-						<button id="addFriendButton" class="btn" onclick="showAddFriend()">加好友</button>
+						<button id="logoutButton"  style="background:#cccccc" onclick="logout()"></button>
+						<button id="addFriendButton" style="background:#cccccc"  onclick="showAddFriend()">加好友</button>
+						<button id="delFriendButton" style="background:#cccccc" onclick="showDelFriend()">删好友</button>
 					</div>
-					<div id="contractlist" class="chat03_content"></div>
+					<div id="contractlist" class="chat03_content_ul"></div>
 				</div>
 			</div>
 			<div style="clear: both;"></div>
@@ -1039,6 +1066,22 @@
 			<div class="modal-footer">
 				<button id="addFridend" class="btn btn-primary" onclick="startAddFriend()">添加</button><!-- startAddFriend/directDelFriend -->
 				<button id="cancelAddFridend" class="btn" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+		
+		<div id="delFridentModal" class="modal hide fade" role="dialog"
+			aria-hidden="true" data-backdrop="static">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h3>删除好友</h3>
+			</div>
+			<div class="modal-body">
+				<input id="delfridentId" />
+			</div>
+			<div class="modal-footer">
+				<button id="delFridend" class="btn btn-primary" onclick="directDelFriend()">删除</button><!-- startAddFriend/directDelFriend -->
+				<button id="canceldelFridend" class="btn" data-dismiss="modal">取消</button>
 			</div>
 		</div>
 		
