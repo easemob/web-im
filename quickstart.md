@@ -4,7 +4,13 @@ description: 5分钟为你的APP加入聊天功能
 category: webchat
 layout: docs
 ---
-
+---
+Browser\func:IE8:IE9:IE10:IE11：FireFox:Chrome：Safari
+Text Message：●：●：●:●:●:●:●
+Emotion Message:●:●:●:●:●:●:●
+Pic Message:●:●:●:●:●:●:●
+Audio Message:●:●:●:●:●:●:●
+---
 ## WebIM sdk介绍:
 ##**基本功能**
 
