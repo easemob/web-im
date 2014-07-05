@@ -139,7 +139,6 @@
 	
 	//处理连接时函数,主要是登录成功后对页面元素做处理
 	var handleOpen = function (conn){
-		var newroster=[];
 		//从连接中获取到当前的登录人注册帐号名
 		curUserId = conn.context.userId;
 		//获取当前登录人的联系人列表
@@ -256,6 +255,16 @@
 					for(var i = childs.length - 1; i >= 0; i--) {
 					    if(childs[i].id == contact.name){
 						    newcontact.removeChild(childs[i]);	
+						    if(curChatUserId == contact.name){
+						    	if (newroster.length >=0) {
+									buildContactDiv("contractlist", newroster);//页面处理
+									if (newroster.length > 0) {
+										setCurrentContact(newroster[0].name);//页面处理将第一个联系人作为当前聊天div
+									}
+								}else{
+									
+								}
+						    }
 					    }
 					}
 				}
@@ -303,7 +312,7 @@
 		conn.open({
 			user : user,
 			pwd : pass,
-			//连接时提供appkey，不应该在login时
+			//连接时提供appkey
 			appKey : 'easemob-demo#chatdemoui'
 		});
 		return false;
@@ -838,6 +847,12 @@
 		addfridentId.value = "好友账号";//输入好友账号
 	};
 	
+	//添加输入框鼠标焦点进入时清空输入框中的内容
+    var clearInputValue = function clearInputValue(inputId){
+		var inputValue  = document.getElementById(inputId);
+		inputValue.value="";
+	};
+	
 	var showDelFriend = function(){
 		$('#delFridentModal').modal('toggle');
 		var delfridentId  = document.getElementById("delfridentId");
@@ -847,12 +862,20 @@
 	//主动添加好友操作的实现方法
 	var startAddFriend = function startAddFriend(){
 		var user = document.getElementById("addfridentId").value;
+		for(var i in newroster){
+			var ros = newroster[i];	
+			//ros.subscriptio值为both/to为要显示的联系人
+			if(ros.name ==user){
+				alert("该联系人已是您的好友");
+				return;
+			}
+		}
 		conn.addRoster({
 			to : user,
 			name : user,
 			groups : ['default'],
 			success : function(){
-				alert("等待对方确认");
+				alert("demo系统默认处理!\n \n等待对方确认,如对方同意您将收到来自对方添加好友的请求信息");
 				$('#addFridentModal').modal('hide');
 			},
 			error : function(){
@@ -873,7 +896,7 @@
 			name : who,
 			groups : ['default'],
 			success : function(){
-				alert(who+"通过了您的申请并加您为好友");
+				alert("demo系统默认处理\n \n 收到并通过了"+who+"的添加好友请求，"+"双方现在可以通信了");
 			},
 			error : function(){
 				alert('加好友操作失败');
@@ -897,13 +920,12 @@
 	
 	//直接调用删除操作时的调用方法
 	var directDelFriend =function directDelFriend(){
-		//删除操作的复用了加好友的页面元素addfridentId的值
 		var user = document.getElementById("delfridentId").value;
 		conn.removeRoster({
 			to:user,
 			success:function(){
 				conn.unsubscribed({to : user});
-				alert("删除好友"+user+"成功");
+				//alert("删除好友"+user+"成功");
 				$('#delFridentModal').modal('hide');
 			},
 			error:function(){
@@ -1030,7 +1052,7 @@
 						<button id="addFriendButton" style="background:#cccccc"  onclick="showAddFriend()">加好友</button>
 						<button id="delFriendButton" style="background:#cccccc" onclick="showDelFriend()">删好友</button>
 					</div>
-					<div id="contractlist" class="chat03_content_ul"></div>
+					<div id="contractlist"></div>
 				</div>
 			</div>
 			<div style="clear: both;"></div>
@@ -1061,10 +1083,10 @@
 				<h3>添加好友</h3>
 			</div>
 			<div class="modal-body">
-				<input id="addfridentId" />
+				<input id="addfridentId" onfocus='clearInputValue("addfridentId")' />
 			</div>
 			<div class="modal-footer">
-				<button id="addFridend" class="btn btn-primary" onclick="startAddFriend()">添加</button><!-- startAddFriend/directDelFriend -->
+				<button id="addFridend" class="btn btn-primary" onclick="startAddFriend()">添加</button>
 				<button id="cancelAddFridend" class="btn" data-dismiss="modal">取消</button>
 			</div>
 		</div>
@@ -1077,10 +1099,10 @@
 				<h3>删除好友</h3>
 			</div>
 			<div class="modal-body">
-				<input id="delfridentId" />
+				<input id="delfridentId" onfocus='clearInputValue("delfridentId")' />
 			</div>
 			<div class="modal-footer">
-				<button id="delFridend" class="btn btn-primary" onclick="directDelFriend()">删除</button><!-- startAddFriend/directDelFriend -->
+				<button id="delFridend" class="btn btn-primary" onclick="directDelFriend()">删除</button>
 				<button id="canceldelFridend" class="btn" data-dismiss="modal">取消</button>
 			</div>
 		</div>
