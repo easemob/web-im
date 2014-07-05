@@ -19,6 +19,7 @@ a:hover { text-decoration: underline; color:#f60; }
 .chat02_bar li { position: absolute; }
 .chat03_title_t { background: url('../img/icon.png') no-repeat 0px -370px; position: absolute; padding-left: 25px; top: 8px; left: 20px; display: block; width: auto; height: 15px; font-size:12px; font-weight:bold; }
 
+
 .chat01_content { height: 220px; overflow-x: none; overflow-y: auto; resize:vertical; }
 .chat02_content { height: auto; }
 .chat03_content_ul {  text-align: left; font-size: 12px; color: #333; margin: 0px 0px; overflow-y:auto; position:relative;resize:vertical; }
@@ -32,6 +33,7 @@ a:hover { text-decoration: underline; color:#f60; }
 .chat03_content ul li a {  }
 .chat03_content ul img { width: 30px; height: 30px; }
 
+
 .chat02_title_btn { background: url('../img/icon.png') no-repeat 0 0; cursor: pointer; float: left; display: block; width: 15px; height: 15px; margin: 5px 6px; }
 .ctb01{ background-position: 0 -90px; margin-left: 18px; _margin-left: 8px; }
 .ctb03{ background-position: 0 -152px; }
@@ -39,6 +41,9 @@ a:hover { text-decoration: underline; color:#f60; }
 .chat02_title_t { background: url('../img/icon.png') no-repeat 0px -487px; position: absolute; padding-left: 170px; top: 8px; right: 20px; display: block; width: auto; height: 15px; }
 .chat02_title_t a { color:#333; font-size:12px; text-decoration: none; }
 .chat02_title_t a:hover { color:#f60; text-decoration: underline; }
+
+
+
 
 .wl_faces_box { background: url('../img/wlf_bg.png') repeat 0 0; position: absolute; width: 428px; height: 225px; bottom: 22px; left: -50px; display: none; }
 .wl_faces_content { background: #fff; border: 1px #ccc solid; width: 417px; height: 216px; margin: 3px 4px; }
@@ -58,6 +63,7 @@ a:hover { text-decoration: underline; color:#f60; }
 .chat03_content li label { display: block; position: absolute; width: 9px; height: 9px; left: 27px; }
 label.online { background: url('../img/status.gif') no-repeat 0 0; _background: url('../img/status.gif') no-repeat 0 5px; bottom: 4px; _bottom: 2px; }
 label.offline { background: url('../img/status.gif') no-repeat 0 -11px; bottom: 4px; _top: 25px;align:center}
+
 
 .fade {
 		opacity: 0;
