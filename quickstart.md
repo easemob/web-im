@@ -419,3 +419,19 @@ sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消�
 ##8.内置空函数-Method
 当所有需要回调的地方接受到函数时，默认采用此函数
 var emptyFn = function() {};
+
+##**浏览器支持列表**
+<table>
+<tr><td>Browser\Func</td><td>Text Message</td><td>Emotion Message</td><td>Picture Message</td><td>Audio Message</td></tr>
+<tr><td>IE8</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
+<tr><td>IE9</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
+<tr><td>IE10</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+<tr><td>IE11</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+<tr><td>FireFox</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+<tr><td>Chrome</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+<tr><td>Safari</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+</table>
+---
+备注：
+1. 已知Picture Message格式支持：png、jpg、bmp；
+2. 已知Audio Message格式支持：MP3（amr不支持）。
