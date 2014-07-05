@@ -224,10 +224,58 @@ var createActiveXHR = function () {
 		return false;
 	}
 };
-var xmlrequest = function (){
-	return createStandardXHR () || createActiveXHR();
+if (window.XDomainRequest) {
+	XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
+	XDomainRequest.prototype.send = function() {
+		XDomainRequest.prototype.oldsend.apply(this, arguments);
+		this.readyState = 2;
+	};
+}
+
+var xmlrequest = function (crossDomain){
+	crossDomain = crossDomain || true;
+	var temp = createStandardXHR () || createActiveXHR();
+	
+	if ("withCredentials" in temp) {
+		return temp;
+	}
+	if(!crossDomain){
+		return temp;
+	}
+	if(window.XDomainRequest===undefined){
+		return temp;
+	}
+	var xhr = new XDomainRequest();
+	xhr.readyState = 0;
+	xhr.status = 100;
+	xhr.onreadystatechange = emptyFn;
+	xhr.onload = function () {
+		xhr.readyState = 4;
+		xhr.status = 200;
+		
+		var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		xmlDoc.async = "false";
+		xmlDoc.loadXML(xhr.responseText);
+		xhr.responseXML = xmlDoc;
+		xhr.response = xhr.responseText;
+		xhr.onreadystatechange();
+	};
+	xhr.ontimeout = xhr.onerror = function(){
+		xhr.readyState = 4;
+		xhr.status = 500;
+		xhr.onreadystatechange();
+	};
+	return xhr;
 };
-var tepmxhr = xmlrequest();
+Strophe.Request.prototype._newXHR = function(){
+	var xhr =  xmlrequest(true);
+  if (xhr.overrideMimeType) {
+      xhr.overrideMimeType("text/xml");
+  }
+  xhr.onreadystatechange = this.func.bind(null, this);
+  return xhr;
+};
+
 function getIEVersion(){
     var ua = navigator.userAgent,matches,tridentMap={'4':8,'5':9,'6':10,'7':11};
     matches = ua.match(/MSIE (\d+)/i);
@@ -243,8 +291,10 @@ function getIEVersion(){
     return null;
 };
 var ieVersion = getIEVersion();
-var hasSetRequestHeader = ('setRequestHeader' in tepmxhr);
-var hasOverrideMimeType = ('overrideMimeType' in tepmxhr);
+
+var tepmxhr = xmlrequest();
+var hasSetRequestHeader = (tepmxhr.setRequestHeader || false );
+var hasOverrideMimeType = (tepmxhr.overrideMimeType || false);
 tepmxhr = null;
 
 var doAjaxRequest = function(options) {
@@ -307,7 +357,7 @@ var doAjaxRequest = function(options) {
 	};
 
 	if(options.responseType){
-		if("responseType" in xhr){
+		if(xhr.responseType){
 			xhr.responseType = options.responseType;
 		} else {
 			error('',xhr,"当前浏览器不支持设置响应类型");
@@ -347,7 +397,7 @@ var getFileUrlFn = function(fileInputId) {
 		filename : '',
 		filetype : ''
 	};
-	if ("URL" in window && "createObjectURL" in window.URL) {
+	if (window.URL  && window.URL.createObjectURL) {
 		var fileItems = document.getElementById(fileInputId).files;
 		if (fileItems.length > 0) {
 			var u = fileItems.item(0);
@@ -462,10 +512,10 @@ var uploadFn = function(options) {
 			xhr : xhr
 		});
 	}
-	if("upload" in xhr){
+	if(xhr.upload){
 		xhr.upload.addEventListener("progress",options.onFileUploadProgress, false);
 	}
-	if("addEventListener" in xhr){
+	if(xhr.addEventListener){
 		xhr.addEventListener("abort", options.onFileUploadCanceled, false);
 		xhr.addEventListener("load", function(e) {
 			try{
@@ -482,7 +532,7 @@ var uploadFn = function(options) {
 			}
 		}, false);
 		xhr.addEventListener("error", onError, false);
-	} else if("onreadystatechange" in xhr){
+	} else if(xhr.onreadystatechange){
 		xhr.onreadystatechange = function (){
 			if( xhr.readyState === 4){
 				if (ajax.status == 200) {
@@ -846,7 +896,7 @@ var innerCheck = function(options,conn){
 	}
 	var jid = appKey + "_" + user + "@" + conn.domain;// jid = {appkey}_{username}@domain/resource
 	
-	var resource = options.resource || "";
+	var resource = options.resource || "webim";
 	if(resource != ""){
 		jid = jid + "/" + resource;
 	}
@@ -1160,7 +1210,7 @@ connection.prototype.handlePing = function(e) {
 	var id = e.getAttribute('id');
 	var from = e.getAttribute('from');
 	var to = e.getAttribute('to');
-	var dom = $iq().attrs({
+	var dom = $iq({
 				from : to,
 				to : from,
 				id : id,
@@ -1326,6 +1376,14 @@ connection.prototype.sendTextMessage = function(options) {
 	this.sendCommand(dom.tree());
 };
 connection.prototype.sendPicture = function(options) {
+	var onerror =  options.onFileUploadError || this.onError || emptyFn;
+	if(!isCanUploadFile){
+	  onerror({
+			type : EASEMOB_XMPP_UPLOADFILE_BROWSER_ERROR,
+			msg : '当前浏览器不支持异步上传文件,请换用其他浏览器'
+		});
+	  return;
+	}
 	var conn = this;
 	var onFileUploadComplete = options.onFileUploadComplete || emptyFn;
 	var myUploadComplete = function(data) {
@@ -1417,7 +1475,7 @@ connection.prototype.sendPictureMessage = function(options) {
 	};
 	var jsonstr = JSON.stringify(json);
 	var date = new Date();
-	var dom = $msg().attrs({
+	var dom = $msg({
 				type : 'chat',
 				to : toJid,
 				id : this.getUniqueId(),
@@ -1426,6 +1484,14 @@ connection.prototype.sendPictureMessage = function(options) {
 	this.sendCommand(dom.tree());
 };
 connection.prototype.sendAudio = function(options) {
+	var onerror =  options.onFileUploadError || this.onError || emptyFn;
+	if(!isCanUploadFile){
+	  onerror({
+			type : EASEMOB_XMPP_UPLOADFILE_BROWSER_ERROR,
+			msg : '当前浏览器不支持异步上传文件,请换用其他浏览器'
+		});
+	  return;
+	}
 	var conn = this;
 	var onFileUploadComplete = options.onFileUploadComplete || emptyFn;
 	var myonComplete = function(data) {
@@ -1442,8 +1508,6 @@ connection.prototype.sendAudio = function(options) {
 	options.orgName = this.context.orgName || '';
 	options.accessToken = this.context.accessToken || '';
 	options.onFileUploadComplete = myonComplete;
-	options.onFileUploadError = options.onFileUploadError
-			|| this.onError || emptyFn;
 			
 	var file = getFileUrlFn(options.fileInputId);
 	options.fileInfo = file;
@@ -1472,7 +1536,7 @@ connection.prototype.sendAudioMessage = function(options) {
 				}]
 	};
 	var jsonstr = JSON.stringify(json);
-	var dom = $msg().attrs({
+	var dom = $msg({
 				type : 'chat',
 				to : toJid,
 				id : this.getUniqueId(),
@@ -1499,7 +1563,7 @@ connection.prototype.sendFileMessage = function(options) {
 				}]
 	};
 	var jsonstr = JSON.stringify(json);
-	var dom = $msg().attrs({
+	var dom = $msg({
 				type : 'chat',
 				to : toJid,
 				id : this.getUniqueId(),
@@ -1525,7 +1589,7 @@ connection.prototype.sendLocationMessage = function(options) {
 				}]
 	};
 	var jsonstr = JSON.stringify(json);
-	var dom = $msg().attrs({
+	var dom = $msg({
 				type : 'chat',
 				to : toJid,
 				id : this.getUniqueId(),
@@ -1538,10 +1602,9 @@ connection.prototype.addRoster = function(options){
 	var name = options.name || '';
 	var groups = options.groups || '';
 
-	var iq = $iq();
-	iq.attrs({type : 'set'});
-	iq.c("query").attrs({xmlns:'jabber:iq:roster'});
-	iq.c("item").attrs({jid: jid ,name : name});
+	var iq = $iq({type : 'set'});
+	iq.c("query",{xmlns:'jabber:iq:roster'});
+	iq.c("item",{jid: jid ,name : name});
 	
 	if(groups){
 		for (var i = 0; i < groups.length; i++){
@@ -1630,22 +1693,20 @@ connection.prototype.unsubscribed = function(options) {
 	this.sendCommand(pres.tree());
 };
 connection.prototype.setUserSig = function(desc) {
-	var dom = $pres();
+	var dom = $pres({xmlns : 'jabber:client'});
 	desc = desc || "";
-	dom.attrs({xmlns : 'jabber:client'}).c("status").t(desc);
+	dom.c("status").t(desc);
 	this.sendCommand(dom.tree());
 };
 connection.prototype.setPresence = function(type,status) {
-	var dom = $pres();
+	var dom = $pres({xmlns : 'jabber:client'});
 	if (type){
 		if(status){
-			dom.attrs({xmlns : 'jabber:client'}).c("show").t(type);
+			dom.c("show").t(type);
 			dom.up().c("status").t(status);
 		} else {
-			dom.attrs({xmlns : 'jabber:client'}).c("show").t(type);
+			dom.c("show").t(type);
 		}
-	} else {
-		dom.attrs({xmlns : 'jabber:client'});
 	}
 	this.sendCommand(dom.tree());
 };
