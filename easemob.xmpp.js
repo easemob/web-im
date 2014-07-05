@@ -228,6 +228,21 @@ var xmlrequest = function (){
 	return createStandardXHR () || createActiveXHR();
 };
 var tepmxhr = xmlrequest();
+function getIEVersion(){
+    var ua = navigator.userAgent,matches,tridentMap={'4':8,'5':9,'6':10,'7':11};
+    matches = ua.match(/MSIE (\d+)/i);
+    if(matches&&matches[1])
+    {   
+        return +matches[1];
+    }
+    matches = ua.match(/Trident\/(\d+)/i);
+    if(matches&&matches[1])
+    {   
+        return tridentMap[matches[1]]||null;
+    }
+    return null;
+};
+var ieVersion = getIEVersion();
 var hasSetRequestHeader = ('setRequestHeader' in tepmxhr);
 var hasOverrideMimeType = ('overrideMimeType' in tepmxhr);
 tepmxhr = null;
@@ -239,7 +254,7 @@ var doAjaxRequest = function(options) {
 	var xhr = xmlrequest();
 	xhr.onreadystatechange = function (){
 		if( xhr.readyState === 4){
-			status = xhr.status || 0;
+			var status = xhr.status || 0;
 			if (status == 200) {
 				if(dataType=='text'){
 					suc(xhr.responseText,xhr);
