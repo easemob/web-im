@@ -178,7 +178,7 @@
 	
 	//easemobwebim-sdk中收到联系人订阅请求的处理方法，具体的type值所对应的值请参考xmpp协议规范
 	var handlePresence = function (e){
-		//（发送者希望订阅接收者的出席信息）通俗可理解为，别人申请加你为好友
+		//（发送者希望订阅接收者的出席信息）通俗可理解为
 		if(e.type=='subscribe'){
 			//alert("receive subscribe friend request");
 			var fromJid = e.fromJid;
@@ -186,19 +186,19 @@
 			agreeAddFriend(conn,e.from,e.fromJid);//e.from用户名，e.fromJid含有appkey用户名
 			return;
 		}
-		//(发送者允许接收者接收他们的出席信息)通俗可理解为，别人同意你加他为好友
+		//(发送者允许接收者接收他们的出席信息)
 		if(e.type=='subscribed'){
 			//alert("receive friend subscribed message");
 			return;
 		}
-		//（发送者取消订阅另一个实体的出席信息）通俗可理解为，你删除现有好友
+		//（发送者取消订阅另一个实体的出席信息）
 		if(e.type=='unsubscribe'){
 			//alert("receive unsubscribe friend request");
 			//单向删除自己的好友信息，具体使用时请结合具体业务进行处理
 			delFriend(conn,from,e.fromJid);
 			return;
 		}
-		//（订阅者的请求被拒绝或以前的订阅被取消）通俗可理解为，对方单向的删除了好友中的你
+		//（订阅者的请求被拒绝或以前的订阅被取消）
 		if(e.type=='unsubscribed'){
 			//alert("receive delete friend message");
 			return;
@@ -263,8 +263,6 @@
 									if (newroster.length > 0) {
 										setCurrentContact(newroster[0].name);//页面处理将第一个联系人作为当前聊天div
 									}
-								}else{
-									
 								}
 						    }
 					    }
@@ -423,6 +421,7 @@
 		var contentDiv = getContactChatDiv(chatUserId);
 		if (contentDiv) {
 			contentDiv.style.display = "none";
+			
 		}
 
 	};
@@ -438,6 +437,8 @@
 			}
 			curChatUserId = chatUserId;
 		}
+		//对默认的null-nouser div进行处理,走的这里说明联系人列表肯定不为空所以对默认的聊天div进行处理
+		document.getElementById("null-nouser").style.display = "none";
 	};
 	
 	var clearContactUI = function(contactInfoDiv, contactChatDiv) {
@@ -766,6 +767,12 @@
 
 	//显示聊天记录的统一处理方法
 	var appendMsg = function(who, contact, message) {
+		var contactUL = document.getElementById("contactlistUL");
+		if(contactUL.children.length==0){
+			alert("联系人列表为空，不能发消息");
+			return null;
+		}
+		
 		var contactLi = getContactLi(contact);
 		if (contactLi == null) {
 			alert("陌生人" + who + "的消息,忽略");
@@ -928,7 +935,7 @@
 			to:user,
 			success:function(){
 				conn.unsubscribed({to : user});
-				alert("demo系统默认处理\n ，删除好友"+user+"成功,对方重新登录后您将从他的联系人列表中删除");
+				alert("demo系统默认处理\n ，删除好友"+user+"成功,\n"+user+"重新登录后您将不再出现在他的联系人列表中");
 				$('#delFridentModal').modal('hide');
 			},
 			error:function(){
