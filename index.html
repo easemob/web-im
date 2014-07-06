@@ -4,9 +4,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>WEBIM-DEMO</title>
 <script type="text/javascript" src="jquery-1.11.1.js"></script>
-<script type='text/javascript' src='strophe-custom-1.0.0.js'></script>
+<script type='text/javascript' src='strophe.js'></script>
 <script type='text/javascript' src='json2.js'></script>
-<script type="text/javascript" src="easemob.xmpp-1.0.0.js"></script>
+<script type="text/javascript" src="easemob.xmpp.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
 <link rel="stylesheet" type="text/css" href="css/chat.css" />
 <link rel="stylesheet" type="text/css" href="css/login.css" />
@@ -139,6 +139,7 @@
 	
 	//处理连接时函数,主要是登录成功后对页面元素做处理
 	var handleOpen = function (conn){
+		newroster=[];
 		//从连接中获取到当前的登录人注册帐号名
 		curUserId = conn.context.userId;
 		//获取当前登录人的联系人列表
@@ -172,6 +173,7 @@
 		hiddenChatUI();
 		clearContactUI("contractlist", msgCardDivId);
 		showLoginUI();
+		newroster=[];
 	};
 	
 	//easemobwebim-sdk中收到联系人订阅请求的处理方法，具体的type值所对应的值请参考xmpp协议规范
@@ -319,6 +321,7 @@
 	};
 	var logout = function() {
 		conn.close();
+		newroster=[];
 	};
 
 	
@@ -925,7 +928,7 @@
 			to:user,
 			success:function(){
 				conn.unsubscribed({to : user});
-				//alert("删除好友"+user+"成功");
+				alert("demo系统默认处理\n ，删除好友"+user+"成功,对方重新登录后您将从他的联系人列表中删除");
 				$('#delFridentModal').modal('hide');
 			},
 			error:function(){
