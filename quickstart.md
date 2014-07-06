@@ -5,7 +5,7 @@ category: webchat
 layout: docs
 ---
 
-## WebIM sdk介绍:
+## WebIM SDK介绍:
 ##**基本功能**
 
 ### 1.创建连接
@@ -14,25 +14,8 @@ layout: docs
     conn.init({
 			onOpened : function() {
 				curUserId = conn.context.userId;
-				conn.getRoster(function(roster) {
-					//获取好友列表，并进行好友列表渲染，roster格式为：
-					[
-						{
-							jid:"asemoemo#chatdemoui_test1@easemob.com",
-							name:"test1",
-							subscription: "none"
-						},
-						{
-							jid:"asemoemo#chatdemoui_test2@easemob.com",
-							name:"test2",
-							subscription: "none"
-						}
-					]
-					conn.setPresence(null);
-				}, function(e) {
-					//获取好友异常处理
-					alert(e.msg + ",请重新登录");
-				});
+				//查询好友列表
+				conn.getRoster(....);
 			},
 			onClosed : function() {
 				//处理登出事件
@@ -320,7 +303,62 @@ sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消�
 			return;
 		}
 	};
+###7.删除好友
 
+	var date = new Date().toLocaleTimeString();
+		conn.removeRoster({
+			toJid : jid,
+			name : who,
+			groups : ['default'],
+			success : function(){
+				var date = new Date().toLocaleTimeString();
+				connection.unsubscribed({
+					toJid : jid,
+					message : date
+				});
+				conn.subscribe({toJid : jid,message:date});
+				
+			},
+			error : function(){
+				alert('删除联系人失败');
+			}
+		});
+###8.查询好友列表
+查询好友列表时，要注意susciption（both，to,from）为不同值得处理,此处认为both和to的为好友，开发者自定义处理，保持跟APP处理一致即可。
+
+    conn.getRoster({
+			success : function(roster) {
+				hiddenWaitLoginedUI();// 页面处理
+				//获取好友列表，并进行好友列表渲染，roster格式为：
+				/**	[
+						{
+							jid:"asemoemo#chatdemoui_test1@easemob.com",
+							name:"test1",
+							subscription: "both"
+						},
+						{
+							jid:"asemoemo#chatdemoui_test2@easemob.com",
+							name:"test2",
+							subscription: "from"
+						}
+					]
+				*/
+				for(var i in roster){
+					var ros = roster[i];	
+					//ros.subscriptio值为both/to为要显示的联系人,此处与APP需保持一致，才能保证两个客户端登录后的好友列表一致
+					if(ros.subscription =='both' || ros.subscription=='to'){
+						newroster.push(ros);
+					}
+				}
+				if (newroster.length >=0) {
+					buildContactDiv("contractlist", newroster);//页面处理
+					if (newroster.length > 0) {
+						setCurrentContact(newroster[0].name);//页面处理将第一个联系人作为当前聊天div
+					}
+				}
+				//conn.setPresence();
+			},	
+		});
 
 ##**工具类说明**
 ##1.表情工具类-object
