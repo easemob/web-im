@@ -48,7 +48,15 @@
 	var hiddenChatUI = function() {
 		document.getElementById("content").style.display = "none";
 	};
-	
+	$(function() {
+	    $("textarea").keydown(function(event) {
+	        if (event.keyCode == "13") {
+		        e = $(this).val();
+				$(this).val(e + '<br>');
+				           
+	        }
+	    });
+	});
 	//easemobwebim-sdk注册回调函数列表
 	$(document).ready(function() {
 		conn = new Easemob.xmpp.Connection();
