@@ -1004,7 +1004,7 @@ var STATUS_CLOSED = tempIndex++;
 var connection = function() {
 }
 connection.prototype.init = function(options) {
-	this.url = options.url || 'http://im1.easemob.com/http-bind/';
+	this.url = options.url || 'http://im-api.easemob.com/http-bind/';
 	this.wait = options.wait || 60;
 	this.hold = options.hold || 1;
 	if(options.route){
