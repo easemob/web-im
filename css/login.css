@@ -90,38 +90,58 @@ a:hover {
 	text-align: center;
 }
 
-.chatBox {
-	width: 760px;
+.leftcontact {
+	float: left;
+	width: 196px;
 	border: 1px #666666 solid;
 	height: auto;
 	margin: 0 auto;
-	margin-top: 150px;
+	margin-top: 80px;
+	margin-left: 120px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
 	position: relative;
+}
+
+.leftheader {
+	border: 1px #666666 solid;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	z-index: 2000;
+	position: relative;
+	width: 196px;
+	background-color: #5D6978;
+}
+
+.leftheader-font {
+	font-size: 14px;
+	font-weight: bold;
+	color: #333;
+	text-decoration: none;
 }
 
 .chatRight {
 	border-right: 1px #bebebe solid;
 	width: 562px;
 	height: auto;
-	float: right;
-}
-
-.chatLeft {
-	width: 196px;
-	height: auto;
-	float: left;
-	overflow-y: auto;
-	resize: vertical;
+	margin-left: 340px;
+	position: relative;
+	border: 1px #666666 solid;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
 }
 
 .chat01_title {
-	background: url('../img/title_bg.jpg') repeat-x 0 0;
-	height: 30px;
+	background-color: #5D6978;
+	height: 42px;
 	margin-top: -10px;
 }
 
 .chat03_title {
-	background: url('../img/title_bg.jpg') repeat-x 0 0;
+	background-color: #5D6978;
 	height: 30px;
 	position: relative;
 }
@@ -134,7 +154,7 @@ a:hover {
 	line-height: 17px;
 	float: left;
 	padding-left: 6px;
-	margin: 5px 20px;
+	margin: 12px 20px;
 	_margin-left: 9px;
 }
 
@@ -143,7 +163,7 @@ a:hover {
 	_padding-top: 0px;
 	_padding-bottom: 0px;
 	height: 19px;
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: bold;
 	color: #333;
 	text-decoration: none;
@@ -169,6 +189,7 @@ a:hover {
 	background: url('../img/chat_bar_bg.jpg') repeat-x 0 0;
 	height: 35px;
 	position: relative;
+	margin-bottom: 0px;
 }
 
 .chat02_bar ul {
@@ -194,7 +215,7 @@ a:hover {
 }
 
 .chat01_content {
-	height: 278px;
+	height: 312px;
 	overflow-x: none;
 	overflow-y: auto;
 	resize: vertical;
