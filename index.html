@@ -20,6 +20,8 @@
 	var fileInputId = "fileInput";
 	var newroster = [];//要显示最新的联系人列表
 	var maxWidth = 200;
+	var logouting = false;
+	
 	window.URL = window.URL || window.webkitURL || window.mozURL
 			|| window.msURL;
 	var getLoginInfo = function() {
@@ -185,8 +187,11 @@
 		curChatUserId = null;
 		hiddenChatUI();
 		clearContactUI("contractlist", msgCardDivId);
-		showLoginUI();
 		newroster = [];
+		if(logouting){
+			showLoginUI();
+		} else {
+		}
 	};
 
 	//easemobwebim-sdk中收到联系人订阅请求的处理方法，具体的type值所对应的值请参考xmpp协议规范
@@ -312,6 +317,7 @@
 
 	//登录系统时的操作方法
 	var login = function() {
+		logouting = false;
 		var user = document.getElementById("username").value;
 		var pass = document.getElementById("password").value;
 		if (user == '' || pass == '') {
@@ -330,6 +336,7 @@
 		return false;
 	};
 	var logout = function() {
+		logouting = true;
 		conn.close();
 		newroster = [];
 	};
@@ -848,6 +855,8 @@
 			} else {
 				var eletext = "<p3>" + data + "</p3>";
 				var ele = $(eletext);
+				ele[0].setAttribute("class", "chat-content-p3");
+				ele[0].setAttribute("className", "chat-content-p3");
 				for ( var j = 0; j < ele.length; j++) {
 					lineDiv.appendChild(ele[j]);
 				}
@@ -1011,7 +1020,7 @@
 	<div id="loginmodal" class="modal hide fade in" role="dialog"
 		aria-hidden="true" data-backdrop="static">
 		<div class="modal-header">
-			<h3>用户登陆</h3>
+			<h3>用户登录</h3>
 		</div>
 		<div class="modal-body">
 			<table>
@@ -1029,7 +1038,7 @@
 	</div>
 
 	<div id="waitLoginmodal" class="modal hide fade" data-backdrop="static">
-		<img src="img/waitting.gif">正在努力加载中...</img>
+		<img src="img/waitting.gif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;正在努力加载中...</img>
 	</div>
 	<div class="content" id="content" style="display: none">
 		<div class="leftcontact" id="leftcontact">
@@ -1071,7 +1080,7 @@
 			<div id="chat01">
 				<div class="chat01_title">
 					<ul class="talkTo">
-						<li id="talkTo"><a href="javascript:e;"></a></li>
+						<li id="talkTo"><a href="javascript:;"></a></li>
 						<li id="recycle" style="float: right;"><img
 							src="img/recycle.png" onclick="clearCurrentChat();"
 							style="margin-right: 15px; cursor: hand; width: 18px;" title="清屏" /></li>
