@@ -19,8 +19,8 @@
 	var talkInputId = "talkInputId";
 	var fileInputId = "fileInput";
 	var newroster = [];//要显示最新的联系人列表
+	var unknowContact = {};
 	var maxWidth = 200;
-	var logouting = false;
 	
 	window.URL = window.URL || window.webkitURL || window.mozURL
 			|| window.msURL;
@@ -188,10 +188,8 @@
 		hiddenChatUI();
 		clearContactUI("contractlist", msgCardDivId);
 		newroster = [];
-		if(logouting){
-			showLoginUI();
-		} else {
-		}
+		unknowContact = {};
+		showLoginUI();
 	};
 
 	//easemobwebim-sdk中收到联系人订阅请求的处理方法，具体的type值所对应的值请参考xmpp协议规范
@@ -229,7 +227,16 @@
 			alert(e.msg + ",请重新登录");
 			showLoginUI();
 		} else {
-			alert(e.msg);
+			var msg = e.msg;
+			if(e.type == EASEMOB_XMPP_CONNCTION_SERVER_CLOSE_ERROR){
+				if(msg == ""){
+					alert("服务器器断开连接,可能是因为在别处登录");
+				} else {
+					alert("服务器器断开连接");
+				}
+			} else {
+				alert(msg);
+			}
 		}
 	};
 
@@ -317,7 +324,6 @@
 
 	//登录系统时的操作方法
 	var login = function() {
-		logouting = false;
 		var user = document.getElementById("username").value;
 		var pass = document.getElementById("password").value;
 		if (user == '' || pass == '') {
@@ -336,7 +342,6 @@
 		return false;
 	};
 	var logout = function() {
-		logouting = true;
 		conn.close();
 		newroster = [];
 	};
@@ -802,7 +807,11 @@
 
 		var contactLi = getContactLi(contact);
 		if (contactLi == null) {
+			if(unknowContact[contact]){
+				return;
+			}
 			alert("陌生人" + who + "的消息,忽略");
+			unknowContact[contact] = true;
 			return null;
 		}
 
@@ -1066,13 +1075,15 @@
 				</span>
 			</div>
 			<div id="leftmiddle">
+			<!--
 				<input style="width: 120px; color: #999999; margin-top: 8px;"
 					type="text" id="searchfriend" value="搜索"
 					onFocus="if(value==defaultValue){value='';this.style.color='#000'}"
 					onBlur="if(!value){value=defaultValue;this.style.color='#999'}" />
 				<button id="searchFriend" style="background: #cccccc">查询</button>
+			-->
 			</div>
-			<div id="contractlist" style="height: 448px;overflow:scroll;"></div>
+			<div id="contractlist" style="height: 490px;overflow:scroll;"></div>
 		</div>
 		<!-- 聊天页面 -->
 		<div style="height: 78px;" id="righttop"></div>

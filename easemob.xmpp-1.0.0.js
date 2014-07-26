@@ -136,7 +136,7 @@ EASEMOB_XMPP_CONNCTION_OPEN_USERGRID_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_ATTACH_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_ATTACH_USERGRID_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_REOPEN_ERROR = tempIndex++;
-EASEMOB_XMPP_CONNCTION_CLOSE_ERROR = tempIndex++;
+EASEMOB_XMPP_CONNCTION_SERVER_CLOSE_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_SERVER_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_IQ_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_PING_ERROR = tempIndex++;
@@ -955,12 +955,12 @@ var login2ImCallback = function (status,msg,conn){
 			accessToken : conn.context.accessToken
 		});
 	} else if (status == Strophe.Status.DISCONNECTING) {
-		if(!conn.isClosing()){//不是主动关闭
-			conn.onError({
-				type : EASEMOB_XMPP_CONNCTION_SERVER_ERROR,
-				msg : '服务器异常,即将断开连接,'+msg
-			});
+		if(conn.isOpened()){//不是主动关闭
 			conn.context.status = STATUS_CLOSING;
+			conn.onError({
+				type : EASEMOB_XMPP_CONNCTION_SERVER_CLOSE_ERROR,
+				msg : msg
+			});
 		}
 	} else if (status == Strophe.Status.DISCONNECTED) {
 		conn.context.status = STATUS_CLOSED;
@@ -1004,7 +1004,8 @@ var STATUS_CLOSED = tempIndex++;
 var connection = function() {
 }
 connection.prototype.init = function(options) {
-	this.url = options.url || 'http://im-api.easemob.com/http-bind/';
+	//this.url = options.url || 'http://im-api.easemob.com/http-bind/';
+	this.url = options.url || 'http://im1.easemob.com:5280/http-bind/';
 	this.wait = options.wait || 60;
 	this.hold = options.hold || 1;
 	if(options.route){

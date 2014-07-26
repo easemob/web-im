@@ -2617,8 +2617,8 @@ Strophe.Connection.prototype = {
 
         Strophe.info("Disconnect was called because: " + reason);
         if (this.connected) {
-            var pres = false;
             this.disconnecting = true;
+            var pres = false;
             if (this.authenticated) {
                 pres = $pres({
                     xmlns: Strophe.NS.CLIENT,
@@ -2771,11 +2771,10 @@ Strophe.Connection.prototype = {
                 if (cond == "remote-stream-error" && conflict.length > 0) {
                     cond = "conflict";
                 }
-                this._changeConnectStatus(Strophe.Status.CONNFAIL, cond);
-            } else {
-                this._changeConnectStatus(Strophe.Status.CONNFAIL, "unknown");
             }
-            this.disconnect('unknown stream-error');
+            this._changeConnectStatus(Strophe.Status.DISCONNECTING, cond || "",false);
+            this.disconnecting = true;
+        	this._doDisconnect();
             return;
         }
 
