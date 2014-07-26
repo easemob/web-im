@@ -257,6 +257,13 @@ a:hover {
 	resize: vertical;
 }
 
+.chat-content-p3 {
+	width: 500px;
+	white-space: pre-wrap;
+	word-break: break-all;
+	display: block;
+}
+
 .chat03_name {
 	color: #333;
 	position: absolute;
