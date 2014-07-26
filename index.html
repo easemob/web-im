@@ -47,6 +47,7 @@
 	//登录之前不显示web对话框
 	var hiddenChatUI = function() {
 		document.getElementById("content").style.display = "none";
+		document.getElementById(talkInputId).value = "";
 	};
 	$(function() {
 		$("textarea").keydown(function(event) {
@@ -450,7 +451,7 @@
 	};
 
 	var clearContactUI = function(contactInfoDiv, contactChatDiv) {
-		document.getElementById(talkToDivId).innerHTML = "";
+				document.getElementById(talkToDivId).children[0].innerHTML = "";
 		var contactlist = document.getElementById(contactInfoDiv);
 		var children = contactlist.children;
 		if (children.length > 0) {
