@@ -1501,8 +1501,10 @@ connection.prototype.sendAudio = function(options) {
 		onFileUploadComplete(data);
 		options["url"] = data.uri;
 		options["secret"] = data.entities[0]["share-secret"];
-		options["file_length"] = data.entities[0]["file-metadata"]["content-length"];
-		options["filetype"] = data.entities[0]["file-metadata"]["content-type"];
+		if(data.entities[0]["file-metadata"]){
+			options["file_length"] = data.entities[0]["file-metadata"]["content-length"];
+			options["filetype"] = data.entities[0]["file-metadata"]["content-type"];
+		}
 		options["uuid"] = data.entities[0].uuid;
 		options["length"] = data.duration;
 		conn.sendAudioMessage(options);
