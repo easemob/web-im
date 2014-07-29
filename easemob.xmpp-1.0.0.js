@@ -1390,11 +1390,13 @@ connection.prototype.sendPicture = function(options) {
 	var myUploadComplete = function(data) {
 		options["url"] = data.uri;
 		options["secret"] = data.entities[0]["share-secret"];
-		var file_len = data.entities[0]["file-metadata"]["content-length"];
-		options["file_length"] = file_len;
-		options["filetype"] = data.entities[0]["file-metadata"]["content-type"]
-		if (file_len > 204800) {
-			options["thumbnail"] = true;
+		if(data.entities[0]["file-metadata"]){
+			var file_len = data.entities[0]["file-metadata"]["content-length"];
+			options["file_length"] = file_len;
+			options["filetype"] = data.entities[0]["file-metadata"]["content-type"]
+			if (file_len > 204800) {
+				options["thumbnail"] = true;
+			}
 		}
 		options["uuid"] = data.entities[0].uuid;
 		
