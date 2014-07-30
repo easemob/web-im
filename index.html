@@ -210,14 +210,14 @@
 			if (toRoster) {
 				for ( var i = 0; i < toRoster.length; i++) {
 					if (toRoster[i].name == e.from) {
-						agreeAddFriend(conn, e.from, e.fromJid);
+						agreeAddFriend(conn, e.from);
 						return;
 					}
 				}
 			}
 			if (window.confirm(e.from + "请求加你为好友。\n验证消息：" + e.status)) {
 				//同意好友请求
-				agreeAddFriend(conn, e.from, e.fromJid);//e.from用户名，e.fromJid含有appkey用户名
+				agreeAddFriend(conn, e.from);//e.from用户名，e.fromJid含有appkey用户名
 				//反向添加对方好友
 				var date = new Date().toLocaleTimeString();
 				conn.subscribe({
@@ -226,7 +226,7 @@
 					message : date
 				});
 			} else {
-				rejectAddFriend(conn, e.fromJid);//拒绝加为好友
+				rejectAddFriend(conn, e.from);//拒绝加为好友
 			}
 			return;
 		}
@@ -973,20 +973,20 @@
 	};
 
 	//回调方法执行时同意添加好友操作的实现方法
-	var agreeAddFriend = function(connection, who, jid) {
+	var agreeAddFriend = function(connection, user) {
 		var date = new Date().toLocaleTimeString();
 		connection.subscribed({
 			//resource : "webim",
 			//toJid : jid,
-			to : who,
+			to : user,
 			message : date
 		});
 	};
 	//拒绝添加好友的方法处理
-	var rejectAddFriend = function(conn, toJid) {
+	var rejectAddFriend = function(conn, user) {
 		var date = new Date().toLocaleTimeString();
 		conn.unsubscribed({
-			toJid : toJid,
+			to : user,
 			message : date
 		});
 	};
