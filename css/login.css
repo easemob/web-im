@@ -216,10 +216,9 @@ a:hover {
 
 .chat01_content {
 	height: 312px;
-	width: 552px;
 	overflow-x: none;
-	overflow-y: scroll;
-	resize: none;
+	overflow-y: auto;
+	resize: vertical;
 }
 
 .chat02_content {
@@ -233,7 +232,7 @@ a:hover {
 	margin: 0px 0px;
 	overflow-y: auto;
 	position: relative;
-	resize: vertical;
+	resize: none;
 }
 
 .chat03_content {
@@ -255,13 +254,6 @@ a:hover {
 	overflow-y: auto;
 	padding: 5px;
 	resize: vertical;
-}
-
-.chat-content-p3 {
-	width: 500px;
-	white-space: pre-wrap;
-	word-break: break-all;
-	display: block;
 }
 
 .chat03_name {
