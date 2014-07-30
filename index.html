@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>WEBIM-DEMO</title>
+<title>WebIM-DEMO</title>
 <script type="text/javascript" src="jquery-1.11.1.js"></script>
 <script type='text/javascript' src='strophe-custom-1.0.0.js'></script>
 <script type='text/javascript' src='json2.js'></script>
@@ -18,10 +18,12 @@
 	var talkToDivId = "talkTo";
 	var talkInputId = "talkInputId";
 	var fileInputId = "fileInput";
-	var newroster = [];//要显示最新的联系人列表
+	var bothRoster = [];
+	var fromRoster = [];
+	var toRoster = [];
 	var unknowContact = {};
 	var maxWidth = 200;
-	
+
 	window.URL = window.URL || window.webkitURL || window.mozURL
 			|| window.msURL;
 	var getLoginInfo = function() {
@@ -43,12 +45,16 @@
 		$('#waitLoginmodal').modal('hide');
 	};
 	var showChatUI = function() {
-		document.getElementById("content").style.display = "block";
+		$('#content').css({
+			"display" : "block"
+		});
 		document.getElementById("login_user").children[0].innerHTML = curUserId;
 	};
 	//登录之前不显示web对话框
 	var hiddenChatUI = function() {
-		document.getElementById("content").style.display = "none";
+		$('#content').css({
+			"display" : "none"
+		});
 		document.getElementById(talkInputId).value = "";
 	};
 	$(function() {
@@ -89,7 +95,7 @@
 			onAudioMessage : function(message) {
 				handleAudioMessage(message);
 			},
-			onLocationMessage : function(message){
+			onLocationMessage : function(message) {
 				handleLocationMessage(message);
 			},
 			//收到联系人订阅请求的回调方法
@@ -153,102 +159,114 @@
 
 	//处理连接时函数,主要是登录成功后对页面元素做处理
 	var handleOpen = function(conn) {
-		newroster = [];
 		//从连接中获取到当前的登录人注册帐号名
 		curUserId = conn.context.userId;
 		//获取当前登录人的联系人列表
-		conn
-				.getRoster({
-					success : function(roster) {
-						hiddenWaitLoginedUI();// 页面处理
-						showChatUI();
-						for ( var i in roster) {
-							var ros = roster[i];
-							//ros.subscriptio值为both/to为要显示的联系人
-							if (ros.subscription == 'both'
-									|| ros.subscription == 'to') {
-								newroster.push(ros);
-							}
-						}
-						if (newroster.length >= 0) {
-							buildContactDiv("contractlist", newroster);//页面处理
-							if (newroster.length > 0) {
-								setCurrentContact(newroster[0].name);//页面处理将第一个联系人作为当前聊天div
-							}
-						}
-						conn.setPresence();
-					},
-				});
+		conn.getRoster({
+			success : function(roster) {
+				hiddenWaitLoginedUI();// 页面处理
+				showChatUI();
+				var curroster;
+				for ( var i in roster) {
+					var ros = roster[i];
+					//both为双方互为好友，要显示的联系人
+					if (ros.subscription == 'both') {
+						bothRoster.push(ros);
+					} else if (ros.subscription == 'from') {
+						//to表明了联系人是我的单向好友
+						fromRoster.push(ros);
+					} else if (ros.subscription == 'to') {
+						//from我是对方的单向好友
+						toRoster.push(ros);
+					}
+				}
+				if (bothRoster.length > 0) {
+					curroster = bothRoster[0];
+					buildContactDiv("contractlist", bothRoster);//页面处理
+					if (curroster)
+						setCurrentContact(curroster.name);//页面处理将第一个联系人作为当前聊天div
+				}
+				conn.setPresence();
+			},
+		});
 	};
 
 	//连接中断时的处理，主要是对页面进行处理
 	var handleClosed = function() {
 		curUserId = null;
 		curChatUserId = null;
+		bothRoster = [];
+		fromRoster = [];
+		toRoster = [];
 		hiddenChatUI();
 		clearContactUI("contractlist", msgCardDivId);
-		newroster = [];
 		unknowContact = {};
 		showLoginUI();
 	};
-
 	//easemobwebim-sdk中收到联系人订阅请求的处理方法，具体的type值所对应的值请参考xmpp协议规范
 	var handlePresence = function(e) {
-		//（发送者希望订阅接收者的出席信息）通俗可理解为，别人申请加你为好友
+		//（发送者希望订阅接收者的出席信息），即别人申请加你为好友
 		if (e.type == 'subscribe') {
-			//alert("receive subscribe friend request");
-			var fromJid = e.fromJid;
-			//此处默认为双方互加好友，具体使用时请结合具体业务进行处理
-			agreeAddFriend(conn, e.from, e.fromJid);//e.from用户名，e.fromJid含有appkey用户名
-			return;
-		}
-		//(发送者允许接收者接收他们的出席信息)通俗可理解为，别人同意你加他为好友
-		if (e.type == 'subscribed') {
-			//alert("receive friend subscribed message");
-			return;
-		}
-		//（发送者取消订阅另一个实体的出席信息）通俗可理解为，你删除现有好友
-		if (e.type == 'unsubscribe') {
-			//alert("receive unsubscribe friend request");
-			//单向删除自己的好友信息，具体使用时请结合具体业务进行处理
-			delFriend(conn, from, e.fromJid);
-			return;
-		}
-		//（订阅者的请求被拒绝或以前的订阅被取消）通俗可理解为，对方单向的删除了好友中的你
-		if (e.type == 'unsubscribed') {
-			//alert("receive delete friend message");
-			return;
-		}
-	};
-	//异常情况下的处理方法
-	var handleError = function(e) {
-		if (curUserId == null) {
-			hiddenWaitLoginedUI();
-			alert(e.msg + ",请重新登录");
-			showLoginUI();
-		} else {
-			var msg = e.msg;
-			if(e.type == EASEMOB_XMPP_CONNCTION_SERVER_CLOSE_ERROR){
-				if(msg == ""){
-					alert("服务器器断开连接,可能是因为在别处登录");
-				} else {
-					alert("服务器器断开连接");
+			if (toRoster) {
+				for ( var i = 0; i < toRoster.length; i++) {
+					if (toRoster[i].name == e.from) {
+						agreeAddFriend(conn, e.from, e.fromJid);
+						return;
+					}
 				}
-			} else {
-				alert(msg);
 			}
+			if (window.confirm(e.from + "请求加你为好友。\n验证消息：" + e.status)) {
+				//同意好友请求
+				agreeAddFriend(conn, e.from, e.fromJid);//e.from用户名，e.fromJid含有appkey用户名
+				//反向添加对方好友
+				var date = new Date().toLocaleTimeString();
+				conn.subscribe({
+					//resource : "webim",
+					to : e.from,
+					message : date
+				});
+			} else {
+				rejectAddFriend(conn, e.fromJid);//拒绝加为好友
+			}
+			return;
+		}
+		//(发送者允许接收者接收他们的出席信息)，即别人同意你加他为好友
+		if (e.type == 'subscribed') {
+			toRoster.push({
+				name : e.from,
+				jid : e.fromJid,
+				subscription : "to"
+			});
+			return;
+		}
+		//（发送者取消订阅另一个实体的出席信息）,即删除现有好友
+		if (e.type == 'unsubscribe') {
+			//单向删除自己的好友信息，具体使用时请结合具体业务进行处理
+			delFriend(conn, e.from);
+			return;
+		}
+		//（订阅者的请求被拒绝或以前的订阅被取消），即对方单向的删除了好友
+		if (e.type == 'unsubscribed') {
+			delFriend(conn, e.from);
+			return;
 		}
 	};
-
 	//easemobwebim-sdk中处理出席状态操作
-	var handleRoster = function(e) {
-		for ( var i = 0; i < e.length; i++) {
-			var contact = e[i];
+	var handleRoster = function(rosterMsg) {
+		for ( var i = 0; i < rosterMsg.length; i++) {
+			var contact = rosterMsg[i];
 			if (contact.ask && contact.ask == 'subscribe') {
 				continue;
 			}
-			if (contact.subscription == 'both' || contact.subscription == 'to') {
-				var isexist = contains(newroster, contact);
+			if (contact.subscription == 'to') {
+				toRoster.push({
+					name : contact.name,
+					jid : contact.jid,
+					subscription : "to"
+				});
+			}
+			if (contact.subscription == 'both') {
+				var isexist = contains(bothRoster, contact);
 				if (!isexist) {
 					var newcontact = document.getElementById("contactlistUL");
 					var lielem = document.createElement("li");
@@ -267,25 +285,24 @@
 					lielem.appendChild(spanelem);
 
 					newcontact.appendChild(lielem);
-
-					newroster.push(contact);
+					bothRoster.push(contact);
 				}
 			}
 			if (contact.subscription == 'remove') {
-				var isexist = contains(newroster, contact);
+				var isexist = contains(bothRoster, contact);
 				if (isexist) {
 					var newcontact = document.getElementById("contactlistUL");
-					newroster.remove(contact);//联系人删除操作
+					bothRoster.remove(contact);//联系人删除操作
 					//退出后重新登录后显示
 					var childs = newcontact.childNodes;
 					for ( var i = childs.length - 1; i >= 0; i--) {
 						if (childs[i].id == contact.name) {
 							newcontact.removeChild(childs[i]);
 							if (curChatUserId == contact.name) {
-								if (newroster.length >= 0) {
-									buildContactDiv("contractlist", newroster);//页面处理
-									if (newroster.length > 0) {
-										setCurrentContact(newroster[0].name);//页面处理将第一个联系人作为当前聊天div
+								if (bothRoster.length >= 0) {
+									buildContactDiv("contractlist", bothRoster);//页面处理
+									if (bothRoster.length > 0) {
+										setCurrentContact(bothRoster[0].name);//页面处理将第一个联系人作为当前聊天div
 									}
 								}
 							}
@@ -296,12 +313,30 @@
 			}
 		}
 	};
-
+	//异常情况下的处理方法
+	var handleError = function(e) {
+		if (curUserId == null) {
+			hiddenWaitLoginedUI();
+			alert(e.msg + ",请重新登录");
+			showLoginUI();
+		} else {
+			var msg = e.msg;
+			if (e.type == EASEMOB_XMPP_CONNCTION_SERVER_CLOSE_ERROR) {
+				if (msg == "") {
+					alert("服务器器断开连接,可能是因为在别处登录");
+				} else {
+					alert("服务器器断开连接");
+				}
+			} else {
+				alert(msg);
+			}
+		}
+	};
 	//判断要操作的联系人和当前联系人列表的关系
-	var contains = function contains(newroster, contact) {
-		var i = newroster.length;
+	var contains = function(roster, contact) {
+		var i = roster.length;
 		while (i--) {
-			if (newroster[i].name === contact.name) {
+			if (roster[i].name === contact.name) {
 				return true;
 			}
 		}
@@ -324,8 +359,8 @@
 
 	//登录系统时的操作方法
 	var login = function() {
-		var user = document.getElementById("username").value;
-		var pass = document.getElementById("password").value;
+		var user = $("#username").val();
+		var pass = $("#password").val();
 		if (user == '' || pass == '') {
 			alert("请输入用户名和密码");
 			return;
@@ -343,7 +378,6 @@
 	};
 	var logout = function() {
 		conn.close();
-		newroster = [];
 	};
 
 	//设置当前显示的聊天窗口div，如果有联系人则默认选中联系人中的第一个联系人，如没有联系人则当前div为null-nouser
@@ -352,7 +386,9 @@
 		if (curChatUserId != null) {
 			hiddenContactChatDiv(curChatUserId);
 		} else {
-			document.getElementById("null-nouser").style.display = "none";
+			$('#null-nouser').css({
+				"display" : "none"
+			});
 		}
 		curChatUserId = defaultUserId;
 	};
@@ -364,6 +400,10 @@
 
 		var cache = {};
 		for (i = 0; i < roster.length; i++) {
+			if (roster[i].subscription != 'both') {
+				continue;
+			}
+
 			var jid = roster[i].jid;
 			var userName = jid.substring(jid.indexOf("_") + 1).split("@")[0];
 			if (userName in cache) {
@@ -462,11 +502,13 @@
 			curChatUserId = chatUserId;
 		}
 		//对默认的null-nouser div进行处理,走的这里说明联系人列表肯定不为空所以对默认的聊天div进行处理
-		document.getElementById("null-nouser").style.display = "none";
+		$('#null-nouser').css({
+			"display" : "none"
+		});
 	};
 
 	var clearContactUI = function(contactInfoDiv, contactChatDiv) {
-				document.getElementById(talkToDivId).children[0].innerHTML = "";
+		document.getElementById(talkToDivId).children[0].innerHTML = "";
 		var contactlist = document.getElementById(contactInfoDiv);
 		var children = contactlist.children;
 		if (children.length > 0) {
@@ -477,13 +519,16 @@
 		for ( var i = children.length - 1; i > 1; i--) {
 			chatRootDiv.removeChild(children[i]);
 		}
-		document.getElementById("null-nouser").style.display = "block";
+		$('#null-nouser').css({
+			"display" : "block"
+		});
 	};
 	var emotionFlag = false;
 	var showEmotionDialog = function() {
-		var wl_faces_box_div = document.getElementById("wl_faces_box");
 		if (emotionFlag) {
-			wl_faces_box_div.style.display = 'block';
+			$('#wl_faces_box').css({
+				"display" : "block"
+			});
 			return;
 		}
 		;
@@ -502,7 +547,9 @@
 			emotionLi.appendChild(emotionImgContent);
 			document.getElementById("emotionUL").appendChild(emotionLi);
 		}
-		wl_faces_box_div.style.display = 'block';
+		$('#wl_faces_box').css({
+			"display" : "block"
+		});
 	};
 	//表情选择div的关闭方法
 	var turnoffFaces_box = function() {
@@ -516,13 +563,11 @@
 	};
 	var showSendPic = function() {
 		$('#fileModal').modal('toggle');
-		var sendfiletype = document.getElementById("sendfiletype");
-		sendfiletype.value = "pic";
+		$('#sendfiletype').val('pic');
 	};
 	var showSendAudio = function() {
 		$('#fileModal').modal('toggle');
-		var sendfiletype = document.getElementById("sendfiletype");
-		sendfiletype.value = "audio";
+		$('#sendfiletype').val('audio');
 	};
 	var sendText = function() {
 		var msgInput = document.getElementById(talkInputId);
@@ -553,8 +598,7 @@
 		"bmp" : true
 	};
 	var sendFile = function() {
-		var sendfiletypeele = document.getElementById("sendfiletype");
-		var type = sendfiletypeele.value;
+		var type = $("#sendfiletype").val();
 		if (type == 'pic') {
 			sendPic();
 		} else {
@@ -756,7 +800,6 @@
 						appendMsg(from, from, spans);
 					}
 					reader.readAsDataURL(response);
-
 					return;
 				}
 			}
@@ -790,13 +833,13 @@
 		Easemob.xmpp.Helper.download(options);
 	};
 
-	var handleLocationMessage = function(message){
+	var handleLocationMessage = function(message) {
 		var from = message.from;
 		var addr = message.addr;
 		var ele = appendMsg(from, from, addr);
 		return ele;
 	};
-	
+
 	//显示聊天记录的统一处理方法
 	var appendMsg = function(who, contact, message) {
 		var contactUL = document.getElementById("contactlistUL");
@@ -807,7 +850,7 @@
 
 		var contactLi = getContactLi(contact);
 		if (contactLi == null) {
-			if(unknowContact[contact]){
+			if (unknowContact[contact]) {
 				return;
 			}
 			alert("陌生人" + who + "的消息,忽略");
@@ -890,82 +933,57 @@
 
 	var showAddFriend = function() {
 		$('#addFridentModal').modal('toggle');
-		var addfridentId = document.getElementById("addfridentId");
-		addfridentId.value = "好友账号";//输入好友账号
+		$('#addfridentId').val('好友账号');//输入好友账号
 	};
 
 	//添加输入框鼠标焦点进入时清空输入框中的内容
-	var clearInputValue = function clearInputValue(inputId) {
-		var inputValue = document.getElementById(inputId);
-		inputValue.value = "";
+	var clearInputValue = function(inputId) {
+		$('#' + inputId).val('');
 	};
 
 	var showDelFriend = function() {
 		$('#delFridentModal').modal('toggle');
-		var delfridentId = document.getElementById("delfridentId");
-		delfridentId.value = "好友账号";//输入好友账号
+		$('#delfridentId').val('好友账号');//输入好友账号
 	};
 
 	//主动添加好友操作的实现方法
-	var startAddFriend = function startAddFriend() {
-		var user = document.getElementById("addfridentId").value;
-		for ( var i in newroster) {
-			var ros = newroster[i];
-			//ros.subscriptio值为both/to为要显示的联系人
-			if (ros.name == user) {
-				alert("该联系人已是您的好友");
-				return;
-			}
+	var startAddFriend = function() {
+		var user = $('#addfridentId').val();
+		if (user == '') {
+			alert("请输入好友名称");
+			return;
 		}
-		conn.addRoster({
-			to : user,
-			name : user,
-			groups : [ 'default' ],
-			success : function() {
-				alert("demo系统默认处理!\n \n等待对方确认,如对方同意您将收到来自对方添加好友的请求信息");
-				$('#addFridentModal').modal('hide');
-			},
-			error : function() {
-				alert('添加操作成功失败');
-				$('#addFridentModal').modal('hide');
+
+		if (bothRoster)
+			for ( var i = 0; i < bothRoster.length; i++) {
+				if (bothRoster[i].name == user) {
+					alert(user + "已是您的好友");
+					return;
+				}
 			}
-		});
+		//发送添加好友请求
 		var date = new Date().toLocaleTimeString();
 		conn.subscribe({
+			//resource : "webim",
 			to : user,
-			message : date
+			message : "加个好友呗-" + date
 		});
+		$('#addFridentModal').modal('hide');
 		return;
 	};
 
 	//回调方法执行时同意添加好友操作的实现方法
-	var agreeAddFriend = function agreeAddFriend(connection, who, jid) {
-		var date = new Date().toLocaleTimeString();
-		conn
-				.addRoster({
-					toJid : jid,
-					name : who,
-					groups : [ 'default' ],
-					success : function() {
-						alert("demo系统默认处理\n \n 收到并通过了" + who + "的添加好友请求，"
-								+ "双方现在可以通信了");
-					},
-					error : function() {
-						alert('加好友操作失败');
-					}
-				});
+	var agreeAddFriend = function(connection, who, jid) {
 		var date = new Date().toLocaleTimeString();
 		connection.subscribed({
-			toJid : jid,
-			message : date
-		});
-		conn.subscribe({
-			toJid : jid,
+			//resource : "webim",
+			//toJid : jid,
+			to : who,
 			message : date
 		});
 	};
 	//拒绝添加好友的方法处理
-	var rejectAddFriend = function rejectAddFriend() {
+	var rejectAddFriend = function(conn, toJid) {
 		var date = new Date().toLocaleTimeString();
 		conn.unsubscribed({
 			toJid : toJid,
@@ -974,46 +992,34 @@
 	};
 
 	//直接调用删除操作时的调用方法
-	var directDelFriend = function directDelFriend() {
-		var user = document.getElementById("delfridentId").value;
+	var directDelFriend = function() {
+		var user = $('#delfridentId').val();
 		conn.removeRoster({
 			to : user,
 			success : function() {
 				conn.unsubscribed({
 					to : user
 				});
-				alert("demo系统默认处理\n ，删除好友" + user + "成功,\n" + user
-						+ "重新登录后您将不再出现在他的联系人列表中");
+				alert("删除好友" + user + "成功!");
 				$('#delFridentModal').modal('hide');
 			},
 			error : function() {
-				alert("删除联系人失败");
+				alert("删除联系人失败!");
 				$('#delFridentModal').modal('hide');
 			}
 		});
 	};
 	//回调方法执行时删除好友操作的方法处理
-	var delFriend = function delFriend(connection, who, jid) {
+	var delFriend = function(connection, user) {
 		var date = new Date().toLocaleTimeString();
 		conn.removeRoster({
-			toJid : jid,
-			name : who,
+			to : user,
 			groups : [ 'default' ],
 			success : function() {
 				var date = new Date().toLocaleTimeString();
 				connection.unsubscribed({
-					toJid : jid,
-					message : date
+					to : user
 				});
-				conn.subscribe({
-					toJid : jid,
-					message : date
-				});
-				$('#delFridentModal').modal('hide');
-			},
-			error : function() {
-				alert('删除联系人失败');
-				$('#delFridentModal').modal('hide');
 			}
 		});
 	};
@@ -1075,7 +1081,7 @@
 				</span>
 			</div>
 			<div id="leftmiddle">
-			<!--
+				<!--
 				<input style="width: 120px; color: #999999; margin-top: 8px;"
 					type="text" id="searchfriend" value="搜索"
 					onFocus="if(value==defaultValue){value='';this.style.color='#000'}"
@@ -1083,7 +1089,7 @@
 				<button id="searchFriend" style="background: #cccccc">查询</button>
 			-->
 			</div>
-			<div id="contractlist" style="height: 490px;overflow:scroll;"></div>
+			<div id="contractlist" style="height: 490px; overflow: scroll;"></div>
 		</div>
 		<!-- 聊天页面 -->
 		<div style="height: 78px;" id="righttop"></div>
@@ -1126,7 +1132,7 @@
 					</div>
 				</div>
 				<div id="input_content" class="chat02_content">
-					<textarea id="talkInputId" style="resize:none;"></textarea>
+					<textarea id="talkInputId" style="resize: none;"></textarea>
 				</div>
 				<div class="chat02_bar">
 					<ul>
