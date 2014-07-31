@@ -59,15 +59,22 @@
 	};
 	$(function() {
 		$("textarea").keydown(function(event) {
-			if (event.keyCode == 13 ||(event.keyCode == 13 && event.ctrlKey)) {
+
+			if(event.altKey && event.keyCode == 13){
+				e = $(this).val();
+			    $(this).val(e + '\n');
+			}
+			else if (event.ctrlKey &&  event.keyCode == 13) {
 				//e = $(this).val();
 				//$(this).val(e + '<br>');
 				event.returnValue = false;
 				sendText();
 			 	return false;
 			}
-			if(event.altKey && event.ctrlKey){
-				return true;
+			else if(event.keyCode == 13){
+				event.returnValue = false;
+				sendText();
+			 	return false;
 			}
 			
 		});
