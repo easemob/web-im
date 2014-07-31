@@ -109,7 +109,7 @@ a:hover {
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	z-index: 2000;
+	z-index: 1000;
 	position: relative;
 	width: 196px;
 	background-color: #5D6978;
@@ -216,9 +216,9 @@ a:hover {
 
 .chat01_content {
 	height: 312px;
+	width: 555px;
 	overflow-x: none;
 	overflow-y: auto;
-	resize: vertical;
 }
 
 .chat02_content {
@@ -265,6 +265,10 @@ a:hover {
 	height: 480px;
 }
 
+.chat-content-p3 {
+	word-wrap: break-word; 
+    word-break: normal; 
+}
 .chat03_content ul {
 	position: relative;
 }

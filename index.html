@@ -59,11 +59,17 @@
 	};
 	$(function() {
 		$("textarea").keydown(function(event) {
-			if (event.keyCode == "13") {
-				e = $(this).val();
-				$(this).val(e + '<br>');
-
+			if (event.keyCode == 13 ||(event.keyCode == 13 && event.ctrlKey)) {
+				//e = $(this).val();
+				//$(this).val(e + '<br>');
+				event.returnValue = false;
+				sendText();
+			 	return false;
 			}
+			if(event.altKey && event.ctrlKey){
+				return true;
+			}
+			
 		});
 	});
 	//easemobwebim-sdk注册回调函数列表
@@ -155,6 +161,15 @@
 				login();
 			}
 		});
+
+		$(function() {
+			$(window).bind('beforeunload', function() {
+				if (conn) {
+					conn.close();
+				}
+				return true;
+			});
+		});
 	});
 
 	//处理连接时函数,主要是登录成功后对页面元素做处理
@@ -223,7 +238,7 @@
 				conn.subscribe({
 					//resource : "webim",
 					to : e.from,
-					message : date
+					message : "[resp:true]"
 				});
 			} else {
 				rejectAddFriend(conn, e.from);//拒绝加为好友
@@ -979,7 +994,7 @@
 			//resource : "webim",
 			//toJid : jid,
 			to : user,
-			message : date
+			message : "[resp:true]"
 		});
 	};
 	//拒绝添加好友的方法处理
@@ -1029,9 +1044,16 @@
 				|| createContactChatDiv(curChatUserId);
 		currentDiv.innerHTML = "";
 	}
+	
+	$("#warning-block").show();
 </script>
 </head>
 <body>
+	<div class="alert alert-block hide" id="warning-block">
+	    <button type="button" class="close" data-dismiss="alert">&times;</button>
+	    <h4>Warning!</h4>Best check yo self, you're not...
+	</div>
+
 	<div id="loginmodal" class="modal hide fade in" role="dialog"
 		aria-hidden="true" data-backdrop="static">
 		<div class="modal-header">
@@ -1048,7 +1070,7 @@
 			</table>
 		</div>
 		<div class="modal-footer">
-			<button class="flatbtn-blu" onclick="login()" tabindex="3">登陆</button>
+			<button class="flatbtn-blu" onclick="login()" tabindex="3">登录</button>
 		</div>
 	</div>
 
@@ -1072,8 +1094,6 @@
 						<ul class="dropdown-menu">
 							<li><a href="javascript:showAddFriend()">添加好友</a></li>
 							<li><a href="javascript:showDelFriend()">删除好友</a></li>
-							<li><a href="#">发起聊天</a></li>
-							<li><a href="#">关闭声音</a></li>
 							<li class="divider"></li>
 							<li><a href="javascript:logout();">退出</a></li>
 						</ul>
