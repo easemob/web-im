@@ -8,7 +8,7 @@
 <script type='text/javascript' src='json2.js'></script>
 <script type="text/javascript" src="easemob.xmpp-1.0.0.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
-<link rel="stylesheet" type="text/css" href="css/login.css" />
+<link rel="stylesheet" type="text/css" href="css/webim.css" />
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 <script type="text/javascript">
 	var curUserId = null;
@@ -57,6 +57,7 @@
 		});
 		document.getElementById(talkInputId).value = "";
 	};
+	//定义消息编辑文本域的快捷键，enter和ctrl+enter为发送，alt+enter为换行
 	$(function() {
 		$("textarea").keydown(function(event) {
 
@@ -594,6 +595,7 @@
 	var sendText = function() {
 		var msgInput = document.getElementById(talkInputId);
 		var msg = msgInput.value;
+		
 		if (msg == null || msg.length == 0) {
 			return;
 		}
@@ -608,7 +610,8 @@
 			msg : msg
 		});
 		//当前登录人发送的信息在聊天窗口中原样显示
-		appendMsg(curUserId, to, msg);
+		var msgtext=msg.replace(/\n/g,'<br>'); 
+		appendMsg(curUserId, to, msgtext);
 		turnoffFaces_box();
 		msgInput.value = "";
 		msgInput.focus();
