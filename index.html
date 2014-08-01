@@ -61,23 +61,21 @@
 	$(function() {
 		$("textarea").keydown(function(event) {
 
-			if(event.altKey && event.keyCode == 13){
+			if (event.altKey && event.keyCode == 13) {
 				e = $(this).val();
-			    $(this).val(e + '\n');
-			}
-			else if (event.ctrlKey &&  event.keyCode == 13) {
+				$(this).val(e + '\n');
+			} else if (event.ctrlKey && event.keyCode == 13) {
 				//e = $(this).val();
 				//$(this).val(e + '<br>');
 				event.returnValue = false;
 				sendText();
-			 	return false;
-			}
-			else if(event.keyCode == 13){
+				return false;
+			} else if (event.keyCode == 13) {
 				event.returnValue = false;
 				sendText();
-			 	return false;
+				return false;
 			}
-			
+
 		});
 	});
 	//easemobwebim-sdk注册回调函数列表
@@ -192,14 +190,13 @@
 				var curroster;
 				for ( var i in roster) {
 					var ros = roster[i];
-					//both为双方互为好友，要显示的联系人
-					if (ros.subscription == 'both') {
+					//both为双方互为好友，要显示的联系人,from我是对方的单向好友
+					if (ros.subscription == 'both'
+							|| ros.subscription == 'from') {
 						bothRoster.push(ros);
-					} else if (ros.subscription == 'from') {
-						//to表明了联系人是我的单向好友
-						fromRoster.push(ros);
 					} else if (ros.subscription == 'to') {
-						//from我是对方的单向好友
+						//
+						//to表明了联系人是我的单向好友
 						toRoster.push(ros);
 					}
 				}
@@ -423,7 +420,7 @@
 
 		var cache = {};
 		for (i = 0; i < roster.length; i++) {
-			if (roster[i].subscription != 'both') {
+			if (!(roster[i].subscription == 'both' || roster[i].subscription == 'from')) {
 				continue;
 			}
 
@@ -595,7 +592,7 @@
 	var sendText = function() {
 		var msgInput = document.getElementById(talkInputId);
 		var msg = msgInput.value;
-		
+
 		if (msg == null || msg.length == 0) {
 			return;
 		}
@@ -610,7 +607,7 @@
 			msg : msg
 		});
 		//当前登录人发送的信息在聊天窗口中原样显示
-		var msgtext=msg.replace(/\n/g,'<br>'); 
+		var msgtext = msg.replace(/\n/g, '<br>');
 		appendMsg(curUserId, to, msgtext);
 		turnoffFaces_box();
 		msgInput.value = "";
@@ -1054,14 +1051,15 @@
 				|| createContactChatDiv(curChatUserId);
 		currentDiv.innerHTML = "";
 	}
-	
+
 	$("#warning-block").show();
 </script>
 </head>
 <body>
 	<div class="alert alert-block hide" id="warning-block">
-	    <button type="button" class="close" data-dismiss="alert">&times;</button>
-	    <h4>Warning!</h4>Best check yo self, you're not...
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<h4>Warning!</h4>
+		Best check yo self, you're not...
 	</div>
 
 	<div id="loginmodal" class="modal hide fade in" role="dialog"
