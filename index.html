@@ -195,7 +195,6 @@
 							|| ros.subscription == 'from') {
 						bothRoster.push(ros);
 					} else if (ros.subscription == 'to') {
-						//
 						//to表明了联系人是我的单向好友
 						toRoster.push(ros);
 					}
@@ -237,11 +236,9 @@
 			}
 			if (window.confirm(e.from + "请求加你为好友。\n验证消息：" + e.status)) {
 				//同意好友请求
-				agreeAddFriend(conn, e.from);//e.from用户名，e.fromJid含有appkey用户名
+				agreeAddFriend(conn, e.from);//e.from用户名
 				//反向添加对方好友
-				var date = new Date().toLocaleTimeString();
 				conn.subscribe({
-					//resource : "webim",
 					to : e.from,
 					message : "[resp:true]"
 				});
@@ -574,7 +571,6 @@
 	//表情选择div的关闭方法
 	var turnoffFaces_box = function() {
 		$("#wl_faces_box").fadeOut("slow");
-		//document.getElementById("wl_faces_box").style.display = "none";
 	};
 	var selectEmotionImg = function(selImg) {
 		var txt = document.getElementById(talkInputId);
@@ -986,7 +982,6 @@
 		//发送添加好友请求
 		var date = new Date().toLocaleTimeString();
 		conn.subscribe({
-			//resource : "webim",
 			to : user,
 			message : "加个好友呗-" + date
 		});
@@ -996,10 +991,7 @@
 
 	//回调方法执行时同意添加好友操作的实现方法
 	var agreeAddFriend = function(connection, user) {
-		var date = new Date().toLocaleTimeString();
 		connection.subscribed({
-			//resource : "webim",
-			//toJid : jid,
 			to : user,
 			message : "[resp:true]"
 		});
@@ -1033,12 +1025,10 @@
 	};
 	//回调方法执行时删除好友操作的方法处理
 	var delFriend = function(connection, user) {
-		var date = new Date().toLocaleTimeString();
 		conn.removeRoster({
 			to : user,
 			groups : [ 'default' ],
 			success : function() {
-				var date = new Date().toLocaleTimeString();
 				connection.unsubscribed({
 					to : user
 				});
@@ -1051,17 +1041,9 @@
 				|| createContactChatDiv(curChatUserId);
 		currentDiv.innerHTML = "";
 	}
-
-	$("#warning-block").show();
 </script>
 </head>
 <body>
-	<div class="alert alert-block hide" id="warning-block">
-		<button type="button" class="close" data-dismiss="alert">&times;</button>
-		<h4>Warning!</h4>
-		Best check yo self, you're not...
-	</div>
-
 	<div id="loginmodal" class="modal hide fade in" role="dialog"
 		aria-hidden="true" data-backdrop="static">
 		<div class="modal-header">
