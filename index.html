@@ -282,6 +282,14 @@
 					subscription : "to"
 				});
 			}
+			
+			if (contact.subscription == 'from') {
+				toRoster.push({
+					name : contact.name,
+					jid : contact.jid,
+					subscription : "from"
+				});
+			}
 			if (contact.subscription == 'both') {
 				var isexist = contains(bothRoster, contact);
 				if (!isexist) {
