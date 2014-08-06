@@ -657,8 +657,22 @@
 				},
 				onFileUploadComplete : function(data) {
 					$('#fileModal').modal('hide');
-					var messageContent = "发送图片" + filename;
-					appendMsg(curUserId, to, messageContent);
+					var file = document.getElementById(fileInputId);
+					if (file && file.files) {
+						var objUrl = getObjectURL(file.files[0]);
+						if (objUrl) {
+							var img = document.createElement("img");
+							img.src = objUrl;
+							img.width = maxWidth;
+						}
+					}
+					appendMsg(curUserId, to, {
+						data : [ {
+							type : 'pic',
+							filename : filename,
+							data : img
+						} ]
+					});
 				}
 			};
 			conn.sendPicture(opt);
@@ -1063,6 +1077,18 @@
 				|| createContactChatDiv(curChatUserId);
 		currentDiv.innerHTML = "";
 	}
+
+	function getObjectURL(file) {
+		var url = null;
+		if (window.createObjectURL != undefined) { // basic
+			url = window.createObjectURL(file);
+		} else if (window.URL != undefined) { // mozilla(firefox)
+			url = window.URL.createObjectURL(file);
+		} else if (window.webkitURL != undefined) { // webkit or chrome
+			url = window.webkitURL.createObjectURL(file);
+		}
+		return url;
+	}
 </script>
 </head>
 <body>
@@ -1227,7 +1253,6 @@
 				<button id="canceldelFridend" class="btn" data-dismiss="modal">取消</button>
 			</div>
 		</div>
-
 	</div>
 </body>
 </html>
