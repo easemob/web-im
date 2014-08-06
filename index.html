@@ -226,12 +226,10 @@
 	var handlePresence = function(e) {
 		//（发送者希望订阅接收者的出席信息），即别人申请加你为好友
 		if (e.type == 'subscribe') {
-			if (toRoster) {
-				for ( var i = 0; i < toRoster.length; i++) {
-					if (toRoster[i].name == e.from) {
-						agreeAddFriend(conn, e.from);
-						return;
-					}
+			if (e.status) {
+				if (e.status.indexOf('resp:true') > -1) {
+					agreeAddFriend(conn, e.from);
+					return;
 				}
 			}
 			if (window.confirm(e.from + "请求加你为好友。\n验证消息：" + e.status)) {
@@ -282,7 +280,7 @@
 					subscription : "to"
 				});
 			}
-			
+			//app端删除好友后web端要同时判断状态from做删除对方的操作
 			if (contact.subscription == 'from') {
 				toRoster.push({
 					name : contact.name,
@@ -1016,21 +1014,37 @@
 	//直接调用删除操作时的调用方法
 	var directDelFriend = function() {
 		var user = $('#delfridentId').val();
-		conn.removeRoster({
-			to : user,
-			success : function() {
-				conn.unsubscribed({
-					to : user
-				});
-				alert("删除好友" + user + "成功!");
-				$('#delFridentModal').modal('hide');
-			},
-			error : function() {
-				alert("删除联系人失败!");
-				$('#delFridentModal').modal('hide');
-			}
-		});
+
+		if (validateFriend(user, bothRoster)) {
+			conn.removeRoster({
+				to : user,
+				success : function() {
+					conn.unsubscribed({
+						to : user
+					});
+				},
+				error : function() {
+					alert("删除联系人失败!");
+				}
+			});
+
+		} else {
+			alert("该用户不是你的好友！")
+		}
+		$('#delFridentModal').modal('hide');
 	};
+	//判断要删除的好友是否在当前好友列表中
+	var validateFriend = function(optionuser, bothRoster) {
+
+		for ( var deluser in bothRoster) {
+			if (optionuser == bothRoster[deluser].name) {
+				return true;
+			}
+
+		}
+		return false;
+	};
+
 	//回调方法执行时删除好友操作的方法处理
 	var delFriend = function(connection, user) {
 		conn.removeRoster({
