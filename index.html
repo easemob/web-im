@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -160,6 +160,10 @@
 			document.getElementById("canceldelFridend").disabled = false;
 		});
 
+		$('#confirm-block-div-modal').on('hidden.bs.modal', function(e) {
+
+		});
+
 		//在 密码输入框时的回车登录
 		$('#password').keypress(function(e) {
 			var key = e.which;
@@ -232,7 +236,9 @@
 					return;
 				}
 			}
-			if (window.confirm(e.from + "请求加你为好友。\n验证消息：" + e.status)) {
+			var subscribeMessage = e.from + "请求加你为好友。\n验证消息：" + e.status;
+			showNewNotice(subscribeMessage);
+			$('#confirm-block-footer-confirmButton').click(function() {
 				//同意好友请求
 				agreeAddFriend(conn, e.from);//e.from用户名
 				//反向添加对方好友
@@ -240,9 +246,12 @@
 					to : e.from,
 					message : "[resp:true]"
 				});
-			} else {
+				$('#confirm-block-div-modal').modal('hide');
+			});
+			$('#confirm-block-footer-cancelButton').click(function() {
 				rejectAddFriend(conn, e.from);//拒绝加为好友
-			}
+				$('#confirm-block-div-modal').modal('hide');
+			});
 			return;
 		}
 		//(发送者允许接收者接收他们的出席信息)，即别人同意你加他为好友
@@ -268,7 +277,7 @@
 	};
 	//easemobwebim-sdk中处理出席状态操作
 	var handleRoster = function(rosterMsg) {
-		for ( var i = 0; i < rosterMsg.length; i++) {
+		for (var i = 0; i < rosterMsg.length; i++) {
 			var contact = rosterMsg[i];
 			if (contact.ask && contact.ask == 'subscribe') {
 				continue;
@@ -318,7 +327,7 @@
 					bothRoster.remove(contact);//联系人删除操作
 					//退出后重新登录后显示
 					var childs = newcontact.childNodes;
-					for ( var i = childs.length - 1; i >= 0; i--) {
+					for (var i = childs.length - 1; i >= 0; i--) {
 						if (childs[i].id == contact.name) {
 							newcontact.removeChild(childs[i]);
 							if (curChatUserId == contact.name) {
@@ -367,7 +376,7 @@
 	};
 
 	Array.prototype.indexOf = function(val) {
-		for ( var i = 0; i < this.length; i++) {
+		for (var i = 0; i < this.length; i++) {
 			if (this[i].name == val.name)
 				return i;
 		}
@@ -539,7 +548,7 @@
 		}
 		var chatRootDiv = document.getElementById(contactChatDiv);
 		var children = chatRootDiv.children;
-		for ( var i = children.length - 1; i > 1; i--) {
+		for (var i = children.length - 1; i > 1; i--) {
 			chatRootDiv.removeChild(children[i]);
 		}
 		$('#null-nouser').css({
@@ -586,10 +595,12 @@
 	var showSendPic = function() {
 		$('#fileModal').modal('toggle');
 		$('#sendfiletype').val('pic');
+		$('#send-file-warning').html("");
 	};
 	var showSendAudio = function() {
 		$('#fileModal').modal('toggle');
 		$('#sendfiletype').val('audio');
+		$('#send-file-warning').html("");
 	};
 	var sendText = function() {
 		var msgInput = document.getElementById(talkInputId);
@@ -600,7 +611,8 @@
 		}
 		var to = curChatUserId;
 		if (to == null) {
-			alert("请选择联系人");
+			//alert("请选择联系人");
+			$('#')
 			return;
 		}
 		//easemobwebim-sdk发送文本消息的方法 to为发送给谁，meg为文本消息对象
@@ -633,13 +645,14 @@
 	var sendPic = function() {
 		var to = curChatUserId;
 		if (to == null) {
-			alert("请选择联系人");
+			//alert("请选择联系人");
 			return;
 		}
 		// Easemob.xmpp.Helper.getFileUrl为easemobwebim-sdk获取发送文件对象的方法，fileInputId为 input 标签的id值
 		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
-			alert("请选择发送图片");
+			//alert("请选择发送图片");
+			$('#send-file-warning').html("<font color='#FF0000'>请选择发送图片</font>");
 			return;
 		}
 		var filetype = fileObj.filetype;
@@ -678,7 +691,8 @@
 			conn.sendPicture(opt);
 			return;
 		}
-		alert("不支持此图片类型" + filetype);
+		//alert("不支持此图片类型" + filetype);
+		$('#send-file-warning').html("<font color='#FF0000'>不支持此图片类型" + filetype+"</font>");
 	};
 	var audtype = {
 		"mp3" : true,
@@ -697,7 +711,8 @@
 		//利用easemobwebim-sdk提供的方法来构造一个file对象
 		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
-			alert("请选择发送音频");
+			//alert("请选择发送音频");
+			$('#send-file-warning').html("<font color='#FF0000'>请选择发送音频</font>");
 			return;
 		}
 		var filetype = fileObj.filetype;
@@ -723,7 +738,8 @@
 			conn.sendAudio(opt);
 			return;
 		}
-		alert("不支持此音频类型" + filetype);
+		//alert("不支持此音频类型" + filetype);
+		$('#send-file-warning').html("<font color='#FF0000'>不支持此音频类型" + filetype+"</font>");
 	};
 	//easemobwebim-sdk收到文本消息的回调方法的实现
 	var handleTextMessage = function(message) {
@@ -882,7 +898,8 @@
 	var appendMsg = function(who, contact, message) {
 		var contactUL = document.getElementById("contactlistUL");
 		if (contactUL.children.length == 0) {
-			alert("联系人列表为空，不能发消息");
+			//alert("联系人列表为空，不能发消息");
+			$('confirm-block-div-modal').html("联系人列表为空，不能发消息");
 			return null;
 		}
 
@@ -891,7 +908,8 @@
 			if (unknowContact[contact]) {
 				return;
 			}
-			alert("陌生人" + who + "的消息,忽略");
+			//alert("陌生人" + who + "的消息,忽略");
+			$('confirm-block-div-modal').html("陌生人" + who + "的消息,忽略");
 			unknowContact[contact] = true;
 			return null;
 		}
@@ -911,34 +929,34 @@
 		var header = $(headstr.join(''))
 
 		var lineDiv = document.createElement("div");
-		for ( var i = 0; i < header.length; i++) {
+		for (var i = 0; i < header.length; i++) {
 			var ele = header[i];
 			lineDiv.appendChild(ele);
 		}
 
 		var messageContent = localMsg;
 
-		for ( var i = 0; i < messageContent.length; i++) {
+		for (var i = 0; i < messageContent.length; i++) {
 			var msg = messageContent[i];
 			var type = msg.type;
 			var data = msg.data;
 			if (type == "emotion") {
 				var eletext = "<p3><img src='" + data + "'/></p3>";
 				var ele = $(eletext);
-				for ( var j = 0; j < ele.length; j++) {
+				for (var j = 0; j < ele.length; j++) {
 					lineDiv.appendChild(ele[j]);
 				}
 			} else if (type == "pic") {
 				var filename = msg.filename;
 				var fileele = $("<p3>" + filename + "</p3><br>");
-				for ( var j = 0; j < fileele.length; j++) {
+				for (var j = 0; j < fileele.length; j++) {
 					lineDiv.appendChild(fileele[j]);
 				}
 				lineDiv.appendChild(data);
 			} else if (type == 'audio') {
 				var filename = msg.filename;
 				var fileele = $("<p3>" + filename + "</p3><br>");
-				for ( var j = 0; j < fileele.length; j++) {
+				for (var j = 0; j < fileele.length; j++) {
 					lineDiv.appendChild(fileele[j]);
 				}
 				lineDiv.appendChild(data);
@@ -950,7 +968,7 @@
 				if (curUserId == who) {
 					ele[0].style.backgroundColor = "#EBEBEB";
 				}
-				for ( var j = 0; j < ele.length; j++) {
+				for (var j = 0; j < ele.length; j++) {
 					lineDiv.appendChild(ele[j]);
 				}
 			}
@@ -980,6 +998,7 @@
 	var showAddFriend = function() {
 		$('#addFridentModal').modal('toggle');
 		$('#addfridentId').val('好友账号');//输入好友账号
+		$('#add-frident-warning').html("");
 	};
 
 	//添加输入框鼠标焦点进入时清空输入框中的内容
@@ -990,20 +1009,30 @@
 	var showDelFriend = function() {
 		$('#delFridentModal').modal('toggle');
 		$('#delfridentId').val('好友账号');//输入好友账号
+		$('#del-frident-warning').html("");
 	};
+
+	//消息通知操作时条用的方法
+	var showNewNotice = function(message) {
+		$('#confirm-block-div-modal').modal('toggle');
+		$('#confirm-block-footer-body').html(message);
+	}
 
 	//主动添加好友操作的实现方法
 	var startAddFriend = function() {
 		var user = $('#addfridentId').val();
 		if (user == '') {
-			alert("请输入好友名称");
+			//alert("请输入好友名称");
+			$('#add-frident-warning').html(
+					"<font color='#FF0000'> 请输入好友名称</font>");
 			return;
 		}
-
 		if (bothRoster)
-			for ( var i = 0; i < bothRoster.length; i++) {
+			for (var i = 0; i < bothRoster.length; i++) {
 				if (bothRoster[i].name == user) {
-					alert(user + "已是您的好友");
+					//alert(user + "已是您的好友");
+					$('#add-frident-warning').html(
+							"<font color='#FF0000'> 已是您的好友</font>");
 					return;
 				}
 			}
@@ -1036,7 +1065,6 @@
 	//直接调用删除操作时的调用方法
 	var directDelFriend = function() {
 		var user = $('#delfridentId').val();
-
 		if (validateFriend(user, bothRoster)) {
 			conn.removeRoster({
 				to : user,
@@ -1044,25 +1072,25 @@
 					conn.unsubscribed({
 						to : user
 					});
+					//删除操作成功时隐藏掉dialog
+					$('#delFridentModal').modal('hide');
 				},
 				error : function() {
-					alert("删除联系人失败!");
+					$('#del-frident-warning').html(
+							"<font color='#FF0000'>删除联系人失败!</font>");
 				}
 			});
-
 		} else {
-			alert("该用户不是你的好友！")
+			$('#del-frident-warning').html(
+					"<font color='#FF0000'>该用户不是你的好友!</font>");
 		}
-		$('#delFridentModal').modal('hide');
 	};
 	//判断要删除的好友是否在当前好友列表中
 	var validateFriend = function(optionuser, bothRoster) {
-
 		for ( var deluser in bothRoster) {
 			if (optionuser == bothRoster[deluser].name) {
 				return true;
 			}
-
 		}
 		return false;
 	};
@@ -1167,6 +1195,9 @@
 						<li id="recycle" style="float: right;"><img
 							src="img/recycle.png" onclick="clearCurrentChat();"
 							style="margin-right: 15px; cursor: hand; width: 18px;" title="清屏" /></li>
+						<!-- <li id="noticeInfo" style="float: right;"><img
+							src="img/notice-read.jpg" onclick="showNewNotice();"
+							style="margin-right: 15px; cursor: hand; width: 18px;" title="通知" /></li> -->
 					</ul>
 				</div>
 				<div id="null-nouser" class="chat01_content"></div>
@@ -1220,6 +1251,7 @@
 				<div class="modal-body">
 					<input type='file' id="fileInput" /> <input type='hidden'
 						id="sendfiletype" />
+					<div id="send-file-warning"></div>
 				</div>
 				<div class="modal-footer">
 					<button id="fileSend" class="btn btn-primary" onclick="sendFile()">发送</button>
@@ -1237,6 +1269,7 @@
 			</div>
 			<div class="modal-body">
 				<input id="addfridentId" onfocus='clearInputValue("addfridentId")' />
+				<div id="add-frident-warning"></div>
 			</div>
 			<div class="modal-footer">
 				<button id="addFridend" class="btn btn-primary"
@@ -1254,6 +1287,7 @@
 			</div>
 			<div class="modal-body">
 				<input id="delfridentId" onfocus='clearInputValue("delfridentId")' />
+				<div id="del-frident-warning"></div>
 			</div>
 			<div class="modal-footer">
 				<button id="delFridend" class="btn btn-primary"
@@ -1261,6 +1295,33 @@
 				<button id="canceldelFridend" class="btn" data-dismiss="modal">取消</button>
 			</div>
 		</div>
+
+		<!-- 一般消息通知 -->
+		<div class="alert alert-block hide" id="notice-block-div">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<div class="modal-body">
+				<h4>Warning!</h4>
+				<div id="notice-block-body"></div>
+			</div>
+		</div>
+
+		<!-- 确认消息通知 -->
+		<div id="confirm-block-div-modal" class="modal fade hide"
+			role="dialog" aria-hidden="true" data-backdrop="static">
+			<div class="modal-header">
+				<h3>订阅通知</h3>
+			</div>
+			<div class="modal-body">
+				<div id="confirm-block-footer-body"></div>
+			</div>
+			<div class="modal-footer">
+				<button id="confirm-block-footer-confirmButton"
+					class="btn btn-primary">同意</button>
+				<button id="confirm-block-footer-cancelButton" class="btn"
+					data-dismiss="modal">拒绝</button>
+			</div>
+		</div>
+
 	</div>
 </body>
 </html>
