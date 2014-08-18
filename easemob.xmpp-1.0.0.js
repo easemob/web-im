@@ -144,6 +144,11 @@ EASEMOB_XMPP_CONNCTION_GETROSTER_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_CROSSDOMAIN_ERROR = tempIndex++;
 EASEMOB_XMPP_CONNCTION_LISTENING_OUTOF_MAXRETRIES = tempIndex++;
 EASEMOB_XMPP_CONNCTION_RECEIVEMSG_CONTENTERROR = tempIndex++;
+EASEMOB_XMPP_CONNCTION_JOINROOM_ERROR = tempIndex++;
+EASEMOB_XMPP_CONNCTION_GETROOM_ERROR = tempIndex++;
+EASEMOB_XMPP_CONNCTION_GETROOMINFO_ERROR = tempIndex++;
+EASEMOB_XMPP_CONNCTION_GETROOMMEMBER_ERROR = tempIndex++;
+EASEMOB_XMPP_CONNCTION_GETROOMOCCUPANTS_ERROR = tempIndex++;
 
 EASEMOB_XMPP_UPLOADFILE_BROWSER_ERROR = tempIndex++;
 EASEMOB_XMPP_UPLOADFILE_ERROR = tempIndex++;
@@ -726,8 +731,10 @@ var parseResponseMessageFn = function(msginfo){
 			if(childNodes && childNodes.length>0){
 				var childNode = msgBody.childNodes[0];
 				if(childNode.nodeType==Strophe.ElementType.TEXT){
+					var jsondata = childNode.nodeValue;
+					jsondata = jsondata.replace('\n','<br>');
 					try{
-						var data = eval("("+childNode.nodeValue+")");
+						var data = eval("("+jsondata+")");
 						parseMsgData.errorMsg = false;
 						parseMsgData.data = [data];
 					}catch(e){
@@ -796,6 +803,39 @@ var parseFriendFn = function(queryTag){
 	}
 	return rouster;
 };
+var parseRoomFn = function(result){
+	var rooms = [];
+	var items = result.getElementsByTagName("item");
+	if(items){
+		for(var i=0;i<items.length;i++){
+			var item = items[i];
+			var roomJid = item.getAttribute('jid');
+			var tmp = roomJid.split("@")[0];
+			var room = {
+					jid : roomJid,
+					name : item.getAttribute('name'),
+					roomId : tmp.split('_')[1] 
+				};
+			rooms.push(room);
+		}
+	}
+	return rooms;
+};
+var parseRoomOccupantsFn = function(result){
+	var occupants = [];
+	var items = result.getElementsByTagName("item");
+	if(items){
+		for(var i=0;i<items.length;i++){
+			var item = items[i];
+			var room = {
+					jid : item.getAttribute('jid'),
+					name : item.getAttribute('name')
+				};
+			occupants.push(room);
+		}
+	}
+	return occupants;
+}
 var login2UserGrid = function(options){
 	options = options || {};
 
@@ -894,7 +934,8 @@ var innerCheck = function(options,conn){
 		});
 		return false;
 	}
-	var jid = appKey + "_" + user + "@" + conn.domain;// jid = {appkey}_{username}@domain/resource
+	var jid = appKey + "_" + user + "@" + conn.domain;// jid =
+														// {appkey}_{username}@domain/resource
 	
 	var resource = options.resource || "webim";
 	if(resource != ""){
@@ -955,7 +996,7 @@ var login2ImCallback = function (status,msg,conn){
 			accessToken : conn.context.accessToken
 		});
 	} else if (status == Strophe.Status.DISCONNECTING) {
-		if(conn.isOpened()){//不是主动关闭
+		if(conn.isOpened()){// 不是主动关闭
 			conn.context.status = STATUS_CLOSING;
 			conn.onError({
 				type : EASEMOB_XMPP_CONNCTION_SERVER_CLOSE_ERROR,
@@ -1005,7 +1046,7 @@ var connection = function() {
 }
 connection.prototype.init = function(options) {
 	this.url = options.url || 'http://im-api.easemob.com/http-bind/';
-	//this.url = options.url || 'http://im1.easemob.com:5280/http-bind/';
+	// this.url = options.url || 'http://im1.easemob.com:5280/http-bind/';
 	this.wait = options.wait || 60;
 	this.hold = options.hold || 1;
 	if(options.route){
@@ -1034,7 +1075,7 @@ connection.prototype.init = function(options) {
 		status : STATUS_INIT
 	};
 }
-//user, pwd, appKey, resource
+// user, pwd, appKey, resource
 connection.prototype.open = function(options) {
 	var pass = innerCheck(options,this);
 	if(pass == false)
@@ -1165,7 +1206,7 @@ connection.prototype.close = function() {
 	this.context.status = STATUS_CLOSING;
 	this.context.stropheConn.disconnect();
 };
-//see stropheConn.addHandler
+// see stropheConn.addHandler
 connection.prototype.addHandler = function (handler, ns, name, type, id, from, options){
 	this.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
 };
@@ -1252,6 +1293,7 @@ connection.prototype.handleMessage = function(msginfo){
 		var msg = msgDatas[i];
 		var from = msg.from;
 		var too = msg.to;
+		var chattype = msginfo.attributes['type'].value || 'chat';
 		var msgBodies = msg.bodies;
 		if(!msgBodies || msgBodies.length==0){
 			continue;
@@ -1263,12 +1305,14 @@ connection.prototype.handleMessage = function(msginfo){
 			var emotionsbody = parseTextMessageFn(receiveMsg);
 			if(emotionsbody.isemotion){
 				this.onEmotionMessage({
+					type : chattype,
 					from : from,
 					to : too,
 					data : emotionsbody.body
 				});
 			} else {
 				conn.onTextMessage({
+					type : chattype,
 					from : from,
 					to : too,
 					data : receiveMsg
@@ -1282,6 +1326,7 @@ connection.prototype.handleMessage = function(msginfo){
 				rheight = msgBody.size.height;
 			}
 			var msg = {
+				type : chattype,
 				from : from,
 				to : too,
 				url : msgBody.url,
@@ -1298,6 +1343,7 @@ connection.prototype.handleMessage = function(msginfo){
 			this.onPictureMessage(msg);
 		} else if ("audio" == type) {
 			this.onAudioMessage({
+				type : chattype,
 				from : from,
 				to : too,
 				url : msgBody.url,
@@ -1310,6 +1356,7 @@ connection.prototype.handleMessage = function(msginfo){
 			});
 		} else if ("file" == type) {
 			this.onFileMessage({
+				type : chattype,
 				from : from,
 				to : too,
 				url : msgBody.url,
@@ -1320,6 +1367,7 @@ connection.prototype.handleMessage = function(msginfo){
 			});
 		} else if ("loc" == type) {
 			this.onLocationMessage({
+				type : chattype,
 				from : from,
 				to : too,
 				addr : msgBody.addr,
@@ -1353,8 +1401,10 @@ connection.prototype.getUniqueId = function (prefix)
 };
 connection.prototype.sendTextMessage = function(options) {
 	var appKey = this.context.appKey || '';
-	var toJid = appKey + "_" + options.to + "@"
-			+ this.domain;
+	var toJid = appKey + "_" + options.to + "@"	+ this.domain;
+	if(options.type && options.type == 'groupchat'){
+		toJid = options.toJid; 
+	}
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
 	}
@@ -1369,8 +1419,8 @@ connection.prototype.sendTextMessage = function(options) {
 	};
 	var jsonstr = JSON.stringify(json);
 	var dom = $msg({
-		to:toJid, 
-		type:'chat', 
+		to : toJid, 
+		type : options.type || 'chat', 
 		id : this.getUniqueId(),
 		xmlns : "jabber:client"
 	}).c("body").t(jsonstr);
@@ -1452,8 +1502,10 @@ connection.prototype.sendPicture = function(options) {
 };
 connection.prototype.sendPictureMessage = function(options) {
 	var appKey = this.context.appKey || '';
-	var toJid = appKey + "_" + options.to + "@"
-			+ this.domain;
+	var toJid = appKey + "_" + options.to + "@"	+ this.domain;
+	if(options.type && options.type == 'groupchat'){
+		toJid = options.toJid; 
+	}
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
 	}
@@ -1479,7 +1531,7 @@ connection.prototype.sendPictureMessage = function(options) {
 	var jsonstr = JSON.stringify(json);
 	var date = new Date();
 	var dom = $msg({
-				type : 'chat',
+				type : options.type || 'chat',
 				to : toJid,
 				id : this.getUniqueId(),
 				xmlns : "jabber:client"
@@ -1522,8 +1574,10 @@ connection.prototype.sendAudio = function(options) {
 };
 connection.prototype.sendAudioMessage = function(options) {
 	var appKey = this.context.appKey || '';
-	var toJid = appKey + "_" + options.to + "@"
-			+ this.domain;
+	var toJid = appKey + "_" + options.to + "@"	+ this.domain;
+	if(options.type && options.type == 'groupchat'){
+		toJid = options.toJid; 
+	}
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
 	}
@@ -1542,7 +1596,7 @@ connection.prototype.sendAudioMessage = function(options) {
 	};
 	var jsonstr = JSON.stringify(json);
 	var dom = $msg({
-				type : 'chat',
+				type : options.type || 'chat',
 				to : toJid,
 				id : this.getUniqueId(),
 				xmlns : "jabber:client"
@@ -1696,6 +1750,164 @@ connection.prototype.unsubscribed = function(options) {
 		pres.c("status").t(options.message).up();
 	}
 	this.sendCommand(pres.tree());
+ };
+connection.prototype.join = function(options){
+	var roomJid = this.context.appKey+"_"+options.roomId+'@conference.' + this.domain;
+	var room_nick = roomJid+"/"+this.context.userId;
+	var suc =options.success || emptyFn;
+	var err =  options.error || emptyFn;
+	var errorFn = function (ele){
+		err({
+			type : EASEMOB_XMPP_CONNCTION_JOINROOM_ERROR,
+			msg : '加入房间失败',
+			data : ele
+		});
+	}
+	var iq = $pres({
+		from: this.context.jid,
+		to: room_nick
+	}).c("x", {
+		xmlns: Strophe.NS.MUC
+	});
+	this.context.stropheConn.sendIQ(iq, suc, errorFn);
+};
+connection.prototype.listRooms = function(options) {
+    var iq;
+    iq = $iq({
+      to: options.server||'conference.easemob.com',
+      from: this.context.jid,
+      type: "get"
+    }).c("query", {
+      xmlns: Strophe.NS.DISCO_ITEMS
+    });
+    var suc =options.success || emptyFn;
+	var completeFn = function(result){
+		var rooms = [];
+		rooms = parseRoomFn(result);
+		suc(rooms);
+	}
+	var err =  options.error || emptyFn;
+	var errorFn = function (ele){
+		err({
+			type : EASEMOB_XMPP_CONNCTION_GETROOM_ERROR,
+			msg : '获取群组列表失败',
+			data : ele
+		});
+	}
+    this.context.stropheConn.sendIQ(iq, completeFn, errorFn);
+};
+
+connection.prototype.queryRoomMember = function(options){
+	var domain = this.domain;
+	var members = [];
+	 var iq= $iq({
+	      to : this.context.appKey+"_"+options.roomId+'@conference.' + domain,
+	      type : 'get'
+	    }).c('query', {
+	    	xmlns: Strophe.NS.MUC+'#admin'
+	    }).c('item',{
+	    	affiliation:'member'
+	    });
+    var suc =options.success || emptyFn;
+	var completeFn = function(result){
+		var items = result.getElementsByTagName('item');
+		if(items){
+			for(var i=0;i<items.length;i++){
+				var item = items[i];
+				var mem = {
+						jid : item.getAttribute('jid'),
+						affiliation : 'member'
+					};
+				members.push(mem);
+			}
+		}
+		suc(members);
+	}
+	var err =  options.error || emptyFn;
+	var errorFn = function (ele){
+		err({
+			type : EASEMOB_XMPP_CONNCTION_GETROOMMEMBER_ERROR,
+			msg : '获取群组成员列表失败',
+			data : ele
+		});
+	}
+    this.context.stropheConn.sendIQ(iq, completeFn, errorFn);
+};
+
+connection.prototype.queryRoomInfo = function(options){
+	var domain = this.domain;
+	var iq= $iq({
+	      to:  this.context.appKey+"_"+options.roomId+'@conference.' + domain,
+	      type: "get"
+	    }).c("query", {
+	      xmlns: Strophe.NS.DISCO_INFO
+	    });
+    var suc =options.success || emptyFn;
+    var members = [];
+	var completeFn = function(result){
+		var fields = result.getElementsByTagName('field');
+		if(fields){
+			for(var i=0;i<fields.length;i++){
+				var field = fields[i];
+				if(field.getAttribute('label') == 'owner'){
+					var mem = {
+							jid : field.textContent + "@" + domain,
+							affiliation : 'owner'
+						};
+					members.push(mem);
+				}
+			}
+		}
+		suc(members);
+	}
+	var err =  options.error || emptyFn;
+	var errorFn = function (ele){
+		err({
+			type : EASEMOB_XMPP_CONNCTION_GETROOMINFO_ERROR,
+			msg : '获取群组信息失败',
+			data : ele
+		});
+	}
+    this.context.stropheConn.sendIQ(iq, completeFn, errorFn);
+};
+
+connection.prototype.queryRoomOccupants = function(options) {
+	var suc =options.success || emptyFn;
+	var completeFn = function(result){
+		var occupants = [];
+		occupants = parseRoomOccupantsFn(result);
+		suc(occupants);
+	}
+	var err =  options.error || emptyFn;
+	var errorFn = function (ele){
+		err({
+			type : EASEMOB_XMPP_CONNCTION_GETROOMOCCUPANTS_ERROR,
+			msg : '获取群组出席者列表失败',
+			data : ele
+		});
+	}
+    var attrs = {
+      xmlns: Strophe.NS.DISCO_ITEMS
+    };
+    var info = $iq({
+      from : this.context.jid,
+      to : this.context.appKey+"_"+options.roomId+'@conference.' + this.domain,
+      type : 'get'
+    }).c('query', attrs);
+    this.context.stropheConn.sendIQ(info, completeFn, errorFn);
+  };
+connection.prototype.sendRoomMsg = function(options){
+	var msgType = options.msgtype || 'txt';
+	options.type = 'groupchat';
+	options.to = options.roomId;
+	options.toJid = this.context.appKey + "_"+options.roomId+'@conference.' + this.domain;
+	if('txt' == msgType){
+		this.sendTextMessage(options);
+	}else if('img' == msgType){
+		this.sendPicture(options);
+	}else if('audio' == msgType){
+		this.sendAudio(options);
+	}
 };
 connection.prototype.setUserSig = function(desc) {
 	var dom = $pres({xmlns : 'jabber:client'});
@@ -1777,7 +1989,7 @@ Easemob.xmpp.Connection = connection;
 if (typeof Easemob.xmpp.Helper == 'undefined') {
 	Easemob.xmpp.Helper = {};
 	
-	//method
+	// method
 	Easemob.xmpp.Helper.getFileUrl = getFileUrlFn;
 	Easemob.xmpp.Helper.upload = uploadFn;
 	Easemob.xmpp.Helper.download = downloadFn;
@@ -1786,13 +1998,13 @@ if (typeof Easemob.xmpp.Helper == 'undefined') {
 	Easemob.xmpp.Helper.parseTextMessage = parseTextMessageFn;
 	Easemob.xmpp.Helper.login2UserGrid = login2UserGrid;
 
-	//attritue
+	// attritue
 	Easemob.xmpp.Helper.isCanUploadFile = isCanUploadFile;
 	Easemob.xmpp.Helper.isCanDownLoadFile = isCanDownLoadFile;
 	Easemob.xmpp.Helper.hasSetRequestHeader = hasSetRequestHeader;
 	Easemob.xmpp.Helper.hasOverrideMimeType = hasOverrideMimeType;
 	
-	//object
+	// object
 	Easemob.xmpp.Helper.Base64 = innerBase64;
 	Easemob.xmpp.Helper.EmotionPicData = emotionPicData;
 }
