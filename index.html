@@ -27,6 +27,7 @@
 	var listRoom = [];
 	var listRoomId = [];
 	var curContentTypeFlag = null;
+	var groupFlagMark = "group&-";
 
 	window.URL = window.URL || window.webkitURL || window.mozURL
 			|| window.msURL;
@@ -505,7 +506,7 @@
 			cache[roomId] = true;
 			var lielem = document.createElement("li");
 			$(lielem).attr({
-				'id' : 'group&-' + roomId,
+				'id' : groupFlagMark + roomId,
 				'class' : 'offline',
 				'className' : 'offline',
 				'type' : 'groupchat',
@@ -567,7 +568,7 @@
 		}
 		contactLi.style.backgroundColor = "blue";
 		var dispalyTitle = null;//聊天窗口显示当前对话人名称
-		if (chatUserId.indexOf("group&-") >= 0) {
+		if (chatUserId.indexOf(groupFlagMark) >= 0) {
 			dispalyTitle = "群组" + $(contactLi).attr('displayname') + "聊天中";
 			curRoomId = $(contactLi).attr('roomid');
 			$("#roomMemberImg").css('display', 'block');
@@ -594,7 +595,8 @@
 	//切换联系人聊天窗口div
 	var chooseContactDivClick = function(li) {
 		var chatUserId = li.id;
-		if ($(li).attr("type") == 'groupchat' && ('true' != $(li).attr("joined"))) {
+		if ($(li).attr("type") == 'groupchat'
+				&& ('true' != $(li).attr("joined"))) {
 			conn.join({
 				roomId : $(li).attr("roomId")
 			});
@@ -678,6 +680,7 @@
 		$('#sendfiletype').val('audio');
 		$('#send-file-warning').html("");
 	};
+
 	var sendText = function() {
 		var msgInput = document.getElementById(talkInputId);
 		var msg = msgInput.value;
@@ -691,20 +694,18 @@
 			$('#')
 			return;
 		}
+		var options = {
+			to : to,
+			msg : msg,
+			type:"chat"
+		};
 		// 群组消息和个人消息的判断分支
-		if (curChatUserId.indexOf("group&-") >= 0) {
-			conn.sendRoomMsg({
-				msgtype : 'txt',
-				roomId : curRoomId,
-				msg : msg
-			});
-		} else {
-			//easemobwebim-sdk发送文本消息的方法 to为发送给谁，meg为文本消息对象
-			conn.sendTextMessage({
-				to : to,
-				msg : msg
-			});
+		if (curChatUserId.indexOf(groupFlagMark) >= 0) {
+			options.type = 'groupchat';
+			options.to = curRoomId;
 		}
+		//easemobwebim-sdk发送文本消息的方法 to为发送给谁，meg为文本消息对象
+		conn.sendTextMessage(options);
 
 		//当前登录人发送的信息在聊天窗口中原样显示
 		var msgtext = msg.replace(/\n/g, '<br>');
@@ -713,6 +714,7 @@
 		msgInput.value = "";
 		msgInput.focus();
 	};
+
 	var pictype = {
 		"jpg" : true,
 		"gif" : true,
@@ -748,6 +750,7 @@
 			document.getElementById("fileSend").disabled = true;
 			document.getElementById("cancelfileSend").disabled = true;
 			var opt = {
+				type:'chat',
 				fileInputId : fileInputId,
 				to : to,
 				onFileUploadError : function(error) {
@@ -775,13 +778,12 @@
 					});
 				}
 			};
-			if (curChatUserId.indexOf("group&-") >= 0) {
-				opt.roomId = curRoomId;
-				opt.msgtype = 'img';
-				conn.sendRoomMsg(opt);
-			} else {
-				conn.sendPicture(opt);
+
+			if (curChatUserId.indexOf(groupFlagMark) >= 0) {
+				opt.type = 'groupchat';
+				opt.to = curRoomId;
 			}
+			conn.sendPicture(opt);
 			return;
 		}
 		//alert("不支持此图片类型" + filetype);
@@ -816,6 +818,7 @@
 			document.getElementById("fileSend").disabled = true;
 			document.getElementById("cancelfileSend").disabled = true;
 			var opt = {
+				type:"chat",
 				fileInputId : fileInputId,
 				to : to,//发给谁
 				onFileUploadError : function(error) {
@@ -830,13 +833,11 @@
 				}
 			};
 			//构造完opt对象后调用easemobwebim-sdk中发送音频的方法
-			if (curChatUserId.indexOf("group&-") >= 0) {
-				opt.roomId = curRoomId;
-				opt.msgtype = 'audio';
-				conn.sendRoomMsg(opt);
-			} else {
-				conn.sendAudio(opt);
+			if (curChatUserId.indexOf(groupFlagMark) >= 0) {
+				opt.type = 'groupchat';
+				opt.to = curRoomId;
 			}
+			conn.sendAudio(opt);
 			return;
 		}
 		//alert("不支持此音频类型" + filetype);
@@ -874,11 +875,9 @@
 		var filename = message.filename;//文件名称，带文件扩展名
 		var from = message.from;//文件的发送者
 		var mestype = message.type;//消息发送的类型是群组消息还是个人消息
-		var contactDivId = message.to;
-		var displayName = contactDivId;
+		var contactDivId = from;
 		if (mestype == 'groupchat') {
-			contactDivId = "group&-" + contactDivId;
-			displayName = from;
+			contactDivId = groupFlagMark + message.to;
 		}
 		//测试提出两条消息，注释掉处理消息 0703
 		//var ele = appendMsg(from, from, "收到图片" + filename + ",正在处理");//在聊天记录中处理记录显示的统一方法
@@ -920,7 +919,7 @@
 					} else {
 						img.width = pic_real_width;
 					}
-					appendMsg(displayName, contactDivId, {
+					appendMsg(from, contactDivId, {
 						data : [ {
 							type : 'pic',
 							filename : filename,
@@ -935,7 +934,7 @@
 				} else {
 					img.width = pic_real_width;
 				}
-				appendMsg(displayName, contactDivId, {
+				appendMsg(from, contactDivId, {
 					data : [ {
 						type : 'pic',
 						filename : filename,
@@ -945,7 +944,7 @@
 			}
 		};
 		options.onFileDownloadError = function(e) {
-			appendMsg(contactDivId, contactDivId, e.msg + ",下载图片" + filename
+			appendMsg(from, contactDivId, e.msg + ",下载图片" + filename
 					+ "失败");
 		};
 		//easemobwebim-sdk包装的下载文件对象的统一处理方法。
@@ -958,11 +957,9 @@
 		var from = message.from;
 
 		var mestype = message.type;//消息发送的类型是群组消息还是个人消息
-		var contactDivId = message.to;
-		var displayName = contactDivId;
+		var contactDivId = from;
 		if (mestype == 'groupchat') {
-			contactDivId = "group&-" + contactDivId;
-			displayName = from;
+			contactDivId = groupFlagMark + message.to;
 		}
 
 		//测试提出两条消息，注释掉处理消息0703
@@ -984,7 +981,7 @@
 							spans = spans
 									+ ",请<a href='"+event.target.result+"'>&nbsp;&nbsp;下载&nbsp;&nbsp;</a>播放";
 						}
-						appendMsg(displayName, contactDivId, spans);
+						appendMsg(from, contactDivId, spans);
 					}
 					reader.readAsDataURL(response);
 					return;
@@ -999,12 +996,12 @@
 				};
 				audio.onerror = function() {
 					audio.onerror = null;
-					appendMsg(contactDivId, contactDivId, "当前浏览器不支持播放此音频:"
+					appendMsg(from, contactDivId, "当前浏览器不支持播放此音频:"
 							+ filename);
 				};
 				audio.controls = "controls";
 				audio.src = objectURL;
-				appendMsg(displayName, contactDivId, {
+				appendMsg(from, contactDivId, {
 					data : [ {
 						type : 'audio',
 						filename : filename,
@@ -1016,7 +1013,7 @@
 			}
 		};
 		options.onFileDownloadError = function(e) {
-			appendMsg(contactDivId, contactDivId, e.msg + ",下载音频" + filename
+			appendMsg(from, contactDivId, e.msg + ",下载音频" + filename
 					+ "失败");
 		};
 		Easemob.xmpp.Helper.download(options);
@@ -1039,7 +1036,7 @@
 		}
 		var contactDivId = contact;
 		if (chattype) {
-			contactDivId = "group&-" + contact;
+			contactDivId = groupFlagMark + contact;
 		}
 		var contactLi = getContactLi(contactDivId);
 		if (contactLi == null) {
@@ -1390,8 +1387,7 @@
 			<div class="chat02">
 				<div class="chat02_title">
 					<a class="chat02_title_btn ctb01" onclick="showEmotionDialog()"
-						href="javascript:;" title="选择表情"></a> <a
-						class="chat02_title_btn ctb03" title="选择图片"
+						title="选择表情"></a> <a class="chat02_title_btn ctb03" title="选择图片"
 						onclick="showSendPic()" href="#"> </a> <a
 						class="chat02_title_btn ctb02" onclick="showSendAudio()" href="#"
 						title="选择语音"><span></span></a> <label id="chat02_title_t"></label>
@@ -1417,9 +1413,8 @@
 				</div>
 				<div class="chat02_bar">
 					<ul>
-						<li style="right: 5px; top: 5px;"><a href="javascript:;">
-								<img src="img/send_btn.jpg" onclick='sendText()' />
-						</a></li>
+						<li style="right: 5px; top: 5px;"><img src="img/send_btn.jpg"
+							onclick="sendText()" /></li>
 					</ul>
 				</div>
 

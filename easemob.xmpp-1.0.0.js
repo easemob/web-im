@@ -1403,7 +1403,7 @@ connection.prototype.sendTextMessage = function(options) {
 	var appKey = this.context.appKey || '';
 	var toJid = appKey + "_" + options.to + "@"	+ this.domain;
 	if(options.type && options.type == 'groupchat'){
-		toJid = options.toJid; 
+		toJid = appKey + "_"+options.to+'@conference.' + this.domain;
 	}
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
@@ -1504,7 +1504,7 @@ connection.prototype.sendPictureMessage = function(options) {
 	var appKey = this.context.appKey || '';
 	var toJid = appKey + "_" + options.to + "@"	+ this.domain;
 	if(options.type && options.type == 'groupchat'){
-		toJid = options.toJid; 
+		toJid = appKey + "_"+options.to+'@conference.' + this.domain;
 	}
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
@@ -1576,7 +1576,7 @@ connection.prototype.sendAudioMessage = function(options) {
 	var appKey = this.context.appKey || '';
 	var toJid = appKey + "_" + options.to + "@"	+ this.domain;
 	if(options.type && options.type == 'groupchat'){
-		toJid = options.toJid; 
+		toJid =appKey + "_"+options.to+'@conference.' + this.domain;
 	}
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
@@ -1751,6 +1751,23 @@ connection.prototype.unsubscribed = function(options) {
 	}
 	this.sendCommand(pres.tree());
  };
+ 
+connection.prototype.createRoom = function(options) {
+	var suc =options.success || emptyFn;
+	var err =  options.error || emptyFn;
+	var roomiq;
+	roomiq = $iq({
+		to: options.rooomName,
+		type: "set"
+	}).c("query", {
+		xmlns: Strophe.NS.MUC_OWNER
+	}).c("x", {
+		 xmlns: "jabber:x:data",
+		 type: "submit"
+	});
+	return this.context.stropheConn.sendIQ(roomiq.tree(), suc, err);
+};
+ 
 connection.prototype.join = function(options){
 	var roomJid = this.context.appKey+"_"+options.roomId+'@conference.' + this.domain;
 	var room_nick = roomJid+"/"+this.context.userId;
@@ -1769,7 +1786,7 @@ connection.prototype.join = function(options){
 	}).c("x", {
 		xmlns: Strophe.NS.MUC
 	});
-	this.context.stropheConn.sendIQ(iq, suc, errorFn);
+	this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 };
 connection.prototype.listRooms = function(options) {
     var iq;
@@ -1794,7 +1811,7 @@ connection.prototype.listRooms = function(options) {
 			data : ele
 		});
 	}
-    this.context.stropheConn.sendIQ(iq, completeFn, errorFn);
+    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
 };
 
 connection.prototype.queryRoomMember = function(options){
@@ -1831,7 +1848,7 @@ connection.prototype.queryRoomMember = function(options){
 			data : ele
 		});
 	}
-    this.context.stropheConn.sendIQ(iq, completeFn, errorFn);
+    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
 };
 
 connection.prototype.queryRoomInfo = function(options){
@@ -1868,7 +1885,7 @@ connection.prototype.queryRoomInfo = function(options){
 			data : ele
 		});
 	}
-    this.context.stropheConn.sendIQ(iq, completeFn, errorFn);
+    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
 };
 
 connection.prototype.queryRoomOccupants = function(options) {
@@ -1894,21 +1911,8 @@ connection.prototype.queryRoomOccupants = function(options) {
       to : this.context.appKey+"_"+options.roomId+'@conference.' + this.domain,
       type : 'get'
     }).c('query', attrs);
-    this.context.stropheConn.sendIQ(info, completeFn, errorFn);
+    this.context.stropheConn.sendIQ(info.tree(), completeFn, errorFn);
   };
-connection.prototype.sendRoomMsg = function(options){
-	var msgType = options.msgtype || 'txt';
-	options.type = 'groupchat';
-	options.to = options.roomId;
-	options.toJid = this.context.appKey + "_"+options.roomId+'@conference.' + this.domain;
-	if('txt' == msgType){
-		this.sendTextMessage(options);
-	}else if('img' == msgType){
-		this.sendPicture(options);
-	}else if('audio' == msgType){
-		this.sendAudio(options);
-	}
-};
 connection.prototype.setUserSig = function(desc) {
 	var dom = $pres({xmlns : 'jabber:client'});
 	desc = desc || "";
