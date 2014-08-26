@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -1280,18 +1280,15 @@
 	}
 
 	var showRoomMemberList = function showRoomMemberList(occupants) {
-		var membernames = [];
 		for (i = 0; i < occupants.length; i++) {
 			var jid = occupants[i].jid;
 			var userName = jid.substring(jid.indexOf("_") + 1).split("@")[0];
-			//membernames.push(jid);
-			membernames.push(userName);
+			var txt=$("<p></p>").text(userName); 
+			$('#room-member-list').append(txt);
 		}
-
-		$('#room-member-list').text(membernames);
 		$('#option-room-div-modal').modal('toggle');
 	};
-
+	
 	var getObjectURL = function getObjectURL(file) {
 		var url = null;
 		if (window.createObjectURL != undefined) { // basic
@@ -1510,7 +1507,7 @@
 				<h3>群组成员</h3>
 			</div>
 			<div class="modal-body">
-				<div id="room-member-list"></div>
+				<div id="room-member-list" style="height:100px; overflow-y:auto"></div>
 			</div>
 		</div>
 
