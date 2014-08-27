@@ -130,7 +130,8 @@ layout: docs
 		pwd : pass,
 		appKey : 'easemob-demo#chatdemoui'//开发者APPKey
 	});
-###4.发送文本（表情）聊天消息
+###4.单聊
+####4.1发送文本（表情）聊天消息
 	//发送文本消息
     conn.sendTextMessage({
 			to : to,
@@ -143,7 +144,7 @@ layout: docs
 			msg :'hello world！[(*)][(#)]' //文本消息+表情
 		});
 
-###5.发送图片消息
+####4.2发送图片消息
 发送图片消息sdk自动分两步完成：<br>
 1）上传图片文件<br>
 2）发送图片消息参见2初始化连接中的onPictureMessage的格式
@@ -185,7 +186,7 @@ layout: docs
 		}
 		alert("不支持此图片类型" + filetype);
 	};
-###5.发送音频消息
+####4.3发送音频消息
 sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消息
 
     function sendAudio () {
@@ -223,6 +224,147 @@ sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消�
 		}
 		alert("不支持此音频类型" + filetype);
 	};
+###5.群聊
+####5.1发送文本（表情）聊天消息
+
+    //发送文本消息
+    conn.sendTextMessage({
+			to : to,
+	        type : 'groupchat',
+			msg :'hello world！' //文本消息
+		});
+
+	//发送表情消息，调用接口同文本消息
+	 conn.sendTextMessage({
+			to : to,
+            type : 'groupchat',
+			msg :'hello world！[(*)][(#)]' //文本消息+表情
+		});
+####5.2发送图片消息
+发送图片消息sdk自动分两步完成：<br>
+1）上传图片文件<br>
+2）发送图片消息参见2初始化连接中的onPictureMessage的格式
+
+    //发送图片消息时调用方法
+	var sendPic = function() {
+		var to = curChatUserId;
+		if (to == null) {
+			return;
+		}
+		// Easemob.xmpp.Helper.getFileUrl为easemobwebim-sdk获取发送文件对象的方法，fileInputId为 input 标签的id值
+		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+		if (fileObj.url == null || fileObj.url == '') {
+			alert("请选择发送图片");
+			return;
+		}
+		var filetype = fileObj.filetype;
+		var filename = fileObj.filename;
+		if (filetype in pictype) {
+			document.getElementById("fileSend").disabled = true;
+			document.getElementById("cancelfileSend").disabled = true;
+			var opt = {
+				type:'chat',
+				fileInputId : fileInputId,
+				to : to,
+				onFileUploadError : function(error) {
+					//处理图片上传失败
+				},
+				onFileUploadComplete : function(data) {
+					//关闭文件选择窗口
+					$('#fileModal').modal('hide');
+					//本地缩略图
+					var file = document.getElementById(fileInputId);
+					if (file && file.files) {
+						var objUrl = getObjectURL(file.files[0]);
+						if (objUrl) {
+							var img = document.createElement("img");
+							img.src = objUrl;
+							img.width = maxWidth;
+						}
+					}
+				
+				}
+			};
+			//判断是否为群组标识
+			if (curChatUserId.indexOf(groupFlagMark) >= 0) {
+				opt.type = 'groupchat';//群组标识符
+				opt.to = curRoomId;
+			}
+			conn.sendPicture(opt);
+			return;
+		}
+		alert("不支持此图片类型" + filetype);
+	};
+####5.3发送音频消息
+sdk处理同5.2.发送图片消息，分两步：1）上传音频；2）发送消息
+
+	//发送音频消息时调用的方法
+	var sendAudio = function() {
+		var to = curChatUserId;
+		if (to == null) {
+			alert("请选择联系人");
+			return;
+		}
+		//利用easemobwebim-sdk提供的方法来构造一个file对象
+		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+		if (fileObj.url == null || fileObj.url == '') {
+				alert("请选择发送音频");
+			return;
+		}
+		var filetype = fileObj.filetype;
+		var filename = fileObj.filename;
+		if (filetype in audtype) {
+			document.getElementById("fileSend").disabled = true;
+			document.getElementById("cancelfileSend").disabled = true;
+			var opt = {
+				type:"chat",
+				fileInputId : fileInputId,
+				to : to,//发给谁
+				onFileUploadError : function(error) {
+					//处理上传音频失败
+				},
+				onFileUploadComplete : function(data) {
+					//处理上传音频成功，如本地消息提示发送成功
+				}
+			};
+			//构造完opt对象后调用easemobwebim-sdk中发送音频的方法
+			if (curChatUserId.indexOf(groupFlagMark) >= 0) {
+				opt.type = 'groupchat';
+				opt.to = curRoomId;
+			}
+			conn.sendAudio(opt);
+			return;
+		}
+		alert("不支持此音频类型" + filetype);
+	};
+####5.4获取群组成员
+	//根据roomId查询room成员列表
+	var queryOccupants = function queryOccupants(roomId) {
+		var occupants = [];//存放成员容器
+		//查询获取room信息
+		conn.queryRoomInfo({
+			roomId : roomId,
+			success : function(occs) {
+				if (occs) {
+					for ( var i = 0; i < occs.length; i++) {
+						occupants.push(occs[i]);
+					}
+				}
+				//查询获取room成员信息
+				conn.queryRoomMember({
+					roomId : roomId,
+					success : function(members) {
+						if (members) {
+							for ( var i = 0; i < members.length; i++) {
+								occupants.push(members[i]);
+							}
+						}
+					}
+				});
+			}
+		});
+	};
+
 ###6.添加好友
 1）.申请添加好友
     
@@ -463,11 +605,12 @@ var emptyFn = function() {};
 <tr><td>Browser\Func</td><td>Text Message</td><td>Emotion Message</td><td>Picture Message</td><td>Audio Message</td></tr>
 <tr><td>IE8</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
 <tr><td>IE9</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
-<tr><td>IE10</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+<tr><td>IE10</td><td>●</td><td>●</td><td>○</td><td>●</td></tr>
 <tr><td>IE11</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
 <tr><td>FireFox</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
 <tr><td>Chrome</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
-<tr><td>Safari</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
+<tr><td>Safari5X</td><td>●</td><td>●</td><td>○</td><td>●</td></tr>
+<tr><td>Safari6X</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
 </table>
 ---
 备注：

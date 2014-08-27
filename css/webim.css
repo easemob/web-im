@@ -115,6 +115,13 @@ a:hover {
 	background-color: #5D6978;
 }
 
+.login_user_title {
+	display: -moz-inline-box;
+	display: inline-block;
+	width: 65px;
+	overflow: hidden;
+}
+
 .leftheader-font {
 	font-size: 14px;
 	font-weight: bold;

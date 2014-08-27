@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -20,7 +20,6 @@
 	var talkInputId = "talkInputId";
 	var fileInputId = "fileInput";
 	var bothRoster = [];
-	var fromRoster = [];
 	var toRoster = [];
 	var unknowContact = {};
 	var maxWidth = 200;
@@ -53,7 +52,9 @@
 		$('#content').css({
 			"display" : "block"
 		});
-		document.getElementById("login_user").children[0].innerHTML = curUserId;
+		var login_userEle = document.getElementById("login_user").children[0];
+		login_userEle.innerHTML = curUserId;
+		login_userEle.setAttribute("title", curUserId);
 	};
 	//登录之前不显示web对话框
 	var hiddenChatUI = function() {
@@ -172,6 +173,11 @@
 		$('#option-room-div-modall').on('hidden.bs.modal', function(e) {
 
 		});
+		
+		$('#notice-block-div').on('hidden.bs.modal', function(e) {
+
+		});
+
 
 		//在 密码输入框时的回车登录
 		$('#password').keypress(function(e) {
@@ -231,7 +237,7 @@
 
 					}
 				});
-			},
+			}
 		});
 
 	};
@@ -242,7 +248,6 @@
 		curChatUserId = null;
 		curRoomId = null;
 		bothRoster = [];
-		fromRoster = [];
 		toRoster = [];
 		listRoom = [];
 		listRoomId = [];
@@ -489,7 +494,9 @@
 		if (children.length > 0) {
 			contactlist.removeChild(children[0]);
 		}
-		contactlist.appendChild(uielem);
+		if(uielem){
+			contactlist.appendChild(uielem);	
+		}
 	};
 
 	//构造群组列表
@@ -527,7 +534,10 @@
 		if (children.length > 0) {
 			contactlist.removeChild(children[0]);
 		}
-		contactlist.appendChild(uielem);
+		if(uielem){
+			contactlist.appendChild(uielem);	
+		}
+		
 	};
 
 	//选择联系人的处理
@@ -690,8 +700,6 @@
 		}
 		var to = curChatUserId;
 		if (to == null) {
-			//alert("请选择联系人");
-			$('#')
 			return;
 		}
 		var options = {
@@ -733,13 +741,11 @@
 	var sendPic = function() {
 		var to = curChatUserId;
 		if (to == null) {
-			//alert("请选择联系人");
 			return;
 		}
 		// Easemob.xmpp.Helper.getFileUrl为easemobwebim-sdk获取发送文件对象的方法，fileInputId为 input 标签的id值
 		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
-			//alert("请选择发送图片");
 			$('#send-file-warning')
 					.html("<font color='#FF0000'>请选择发送图片</font>");
 			return;
@@ -786,7 +792,6 @@
 			conn.sendPicture(opt);
 			return;
 		}
-		//alert("不支持此图片类型" + filetype);
 		$('#send-file-warning').html(
 				"<font color='#FF0000'>不支持此图片类型" + filetype + "</font>");
 	};
@@ -807,7 +812,6 @@
 		//利用easemobwebim-sdk提供的方法来构造一个file对象
 		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
-			//alert("请选择发送音频");
 			$('#send-file-warning')
 					.html("<font color='#FF0000'>请选择发送音频</font>");
 			return;
@@ -840,7 +844,6 @@
 			conn.sendAudio(opt);
 			return;
 		}
-		//alert("不支持此音频类型" + filetype);
 		$('#send-file-warning').html(
 				"<font color='#FF0000'>不支持此音频类型" + filetype + "</font>");
 	};
@@ -1030,8 +1033,6 @@
 	var appendMsg = function(who, contact, message, chattype) {
 		var contactUL = document.getElementById("contactlistUL");
 		if (contactUL.children.length == 0) {
-			//alert("联系人列表为空，不能发消息");
-			$('confirm-block-div-modal').html("联系人列表为空，不能发消息");
 			return null;
 		}
 		var contactDivId = contact;
@@ -1044,7 +1045,6 @@
 				return;
 			}
 			//alert("陌生人" + who + "的消息,忽略");
-			$('confirm-block-div-modal').html("陌生人" + who + "的消息,忽略");
 			unknowContact[contact] = true;
 			return null;
 		}
@@ -1150,7 +1150,13 @@
 	var showNewNotice = function(message) {
 		$('#confirm-block-div-modal').modal('toggle');
 		$('#confirm-block-footer-body').html(message);
-	}
+	};
+	
+	var showWarning = function(message){
+		$('#notice-block-div').modal('toggle');
+		$('#notice-block-body').html(message);
+	};
+	
 
 	//主动添加好友操作的实现方法
 	var startAddFriend = function() {
@@ -1164,7 +1170,6 @@
 		if (bothRoster)
 			for ( var i = 0; i < bothRoster.length; i++) {
 				if (bothRoster[i].name == user) {
-					//alert(user + "已是您的好友");
 					$('#add-frident-warning').html(
 							"<font color='#FF0000'> 已是您的好友</font>");
 					return;
@@ -1277,7 +1282,7 @@
 				});
 			}
 		});
-	}
+	};
 
 	var showRoomMemberList = function showRoomMemberList(occupants) {
 		for (i = 0; i < occupants.length; i++) {
@@ -1332,19 +1337,19 @@
 				<span> <img src="img/head/header2.jpg" alt="logo"
 					class="img-circle" width="60px" height="60px"
 					style="margin-top: -40px; margin-left: 20px" /></span> <span
-					id="login_user"> <a class="leftheader-font"
-					href="javascript:;"></a>
+					id="login_user" class="login_user_title"> <a class="leftheader-font"
+					href="#"></a>
 				</span> <span>
-					<div class="btn-group" style="margin-left: 30px;">
+					<div class="btn-group" style="margin-left: 5px;">
 						<button class="btn btn-inverse dropdown-toggle"
 							data-toggle="dropdown">
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu">
-							<li><a href="javascript:showAddFriend()">添加好友</a></li>
-							<li><a href="javascript:showDelFriend()">删除好友</a></li>
+							<li><a href="#" onclick="showAddFriend()">添加好友</a></li>
+							<li><a href="#" onclick="showDelFriend()">删除好友</a></li>
 							<li class="divider"></li>
-							<li><a href="javascript:logout();">退出</a></li>
+							<li><a href="#" onclick="logout()">退出</a></li>
 						</ul>
 					</div>
 				</span>
@@ -1358,7 +1363,7 @@
 				<button id="searchFriend" style="background: #cccccc">查询</button>
 			-->
 			</div>
-			<div id="contractlist" style="height: 490px; overflow: scroll;"></div>
+			<div id="contractlist" style="height: 490px; overflow-y:auto ;overflow-x:auto;"></div>
 		</div>
 		<!-- 聊天页面 -->
 		<div style="height: 78px;" id="righttop"></div>
@@ -1366,7 +1371,7 @@
 			<div id="chat01">
 				<div class="chat01_title">
 					<ul class="talkTo">
-						<li id="talkTo"><a href="javascript:;"></a></li>
+						<li id="talkTo"><a href="#"></a></li>
 						<li id="recycle" style="float: right;"><img
 							src="img/recycle.png" onclick="clearCurrentChat();"
 							style="margin-right: 15px; cursor: hand; width: 18px;" title="清屏" /></li>
@@ -1473,7 +1478,7 @@
 		</div>
 
 		<!-- 一般消息通知 -->
-		<div class="alert alert-block hide" id="notice-block-div">
+		<div  id="notice-block-div" class="modal fade hide">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			<div class="modal-body">
 				<h4>Warning!</h4>
