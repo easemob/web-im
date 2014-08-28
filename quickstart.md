@@ -605,11 +605,11 @@ var emptyFn = function() {};
 <tr><td>Browser\Func</td><td>Text Message</td><td>Emotion Message</td><td>Picture Message</td><td>Audio Message</td></tr>
 <tr><td>IE8</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
 <tr><td>IE9</td><td>○</td><td>○</td><td>○</td><td>○</td></tr>
-<tr><td>IE10</td><td>●</td><td>●</td><td>○</td><td>●</td></tr>
+<tr><td>IE10</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
 <tr><td>IE11</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
 <tr><td>FireFox</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
 <tr><td>Chrome</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
-<tr><td>Safari5X</td><td>●</td><td>●</td><td>○</td><td>●</td></tr>
+<tr><td>Safari5X</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
 <tr><td>Safari6X</td><td>●</td><td>●</td><td>●</td><td>●</td></tr>
 </table>
 ---

@@ -173,11 +173,10 @@
 		$('#option-room-div-modall').on('hidden.bs.modal', function(e) {
 
 		});
-		
+
 		$('#notice-block-div').on('hidden.bs.modal', function(e) {
 
 		});
-
 
 		//在 密码输入框时的回车登录
 		$('#password').keypress(function(e) {
@@ -204,8 +203,10 @@
 		//获取当前登录人的联系人列表
 		conn.getRoster({
 			success : function(roster) {
-				hiddenWaitLoginedUI();// 页面处理
+				// 页面处理
+				hiddenWaitLoginedUI();
 				showChatUI();
+				createContactlistUL();
 				var curroster;
 				for ( var i in roster) {
 					var ros = roster[i];
@@ -454,11 +455,20 @@
 		}
 		curChatUserId = defaultUserId;
 	};
+
+	var createContactlistUL = function() {
+		var uielem = document.createElement("ul");
+		$(uielem).attr({
+			"id" : "contactlistUL",
+			"class" : "chat03_content_ul"
+		});
+		var contactlist = document.getElementById("contractlist");
+		contactlist.appendChild(uielem);
+	};
+
 	//构造联系人列表
 	var buildContactDiv = function(contactlistDivId, roster) {
-		var uielem = document.createElement("ul");
-		uielem.setAttribute("id", "contactlistUL");
-		uielem.setAttribute("class", "chat03_content_ul");
+		var uielem = document.getElementById("contactlistUL");
 		var cache = {};
 		for (i = 0; i < roster.length; i++) {
 			if (!(roster[i].subscription == 'both' || roster[i].subscription == 'from')) {
@@ -471,11 +481,13 @@
 			}
 			cache[userName] = true;
 			var lielem = document.createElement("li");
-			lielem.setAttribute("id", userName);
-			lielem.setAttribute("class", "offline");
-			lielem.setAttribute("className", "offline");
-			lielem.setAttribute("chat", "chat");
-			lielem.setAttribute("displayName", userName);
+			$(lielem).attr({
+				'id' : userName,
+				'class' : 'offline',
+				'className' : 'offline',
+				'chat' : 'chat',
+				'displayName' : userName
+			});
 			lielem.onclick = function() {
 				chooseContactDivClick(this);
 			};
@@ -494,9 +506,7 @@
 		if (children.length > 0) {
 			contactlist.removeChild(children[0]);
 		}
-		if(uielem){
-			contactlist.appendChild(uielem);	
-		}
+		contactlist.appendChild(uielem);
 	};
 
 	//构造群组列表
@@ -534,10 +544,7 @@
 		if (children.length > 0) {
 			contactlist.removeChild(children[0]);
 		}
-		if(uielem){
-			contactlist.appendChild(uielem);	
-		}
-		
+		contactlist.appendChild(uielem);
 	};
 
 	//选择联系人的处理
@@ -705,7 +712,7 @@
 		var options = {
 			to : to,
 			msg : msg,
-			type:"chat"
+			type : "chat"
 		};
 		// 群组消息和个人消息的判断分支
 		if (curChatUserId.indexOf(groupFlagMark) >= 0) {
@@ -756,7 +763,7 @@
 			document.getElementById("fileSend").disabled = true;
 			document.getElementById("cancelfileSend").disabled = true;
 			var opt = {
-				type:'chat',
+				type : 'chat',
 				fileInputId : fileInputId,
 				to : to,
 				onFileUploadError : function(error) {
@@ -806,7 +813,6 @@
 	var sendAudio = function() {
 		var to = curChatUserId;
 		if (to == null) {
-			alert("请选择联系人");
 			return;
 		}
 		//利用easemobwebim-sdk提供的方法来构造一个file对象
@@ -822,7 +828,7 @@
 			document.getElementById("fileSend").disabled = true;
 			document.getElementById("cancelfileSend").disabled = true;
 			var opt = {
-				type:"chat",
+				type : "chat",
 				fileInputId : fileInputId,
 				to : to,//发给谁
 				onFileUploadError : function(error) {
@@ -947,8 +953,7 @@
 			}
 		};
 		options.onFileDownloadError = function(e) {
-			appendMsg(from, contactDivId, e.msg + ",下载图片" + filename
-					+ "失败");
+			appendMsg(from, contactDivId, e.msg + ",下载图片" + filename + "失败");
 		};
 		//easemobwebim-sdk包装的下载文件对象的统一处理方法。
 		Easemob.xmpp.Helper.download(options);
@@ -980,9 +985,9 @@
 					var spans = "不支持的音频格式:" + filename;
 					var reader = new FileReader();
 					reader.onload = function(event) {
-						if (navigator.userAgent.indexOf("MSIE") < 0) {
+						if (navigator.userAgent.indexOf("Trident") == -1) {
 							spans = spans
-									+ ",请<a href='"+event.target.result+"'>&nbsp;&nbsp;下载&nbsp;&nbsp;</a>播放";
+									+ ",请<a download='"+filename+"' href='"+event.target.result+"'>&nbsp;&nbsp;下载&nbsp;&nbsp;</a>播放";
 						}
 						appendMsg(from, contactDivId, spans);
 					}
@@ -999,8 +1004,7 @@
 				};
 				audio.onerror = function() {
 					audio.onerror = null;
-					appendMsg(from, contactDivId, "当前浏览器不支持播放此音频:"
-							+ filename);
+					appendMsg(from, contactDivId, "当前浏览器不支持播放此音频:" + filename);
 				};
 				audio.controls = "controls";
 				audio.src = objectURL;
@@ -1016,8 +1020,7 @@
 			}
 		};
 		options.onFileDownloadError = function(e) {
-			appendMsg(from, contactDivId, e.msg + ",下载音频" + filename
-					+ "失败");
+			appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
 		};
 		Easemob.xmpp.Helper.download(options);
 	};
@@ -1151,12 +1154,11 @@
 		$('#confirm-block-div-modal').modal('toggle');
 		$('#confirm-block-footer-body').html(message);
 	};
-	
-	var showWarning = function(message){
+
+	var showWarning = function(message) {
 		$('#notice-block-div').modal('toggle');
 		$('#notice-block-body').html(message);
 	};
-	
 
 	//主动添加好友操作的实现方法
 	var startAddFriend = function() {
@@ -1288,12 +1290,12 @@
 		for (i = 0; i < occupants.length; i++) {
 			var jid = occupants[i].jid;
 			var userName = jid.substring(jid.indexOf("_") + 1).split("@")[0];
-			var txt=$("<p></p>").text(userName); 
+			var txt = $("<p></p>").text(userName);
 			$('#room-member-list').append(txt);
 		}
 		$('#option-room-div-modal').modal('toggle');
 	};
-	
+
 	var getObjectURL = function getObjectURL(file) {
 		var url = null;
 		if (window.createObjectURL != undefined) { // basic
@@ -1337,8 +1339,8 @@
 				<span> <img src="img/head/header2.jpg" alt="logo"
 					class="img-circle" width="60px" height="60px"
 					style="margin-top: -40px; margin-left: 20px" /></span> <span
-					id="login_user" class="login_user_title"> <a class="leftheader-font"
-					href="#"></a>
+					id="login_user" class="login_user_title"> <a
+					class="leftheader-font" href="#"></a>
 				</span> <span>
 					<div class="btn-group" style="margin-left: 5px;">
 						<button class="btn btn-inverse dropdown-toggle"
@@ -1363,7 +1365,8 @@
 				<button id="searchFriend" style="background: #cccccc">查询</button>
 			-->
 			</div>
-			<div id="contractlist" style="height: 490px; overflow-y:auto ;overflow-x:auto;"></div>
+			<div id="contractlist"
+				style="height: 490px; overflow-y: auto; overflow-x: auto;"></div>
 		</div>
 		<!-- 聊天页面 -->
 		<div style="height: 78px;" id="righttop"></div>
@@ -1478,7 +1481,7 @@
 		</div>
 
 		<!-- 一般消息通知 -->
-		<div  id="notice-block-div" class="modal fade hide">
+		<div id="notice-block-div" class="modal fade hide">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 			<div class="modal-body">
 				<h4>Warning!</h4>
@@ -1503,7 +1506,7 @@
 			</div>
 		</div>
 
-		<!-- 群组消息操作界面 -->
+		<!-- 群组成员操作界面 -->
 		<div id="option-room-div-modal" class="alert modal fade hide"
 			role="dialog" aria-hidden="true" data-backdrop="static">
 			<button type="button" class="close" data-dismiss="modal"
@@ -1512,7 +1515,7 @@
 				<h3>群组成员</h3>
 			</div>
 			<div class="modal-body">
-				<div id="room-member-list" style="height:100px; overflow-y:auto"></div>
+				<div id="room-member-list" style="height: 100px; overflow-y: auto"></div>
 			</div>
 		</div>
 
