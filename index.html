@@ -28,6 +28,7 @@
 	var curContentTypeFlag = null;
 	var groupFlagMark = "group&-";
 	var groupQuering = false;
+	var textSending = false;
 	
 	window.URL = window.URL || window.webkitURL || window.mozURL
 			|| window.msURL;
@@ -65,6 +66,7 @@
 		document.getElementById(talkInputId).value = "";
 	};
 	//定义消息编辑文本域的快捷键，enter和ctrl+enter为发送，alt+enter为换行
+	//控制提交频率
 	$(function() {
 		$("textarea").keydown(function(event) {
 
@@ -258,6 +260,7 @@
 		unknowContact = {};
 		showLoginUI();
 		groupQuering = false;
+		textSending = false;
 	};
 	//easemobwebim-sdk中收到联系人订阅请求的处理方法，具体的type值所对应的值请参考xmpp协议规范
 	var handlePresence = function(e) {
@@ -701,6 +704,11 @@
 	};
 
 	var sendText = function() {
+		if(textSending){
+			return;
+		}
+		textSending = true;
+		
 		var msgInput = document.getElementById(talkInputId);
 		var msg = msgInput.value;
 
@@ -730,6 +738,10 @@
 		turnoffFaces_box();
 		msgInput.value = "";
 		msgInput.focus();
+		
+		setTimeout(function(){
+			textSending = false;
+		},1000);
 	};
 
 	var pictype = {
