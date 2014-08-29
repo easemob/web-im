@@ -27,7 +27,8 @@
 	var listRoomId = [];
 	var curContentTypeFlag = null;
 	var groupFlagMark = "group&-";
-
+	var groupQuering = false;
+	
 	window.URL = window.URL || window.webkitURL || window.mozURL
 			|| window.msURL;
 	var getLoginInfo = function() {
@@ -256,6 +257,7 @@
 		clearContactUI("contractlist", msgCardDivId);
 		unknowContact = {};
 		showLoginUI();
+		groupQuering = false;
 	};
 	//easemobwebim-sdk中收到联系人订阅请求的处理方法，具体的type值所对应的值请参考xmpp协议规范
 	var handlePresence = function(e) {
@@ -1254,9 +1256,13 @@
 				|| createContactChatDiv(curChatUserId);
 		currentDiv.innerHTML = "";
 	};
-
+	
 	//显示成员列表
 	var showRoomMember = function showRoomMember() {
+		if(groupQuering){
+			return;
+		}
+		groupQuering = true;
 		queryOccupants(curRoomId);
 	};
 
@@ -1280,13 +1286,25 @@
 							}
 						}
 						showRoomMemberList(occupants);
+						groupQuering = false;
+					},
+					error : function(){
+						groupQuering = false;
 					}
 				});
+			},
+			error : function(){
+				groupQuering = false;
 			}
 		});
 	};
 
 	var showRoomMemberList = function showRoomMemberList(occupants) {
+		var list = $('#room-member-list')[0];
+		var childs=list.childNodes;    
+		for(var i=childs.length-1;i>=0;i--){    
+			list.removeChild(childs.item(i));  
+		}
 		for (i = 0; i < occupants.length; i++) {
 			var jid = occupants[i].jid;
 			var userName = jid.substring(jid.indexOf("_") + 1).split("@")[0];
