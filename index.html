@@ -29,7 +29,7 @@
 	var groupFlagMark = "group&-";
 	var groupQuering = false;
 	var textSending = false;
-	
+
 	window.URL = window.URL || window.webkitURL || window.mozURL
 			|| window.msURL;
 	var getLoginInfo = function() {
@@ -359,16 +359,16 @@
 			if (contact.subscription == 'remove') {
 				var isexist = contains(bothRoster, contact);
 				if (isexist) {
-					var newcontact = document.getElementById("contactlistUL");
 					bothRoster.remove(contact);//联系人删除操作
-					//退出后重新登录后显示
+
+					var newcontact = document.getElementById("contactlistUL");
 					var childs = newcontact.childNodes;
 					for ( var i = childs.length - 1; i >= 0; i--) {
 						if (childs[i].id == contact.name) {
 							newcontact.removeChild(childs[i]);
 							if (curChatUserId == contact.name) {
 								if (bothRoster.length >= 0) {
-									buildContactDiv("contractlist", bothRoster);//页面处理
+									//buildContactDiv("contractlist", bothRoster);//页面处理
 									if (bothRoster.length > 0) {
 										setCurrentContact(bothRoster[0].name);//页面处理将第一个联系人作为当前聊天div
 									}
@@ -376,8 +376,13 @@
 							}
 						}
 					}
+					var chatDivParent = document.getElementById("chat01");
+					var chatDiv = document.getElementById(curChatUserId + "-"
+							+ contact);
+					if (chatDiv) {
+						chatDivParent.removeChild(chatDiv);
+					}
 				}
-
 			}
 		}
 	};
@@ -704,11 +709,11 @@
 	};
 
 	var sendText = function() {
-		if(textSending){
+		if (textSending) {
 			return;
 		}
 		textSending = true;
-		
+
 		var msgInput = document.getElementById(talkInputId);
 		var msg = msgInput.value;
 
@@ -738,10 +743,10 @@
 		turnoffFaces_box();
 		msgInput.value = "";
 		msgInput.focus();
-		
-		setTimeout(function(){
+
+		setTimeout(function() {
 			textSending = false;
-		},1000);
+		}, 1000);
 	};
 
 	var pictype = {
@@ -1268,10 +1273,10 @@
 				|| createContactChatDiv(curChatUserId);
 		currentDiv.innerHTML = "";
 	};
-	
+
 	//显示成员列表
 	var showRoomMember = function showRoomMember() {
-		if(groupQuering){
+		if (groupQuering) {
 			return;
 		}
 		groupQuering = true;
@@ -1300,12 +1305,12 @@
 						showRoomMemberList(occupants);
 						groupQuering = false;
 					},
-					error : function(){
+					error : function() {
 						groupQuering = false;
 					}
 				});
 			},
-			error : function(){
+			error : function() {
 				groupQuering = false;
 			}
 		});
@@ -1313,9 +1318,9 @@
 
 	var showRoomMemberList = function showRoomMemberList(occupants) {
 		var list = $('#room-member-list')[0];
-		var childs=list.childNodes;    
-		for(var i=childs.length-1;i>=0;i--){    
-			list.removeChild(childs.item(i));  
+		var childs = list.childNodes;
+		for ( var i = childs.length - 1; i >= 0; i--) {
+			list.removeChild(childs.item(i));
 		}
 		for (i = 0; i < occupants.length; i++) {
 			var jid = occupants[i].jid;

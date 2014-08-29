@@ -273,7 +273,6 @@ a:hover {
 }
 
 .chat-content-p3 {
-	word-wrap: break-word;
 	white-space: pre-wrap;
 	border-radius: 5px;
 	background-color: #C0C0C0;
