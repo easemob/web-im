@@ -6,7 +6,7 @@
 <script type="text/javascript" src="jquery-1.11.1.js"></script>
 <script type='text/javascript' src='strophe-custom-1.0.0.js'></script>
 <script type='text/javascript' src='json2.js'></script>
-<script type="text/javascript" src="easemob.xmpp-1.0.0.js"></script>
+<script type="text/javascript" src="easemob.im-1.0.0.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
 <link rel="stylesheet" type="text/css" href="css/webim.css" />
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
@@ -89,7 +89,7 @@
 	});
 	//easemobwebim-sdk注册回调函数列表
 	$(document).ready(function() {
-		conn = new Easemob.xmpp.Connection();
+		conn = new Easemob.im.Connection();
 		//初始化连接
 		conn.init({
 			//当连接成功时的回调方法
@@ -394,7 +394,7 @@
 			showLoginUI();
 		} else {
 			var msg = e.msg;
-			if (e.type == EASEMOB_XMPP_CONNCTION_SERVER_CLOSE_ERROR) {
+			if (e.type == EASEMOB_IM_CONNCTION_SERVER_CLOSE_ERROR) {
 				if (msg == "") {
 					alert("服务器器断开连接,可能是因为在别处登录");
 				} else {
@@ -670,8 +670,8 @@
 		}
 		;
 		emotionFlag = true;
-		// Easemob.xmpp.Helper.EmotionPicData设置表情的json数组
-		var sjson = Easemob.xmpp.Helper.EmotionPicData;
+		// Easemob.im.Helper.EmotionPicData设置表情的json数组
+		var sjson = Easemob.im.Helper.EmotionPicData;
 		for ( var key in sjson) {
 			var emotionImgContent = document.createElement("img");
 			emotionImgContent.setAttribute("id", key);
@@ -769,8 +769,8 @@
 		if (to == null) {
 			return;
 		}
-		// Easemob.xmpp.Helper.getFileUrl为easemobwebim-sdk获取发送文件对象的方法，fileInputId为 input 标签的id值
-		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+		// Easemob.im.Helper.getFileUrl为easemobwebim-sdk获取发送文件对象的方法，fileInputId为 input 标签的id值
+		var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
 			$('#send-file-warning')
 					.html("<font color='#FF0000'>请选择发送图片</font>");
@@ -835,7 +835,7 @@
 			return;
 		}
 		//利用easemobwebim-sdk提供的方法来构造一个file对象
-		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+		var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
 			$('#send-file-warning')
 					.html("<font color='#FF0000'>请选择发送音频</font>");
@@ -975,7 +975,7 @@
 			appendMsg(from, contactDivId, e.msg + ",下载图片" + filename + "失败");
 		};
 		//easemobwebim-sdk包装的下载文件对象的统一处理方法。
-		Easemob.xmpp.Helper.download(options);
+		Easemob.im.Helper.download(options);
 	};
 	//easemobwebim-sdk收到音频消息回调方法的实现
 	var handleAudioMessage = function(message) {
@@ -1041,7 +1041,7 @@
 		options.onFileDownloadError = function(e) {
 			appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
 		};
-		Easemob.xmpp.Helper.download(options);
+		Easemob.im.Helper.download(options);
 	};
 
 	var handleLocationMessage = function(message) {
@@ -1074,7 +1074,7 @@
 		// 消息体 {isemotion:true;body:[{type:txt,msg:ssss}{type:emotion,msg:imgdata}]}
 		var localMsg = null;
 		if (typeof message == 'string') {
-			localMsg = Easemob.xmpp.Helper.parseTextMessage(message);
+			localMsg = Easemob.im.Helper.parseTextMessage(message);
 			localMsg = localMsg.body;
 		} else {
 			localMsg = message.data;
@@ -1128,7 +1128,7 @@
 				}
 			}
 		}
-		if (contact != curChatUserId) {
+		if (curChatUserId.indexOf(contact) < 0 ) {
 			contactLi.style.backgroundColor = "green";
 		}
 		var msgContentDiv = getContactChatDiv(contactDivId);

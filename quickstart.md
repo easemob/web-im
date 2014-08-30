@@ -9,7 +9,7 @@ layout: docs
 ##**基本功能**
 
 ### 1.创建连接
-    var conn = new Easemob.xmpp.Connection();
+    var conn = new Easemob.im.Connection();
 ### 2.初始化连接
     conn.init({
 			onOpened : function() {
@@ -157,7 +157,7 @@ layout: docs
 			return;
 		}
 		//fileInputId：文件选择输入框的Id，sdk自动根据id自动获取文件对象（含图片，或者其他类型文件）
-		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+		var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
 			alert("请选择发送图片");
 			return;
@@ -195,7 +195,7 @@ sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消�
 			alert("请选择联系人");
 			return;
 		}
-		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+		var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
 			alert("请选择发送音频");
 			return;
@@ -251,8 +251,8 @@ sdk处理同4.发送图片消息，分两步：1）上传音频；2）发送消�
 		if (to == null) {
 			return;
 		}
-		// Easemob.xmpp.Helper.getFileUrl为easemobwebim-sdk获取发送文件对象的方法，fileInputId为 input 标签的id值
-		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+		// Easemob.im.Helper.getFileUrl为easemobwebim-sdk获取发送文件对象的方法，fileInputId为 input 标签的id值
+		var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
 			alert("请选择发送图片");
 			return;
@@ -306,7 +306,7 @@ sdk处理同5.2.发送图片消息，分两步：1）上传音频；2）发送�
 			return;
 		}
 		//利用easemobwebim-sdk提供的方法来构造一个file对象
-		var fileObj = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+		var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
 		if (fileObj.url == null || fileObj.url == '') {
 				alert("请选择发送音频");
 			return;
@@ -510,21 +510,21 @@ sdk处理同5.2.发送图片消息，分两步：1）上传音频；2）发送�
 			"[:D]" : "data:image/png;base64,iVBORw0KGgoAAAANSUh....=="
 		}
 	
-    var emotion_json = Easemob.xmpp.Helper.EmotionPicData;
+    var emotion_json = Easemob.im.Helper.EmotionPicData;
 ##2.Base64工具类-object
-    var base64  = Easemob.xmpp.Helper.Base64;
+    var base64  = Easemob.im.Helper.Base64;
 	var srcstr="ssss";
 	var base64str = base64.encode(srcstr);
 	var orgstr = base64.decode(srcstr);
 ##3.文件上传工具类-attribute
 	//是否能上传file
-	var canupload = Easemob.xmpp.Helper.isCanUploadFile;
+	var canupload = Easemob.im.Helper.isCanUploadFile;
 	//是否能下载file
-	var candownload = Easemob.xmpp.Helper.isCanDownLoadFile ;
+	var candownload = Easemob.im.Helper.isCanDownLoadFile ;
 	//是否设置header
-	var hasheader = Easemob.xmpp.Helper.hasSetRequestHeader;
+	var hasheader = Easemob.im.Helper.hasSetRequestHeader;
 	//是否设置mimetype
-	var hasmimetype = Easemob.xmpp.Helper.hasOverrideMimeType;
+	var hasmimetype = Easemob.im.Helper.hasOverrideMimeType;
 ##4.表情解析工具类-Method
 	//返回表情JSON，格式为：
 		{
@@ -539,7 +539,7 @@ sdk处理同5.2.发送图片消息，分两步：1）上传音频；2）发送�
 					}]
 		}
 
-    var emotionMsg = Easemob.xmpp.Helper.parseTextMessage(message);
+    var emotionMsg = Easemob.im.Helper.parseTextMessage(message);
 ##5.文件上传工具类-Method
 	//返回fileinfo对象，格式为：
 		{
@@ -547,7 +547,7 @@ sdk处理同5.2.发送图片消息，分两步：1）上传音频；2）发送�
 			filename : '',
 			filetype : ''
 		}
-    var fileInfo = Easemob.xmpp.Helper.getFileUrl(fileInputId);
+    var fileInfo = Easemob.im.Helper.getFileUrl(fileInputId);
 	//上传
 	var options={
 		appName = 'chatdemoui',
@@ -558,7 +558,7 @@ sdk处理同5.2.发送图片消息，分两步：1）上传音频；2）发送�
 		width:100,//only for pic
 		heght：100//only for pic
 	}
-	Easemob.xmpp.Helper.upload(options);
+	Easemob.im.Helper.upload(options);
 	//下载
 	var options = {
 		method:'GET',//default GET
@@ -570,7 +570,7 @@ sdk处理同5.2.发送图片消息，分两步：1）上传音频；2）发送�
 		onFileUploadComplete:function(data){//upload file success },
 		onFileUploadError:function(e){//upload file error },
 	}
-	Easemob.xmpp.Helper.download(options);
+	Easemob.im.Helper.download(options);
 	//文件大小 
 	var options={
 		fileInputId:'uploadfileinput'//文件输入框id
@@ -586,7 +586,7 @@ sdk处理同5.2.发送图片消息，分两步：1）上传音频；2）发送�
 		headers:'',//default {}
 		data : '';//default null
 	};
-	Easemob.xmpp.Helper.xhr(options);
+	Easemob.im.Helper.xhr(options);
 ##7.登录usergrid-Method
 	var options = {
 		appKey:'easemob-demo#chatdemoui',//default ''
@@ -595,7 +595,7 @@ sdk处理同5.2.发送图片消息，分两步：1）上传音频；2）发送�
 		user : 'test1', //default ''
 		pwd : '123456'  //default ''
 	};
-	Easemob.xmpp.Helper.login2UserGrid(options);
+	Easemob.im.Helper.login2UserGrid(options);
 ##8.内置空函数-Method
 当所有需要回调的地方接受到函数时，默认采用此函数
 var emptyFn = function() {};
