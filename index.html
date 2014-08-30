@@ -268,7 +268,7 @@
 		if (e.type == 'subscribe') {
 			if (e.status) {
 				if (e.status.indexOf('resp:true') > -1) {
-					agreeAddFriend(conn, e.from);
+					agreeAddFriend(e.from);
 					return;
 				}
 			}
@@ -276,7 +276,7 @@
 			showNewNotice(subscribeMessage);
 			$('#confirm-block-footer-confirmButton').click(function() {
 				//同意好友请求
-				agreeAddFriend(conn, e.from);//e.from用户名
+				agreeAddFriend(e.from);//e.from用户名
 				//反向添加对方好友
 				conn.subscribe({
 					to : e.from,
@@ -285,7 +285,7 @@
 				$('#confirm-block-div-modal').modal('hide');
 			});
 			$('#confirm-block-footer-cancelButton').click(function() {
-				rejectAddFriend(conn, e.from);//拒绝加为好友
+				rejectAddFriend(e.from);//拒绝加为好友
 				$('#confirm-block-div-modal').modal('hide');
 			});
 			return;
@@ -302,12 +302,12 @@
 		//（发送者取消订阅另一个实体的出席信息）,即删除现有好友
 		if (e.type == 'unsubscribe') {
 			//单向删除自己的好友信息，具体使用时请结合具体业务进行处理
-			delFriend(conn, e.from);
+			delFriend(e.from);
 			return;
 		}
 		//（订阅者的请求被拒绝或以前的订阅被取消），即对方单向的删除了好友
 		if (e.type == 'unsubscribed') {
-			delFriend(conn, e.from);
+			delFriend(e.from);
 			return;
 		}
 	};
@@ -359,29 +359,7 @@
 			if (contact.subscription == 'remove') {
 				var isexist = contains(bothRoster, contact);
 				if (isexist) {
-					bothRoster.remove(contact);//联系人删除操作
-
-					var newcontact = document.getElementById("contactlistUL");
-					var childs = newcontact.childNodes;
-					for ( var i = childs.length - 1; i >= 0; i--) {
-						if (childs[i].id == contact.name) {
-							newcontact.removeChild(childs[i]);
-							if (curChatUserId == contact.name) {
-								if (bothRoster.length >= 0) {
-									//buildContactDiv("contractlist", bothRoster);//页面处理
-									if (bothRoster.length > 0) {
-										setCurrentContact(bothRoster[0].name);//页面处理将第一个联系人作为当前聊天div
-									}
-								}
-							}
-						}
-					}
-					var chatDivParent = document.getElementById("chat01");
-					var chatDiv = document.getElementById(curChatUserId + "-"
-							+ contact);
-					if (chatDiv) {
-						chatDivParent.removeChild(chatDiv);
-					}
+					removeFriendDomElement(contact.name);
 				}
 			}
 		}
@@ -559,15 +537,12 @@
 
 	//选择联系人的处理
 	var getContactLi = function(chatUserId) {
-		var li = document.getElementById(chatUserId);
-		return li;
+		return document.getElementById(chatUserId);
 	};
 
 	//构造当前聊天记录的窗口div
 	var getContactChatDiv = function(chatUserId) {
-		var msgContentDivId = curUserId + "-" + chatUserId;
-		var contentDiv = document.getElementById(msgContentDivId);
-		return contentDiv;
+		return document.getElementById(curUserId + "-" + chatUserId);
 	};
 
 	//如果当前没有某一个联系人的聊天窗口div就新建一个
@@ -907,11 +882,6 @@
 		if (mestype == 'groupchat') {
 			contactDivId = groupFlagMark + message.to;
 		}
-		//测试提出两条消息，注释掉处理消息 0703
-		//var ele = appendMsg(from, from, "收到图片" + filename + ",正在处理");//在聊天记录中处理记录显示的统一方法
-		//if (ele == null) {
-		//	return;
-		//}
 		var options = message;
 		// 图片消息下载成功后的处理逻辑
 		options.onFileDownloadComplete = function(response, xhr) {
@@ -988,12 +958,6 @@
 		if (mestype == 'groupchat') {
 			contactDivId = groupFlagMark + message.to;
 		}
-
-		//测试提出两条消息，注释掉处理消息0703
-		//var ele = appendMsg(from, from, "收到音频" + filename + ",正在处理");
-		//if (ele == null) {
-		//	return;
-		//}
 		var options = message;
 		options.onFileDownloadComplete = function(response, xhr) {
 			//amr 不处理播放，提供下载
@@ -1128,7 +1092,7 @@
 				}
 			}
 		}
-		if (curChatUserId.indexOf(contact) < 0 ) {
+		if (curChatUserId.indexOf(contact) < 0) {
 			contactLi.style.backgroundColor = "green";
 		}
 		var msgContentDiv = getContactChatDiv(contactDivId);
@@ -1183,7 +1147,6 @@
 	var startAddFriend = function() {
 		var user = $('#addfridentId').val();
 		if (user == '') {
-			//alert("请输入好友名称");
 			$('#add-frident-warning').html(
 					"<font color='#FF0000'> 请输入好友名称</font>");
 			return;
@@ -1207,14 +1170,14 @@
 	};
 
 	//回调方法执行时同意添加好友操作的实现方法
-	var agreeAddFriend = function(connection, user) {
-		connection.subscribed({
+	var agreeAddFriend = function(user) {
+		conn.subscribed({
 			to : user,
 			message : "[resp:true]"
 		});
 	};
 	//拒绝添加好友的方法处理
-	var rejectAddFriend = function(conn, user) {
+	var rejectAddFriend = function(user) {
 		var date = new Date().toLocaleTimeString();
 		conn.unsubscribed({
 			to : user,
@@ -1256,17 +1219,69 @@
 	};
 
 	//回调方法执行时删除好友操作的方法处理
-	var delFriend = function(connection, user) {
+	var delFriend = function(user) {
 		conn.removeRoster({
 			to : user,
 			groups : [ 'default' ],
 			success : function() {
-				connection.unsubscribed({
+				conn.unsubscribed({
 					to : user
 				});
 			}
 		});
 	};
+	var removeFriendDomElement = function(userToDel, local) {
+		var contactToDel;
+		if (bothRoster.length > 0) {
+			for ( var i = 0; i < bothRoster.length; i++) {
+				if (bothRoster[i].name == userToDel) {
+					contactToDel = bothRoster[i];
+					break;
+				}
+			}
+		}
+		if (contactToDel) {
+			bothRoster.remove(contactToDel);
+		}
+		// 隐藏删除好友窗口
+		if (local) {
+			$('#delFridentModal').modal('hide');
+		}
+		//删除通讯录
+		$('#' + userToDel).remove();
+		//删除聊天
+		var chatDivId = curUserId + "-" + userToDel;
+		var chatDiv = $('#' + chatDivId);
+		if (chatDiv) {
+			chatDiv.remove();
+		}
+		if (curChatUserId != userToDel) {
+			return;
+		} else {
+			var displayName = '';
+			//将第一个联系人作为当前聊天div
+			if (bothRoster.length > 0) {
+				curChatUserId = bothRoster[0].name;
+				$('#' + curChatUserId).css({
+					"background-color" : "blue"
+				});
+				var currentDiv = getContactChatDiv(curChatUserId)
+						|| createContactChatDiv(curChatUserId);
+				document.getElementById(msgCardDivId).appendChild(currentDiv);
+				$(currentDiv).css({
+					"display" : "block"
+				});
+				displayName = '与' + curChatUserId + '聊天中';
+			} else {
+				$('#null-nouser').css({
+					"display" : "block"
+				});
+				displayName = '';
+			}
+			$('#talkTo').html('<a href="#">' + displayName + '</a>');
+		}
+	};
+
 	//清除聊天记录
 	var clearCurrentChat = function clearCurrentChat() {
 		var currentDiv = getContactChatDiv(curChatUserId)
