@@ -313,7 +313,7 @@
 	};
 	//easemobwebim-sdk中处理出席状态操作
 	var handleRoster = function(rosterMsg) {
-		for ( var i = 0; i < rosterMsg.length; i++) {
+		for (var i = 0; i < rosterMsg.length; i++) {
 			var contact = rosterMsg[i];
 			if (contact.ask && contact.ask == 'subscribe') {
 				continue;
@@ -395,7 +395,7 @@
 	};
 
 	Array.prototype.indexOf = function(val) {
-		for ( var i = 0; i < this.length; i++) {
+		for (var i = 0; i < this.length; i++) {
 			if (this[i].name == val.name)
 				return i;
 		}
@@ -473,7 +473,7 @@
 				'id' : userName,
 				'class' : 'offline',
 				'className' : 'offline',
-				'chat' : 'chat',
+				'type' : 'chat',
 				'displayName' : userName
 			});
 			lielem.onclick = function() {
@@ -617,6 +617,11 @@
 		$('#null-nouser').css({
 			"display" : "none"
 		});
+		var badgespan = $(li).children(".badge");
+		if (badgespan && badgespan.length > 0) {
+			li.removeChild(li.children[2]);
+		}
+
 	};
 
 	var clearContactUI = function(contactInfoDiv, contactChatDiv) {
@@ -628,7 +633,7 @@
 		}
 		var chatRootDiv = document.getElementById(contactChatDiv);
 		var children = chatRootDiv.children;
-		for ( var i = children.length - 1; i > 1; i--) {
+		for (var i = children.length - 1; i > 1; i--) {
 			chatRootDiv.removeChild(children[i]);
 		}
 		$('#null-nouser').css({
@@ -1050,32 +1055,32 @@
 		var header = $(headstr.join(''))
 
 		var lineDiv = document.createElement("div");
-		for ( var i = 0; i < header.length; i++) {
+		for (var i = 0; i < header.length; i++) {
 			var ele = header[i];
 			lineDiv.appendChild(ele);
 		}
 		var messageContent = localMsg;
-		for ( var i = 0; i < messageContent.length; i++) {
+		for (var i = 0; i < messageContent.length; i++) {
 			var msg = messageContent[i];
 			var type = msg.type;
 			var data = msg.data;
 			if (type == "emotion") {
 				var eletext = "<p3><img src='" + data + "'/></p3>";
 				var ele = $(eletext);
-				for ( var j = 0; j < ele.length; j++) {
+				for (var j = 0; j < ele.length; j++) {
 					lineDiv.appendChild(ele[j]);
 				}
 			} else if (type == "pic") {
 				var filename = msg.filename;
 				var fileele = $("<p3>" + filename + "</p3><br>");
-				for ( var j = 0; j < fileele.length; j++) {
+				for (var j = 0; j < fileele.length; j++) {
 					lineDiv.appendChild(fileele[j]);
 				}
 				lineDiv.appendChild(data);
 			} else if (type == 'audio') {
 				var filename = msg.filename;
 				var fileele = $("<p3>" + filename + "</p3><br>");
-				for ( var j = 0; j < fileele.length; j++) {
+				for (var j = 0; j < fileele.length; j++) {
 					lineDiv.appendChild(fileele[j]);
 				}
 				lineDiv.appendChild(data);
@@ -1087,13 +1092,23 @@
 				if (curUserId == who) {
 					ele[0].style.backgroundColor = "#EBEBEB";
 				}
-				for ( var j = 0; j < ele.length; j++) {
+				for (var j = 0; j < ele.length; j++) {
 					lineDiv.appendChild(ele[j]);
 				}
 			}
 		}
 		if (curChatUserId.indexOf(contact) < 0) {
 			contactLi.style.backgroundColor = "green";
+			var badgespan = $(contactLi).children(".badge");
+			if (badgespan && badgespan.length > 0) {
+				var count = badgespan.text();
+				var myNum = new Number(count);
+				myNum++;
+				badgespan.text(myNum);
+			} else {
+				$(contactLi).append('<span class="badge">1</span>');
+			}
+
 		}
 		var msgContentDiv = getContactChatDiv(contactDivId);
 		if (curUserId == who) {
@@ -1152,7 +1167,7 @@
 			return;
 		}
 		if (bothRoster)
-			for ( var i = 0; i < bothRoster.length; i++) {
+			for (var i = 0; i < bothRoster.length; i++) {
 				if (bothRoster[i].name == user) {
 					$('#add-frident-warning').html(
 							"<font color='#FF0000'> 已是您的好友</font>");
@@ -1233,7 +1248,7 @@
 	var removeFriendDomElement = function(userToDel, local) {
 		var contactToDel;
 		if (bothRoster.length > 0) {
-			for ( var i = 0; i < bothRoster.length; i++) {
+			for (var i = 0; i < bothRoster.length; i++) {
 				if (bothRoster[i].name == userToDel) {
 					contactToDel = bothRoster[i];
 					break;
@@ -1305,7 +1320,7 @@
 			roomId : roomId,
 			success : function(occs) {
 				if (occs) {
-					for ( var i = 0; i < occs.length; i++) {
+					for (var i = 0; i < occs.length; i++) {
 						occupants.push(occs[i]);
 					}
 				}
@@ -1313,7 +1328,7 @@
 					roomId : roomId,
 					success : function(members) {
 						if (members) {
-							for ( var i = 0; i < members.length; i++) {
+							for (var i = 0; i < members.length; i++) {
 								occupants.push(members[i]);
 							}
 						}
@@ -1334,7 +1349,7 @@
 	var showRoomMemberList = function showRoomMemberList(occupants) {
 		var list = $('#room-member-list')[0];
 		var childs = list.childNodes;
-		for ( var i = childs.length - 1; i >= 0; i--) {
+		for (var i = childs.length - 1; i >= 0; i--) {
 			list.removeChild(childs.item(i));
 		}
 		for (i = 0; i < occupants.length; i++) {
