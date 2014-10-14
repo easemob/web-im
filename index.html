@@ -92,6 +92,7 @@
 		conn = new Easemob.im.Connection();
 		//初始化连接
 		conn.init({
+			SSLEnabled : false,
 			//当连接成功时的回调方法
 			onOpened : function() {
 				handleOpen(conn);
@@ -1036,7 +1037,8 @@
 				return;
 			}
 			//alert("陌生人" + who + "的消息,忽略");
-			unknowContact[contact] = true;
+			alert("陌生人" + who + "的消息 :" + message);
+			//unknowContact[contact] = true;//只提示一次陌生人消息，防骚扰
 			return null;
 		}
 
@@ -1048,10 +1050,8 @@
 		} else {
 			localMsg = message.data;
 		}
-		var date = new Date();
-		var time = date.toLocaleTimeString();
 		var headstr = [ "<p1>" + who + "   <span></span>" + "   </p1>",
-				"<p2>" + time + "<b></b><br/></p2>" ];
+				"<p2>" + getLoacalTimeString() + "<b></b><br/></p2>" ];
 		var header = $(headstr.join(''))
 
 		var lineDiv = document.createElement("div");
@@ -1175,10 +1175,9 @@
 				}
 			}
 		//发送添加好友请求
-		var date = new Date().toLocaleTimeString();
 		conn.subscribe({
 			to : user,
-			message : "加个好友呗-" + date
+			message : "加个好友呗-" + getLoacalTimeString()
 		});
 		$('#addFridentModal').modal('hide');
 		return;
@@ -1193,10 +1192,9 @@
 	};
 	//拒绝添加好友的方法处理
 	var rejectAddFriend = function(user) {
-		var date = new Date().toLocaleTimeString();
 		conn.unsubscribed({
 			to : user,
-			message : date
+			message : getLoacalTimeString()
 		});
 	};
 
@@ -1372,6 +1370,12 @@
 		}
 		return url;
 	};
+	var getLoacalTimeString = function getLoacalTimeString() {
+		var date = new Date();
+		var time = date.getHours() + ":" + date.getMinutes() + ":"
+				+ date.getSeconds();
+		return time;
+	}
 </script>
 </head>
 <body>
