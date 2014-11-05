@@ -1,618 +1,764 @@
 ---
-title: ç¯ä¿¡
-description: 5åˆ†é’Ÿä¸ºä½ çš„APPåŠ å…¥èŠå¤©åŠŸèƒ½
-category: webchat
-layout: docs
+title: WebIM ¿ª·¢Ö¸ÄÏ
+sidebar: webimsidebar
+secondnavwebim: true
 ---
 
-## WebIM SDKä»‹ç»:
-##**åŸºæœ¬åŠŸèƒ½**
+# ¿ìËÙÈëÃÅ  
 
-### 1.åˆ›å»ºè¿æ¥
-    var conn = new Easemob.im.Connection();
-### 2.åˆå§‹åŒ–è¿æ¥
-    conn.init({
-			onOpened : function() {
-				curUserId = conn.context.userId;
-				//æŸ¥è¯¢å¥½å‹åˆ—è¡¨
-				conn.getRoster(....);
-			},
-			onClosed : function() {
-				//å¤„ç†ç™»å‡ºäº‹ä»¶
-			},
-			onTextMessage : function(message) {
-               /**å¤„ç†æ–‡æœ¬æ¶ˆæ¯ï¼Œæ¶ˆæ¯æ ¼å¼ä¸ºï¼š
-					{
-					from : from,
-					to : too,
-					data : { "type":"txt",
-                          "msg":"hello from test2"
-                          }
-					}
-				*/
-				handleTextMessage(message);
-			},
-			onEmotionMessage : function(message) {
-				/*å¤„ç†è¡¨æƒ…æ¶ˆæ¯,æ¶ˆæ¯æ ¼å¼ä¸ºï¼š
-                	{
-					from : from,
-					to : too,
-					data : [{ "type":"txt",
-                          "msg":"hello from test2"
-                          },
-                          { "type":"emotion",
-                          "msg":"data:image/png;base64, â€¦â€¦"//å›¾ç‰‡çš„base64ç¼–ç 
-						}]
-					}
-				*/
-				handleEmotion(message);
-			},
-			onPictureMessage : function(message) {
-	              /**å¤„ç†å›¾ç‰‡æ¶ˆæ¯ï¼Œæ¶ˆæ¯æ ¼å¼ä¸ºï¼š
-					{
-					from : "test1",
-					to : "test2",
-					url : "http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae",
-					secret : "NSgGYPCxEeOou00jZasg9e-GqKUZGdph96EFxJ4WxW-qkxV4",
-					filename : "logo.png",
-					thumb : "http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae",
-					thumb_secret : "0595b06a-ed8b-11e3-9b85-93fade9c198c",
-					file_length : 42394,
-					width : 280,
-					height : 160,
-					filetype : "image/png",
-					accessToken :"YWMtjPPoovCqEeOQs7myPqqaOwAAAUaqNH0a8rRj4PwJLQju6-S47ZO6wYs3Lwo"
-				    }
-				*/
+## ³õÊ¼»¯
 
-				handlePictureMessage(message);
-			},
-			onAudioMessage : function(message) {
-                /**å¤„ç†éŸ³é¢‘æ¶ˆæ¯ï¼Œæ¶ˆæ¯æ ¼å¼ä¸ºï¼š
-	               {
-					from : "test1",
-					to : "test2",
-					url : "http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae",
-					secret :"NSgGYPCxEeOou00jZasg9e-GqKUZGdph96EFxJ4WxW-qkxV4",
-					filename : "é£é›¨æ— é˜».mp3",
-					length :45223,
-					file_length : 304,
-					filetype : "mp3",
-					accessToken :"YWMtjPPoovCqEeOQs7myPqqaOwAAAUaqNH0a8rRj4PwJLQju6-S47ZO6wYs3Lwo"
-				  }
-				*/
-				handleAudioMessage(message);
-			},
-			//æ”¶åˆ°è”ç³»äººè®¢é˜…è¯·æ±‚çš„å›è°ƒæ–¹æ³•
-			onPresence : function (message){
-				/**
-				{
-				from: "l2",
-				fromJid: "easemob-demo#chatdemoui_l2@easemob.com",
-				status: "ä¸‹åˆ11:44:47",
-				to: "test1",
-				toJid: "easemob-demo#chatdemoui_test1@easemob.com/13856640471403797405809685",
-				type: "subscribed"
-				}
-				*/
-				handlePresence(message);
-			},
-			//æ”¶åˆ°è”ç³»äººä¿¡æ¯çš„å›è°ƒæ–¹æ³•
-			onRoster : function (message){
-				/**
-				[
-				{
-				groups: [{0: "default",
-						length: 1}],
-				jid: "easemob-demo#chatdemoui_l2@easemob.com",
-				name: "l2",
-				subscription: "to"
-				}]
-				*/
-				handleRoster(message);
-			},
-			onError : function(e) {
-				//å¼‚å¸¸å¤„ç†
-				alert(e.msg);
-			}
-		});
-###3.ç™»å½•èŠå¤©ç”¨æˆ·
-    //ç”¨æˆ·å
-	var user = document.getElementById("username").value;
-	//å¯†ç 
-	var pass = document.getElementById("password").value;
-	if (user == '' || pass == '') {
-		alert("è¯·è¾“å…¥ç”¨æˆ·åå’Œå¯†ç ");
-		return;
+### ´´½¨Á¬½Ó{#conn_new}
+<pre class="hll"><code class="language-javascript">
+var conn = new Easemob.im.Connection();
+</code></pre>
+
+### ³õÊ¼»¯Á¬½Ó{#conn_init}
+<pre class="hll"><code class="language-javascript">
+conn.init({
+    https : true,//·Ç±ØÌî£¬urlÖµÎ´ÉèÖÃÊ±ÓĞĞ§£¬ÓÅÏÈ²ÉÓÃurlÅäÖÃµÄ²ÎÊı¡£Ä¬ÈÏ²ÉÓÃhttpÁ¬½Ó£¬µØÖ·Îª¡®http://im-api.easemob.com/http-bind/¡¯£¬ÆôÓÃhttpsÊ±´«µİ´ËÖµ£¬µØÖ·Îª£º¡®https://im-api.easemob.com/http-bind/¡¯
+    url £º 'http://im-api.easemob.com/http-bind/',//·Ç±ØÌî£¬Ä¬ÈÏÁÄÌì·şÎñÆ÷µØÖ·£¬
+    domain : 'aa.com',//·Ç±ØÌî£¬Ä¬ÈÏ£º¡®easemob.com¡¯
+    wait £º '60',//·Ç±ØÌî£¬Á¬½Ó³¬Ê±£¬Ä¬ÈÏ£º60£¬µ¥Î»seconds
+    onOpened : function() {
+        curUserId = conn.context.userId;
+        //²éÑ¯ºÃÓÑÁĞ±í
+        conn.getRoster(....);
+    },
+    onClosed : function() {
+        //´¦ÀíµÇ³öÊÂ¼ş
+    },
+    onTextMessage : function(message) {
+        /**´¦ÀíÎÄ±¾ÏûÏ¢£¬ÏûÏ¢¸ñÊ½Îª£º
+            {	type :'chat',//ÈºÁÄÎª¡°groupchat¡±
+                from : from,
+                to : too,
+                data : { "type":"txt",
+                    "msg":"hello from test2"
+                }
+            }
+        */
+        handleTextMessage(message);
+    },
+    onEmotionMessage : function(message) {
+        /*´¦Àí±íÇéÏûÏ¢,ÏûÏ¢¸ñÊ½Îª£º
+            {	type :'chat',//ÈºÁÄÎª¡°groupchat¡±
+                from : from,
+                to : too,
+                data : [{ "type":"txt",
+                    "msg":"hello from test2"
+                },
+                { "type":"emotion",
+                  "msg":"data:image/png;base64, ¡­¡­"//Í¼Æ¬µÄbase64±àÂë
+                }]
+            }
+        */
+        handleEmotion(message);
+    },
+    onPictureMessage : function(message) {
+        /**´¦ÀíÍ¼Æ¬ÏûÏ¢£¬ÏûÏ¢¸ñÊ½Îª£º
+            {	type :'chat',//ÈºÁÄÎª¡°groupchat¡±
+                from : "test1",
+                to : "test2",
+                url : "http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae",
+                secret : "NSgGYPCxEeOou00jZasg9e-GqKUZGdph96EFxJ4WxW-qkxV4",
+                filename : "logo.png",
+                thumb : "http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae",
+                thumb_secret : "0595b06a-ed8b-11e3-9b85-93fade9c198c",
+                file_length : 42394,
+                width : 280,
+                height : 160,
+                filetype : "image/png",
+                accessToken :"YWMtjPPoovCqEeOQs7myPqqaOwAAAUaqNH0a8rRj4PwJLQju6-S47ZO6wYs3Lwo"
+            }
+        */
+
+        handlePictureMessage(message);
+    },
+    onAudioMessage : function(message) {
+        /**´¦ÀíÒôÆµÏûÏ¢£¬ÏûÏ¢¸ñÊ½Îª£º
+           {	type :'chat',//ÈºÁÄÎª¡°groupchat¡±
+                from : "test1",
+                to : "test2",
+                url : "http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae",
+                secret :"NSgGYPCxEeOou00jZasg9e-GqKUZGdph96EFxJ4WxW-qkxV4",
+                filename : "·çÓêÎŞ×è.mp3",
+                length :45223,
+                file_length : 304,
+                filetype : "mp3",
+                accessToken :"YWMtjPPoovCqEeOQs7myPqqaOwAAAUaqNH0a8rRj4PwJLQju6-S47ZO6wYs3Lwo"
+            }
+        */
+        handleAudioMessage(message);
+    },
+    //ÊÕµ½ÁªÏµÈË¶©ÔÄÇëÇóµÄ»Øµ÷·½·¨
+    onPresence : function (message){
+        /**
+            {
+                from: "l2",
+                fromJid: "easemob-demo#chatdemoui_l2@easemob.com",
+                status: "ÏÂÎç11:44:47",
+                to: "test1",
+                toJid: "easemob-demo#chatdemoui_test1@easemob.com/13856640471403797405809685",
+                type: "subscribed"
+            }
+        */
+        handlePresence(message);
+    },
+    //ÊÕµ½ÁªÏµÈËĞÅÏ¢µÄ»Øµ÷·½·¨
+    onRoster : function (message){
+        /**
+            [{
+                groups: [{0: "default",
+                        length: 1}],
+                jid: "easemob-demo#chatdemoui_l2@easemob.com",
+                name: "l2",
+                subscription: "to"
+            }]
+        */
+        handleRoster(message);
+    },
+    onError : function(e) {
+        //Òì³£´¦Àí
+        alert(e.msg);
+    }
+});
+</code></pre>
+
+### ´ò¿ªÁ¬½Ó{#conn_open}
+
+Ö§³Öusername/passwordºÍusername/tokenµÇÂ¼Á½ÖÖ·½Ê½£¬sdkÖĞ»á¸ù¾İ´«ÈëµÄ²ÎÊı½øĞĞ×Ô¶¯Ñ¡ÔñÊÇ·ñµÇÂ¼usergrid£¬»ñÈ¡µÇÂ¼³É¹¦µÄtokenºóÔÙ½øĞĞµÇÂ¼ÁÄÌì£¬Èç¹ûÊ¹ÓÃtokenµÄ´ò¿ªÁ¬½Ó½«Ìø¹ıµÇÂ¼usergird£¬Ö±½ÓµÇÂ¼IM·şÎñÆ÷¡£
+
+<pre class="hll"><code class="language-javascript">
+//ÓÃ»§Ãû
+var user = $("#username").val();
+//ÃÜÂë
+var pass = $("#password").val();
+if (user == '' || pass == '') {
+    alert("ÇëÊäÈëÓÃ»§ÃûºÍÃÜÂë");
+    return;
+}
+conn.open({
+    user : user,
+    pwd : pass,
+    appKey : 'easemob-demo#chatdemoui'//¿ª·¢ÕßAPPKey
+    //accessToken : 'YWMt8bfZfFk5EeSiAzsQ0OXu4QAAAUpoZFOMJ66ic5m2LOZRhYUsRKZWINA06HI'
+});
+</code></pre>
+
+## µ¥ÁÄ{#single_chat}
+
+### ²éÑ¯ºÃÓÑÁĞ±í{#getRoster}
+
+²éÑ¯ºÃÓÑÁĞ±íÊ±£¬Òª×¢Òâsusciption£¨both£¬to,from£©Îª²»Í¬ÖµµÃ´¦Àí,´Ë´¦Ä¬ÈÏbothºÍtoµÄÎªºÃÓÑ£¬¿ª·¢Õß×Ô¶¨Òå´¦Àí£¬±£³Ö¸úAPP¶Ë´¦ÀíÒ»ÖÂ¼´¿É¡£
+
+<pre class="hll"><code class="language-javascript">
+conn.**getRoster**({
+    **success** : function(roster) {
+        //»ñÈ¡ºÃÓÑÁĞ±í£¬²¢½øĞĞºÃÓÑÁĞ±íäÖÈ¾£¬roster¸ñÊ½Îª£º
+        /** [
+                {
+                    jid:"asemoemo#chatdemoui_test1@easemob.com",
+                    name:"test1",
+                    subscription: "both"
+                },
+                {
+                    jid:"asemoemo#chatdemoui_test2@easemob.com",
+                    name:"test2",
+                    subscription: "from"
+                }
+            ]
+        */
+        for(var i in roster){
+            var ros = roster[i];    
+            //ros.subscriptioÖµÎªboth/toÎªÒªÏÔÊ¾µÄÁªÏµÈË,´Ë´¦ÓëAPPĞè±£³ÖÒ»ÖÂ£¬²ÅÄÜ±£Ö¤Á½¸ö¿Í»§¶ËµÇÂ¼ºóµÄºÃÓÑÁĞ±íÒ»ÖÂ
+            if(ros.subscription =='both' || ros.subscription=='to'){
+                newroster.push(ros);
+            }
+        }
+        if (newroster.length >=0) {
+            buildContactDiv("contractlist", newroster);//Ò³Ãæ´¦Àí
+            if (newroster.length > 0) {
+                setCurrentContact(newroster[0].name);//Ò³Ãæ´¦Àí½«µÚÒ»¸öÁªÏµÈË×÷Îªµ±Ç°ÁÄÌìdiv
+            }
+        }
+        //conn.setPresence();
+    },    
+});
+</code></pre>
+
+### Ìí¼ÓºÃÓÑ{#subscribe}
+Í¨¹ısdkµÄsubscribeºÍunsubcribe½øĞĞÌí¼Ó»òÕßÉ¾³ıºÃÓÑ²Ù×÷£¬µÇÂ¼ÓÃ»§Í¨¹ı×¢²áonPresence£¬¼àÌı¶Ô·½µÄÌí¼Ó»òÕßÉ¾³ıºÃÓÑÇëÇó£¬²¢×öÏàÓ¦µÄ´¦Àí¡£
+<pre class="hll"><code class="language-javascript">   
+//easemobwebim-sdkÖĞÊÕµ½ÁªÏµÈË¶©ÔÄÇëÇóµÄ´¦Àí·½·¨£¬¾ßÌåµÄtypeÖµËù¶ÔÓ¦µÄÖµÇë²Î¿¼xmppĞ­Òé¹æ·¶
+var handlePresence = function (e){
+	//£¨·¢ËÍÕßÏ£Íû¶©ÔÄ½ÓÊÕÕßµÄ³öÏ¯ĞÅÏ¢£©£¬¼´±ğÈËÉêÇë¼ÓÄãÎªºÃÓÑ
+	if (e.type == 'subscribe') {
+		//Èôe.statusÖĞº¬ÓĞ[resp:true],Ôò±íÊ¾Îª¶Ô·½Í¬ÒâºÃÓÑºó·´ÏòÌí¼Ó×Ô¼ºÎªºÃÓÑµÄÏûÏ¢£¬demoÖĞ·¢ÏÖ´ËÀàÏûÏ¢£¬Ä¬ÈÏÍ¬Òâ²Ù×÷£¬Íê³ÉË«·½»¥ÎªºÃÓÑ£»Èç¹û²»º¬ÓĞ[resp:true]£¬Ôò±íÊ¾ÎªÕı³£µÄ¶Ô·½ÇëÇóÌí¼Ó×Ô¼ºÎªºÃÓÑµÄÉêÇëÏûÏ¢¡£
+		......
 	}
-	conn.open({
-		user : user,
-		pwd : pass,
-		appKey : 'easemob-demo#chatdemoui'//å¼€å‘è€…APPKey
+	//(·¢ËÍÕßÔÊĞí½ÓÊÕÕß½ÓÊÕËûÃÇµÄ³öÏ¯ĞÅÏ¢)£¬¼´±ğÈËÍ¬ÒâÄã¼ÓËûÎªºÃÓÑ
+	if (e.type == 'subscribed') {
+		......
+	}
+	//£¨·¢ËÍÕßÈ¡Ïû¶©ÔÄÁíÒ»¸öÊµÌåµÄ³öÏ¯ĞÅÏ¢£©,¼´É¾³ıÏÖÓĞºÃÓÑ
+	if (e.type == 'unsubscribe') {
+		.......
+	}
+	//£¨¶©ÔÄÕßµÄÇëÇó±»¾Ü¾ø»òÒÔÇ°µÄ¶©ÔÄ±»È¡Ïû£©£¬¼´¶Ô·½µ¥ÏòµÄÉ¾³ıÁËºÃÓÑ
+	if (e.type == 'unsubscribed') {
+		.......
+	}
+};
+</code></pre>
+
+#### ÉêÇëÌí¼Ó¶Ô·½ÎªºÃÓÑ{#addFriend}
+<pre class="hll"><code class="language-javascript">   
+//Ö÷¶¯ÉêÇëÌí¼Ó¶Ô·½ÎªºÃÓÑ
+var startAddFriend = function startAddFriend(){
+    //¶Ô·½ÓÃ»§ÕËºÅ
+    var user = $("addfridentId").val();
+    //ÇëÇóÌí¼Ó¶Ô·½ÎªºÃÓÑ
+    conn.subscribe({
+		to : user,
+		message : "¼Ó¸öºÃÓÑßÂ-" + getLoacalTimeString()
 	});
-###4.å•èŠ
-####4.1å‘é€æ–‡æœ¬ï¼ˆè¡¨æƒ…ï¼‰èŠå¤©æ¶ˆæ¯
-	//å‘é€æ–‡æœ¬æ¶ˆæ¯
-    conn.sendTextMessage({
-			to : to,
-			msg :'hello worldï¼' //æ–‡æœ¬æ¶ˆæ¯
-		});
+    return;
+};
+var getLoacalTimeString = function getLoacalTimeString() {
+		var date = new Date();
+		var time = date.getHours() + ":" + date.getMinutes() + ":"
+				+ date.getSeconds();
+		return time;
+	}
+</code></pre>
 
-	//å‘é€è¡¨æƒ…æ¶ˆæ¯ï¼Œè°ƒç”¨æ¥å£åŒæ–‡æœ¬æ¶ˆæ¯
-	 conn.sendTextMessage({
-			to : to,
-			msg :'hello worldï¼[(*)][(#)]' //æ–‡æœ¬æ¶ˆæ¯+è¡¨æƒ…
-		});
+#### ¶Ô·½ÊÕµ½ÇëÇó£¬Í¬Òâ»òÕß¾Ü¾ø{#agreed_reject}
 
-####4.2å‘é€å›¾ç‰‡æ¶ˆæ¯
-å‘é€å›¾ç‰‡æ¶ˆæ¯sdkè‡ªåŠ¨åˆ†ä¸¤æ­¥å®Œæˆï¼š<br>
-1ï¼‰ä¸Šä¼ å›¾ç‰‡æ–‡ä»¶<br>
-2ï¼‰å‘é€å›¾ç‰‡æ¶ˆæ¯å‚è§2åˆå§‹åŒ–è¿æ¥ä¸­çš„onPictureMessageçš„æ ¼å¼
-
-	function sendPic() {
-		//å›¾ç‰‡æ¥æ”¶è€…ï¼Œå¦‚â€œtest1â€
-		var to = curChatUserId;
-		if (to == null) {
-			alert("è¯·é€‰æ‹©è”ç³»äºº");
-			return;
-		}
-		//fileInputIdï¼šæ–‡ä»¶é€‰æ‹©è¾“å…¥æ¡†çš„Idï¼Œsdkè‡ªåŠ¨æ ¹æ®idè‡ªåŠ¨è·å–æ–‡ä»¶å¯¹è±¡ï¼ˆå«å›¾ç‰‡ï¼Œæˆ–è€…å…¶ä»–ç±»å‹æ–‡ä»¶ï¼‰
-		var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
-		if (fileObj.url == null || fileObj.url == '') {
-			alert("è¯·é€‰æ‹©å‘é€å›¾ç‰‡");
-			return;
-		}
-		var filetype = fileObj.filetype;
-		var filename = fileObj.filename;
-		if (filetype in  {
-						"jpg" : true,
-						"gif" : true,
-						"png" : true,
-						"bmp" : true
-						}) 
-			{
-			var opt = {
-			fileInputId : fileInputId,
-			to : to,
-			onFileUploadError : function(error) {
-				//å¤„ç†å›¾ç‰‡ä¸Šä¼ å¤±è´¥
-			},
-			onFileUploadComplete : function(data) {
-				//å¤„ç†å›¾ç‰‡ä¸Šä¼ æˆåŠŸï¼Œå¦‚æœ¬åœ°æ¶ˆæ¯æ˜¾ç¤º
-			}
-			};
-			conn.sendPicture(opt);
-			return;
-		}
-		alert("ä¸æ”¯æŒæ­¤å›¾ç‰‡ç±»å‹" + filetype);
-	};
-####4.3å‘é€éŸ³é¢‘æ¶ˆæ¯
-sdkå¤„ç†åŒ4.å‘é€å›¾ç‰‡æ¶ˆæ¯ï¼Œåˆ†ä¸¤æ­¥ï¼š1ï¼‰ä¸Šä¼ éŸ³é¢‘ï¼›2ï¼‰å‘é€æ¶ˆæ¯
-
-    function sendAudio () {
-		var to = curChatUserId;
-		if (to == null) {
-			alert("è¯·é€‰æ‹©è”ç³»äºº");
-			return;
-		}
-		var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
-		if (fileObj.url == null || fileObj.url == '') {
-			alert("è¯·é€‰æ‹©å‘é€éŸ³é¢‘");
-			return;
-		}
-		var filetype = fileObj.filetype;
-		var filename = fileObj.filename;
-		if (filetype in {
-					"mp3" : true,
-					"wma" : true,
-					"wav" : true,
-					"avi" : true
-					})
-		 	{
-			var opt = {
-				fileInputId : fileInputId,
-				to : to,
-				onFileUploadError : function(error) {
-				//å¤„ç†ä¸Šä¼ éŸ³é¢‘å¤±è´¥
-				},
-				onFileUploadComplete : function(data) {
-				//å¤„ç†ä¸Šä¼ éŸ³é¢‘æˆåŠŸï¼Œå¦‚æœ¬åœ°æ¶ˆæ¯æç¤ºå‘é€æˆåŠŸ
-				}
-			};
-			conn.sendAudio(opt);
-			return;
-		}
-		alert("ä¸æ”¯æŒæ­¤éŸ³é¢‘ç±»å‹" + filetype);
-	};
-###5.ç¾¤èŠ
-####5.1å‘é€æ–‡æœ¬ï¼ˆè¡¨æƒ…ï¼‰èŠå¤©æ¶ˆæ¯
-
-    //å‘é€æ–‡æœ¬æ¶ˆæ¯
-    conn.sendTextMessage({
-			to : to,
-	        type : 'groupchat',
-			msg :'hello worldï¼' //æ–‡æœ¬æ¶ˆæ¯
-		});
-
-	//å‘é€è¡¨æƒ…æ¶ˆæ¯ï¼Œè°ƒç”¨æ¥å£åŒæ–‡æœ¬æ¶ˆæ¯
-	 conn.sendTextMessage({
-			to : to,
-            type : 'groupchat',
-			msg :'hello worldï¼[(*)][(#)]' //æ–‡æœ¬æ¶ˆæ¯+è¡¨æƒ…
-		});
-####5.2å‘é€å›¾ç‰‡æ¶ˆæ¯
-å‘é€å›¾ç‰‡æ¶ˆæ¯sdkè‡ªåŠ¨åˆ†ä¸¤æ­¥å®Œæˆï¼š<br>
-1ï¼‰ä¸Šä¼ å›¾ç‰‡æ–‡ä»¶<br>
-2ï¼‰å‘é€å›¾ç‰‡æ¶ˆæ¯å‚è§2åˆå§‹åŒ–è¿æ¥ä¸­çš„onPictureMessageçš„æ ¼å¼
-
-    //å‘é€å›¾ç‰‡æ¶ˆæ¯æ—¶è°ƒç”¨æ–¹æ³•
-	var sendPic = function() {
-		var to = curChatUserId;
-		if (to == null) {
-			return;
-		}
-		// Easemob.im.Helper.getFileUrlä¸ºeasemobwebim-sdkè·å–å‘é€æ–‡ä»¶å¯¹è±¡çš„æ–¹æ³•ï¼ŒfileInputIdä¸º input æ ‡ç­¾çš„idå€¼
-		var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
-		if (fileObj.url == null || fileObj.url == '') {
-			alert("è¯·é€‰æ‹©å‘é€å›¾ç‰‡");
-			return;
-		}
-		var filetype = fileObj.filetype;
-		var filename = fileObj.filename;
-		if (filetype in pictype) {
-			document.getElementById("fileSend").disabled = true;
-			document.getElementById("cancelfileSend").disabled = true;
-			var opt = {
-				type:'chat',
-				fileInputId : fileInputId,
-				to : to,
-				onFileUploadError : function(error) {
-					//å¤„ç†å›¾ç‰‡ä¸Šä¼ å¤±è´¥
-				},
-				onFileUploadComplete : function(data) {
-					//å…³é—­æ–‡ä»¶é€‰æ‹©çª—å£
-					$('#fileModal').modal('hide');
-					//æœ¬åœ°ç¼©ç•¥å›¾
-					var file = document.getElementById(fileInputId);
-					if (file && file.files) {
-						var objUrl = getObjectURL(file.files[0]);
-						if (objUrl) {
-							var img = document.createElement("img");
-							img.src = objUrl;
-							img.width = maxWidth;
-						}
-					}
-				
-				}
-			};
-			//åˆ¤æ–­æ˜¯å¦ä¸ºç¾¤ç»„æ ‡è¯†
-			if (curChatUserId.indexOf(groupFlagMark) >= 0) {
-				opt.type = 'groupchat';//ç¾¤ç»„æ ‡è¯†ç¬¦
-				opt.to = curRoomId;
-			}
-			conn.sendPicture(opt);
-			return;
-		}
-		alert("ä¸æ”¯æŒæ­¤å›¾ç‰‡ç±»å‹" + filetype);
-	};
-####5.3å‘é€éŸ³é¢‘æ¶ˆæ¯
-sdkå¤„ç†åŒ5.2.å‘é€å›¾ç‰‡æ¶ˆæ¯ï¼Œåˆ†ä¸¤æ­¥ï¼š1ï¼‰ä¸Šä¼ éŸ³é¢‘ï¼›2ï¼‰å‘é€æ¶ˆæ¯
-
-	//å‘é€éŸ³é¢‘æ¶ˆæ¯æ—¶è°ƒç”¨çš„æ–¹æ³•
-	var sendAudio = function() {
-		var to = curChatUserId;
-		if (to == null) {
-			alert("è¯·é€‰æ‹©è”ç³»äºº");
-			return;
-		}
-		//åˆ©ç”¨easemobwebim-sdkæä¾›çš„æ–¹æ³•æ¥æ„é€ ä¸€ä¸ªfileå¯¹è±¡
-		var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
-		if (fileObj.url == null || fileObj.url == '') {
-				alert("è¯·é€‰æ‹©å‘é€éŸ³é¢‘");
-			return;
-		}
-		var filetype = fileObj.filetype;
-		var filename = fileObj.filename;
-		if (filetype in audtype) {
-			document.getElementById("fileSend").disabled = true;
-			document.getElementById("cancelfileSend").disabled = true;
-			var opt = {
-				type:"chat",
-				fileInputId : fileInputId,
-				to : to,//å‘ç»™è°
-				onFileUploadError : function(error) {
-					//å¤„ç†ä¸Šä¼ éŸ³é¢‘å¤±è´¥
-				},
-				onFileUploadComplete : function(data) {
-					//å¤„ç†ä¸Šä¼ éŸ³é¢‘æˆåŠŸï¼Œå¦‚æœ¬åœ°æ¶ˆæ¯æç¤ºå‘é€æˆåŠŸ
-				}
-			};
-			//æ„é€ å®Œoptå¯¹è±¡åè°ƒç”¨easemobwebim-sdkä¸­å‘é€éŸ³é¢‘çš„æ–¹æ³•
-			if (curChatUserId.indexOf(groupFlagMark) >= 0) {
-				opt.type = 'groupchat';
-				opt.to = curRoomId;
-			}
-			conn.sendAudio(opt);
-			return;
-		}
-		alert("ä¸æ”¯æŒæ­¤éŸ³é¢‘ç±»å‹" + filetype);
-	};
-####5.4è·å–ç¾¤ç»„æˆå‘˜
-	//æ ¹æ®roomIdæŸ¥è¯¢roomæˆå‘˜åˆ—è¡¨
-	var queryOccupants = function queryOccupants(roomId) {
-		var occupants = [];//å­˜æ”¾æˆå‘˜å®¹å™¨
-		//æŸ¥è¯¢è·å–roomä¿¡æ¯
-		conn.queryRoomInfo({
-			roomId : roomId,
-			success : function(occs) {
-				if (occs) {
-					for ( var i = 0; i < occs.length; i++) {
-						occupants.push(occs[i]);
-					}
-				}
-				//æŸ¥è¯¢è·å–roomæˆå‘˜ä¿¡æ¯
-				conn.queryRoomMember({
-					roomId : roomId,
-					success : function(members) {
-						if (members) {
-							for ( var i = 0; i < members.length; i++) {
-								occupants.push(members[i]);
-							}
-						}
-					}
-				});
-			}
-		});
-	};
-
-###6.æ·»åŠ å¥½å‹
-1ï¼‰.ç”³è¯·æ·»åŠ å¥½å‹
-    
-    //ä¸»åŠ¨æ·»åŠ å¥½å‹æ“ä½œçš„å®ç°æ–¹æ³•
-	var startAddFriend = function startAddFriend(){
-		//è·å–è¦æ·»åŠ çš„ç”¨æˆ·è´¦å·
-		var user = document.getElementById("addfridentId").value;
-		//æ·»åŠ è”ç³»äººåˆ—è¡¨ï¼Œå¼€å‘è€…å¯ä»¥æ”¾åˆ°è®¢é˜…è€…åŒæ„åå†è¿›è¡Œæ­¤æ“ä½œ
-		conn.addRoster({
+<pre class="hll"><code class="language-javascript">  
+//¶Ô·½ÊÕµ½ÇëÇó¼ÓÎªºÃÓÑ£¬½ÓÊÜÇëÇó
+$('#confirm-block-footer-confirmButton').click(function() {
+	//Í¬ÒâºÃÓÑÇëÇó
+	agreeAddFriend(e.from);//e.fromÓÃ»§Ãû
+	//·´ÏòÌí¼Ó¶Ô·½ºÃÓÑ
+	conn.subscribe({
+		to : e.from,
+		message : "[resp:true]"
+	});
+}
+//Í¬Òâ
+var agreeAddFriend = function agreeAddFriend(connection,who,jid){
+   conn.subscribed({
 			to : user,
-			name : user,
-			groups : ['default'],//æ­¤å¤„é»˜è®¤æ·»åŠ åˆ°defaultåˆ†ç»„
-			success : function(){
-				alert("ç­‰å¾…å¯¹æ–¹ç¡®è®¤");
-			},
-			error : function(){
-				alert('æ·»åŠ æ“ä½œæˆåŠŸå¤±è´¥');
-			}
+			message : "[resp:true]"//Í¬Òâºó·¢ËÍ·´¼Ó¶Ô·½ÎªºÃÓÑµÄÏûÏ¢£¬·´¼ÓÏûÏ¢±êÊ¶[resp:true]
 		});
-		var date = new Date().toLocaleTimeString();
-		//å‘é€è®¢é˜…è¯·æ±‚
-		conn.subscribe({to : user,message:date});
-		return;
+};
+
+//¶Ô·½ÊÕµ½ÇëÇó¼ÓÎªºÃÓÑ£¬¾Ü¾øÇëÇó
+$('#confirm-block-footer-cancelButton').click(function() {
+	rejectAddFriend(e.from);//¾Ü¾ø¼ÓÎªºÃÓÑ
+});
+//¾Ü¾ø
+var rejectAddFriend = function(user) {
+	conn.unsubscribed({
+		to : user,
+		message : getLoacalTimeString()
+	});
+};
+</code></pre>
+
+¶ÔÓÚºÃÓÑµÄ·Ö×é£¬Ìí¼ÓºÃÓÑÊ±ÔÚaddroster¿ÉÒÔÖ¸¶¨groupÊôĞÔ£¨Ä¬ÈÏÎª£ºdefault×é£©£¬Ìí¼ÓºÃÓÑ³É¹¦ºó£¬ºÃÓÑÁĞ±íäÖÈ¾Ê±£¬¸ù¾İºÃÓÑµÄgroupÊôĞÔ½øĞĞ·Ö×éäÖÈ¾£¬ÊµÏÖÀàËÆÆäËûÁÄÌì¹¤¾ßµÄ×Ô¶¨ÒåºÃÓÑ·Ö×é¹ÜÀíµÄ¹¦ÄÜ¡£
+
+#### É¾³ıºÃÓÑ{#delfriend}
+
+È¡Ïû¶©ÔÄ£¬Í¬Ê±½«¶Ô·½´Ó×Ô¼ºµÄºÃÓÑÁĞ±íÉÏÉ¾³ıµô¡£
+
+<pre class="hll"><code class="language-javascript">
+var delFriend = function(user) {
+	conn.removeRoster({
+		to : user,
+		groups : [ 'default' ],
+		success : function() {
+			conn.**unsubscribed**({
+				to : user
+			});
+		}
+	});
+};
+</code></pre>
+
+### ·¢ËÍÎÄ±¾£¨±íÇé£©ÁÄÌìÏûÏ¢{#sendTextMessage}
+
+<pre class="hll"><code class="language-javascript">
+//·¢ËÍÎÄ±¾ÏûÏ¢
+conn.sendTextMessage({
+    to : to,//ÓÃ»§µÇÂ¼Ãû£¬sd¸ù¾İappkeyºÍdomain×éÖ¯jid£¬Èçeasemob-demo#chatdemoui_**TEST**@easemob.com£¬ÖĞ"to:TEST",ÏÂÍ¬
+    msg :'hello world£¡' //ÎÄ±¾ÏûÏ¢
+});
+
+//·¢ËÍ±íÇéÏûÏ¢£¬µ÷ÓÃ½Ó¿ÚÍ¬ÎÄ±¾ÏûÏ¢
+conn.sendTextMessage({
+    to : to,
+    msg :'hello world£¡[(*)][(#)]' //ÎÄ±¾ÏûÏ¢+±íÇé
+});
+</code></pre>
+
+### ·¢ËÍÍ¼Æ¬ÏûÏ¢{#sendPic}
+
+·¢ËÍÍ¼Æ¬ÏûÏ¢sdk×Ô¶¯·ÖÁ½²½Íê³É£º<br>
+1£©ÉÏ´«Í¼Æ¬ÎÄ¼şµ½·şÎñÆ÷£¬²¢µÃµ½·şÎñ·µ»ØµÄÍ¼Æ¬ĞÅÏ¢µÈ<br>
+2£©·¢ËÍÍ¼Æ¬ÏûÏ¢£¬ÏûÏ¢Ìå°üº¬Í¼Æ¬µÄ»ù±¾ĞÅÏ¢¡¢·şÎñÆ÷Â·¾¶¡¢secretµÈ£¬½ÓÊÕ·½³õÊ¼»¯Á¬½ÓÖĞµÄonPictureMessageµÄ¸ñÊ½£¬¸ù¾İÍ¼Æ¬ÏûÏ¢ÄÚÈİµ½·şÎñÆ÷ÏÂÔØÍ¼Æ¬£¬²¢½øĞĞÏÔÊ¾
+
+<pre class="hll"><code class="language-javascript">
+function sendPic() {
+    //Í¼Æ¬½ÓÊÕÕß£¬Èç¡°test1¡±
+    var to = curChatUserId;
+    if (to == null) {
+        alert("ÇëÑ¡ÔñÁªÏµÈË");
+        return;
+    }
+    //fileInputId£ºÎÄ¼şÑ¡ÔñÊäÈë¿òµÄId£¬sdk×Ô¶¯¸ù¾İid×Ô¶¯»ñÈ¡ÎÄ¼ş¶ÔÏó£¨º¬Í¼Æ¬£¬»òÕßÆäËûÀàĞÍÎÄ¼ş£©
+    var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
+    if (fileObj.url == null || fileObj.url == '') {
+        alert("ÇëÑ¡Ôñ·¢ËÍÍ¼Æ¬");
+        return;
+    }
+    var filetype = fileObj.filetype;
+    var filename = fileObj.filename;
+    if (filetype in  {
+                    "jpg" : true,
+                    "gif" : true,
+                    "png" : true,
+                    "bmp" : true
+                    }) {
+        var opt = {
+            fileInputId : fileInputId,
+            to : to,
+            onFileUploadError : function(error) {
+                //´¦ÀíÍ¼Æ¬ÉÏ´«Ê§°Ü
+            },
+            onFileUploadComplete : function(data) {
+                //´¦ÀíÍ¼Æ¬ÉÏ´«³É¹¦£¬Èç±¾µØÏûÏ¢ÏÔÊ¾
+            }
+        };
+        conn.sendPicture(opt);
+        return;
+    }
+    alert("²»Ö§³Ö´ËÍ¼Æ¬ÀàĞÍ" + filetype);
+};
+</code></pre>
+
+### ·¢ËÍÒôÆµÏûÏ¢{#sendAudio}
+
+sdk´¦ÀíÍ¬·¢ËÍÍ¼Æ¬ÏûÏ¢£¬·ÖÁ½²½£º
+
+1. ÉÏ´«ÒôÆµÎÄ¼şµ½·şÎñÆ÷£¬µÃµ½ÒôÆµÎÄ¼şµÄĞÅÏ¢£»
+2. ·¢ËÍÒôÆµÏûÏ¢¸ø½ÓÊÕ·½£¬ÏûÏ¢Ìå°üº¬ÒôÆµµÄ»ù±¾ĞÅÏ¢¡¢ÏÂÔØÂ·¾¶ºÍsecretĞÅÏ¢µÈ£¬½ÓÊÕ·½ÊÕµ½ÏûÏ¢ºó£¬¸ù¾İÏûÏ¢ÌåÄÚ²¿µÄÒôÆµÏÂÔØÂ·¾¶ºÍsecretÂ·¾¶£¬ÏÂÔØÒôÆµ²¢½øĞĞÏÔÊ¾¡£
+
+<pre class="hll"><code class="language-javascript">
+function sendAudio () {
+    var to = curChatUserId;
+    if (to == null) {
+        alert("ÇëÑ¡ÔñÁªÏµÈË");
+        return;
+    }
+    var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
+    if (fileObj.url == null || fileObj.url == '') {
+        alert("ÇëÑ¡Ôñ·¢ËÍÒôÆµ");
+        return;
+    }
+    var filetype = fileObj.filetype;
+    var filename = fileObj.filename;
+    if (filetype in {
+                "mp3" : true,
+                "wma" : true,
+                "wav" : true,
+                "avi" : true
+                })
+    {
+        var opt = {
+            fileInputId : fileInputId,
+            to : to,
+            onFileUploadError : function(error) {
+                //´¦ÀíÉÏ´«ÒôÆµÊ§°Ü
+            },
+            onFileUploadComplete : function(data) {
+                //´¦ÀíÉÏ´«ÒôÆµ³É¹¦£¬Èç±¾µØÏûÏ¢ÌáÊ¾·¢ËÍ³É¹¦
+            }
+        };
+        conn.sendAudio(opt);
+        return;
+    }
+    alert("²»Ö§³Ö´ËÒôÆµÀàĞÍ" + filetype);
+};
+</code></pre>
+
+### ½ÓÊÕÏûÏ¢
+
+#### ×¢²á½ÓÊÕÏûÏ¢ {#onmessage}
+
+<pre class="hll"><code class="language-javascript">
+conn.init({
+	onTextMessage : function(message) {        },//ÊÕµ½ÎÄ±¾ÏûÏ¢´¦Àí¶¯×÷
+    onEmotionMessage : function(message) {        },//ÊÕµ½±íÇéÏûÏ¢´¦Àí¶¯×÷
+    onPictureMessage : function(message) {         },//ÊÕµ½Í¼Æ¬ÏûÏ¢´¦Àí¶¯×÷
+    onAudioMessage : function(message) {        }, //ÊÕµ½ÓïÒôÏûÏ¢´¦Àí¶¯×÷
+	...
+});
+</code></pre>
+
+#### ´¦ÀíÏûÏ¢{#options}
+
+conn.init()ÖĞ×¢²á²»Í¬ÏûÏ¢½ÓÊÕhandlerÖ®ºó£¬¿É×ÔĞĞ½âÎöÏûÏ¢Ìå£¬¶¨Î»ÁÄÌìºÃÓÑ£¬²¢×·¼Óµ½ÓëÆäÁÄÌì´°¿Ú¡£¾ßÌå²Î¿¼webim.easemob.comĞ§¹û£¬ÏûÏ¢Ìå¸ñÊ½²Î¼ûÇ°ÕÂ½Ú£º³õÊ¼»¯Á¬½Ó¡£<br>
+×¢£º¶ÔÓÚÍ¼Æ¬¡¢ÓïÒôÏûÏ¢ĞèÒªÏÈ½øĞĞÏÂÔØ£¬È»ºó½øĞĞÏÔÊ¾»òÕß²¥·Å´¦Àí¡£ÈçÏÂ(ÏÂÔØÍ¼Æ¬£¬ÒôÆµÍ¬)£º
+<pre class="hll"><code class="language-javascript">
+var handlePictureMessage = function(message) {
+var filename = message.filename;//ÎÄ¼şÃû³Æ£¬´øÎÄ¼şÀ©Õ¹Ãû
+var from = message.from;//ÎÄ¼şµÄ·¢ËÍÕß
+var mestype = message.type;//ÏûÏ¢·¢ËÍµÄÀàĞÍÊÇÈº×éÏûÏ¢»¹ÊÇ¸öÈËÏûÏ¢
+......
+...
+var options = message;
+// Í¼Æ¬ÏûÏ¢ÏÂÔØ³É¹¦ºóµÄ´¦ÀíÂß¼­
+options.onFileDownloadComplete = function(response, xhr) {
+	var objectURL = window.URL.createObjectURL(response);
+	img = document.createElement("img");
+	img.onload = function(e) {
+		img.onload = null;
+		window.URL.revokeObjectURL(img.src);
 	};
-
-    //å›è°ƒæ–¹æ³•æ‰§è¡Œæ—¶å¯¹æ–¹åŒæ„äº†æ·»åŠ å¥½å‹çš„å®ç°æ–¹æ³•
-	var agreeAddFriend = function agreeAddFriend(connection,who,jid){
-		var date = new Date().toLocaleTimeString();
-		conn.addRoster({
-			toJid : jid,
-			name : who,//whoä¸ºå¯¹æ–¹
-			groups : ['default'],//å¥½å‹é»˜è®¤åˆ†ç»„
-			success : function(){
-				alert(who+"é€šè¿‡äº†æ‚¨æ·»åŠ å¥½å‹çš„ç”³è¯·");
-			},
-			error : function(){
-				alert('åŠ å¥½å‹æ“ä½œå¤±è´¥');
-			}
-		});
-		var date = new Date().toLocaleTimeString();
-		//å‘é€è€…å…è®¸æ¥æ”¶è€…æ¥æ”¶ä»–ä»¬çš„å‡ºå¸­ä¿¡æ¯
-		connection.subscribed({
-			toJid : jid,
-			message : date
-		});
-		//å‘é€è®¢é˜…è¯·æ±‚
-		conn.subscribe({toJid : jid,message:date});
-	};
-å¯¹äºå¥½å‹çš„åˆ†ç»„ï¼Œæ·»åŠ å¥½å‹æ—¶åœ¨addrosterå¯ä»¥æŒ‡å®šgroupå±æ€§ï¼ˆé»˜è®¤ä¸ºï¼šdefaultç»„ï¼‰ï¼Œæ·»åŠ å¥½å‹æˆåŠŸåï¼Œå¥½å‹åˆ—è¡¨æ¸²æŸ“æ—¶ï¼Œæ ¹æ®å¥½å‹çš„groupå±æ€§è¿›è¡Œåˆ†ç»„æ¸²æŸ“ï¼Œå®ç°ç±»ä¼¼å…¶ä»–èŠå¤©å·¥å…·çš„è‡ªå®šä¹‰å¥½å‹åˆ†ç»„ç®¡ç†çš„åŠŸèƒ½ã€‚
-
-2ï¼‰.æ·»åŠ å¥½å‹çš„å›è°ƒæ–¹æ³•å®ç°
-
-    //easemobwebim-sdkä¸­æ”¶åˆ°è”ç³»äººè®¢é˜…è¯·æ±‚çš„å¤„ç†æ–¹æ³•ï¼Œå…·ä½“çš„typeå€¼æ‰€å¯¹åº”çš„å€¼è¯·å‚è€ƒxmppåè®®è§„èŒƒ
-	var handlePresence = function (e){
-		//ï¼ˆå‘é€è€…å¸Œæœ›è®¢é˜…æ¥æ”¶è€…çš„å‡ºå¸­ä¿¡æ¯ï¼‰
-		if(e.type=='subscribe'){
-			alert("receive subscribe friend request");
-			var fromJid = e.fromJid;
-			//æ­¤å¤„é»˜è®¤ä¸ºåŒæ–¹äº’åŠ å¥½å‹ï¼Œå…·ä½“ä½¿ç”¨æ—¶è¯·ç»“åˆå…·ä½“ä¸šåŠ¡è¿›è¡Œå¤„ç†
-			agreeAddFriend(conn,e.from,e.fromJid);//e.fromç”¨æˆ·åï¼Œe.fromJidå«æœ‰appkeyç”¨æˆ·å
+	img.onerror = function() {
+		img.onerror = null;
+		if (typeof FileReader == 'undefined') {
+			img.alter = "µ±Ç°ä¯ÀÀÆ÷²»Ö§³Öblob·½Ê½";
 			return;
 		}
-		//(å‘é€è€…å…è®¸æ¥æ”¶è€…æ¥æ”¶ä»–ä»¬çš„å‡ºå¸­ä¿¡æ¯)
-		if(e.type=='subscribed'){
-			alert("receive friend subscribed message");
-			return;
-		}
-		//ï¼ˆå‘é€è€…å–æ¶ˆè®¢é˜…å¦ä¸€ä¸ªå®ä½“çš„å‡ºå¸­ä¿¡æ¯ï¼‰
-		if(e.type=='unsubscribe'){
-			alert("receive unsubscribe friend request");
-			//å•å‘åˆ é™¤è‡ªå·±çš„å¥½å‹ä¿¡æ¯ï¼Œå…·ä½“ä½¿ç”¨æ—¶è¯·ç»“åˆå…·ä½“ä¸šåŠ¡è¿›è¡Œå¤„ç†
-			delFriend(conn,from,e.fromJid);
-			return;
-		}
-		//ï¼ˆè®¢é˜…è€…çš„è¯·æ±‚è¢«æ‹’ç»æˆ–ä»¥å‰çš„è®¢é˜…è¢«å–æ¶ˆï¼‰
-		if(e.type=='unsubscribed'){
-			alert("receive delete friend message");
-			return;
-		}
-	};
-###7.åˆ é™¤å¥½å‹
-
-	var date = new Date().toLocaleTimeString();
-		conn.removeRoster({
-			toJid : jid,
-			name : who,
-			groups : ['default'],
-			success : function(){
-				var date = new Date().toLocaleTimeString();
-				connection.unsubscribed({
-					toJid : jid,
-					message : date
-				});
-				conn.subscribe({toJid : jid,message:date});
-				
-			},
-			error : function(){
-				alert('åˆ é™¤è”ç³»äººå¤±è´¥');
-			}
-		});
-###8.æŸ¥è¯¢å¥½å‹åˆ—è¡¨
-æŸ¥è¯¢å¥½å‹åˆ—è¡¨æ—¶ï¼Œè¦æ³¨æ„susciptionï¼ˆbothï¼Œto,fromï¼‰ä¸ºä¸åŒå€¼å¾—å¤„ç†,æ­¤å¤„è®¤ä¸ºbothå’Œtoçš„ä¸ºå¥½å‹ï¼Œå¼€å‘è€…è‡ªå®šä¹‰å¤„ç†ï¼Œä¿æŒè·ŸAPPå¤„ç†ä¸€è‡´å³å¯ã€‚
-
-    conn.getRoster({
-			success : function(roster) {
-				hiddenWaitLoginedUI();// é¡µé¢å¤„ç†
-				//è·å–å¥½å‹åˆ—è¡¨ï¼Œå¹¶è¿›è¡Œå¥½å‹åˆ—è¡¨æ¸²æŸ“ï¼Œrosteræ ¼å¼ä¸ºï¼š
-				/**	[
-						{
-							jid:"asemoemo#chatdemoui_test1@easemob.com",
-							name:"test1",
-							subscription: "both"
-						},
-						{
-							jid:"asemoemo#chatdemoui_test2@easemob.com",
-							name:"test2",
-							subscription: "from"
-						}
-					]
-				*/
-				for(var i in roster){
-					var ros = roster[i];	
-					//ros.subscriptioå€¼ä¸ºboth/toä¸ºè¦æ˜¾ç¤ºçš„è”ç³»äºº,æ­¤å¤„ä¸APPéœ€ä¿æŒä¸€è‡´ï¼Œæ‰èƒ½ä¿è¯ä¸¤ä¸ªå®¢æˆ·ç«¯ç™»å½•åçš„å¥½å‹åˆ—è¡¨ä¸€è‡´
-					if(ros.subscription =='both' || ros.subscription=='to'){
-						newroster.push(ros);
-					}
-				}
-				if (newroster.length >=0) {
-					buildContactDiv("contractlist", newroster);//é¡µé¢å¤„ç†
-					if (newroster.length > 0) {
-						setCurrentContact(newroster[0].name);//é¡µé¢å¤„ç†å°†ç¬¬ä¸€ä¸ªè”ç³»äººä½œä¸ºå½“å‰èŠå¤©div
-					}
-				}
-				//conn.setPresence();
-			},	
-		});
-
-##**å·¥å…·ç±»è¯´æ˜**
-##1.è¡¨æƒ…å·¥å…·ç±»-object
-	//è¿”å›è¡¨æƒ…JSON objectï¼Œæ ¼å¼ä¸ºï¼š
-		{
-			"[):]" : "data:image/png;base64,iVBORw0K....==",
-			"[:D]" : "data:image/png;base64,iVBORw0KGgoAAAANSUh....=="
-		}
-	
-    var emotion_json = Easemob.im.Helper.EmotionPicData;
-##2.Base64å·¥å…·ç±»-object
-    var base64  = Easemob.im.Helper.Base64;
-	var srcstr="ssss";
-	var base64str = base64.encode(srcstr);
-	var orgstr = base64.decode(srcstr);
-##3.æ–‡ä»¶ä¸Šä¼ å·¥å…·ç±»-attribute
-	//æ˜¯å¦èƒ½ä¸Šä¼ file
-	var canupload = Easemob.im.Helper.isCanUploadFile;
-	//æ˜¯å¦èƒ½ä¸‹è½½file
-	var candownload = Easemob.im.Helper.isCanDownLoadFile ;
-	//æ˜¯å¦è®¾ç½®header
-	var hasheader = Easemob.im.Helper.hasSetRequestHeader;
-	//æ˜¯å¦è®¾ç½®mimetype
-	var hasmimetype = Easemob.im.Helper.hasOverrideMimeType;
-##4.è¡¨æƒ…è§£æå·¥å…·ç±»-Method
-	//è¿”å›è¡¨æƒ…JSONï¼Œæ ¼å¼ä¸ºï¼š
-		{
-			isemotion:true;
-			body:[{
-					type:txt,
-					msg:ssss
-					}ï¼Œ
-				  {
-					type:emotion,
-					msg:imgdata
-					}]
-		}
-
-    var emotionMsg = Easemob.im.Helper.parseTextMessage(message);
-##5.æ–‡ä»¶ä¸Šä¼ å·¥å…·ç±»-Method
-	//è¿”å›fileinfoå¯¹è±¡ï¼Œæ ¼å¼ä¸ºï¼š
-		{
-			url : '',
-			filename : '',
-			filetype : ''
-		}
-    var fileInfo = Easemob.im.Helper.getFileUrl(fileInputId);
-	//ä¸Šä¼ 
-	var options={
-		appName = 'chatdemoui',
-		orgName = 'easemob-demo',
-		accessToken = 'YWMtjPPoovCqEeOQs7myPqqaOwAAAUaqNH0a8rRj4PwJLQju6-S47ZO6wYs3Lwo',
-		onFileUploadComplete:function(data){//upload file success },
-		onFileUploadError:function(e){//upload file error },
-		width:100,//only for pic
-		heghtï¼š100//only for pic
+		img.onerror = function() {
+			img.alter = "µ±Ç°ä¯ÀÀÆ÷²»Ö§³Öblob·½Ê½";
+		};
+		var reader = new FileReader();
+		reader.onload = function(event) {
+			img.src = this.result;
+		};
+		reader.readAsDataURL(response);
 	}
-	Easemob.im.Helper.upload(options);
-	//ä¸‹è½½
-	var options = {
-		method:'GET',//default GET
-		responseType:'blob',//default blob
-		mimeType:'text/plain; charset=x-user-defined',//default
-		url:'http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae',
-		secret = 'NSgGYPCxEeOou00jZasg9e-GqKUZGdph96EFxJ4WxW-qkxV4',
-		accessToken = 'YWMtjPPoovCqEeOQs7myPqqaOwAAAUaqNH0a8rRj4PwJLQju6-S47ZO6wYs3Lwo',
-		onFileUploadComplete:function(data){//upload file success },
-		onFileUploadError:function(e){//upload file error },
-	}
-	Easemob.im.Helper.download(options);
-	//æ–‡ä»¶å¤§å° 
-	var options={
-		fileInputId:'uploadfileinput'//æ–‡ä»¶è¾“å…¥æ¡†id
-	};
-	var fileSize = getFileSize(options.fileInputId);;
-##6.å‘é€Ajaxè¯·æ±‚-Method
-	var options = {
-		dataType:'text',//default
-		success:function(){//handle request success},
-		error :function(){//handle request error},
-		type ï¼š 'post',//default 'post'
-		url : 'http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae',
-		headers:'',//default {}
-		data : '';//default null
-	};
-	Easemob.im.Helper.xhr(options);
-##7.ç™»å½•usergrid-Method
-	var options = {
-		appKey:'easemob-demo#chatdemoui',//default ''
-		success:function(data){ //login success },//default emptyFn
-		error : cunction(error){ //login error }, //default emptyFn
-		user : 'test1', //default ''
-		pwd : '123456'  //default ''
-	};
-	Easemob.im.Helper.login2UserGrid(options);
-##8.å†…ç½®ç©ºå‡½æ•°-Method
-å½“æ‰€æœ‰éœ€è¦å›è°ƒçš„åœ°æ–¹æ¥å—åˆ°å‡½æ•°æ—¶ï¼Œé»˜è®¤é‡‡ç”¨æ­¤å‡½æ•°
+	img.src = objectURL;
+	var pic_real_width = options.width;
+	......
+	...
+};
+options.onFileDownloadError = function(e) {
+	appendMsg(from, contactDivId, e.msg + ",ÏÂÔØÍ¼Æ¬" + filename + "Ê§°Ü");
+};
+**Easemob.im.Helper.download(options)**;
+
+</code></pre>
+
+#### ÀúÊ·ÏûÏ¢{#history_message}
+
+sdkÔİ²»¾ßÓĞ»º´æÀúÊ·ÏûÏ¢¹¦ÄÜ£¬demoÖĞÁÄÌì´°¿ÚÖ»ÄÜÏÔÊ¾£¬µ±Ç°µÇÂ¼ºó»á»°ÊµÊ±ÔÚÁÄÌìĞÅÏ¢£¬²»ÄÜ²é¿´ÀúÊ·ÏûÏ¢£¬¿ÉÒÔ¶ÔµÇÂ¼ºóµÄÁÄÌìĞÅÏ¢½øĞĞÇå³ı²Ù×÷¡£
+
+#### ĞÂÏûÏ¢ÌáÊ¾{#new_message}
+
+sdkÔÚÊÕµ½ĞÂÏûÏ¢ÊÇ»áÖ±½Ó×ª·¢¸øµÇÂ¼ÓÃ»§£¬½ÓÊÕµ½ÏûÏ¢ºó£¬demoÖĞ»áÔÚºÃÓÑ»òÕßÈº×éµÄºóÃæÏÔÊ¾ºìÉ«ÏûÏ¢Êı£¬¾ßÌåÑùÊ½¿ª·¢Õß¿É×ÔĞĞ´¦Àí¡£
+
+## ÈºÁÄ{#group_chat}
+
+### ²éÑ¯Èº×é³ÉÔ±{#queryOccupants}
+
+<pre class="hll"><code class="language-javascript">
+//¸ù¾İroomId²éÑ¯room³ÉÔ±ÁĞ±í
+var queryOccupants = function queryOccupants(roomId) {
+    var occupants = [];//´æ·Å³ÉÔ±ÈİÆ÷
+    //²éÑ¯»ñÈ¡roomĞÅÏ¢
+    conn.queryRoomInfo({
+        roomId : roomId,
+        success : function(occs) {
+            if (occs) {
+                for ( var i = 0; i < occs.length; i++) {
+                    occupants.push(occs[i]);
+                }
+            }
+            //²éÑ¯»ñÈ¡room³ÉÔ±ĞÅÏ¢
+            conn.queryRoomMember({
+                roomId : roomId,
+                success : function(members) {
+                    if (members) {
+                        for ( var i = 0; i < members.length; i++) {
+                            occupants.push(members[i]);
+                        }
+                    }
+                }
+            });
+        }
+    });
+};
+</code></pre>
+
+### ·¢ËÍÎÄ±¾£¨±íÇé£©ÁÄÌìÏûÏ¢{#group_sendTextMessage}
+
+<pre class="hll"><code class="language-javascript">
+//·¢ËÍÎÄ±¾ÏûÏ¢
+conn.sendTextMessage({
+    to : to,
+    type : 'groupchat',
+    msg :'hello world£¡' //ÎÄ±¾ÏûÏ¢
+});
+
+//·¢ËÍ±íÇéÏûÏ¢£¬µ÷ÓÃ½Ó¿ÚÍ¬ÎÄ±¾ÏûÏ¢
+conn.sendTextMessage({
+    to : to,
+    type : 'groupchat',
+    msg :'hello world£¡[(*)][(#)]' //ÎÄ±¾ÏûÏ¢+±íÇé
+});
+</code></pre>
+
+### ·¢ËÍÍ¼Æ¬ÏûÏ¢{#group_sendPic}
+
+·¢ËÍÍ¼Æ¬ÏûÏ¢sdk×Ô¶¯·ÖÁ½²½Íê³É
+
+1. ÉÏ´«Í¼Æ¬ÎÄ¼ş
+2. ·¢ËÍÍ¼Æ¬ÏûÏ¢³õÊ¼»¯Á¬½ÓÖĞµÄonPictureMessageµÄ¸ñÊ½
+
+<pre class="hll"><code class="language-javascript">
+//·¢ËÍÍ¼Æ¬ÏûÏ¢Ê±µ÷ÓÃ·½·¨
+var sendPic = function() {
+    var to = curChatUserId;
+    if (to == null) {
+        return;
+    }
+    // Easemob.im.Helper.getFileUrlÎªeasemobwebim-sdk»ñÈ¡·¢ËÍÎÄ¼ş¶ÔÏóµÄ·½·¨£¬fileInputIdÎª input ±êÇ©µÄidÖµ
+    var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
+    if (fileObj.url == null || fileObj.url == '') {
+        alert("ÇëÑ¡Ôñ·¢ËÍÍ¼Æ¬");
+        return;
+    }
+    var filetype = fileObj.filetype;
+    var filename = fileObj.filename;
+    if (filetype in pictype) {
+        document.getElementById("fileSend").disabled = true;
+        document.getElementById("cancelfileSend").disabled = true;
+        var opt = {
+            type:'chat',
+            fileInputId : fileInputId,
+            to : to,
+            onFileUploadError : function(error) {
+                //´¦ÀíÍ¼Æ¬ÉÏ´«Ê§°Ü
+            },
+            onFileUploadComplete : function(data) {
+                //¹Ø±ÕÎÄ¼şÑ¡Ôñ´°¿Ú
+                $('#fileModal').modal('hide');
+                //±¾µØËõÂÔÍ¼
+                var file = document.getElementById(fileInputId);
+                if (file && file.files) {
+                    var objUrl = getObjectURL(file.files[0]);
+                    if (objUrl) {
+                        var img = document.createElement("img");
+                        img.src = objUrl;
+                        img.width = maxWidth;
+                    }
+                }
+            
+            }
+        };
+        //ÅĞ¶ÏÊÇ·ñÎªÈº×é±êÊ¶
+        if (curChatUserId.indexOf(groupFlagMark) >= 0) {
+            opt.type = 'groupchat';//Èº×é±êÊ¶·û
+            opt.to = curRoomId;
+        }
+        conn.sendPicture(opt);
+        return;
+    }
+    alert("²»Ö§³Ö´ËÍ¼Æ¬ÀàĞÍ" + filetype);
+};
+</code></pre>
+
+### ·¢ËÍÒôÆµÏûÏ¢{#group_sendAudio}
+
+sdk´¦ÀíÍ¬Èº·¢ËÍÍ¼Æ¬ÏûÏ¢£¬·ÖÁ½²½
+
+1. ÉÏ´«ÒôÆµ
+2. ·¢ËÍÏûÏ¢
+
+<pre class="hll"><code class="language-javascript">
+//·¢ËÍÒôÆµÏûÏ¢Ê±µ÷ÓÃµÄ·½·¨
+var sendAudio = function() {
+    var to = curChatUserId;
+    if (to == null) {
+        alert("ÇëÑ¡ÔñÁªÏµÈË");
+        return;
+    }
+    //ÀûÓÃeasemobwebim-sdkÌá¹©µÄ·½·¨À´¹¹ÔìÒ»¸öfile¶ÔÏó
+    var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
+    if (fileObj.url == null || fileObj.url == '') {
+            alert("ÇëÑ¡Ôñ·¢ËÍÒôÆµ");
+        return;
+    }
+    var filetype = fileObj.filetype;
+    var filename = fileObj.filename;
+    if (filetype in audtype) {
+        document.getElementById("fileSend").disabled = true;
+        document.getElementById("cancelfileSend").disabled = true;
+        var opt = {
+            type:"chat",
+            fileInputId : fileInputId,
+            to : to,//·¢¸øË­
+            onFileUploadError : function(error) {
+                //´¦ÀíÉÏ´«ÒôÆµÊ§°Ü
+            },
+            onFileUploadComplete : function(data) {
+                //´¦ÀíÉÏ´«ÒôÆµ³É¹¦£¬Èç±¾µØÏûÏ¢ÌáÊ¾·¢ËÍ³É¹¦
+            }
+        };
+        //¹¹ÔìÍêopt¶ÔÏóºóµ÷ÓÃeasemobwebim-sdkÖĞ·¢ËÍÒôÆµµÄ·½·¨
+        if (curChatUserId.indexOf(groupFlagMark) >= 0) {
+            opt.type = 'groupchat';
+            opt.to = curRoomId;
+        }
+        conn.sendAudio(opt);
+        return;
+    }
+    alert("²»Ö§³Ö´ËÒôÆµÀàĞÍ" + filetype);
+};
+</code></pre>
+### ½ÓÊÕ¼°´¦ÀíÏûÏ¢{#messageType}
+ÈºÁÄ½ÓÊÕ¼°´¦ÀíÏûÏ¢Í¬µ¥ÁÄ£¬ÏûÏ¢ÌåÓëµ¥ÁÄÏûÏ¢¸ù¾İmessageµÄtype½øĞĞÇø·Ö£¬µ¥ÁÄÎª£º¡°chat¡±£¬ÈºÁÄÎª£º¡°groupchat¡±¡£¸ù¾İÏûÏ¢µÄÀàĞÍ½øĞĞ²»Í¬´¦Àí¼´¿É¡£
+
+## ÍË³ö{#quit}
+
+### ¹Ø±ÕÁ¬½Ó{#conn_close}
+//sdk¹Ø±ÕÁ¬½Ó²¢´¦ÀíÁ¬½Ó×´Ì¬ÎªCLOSED
+<pre class="hll"><code class="language-javascript">
+conn.close();
+</code></pre>
+
+## ¹¤¾ßÀàËµÃ÷{#sdk_tools}
+
+### ±íÇé¹¤¾ßÀà{#emotion}
+
+<pre class="hll"><code class="language-javascript">
+//·µ»Ø±íÇéJSON object£¬¸ñÊ½Îª£º
+    {
+        "[):]" : "data:image/png;base64,iVBORw0K....==",
+        "[:D]" : "data:image/png;base64,iVBORw0KGgoAAAANSUh....=="
+    }
+
+var emotion_json = Easemob.im.Helper.EmotionPicData;
+</code></pre>
+
+### Base64¹¤¾ßÀà{#base64}
+
+<pre class="hll"><code class="language-javascript">
+var base64  = Easemob.im.Helper.Base64;
+var srcstr="ssss";
+var base64str = base64.encode(srcstr);
+var orgstr = base64.decode(srcstr);
+</code></pre>
+
+### ÎÄ¼şÉÏ´«¹¤¾ßÀà{#fileupload}
+
+<pre class="hll"><code class="language-javascript">
+//ÊÇ·ñÄÜÉÏ´«file
+var canupload = Easemob.im.Helper.isCanUploadFile;
+//ÊÇ·ñÄÜÏÂÔØfile
+var candownload = Easemob.im.Helper.isCanDownLoadFile ;
+//ÊÇ·ñÉèÖÃheader
+var hasheader = Easemob.im.Helper.hasSetRequestHeader;
+//ÊÇ·ñÉèÖÃmimetype
+var hasmimetype = Easemob.im.Helper.hasOverrideMimeType;
+</code></pre>
+
+### ±íÇé½âÎö¹¤¾ßÀà{#handleMotion}
+
+<pre class="hll"><code class="language-javascript">
+//·µ»Ø±íÇéJSON£¬¸ñÊ½Îª£º
+{
+    isemotion:true;
+    body:[{
+        type:txt,
+        msg:ssss
+    },
+    {
+        type:emotion,
+        msg:imgdata
+    }]
+}
+
+var emotionMsg = Easemob.im.Helper.parseTextMessage(message);
+</code></pre>
+
+### ÎÄ¼şÉÏ´«¹¤¾ßÀà{#fileupdate}
+
+<pre class="hll"><code class="language-javascript">
+//·µ»Øfileinfo¶ÔÏó£¬¸ñÊ½Îª£º
+    {
+        url : '',
+        filename : '',
+        filetype : ''
+    }
+var fileInfo = Easemob.im.Helper.getFileUrl(fileInputId);
+//ÉÏ´«
+var options={
+    appName = 'chatdemoui',
+    orgName = 'easemob-demo',
+    accessToken = 'YWMtjPPoovCqEeOQs7myPqqaOwAAAUaqNH0a8rRj4PwJLQju6-S47ZO6wYs3Lwo',
+    onFileUploadComplete:function(data){//upload file success },
+    onFileUploadError:function(e){//upload file error },
+    width:100,//only for pic
+    heght:100//only for pic
+}
+Easemob.im.Helper.upload(options);
+//ÏÂÔØ
+var options = {
+    method:'GET',//default GET
+    responseType:'blob',//default blob
+    mimeType:'text/plain; charset=x-user-defined',//default
+    url:'http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae',
+    secret = 'NSgGYPCxEeOou00jZasg9e-GqKUZGdph96EFxJ4WxW-qkxV4',
+    accessToken = 'YWMtjPPoovCqEeOQs7myPqqaOwAAAUaqNH0a8rRj4PwJLQju6-S47ZO6wYs3Lwo',
+    onFileUploadComplete:function(data){//upload file success },
+    onFileUploadError:function(e){//upload file error },
+}
+Easemob.im.Helper.download(options);
+//ÎÄ¼ş´óĞ¡ 
+var options={
+    fileInputId:'uploadfileinput'//ÎÄ¼şÊäÈë¿òid
+};
+var fileSize = getFileSize(options.fileInputId);;
+</code></pre>
+
+### ·¢ËÍAjaxÇëÇó{#ajaxresquest}
+
+<pre class="hll"><code class="language-javascript">
+var options = {
+    dataType:'text',//default
+    success:function(){//handle request success},
+    error :function(){//handle request error},
+    type : 'post',//default 'post'
+    url : 'http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae',
+    headers:'',//default {}
+    data : '';//default null
+};
+Easemob.im.Helper.xhr(options);
+</code></pre>
+
+### µÇÂ¼{#sdk_login}
+
+<pre class="hll"><code class="language-javascript">
+var options = {
+    appKey:'easemob-demo#chatdemoui',//default ''
+    success:function(data){ //login success },//default emptyFn
+    error : cunction(error){ //login error }, //default emptyFn
+    user : 'test1', //default ''
+    pwd : '123456'  //default ''
+};
+Easemob.im.Helper.login2UserGrid(options);
+</code></pre>
+
+### ÄÚÖÃ¿Õº¯Êı{#null_function}
+
+µ±ËùÓĞĞèÒª»Øµ÷µÄµØ·½½ÓÊÜµ½º¯ÊıÊ±£¬Ä¬ÈÏ²ÉÓÃ´Ëº¯Êı
+
+<pre class="hll"><code class="language-javascript">
 var emptyFn = function() {};
-
-##**æµè§ˆå™¨æ”¯æŒåˆ—è¡¨**
-<table>
-<tr><td>Browser\Func</td><td>Text Message</td><td>Emotion Message</td><td>Picture Message</td><td>Audio Message</td></tr>
-<tr><td>IE8</td><td>â—‹</td><td>â—‹</td><td>â—‹</td><td>â—‹</td></tr>
-<tr><td>IE9</td><td>â—‹</td><td>â—‹</td><td>â—‹</td><td>â—‹</td></tr>
-<tr><td>IE10</td><td>â—</td><td>â—</td><td>â—</td><td>â—</td></tr>
-<tr><td>IE11</td><td>â—</td><td>â—</td><td>â—</td><td>â—</td></tr>
-<tr><td>FireFox</td><td>â—</td><td>â—</td><td>â—</td><td>â—</td></tr>
-<tr><td>Chrome</td><td>â—</td><td>â—</td><td>â—</td><td>â—</td></tr>
-<tr><td>Safari5X</td><td>â—</td><td>â—</td><td>â—</td><td>â—</td></tr>
-<tr><td>Safari6X</td><td>â—</td><td>â—</td><td>â—</td><td>â—</td></tr>
-</table>
----
-å¤‡æ³¨ï¼š
-1. å·²çŸ¥Picture Messageæ ¼å¼æ”¯æŒï¼špngã€jpgã€bmpï¼›
-2. å·²çŸ¥Audio Messageæ ¼å¼æ”¯æŒï¼šMP3ï¼ˆamrä¸æ”¯æŒï¼‰ã€‚
+</code></pre>
