@@ -1315,7 +1315,7 @@ connection.prototype.handleMessage = function(msginfo){
 					data : emotionsbody.body
 				});
 			} else {
-				this.conn.onTextMessage({
+				this.onTextMessage({
 					type : chattype,
 					from : from,
 					to : too,
