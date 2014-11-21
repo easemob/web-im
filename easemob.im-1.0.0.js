@@ -1297,7 +1297,7 @@ connection.prototype.handleMessage = function(msginfo){
 		var msg = msgDatas[i];
 		var from = msg.from;
 		var too = msg.to;
-		var chattype = msginfo.attributes['type'].value || 'chat';
+		var chattype = msginfo.getAttribute('type') || 'chat';
 		var msgBodies = msg.bodies;
 		if(!msgBodies || msgBodies.length==0){
 			continue;
