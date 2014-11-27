@@ -5969,6 +5969,9 @@ a.badge:focus {
 .accordion-inner {
   padding: 9px 15px;
   border-top: 1px solid #e5e5e5;
+  height : 328px;
+  overflow-x : auto;
+  overflow-y : auto;
 }
 
 .carousel {
