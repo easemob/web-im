@@ -6,11 +6,12 @@
 <script type="text/javascript" src="jquery-1.11.1.js"></script>
 <script type='text/javascript' src='strophe-custom-1.0.0.js'></script>
 <script type='text/javascript' src='json2.js'></script>
-<script type="text/javascript" src="easemob.im-1.0.0.js"></script>
+<script type="text/javascript" src="easemob.im-1.0.3.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
 <link rel="stylesheet" type="text/css" href="css/webim.css" />
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 <script type="text/javascript">
+	var apiURL = null ;
 	var curUserId = null;
 	var curChatUserId = null;
 	var conn = null;
@@ -29,6 +30,7 @@
 	var groupFlagMark = "group&-";
 	var groupQuering = false;
 	var textSending = false;
+	var browerType = null;
 
 	window.URL = window.URL || window.webkitURL || window.mozURL
 			|| window.msURL;
@@ -69,7 +71,6 @@
 	//控制提交频率
 	$(function() {
 		$("textarea").keydown(function(event) {
-
 			if (event.altKey && event.keyCode == 13) {
 				e = $(this).val();
 				$(this).val(e + '\n');
@@ -92,7 +93,7 @@
 		conn = new Easemob.im.Connection();
 		//初始化连接
 		conn.init({
-			SSLEnabled : false,
+			https : false,
 			//当连接成功时的回调方法
 			onOpened : function() {
 				handleOpen(conn);
@@ -195,7 +196,6 @@
 				if (conn) {
 					conn.close();
 				}
-				return true;
 			});
 		});
 	});
@@ -210,7 +210,6 @@
 				// 页面处理
 				hiddenWaitLoginedUI();
 				showChatUI();
-				createContactlistUL();
 				var curroster;
 				for ( var i in roster) {
 					var ros = roster[i];
@@ -235,7 +234,7 @@
 					success : function(rooms) {
 						if (rooms) {
 							var listRoom = rooms;
-							buildListRoomDiv("contractlist", rooms);//群组列表页面处理
+							buildListRoomDiv("contracgrouplist", rooms);//群组列表页面处理
 						}
 					},
 					error : function(e) {
@@ -257,7 +256,9 @@
 		listRoom = [];
 		listRoomId = [];
 		hiddenChatUI();
-		clearContactUI("contractlist", msgCardDivId);
+		clearContactUI("contactlistUL", "contactgrouplistUL",
+				"momogrouplistUL", msgCardDivId);
+
 		unknowContact = {};
 		showLoginUI();
 		groupQuering = false;
@@ -337,23 +338,19 @@
 			if (contact.subscription == 'both') {
 				var isexist = contains(bothRoster, contact);
 				if (!isexist) {
-					var newcontact = document.getElementById("contactlistUL");
-					var lielem = document.createElement("li");
-					lielem.setAttribute("id", contact.name);
-					lielem.setAttribute("class", "offline");
-					lielem.setAttribute("className", "offline");
-					lielem.onclick = function() {
+					var lielem = $('<li>').attr({
+						"id" : contact.name,
+						"class" : "offline",
+						"className" : "offline"
+					}).click(function() {
 						chooseContactDivClick(this);
-					};
-					var imgelem = document.createElement("img");
-					imgelem.setAttribute("src", "img/head/contact_normal.png");
-					lielem.appendChild(imgelem);
+					});
+					$('<img>').attr({
+						"src" : "img/head/contact_normal.png"
+					}).appendTo(lielem);
 
-					var spanelem = document.createElement("span");
-					spanelem.innerHTML = contact.name;
-					lielem.appendChild(spanelem);
-
-					newcontact.appendChild(lielem);
+					$('<span>').html(contact.name).appendTo(lielem);
+					$('#contactlistUL').append(lielem);
 					bothRoster.push(contact);
 				}
 			}
@@ -421,10 +418,12 @@
 		showWaitLoginedUI();
 		//根据用户名密码登录系统
 		conn.open({
+			apiUrl: apiURL,
 			user : user,
 			pwd : pass,
 			//连接时提供appkey
-			appKey : 'easemob-demo#chatdemoui'
+			appKey : 'easemob-demo#chatdemoui',
+		//accessToken : 'YWMt8bfZfFk5EeSiAzsQ0OXu4QAAAUpoZFOMJ66ic5m2LOZRhYUsRKZWINA06HI'
 		});
 		return false;
 	};
@@ -445,16 +444,6 @@
 		curChatUserId = defaultUserId;
 	};
 
-	var createContactlistUL = function() {
-		var uielem = document.createElement("ul");
-		$(uielem).attr({
-			"id" : "contactlistUL",
-			"class" : "chat03_content_ul"
-		});
-		var contactlist = document.getElementById("contractlist");
-		contactlist.appendChild(uielem);
-	};
-
 	//构造联系人列表
 	var buildContactDiv = function(contactlistDivId, roster) {
 		var uielem = document.getElementById("contactlistUL");
@@ -469,26 +458,19 @@
 				continue;
 			}
 			cache[userName] = true;
-			var lielem = document.createElement("li");
-			$(lielem).attr({
+			var lielem = $('<li>').attr({
 				'id' : userName,
 				'class' : 'offline',
 				'className' : 'offline',
 				'type' : 'chat',
 				'displayName' : userName
-			});
-			lielem.onclick = function() {
+			}).click(function() {
 				chooseContactDivClick(this);
-			};
-			var imgelem = document.createElement("img");
-			imgelem.setAttribute("src", "img/head/contact_normal.png");
-			lielem.appendChild(imgelem);
-
-			var spanelem = document.createElement("span");
-			spanelem.innerHTML = userName;
-			lielem.appendChild(spanelem);
-
-			uielem.appendChild(lielem);
+			});
+			$('<img>').attr("src", "img/head/contact_normal.png").appendTo(
+					lielem);
+			$('<span>').html(userName).appendTo(lielem);
+			$('#contactlistUL').append(lielem);
 		}
 		var contactlist = document.getElementById(contactlistDivId);
 		var children = contactlist.children;
@@ -499,8 +481,8 @@
 	};
 
 	//构造群组列表
-	buildListRoomDiv = function(contactlistDivId, rooms) {
-		var uielem = document.getElementById("contactlistUL");
+	var buildListRoomDiv = function(contactlistDivId, rooms) {
+		var uielem = document.getElementById("contactgrouplistUL");
 		var cache = {};
 		for (i = 0; i < rooms.length; i++) {
 			var roomsName = rooms[i].name;
@@ -510,8 +492,7 @@
 				continue;
 			}
 			cache[roomId] = true;
-			var lielem = document.createElement("li");
-			$(lielem).attr({
+			var lielem = $('<li>').attr({
 				'id' : groupFlagMark + roomId,
 				'class' : 'offline',
 				'className' : 'offline',
@@ -519,14 +500,14 @@
 				'displayName' : roomsName,
 				'roomId' : roomId,
 				'joined' : 'false'
-			});
-			$(lielem).click(function() {
+			}).click(function() {
 				chooseContactDivClick(this);
 			});
-			$(lielem).append('<img src="img/head/group_normal.png"/>');
-			$(lielem).append('<span>' + roomsName + '<span>');
-
-			uielem.appendChild(lielem);
+			$('<img>').attr({
+				'src' : 'img/head/group_normal.png'
+			}).appendTo(lielem);
+			$('<span>').html(roomsName).appendTo(lielem);
+			$('#contactgrouplistUL').append(lielem);
 		}
 		var contactlist = document.getElementById(contactlistDivId);
 		var children = contactlist.children;
@@ -550,10 +531,12 @@
 	var createContactChatDiv = function(chatUserId) {
 		var msgContentDivId = curUserId + "-" + chatUserId;
 		var newContent = document.createElement("div");
-		newContent.setAttribute("id", msgContentDivId);
-		newContent.setAttribute("class", "chat01_content");
-		newContent.setAttribute("className", "chat01_content");
-		newContent.setAttribute("style", "display:none");
+		$(newContent).attr({
+			"id" : msgContentDivId,
+			"class" : "chat01_content",
+			"className" : "chat01_content",
+			"style" : "display:none"
+		});
 		return newContent;
 	};
 
@@ -569,7 +552,7 @@
 		if (contactLi == null) {
 			return;
 		}
-		contactLi.style.backgroundColor = "blue";
+		contactLi.style.backgroundColor = "#33CCFF";
 		var dispalyTitle = null;//聊天窗口显示当前对话人名称
 		if (chatUserId.indexOf(groupFlagMark) >= 0) {
 			dispalyTitle = "群组" + $(contactLi).attr('displayname') + "聊天中";
@@ -625,13 +608,15 @@
 
 	};
 
-	var clearContactUI = function(contactInfoDiv, contactChatDiv) {
+	var clearContactUI = function(contactlistUL, contactgrouplistUL,
+			momogrouplistUL, contactChatDiv) {
+		//清除左侧联系人内容
+		$('#contactlistUL').empty();
+		$('#contactgrouplistUL').empty();
+		$('#momogrouplistUL').empty();
+
+		//清除右侧对话框内容
 		document.getElementById(talkToDivId).children[0].innerHTML = "";
-		var contactlist = document.getElementById(contactInfoDiv);
-		var children = contactlist.children;
-		if (children.length > 0) {
-			contactlist.removeChild(children[0]);
-		}
 		var chatRootDiv = document.getElementById(contactChatDiv);
 		var children = chatRootDiv.children;
 		for (var i = children.length - 1; i > 1; i--) {
@@ -641,6 +626,7 @@
 			"display" : "block"
 		});
 	};
+
 	var emotionFlag = false;
 	var showEmotionDialog = function() {
 		if (emotionFlag) {
@@ -649,21 +635,18 @@
 			});
 			return;
 		}
-		;
 		emotionFlag = true;
 		// Easemob.im.Helper.EmotionPicData设置表情的json数组
 		var sjson = Easemob.im.Helper.EmotionPicData;
 		for ( var key in sjson) {
-			var emotionImgContent = document.createElement("img");
-			emotionImgContent.setAttribute("id", key);
-			emotionImgContent.setAttribute("src", sjson[key]);
-			emotionImgContent.setAttribute("style", "cursor:pointer;");
-			emotionImgContent.onclick = function() {
+			var emotions = $('<img>').attr({
+				"id" : key,
+				"src" : sjson[key],
+				"style" : "cursor:pointer;"
+			}).click(function() {
 				selectEmotionImg(this);
-			};
-			var emotionLi = document.createElement("li");
-			emotionLi.appendChild(emotionImgContent);
-			document.getElementById("emotionUL").appendChild(emotionLi);
+			});
+			$('<li>').append(emotions).appendTo($('#emotionUL'));
 		}
 		$('#wl_faces_box').css({
 			"display" : "block"
@@ -796,6 +779,7 @@
 				opt.type = 'groupchat';
 				opt.to = curRoomId;
 			}
+			opt.apiUrl = apiURL;
 			conn.sendPicture(opt);
 			return;
 		}
@@ -847,6 +831,7 @@
 				opt.type = 'groupchat';
 				opt.to = curRoomId;
 			}
+			opt.apiUrl =  apiURL;
 			conn.sendAudio(opt);
 			return;
 		}
@@ -953,6 +938,7 @@
 		//easemobwebim-sdk包装的下载文件对象的统一处理方法。
 		Easemob.im.Helper.download(options);
 	};
+
 	//easemobwebim-sdk收到音频消息回调方法的实现
 	var handleAudioMessage = function(message) {
 		var filename = message.filename;
@@ -966,50 +952,36 @@
 		}
 		var options = message;
 		options.onFileDownloadComplete = function(response, xhr) {
-			//amr 不处理播放，提供下载
-			var index = filename.lastIndexOf("\.");
-			if (index > 0) {
-				var fileType = filename.substring(index, filename.length);
-				if (".amr" == fileType.toLowerCase()) {
-					var spans = "不支持的音频格式:" + filename;
-					var reader = new FileReader();
-					reader.onload = function(event) {
-						if (navigator.userAgent.indexOf("Trident") == -1) {
-							spans = spans
-									+ ",请<a download='"+filename+"' href='"+event.target.result+"'>&nbsp;&nbsp;下载&nbsp;&nbsp;</a>播放";
-						}
-						appendMsg(from, contactDivId, spans);
-					}
-					reader.readAsDataURL(response);
-					return;
-				}
-			}
 			var objectURL = window.URL.createObjectURL(response);
 			var audio = document.createElement("audio");
-			if (("src" in audio) && ("controls" in audio)) {
-				audio.onload = function() {
-					audio.onload = null;
-					window.URL.revokeObjectURL(audio.src);
-				};
-				audio.onerror = function() {
-					audio.onerror = null;
-					appendMsg(from, contactDivId, "当前浏览器不支持播放此音频:" + filename);
-				};
-				audio.controls = "controls";
-				audio.src = objectURL;
-				appendMsg(from, contactDivId, {
-					data : [ {
-						type : 'audio',
-						filename : filename,
-						data : audio
-					} ]
-				});
-				audio.play();
-				return;
-			}
+				if (("src" in audio) && ("controls" in audio)) {
+					audio.onload = function() {
+						audio.onload = null;
+						window.URL.revokeObjectURL(audio.src);
+					};
+					audio.onerror = function() {
+						audio.onerror = null;
+						appendMsg(from, contactDivId, "当前浏览器不支持播放此音频:"
+								+ filename);
+					};
+					audio.controls = "controls";
+					audio.src = objectURL;
+					appendMsg(from, contactDivId, {
+						data : [ {
+							type : 'audio',
+							filename : filename,
+							data : audio
+						} ]
+					});
+					audio.play();
+					return;
+				}
 		};
 		options.onFileDownloadError = function(e) {
 			appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
+		};
+		options.headers = {
+			"Accept" : "audio/mp3"
 		};
 		Easemob.im.Helper.download(options);
 	};
@@ -1019,6 +991,37 @@
 		var addr = message.addr;
 		var ele = appendMsg(from, from, addr);
 		return ele;
+	};
+
+	//收到陌生人消息时创建陌生人列表
+	var createMomogrouplistUL = function createMomogrouplistUL(who, message) {
+		var momogrouplistUL = document.getElementById("momogrouplistUL");
+		var cache = {};
+
+		if (who in cache) {
+			return;
+		}
+		cache[who] = true;
+		var lielem = document.createElement("li");
+		$(lielem).attr({
+			'id' : who,
+			'class' : 'offline',
+			'className' : 'offline',
+			'type' : 'chat',
+			'displayName' : who
+		});
+		lielem.onclick = function() {
+			chooseContactDivClick(this);
+		};
+		var imgelem = document.createElement("img");
+		imgelem.setAttribute("src", "img/head/contact_normal.png");
+		lielem.appendChild(imgelem);
+
+		var spanelem = document.createElement("span");
+		spanelem.innerHTML = who;
+		lielem.appendChild(spanelem);
+
+		momogrouplistUL.appendChild(lielem);
 	};
 
 	//显示聊天记录的统一处理方法
@@ -1036,10 +1039,10 @@
 			if (unknowContact[contact]) {
 				return;
 			}
-			//alert("陌生人" + who + "的消息,忽略");
-			alert("陌生人" + who + "的消息 :" + message);
+			//alert("陌生人" + who + "的消息 :" + message);
+			createMomogrouplistUL(who, message);
 			//unknowContact[contact] = true;//只提示一次陌生人消息，防骚扰
-			return null;
+			//return ;
 		}
 
 		// 消息体 {isemotion:true;body:[{type:txt,msg:ssss}{type:emotion,msg:imgdata}]}
@@ -1098,6 +1101,10 @@
 			}
 		}
 		if (curChatUserId.indexOf(contact) < 0) {
+			var contactLi = getContactLi(contactDivId);
+			if (contactLi == null) {
+				return;
+			}
 			contactLi.style.backgroundColor = "green";
 			var badgespan = $(contactLi).children(".badge");
 			if (badgespan && badgespan.length > 0) {
@@ -1108,7 +1115,8 @@
 			} else {
 				$(contactLi).append('<span class="badge">1</span>');
 			}
-
+			$(contactLi).parent().parent().parent().prev().children().append(
+					'<span class="badge"></span>');
 		}
 		var msgContentDiv = getContactChatDiv(contactDivId);
 		if (curUserId == who) {
@@ -1276,7 +1284,7 @@
 			if (bothRoster.length > 0) {
 				curChatUserId = bothRoster[0].name;
 				$('#' + curChatUserId).css({
-					"background-color" : "blue"
+					"background-color" : "#33CCFF"
 				});
 				var currentDiv = getContactChatDiv(curChatUserId)
 						|| createContactChatDiv(curChatUserId);
@@ -1434,11 +1442,51 @@
 				<button id="searchFriend" style="background: #cccccc">查询</button>
 			-->
 			</div>
-			<div id="contractlist"
-				style="height: 490px; overflow-y: auto; overflow-x: auto;"></div>
+			<div id="contractlist11"
+				style="height: 492px; overflow-y: auto; overflow-x: auto;">
+				<div class="accordion" id="accordionDiv">
+					<div class="accordion-group">
+						<div class="accordion-heading">
+							<a id="accordion1" class="accordion-toggle"
+								data-toggle="collapse" data-parent="#accordionDiv"
+								href="#collapseOne">我的好友 </a>
+						</div>
+						<div id="collapseOne" class="accordion-body collapse in">
+							<div class="accordion-inner" id="contractlist">
+								<ul id="contactlistUL" class="chat03_content_ul"></ul>
+							</div>
+						</div>
+					</div>
+					<div class="accordion-group">
+						<div class="accordion-heading">
+							<a id="accordion2" class="accordion-toggle"
+								data-toggle="collapse" data-parent="#accordionDiv"
+								href="#collapseTwo"> 我的群组</a>
+						</div>
+						<div id="collapseTwo" class="accordion-body collapse">
+							<div class="accordion-inner" id="contracgrouplist">
+								<ul id="contactgrouplistUL" class="chat03_content_ul"></ul>
+							</div>
+						</div>
+					</div>
+					<div class="accordion-group">
+						<div class="accordion-heading">
+							<a id="accordion3" class="accordion-toggle"
+								data-toggle="collapse" data-parent="#accordionDiv"
+								href="#collapseThree"> 陌生人</a>
+						</div>
+						<div id="collapseThree" class="accordion-body collapse">
+							<div class="accordion-inner" id="momogrouplist">
+								<ul id="momogrouplistUL" class="chat03_content_ul"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
 		</div>
+		<div id="rightTop" style="height: 78px;"></div>
 		<!-- 聊天页面 -->
-		<div style="height: 78px;" id="righttop"></div>
 		<div class="chatRight">
 			<div id="chat01">
 				<div class="chat01_title">
