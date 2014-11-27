@@ -1,36 +1,36 @@
 ---
-title: WebIM ¿ª·¢Ö¸ÄÏ
+title: WebIM å¼€å‘æŒ‡å—
 sidebar: webimsidebar
 secondnavwebim: true
 ---
 
-# ¿ìËÙÈëÃÅ  
+# å¿«é€Ÿå…¥é—¨  
 
-## ³õÊ¼»¯
+## åˆå§‹åŒ–
 
-### ´´½¨Á¬½Ó{#conn_new}
+### åˆ›å»ºè¿æ¥{#conn_new}
 <pre class="hll"><code class="language-javascript">
 var conn = new Easemob.im.Connection();
 </code></pre>
 
-### ³õÊ¼»¯Á¬½Ó{#conn_init}
+### åˆå§‹åŒ–è¿æ¥{#conn_init}
 <pre class="hll"><code class="language-javascript">
 conn.init({
-    https : true,//·Ç±ØÌî£¬urlÖµÎ´ÉèÖÃÊ±ÓĞĞ§£¬ÓÅÏÈ²ÉÓÃurlÅäÖÃµÄ²ÎÊı¡£Ä¬ÈÏ²ÉÓÃhttpÁ¬½Ó£¬µØÖ·Îª¡®http://im-api.easemob.com/http-bind/¡¯£¬ÆôÓÃhttpsÊ±´«µİ´ËÖµ£¬µØÖ·Îª£º¡®https://im-api.easemob.com/http-bind/¡¯
-    url £º 'http://im-api.easemob.com/http-bind/',//·Ç±ØÌî£¬Ä¬ÈÏÁÄÌì·şÎñÆ÷µØÖ·£¬
-    domain : 'aa.com',//·Ç±ØÌî£¬Ä¬ÈÏ£º¡®easemob.com¡¯
-    wait £º '60',//·Ç±ØÌî£¬Á¬½Ó³¬Ê±£¬Ä¬ÈÏ£º60£¬µ¥Î»seconds
+    https : true,//éå¿…å¡«ï¼Œurlå€¼æœªè®¾ç½®æ—¶æœ‰æ•ˆï¼Œä¼˜å…ˆé‡‡ç”¨urlé…ç½®çš„å‚æ•°ã€‚é»˜è®¤é‡‡ç”¨httpè¿æ¥ï¼Œåœ°å€ä¸ºâ€˜http://im-api.easemob.com/http-bind/â€™ï¼Œå¯ç”¨httpsæ—¶ä¼ é€’æ­¤å€¼ï¼Œåœ°å€ä¸ºï¼šâ€˜https://im-api.easemob.com/http-bind/â€™
+    url ï¼š 'http://im-api.easemob.com/http-bind/',//éå¿…å¡«ï¼Œé»˜è®¤èŠå¤©æœåŠ¡å™¨åœ°å€ï¼Œ
+    domain : 'aa.com',//éå¿…å¡«ï¼Œé»˜è®¤ï¼šâ€˜easemob.comâ€™
+    wait ï¼š '60',//éå¿…å¡«ï¼Œè¿æ¥è¶…æ—¶ï¼Œé»˜è®¤ï¼š60ï¼Œå•ä½seconds
     onOpened : function() {
         curUserId = conn.context.userId;
-        //²éÑ¯ºÃÓÑÁĞ±í
+        //æŸ¥è¯¢å¥½å‹åˆ—è¡¨
         conn.getRoster(....);
     },
     onClosed : function() {
-        //´¦ÀíµÇ³öÊÂ¼ş
+        //å¤„ç†ç™»å‡ºäº‹ä»¶
     },
     onTextMessage : function(message) {
-        /**´¦ÀíÎÄ±¾ÏûÏ¢£¬ÏûÏ¢¸ñÊ½Îª£º
-            {	type :'chat',//ÈºÁÄÎª¡°groupchat¡±
+        /**å¤„ç†æ–‡æœ¬æ¶ˆæ¯ï¼Œæ¶ˆæ¯æ ¼å¼ä¸ºï¼š
+            {	type :'chat',//ç¾¤èŠä¸ºâ€œgroupchatâ€
                 from : from,
                 to : too,
                 data : { "type":"txt",
@@ -41,23 +41,23 @@ conn.init({
         handleTextMessage(message);
     },
     onEmotionMessage : function(message) {
-        /*´¦Àí±íÇéÏûÏ¢,ÏûÏ¢¸ñÊ½Îª£º
-            {	type :'chat',//ÈºÁÄÎª¡°groupchat¡±
+        /*å¤„ç†è¡¨æƒ…æ¶ˆæ¯,æ¶ˆæ¯æ ¼å¼ä¸ºï¼š
+            {	type :'chat',//ç¾¤èŠä¸ºâ€œgroupchatâ€
                 from : from,
                 to : too,
                 data : [{ "type":"txt",
                     "msg":"hello from test2"
                 },
                 { "type":"emotion",
-                  "msg":"data:image/png;base64, ¡­¡­"//Í¼Æ¬µÄbase64±àÂë
+                  "msg":"data:image/png;base64, â€¦â€¦"//å›¾ç‰‡çš„base64ç¼–ç 
                 }]
             }
         */
         handleEmotion(message);
     },
     onPictureMessage : function(message) {
-        /**´¦ÀíÍ¼Æ¬ÏûÏ¢£¬ÏûÏ¢¸ñÊ½Îª£º
-            {	type :'chat',//ÈºÁÄÎª¡°groupchat¡±
+        /**å¤„ç†å›¾ç‰‡æ¶ˆæ¯ï¼Œæ¶ˆæ¯æ ¼å¼ä¸ºï¼š
+            {	type :'chat',//ç¾¤èŠä¸ºâ€œgroupchatâ€
                 from : "test1",
                 to : "test2",
                 url : "http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae",
@@ -76,13 +76,13 @@ conn.init({
         handlePictureMessage(message);
     },
     onAudioMessage : function(message) {
-        /**´¦ÀíÒôÆµÏûÏ¢£¬ÏûÏ¢¸ñÊ½Îª£º
-           {	type :'chat',//ÈºÁÄÎª¡°groupchat¡±
+        /**å¤„ç†éŸ³é¢‘æ¶ˆæ¯ï¼Œæ¶ˆæ¯æ ¼å¼ä¸ºï¼š
+           {	type :'chat',//ç¾¤èŠä¸ºâ€œgroupchatâ€
                 from : "test1",
                 to : "test2",
                 url : "http://s1.easemob.com/weiquan2/a2/chatfiles/0c0f5f3a-e66b-11e3-8863-f1c202c2b3ae",
                 secret :"NSgGYPCxEeOou00jZasg9e-GqKUZGdph96EFxJ4WxW-qkxV4",
-                filename : "·çÓêÎŞ×è.mp3",
+                filename : "é£é›¨æ— é˜».mp3",
                 length :45223,
                 file_length : 304,
                 filetype : "mp3",
@@ -91,13 +91,13 @@ conn.init({
         */
         handleAudioMessage(message);
     },
-    //ÊÕµ½ÁªÏµÈË¶©ÔÄÇëÇóµÄ»Øµ÷·½·¨
+    //æ”¶åˆ°è”ç³»äººè®¢é˜…è¯·æ±‚çš„å›è°ƒæ–¹æ³•
     onPresence : function (message){
         /**
             {
                 from: "l2",
                 fromJid: "easemob-demo#chatdemoui_l2@easemob.com",
-                status: "ÏÂÎç11:44:47",
+                status: "ä¸‹åˆ11:44:47",
                 to: "test1",
                 toJid: "easemob-demo#chatdemoui_test1@easemob.com/13856640471403797405809685",
                 type: "subscribed"
@@ -105,7 +105,7 @@ conn.init({
         */
         handlePresence(message);
     },
-    //ÊÕµ½ÁªÏµÈËĞÅÏ¢µÄ»Øµ÷·½·¨
+    //æ”¶åˆ°è”ç³»äººä¿¡æ¯çš„å›è°ƒæ–¹æ³•
     onRoster : function (message){
         /**
             [{
@@ -119,43 +119,43 @@ conn.init({
         handleRoster(message);
     },
     onError : function(e) {
-        //Òì³£´¦Àí
+        //å¼‚å¸¸å¤„ç†
         alert(e.msg);
     }
 });
 </code></pre>
 
-### ´ò¿ªÁ¬½Ó{#conn_open}
+### æ‰“å¼€è¿æ¥{#conn_open}
 
-Ö§³Öusername/passwordºÍusername/tokenµÇÂ¼Á½ÖÖ·½Ê½£¬sdkÖĞ»á¸ù¾İ´«ÈëµÄ²ÎÊı½øĞĞ×Ô¶¯Ñ¡ÔñÊÇ·ñµÇÂ¼usergrid£¬»ñÈ¡µÇÂ¼³É¹¦µÄtokenºóÔÙ½øĞĞµÇÂ¼ÁÄÌì£¬Èç¹ûÊ¹ÓÃtokenµÄ´ò¿ªÁ¬½Ó½«Ìø¹ıµÇÂ¼usergird£¬Ö±½ÓµÇÂ¼IM·şÎñÆ÷¡£
+æ”¯æŒusername/passwordå’Œusername/tokenç™»å½•ä¸¤ç§æ–¹å¼ï¼Œsdkä¸­ä¼šæ ¹æ®ä¼ å…¥çš„å‚æ•°è¿›è¡Œè‡ªåŠ¨é€‰æ‹©æ˜¯å¦ç™»å½•usergridï¼Œè·å–ç™»å½•æˆåŠŸçš„tokenåå†è¿›è¡Œç™»å½•èŠå¤©ï¼Œå¦‚æœä½¿ç”¨tokençš„æ‰“å¼€è¿æ¥å°†è·³è¿‡ç™»å½•usergirdï¼Œç›´æ¥ç™»å½•IMæœåŠ¡å™¨ã€‚
 
 <pre class="hll"><code class="language-javascript">
-//ÓÃ»§Ãû
+//ç”¨æˆ·å
 var user = $("#username").val();
-//ÃÜÂë
+//å¯†ç 
 var pass = $("#password").val();
 if (user == '' || pass == '') {
-    alert("ÇëÊäÈëÓÃ»§ÃûºÍÃÜÂë");
+    alert("è¯·è¾“å…¥ç”¨æˆ·åå’Œå¯†ç ");
     return;
 }
 conn.open({
     user : user,
     pwd : pass,
-    appKey : 'easemob-demo#chatdemoui'//¿ª·¢ÕßAPPKey
+    appKey : 'easemob-demo#chatdemoui'//å¼€å‘è€…APPKey
     //accessToken : 'YWMt8bfZfFk5EeSiAzsQ0OXu4QAAAUpoZFOMJ66ic5m2LOZRhYUsRKZWINA06HI'
 });
 </code></pre>
 
-## µ¥ÁÄ{#single_chat}
+## å•èŠ{#single_chat}
 
-### ²éÑ¯ºÃÓÑÁĞ±í{#getRoster}
+### æŸ¥è¯¢å¥½å‹åˆ—è¡¨{#getRoster}
 
-²éÑ¯ºÃÓÑÁĞ±íÊ±£¬Òª×¢Òâsusciption£¨both£¬to,from£©Îª²»Í¬ÖµµÃ´¦Àí,´Ë´¦Ä¬ÈÏbothºÍtoµÄÎªºÃÓÑ£¬¿ª·¢Õß×Ô¶¨Òå´¦Àí£¬±£³Ö¸úAPP¶Ë´¦ÀíÒ»ÖÂ¼´¿É¡£
+æŸ¥è¯¢å¥½å‹åˆ—è¡¨æ—¶ï¼Œè¦æ³¨æ„susciptionï¼ˆbothï¼Œto,fromï¼‰ä¸ºä¸åŒå€¼å¾—å¤„ç†,æ­¤å¤„é»˜è®¤bothå’Œtoçš„ä¸ºå¥½å‹ï¼Œå¼€å‘è€…è‡ªå®šä¹‰å¤„ç†ï¼Œä¿æŒè·ŸAPPç«¯å¤„ç†ä¸€è‡´å³å¯ã€‚
 
 <pre class="hll"><code class="language-javascript">
-conn.**getRoster**({
-    **success** : function(roster) {
-        //»ñÈ¡ºÃÓÑÁĞ±í£¬²¢½øĞĞºÃÓÑÁĞ±íäÖÈ¾£¬roster¸ñÊ½Îª£º
+conn.getRoster({
+    success : function(roster) {
+        //è·å–å¥½å‹åˆ—è¡¨ï¼Œå¹¶è¿›è¡Œå¥½å‹åˆ—è¡¨æ¸²æŸ“ï¼Œrosteræ ¼å¼ä¸ºï¼š
         /** [
                 {
                     jid:"asemoemo#chatdemoui_test1@easemob.com",
@@ -171,15 +171,15 @@ conn.**getRoster**({
         */
         for(var i in roster){
             var ros = roster[i];    
-            //ros.subscriptioÖµÎªboth/toÎªÒªÏÔÊ¾µÄÁªÏµÈË,´Ë´¦ÓëAPPĞè±£³ÖÒ»ÖÂ£¬²ÅÄÜ±£Ö¤Á½¸ö¿Í»§¶ËµÇÂ¼ºóµÄºÃÓÑÁĞ±íÒ»ÖÂ
+            //ros.subscriptioå€¼ä¸ºboth/toä¸ºè¦æ˜¾ç¤ºçš„è”ç³»äºº,æ­¤å¤„ä¸APPéœ€ä¿æŒä¸€è‡´ï¼Œæ‰èƒ½ä¿è¯ä¸¤ä¸ªå®¢æˆ·ç«¯ç™»å½•åçš„å¥½å‹åˆ—è¡¨ä¸€è‡´
             if(ros.subscription =='both' || ros.subscription=='to'){
                 newroster.push(ros);
             }
         }
         if (newroster.length >=0) {
-            buildContactDiv("contractlist", newroster);//Ò³Ãæ´¦Àí
+            buildContactDiv("contractlist", newroster);//é¡µé¢å¤„ç†
             if (newroster.length > 0) {
-                setCurrentContact(newroster[0].name);//Ò³Ãæ´¦Àí½«µÚÒ»¸öÁªÏµÈË×÷Îªµ±Ç°ÁÄÌìdiv
+                setCurrentContact(newroster[0].name);//é¡µé¢å¤„ç†å°†ç¬¬ä¸€ä¸ªè”ç³»äººä½œä¸ºå½“å‰èŠå¤©div
             }
         }
         //conn.setPresence();
@@ -187,41 +187,41 @@ conn.**getRoster**({
 });
 </code></pre>
 
-### Ìí¼ÓºÃÓÑ{#subscribe}
-Í¨¹ısdkµÄsubscribeºÍunsubcribe½øĞĞÌí¼Ó»òÕßÉ¾³ıºÃÓÑ²Ù×÷£¬µÇÂ¼ÓÃ»§Í¨¹ı×¢²áonPresence£¬¼àÌı¶Ô·½µÄÌí¼Ó»òÕßÉ¾³ıºÃÓÑÇëÇó£¬²¢×öÏàÓ¦µÄ´¦Àí¡£
+### æ·»åŠ å¥½å‹{#subscribe}
+é€šè¿‡sdkçš„subscribeå’Œunsubcribeè¿›è¡Œæ·»åŠ æˆ–è€…åˆ é™¤å¥½å‹æ“ä½œï¼Œç™»å½•ç”¨æˆ·é€šè¿‡æ³¨å†ŒonPresenceï¼Œç›‘å¬å¯¹æ–¹çš„æ·»åŠ æˆ–è€…åˆ é™¤å¥½å‹è¯·æ±‚ï¼Œå¹¶åšç›¸åº”çš„å¤„ç†ã€‚
 <pre class="hll"><code class="language-javascript">   
-//easemobwebim-sdkÖĞÊÕµ½ÁªÏµÈË¶©ÔÄÇëÇóµÄ´¦Àí·½·¨£¬¾ßÌåµÄtypeÖµËù¶ÔÓ¦µÄÖµÇë²Î¿¼xmppĞ­Òé¹æ·¶
+//easemobwebim-sdkä¸­æ”¶åˆ°è”ç³»äººè®¢é˜…è¯·æ±‚çš„å¤„ç†æ–¹æ³•ï¼Œå…·ä½“çš„typeå€¼æ‰€å¯¹åº”çš„å€¼è¯·å‚è€ƒxmppåè®®è§„èŒƒ
 var handlePresence = function (e){
-	//£¨·¢ËÍÕßÏ£Íû¶©ÔÄ½ÓÊÕÕßµÄ³öÏ¯ĞÅÏ¢£©£¬¼´±ğÈËÉêÇë¼ÓÄãÎªºÃÓÑ
+	//ï¼ˆå‘é€è€…å¸Œæœ›è®¢é˜…æ¥æ”¶è€…çš„å‡ºå¸­ä¿¡æ¯ï¼‰ï¼Œå³åˆ«äººç”³è¯·åŠ ä½ ä¸ºå¥½å‹
 	if (e.type == 'subscribe') {
-		//Èôe.statusÖĞº¬ÓĞ[resp:true],Ôò±íÊ¾Îª¶Ô·½Í¬ÒâºÃÓÑºó·´ÏòÌí¼Ó×Ô¼ºÎªºÃÓÑµÄÏûÏ¢£¬demoÖĞ·¢ÏÖ´ËÀàÏûÏ¢£¬Ä¬ÈÏÍ¬Òâ²Ù×÷£¬Íê³ÉË«·½»¥ÎªºÃÓÑ£»Èç¹û²»º¬ÓĞ[resp:true]£¬Ôò±íÊ¾ÎªÕı³£µÄ¶Ô·½ÇëÇóÌí¼Ó×Ô¼ºÎªºÃÓÑµÄÉêÇëÏûÏ¢¡£
+		//è‹¥e.statusä¸­å«æœ‰[resp:true],åˆ™è¡¨ç¤ºä¸ºå¯¹æ–¹åŒæ„å¥½å‹ååå‘æ·»åŠ è‡ªå·±ä¸ºå¥½å‹çš„æ¶ˆæ¯ï¼Œdemoä¸­å‘ç°æ­¤ç±»æ¶ˆæ¯ï¼Œé»˜è®¤åŒæ„æ“ä½œï¼Œå®ŒæˆåŒæ–¹äº’ä¸ºå¥½å‹ï¼›å¦‚æœä¸å«æœ‰[resp:true]ï¼Œåˆ™è¡¨ç¤ºä¸ºæ­£å¸¸çš„å¯¹æ–¹è¯·æ±‚æ·»åŠ è‡ªå·±ä¸ºå¥½å‹çš„ç”³è¯·æ¶ˆæ¯ã€‚
 		......
 	}
-	//(·¢ËÍÕßÔÊĞí½ÓÊÕÕß½ÓÊÕËûÃÇµÄ³öÏ¯ĞÅÏ¢)£¬¼´±ğÈËÍ¬ÒâÄã¼ÓËûÎªºÃÓÑ
+	//(å‘é€è€…å…è®¸æ¥æ”¶è€…æ¥æ”¶ä»–ä»¬çš„å‡ºå¸­ä¿¡æ¯)ï¼Œå³åˆ«äººåŒæ„ä½ åŠ ä»–ä¸ºå¥½å‹
 	if (e.type == 'subscribed') {
 		......
 	}
-	//£¨·¢ËÍÕßÈ¡Ïû¶©ÔÄÁíÒ»¸öÊµÌåµÄ³öÏ¯ĞÅÏ¢£©,¼´É¾³ıÏÖÓĞºÃÓÑ
+	//ï¼ˆå‘é€è€…å–æ¶ˆè®¢é˜…å¦ä¸€ä¸ªå®ä½“çš„å‡ºå¸­ä¿¡æ¯ï¼‰,å³åˆ é™¤ç°æœ‰å¥½å‹
 	if (e.type == 'unsubscribe') {
 		.......
 	}
-	//£¨¶©ÔÄÕßµÄÇëÇó±»¾Ü¾ø»òÒÔÇ°µÄ¶©ÔÄ±»È¡Ïû£©£¬¼´¶Ô·½µ¥ÏòµÄÉ¾³ıÁËºÃÓÑ
+	//ï¼ˆè®¢é˜…è€…çš„è¯·æ±‚è¢«æ‹’ç»æˆ–ä»¥å‰çš„è®¢é˜…è¢«å–æ¶ˆï¼‰ï¼Œå³å¯¹æ–¹å•å‘çš„åˆ é™¤äº†å¥½å‹
 	if (e.type == 'unsubscribed') {
 		.......
 	}
 };
 </code></pre>
 
-#### ÉêÇëÌí¼Ó¶Ô·½ÎªºÃÓÑ{#addFriend}
+#### ç”³è¯·æ·»åŠ å¯¹æ–¹ä¸ºå¥½å‹{#addFriend}
 <pre class="hll"><code class="language-javascript">   
-//Ö÷¶¯ÉêÇëÌí¼Ó¶Ô·½ÎªºÃÓÑ
+//ä¸»åŠ¨ç”³è¯·æ·»åŠ å¯¹æ–¹ä¸ºå¥½å‹
 var startAddFriend = function startAddFriend(){
-    //¶Ô·½ÓÃ»§ÕËºÅ
+    //å¯¹æ–¹ç”¨æˆ·è´¦å·
     var user = $("addfridentId").val();
-    //ÇëÇóÌí¼Ó¶Ô·½ÎªºÃÓÑ
+    //è¯·æ±‚æ·»åŠ å¯¹æ–¹ä¸ºå¥½å‹
     conn.subscribe({
 		to : user,
-		message : "¼Ó¸öºÃÓÑßÂ-" + getLoacalTimeString()
+		message : "åŠ ä¸ªå¥½å‹å‘—-" + getLoacalTimeString()
 	});
     return;
 };
@@ -233,32 +233,32 @@ var getLoacalTimeString = function getLoacalTimeString() {
 	}
 </code></pre>
 
-#### ¶Ô·½ÊÕµ½ÇëÇó£¬Í¬Òâ»òÕß¾Ü¾ø{#agreed_reject}
+#### å¯¹æ–¹æ”¶åˆ°è¯·æ±‚ï¼ŒåŒæ„æˆ–è€…æ‹’ç»{#agreed_reject}
 
 <pre class="hll"><code class="language-javascript">  
-//¶Ô·½ÊÕµ½ÇëÇó¼ÓÎªºÃÓÑ£¬½ÓÊÜÇëÇó
+//å¯¹æ–¹æ”¶åˆ°è¯·æ±‚åŠ ä¸ºå¥½å‹ï¼Œæ¥å—è¯·æ±‚
 $('#confirm-block-footer-confirmButton').click(function() {
-	//Í¬ÒâºÃÓÑÇëÇó
-	agreeAddFriend(e.from);//e.fromÓÃ»§Ãû
-	//·´ÏòÌí¼Ó¶Ô·½ºÃÓÑ
+	//åŒæ„å¥½å‹è¯·æ±‚
+	agreeAddFriend(e.from);//e.fromç”¨æˆ·å
+	//åå‘æ·»åŠ å¯¹æ–¹å¥½å‹
 	conn.subscribe({
 		to : e.from,
 		message : "[resp:true]"
 	});
 }
-//Í¬Òâ
+//åŒæ„
 var agreeAddFriend = function agreeAddFriend(connection,who,jid){
    conn.subscribed({
 			to : user,
-			message : "[resp:true]"//Í¬Òâºó·¢ËÍ·´¼Ó¶Ô·½ÎªºÃÓÑµÄÏûÏ¢£¬·´¼ÓÏûÏ¢±êÊ¶[resp:true]
+			message : "[resp:true]"//åŒæ„åå‘é€ååŠ å¯¹æ–¹ä¸ºå¥½å‹çš„æ¶ˆæ¯ï¼ŒååŠ æ¶ˆæ¯æ ‡è¯†[resp:true]
 		});
 };
 
-//¶Ô·½ÊÕµ½ÇëÇó¼ÓÎªºÃÓÑ£¬¾Ü¾øÇëÇó
+//å¯¹æ–¹æ”¶åˆ°è¯·æ±‚åŠ ä¸ºå¥½å‹ï¼Œæ‹’ç»è¯·æ±‚
 $('#confirm-block-footer-cancelButton').click(function() {
-	rejectAddFriend(e.from);//¾Ü¾ø¼ÓÎªºÃÓÑ
+	rejectAddFriend(e.from);//æ‹’ç»åŠ ä¸ºå¥½å‹
 });
-//¾Ü¾ø
+//æ‹’ç»
 var rejectAddFriend = function(user) {
 	conn.unsubscribed({
 		to : user,
@@ -267,11 +267,11 @@ var rejectAddFriend = function(user) {
 };
 </code></pre>
 
-¶ÔÓÚºÃÓÑµÄ·Ö×é£¬Ìí¼ÓºÃÓÑÊ±ÔÚaddroster¿ÉÒÔÖ¸¶¨groupÊôĞÔ£¨Ä¬ÈÏÎª£ºdefault×é£©£¬Ìí¼ÓºÃÓÑ³É¹¦ºó£¬ºÃÓÑÁĞ±íäÖÈ¾Ê±£¬¸ù¾İºÃÓÑµÄgroupÊôĞÔ½øĞĞ·Ö×éäÖÈ¾£¬ÊµÏÖÀàËÆÆäËûÁÄÌì¹¤¾ßµÄ×Ô¶¨ÒåºÃÓÑ·Ö×é¹ÜÀíµÄ¹¦ÄÜ¡£
+å¯¹äºå¥½å‹çš„åˆ†ç»„ï¼Œæ·»åŠ å¥½å‹æ—¶åœ¨addrosterå¯ä»¥æŒ‡å®šgroupå±æ€§ï¼ˆé»˜è®¤ä¸ºï¼šdefaultç»„ï¼‰ï¼Œæ·»åŠ å¥½å‹æˆåŠŸåï¼Œå¥½å‹åˆ—è¡¨æ¸²æŸ“æ—¶ï¼Œæ ¹æ®å¥½å‹çš„groupå±æ€§è¿›è¡Œåˆ†ç»„æ¸²æŸ“ï¼Œå®ç°ç±»ä¼¼å…¶ä»–èŠå¤©å·¥å…·çš„è‡ªå®šä¹‰å¥½å‹åˆ†ç»„ç®¡ç†çš„åŠŸèƒ½ã€‚
 
-#### É¾³ıºÃÓÑ{#delfriend}
+#### åˆ é™¤å¥½å‹{#delfriend}
 
-È¡Ïû¶©ÔÄ£¬Í¬Ê±½«¶Ô·½´Ó×Ô¼ºµÄºÃÓÑÁĞ±íÉÏÉ¾³ıµô¡£
+å–æ¶ˆè®¢é˜…ï¼ŒåŒæ—¶å°†å¯¹æ–¹ä»è‡ªå·±çš„å¥½å‹åˆ—è¡¨ä¸Šåˆ é™¤æ‰ã€‚
 
 <pre class="hll"><code class="language-javascript">
 var delFriend = function(user) {
@@ -287,40 +287,40 @@ var delFriend = function(user) {
 };
 </code></pre>
 
-### ·¢ËÍÎÄ±¾£¨±íÇé£©ÁÄÌìÏûÏ¢{#sendTextMessage}
+### å‘é€æ–‡æœ¬ï¼ˆè¡¨æƒ…ï¼‰èŠå¤©æ¶ˆæ¯{#sendTextMessage}
 
 <pre class="hll"><code class="language-javascript">
-//·¢ËÍÎÄ±¾ÏûÏ¢
+//å‘é€æ–‡æœ¬æ¶ˆæ¯
 conn.sendTextMessage({
-    to : to,//ÓÃ»§µÇÂ¼Ãû£¬sd¸ù¾İappkeyºÍdomain×éÖ¯jid£¬Èçeasemob-demo#chatdemoui_**TEST**@easemob.com£¬ÖĞ"to:TEST",ÏÂÍ¬
-    msg :'hello world£¡' //ÎÄ±¾ÏûÏ¢
+    to : to,//ç”¨æˆ·ç™»å½•åï¼Œsdæ ¹æ®appkeyå’Œdomainç»„ç»‡jidï¼Œå¦‚easemob-demo#chatdemoui_**TEST**@easemob.comï¼Œä¸­"to:TEST",ä¸‹åŒ
+    msg :'hello worldï¼' //æ–‡æœ¬æ¶ˆæ¯
 });
 
-//·¢ËÍ±íÇéÏûÏ¢£¬µ÷ÓÃ½Ó¿ÚÍ¬ÎÄ±¾ÏûÏ¢
+//å‘é€è¡¨æƒ…æ¶ˆæ¯ï¼Œè°ƒç”¨æ¥å£åŒæ–‡æœ¬æ¶ˆæ¯
 conn.sendTextMessage({
     to : to,
-    msg :'hello world£¡[(*)][(#)]' //ÎÄ±¾ÏûÏ¢+±íÇé
+    msg :'hello worldï¼[(*)][(#)]' //æ–‡æœ¬æ¶ˆæ¯+è¡¨æƒ…
 });
 </code></pre>
 
-### ·¢ËÍÍ¼Æ¬ÏûÏ¢{#sendPic}
+### å‘é€å›¾ç‰‡æ¶ˆæ¯{#sendPic}
 
-·¢ËÍÍ¼Æ¬ÏûÏ¢sdk×Ô¶¯·ÖÁ½²½Íê³É£º<br>
-1£©ÉÏ´«Í¼Æ¬ÎÄ¼şµ½·şÎñÆ÷£¬²¢µÃµ½·şÎñ·µ»ØµÄÍ¼Æ¬ĞÅÏ¢µÈ<br>
-2£©·¢ËÍÍ¼Æ¬ÏûÏ¢£¬ÏûÏ¢Ìå°üº¬Í¼Æ¬µÄ»ù±¾ĞÅÏ¢¡¢·şÎñÆ÷Â·¾¶¡¢secretµÈ£¬½ÓÊÕ·½³õÊ¼»¯Á¬½ÓÖĞµÄonPictureMessageµÄ¸ñÊ½£¬¸ù¾İÍ¼Æ¬ÏûÏ¢ÄÚÈİµ½·şÎñÆ÷ÏÂÔØÍ¼Æ¬£¬²¢½øĞĞÏÔÊ¾
+å‘é€å›¾ç‰‡æ¶ˆæ¯sdkè‡ªåŠ¨åˆ†ä¸¤æ­¥å®Œæˆï¼š<br>
+1ï¼‰ä¸Šä¼ å›¾ç‰‡æ–‡ä»¶åˆ°æœåŠ¡å™¨ï¼Œå¹¶å¾—åˆ°æœåŠ¡è¿”å›çš„å›¾ç‰‡ä¿¡æ¯ç­‰<br>
+2ï¼‰å‘é€å›¾ç‰‡æ¶ˆæ¯ï¼Œæ¶ˆæ¯ä½“åŒ…å«å›¾ç‰‡çš„åŸºæœ¬ä¿¡æ¯ã€æœåŠ¡å™¨è·¯å¾„ã€secretç­‰ï¼Œæ¥æ”¶æ–¹åˆå§‹åŒ–è¿æ¥ä¸­çš„onPictureMessageçš„æ ¼å¼ï¼Œæ ¹æ®å›¾ç‰‡æ¶ˆæ¯å†…å®¹åˆ°æœåŠ¡å™¨ä¸‹è½½å›¾ç‰‡ï¼Œå¹¶è¿›è¡Œæ˜¾ç¤º
 
 <pre class="hll"><code class="language-javascript">
 function sendPic() {
-    //Í¼Æ¬½ÓÊÕÕß£¬Èç¡°test1¡±
+    //å›¾ç‰‡æ¥æ”¶è€…ï¼Œå¦‚â€œtest1â€
     var to = curChatUserId;
     if (to == null) {
-        alert("ÇëÑ¡ÔñÁªÏµÈË");
+        alert("è¯·é€‰æ‹©è”ç³»äºº");
         return;
     }
-    //fileInputId£ºÎÄ¼şÑ¡ÔñÊäÈë¿òµÄId£¬sdk×Ô¶¯¸ù¾İid×Ô¶¯»ñÈ¡ÎÄ¼ş¶ÔÏó£¨º¬Í¼Æ¬£¬»òÕßÆäËûÀàĞÍÎÄ¼ş£©
+    //fileInputIdï¼šæ–‡ä»¶é€‰æ‹©è¾“å…¥æ¡†çš„Idï¼Œsdkè‡ªåŠ¨æ ¹æ®idè‡ªåŠ¨è·å–æ–‡ä»¶å¯¹è±¡ï¼ˆå«å›¾ç‰‡ï¼Œæˆ–è€…å…¶ä»–ç±»å‹æ–‡ä»¶ï¼‰
     var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
     if (fileObj.url == null || fileObj.url == '') {
-        alert("ÇëÑ¡Ôñ·¢ËÍÍ¼Æ¬");
+        alert("è¯·é€‰æ‹©å‘é€å›¾ç‰‡");
         return;
     }
     var filetype = fileObj.filetype;
@@ -335,36 +335,36 @@ function sendPic() {
             fileInputId : fileInputId,
             to : to,
             onFileUploadError : function(error) {
-                //´¦ÀíÍ¼Æ¬ÉÏ´«Ê§°Ü
+                //å¤„ç†å›¾ç‰‡ä¸Šä¼ å¤±è´¥
             },
             onFileUploadComplete : function(data) {
-                //´¦ÀíÍ¼Æ¬ÉÏ´«³É¹¦£¬Èç±¾µØÏûÏ¢ÏÔÊ¾
+                //å¤„ç†å›¾ç‰‡ä¸Šä¼ æˆåŠŸï¼Œå¦‚æœ¬åœ°æ¶ˆæ¯æ˜¾ç¤º
             }
         };
         conn.sendPicture(opt);
         return;
     }
-    alert("²»Ö§³Ö´ËÍ¼Æ¬ÀàĞÍ" + filetype);
+    alert("ä¸æ”¯æŒæ­¤å›¾ç‰‡ç±»å‹" + filetype);
 };
 </code></pre>
 
-### ·¢ËÍÒôÆµÏûÏ¢{#sendAudio}
+### å‘é€éŸ³é¢‘æ¶ˆæ¯{#sendAudio}
 
-sdk´¦ÀíÍ¬·¢ËÍÍ¼Æ¬ÏûÏ¢£¬·ÖÁ½²½£º
+sdkå¤„ç†åŒå‘é€å›¾ç‰‡æ¶ˆæ¯ï¼Œåˆ†ä¸¤æ­¥ï¼š
 
-1. ÉÏ´«ÒôÆµÎÄ¼şµ½·şÎñÆ÷£¬µÃµ½ÒôÆµÎÄ¼şµÄĞÅÏ¢£»
-2. ·¢ËÍÒôÆµÏûÏ¢¸ø½ÓÊÕ·½£¬ÏûÏ¢Ìå°üº¬ÒôÆµµÄ»ù±¾ĞÅÏ¢¡¢ÏÂÔØÂ·¾¶ºÍsecretĞÅÏ¢µÈ£¬½ÓÊÕ·½ÊÕµ½ÏûÏ¢ºó£¬¸ù¾İÏûÏ¢ÌåÄÚ²¿µÄÒôÆµÏÂÔØÂ·¾¶ºÍsecretÂ·¾¶£¬ÏÂÔØÒôÆµ²¢½øĞĞÏÔÊ¾¡£
+1. ä¸Šä¼ éŸ³é¢‘æ–‡ä»¶åˆ°æœåŠ¡å™¨ï¼Œå¾—åˆ°éŸ³é¢‘æ–‡ä»¶çš„ä¿¡æ¯ï¼›
+2. å‘é€éŸ³é¢‘æ¶ˆæ¯ç»™æ¥æ”¶æ–¹ï¼Œæ¶ˆæ¯ä½“åŒ…å«éŸ³é¢‘çš„åŸºæœ¬ä¿¡æ¯ã€ä¸‹è½½è·¯å¾„å’Œsecretä¿¡æ¯ç­‰ï¼Œæ¥æ”¶æ–¹æ”¶åˆ°æ¶ˆæ¯åï¼Œæ ¹æ®æ¶ˆæ¯ä½“å†…éƒ¨çš„éŸ³é¢‘ä¸‹è½½è·¯å¾„å’Œsecretè·¯å¾„ï¼Œä¸‹è½½éŸ³é¢‘å¹¶è¿›è¡Œæ˜¾ç¤ºã€‚
 
 <pre class="hll"><code class="language-javascript">
 function sendAudio () {
     var to = curChatUserId;
     if (to == null) {
-        alert("ÇëÑ¡ÔñÁªÏµÈË");
+        alert("è¯·é€‰æ‹©è”ç³»äºº");
         return;
     }
     var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
     if (fileObj.url == null || fileObj.url == '') {
-        alert("ÇëÑ¡Ôñ·¢ËÍÒôÆµ");
+        alert("è¯·é€‰æ‹©å‘é€éŸ³é¢‘");
         return;
     }
     var filetype = fileObj.filetype;
@@ -380,46 +380,46 @@ function sendAudio () {
             fileInputId : fileInputId,
             to : to,
             onFileUploadError : function(error) {
-                //´¦ÀíÉÏ´«ÒôÆµÊ§°Ü
+                //å¤„ç†ä¸Šä¼ éŸ³é¢‘å¤±è´¥
             },
             onFileUploadComplete : function(data) {
-                //´¦ÀíÉÏ´«ÒôÆµ³É¹¦£¬Èç±¾µØÏûÏ¢ÌáÊ¾·¢ËÍ³É¹¦
+                //å¤„ç†ä¸Šä¼ éŸ³é¢‘æˆåŠŸï¼Œå¦‚æœ¬åœ°æ¶ˆæ¯æç¤ºå‘é€æˆåŠŸ
             }
         };
         conn.sendAudio(opt);
         return;
     }
-    alert("²»Ö§³Ö´ËÒôÆµÀàĞÍ" + filetype);
+    alert("ä¸æ”¯æŒæ­¤éŸ³é¢‘ç±»å‹" + filetype);
 };
 </code></pre>
 
-### ½ÓÊÕÏûÏ¢
+### æ¥æ”¶æ¶ˆæ¯
 
-#### ×¢²á½ÓÊÕÏûÏ¢ {#onmessage}
+#### æ³¨å†Œæ¥æ”¶æ¶ˆæ¯ {#onmessage}
 
 <pre class="hll"><code class="language-javascript">
 conn.init({
-	onTextMessage : function(message) {        },//ÊÕµ½ÎÄ±¾ÏûÏ¢´¦Àí¶¯×÷
-    onEmotionMessage : function(message) {        },//ÊÕµ½±íÇéÏûÏ¢´¦Àí¶¯×÷
-    onPictureMessage : function(message) {         },//ÊÕµ½Í¼Æ¬ÏûÏ¢´¦Àí¶¯×÷
-    onAudioMessage : function(message) {        }, //ÊÕµ½ÓïÒôÏûÏ¢´¦Àí¶¯×÷
+	onTextMessage : function(message) {        },//æ”¶åˆ°æ–‡æœ¬æ¶ˆæ¯å¤„ç†åŠ¨ä½œ
+    onEmotionMessage : function(message) {        },//æ”¶åˆ°è¡¨æƒ…æ¶ˆæ¯å¤„ç†åŠ¨ä½œ
+    onPictureMessage : function(message) {         },//æ”¶åˆ°å›¾ç‰‡æ¶ˆæ¯å¤„ç†åŠ¨ä½œ
+    onAudioMessage : function(message) {        }, //æ”¶åˆ°è¯­éŸ³æ¶ˆæ¯å¤„ç†åŠ¨ä½œ
 	...
 });
 </code></pre>
 
-#### ´¦ÀíÏûÏ¢{#options}
+#### å¤„ç†æ¶ˆæ¯{#options}
 
-conn.init()ÖĞ×¢²á²»Í¬ÏûÏ¢½ÓÊÕhandlerÖ®ºó£¬¿É×ÔĞĞ½âÎöÏûÏ¢Ìå£¬¶¨Î»ÁÄÌìºÃÓÑ£¬²¢×·¼Óµ½ÓëÆäÁÄÌì´°¿Ú¡£¾ßÌå²Î¿¼webim.easemob.comĞ§¹û£¬ÏûÏ¢Ìå¸ñÊ½²Î¼ûÇ°ÕÂ½Ú£º³õÊ¼»¯Á¬½Ó¡£<br>
-×¢£º¶ÔÓÚÍ¼Æ¬¡¢ÓïÒôÏûÏ¢ĞèÒªÏÈ½øĞĞÏÂÔØ£¬È»ºó½øĞĞÏÔÊ¾»òÕß²¥·Å´¦Àí¡£ÈçÏÂ(ÏÂÔØÍ¼Æ¬£¬ÒôÆµÍ¬)£º
+conn.init()ä¸­æ³¨å†Œä¸åŒæ¶ˆæ¯æ¥æ”¶handlerä¹‹åï¼Œå¯è‡ªè¡Œè§£ææ¶ˆæ¯ä½“ï¼Œå®šä½èŠå¤©å¥½å‹ï¼Œå¹¶è¿½åŠ åˆ°ä¸å…¶èŠå¤©çª—å£ã€‚å…·ä½“å‚è€ƒwebim.easemob.comæ•ˆæœï¼Œæ¶ˆæ¯ä½“æ ¼å¼å‚è§å‰ç« èŠ‚ï¼šåˆå§‹åŒ–è¿æ¥ã€‚<br>
+æ³¨ï¼šå¯¹äºå›¾ç‰‡ã€è¯­éŸ³æ¶ˆæ¯éœ€è¦å…ˆè¿›è¡Œä¸‹è½½ï¼Œç„¶åè¿›è¡Œæ˜¾ç¤ºæˆ–è€…æ’­æ”¾å¤„ç†ã€‚å¦‚ä¸‹(ä¸‹è½½å›¾ç‰‡ï¼ŒéŸ³é¢‘åŒ)ï¼š
 <pre class="hll"><code class="language-javascript">
 var handlePictureMessage = function(message) {
-var filename = message.filename;//ÎÄ¼şÃû³Æ£¬´øÎÄ¼şÀ©Õ¹Ãû
-var from = message.from;//ÎÄ¼şµÄ·¢ËÍÕß
-var mestype = message.type;//ÏûÏ¢·¢ËÍµÄÀàĞÍÊÇÈº×éÏûÏ¢»¹ÊÇ¸öÈËÏûÏ¢
+var filename = message.filename;//æ–‡ä»¶åç§°ï¼Œå¸¦æ–‡ä»¶æ‰©å±•å
+var from = message.from;//æ–‡ä»¶çš„å‘é€è€…
+var mestype = message.type;//æ¶ˆæ¯å‘é€çš„ç±»å‹æ˜¯ç¾¤ç»„æ¶ˆæ¯è¿˜æ˜¯ä¸ªäººæ¶ˆæ¯
 ......
 ...
 var options = message;
-// Í¼Æ¬ÏûÏ¢ÏÂÔØ³É¹¦ºóµÄ´¦ÀíÂß¼­
+// å›¾ç‰‡æ¶ˆæ¯ä¸‹è½½æˆåŠŸåçš„å¤„ç†é€»è¾‘
 options.onFileDownloadComplete = function(response, xhr) {
 	var objectURL = window.URL.createObjectURL(response);
 	img = document.createElement("img");
@@ -430,11 +430,11 @@ options.onFileDownloadComplete = function(response, xhr) {
 	img.onerror = function() {
 		img.onerror = null;
 		if (typeof FileReader == 'undefined') {
-			img.alter = "µ±Ç°ä¯ÀÀÆ÷²»Ö§³Öblob·½Ê½";
+			img.alter = "å½“å‰æµè§ˆå™¨ä¸æ”¯æŒblobæ–¹å¼";
 			return;
 		}
 		img.onerror = function() {
-			img.alter = "µ±Ç°ä¯ÀÀÆ÷²»Ö§³Öblob·½Ê½";
+			img.alter = "å½“å‰æµè§ˆå™¨ä¸æ”¯æŒblobæ–¹å¼";
 		};
 		var reader = new FileReader();
 		reader.onload = function(event) {
@@ -448,29 +448,29 @@ options.onFileDownloadComplete = function(response, xhr) {
 	...
 };
 options.onFileDownloadError = function(e) {
-	appendMsg(from, contactDivId, e.msg + ",ÏÂÔØÍ¼Æ¬" + filename + "Ê§°Ü");
+	appendMsg(from, contactDivId, e.msg + ",ä¸‹è½½å›¾ç‰‡" + filename + "å¤±è´¥");
 };
-**Easemob.im.Helper.download(options)**;
+Easemob.im.Helper.download(options);
 
 </code></pre>
 
-#### ÀúÊ·ÏûÏ¢{#history_message}
+#### å†å²æ¶ˆæ¯{#history_message}
 
-sdkÔİ²»¾ßÓĞ»º´æÀúÊ·ÏûÏ¢¹¦ÄÜ£¬demoÖĞÁÄÌì´°¿ÚÖ»ÄÜÏÔÊ¾£¬µ±Ç°µÇÂ¼ºó»á»°ÊµÊ±ÔÚÁÄÌìĞÅÏ¢£¬²»ÄÜ²é¿´ÀúÊ·ÏûÏ¢£¬¿ÉÒÔ¶ÔµÇÂ¼ºóµÄÁÄÌìĞÅÏ¢½øĞĞÇå³ı²Ù×÷¡£
+sdkæš‚ä¸å…·æœ‰ç¼“å­˜å†å²æ¶ˆæ¯åŠŸèƒ½ï¼Œdemoä¸­èŠå¤©çª—å£åªèƒ½æ˜¾ç¤ºï¼Œå½“å‰ç™»å½•åä¼šè¯å®æ—¶åœ¨èŠå¤©ä¿¡æ¯ï¼Œä¸èƒ½æŸ¥çœ‹å†å²æ¶ˆæ¯ï¼Œå¯ä»¥å¯¹ç™»å½•åçš„èŠå¤©ä¿¡æ¯è¿›è¡Œæ¸…é™¤æ“ä½œã€‚
 
-#### ĞÂÏûÏ¢ÌáÊ¾{#new_message}
+#### æ–°æ¶ˆæ¯æç¤º{#new_message}
 
-sdkÔÚÊÕµ½ĞÂÏûÏ¢ÊÇ»áÖ±½Ó×ª·¢¸øµÇÂ¼ÓÃ»§£¬½ÓÊÕµ½ÏûÏ¢ºó£¬demoÖĞ»áÔÚºÃÓÑ»òÕßÈº×éµÄºóÃæÏÔÊ¾ºìÉ«ÏûÏ¢Êı£¬¾ßÌåÑùÊ½¿ª·¢Õß¿É×ÔĞĞ´¦Àí¡£
+sdkåœ¨æ”¶åˆ°æ–°æ¶ˆæ¯æ˜¯ä¼šç›´æ¥è½¬å‘ç»™ç™»å½•ç”¨æˆ·ï¼Œæ¥æ”¶åˆ°æ¶ˆæ¯åï¼Œdemoä¸­ä¼šåœ¨å¥½å‹æˆ–è€…ç¾¤ç»„çš„åé¢æ˜¾ç¤ºçº¢è‰²æ¶ˆæ¯æ•°ï¼Œå…·ä½“æ ·å¼å¼€å‘è€…å¯è‡ªè¡Œå¤„ç†ã€‚
 
-## ÈºÁÄ{#group_chat}
+## ç¾¤èŠ{#group_chat}
 
-### ²éÑ¯Èº×é³ÉÔ±{#queryOccupants}
+### æŸ¥è¯¢ç¾¤ç»„æˆå‘˜{#queryOccupants}
 
 <pre class="hll"><code class="language-javascript">
-//¸ù¾İroomId²éÑ¯room³ÉÔ±ÁĞ±í
+//æ ¹æ®roomIdæŸ¥è¯¢roomæˆå‘˜åˆ—è¡¨
 var queryOccupants = function queryOccupants(roomId) {
-    var occupants = [];//´æ·Å³ÉÔ±ÈİÆ÷
-    //²éÑ¯»ñÈ¡roomĞÅÏ¢
+    var occupants = [];//å­˜æ”¾æˆå‘˜å®¹å™¨
+    //æŸ¥è¯¢è·å–roomä¿¡æ¯
     conn.queryRoomInfo({
         roomId : roomId,
         success : function(occs) {
@@ -479,7 +479,7 @@ var queryOccupants = function queryOccupants(roomId) {
                     occupants.push(occs[i]);
                 }
             }
-            //²éÑ¯»ñÈ¡room³ÉÔ±ĞÅÏ¢
+            //æŸ¥è¯¢è·å–roomæˆå‘˜ä¿¡æ¯
             conn.queryRoomMember({
                 roomId : roomId,
                 success : function(members) {
@@ -495,42 +495,42 @@ var queryOccupants = function queryOccupants(roomId) {
 };
 </code></pre>
 
-### ·¢ËÍÎÄ±¾£¨±íÇé£©ÁÄÌìÏûÏ¢{#group_sendTextMessage}
+### å‘é€æ–‡æœ¬ï¼ˆè¡¨æƒ…ï¼‰èŠå¤©æ¶ˆæ¯{#group_sendTextMessage}
 
 <pre class="hll"><code class="language-javascript">
-//·¢ËÍÎÄ±¾ÏûÏ¢
+//å‘é€æ–‡æœ¬æ¶ˆæ¯
 conn.sendTextMessage({
     to : to,
     type : 'groupchat',
-    msg :'hello world£¡' //ÎÄ±¾ÏûÏ¢
+    msg :'hello worldï¼' //æ–‡æœ¬æ¶ˆæ¯
 });
 
-//·¢ËÍ±íÇéÏûÏ¢£¬µ÷ÓÃ½Ó¿ÚÍ¬ÎÄ±¾ÏûÏ¢
+//å‘é€è¡¨æƒ…æ¶ˆæ¯ï¼Œè°ƒç”¨æ¥å£åŒæ–‡æœ¬æ¶ˆæ¯
 conn.sendTextMessage({
     to : to,
     type : 'groupchat',
-    msg :'hello world£¡[(*)][(#)]' //ÎÄ±¾ÏûÏ¢+±íÇé
+    msg :'hello worldï¼[(*)][(#)]' //æ–‡æœ¬æ¶ˆæ¯+è¡¨æƒ…
 });
 </code></pre>
 
-### ·¢ËÍÍ¼Æ¬ÏûÏ¢{#group_sendPic}
+### å‘é€å›¾ç‰‡æ¶ˆæ¯{#group_sendPic}
 
-·¢ËÍÍ¼Æ¬ÏûÏ¢sdk×Ô¶¯·ÖÁ½²½Íê³É
+å‘é€å›¾ç‰‡æ¶ˆæ¯sdkè‡ªåŠ¨åˆ†ä¸¤æ­¥å®Œæˆ
 
-1. ÉÏ´«Í¼Æ¬ÎÄ¼ş
-2. ·¢ËÍÍ¼Æ¬ÏûÏ¢³õÊ¼»¯Á¬½ÓÖĞµÄonPictureMessageµÄ¸ñÊ½
+1. ä¸Šä¼ å›¾ç‰‡æ–‡ä»¶
+2. å‘é€å›¾ç‰‡æ¶ˆæ¯åˆå§‹åŒ–è¿æ¥ä¸­çš„onPictureMessageçš„æ ¼å¼
 
 <pre class="hll"><code class="language-javascript">
-//·¢ËÍÍ¼Æ¬ÏûÏ¢Ê±µ÷ÓÃ·½·¨
+//å‘é€å›¾ç‰‡æ¶ˆæ¯æ—¶è°ƒç”¨æ–¹æ³•
 var sendPic = function() {
     var to = curChatUserId;
     if (to == null) {
         return;
     }
-    // Easemob.im.Helper.getFileUrlÎªeasemobwebim-sdk»ñÈ¡·¢ËÍÎÄ¼ş¶ÔÏóµÄ·½·¨£¬fileInputIdÎª input ±êÇ©µÄidÖµ
+    // Easemob.im.Helper.getFileUrlä¸ºeasemobwebim-sdkè·å–å‘é€æ–‡ä»¶å¯¹è±¡çš„æ–¹æ³•ï¼ŒfileInputIdä¸º input æ ‡ç­¾çš„idå€¼
     var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
     if (fileObj.url == null || fileObj.url == '') {
-        alert("ÇëÑ¡Ôñ·¢ËÍÍ¼Æ¬");
+        alert("è¯·é€‰æ‹©å‘é€å›¾ç‰‡");
         return;
     }
     var filetype = fileObj.filetype;
@@ -543,12 +543,12 @@ var sendPic = function() {
             fileInputId : fileInputId,
             to : to,
             onFileUploadError : function(error) {
-                //´¦ÀíÍ¼Æ¬ÉÏ´«Ê§°Ü
+                //å¤„ç†å›¾ç‰‡ä¸Šä¼ å¤±è´¥
             },
             onFileUploadComplete : function(data) {
-                //¹Ø±ÕÎÄ¼şÑ¡Ôñ´°¿Ú
+                //å…³é—­æ–‡ä»¶é€‰æ‹©çª—å£
                 $('#fileModal').modal('hide');
-                //±¾µØËõÂÔÍ¼
+                //æœ¬åœ°ç¼©ç•¥å›¾
                 var file = document.getElementById(fileInputId);
                 if (file && file.files) {
                     var objUrl = getObjectURL(file.files[0]);
@@ -561,37 +561,37 @@ var sendPic = function() {
             
             }
         };
-        //ÅĞ¶ÏÊÇ·ñÎªÈº×é±êÊ¶
+        //åˆ¤æ–­æ˜¯å¦ä¸ºç¾¤ç»„æ ‡è¯†
         if (curChatUserId.indexOf(groupFlagMark) >= 0) {
-            opt.type = 'groupchat';//Èº×é±êÊ¶·û
+            opt.type = 'groupchat';//ç¾¤ç»„æ ‡è¯†ç¬¦
             opt.to = curRoomId;
         }
         conn.sendPicture(opt);
         return;
     }
-    alert("²»Ö§³Ö´ËÍ¼Æ¬ÀàĞÍ" + filetype);
+    alert("ä¸æ”¯æŒæ­¤å›¾ç‰‡ç±»å‹" + filetype);
 };
 </code></pre>
 
-### ·¢ËÍÒôÆµÏûÏ¢{#group_sendAudio}
+### å‘é€éŸ³é¢‘æ¶ˆæ¯{#group_sendAudio}
 
-sdk´¦ÀíÍ¬Èº·¢ËÍÍ¼Æ¬ÏûÏ¢£¬·ÖÁ½²½
+sdkå¤„ç†åŒç¾¤å‘é€å›¾ç‰‡æ¶ˆæ¯ï¼Œåˆ†ä¸¤æ­¥
 
-1. ÉÏ´«ÒôÆµ
-2. ·¢ËÍÏûÏ¢
+1. ä¸Šä¼ éŸ³é¢‘
+2. å‘é€æ¶ˆæ¯
 
 <pre class="hll"><code class="language-javascript">
-//·¢ËÍÒôÆµÏûÏ¢Ê±µ÷ÓÃµÄ·½·¨
+//å‘é€éŸ³é¢‘æ¶ˆæ¯æ—¶è°ƒç”¨çš„æ–¹æ³•
 var sendAudio = function() {
     var to = curChatUserId;
     if (to == null) {
-        alert("ÇëÑ¡ÔñÁªÏµÈË");
+        alert("è¯·é€‰æ‹©è”ç³»äºº");
         return;
     }
-    //ÀûÓÃeasemobwebim-sdkÌá¹©µÄ·½·¨À´¹¹ÔìÒ»¸öfile¶ÔÏó
+    //åˆ©ç”¨easemobwebim-sdkæä¾›çš„æ–¹æ³•æ¥æ„é€ ä¸€ä¸ªfileå¯¹è±¡
     var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
     if (fileObj.url == null || fileObj.url == '') {
-            alert("ÇëÑ¡Ôñ·¢ËÍÒôÆµ");
+            alert("è¯·é€‰æ‹©å‘é€éŸ³é¢‘");
         return;
     }
     var filetype = fileObj.filetype;
@@ -602,15 +602,15 @@ var sendAudio = function() {
         var opt = {
             type:"chat",
             fileInputId : fileInputId,
-            to : to,//·¢¸øË­
+            to : to,//å‘ç»™è°
             onFileUploadError : function(error) {
-                //´¦ÀíÉÏ´«ÒôÆµÊ§°Ü
+                //å¤„ç†ä¸Šä¼ éŸ³é¢‘å¤±è´¥
             },
             onFileUploadComplete : function(data) {
-                //´¦ÀíÉÏ´«ÒôÆµ³É¹¦£¬Èç±¾µØÏûÏ¢ÌáÊ¾·¢ËÍ³É¹¦
+                //å¤„ç†ä¸Šä¼ éŸ³é¢‘æˆåŠŸï¼Œå¦‚æœ¬åœ°æ¶ˆæ¯æç¤ºå‘é€æˆåŠŸ
             }
         };
-        //¹¹ÔìÍêopt¶ÔÏóºóµ÷ÓÃeasemobwebim-sdkÖĞ·¢ËÍÒôÆµµÄ·½·¨
+        //æ„é€ å®Œoptå¯¹è±¡åè°ƒç”¨easemobwebim-sdkä¸­å‘é€éŸ³é¢‘çš„æ–¹æ³•
         if (curChatUserId.indexOf(groupFlagMark) >= 0) {
             opt.type = 'groupchat';
             opt.to = curRoomId;
@@ -618,26 +618,26 @@ var sendAudio = function() {
         conn.sendAudio(opt);
         return;
     }
-    alert("²»Ö§³Ö´ËÒôÆµÀàĞÍ" + filetype);
+    alert("ä¸æ”¯æŒæ­¤éŸ³é¢‘ç±»å‹" + filetype);
 };
 </code></pre>
-### ½ÓÊÕ¼°´¦ÀíÏûÏ¢{#messageType}
-ÈºÁÄ½ÓÊÕ¼°´¦ÀíÏûÏ¢Í¬µ¥ÁÄ£¬ÏûÏ¢ÌåÓëµ¥ÁÄÏûÏ¢¸ù¾İmessageµÄtype½øĞĞÇø·Ö£¬µ¥ÁÄÎª£º¡°chat¡±£¬ÈºÁÄÎª£º¡°groupchat¡±¡£¸ù¾İÏûÏ¢µÄÀàĞÍ½øĞĞ²»Í¬´¦Àí¼´¿É¡£
+### æ¥æ”¶åŠå¤„ç†æ¶ˆæ¯{#messageType}
+ç¾¤èŠæ¥æ”¶åŠå¤„ç†æ¶ˆæ¯åŒå•èŠï¼Œæ¶ˆæ¯ä½“ä¸å•èŠæ¶ˆæ¯æ ¹æ®messageçš„typeè¿›è¡ŒåŒºåˆ†ï¼Œå•èŠä¸ºï¼šâ€œchatâ€ï¼Œç¾¤èŠä¸ºï¼šâ€œgroupchatâ€ã€‚æ ¹æ®æ¶ˆæ¯çš„ç±»å‹è¿›è¡Œä¸åŒå¤„ç†å³å¯ã€‚
 
-## ÍË³ö{#quit}
+## é€€å‡º{#quit}
 
-### ¹Ø±ÕÁ¬½Ó{#conn_close}
-//sdk¹Ø±ÕÁ¬½Ó²¢´¦ÀíÁ¬½Ó×´Ì¬ÎªCLOSED
+### å…³é—­è¿æ¥{#conn_close}
+//sdkå…³é—­è¿æ¥å¹¶å¤„ç†è¿æ¥çŠ¶æ€ä¸ºCLOSED
 <pre class="hll"><code class="language-javascript">
 conn.close();
 </code></pre>
 
-## ¹¤¾ßÀàËµÃ÷{#sdk_tools}
+## å·¥å…·ç±»è¯´æ˜{#sdk_tools}
 
-### ±íÇé¹¤¾ßÀà{#emotion}
+### è¡¨æƒ…å·¥å…·ç±»{#emotion}
 
 <pre class="hll"><code class="language-javascript">
-//·µ»Ø±íÇéJSON object£¬¸ñÊ½Îª£º
+//è¿”å›è¡¨æƒ…JSON objectï¼Œæ ¼å¼ä¸ºï¼š
     {
         "[):]" : "data:image/png;base64,iVBORw0K....==",
         "[:D]" : "data:image/png;base64,iVBORw0KGgoAAAANSUh....=="
@@ -646,7 +646,7 @@ conn.close();
 var emotion_json = Easemob.im.Helper.EmotionPicData;
 </code></pre>
 
-### Base64¹¤¾ßÀà{#base64}
+### Base64å·¥å…·ç±»{#base64}
 
 <pre class="hll"><code class="language-javascript">
 var base64  = Easemob.im.Helper.Base64;
@@ -655,23 +655,23 @@ var base64str = base64.encode(srcstr);
 var orgstr = base64.decode(srcstr);
 </code></pre>
 
-### ÎÄ¼şÉÏ´«¹¤¾ßÀà{#fileupload}
+### æ–‡ä»¶ä¸Šä¼ å·¥å…·ç±»{#fileupload}
 
 <pre class="hll"><code class="language-javascript">
-//ÊÇ·ñÄÜÉÏ´«file
+//æ˜¯å¦èƒ½ä¸Šä¼ file
 var canupload = Easemob.im.Helper.isCanUploadFile;
-//ÊÇ·ñÄÜÏÂÔØfile
+//æ˜¯å¦èƒ½ä¸‹è½½file
 var candownload = Easemob.im.Helper.isCanDownLoadFile ;
-//ÊÇ·ñÉèÖÃheader
+//æ˜¯å¦è®¾ç½®header
 var hasheader = Easemob.im.Helper.hasSetRequestHeader;
-//ÊÇ·ñÉèÖÃmimetype
+//æ˜¯å¦è®¾ç½®mimetype
 var hasmimetype = Easemob.im.Helper.hasOverrideMimeType;
 </code></pre>
 
-### ±íÇé½âÎö¹¤¾ßÀà{#handleMotion}
+### è¡¨æƒ…è§£æå·¥å…·ç±»{#handleMotion}
 
 <pre class="hll"><code class="language-javascript">
-//·µ»Ø±íÇéJSON£¬¸ñÊ½Îª£º
+//è¿”å›è¡¨æƒ…JSONï¼Œæ ¼å¼ä¸ºï¼š
 {
     isemotion:true;
     body:[{
@@ -687,17 +687,17 @@ var hasmimetype = Easemob.im.Helper.hasOverrideMimeType;
 var emotionMsg = Easemob.im.Helper.parseTextMessage(message);
 </code></pre>
 
-### ÎÄ¼şÉÏ´«¹¤¾ßÀà{#fileupdate}
+### æ–‡ä»¶ä¸Šä¼ å·¥å…·ç±»{#fileupdate}
 
 <pre class="hll"><code class="language-javascript">
-//·µ»Øfileinfo¶ÔÏó£¬¸ñÊ½Îª£º
+//è¿”å›fileinfoå¯¹è±¡ï¼Œæ ¼å¼ä¸ºï¼š
     {
         url : '',
         filename : '',
         filetype : ''
     }
 var fileInfo = Easemob.im.Helper.getFileUrl(fileInputId);
-//ÉÏ´«
+//ä¸Šä¼ 
 var options={
     appName = 'chatdemoui',
     orgName = 'easemob-demo',
@@ -708,7 +708,7 @@ var options={
     heght:100//only for pic
 }
 Easemob.im.Helper.upload(options);
-//ÏÂÔØ
+//ä¸‹è½½
 var options = {
     method:'GET',//default GET
     responseType:'blob',//default blob
@@ -720,14 +720,14 @@ var options = {
     onFileUploadError:function(e){//upload file error },
 }
 Easemob.im.Helper.download(options);
-//ÎÄ¼ş´óĞ¡ 
+//æ–‡ä»¶å¤§å° 
 var options={
-    fileInputId:'uploadfileinput'//ÎÄ¼şÊäÈë¿òid
+    fileInputId:'uploadfileinput'//æ–‡ä»¶è¾“å…¥æ¡†id
 };
 var fileSize = getFileSize(options.fileInputId);;
 </code></pre>
 
-### ·¢ËÍAjaxÇëÇó{#ajaxresquest}
+### å‘é€Ajaxè¯·æ±‚{#ajaxresquest}
 
 <pre class="hll"><code class="language-javascript">
 var options = {
@@ -742,7 +742,7 @@ var options = {
 Easemob.im.Helper.xhr(options);
 </code></pre>
 
-### µÇÂ¼{#sdk_login}
+### ç™»å½•{#sdk_login}
 
 <pre class="hll"><code class="language-javascript">
 var options = {
@@ -755,9 +755,9 @@ var options = {
 Easemob.im.Helper.login2UserGrid(options);
 </code></pre>
 
-### ÄÚÖÃ¿Õº¯Êı{#null_function}
+### å†…ç½®ç©ºå‡½æ•°{#null_function}
 
-µ±ËùÓĞĞèÒª»Øµ÷µÄµØ·½½ÓÊÜµ½º¯ÊıÊ±£¬Ä¬ÈÏ²ÉÓÃ´Ëº¯Êı
+å½“æ‰€æœ‰éœ€è¦å›è°ƒçš„åœ°æ–¹æ¥å—åˆ°å‡½æ•°æ—¶ï¼Œé»˜è®¤é‡‡ç”¨æ­¤å‡½æ•°
 
 <pre class="hll"><code class="language-javascript">
 var emptyFn = function() {};
