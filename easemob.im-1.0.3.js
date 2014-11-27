@@ -1317,7 +1317,7 @@ connection.prototype.handleMessage = function(msginfo){
 		var msg = msgDatas[i];
 		var from = msg.from;
 		var too = msg.to;
-		var extmsg = msg.ext || '';
+		var extmsg = msg.ext || {};
 		var chattype = msginfo.getAttribute('type') || 'chat';
 		var msgBodies = msg.bodies;
 		if(!msgBodies || msgBodies.length==0){
@@ -1447,7 +1447,7 @@ connection.prototype.sendTextMessage = function(options) {
 			type : "txt",
 			msg : msgTxt
 		}],
-		ext : options.ext || ''
+		ext : options.ext || {}
 	};
 	var jsonstr = JSON.stringify(json);
 	var dom = $msg({
@@ -1559,7 +1559,7 @@ connection.prototype.sendPictureMessage = function(options) {
 						"file_length" : options.file_length,
 						filetype : options.filetype
 				}],
-				ext : options.ext || ''
+				ext : options.ext || {}
 	};
 	var jsonstr = JSON.stringify(json);
 	var date = new Date();
@@ -1626,7 +1626,7 @@ connection.prototype.sendAudioMessage = function(options) {
 						"file_length" : options.file_length,
 						length : options.length
 				}],
-				ext : options.ext || ''
+				ext : options.ext || {}
 	};
 	var jsonstr = JSON.stringify(json);
 	var dom = $msg({
@@ -1654,7 +1654,7 @@ connection.prototype.sendFileMessage = function(options) {
 						filename : options.filename,
 						"file_length" : options.file_length
 				}],
-				ext : options.ext || ''
+				ext : options.ext || {}
 	};
 	var jsonstr = JSON.stringify(json);
 	var dom = $msg({
@@ -1681,7 +1681,7 @@ connection.prototype.sendLocationMessage = function(options) {
 						lat : options.lat,
 						lng : options.lng
 				}],
-				ext : options.ext || ''
+				ext : options.ext || {}
 	};
 	var jsonstr = JSON.stringify(json);
 	var dom = $msg({
