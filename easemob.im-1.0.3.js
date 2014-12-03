@@ -158,6 +158,7 @@ EASEMOB_IM_DOWNLOADFILE_ERROR = tempIndex++;
 EASEMOB_IM_DOWNLOADFILE_NO_LOGIN = tempIndex++;
 EASEMOB_IM_DOWNLOADFILE_BROWSER_ERROR = tempIndex++;
 
+EASEMOB_IM_RESISTERUSER_ERROR = tempIndex++;
 
 tempIndex = 0;
 EASEMOB_IM_MESSAGE_REC_TEXT = tempIndex++;
@@ -395,6 +396,46 @@ var doAjaxRequest = function(options) {
 	xhr.send(data);
 	return xhr;
 };
+
+var registerUserFn = function(options){
+	var orgName = options.orgName || '';
+	var appName = options.appName || '';
+	var appKey = options.appKey || '';
+	if(!orgName && !appName && appKey){
+		var devInfos = appKey.split('#');
+		if(devInfos.length==2){
+			orgName = devInfos[0];
+			appName = devInfos[1];
+		}
+	}
+	if(!orgName && !appName){
+		options.error({
+			type : EASEMOB_IM_RESISTERUSER_ERROR,
+			msg : '没有指定开发者信息'
+		});
+		return;
+	}
+	var prefix = options.https ? 'https' : 'http';
+	var restUrl = options.url || prefix + '://a1.easemob.com/'+ orgName + '/' + appName + '/users';
+	
+	var userjson = {
+			username : options.username,
+			password : options.password,
+			nickname : options.nickname || ''
+	};
+	
+	var userinfo = JSON.stringify(userjson);
+	var options = {
+		url : restUrl,
+		dataType : 'json',
+		data : userinfo,
+		success : options.success || emptyFn,
+		error : options.error || emptyFn
+	};
+	var param = doAjaxRequest(options);
+	return param;
+};
+  
 
 var getFileUrlFn = function(fileInputId) {
 	var uri = {
@@ -1827,7 +1868,7 @@ connection.prototype.join = function(options){
 connection.prototype.listRooms = function(options) {
     var iq;
     iq = $iq({
-      to: options.server||'conference.easemob.com',
+      to: options.server||'conference.' + this.domain,
       from: this.context.jid,
       type: "get"
     }).c("query", {
@@ -1854,7 +1895,7 @@ connection.prototype.queryRoomMember = function(options){
 	var domain = this.domain;
 	var members = [];
 	 var iq= $iq({
-	      to : this.context.appKey+"_"+options.roomId+'@conference.' + domain,
+	      to : this.context.appKey+"_"+options.roomId+'@conference.' + this.domain,
 	      type : 'get'
 	    }).c('query', {
 	    	xmlns: Strophe.NS.MUC+'#admin'
@@ -1949,6 +1990,7 @@ connection.prototype.queryRoomOccupants = function(options) {
     }).c('query', attrs);
     this.context.stropheConn.sendIQ(info.tree(), completeFn, errorFn);
   };
+
 connection.prototype.setUserSig = function(desc) {
 	var dom = $pres({xmlns : 'jabber:client'});
 	desc = desc || "";
@@ -2047,6 +2089,9 @@ if (typeof Easemob.im.Helper == 'undefined') {
 	// object
 	Easemob.im.Helper.Base64 = innerBase64;
 	Easemob.im.Helper.EmotionPicData = emotionPicData;
+	
+	//user
+	Easemob.im.Helper.registerUser = registerUserFn;
 }
 })(jQuery)
 }

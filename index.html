@@ -22,15 +22,12 @@
 	var fileInputId = "fileInput";
 	var bothRoster = [];
 	var toRoster = [];
-	var unknowContact = {};
 	var maxWidth = 200;
 	var listRoom = [];
 	var listRoomId = [];
-	var curContentTypeFlag = null;
 	var groupFlagMark = "group&-";
 	var groupQuering = false;
 	var textSending = false;
-	var browerType = null;
 
 	window.URL = window.URL || window.webkitURL || window.mozURL
 			|| window.msURL;
@@ -175,11 +172,15 @@
 
 		});
 
-		$('#option-room-div-modall').on('hidden.bs.modal', function(e) {
+		$('#option-room-div-modal').on('hidden.bs.modal', function(e) {
 
 		});
 
 		$('#notice-block-div').on('hidden.bs.modal', function(e) {
+
+		});
+
+		$('#regist-div-modall').on('hidden.bs.modal', function(e) {
 
 		});
 
@@ -228,7 +229,6 @@
 					if (curroster)
 						setCurrentContact(curroster.name);//页面处理将第一个联系人作为当前聊天div
 				}
-				conn.setPresence();
 				//获取当前登录人的群组列表
 				conn.listRooms({
 					success : function(rooms) {
@@ -236,6 +236,7 @@
 							var listRoom = rooms;
 							buildListRoomDiv("contracgrouplist", rooms);//群组列表页面处理
 						}
+						conn.setPresence();//陌生人离线消息显示问题
 					},
 					error : function(e) {
 
@@ -259,7 +260,6 @@
 		clearContactUI("contactlistUL", "contactgrouplistUL",
 				"momogrouplistUL", msgCardDivId);
 
-		unknowContact = {};
 		showLoginUI();
 		groupQuering = false;
 		textSending = false;
@@ -427,6 +427,39 @@
 		});
 		return false;
 	};
+	
+	//注册新用户操作方法
+	var regist = function (){
+		var user = $("#regist_username").val();
+		var pass = $("#regist_password").val();
+		var nickname = $("#regist_nickname").val();
+		if (user == '' || pass == ''|| nickname== '') {
+			alert("用户名/密码/昵称 不能为空");
+			return;
+		}
+		var options = {
+				username : user,
+				password : pass,
+				nickname : nickname,
+				appKey : 'easemob-demo#chatdemoui',
+				success : function(result) {
+					alert("注册成功!");
+					$('#loginmodal').modal('show');
+					$('#regist-div-modal').modal('hide');
+				},
+				error : function(e) {
+					alert(e);
+				}
+			};
+		Easemob.im.Helper.registerUser(options);
+	};
+	
+	//注册页面返回登录页面操作
+	var showlogin = function(){
+		$('#loginmodal').modal('show');
+		$('#regist-div-modal').modal('hide');
+	};
+	
 	var logout = function() {
 		conn.close();
 	};
@@ -954,28 +987,27 @@
 		options.onFileDownloadComplete = function(response, xhr) {
 			var objectURL = window.URL.createObjectURL(response);
 			var audio = document.createElement("audio");
-				if (("src" in audio) && ("controls" in audio)) {
-					audio.onload = function() {
-						audio.onload = null;
-						window.URL.revokeObjectURL(audio.src);
-					};
-					audio.onerror = function() {
-						audio.onerror = null;
-						appendMsg(from, contactDivId, "当前浏览器不支持播放此音频:"
-								+ filename);
-					};
-					audio.controls = "controls";
-					audio.src = objectURL;
-					appendMsg(from, contactDivId, {
-						data : [ {
-							type : 'audio',
-							filename : filename,
-							data : audio
-						} ]
-					});
-					audio.play();
-					return;
-				}
+			if (("src" in audio) && ("controls" in audio)) {
+				audio.onload = function() {
+					audio.onload = null;
+					window.URL.revokeObjectURL(audio.src);
+				};
+				audio.onerror = function() {
+					audio.onerror = null;
+					appendMsg(from, contactDivId, "当前浏览器不支持播放此音频:" + filename);
+				};
+				audio.controls = "controls";
+				audio.src = objectURL;
+				appendMsg(from, contactDivId, {
+					data : [ {
+						type : 'audio',
+						filename : filename,
+						data : audio
+					} ]
+				});
+				audio.play();
+				return;
+			}
 		};
 		options.onFileDownloadError = function(e) {
 			appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
@@ -1036,12 +1068,8 @@
 		}
 		var contactLi = getContactLi(contactDivId);
 		if (contactLi == null) {
-			if (unknowContact[contact]) {
-				return;
-			}
 			//alert("陌生人" + who + "的消息 :" + message);
 			createMomogrouplistUL(who, message);
-			//unknowContact[contact] = true;//只提示一次陌生人消息，防骚扰
 			//return ;
 		}
 
@@ -1367,6 +1395,12 @@
 		$('#option-room-div-modal').modal('toggle');
 	};
 
+	var showRegist = function showRegist() {
+		$('#loginmodal').modal('hide');
+		$('#regist-div-modal').modal('toggle');
+	};
+	
+
 	var getObjectURL = function getObjectURL(file) {
 		var url = null;
 		if (window.createObjectURL != undefined) { // basic
@@ -1404,6 +1438,36 @@
 		</div>
 		<div class="modal-footer">
 			<button class="flatbtn-blu" onclick="login()" tabindex="3">登录</button>
+			<button class="flatbtn-blu" onclick="showRegist()" tabindex="4">注册</button>
+		</div>
+	</div>
+
+	<!-- 注册操作界面 -->
+	<div id="regist-div-modal" class="alert modal fade hide" role="dialog"
+		aria-hidden="true" data-backdrop="static">
+		<div class="modal-header">
+			<h3>用户注册</h3>
+		</div>
+		<div class="modal-body">
+			<div id="regist_div" style="overflow-y: auto">
+				<table>
+					<tr>
+						<td width="65%"><label >用户名:</label> <input
+							type="text" value="" id="regist_username"
+							tabindex="1" /> <label >密码:</label> <input
+							type="password" value=""  id="regist_password"
+							tabindex="2" /> <label >昵称:</label> <input
+							type="text" value="" id="regist_nickname"
+							tabindex="3" /></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button id="confirm-regist-confirmButton"
+				class="btn btn-primary" onclick="regist()">完成</button>
+			<button id="confirm-regist-cancelButton" 
+			    class="btn"  onclick="showlogin()">返回</button>
 		</div>
 	</div>
 
@@ -1635,7 +1699,6 @@
 				<div id="room-member-list" style="height: 100px; overflow-y: auto"></div>
 			</div>
 		</div>
-
 	</div>
 </body>
 </html>
