@@ -1011,8 +1011,13 @@ var login2ImCallback = function (status,msg,conn){
 		});
 	} else if ((status == Strophe.Status.ATTACHED) || (status == Strophe.Status.CONNECTED)){
 		var handleMessage = function(msginfo){
-			conn.handleMessage(msginfo);
-			return true;
+			var receiveinfo = msginfo.getElementsByTagName("received");
+			if(receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI == "urn:xmpp:receipts"){
+                return true;
+            }else{
+            	conn.handleMessage(msginfo);
+            	return true;
+            }
 		};
 		var handlePresence = function(msginfo){
 			conn.handlePresence(msginfo);
