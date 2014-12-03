@@ -236,7 +236,7 @@
 							var listRoom = rooms;
 							buildListRoomDiv("contracgrouplist", rooms);//群组列表页面处理
 						}
-						conn.setPresence();//陌生人离线消息显示问题
+						conn.setPresence();//设置用户上线状态，必须调用
 					},
 					error : function(e) {
 
