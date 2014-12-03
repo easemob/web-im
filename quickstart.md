@@ -755,6 +755,23 @@ var options = {
 Easemob.im.Helper.login2UserGrid(options);
 </code></pre>
 
+### 注册{#sdk_regist}
+
+<pre class="hll"><code class="language-javascript">
+vvar options = {
+	username : 'zjj8',
+	password : '123456',
+	appKey : 'easemob-demo#chatdemoui',
+	success : function(result) {
+		//注册成功
+		},
+		error : function(e) {
+		//注册失败			
+		}
+	};
+Easemob.im.Helper.registerUser(options);
+</code></pre>
+
 ### 内置空函数{#null_function}
 
 当所有需要回调的地方接受到函数时，默认采用此函数
