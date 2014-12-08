@@ -11,7 +11,7 @@
 <link rel="stylesheet" type="text/css" href="css/webim.css" />
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 <script type="text/javascript">
-	var apiURL = null ;
+	var apiURL = null;
 	var curUserId = null;
 	var curChatUserId = null;
 	var conn = null;
@@ -125,6 +125,10 @@
 			//收到联系人信息的回调方法
 			onRoster : function(message) {
 				handleRoster(message);
+			},
+			//收到群组邀请时的回调方法
+			onInviteMessage : function(message) {
+				handleInviteMessage(message);
 			},
 			//异常时的回调方法
 			onError : function(message) {
@@ -418,7 +422,7 @@
 		showWaitLoginedUI();
 		//根据用户名密码登录系统
 		conn.open({
-			apiUrl: apiURL,
+			apiUrl : apiURL,
 			user : user,
 			pwd : pass,
 			//连接时提供appkey
@@ -427,39 +431,39 @@
 		});
 		return false;
 	};
-	
+
 	//注册新用户操作方法
-	var regist = function (){
+	var regist = function() {
 		var user = $("#regist_username").val();
 		var pass = $("#regist_password").val();
 		var nickname = $("#regist_nickname").val();
-		if (user == '' || pass == ''|| nickname== '') {
+		if (user == '' || pass == '' || nickname == '') {
 			alert("用户名/密码/昵称 不能为空");
 			return;
 		}
 		var options = {
-				username : user,
-				password : pass,
-				nickname : nickname,
-				appKey : 'easemob-demo#chatdemoui',
-				success : function(result) {
-					alert("注册成功!");
-					$('#loginmodal').modal('show');
-					$('#regist-div-modal').modal('hide');
-				},
-				error : function(e) {
-					alert(e.error);
-				}
-			};
+			username : user,
+			password : pass,
+			nickname : nickname,
+			appKey : 'easemob-demo#chatdemoui',
+			success : function(result) {
+				alert("注册成功!");
+				$('#loginmodal').modal('show');
+				$('#regist-div-modal').modal('hide');
+			},
+			error : function(e) {
+				alert(e.error);
+			}
+		};
 		Easemob.im.Helper.registerUser(options);
 	};
-	
+
 	//注册页面返回登录页面操作
-	var showlogin = function(){
+	var showlogin = function() {
 		$('#loginmodal').modal('show');
 		$('#regist-div-modal').modal('hide');
 	};
-	
+
 	var logout = function() {
 		conn.close();
 	};
@@ -639,6 +643,11 @@
 			li.removeChild(li.children[2]);
 		}
 
+		var badgespanGroup = $(li).parent().parent().parent().prev().children()
+				.children(".badge");
+		if (badgespanGroup && badgespanGroup.length > 0) {
+			$(li).parent().parent().parent().prev().children().children().remove();
+		}
 	};
 
 	var clearContactUI = function(contactlistUL, contactgrouplistUL,
@@ -864,7 +873,7 @@
 				opt.type = 'groupchat';
 				opt.to = curRoomId;
 			}
-			opt.apiUrl =  apiURL;
+			opt.apiUrl = apiURL;
 			conn.sendAudio(opt);
 			return;
 		}
@@ -1005,7 +1014,7 @@
 						data : audio
 					} ]
 				});
-				audio.play();
+				//audio.play();
 				return;
 			}
 		};
@@ -1023,6 +1032,29 @@
 		var addr = message.addr;
 		var ele = appendMsg(from, from, addr);
 		return ele;
+	};
+
+	var handleInviteMessage = function(message) {
+		var type = message.type;
+		var from = message.from;
+		var roomId = message.roomid;
+
+		//获取当前登录人的群组列表
+		conn.listRooms({
+			success : function(rooms) {
+				if (rooms) {
+					var listRoom = rooms;
+					cleanListRoomDiv();//先将原群组列表中的内容清除，再将最新的群组列表加入
+					buildListRoomDiv("contracgrouplist", rooms);//群组列表页面处理
+				}
+			},
+			error : function(e) {
+			}
+		});
+
+	};
+	var cleanListRoomDiv = function cleanListRoomDiv() {
+		$('#contactgrouplistUL').empty();
 	};
 
 	//收到陌生人消息时创建陌生人列表
@@ -1140,11 +1172,16 @@
 				var myNum = new Number(count);
 				myNum++;
 				badgespan.text(myNum);
+
+				var badgespanGroup = $(contactLi).parent().parent().parent()
+						.prev().children().children(".badge");
+				badgespanGroup.text("New");
 			} else {
 				$(contactLi).append('<span class="badge">1</span>');
+				$(contactLi).parent().parent().parent().prev().children()
+						.append('<span class="badge">New</span>');
 			}
-			$(contactLi).parent().parent().parent().prev().children().append(
-					'<span class="badge"></span>');
+
 		}
 		var msgContentDiv = getContactChatDiv(contactDivId);
 		if (curUserId == who) {
@@ -1399,7 +1436,6 @@
 		$('#loginmodal').modal('hide');
 		$('#regist-div-modal').modal('toggle');
 	};
-	
 
 	var getObjectURL = function getObjectURL(file) {
 		var url = null;
@@ -1452,22 +1488,20 @@
 			<div id="regist_div" style="overflow-y: auto">
 				<table>
 					<tr>
-						<td width="65%"><label >用户名:</label> <input
-							type="text" value="" id="regist_username"
-							tabindex="1" /> <label >密码:</label> <input
-							type="password" value=""  id="regist_password"
-							tabindex="2" /> <label >昵称:</label> <input
-							type="text" value="" id="regist_nickname"
-							tabindex="3" /></td>
+						<td width="65%"><label>用户名:</label> <input type="text"
+							value="" id="regist_username" tabindex="1" /> <label>密码:</label>
+							<input type="password" value="" id="regist_password" tabindex="2" />
+							<label>昵称:</label> <input type="text" value=""
+							id="regist_nickname" tabindex="3" /></td>
 					</tr>
 				</table>
 			</div>
 		</div>
 		<div class="modal-footer">
-			<button id="confirm-regist-confirmButton"
-				class="btn btn-primary" onclick="regist()">完成</button>
-			<button id="confirm-regist-cancelButton" 
-			    class="btn"  onclick="showlogin()">返回</button>
+			<button id="confirm-regist-confirmButton" class="btn btn-primary"
+				onclick="regist()">完成</button>
+			<button id="confirm-regist-cancelButton" class="btn"
+				onclick="showlogin()">返回</button>
 		</div>
 	</div>
 

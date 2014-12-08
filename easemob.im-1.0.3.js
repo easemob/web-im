@@ -1003,6 +1003,19 @@ var innerCheck = function(options,conn){
 	conn.context.orgName = orgName;
 	return true;
 };
+var parseMessageType = function(msginfo){
+	var msgtype = 'normal';
+	var receiveinfo = msginfo.getElementsByTagName("received");
+	if(receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI == "urn:xmpp:receipts"){
+		msgtype = 'received';
+    }else{
+    	var inviteinfo =  msginfo.getElementsByTagName("invite");
+    	if(inviteinfo && inviteinfo.length > 0){
+    		msgtype = 'invite';
+    	}
+    }
+	return msgtype;
+};
 var login2ImCallback = function (status,msg,conn){
 	if (status == Strophe.Status.CONNFAIL){
 	  conn.onError({
@@ -1011,9 +1024,13 @@ var login2ImCallback = function (status,msg,conn){
 		});
 	} else if ((status == Strophe.Status.ATTACHED) || (status == Strophe.Status.CONNECTED)){
 		var handleMessage = function(msginfo){
-			var receiveinfo = msginfo.getElementsByTagName("received");
-			if(receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI == "urn:xmpp:receipts"){
+			var type = parseMessageType(msginfo);
+			if('received' == type){
+				conn.handleReceivedMessage(msginfo);
                 return true;
+            }else if('invite' == type){
+            	conn.handleInviteMessage(msginfo);
+            	return true;
             }else{
             	conn.handleMessage(msginfo);
             	return true;
@@ -1131,6 +1148,8 @@ connection.prototype.init = function(options) {
 	this.onPresence = options.onPresence || emptyFn;
 	this.onRoster = options.onRoster || emptyFn;
 	this.onError = options.onError || emptyFn;
+	this.onReceivedMessage = options.onReceivedMessage || emptyFn;
+	this.onInviteMessage = options.onInviteMessage || emptyFn;
 	
 	this.context = {
 		status : STATUS_INIT
@@ -1453,6 +1472,32 @@ connection.prototype.handleMessage = function(msginfo){
 			});
 		}
 	}
+};
+connection.prototype.handleReceivedMessage = function(message){
+	this.onReceivedMessage(message);
+};
+connection.prototype.handleInviteMessage = function(message){
+	var form = null;
+	var invitemsg = message.getElementsByTagName('invite');
+	if(invitemsg && invitemsg.length>0){
+		var fromJid = invitemsg[0].getAttribute('from');
+		form = parseNameFromJidFn(fromJid);
+	}
+	var xmsg = message.getElementsByTagName('x');
+	var roomid = null;
+	if(xmsg && xmsg.length > 0){
+		for(var i = 0; i < xmsg.length; i++){
+			if('jabber:x:conference' == xmsg[i].namespaceURI){
+				var roomjid = xmsg[i].getAttribute('jid');
+				roomid = parseNameFromJidFn(roomjid);
+			}
+		}
+	}
+	this.onInviteMessage({
+		type : 'invite',
+		from : form,
+		roomid : roomid
+	});
 };
 connection.prototype.sendCommand = function(dom) {
 	if(this.isOpened()){
