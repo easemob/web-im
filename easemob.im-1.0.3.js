@@ -1730,8 +1730,11 @@ connection.prototype.sendAudioMessage = function(options) {
 };
 connection.prototype.sendFileMessage = function(options) {
 	var appKey = this.context.appKey || '';
-	var toJid = appKey + "_" + options.to + "@"
-			+ this.domain;
+	var toJid = appKey + "_" + options.to + "@"	+ this.domain;
+	if(options.type && options.type == 'groupchat'){
+		toJid =appKey + "_"+options.to+'@conference.' + this.domain;
+	}
+	
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
 	}
@@ -1758,8 +1761,11 @@ connection.prototype.sendFileMessage = function(options) {
 };
 connection.prototype.sendLocationMessage = function(options) {
 	var appKey = this.context.appKey || '';
-	var toJid = appKey + "_" + options.to + "@"
-			+ this.domain;
+	var toJid = appKey + "_" + options.to + "@"	+ this.domain;
+	if(options.type && options.type == 'groupchat'){
+		toJid =appKey + "_"+options.to+'@conference.' + this.domain;
+	}
+	
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
 	}
