@@ -5644,6 +5644,21 @@ a.thumbnail:focus {
   float: right;
 }
 
+.label,
+.badgegroup {
+  display: inline-block;
+  padding: 2px 4px;
+  font-size: 11.844px;
+  font-weight: bold;
+  line-height: 14px;
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  vertical-align: baseline;
+  background-color: red;
+  float: right;
+}
+
 .label {
   -webkit-border-radius: 3px;
      -moz-border-radius: 3px;
@@ -5657,6 +5672,15 @@ a.thumbnail:focus {
      -moz-border-radius: 9px;
           border-radius: 9px;
 }
+
+.badgegroup {
+  padding-right: 9px;
+  padding-left: 9px;
+  -webkit-border-radius: 9px;
+     -moz-border-radius: 9px;
+          border-radius: 9px;
+}
+
 
 .label:empty,
 .badge:empty {
