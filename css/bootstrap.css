@@ -5221,10 +5221,10 @@ input[type="submit"].btn.btn-mini {
 
 .modal.fade {
   top: -25%;
-  -webkit-transition: opacity 0.3s linear, top 0.3s ease-out;
-     -moz-transition: opacity 0.3s linear, top 0.3s ease-out;
-       -o-transition: opacity 0.3s linear, top 0.3s ease-out;
-          transition: opacity 0.3s linear, top 0.3s ease-out;
+  -webkit-transition: opacity 0.1s linear, top 0.1s ease-out;
+     -moz-transition: opacity 0.1s linear, top 0.1s ease-out;
+       -o-transition: opacity 0.1s linear, top 0.1s ease-out;
+          transition: opacity 0.1s linear, top 0.1s ease-out;
 }
 
 .modal.fade.in {
