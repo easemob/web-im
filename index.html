@@ -28,6 +28,8 @@
 	var groupFlagMark = "group--";
 	var groupQuering = false;
 	var textSending = false;
+	var appkey = "easemob-demo#chatdemoui";
+	var time = 0;
 
 	window.URL = window.URL || window.webkitURL || window.mozURL
 			|| window.msURL;
@@ -236,9 +238,13 @@
 				//获取当前登录人的群组列表
 				conn.listRooms({
 					success : function(rooms) {
-						if (rooms) {
-							var listRoom = rooms;
+						if (rooms && rooms.length > 0) {
 							buildListRoomDiv("contracgrouplist", rooms);//群组列表页面处理
+							if (curChatUserId == null) {
+								setCurrentContact(groupFlagMark
+										+ rooms[0].roomId);
+								$('#accordion2').click();
+							}
 						}
 						conn.setPresence();//设置用户上线状态，必须调用
 					},
@@ -426,7 +432,7 @@
 			user : user,
 			pwd : pass,
 			//连接时提供appkey
-			appKey : 'easemob-demo#chatdemoui',
+			appKey : appkey,
 		//accessToken : 'YWMt8bfZfFk5EeSiAzsQ0OXu4QAAAUpoZFOMJ66ic5m2LOZRhYUsRKZWINA06HI'
 		});
 		return false;
@@ -445,7 +451,7 @@
 			username : user,
 			password : pass,
 			nickname : nickname,
-			appKey : 'easemob-demo#chatdemoui',
+			appKey : appkey,
 			success : function(result) {
 				alert("注册成功!");
 				$('#loginmodal').modal('show');
@@ -642,10 +648,9 @@
 		if (badgespan && badgespan.length > 0) {
 			li.removeChild(li.children[2]);
 		}
-		
+
 		//点击有未读消息对象时对未读消息提醒的处理
-		var badgespanGroup = $(li).parent().parent().parent()
-				.find(".badge");
+		var badgespanGroup = $(li).parent().parent().parent().find(".badge");
 		if (badgespanGroup && badgespanGroup.length == 0) {
 			$(li).parent().parent().parent().prev().children().children()
 					.remove();
@@ -658,6 +663,16 @@
 		$('#contactlistUL').empty();
 		$('#contactgrouplistUL').empty();
 		$('#momogrouplistUL').empty();
+
+		//处理联系人分组的未读消息处理
+		var accordionChild = $('#accordionDiv').children();
+		for (var i = 1; i <= accordionChild.length; i++) {
+			var badgegroup = $('#accordion' + i).find(".badgegroup");
+			if (badgegroup && badgegroup.length > 0) {
+				$('#accordion' + i).children().remove();
+			}
+		}
+		;
 
 		//清除右侧对话框内容
 		document.getElementById(talkToDivId).children[0].innerHTML = "";
@@ -1113,13 +1128,9 @@
 
 		momogrouplistUL.appendChild(lielem);
 	};
-
 	//显示聊天记录的统一处理方法
 	var appendMsg = function(who, contact, message, chattype) {
 		var contactUL = document.getElementById("contactlistUL");
-		if (contactUL.children.length == 0) {
-			return null;
-		}
 		var contactDivId = contact;
 		if (chattype) {
 			contactDivId = groupFlagMark + contact;
@@ -1186,7 +1197,15 @@
 				}
 			}
 		}
-		if (curChatUserId.indexOf(contact) < 0) {
+		if (curChatUserId == null && chattype == null) {
+			setCurrentContact(contact);
+			if (time < 1) {
+				$('#accordion3').click();
+				time++;
+			}
+
+		}
+		if (curChatUserId && curChatUserId.indexOf(contact) < 0) {
 			var contactLi = getContactLi(contactDivId);
 			if (contactLi == null) {
 				return;
@@ -1209,7 +1228,7 @@
 			if (badgespanGroup && badgespanGroup.length == 0) {
 				$(contactLi).parent().parent().parent().prev().children()
 						.append('<span class="badgegroup">New</span>');
-			} 
+			}
 
 		}
 		var msgContentDiv = getContactChatDiv(contactDivId);
@@ -1586,9 +1605,9 @@
 					</div>
 					<div class="accordion-group">
 						<div class="accordion-heading">
-							<a id="accordion2" class="accordion-toggle"
+							<a id="accordion2" class="accordion-toggle collapsed"
 								data-toggle="collapse" data-parent="#accordionDiv"
-								href="#collapseTwo"> 我的群组</a>
+								href="#collapseTwo">我的群组</a>
 						</div>
 						<div id="collapseTwo" class="accordion-body collapse">
 							<div class="accordion-inner" id="contracgrouplist">
@@ -1598,9 +1617,9 @@
 					</div>
 					<div class="accordion-group">
 						<div class="accordion-heading">
-							<a id="accordion3" class="accordion-toggle"
+							<a id="accordion3" class="accordion-toggle collapsed"
 								data-toggle="collapse" data-parent="#accordionDiv"
-								href="#collapseThree"> 陌生人</a>
+								href="#collapseThree">陌生人</a>
 						</div>
 						<div id="collapseThree" class="accordion-body collapse">
 							<div class="accordion-inner" id="momogrouplist">

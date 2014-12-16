@@ -277,7 +277,7 @@ a:hover {
 	border-radius: 5px;
 	background-color: #C0C0C0;
 	position: relative;
-	
+	/*padding: 5px 10px 5px 5px;*/ 
 }
 
 .chat03_content ul {
