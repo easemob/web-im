@@ -6,7 +6,7 @@
 <script type="text/javascript" src="jquery-1.11.1.js"></script>
 <script type='text/javascript' src='strophe-custom-1.0.0.js'></script>
 <script type='text/javascript' src='json2.js'></script>
-<script type="text/javascript" src="easemob.im-1.0.3.js"></script>
+<script type="text/javascript" src="easemob.im-1.0.4.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
 <link rel="stylesheet" type="text/css" href="css/webim.css" />
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
@@ -1046,9 +1046,14 @@
 
 	var handleLocationMessage = function(message) {
 		var from = message.from;
-		var addr = message.addr;
-		var ele = appendMsg(from, from, addr);
-		return ele;
+		var to = message.to;
+		var mestype = message.type;
+		var content = message.addr;
+		if (mestype == 'groupchat') {
+			appendMsg(from, to, content, mestype);
+		} else {
+			appendMsg(from, from, content, mestype);
+		}
 	};
 
 	var handleInviteMessage = function(message) {
@@ -1132,14 +1137,12 @@
 	var appendMsg = function(who, contact, message, chattype) {
 		var contactUL = document.getElementById("contactlistUL");
 		var contactDivId = contact;
-		if (chattype) {
+		if (chattype && chattype == 'groupchat') {
 			contactDivId = groupFlagMark + contact;
 		}
 		var contactLi = getContactLi(contactDivId);
 		if (contactLi == null) {
-			//alert("陌生人" + who + "的消息 :" + message);
 			createMomogrouplistUL(who, message);
-			//return ;
 		}
 
 		// 消息体 {isemotion:true;body:[{type:txt,msg:ssss}{type:emotion,msg:imgdata}]}
@@ -1203,7 +1206,6 @@
 				$('#accordion3').click();
 				time++;
 			}
-
 		}
 		if (curChatUserId && curChatUserId.indexOf(contact) < 0) {
 			var contactLi = getContactLi(contactDivId);
@@ -1220,7 +1222,6 @@
 
 			} else {
 				$(contactLi).append('<span class="badge">1</span>');
-
 			}
 			//联系人不同分组的未读消息提醒
 			var badgespanGroup = $(contactLi).parent().parent().parent().prev()
