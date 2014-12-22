@@ -1143,6 +1143,7 @@ connection.prototype.init = function(options) {
 	this.onEmotionMessage = options.onEmotionMessage || emptyFn;
 	this.onPictureMessage = options.onPictureMessage || emptyFn;
 	this.onAudioMessage = options.onAudioMessage || emptyFn;
+	this.onVideoMessage = options.onVideoMessage || emptyFn;
 	this.onFileMessage = options.onFileMessage || emptyFn;
 	this.onLocationMessage = options.onLocationMessage || emptyFn;
 	this.onPresence = options.onPresence || emptyFn;
@@ -1468,6 +1469,18 @@ connection.prototype.handleMessage = function(msginfo){
 				addr : msgBody.addr,
 				lat : msgBody.lat,
 				lng : msgBody.lng,
+				ext : extmsg
+			});
+		}else if("video" == type){
+			this.onVideoMessage({
+				type : chattype,
+				from : from,
+				to : too,
+				url : msgBody.url,
+				secret : msgBody.secret,
+				filename : msgBody.filename,
+				file_length : msgBody.file_length,
+				accessToken : this.context.accessToken || '',
 				ext : extmsg
 			});
 		}

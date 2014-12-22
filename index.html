@@ -4,8 +4,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>WebIM-DEMO</title>
 <script type="text/javascript" src="jquery-1.11.1.js"></script>
-<script type='text/javascript' src='strophe-custom-1.0.0.js'></script>
-<script type='text/javascript' src='json2.js'></script>
+<script type="text/javascript" src="strophe-custom-1.0.0.js"></script>
+<script type="text/javascript" src="json2.js"></script>
 <script type="text/javascript" src="easemob.im-1.0.4.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
 <link rel="stylesheet" type="text/css" href="css/webim.css" />
@@ -117,8 +117,17 @@
 			onAudioMessage : function(message) {
 				handleAudioMessage(message);
 			},
+			//收到位置消息的回调方法
 			onLocationMessage : function(message) {
 				handleLocationMessage(message);
+			},
+			//收到文件消息的回调方法
+			onFileMessage : function(message) {
+				handleFileMessage(message);
+			},
+			//收到视频消息的回调方法
+			onVideoMessage : function(message) {
+				handleVideoMessage(message);
 			},
 			//收到联系人订阅请求的回调方法
 			onPresence : function(message) {
@@ -202,10 +211,56 @@
 			$(window).bind('beforeunload', function() {
 				if (conn) {
 					conn.close();
+					return true;
 				}
 			});
 		});
 	});
+
+	//处理收到文件消息
+	var handleFileMessage = function(message) {
+		var filename = message.filename;
+		var filetype = message.filetype;
+		var from = message.from;
+
+		var mestype = message.type;//消息发送的类型是群组消息还是个人消息
+		var contactDivId = from;
+		if (mestype == 'groupchat') {
+			contactDivId = groupFlagMark + message.to;
+		}
+		var options = message;
+		options.onFileDownloadComplete = function(response, xhr) {
+			var spans = "收到文件消息:" + filename;
+			appendMsg(from, contactDivId, spans);
+			return;
+		};
+		options.onFileDownloadError = function(e) {
+			appendMsg(from, contactDivId, e.msg + ",下载文件" + filename + "失败");
+		};
+		Easemob.im.Helper.download(options);
+	};
+	//收到视频消息
+	var handleVideoMessage = function(message) {
+
+		var filename = message.filename;
+		var filetype = message.filetype;
+		var from = message.from;
+
+		var mestype = message.type;//消息发送的类型是群组消息还是个人消息
+		var contactDivId = from;
+		if (mestype == 'groupchat') {
+			contactDivId = groupFlagMark + message.to;
+		}
+		var options = message;
+		options.onFileDownloadComplete = function(response, xhr) {
+			var spans = "收到视频消息:" + filename;
+			appendMsg(from, contactDivId, spans);
+		};
+		options.onFileDownloadError = function(e) {
+			appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
+		};
+		Easemob.im.Helper.download(options);
+	};
 
 	//处理连接时函数,主要是登录成功后对页面元素做处理
 	var handleOpen = function(conn) {
