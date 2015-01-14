@@ -211,7 +211,10 @@
 			$(window).bind('beforeunload', function() {
 				if (conn) {
 					conn.close();
-					return true;
+					if (navigator.userAgent.indexOf("Firefox") > 0)
+						return ' ';
+					else
+						return '';
 				}
 			});
 		});
