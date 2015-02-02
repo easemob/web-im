@@ -23,8 +23,6 @@
 	var bothRoster = [];
 	var toRoster = [];
 	var maxWidth = 200;
-	var listRoom = [];
-	var listRoomId = [];
 	var groupFlagMark = "group--";
 	var groupQuering = false;
 	var textSending = false;
@@ -322,8 +320,6 @@
 		curRoomId = null;
 		bothRoster = [];
 		toRoster = [];
-		listRoom = [];
-		listRoomId = [];
 		hiddenChatUI();
 		clearContactUI("contactlistUL", "contactgrouplistUL",
 				"momogrouplistUL", msgCardDivId);
@@ -490,7 +486,7 @@
 			user : user,
 			pwd : pass,
 			//连接时提供appkey
-			appKey : appkey,
+			appKey : appkey
 		//accessToken : 'YWMt8bfZfFk5EeSiAzsQ0OXu4QAAAUpoZFOMJ66ic5m2LOZRhYUsRKZWINA06HI'
 		});
 		return false;
@@ -588,7 +584,6 @@
 		for (i = 0; i < rooms.length; i++) {
 			var roomsName = rooms[i].name;
 			var roomId = rooms[i].roomId;
-			listRoomId.push(roomId);
 			if (roomId in cache) {
 				continue;
 			}
@@ -1049,8 +1044,20 @@
 				});
 			}
 		};
+        
+        var redownLoadFileNum = 0;
 		options.onFileDownloadError = function(e) {
-			appendMsg(from, contactDivId, e.msg + ",下载图片" + filename + "失败");
+            //下载失败时只重新下载一次
+            if(redownLoadFileNum < 1){
+               redownLoadFileNum++;
+                options.accessToken = options_c;
+               Easemob.im.Helper.download(options);
+               
+            }else{
+              appendMsg(from, contactDivId, e.msg + ",下载图片" + filename + "失败");
+              redownLoadFileNum = 0;
+            }
+           
 		};
 		//easemobwebim-sdk包装的下载文件对象的统一处理方法。
 		Easemob.im.Helper.download(options);
@@ -1231,14 +1238,7 @@
 				for (var j = 0; j < ele.length; j++) {
 					lineDiv.appendChild(ele[j]);
 				}
-			} else if (type == "pic") {
-				var filename = msg.filename;
-				var fileele = $("<p3>" + filename + "</p3><br>");
-				for (var j = 0; j < fileele.length; j++) {
-					lineDiv.appendChild(fileele[j]);
-				}
-				lineDiv.appendChild(data);
-			} else if (type == 'audio') {
+			} else if (type == "pic" || type == 'audio' || type == 'video') {
 				var filename = msg.filename;
 				var fileele = $("<p3>" + filename + "</p3><br>");
 				for (var j = 0; j < fileele.length; j++) {
