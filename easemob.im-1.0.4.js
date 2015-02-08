@@ -783,7 +783,7 @@ var parseResponseMessageFn = function(msginfo){
 			if(childNodes && childNodes.length>0){
 				var childNode = msgBody.childNodes[0];
 				if(childNode.nodeType==Strophe.ElementType.TEXT){
-					var jsondata = childNode.nodeValue;
+					var jsondata = childNode.wholeText ||childNode.nodeValue;
 					jsondata = jsondata.replace('\n','<br>');
 					try{
 						var data = eval("("+jsondata+")");
@@ -1019,8 +1019,8 @@ var parseMessageType = function(msginfo){
 var login2ImCallback = function (status,msg,conn){
 	if (status == Strophe.Status.CONNFAIL){
 	  conn.onError({
-			type : EASEMOB_IM_CONNCTION_OPEN_ERROR,
-			msg : '登录失败,'+msg
+			type : EASEMOB_IM_CONNCTION_SERVER_CLOSE_ERROR,
+			msg : msg
 		});
 	} else if ((status == Strophe.Status.ATTACHED) || (status == Strophe.Status.CONNECTED)){
 		var handleMessage = function(msginfo){

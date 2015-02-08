@@ -218,51 +218,6 @@
 		});
 	});
 
-	//处理收到文件消息
-	var handleFileMessage = function(message) {
-		var filename = message.filename;
-		var filetype = message.filetype;
-		var from = message.from;
-
-		var mestype = message.type;//消息发送的类型是群组消息还是个人消息
-		var contactDivId = from;
-		if (mestype == 'groupchat') {
-			contactDivId = groupFlagMark + message.to;
-		}
-		var options = message;
-		options.onFileDownloadComplete = function(response, xhr) {
-			var spans = "收到文件消息:" + filename;
-			appendMsg(from, contactDivId, spans);
-			return;
-		};
-		options.onFileDownloadError = function(e) {
-			appendMsg(from, contactDivId, e.msg + ",下载文件" + filename + "失败");
-		};
-		Easemob.im.Helper.download(options);
-	};
-	//收到视频消息
-	var handleVideoMessage = function(message) {
-
-		var filename = message.filename;
-		var filetype = message.filetype;
-		var from = message.from;
-
-		var mestype = message.type;//消息发送的类型是群组消息还是个人消息
-		var contactDivId = from;
-		if (mestype == 'groupchat') {
-			contactDivId = groupFlagMark + message.to;
-		}
-		var options = message;
-		options.onFileDownloadComplete = function(response, xhr) {
-			var spans = "收到视频消息:" + filename;
-			appendMsg(from, contactDivId, spans);
-		};
-		options.onFileDownloadError = function(e) {
-			appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
-		};
-		Easemob.im.Helper.download(options);
-	};
-
 	//处理连接时函数,主要是登录成功后对页面元素做处理
 	var handleOpen = function(conn) {
 		//从连接中获取到当前的登录人注册帐号名
@@ -435,7 +390,7 @@
 		} else {
 			var msg = e.msg;
 			if (e.type == EASEMOB_IM_CONNCTION_SERVER_CLOSE_ERROR) {
-				if (msg == "") {
+				if (msg == "" || msg == 'unknown' ) {
 					alert("服务器器断开连接,可能是因为在别处登录");
 				} else {
 					alert("服务器器断开连接");
@@ -1109,6 +1064,50 @@
 		Easemob.im.Helper.download(options);
 	};
 
+	//处理收到文件消息
+	var handleFileMessage = function(message) {
+		var filename = message.filename;
+		var filetype = message.filetype;
+		var from = message.from;
+
+		var mestype = message.type;//消息发送的类型是群组消息还是个人消息
+		var contactDivId = from;
+		if (mestype == 'groupchat') {
+			contactDivId = groupFlagMark + message.to;
+		}
+		var options = message;
+		options.onFileDownloadComplete = function(response, xhr) {
+			var spans = "收到文件消息:" + filename;
+			appendMsg(from, contactDivId, spans);
+			return;
+		};
+		options.onFileDownloadError = function(e) {
+			appendMsg(from, contactDivId, e.msg + ",下载文件" + filename + "失败");
+		};
+		Easemob.im.Helper.download(options);
+	};
+	//收到视频消息
+	var handleVideoMessage = function(message) {
+
+		var filename = message.filename;
+		var filetype = message.filetype;
+		var from = message.from;
+
+		var mestype = message.type;//消息发送的类型是群组消息还是个人消息
+		var contactDivId = from;
+		if (mestype == 'groupchat') {
+			contactDivId = groupFlagMark + message.to;
+		}
+		var options = message;
+		options.onFileDownloadComplete = function(response, xhr) {
+			var spans = "收到视频消息:" + filename;
+			appendMsg(from, contactDivId, spans);
+		};
+		options.onFileDownloadError = function(e) {
+			appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
+		};
+		Easemob.im.Helper.download(options);
+	};
 	var handleLocationMessage = function(message) {
 		var from = message.from;
 		var to = message.to;
