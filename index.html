@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -1077,8 +1077,11 @@
 		}
 		var options = message;
 		options.onFileDownloadComplete = function(response, xhr) {
-			var spans = "收到文件消息:" + filename;
-			appendMsg(from, contactDivId, spans);
+			var spans = "收到文件消息:" + filename + '   ';
+			var content = spans + "【<a href='"
+					+ window.URL.createObjectURL(response) + "' download='"
+					+ filename + "'>另存为</a>】";
+			appendMsg(from, contactDivId, content);
 			return;
 		};
 		options.onFileDownloadError = function(e) {
@@ -1086,6 +1089,7 @@
 		};
 		Easemob.im.Helper.download(options);
 	};
+
 	//收到视频消息
 	var handleVideoMessage = function(message) {
 
@@ -1100,14 +1104,41 @@
 		}
 		var options = message;
 		options.onFileDownloadComplete = function(response, xhr) {
-			var spans = "收到视频消息:" + filename;
-			appendMsg(from, contactDivId, spans);
+			//var spans = "收到视频消息:" + filename;
+			//appendMsg(from, contactDivId, spans);
+			var objectURL = window.URL.createObjectURL(response);
+			var video = document.createElement("video");
+			if (("src" in video) && ("controls" in video)) {
+				video.onload = function() {
+					video.onload = null;
+					window.URL.revokeObjectURL(video.src);
+				};
+				video.onerror = function() {
+					video.onerror = null;
+					appendMsg(from, contactDivId, "当前浏览器不支持播放此音频:" + filename);
+				};
+				video.src = objectURL;
+				video.controls = "controls";
+				video.width = "320";
+				video.height = "240";
+				appendMsg(from, contactDivId, {
+					data : [ {
+						type : 'video',
+						filename : filename,
+						data : video
+					} ]
+				});
+				//audio.play();
+				return;
+			}
+
 		};
 		options.onFileDownloadError = function(e) {
 			appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
 		};
 		Easemob.im.Helper.download(options);
 	};
+
 	var handleLocationMessage = function(message) {
 		var from = message.from;
 		var to = message.to;
