@@ -1146,6 +1146,7 @@ connection.prototype.init = function(options) {
 	this.onVideoMessage = options.onVideoMessage || emptyFn;
 	this.onFileMessage = options.onFileMessage || emptyFn;
 	this.onLocationMessage = options.onLocationMessage || emptyFn;
+	this.onCmdMessage = options.onCmdMessage || emptyFn;
 	this.onPresence = options.onPresence || emptyFn;
 	this.onRoster = options.onRoster || emptyFn;
 	this.onError = options.onError || emptyFn;
@@ -1374,6 +1375,10 @@ connection.prototype.handleMessage = function(msginfo){
 	if(this.isClosed()){
 		return;
 	}
+	var id = msginfo.getAttribute('id') || '';
+	this.sendReceiptsMessage({
+		id : id
+	});
 	var parseMsgData = parseResponseMessageFn(msginfo);
 	if(parseMsgData.errorMsg){
 		return;
@@ -1481,6 +1486,13 @@ connection.prototype.handleMessage = function(msginfo){
 				filename : msgBody.filename,
 				file_length : msgBody.file_length,
 				accessToken : this.context.accessToken || '',
+				ext : extmsg
+			});
+		}else if("cmd" == type){
+			this.onCmdMessage({
+				from : from,
+				to : too,
+				action : msgBody.action,
 				ext : extmsg
 			});
 		}
@@ -1800,6 +1812,17 @@ connection.prototype.sendLocationMessage = function(options) {
 				id : this.getUniqueId(),
 				xmlns : "jabber:client"
 	}).c("body").t(jsonstr);
+	this.sendCommand(dom.tree());
+};
+connection.prototype.sendReceiptsMessage = function(options){
+	var dom = $msg({
+				from : this.context.jid || '',
+				to : "easemob.com",
+				id : options.id || ''
+	}).c("received",{
+				xmlns : "urn:xmpp:receipts",
+				id : options.id || ''
+			});
 	this.sendCommand(dom.tree());
 };
 connection.prototype.addRoster = function(options){
