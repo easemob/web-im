@@ -162,6 +162,7 @@ EASEMOB_IM_RESISTERUSER_ERROR = tempIndex++;
 
 tempIndex = 0;
 EASEMOB_IM_MESSAGE_REC_TEXT = tempIndex++;
+EASEMOB_IM_MESSAGE_REC_TEXT_ERROR = tempIndex++;
 EASEMOB_IM_MESSAGE_REC_EMOTION = tempIndex++;
 EASEMOB_IM_MESSAGE_REC_PHOTO = tempIndex++;
 EASEMOB_IM_MESSAGE_REC_AUDIO = tempIndex++;
@@ -728,6 +729,13 @@ var parseNameFromJidFn = function(jid,domain){
 };
 
 var parseTextMessageFn = function(message){
+	if(typeof(message) != 'string'){
+		conn.onError({
+			type : EASEMOB_IM_MESSAGE_REC_TEXT_ERROR,
+			msg : '不合法的消息内容格式，请检查发送消息内容！'
+		});
+		return;
+	}
 	var receiveMsg = message;
 	var emessage = [];
 	var expr = /\[[^[\]]{2,3}\]/mg;
