@@ -5,7 +5,7 @@ if (typeof jQuery == 'undefined') {
 } else {
 
 (function($) {
-	
+
 if (typeof Easemob == 'undefined') {
 	Easemob = {};
 }
@@ -22,7 +22,7 @@ var innerBase64 = (function() {
 	var obj = {
 		/**
 		 * Encodes a string in base64
-		 * 
+		 *
 		 * @param {String}
 		 *            input The string to encode in base64.
 		 */
@@ -86,7 +86,7 @@ var innerBase64 = (function() {
 
 		/**
 		 * Decodes a base64 string.
-		 * 
+		 *
 		 * @param {String}
 		 *            input The string to decode.
 		 */
@@ -242,7 +242,7 @@ if (window.XDomainRequest) {
 var xmlrequest = function (crossDomain){
 	crossDomain = crossDomain || true;
 	var temp = createStandardXHR () || createActiveXHR();
-	
+
 	if ("withCredentials" in temp) {
 		return temp;
 	}
@@ -259,7 +259,7 @@ var xmlrequest = function (crossDomain){
 	xhr.onload = function () {
 		xhr.readyState = 4;
 		xhr.status = 200;
-		
+
 		var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
 		xmlDoc.async = "false";
 		xmlDoc.loadXML(xhr.responseText);
@@ -287,12 +287,12 @@ function getIEVersion(){
     var ua = navigator.userAgent,matches,tridentMap={'4':8,'5':9,'6':10,'7':11};
     matches = ua.match(/MSIE (\d+)/i);
     if(matches&&matches[1])
-    {   
+    {
         return +matches[1];
     }
     matches = ua.match(/Trident\/(\d+)/i);
     if(matches&&matches[1])
-    {   
+    {
         return tridentMap[matches[1]]||null;
     }
     return null;
@@ -379,10 +379,10 @@ var doAjaxRequest = function(options) {
 			return null;
 		}
 	}
-	
+
 	var type = options.type || "POST";
 	xhr.open(type, options.url);
-	
+
 	var headers = options.headers || {};
 	for(var key in headers){
 		if(hasSetRequestHeader){
@@ -418,13 +418,13 @@ var registerUserFn = function(options){
 	}
 	var prefix = options.https ? 'https' : 'http';
 	var restUrl = options.url || prefix + '://a1.easemob.com/'+ orgName + '/' + appName + '/users';
-	
+
 	var userjson = {
 			username : options.username,
 			password : options.password,
 			nickname : options.nickname || ''
 	};
-	
+
 	var userinfo = JSON.stringify(userjson);
 	var options = {
 		url : restUrl,
@@ -436,7 +436,7 @@ var registerUserFn = function(options){
 	var param = doAjaxRequest(options);
 	return param;
 };
-  
+
 
 var getFileUrlFn = function(fileInputId) {
 	var uri = {
@@ -482,8 +482,8 @@ var getFileSizeFn = function(fileInputId){
 			}
 		} else if(isIe){
 			file.select();
-			var fileobject = new ActiveXObject ("Scripting.FileSystemObject");  
-			var file = fileobject.GetFile (file.value);  
+			var fileobject = new ActiveXObject ("Scripting.FileSystemObject");
+			var file = fileobject.GetFile (file.value);
 			fileSize = file.Size;
 		}
 	}
@@ -506,7 +506,7 @@ var uploadFn = function(options) {
 		});
 		return;
 	}
-	
+
 	var acc = options.accessToken;
 	if (!acc) {
 		options.onFileUploadError({
@@ -632,7 +632,7 @@ var isCanDownLoadFile = (hasSetRequestHeader && (hasBlob || hasOverrideMimeType)
 var downloadFn = function(options){
 	options.onFileDownloadComplete = options.onFileDownloadComplete || emptyFn;
 	options.onFileDownloadError = options.onFileDownloadError || emptyFn;
-	
+
 	if (!isCanDownLoadFile) {
 		options.onFileDownloadError({
 			type : EASEMOB_IM_DOWNLOADFILE_BROWSER_ERROR,
@@ -648,7 +648,7 @@ var downloadFn = function(options){
 		});
 		return;
 	}
-	
+
 	var onError = function(e) {
 		options.onFileDownloadError({
 			type : EASEMOB_IM_DOWNLOADFILE_ERROR,
@@ -685,7 +685,7 @@ var downloadFn = function(options){
 			}
 		}
 	}
-	
+
 	var method = options.method || 'GET';
 	var resType = options.responseType || 'blob';
 	var mimeType = options.mimeType || "text/plain; charset=x-user-defined";
@@ -782,7 +782,7 @@ var parseTextMessageFn = function(message){
 
 var parseResponseMessageFn = function(msginfo){
 	var parseMsgData = {errorMsg:true,data:[]};
-	
+
 	var msgBodies = msginfo.getElementsByTagName("body");
 	if(msgBodies){
 		for (var i=0;i<msgBodies.length;i++){
@@ -874,7 +874,7 @@ var parseRoomFn = function(result){
 			var room = {
 					jid : roomJid,
 					name : item.getAttribute('name'),
-					roomId : tmp.split('_')[1] 
+					roomId : tmp.split('_')[1]
 				};
 			rooms.push(room);
 		}
@@ -928,11 +928,11 @@ var login2UserGrid = function(options){
 	var error = options.error || emptyFn;
 	var user = options.user || '';
 	var pwd = options.pwd || '';
-	
+
 	var https = options.https;
 	var url = https ? 'https://a1.easemob.com' : 'http://a1.easemob.com';
 	var apiUrl = options.apiUrl || url;
-	
+
 	return dologin2UserGrid(apiUrl,user,pwd,orgName,appName,suc,error);
 };
 var dologin2UserGrid = function(apiUrl,user,pwd,orgName,appName,suc,error) {
@@ -942,7 +942,7 @@ var dologin2UserGrid = function(apiUrl,user,pwd,orgName,appName,suc,error) {
 		password : pwd
 	};
 	var loginfo = JSON.stringify(loginJson);
-	
+
 	var options = {
 		url : apiUrl+"/"+orgName+"/"+appName+"/token",
 		dataType : 'json',
@@ -962,7 +962,7 @@ var innerCheck = function(options,conn){
 		return false;
 	}
 	options = options || {};
-	
+
 	var user = options.user || '';
 	if (options.user == '') {
 		conn.onError({
@@ -999,7 +999,7 @@ var innerCheck = function(options,conn){
 	}
 	var jid = appKey + "_" + user + "@" + conn.domain;// jid =
 														// {appkey}_{username}@domain/resource
-	
+
 	var resource = options.resource || "webim";
 	if(resource != ""){
 		jid = jid + "/" + resource;
@@ -1056,12 +1056,12 @@ var login2ImCallback = function (status,msg,conn){
 			conn.handleIq(msginfo);
 			return true;
 		};
-		
+
 		conn.addHandler(handleMessage, null, 'message', null, null,  null);
 		conn.addHandler(handlePresence, null, 'presence', null, null,  null);
 		conn.addHandler(handlePing, "urn:xmpp:ping", 'iq', "get", null,  null);
 		conn.addHandler(handleIq, "jabber:iq:roster", 'iq', "set", null,  null);
-		
+
 		conn.context.status = STATUS_OPENED;
 		var supportRecMessage = [
            EASEMOB_IM_MESSAGE_REC_TEXT,
@@ -1144,7 +1144,7 @@ connection.prototype.init = function(options) {
 	this.maxRetries = options.maxRetries || 5;
 	this.pollingTime = options.pollingTime || 800;
 	this.stropheConn = false;
-	
+
 	this.onOpened = options.onOpened || emptyFn;
 	this.onClosed = options.onClosed || emptyFn;
 	this.onTextMessage = options.onTextMessage || emptyFn;
@@ -1160,12 +1160,12 @@ connection.prototype.init = function(options) {
 	this.onError = options.onError || emptyFn;
 	this.onReceivedMessage = options.onReceivedMessage || emptyFn;
 	this.onInviteMessage = options.onInviteMessage || emptyFn;
-	
+
 	this.context = {
 		status : STATUS_INIT
 	};
 }
-var dologin2IM = function(options,conn){ 
+var dologin2IM = function(options,conn){
 	var accessToken = options.access_token || '';
 	if(accessToken == ''){
 		var loginfo = JSON.stringify(options);
@@ -1213,7 +1213,7 @@ connection.prototype.open = function(options) {
 		var pwd = options.pwd || '';
 		var appName = this.context.appName;
 		var orgName = this.context.orgName;
-		
+
 		var suc = function(data,xhr){
 			conn.context.status = STATUS_DOLOGIN_IM;
 			dologin2IM(data,conn);
@@ -1246,7 +1246,7 @@ connection.prototype.attach = function(options) {
 		return;{
 	}
 	options = options || {};
-	
+
 	var accessToken = options.accessToken || '';
 	if(accessToken == ''){
 		this.onError({
@@ -1264,7 +1264,7 @@ connection.prototype.attach = function(options) {
 		});
 		return;
 	}
-	
+
 	var rid = options.rid || '';
 	if(rid == ''){
 		this.onError({
@@ -1273,17 +1273,17 @@ connection.prototype.attach = function(options) {
 		});
 		return;
 	}
-	
+
 	var stropheConn = new Strophe.Connection(this.url,{
 						inactivity : this.inactivity,
 						maxRetries : this.maxRetries,
 						pollingTime : this.pollingTime
 	});
-	
+
 	this.context.accessToken = accessToken;
 	this.context.stropheConn = stropheConn;
 	this.context.status = STATUS_DOLOGIN_IM;
-	
+
 	var conn = this;
 	var callback = function(status,msg){
 		login2ImCallback(status,msg,conn);
@@ -1325,7 +1325,7 @@ connection.prototype.handlePresence = function(msginfo){
 		toJid : to,
 		type : type
 	};
-	
+
 	var showTags = msginfo.getElementsByTagName("show");
 	if(showTags && showTags.length>0){
 		var showTag = showTags[0];
@@ -1336,7 +1336,7 @@ connection.prototype.handlePresence = function(msginfo){
 		var statusTag = statusTags[0];
 		info.status = Strophe.getText(statusTag);
 	}
-	
+
 	var priorityTags = msginfo.getElementsByTagName("priority");
 	if(priorityTags && priorityTags.length>0){
 		var priorityTag = priorityTags[0];
@@ -1367,10 +1367,10 @@ connection.prototype.handleIq = function(e) {
 	var curUser = this.context.userId;
 	if (from !== "" && from != curJid && curUser != name)
 		return true;
-		
+
 	var iqresult = $iq({type: 'result', id: id, from: curJid});
 	this.sendCommand(iqresult.tree());
-	
+
 	var msgBodies = e.getElementsByTagName("query");
 	if(msgBodies&&msgBodies.length>0){
 		var queryTag = msgBodies[0];
@@ -1409,6 +1409,7 @@ connection.prototype.handleMessage = function(msginfo){
 			var emotionsbody = parseTextMessageFn(receiveMsg);
 			if(emotionsbody.isemotion){
 				this.onEmotionMessage({
+                    id: id,
 					type : chattype,
 					from : from,
 					to : too,
@@ -1417,6 +1418,7 @@ connection.prototype.handleMessage = function(msginfo){
 				});
 			} else {
 				this.onTextMessage({
+                    id: id,
 					type : chattype,
 					from : from,
 					to : too,
@@ -1432,6 +1434,7 @@ connection.prototype.handleMessage = function(msginfo){
 				rheight = msgBody.size.height;
 			}
 			var msg = {
+                id: id,
 				type : chattype,
 				from : from,
 				to : too,
@@ -1450,6 +1453,7 @@ connection.prototype.handleMessage = function(msginfo){
 			this.onPictureMessage(msg);
 		} else if ("audio" == type) {
 			this.onAudioMessage({
+                id: id,
 				type : chattype,
 				from : from,
 				to : too,
@@ -1464,6 +1468,7 @@ connection.prototype.handleMessage = function(msginfo){
 			});
 		} else if ("file" == type) {
 			this.onFileMessage({
+                id: id,
 				type : chattype,
 				from : from,
 				to : too,
@@ -1476,6 +1481,7 @@ connection.prototype.handleMessage = function(msginfo){
 			});
 		} else if ("loc" == type) {
 			this.onLocationMessage({
+                id: id,
 				type : chattype,
 				from : from,
 				to : too,
@@ -1486,6 +1492,7 @@ connection.prototype.handleMessage = function(msginfo){
 			});
 		}else if("video" == type){
 			this.onVideoMessage({
+                id: id,
 				type : chattype,
 				from : from,
 				to : too,
@@ -1498,6 +1505,7 @@ connection.prototype.handleMessage = function(msginfo){
 			});
 		}else if("cmd" == type){
 			this.onCmdMessage({
+                id: id,
 				from : from,
 				to : too,
 				action : msgBody.action,
@@ -1575,8 +1583,8 @@ connection.prototype.sendTextMessage = function(options) {
 	};
 	var jsonstr = JSON.stringify(json);
 	var dom = $msg({
-		to : toJid, 
-		type : options.type || 'chat', 
+		to : toJid,
+		type : options.type || 'chat',
 		id : this.getUniqueId(),
 		xmlns : "jabber:client"
 	}).c("body").t(jsonstr);
@@ -1605,7 +1613,7 @@ connection.prototype.sendPicture = function(options) {
 			}
 		}
 		options["uuid"] = data.entities[0].uuid;
-		
+
 		onFileUploadComplete(data);
 		conn.sendPictureMessage(options);
 	};
@@ -1646,7 +1654,7 @@ connection.prototype.sendPicture = function(options) {
 	file = getFileUrlFn(picId);
 	options.fileInfo = file;
 	options.filename = file.filename;
-	
+
 	if (!file.url) {
 		options.onFileUploadError({
 			type : EASEMOB_IM_UPLOADFILE_NO_FILE,
@@ -1665,7 +1673,7 @@ connection.prototype.sendPictureMessage = function(options) {
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
 	}
-	
+
 	var json = {
 				from : this.context.userId || '',
 				to : 	options.to,
@@ -1722,11 +1730,11 @@ connection.prototype.sendAudio = function(options) {
 	options.orgName = this.context.orgName || '';
 	options.accessToken = this.context.accessToken || '';
 	options.onFileUploadComplete = myonComplete;
-			
+
 	var file = getFileUrlFn(options.fileInputId);
 	options.fileInfo = file;
 	options.filename = file.filename;
-	
+
 	uploadFn(options, this);
 };
 connection.prototype.sendAudioMessage = function(options) {
@@ -1738,7 +1746,7 @@ connection.prototype.sendAudioMessage = function(options) {
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
 	}
-	
+
 	var json = {
 				from : this.context.userId || '',
 				to : 	options.to,
@@ -1767,7 +1775,7 @@ connection.prototype.sendFileMessage = function(options) {
 	if(options.type && options.type == 'groupchat'){
 		toJid =appKey + "_"+options.to+'@conference.' + this.domain;
 	}
-	
+
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
 	}
@@ -1798,7 +1806,7 @@ connection.prototype.sendLocationMessage = function(options) {
 	if(options.type && options.type == 'groupchat'){
 		toJid =appKey + "_"+options.to+'@conference.' + this.domain;
 	}
-	
+
 	if(options.resource){
 		toJid = toJid + "/" + options.resource;
 	}
@@ -1841,7 +1849,7 @@ connection.prototype.addRoster = function(options){
 	var iq = $iq({type : 'set'});
 	iq.c("query",{xmlns:'jabber:iq:roster'});
 	iq.c("item",{jid: jid ,name : name});
-	
+
 	if(groups){
 		for (var i = 0; i < groups.length; i++){
 			iq.c('group').t(groups[i]).up();
@@ -1854,7 +1862,7 @@ connection.prototype.addRoster = function(options){
 connection.prototype.removeRoster = function(options){
 	var jid = getJid(options,this);
 	var iq = $iq({type: 'set'}).c('query', {xmlns : "jabber:iq:roster"}).c('item', {jid: jid,subscription: "remove"});
-	
+
 	var suc = options.success || emptyFn;
 	var error = options.error || emptyFn;
 	this.context.stropheConn.sendIQ(iq,suc,error);
@@ -1866,7 +1874,7 @@ connection.prototype.getRoster = function(options) {
   }).c('query', {xmlns: 'jabber:iq:roster'});
 
 	options = options || {};
-	suc = options.success || this.onRoster; 
+	suc = options.success || this.onRoster;
   var completeFn = function(ele){
   	var rouster = [];
 		var msgBodies = ele.getElementsByTagName("query");
@@ -1928,7 +1936,7 @@ connection.prototype.unsubscribed = function(options) {
 	}
 	this.sendCommand(pres.tree());
  };
- 
+
 connection.prototype.createRoom = function(options) {
 	var suc =options.success || emptyFn;
 	var err =  options.error || emptyFn;
@@ -1944,7 +1952,7 @@ connection.prototype.createRoom = function(options) {
 	});
 	return this.context.stropheConn.sendIQ(roomiq.tree(), suc, err);
 };
- 
+
 connection.prototype.join = function(options){
 	var roomJid = this.context.appKey+"_"+options.roomId+'@conference.' + this.domain;
 	var room_nick = roomJid+"/"+this.context.userId;
@@ -2170,7 +2178,7 @@ Easemob.im.Connection = connection;
 
 if (typeof Easemob.im.Helper == 'undefined') {
 	Easemob.im.Helper = {};
-	
+
 	// method
 	Easemob.im.Helper.getFileUrl = getFileUrlFn;
 	Easemob.im.Helper.upload = uploadFn;
@@ -2185,11 +2193,11 @@ if (typeof Easemob.im.Helper == 'undefined') {
 	Easemob.im.Helper.isCanDownLoadFile = isCanDownLoadFile;
 	Easemob.im.Helper.hasSetRequestHeader = hasSetRequestHeader;
 	Easemob.im.Helper.hasOverrideMimeType = hasOverrideMimeType;
-	
+
 	// object
 	Easemob.im.Helper.Base64 = innerBase64;
 	Easemob.im.Helper.EmotionPicData = emotionPicData;
-	
+
 	//user
 	Easemob.im.Helper.registerUser = registerUserFn;
 }
