@@ -444,11 +444,13 @@ var getFileUrlFn = function(fileInputId) {
 		filename : '',
 		filetype : ''
 	};
-	if (window.URL  && window.URL.createObjectURL) {
+
+    var wu = window.URL || window.webkitURL || window.mozURL || window.msURL;
+	if (wu && wu.createObjectURL) {
 		var fileItems = document.getElementById(fileInputId).files;
 		if (fileItems.length > 0) {
 			var u = fileItems.item(0);
-			uri.url = window.URL.createObjectURL(u);
+			uri.url = wu.createObjectURL(u);
 			uri.filename = u.name || '';
 		}
 	} else { // IE
