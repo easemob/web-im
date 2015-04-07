@@ -11,6 +11,7 @@ if (typeof Easemob == 'undefined') {
 }
 if (typeof Easemob.im == 'undefined') {
 	Easemob.im = {};
+    Easemob.im.version="1.0.6";
 }
 if (typeof Easemob.im.Connection !== 'undefined') {
 	return;
@@ -140,6 +141,7 @@ EASEMOB_IM_CONNCTION_SERVER_CLOSE_ERROR = tempIndex++;
 EASEMOB_IM_CONNCTION_SERVER_ERROR = tempIndex++;
 EASEMOB_IM_CONNCTION_IQ_ERROR = tempIndex++;
 EASEMOB_IM_CONNCTION_PING_ERROR = tempIndex++;
+EASEMOB_IM_CONNCTION_NOTIFYVERSION_ERROR = tempIndex++;
 EASEMOB_IM_CONNCTION_GETROSTER_ERROR = tempIndex++;
 EASEMOB_IM_CONNCTION_CROSSDOMAIN_ERROR = tempIndex++;
 EASEMOB_IM_CONNCTION_LISTENING_OUTOF_MAXRETRIES = tempIndex++;
@@ -1077,11 +1079,12 @@ var login2ImCallback = function (status,msg,conn){
 			supportSedMessage.push(EASEMOB_IM_MESSAGE_REC_PHOTO);
 			supportSedMessage.push(EASEMOB_IM_MESSAGE_REC_AUDIO_FILE);
 		}
-		conn.onOpened({
-			canReceive : supportRecMessage,
-			canSend : supportSedMessage,
-			accessToken : conn.context.accessToken
-		});
+        conn.notifyVersion();
+        conn.onOpened({
+            canReceive : supportRecMessage,
+            canSend : supportSedMessage,
+            accessToken : conn.context.accessToken
+        });
 	} else if (status == Strophe.Status.DISCONNECTING) {
 		if(conn.isOpened()){// 不是主动关闭
 			conn.context.status = STATUS_CLOSING;
@@ -1135,7 +1138,7 @@ connection.prototype.init = function(options) {
 	var prefix = options.https ? 'https' : 'http';
 	this.url = options.url || prefix + '://im-api.easemob.com/http-bind/';
 	this.https = options.https || false;
-	this.wait = options.wait || 60;
+	this.wait = options.wait || 30;
 	this.hold = options.hold || 1;
 	if(options.route){
 		this.route = options.route;
@@ -1192,9 +1195,11 @@ var dologin2IM = function(options,conn){
 	var jid = conn.context.jid;
 	conn.context.stropheConn = stropheConn;
 	if(conn.route){
-		stropheConn.connect(jid,"$t$" + accessToken,callback,conn.wait,conn.hold,conn.route);
+        //stropheConn.connect(jid,"$t$" + accessToken,callback,conn.wait,conn.hold,conn.route);
+		stropheConn.connect(jid,"123456",callback,conn.wait,conn.hold,conn.route);
 	} else {
-		stropheConn.connect(jid,"$t$" + accessToken,callback,conn.wait,conn.hold);
+		stropheConn.connect(jid,"123456",callback,conn.wait,conn.hold);
+        //stropheConn.connect(jid,"$t$" + accessToken,callback,conn.wait,conn.hold);
 	}
 
 };
@@ -1310,6 +1315,25 @@ connection.prototype.close = function() {
 // see stropheConn.addHandler
 connection.prototype.addHandler = function (handler, ns, name, type, id, from, options){
 	this.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
+};
+connection.prototype.notifyVersion = function (suc,fail){
+    var jid = getJid({},this);
+    var dom = $iq({
+            from : this.context.jid || '',
+            to: this.domain,
+            type: "result"
+    }).c("query", {xmlns: "jabber:iq:version"}).c("name").t("easemob").up().c("version").t(Easemob.im.version).up().c("os").t("webim");
+    suc = suc || emptyFn;
+    error = fail || this.onError;
+    var failFn = function(ele){
+        error({
+            type : EASEMOB_IM_CONNCTION_NOTIFYVERSION_ERROR,
+            msg : '发送版本信息给服务器时失败',
+            data : ele
+        });
+    };
+    this.context.stropheConn.sendIQ(dom.tree(),suc,failFn);
+    return;
 };
 connection.prototype.handlePresence = function(msginfo){
 	if(this.isClosed()){
