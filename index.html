@@ -6,7 +6,7 @@
 <script type="text/javascript" src="jquery-1.11.1.js"></script>
 <script type="text/javascript" src="strophe-custom-2.0.0.js"></script>
 <script type="text/javascript" src="json2.js"></script>
-<script type="text/javascript" src="easemob.im-1.0.5.js"></script>
+<script type="text/javascript" src="easemob.im-1.0.6.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
 <link rel="stylesheet" type="text/css" href="css/webim.css" />
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
@@ -394,7 +394,14 @@
 					alert("服务器器断开连接,可能是因为在别处登录");
 				} else {
 					alert("服务器器断开连接");
-				}
+                }
+                //handleClosed();
+               // conn.open({
+                 //   apiUrl : apiURL,
+                   // appKey : appkey,
+                    //user : conn.context.userId,
+                    //accessToken : conn.context.accessToken
+                //});
 			} else {
 				alert(msg);
 			}
