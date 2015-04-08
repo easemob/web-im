@@ -395,18 +395,13 @@
 				} else {
 					alert("服务器器断开连接");
                 }
-                conn.getRoster({
-                    success:function(){
-                        alert("重连成功");
-                    }
+                handleClosed();
+                conn.open({
+                    apiUrl : apiURL,
+                    appKey : appkey,
+                    user : conn.context.userId,
+                    accessToken : conn.context.accessToken
                 });
-                //handleClosed();
-               // conn.open({
-                 //   apiUrl : apiURL,
-                   // appKey : appkey,
-                    //user : conn.context.userId,
-                    //accessToken : conn.context.accessToken
-                //});
 			} else {
 				alert(msg);
 			}
