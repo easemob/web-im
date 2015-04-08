@@ -1145,7 +1145,7 @@ connection.prototype.init = function(options) {
 	}
 
 	this.domain = options.domain || "easemob.com";
-	this.inactivity = options.inactivity || 60;
+	this.inactivity = options.inactivity || 30;
 	this.maxRetries = options.maxRetries || 5;
 	this.pollingTime = options.pollingTime || 800;
 	this.stropheConn = false;

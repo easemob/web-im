@@ -2115,10 +2115,11 @@ Strophe.Connection = function (service, options)
     this._sasl_challenge_handler = null;
 
     // Max retries before disconnecting
-    this.maxRetries = 5;
-
+    this.maxRetries = options.maxRetries || 5;
+    
+    this.pollingTime = options.pollingTime || 100;
     // setup onIdle callback every 1/10th of a second
-    this._idleTimeout = setTimeout(this._onIdle.bind(this), 100);
+    this._idleTimeout = setTimeout(this._onIdle.bind(this), this.pollingTime);
 
     // initialize plugins
     for (var k in Strophe._connectionPlugins) {
@@ -2558,7 +2559,7 @@ Strophe.Connection.prototype = {
 
         this._proto._sendRestart();
 
-        this._idleTimeout = setTimeout(this._onIdle.bind(this), 100);
+        this._idleTimeout = setTimeout(this._onIdle.bind(this), this.pollingTime);
     },
 
     /** Function: addTimedHandler
