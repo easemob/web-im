@@ -1195,11 +1195,9 @@ var dologin2IM = function(options,conn){
 	var jid = conn.context.jid;
 	conn.context.stropheConn = stropheConn;
 	if(conn.route){
-        //stropheConn.connect(jid,"$t$" + accessToken,callback,conn.wait,conn.hold,conn.route);
-		stropheConn.connect(jid,"123456",callback,conn.wait,conn.hold,conn.route);
+        stropheConn.connect(jid,"$t$" + accessToken,callback,conn.wait,conn.hold,conn.route);
 	} else {
-		stropheConn.connect(jid,"123456",callback,conn.wait,conn.hold);
-        //stropheConn.connect(jid,"$t$" + accessToken,callback,conn.wait,conn.hold);
+        stropheConn.connect(jid,"$t$" + accessToken,callback,conn.wait,conn.hold);
 	}
 
 };
