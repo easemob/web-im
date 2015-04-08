@@ -3482,7 +3482,7 @@ Strophe.Connection.prototype = {
 
         // reactivate the timer only if connected
         if (this.connected) {
-            this._idleTimeout = setTimeout(this._onIdle.bind(this), 100);
+            this._idleTimeout = setTimeout(this._onIdle.bind(this), this.pollingTime);
         }
     }
 };

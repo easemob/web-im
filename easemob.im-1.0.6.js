@@ -1184,7 +1184,7 @@ var dologin2IM = function(options,conn){
 	}
 	conn.context.accessToken = options.access_token;
 	conn.context.accessTokenExpires = options.expires_in;
-	var stropheConn = new Strophe.Connection(conn.url,{
+	var stropheConn = conn.context.stropheConn || new Strophe.Connection(conn.url,{
 						inactivity : conn.inactivity,
 						maxRetries : conn.maxRetries,
 						pollingTime : conn.pollingTime
