@@ -1614,6 +1614,26 @@ connection.prototype.sendTextMessage = function(options) {
 	}).c("body").t(jsonstr);
 	this.sendCommand(dom.tree());
 };
+connection.prototype.heartBeat = function() {
+	var options = {
+		to : conn.domain,
+		type : "normal"
+	};
+	setInterval(function() {
+		conn.sendHeartBeatMessage(options);
+	}, 60000);
+}
+connection.prototype.sendHeartBeatMessage = function(options) {
+	var json = {};
+	var jsonstr = JSON.stringify(json);
+	var dom = $msg({
+		to : options.to,
+		type : options.type,
+		id : this.getUniqueId(),
+		xmlns : "jabber:client"
+	}).c("body").t(jsonstr);
+	this.sendCommand(dom.tree());
+};
 connection.prototype.sendPicture = function(options) {
 	var onerror =  options.onFileUploadError || this.onError || emptyFn;
 	if(!isCanUploadFile){
