@@ -1001,10 +1001,14 @@ var innerCheck = function(options,conn){
 		});
 		return false;
 	}
-	var jid = appKey + "_" + user + "@" + conn.domain;// jid =
-														// {appkey}_{username}@domain/resource
+	
+	// jid = {appkey}_{username}@domain/resource
+	var jid = appKey + "_" + user + "@" + conn.domain;
 
-	var resource = options.resource || "webim";
+	//var resource_value = Math.floor(Math.random()*1000);
+	var resource_value = "webim";
+	
+	var resource = options.resource || resource_value;
 	if(resource != ""){
 		jid = jid + "/" + resource;
 	}
