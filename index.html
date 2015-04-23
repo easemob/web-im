@@ -91,6 +91,7 @@
 		//初始化连接
 		conn.init({
 			https : false,
+			wss: false,
 			//当连接成功时的回调方法
 			onOpened : function() {
 				handleOpen(conn);
