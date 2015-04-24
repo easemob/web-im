@@ -1618,7 +1618,7 @@ connection.prototype.sendTextMessage = function(options) {
 	}).c("body").t(jsonstr);
 	this.sendCommand(dom.tree());
 };
-connection.prototype.heartBeat = function() {
+connection.prototype.heartBeat = function(conn) {
 	var options = {
 		to : conn.domain,
 		type : "normal"

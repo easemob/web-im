@@ -268,7 +268,7 @@
 
 		//启动心跳
 		if (conn.isOpened()) {
-			conn.heartBeat();
+			conn.heartBeat(conn);
 		}
 	};
 
