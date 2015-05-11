@@ -1141,7 +1141,7 @@ var connection = function() {
 connection.prototype.init = function(options) {
 	if (window.WebSocket) {
 		var prefix = options.wss ? 'wss' : 'ws';
-		this.url = options.url || prefix + '://120.26.1.211:5280/ws';
+		this.url = options.url || prefix + '://im-api.easemob.com/ws/';
 	} else {
 		var prefix = options.https ? 'https' : 'http';
 		this.url = options.url || prefix + '://im-api.easemob.com/http-bind/';
