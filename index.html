@@ -485,6 +485,7 @@
 	};
 
 	var logout = function() {
+		conn.stopHeartBeat(conn);
 		conn.close();
 	};
 

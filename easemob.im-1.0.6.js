@@ -1629,7 +1629,7 @@ connection.prototype.heartBeat = function(conn) {
 		to : conn.domain,
 		type : "normal"
 	};
-	setInterval(function() {
+	conn.heartBeatID = setInterval(function() {
 		conn.sendHeartBeatMessage(options);
 	}, 60000);
 }
@@ -1643,6 +1643,9 @@ connection.prototype.sendHeartBeatMessage = function(options) {
 		xmlns : "jabber:client"
 	}).c("body").t(jsonstr);
 	this.sendCommand(dom.tree());
+};
+connection.prototype.stopHeartBeat = function(conn) {
+	clearInterval(conn.heartBeatID);
 };
 connection.prototype.sendPicture = function(options) {
 	var onerror =  options.onFileUploadError || this.onError || emptyFn;

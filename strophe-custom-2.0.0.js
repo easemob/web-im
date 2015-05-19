@@ -2716,6 +2716,12 @@ Strophe.Connection.prototype = {
         }
     },
 
+    //Add by achen@easemob.com
+    _sleeping: function (milliseconds)
+    {
+        this._proto._sleeping(milliseconds);
+    },
+
     /** PrivateFunction: _changeConnectStatus
      *  _Private_ helper function that makes sure plugins and the user's
      *  callback are notified of connection status changes.
@@ -4988,7 +4994,19 @@ Strophe.Websocket.prototype = {
                 Strophe.info("Couldn't send <close /> tag.");
             }
         }
+        this._conn._sleeping(100);
         this._conn._doDisconnect();
+    },
+
+    //Add by achen@easemob.com
+    _sleeping: function (milliseconds)
+    {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds) {
+                break;
+            }
+        }
     },
 
     /** PrivateFunction: _doDisconnect
