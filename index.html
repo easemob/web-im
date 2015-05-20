@@ -396,14 +396,19 @@
 			var msg = e.msg;
 			if (e.type == EASEMOB_IM_CONNCTION_SERVER_CLOSE_ERROR) {
 				if (msg == "" || msg == 'unknown' ) {
-					alert("服务器器断开连接,可能是因为在别处登录");
+					alert("服务器断开连接,可能是因为在别处登录");
 				} else {
-					alert("服务器器断开连接");
+					alert("服务器断开连接");
                 }
+			} else if (e.type === EASEMOB_IM_CONNCTION_SERVER_ERROR) {
+				if (msg.toLowerCase().indexOf("user removed") != -1) {
+					alert("用户已经在管理后台删除");
+				}
 			} else {
 				alert(msg);
 			}
 		}
+		conn.stopHeartBeat(conn);
 	};
 	//判断要操作的联系人和当前联系人列表的关系
 	var contains = function(roster, contact) {

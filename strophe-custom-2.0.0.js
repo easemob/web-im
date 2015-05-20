@@ -4838,13 +4838,13 @@ Strophe.Websocket.prototype = {
         }
 
         if (text) {
-            errorString += " - " + condition;
+            errorString += " - " + text;
         }
 
         Strophe.error(errorString);
 
         // close the connection on stream_error
-        this._conn._changeConnectStatus(connectstatus, condition);
+        this._conn._changeConnectStatus(connectstatus, errorString);
         this._conn._doDisconnect();
         return true;
     },
