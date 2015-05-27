@@ -418,8 +418,10 @@ var registerUserFn = function(options){
 		});
 		return;
 	}
-	var prefix = options.https ? 'https' : 'http';
-	var restUrl = options.url || prefix + '://a1.easemob.com/'+ orgName + '/' + appName + '/users';
+
+	var url = options.https ? 'https://a1.easemob.com' : 'http://a1.easemob.com';
+	var apiUrl = options.apiUrl || url;
+	var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
 
 	var userjson = {
 			username : options.username,
@@ -552,7 +554,7 @@ var uploadFn = function(options) {
 		return ;
 	}
 	var apiUrl = options.apiUrl || 'http://a1.easemob.com';
-	var uploadUrl = apiUrl + "/" + orgName + '/' + appName + '/chatfiles';
+	var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
 
 	var xhr = xmlrequest();
 	var onError = function(e) {

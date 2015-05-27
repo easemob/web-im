@@ -11,6 +11,22 @@
 <link rel="stylesheet" type="text/css" href="css/webim.css" />
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 <script type="text/javascript">
+	/*
+		The global value set for xmpp server
+
+		ws://im-api.easemob.com/ws/
+		ws://im-api.sandbox.easemob.com/ws/
+
+		http://im-api.easemob.com/http-bind/
+		http://im-api.sandbox.easemob.com/http-bind/
+	*/
+	var xmppURL = null;
+	/*
+		The global value set for Easemob backend REST API
+
+		http://a1.easemob.com
+		http://a1.sdb.easemob.com
+	*/
 	var apiURL = null;
 	var curUserId = null;
 	var curChatUserId = null;
@@ -92,6 +108,7 @@
 		conn.init({
 			https : false,
 			wss: false,
+			url: xmppURL,
 			//当连接成功时的回调方法
 			onOpened : function() {
 				handleOpen(conn);
@@ -478,7 +495,8 @@
 			},
 			error : function(e) {
 				alert(e.error);
-			}
+			},
+			apiUrl : apiURL
 		};
 		Easemob.im.Helper.registerUser(options);
 	};
