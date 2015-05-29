@@ -100,6 +100,19 @@
 			}
 
 		});
+		$("#usetoken").on("click", function(){
+			if ($("#password").attr("disabled")) {
+				$("#password").removeAttr("disabled");
+			} else {
+				$("#password").attr("disabled", "disabled");
+			}
+
+			if ($("#token").attr("disabled")) {
+				$("#token").removeAttr("disabled");
+			} else {
+				$("#token").attr("disabled", "disabled");
+			}
+		});
 	});
 	//easemobwebim-sdk注册回调函数列表
 	$(document).ready(function() {
@@ -454,23 +467,41 @@
 
 	//登录系统时的操作方法
 	var login = function() {
-		var user = $("#username").val();
-		var pass = $("#password").val();
-		if (user == '' || pass == '') {
-			alert("请输入用户名和密码");
-			return;
+		if ($("#usetoken").is(":checked")) {
+			var user = $("#username").val();
+			var token = $("#token").val();
+			if (user == '' || token == '') {
+				alert("请输入用户名和令牌");
+				return;
+			}
+			hiddenLoginUI();
+			showWaitLoginedUI();
+			//根据用户名令牌登录系统
+			conn.open({
+				apiUrl : apiURL,
+				user : user,
+				accessToken : token,	
+				//连接时提供appkey
+				appKey : appkey
+			});
+		} else {
+			var user = $("#username").val();
+			var pass = $("#password").val();
+			if (user == '' || pass == '') {
+				alert("请输入用户名和密码");
+				return;
+			}
+			hiddenLoginUI();
+			showWaitLoginedUI();
+			//根据用户名密码登录系统
+			conn.open({
+				apiUrl : apiURL,
+				user : user,
+				pwd : pass,
+				//连接时提供appkey
+				appKey : appkey
+			});			
 		}
-		hiddenLoginUI();
-		showWaitLoginedUI();
-		//根据用户名密码登录系统
-		conn.open({
-			apiUrl : apiURL,
-			user : user,
-			pwd : pass,
-			//连接时提供appkey
-			appKey : appkey
-		//accessToken : 'YWMt8bfZfFk5EeSiAzsQ0OXu4QAAAUpoZFOMJ66ic5m2LOZRhYUsRKZWINA06HI'
-		});
 		return false;
 	};
 
@@ -1600,12 +1631,19 @@
 		<div class="modal-body">
 			<table>
 				<tr>
-					<td width="65%"><label for="username">用户名:</label> <input
-						type="text" name="username" value="" id="username" tabindex="1" />
-						<label for="password">密码:</label> <input type="password" value=""
-						name="password" id="password" tabindex="2" /></td>
+					<td width="65%">
+						<label for="username">用户名:</label>
+						<input type="text" name="username" value="" id="username" tabindex="1"/>
+						<label for="password">密码:</label>
+						<input type="password" name="password" value="" id="password" tabindex="2" />
+						<label for="token">令牌:</label>
+						<input type="text" name="token" value="" id="token" disabled="disabled" tabindex="3" />
+					</td>
 				</tr>
 			</table>
+			<label class="checkbox">
+				<input type="checkbox" name="usetoken" id="usetoken" tabindex="4" />使用令牌登录
+			</label>	
 		</div>
 		<div class="modal-footer">
 			<button class="flatbtn-blu" onclick="login()" tabindex="3">登录</button>
