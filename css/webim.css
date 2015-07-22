@@ -480,7 +480,9 @@ label.offline {
 	-o-transition: opacity 0.15s linear;
 	transition: opacity 0.15s linear;
 }
-
+.modal-backdrop {
+    *display: none;
+}
 .fade.in {
 	opacity: 1;
 }

@@ -5,12 +5,6 @@
 <title>WebIM-DEMO</title>
 <link rel="stylesheet" type="text/css" href="css/webim.css" />
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
-<!--[if lte IE 8]>
-<link rel="stylesheet" type="text/css" href="css/ie.css">
-<![endif]-->
-<!--[if lte IE 6]>
-<link rel="stylesheet" type="text/css" href="css/bootstrap-ie6.css">
-<![endif]-->
 <script type="text/javascript" src="jquery-1.11.1.js"></script>
 <script type="text/javascript" src="strophe.js"></script>
 <script type="text/javascript" src="json2.js"></script>
@@ -19,9 +13,6 @@
 <!--[if lte IE 9]>
 <script type="text/javascript" src="swfupload/swfupload.js"></script>
 <script type="text/javascript" src="jquery.jplayer.min.js"></script>
-<![endif]-->
-<!--[if lte IE 6]>
-<script type="text/javascript" src="bootstrap-ie.js"></script>
 <![endif]-->
 <script type="text/javascript">
     /*
@@ -152,6 +143,10 @@
             https : false,
             wss: false,
             url: xmppURL,
+            debug: true,
+            enableFlash: true,//低版本浏览器是否开启flash支持上传等功能
+            supportAudioType: audtype,
+            supportPictureType: pictype,
             //当连接成功时的回调方法
             onOpened : function() {
                 handleOpen(conn);
@@ -203,77 +198,16 @@
             //异常时的回调方法
             onError : function(message) {
                 handleError(message);
-            },
-            uploadShim: function(uploadurl) {//使用flash支持低版本浏览器上传
-                var cacupBtn = $('input[type="file"]'),
-                    url = uploadurl;
-                var compatibalUpload = {};
-                cacupBtn.length > 0 && (
-                    compatibalUpload = new SWFUpload({ 
-                        upload_url: url
-                        , file_post_name: 'file'
-                        , flash_url: "swfupload/swfupload.swf"
-                        , button_placeholder_id: cacupBtn.attr('id')
-                        , button_width: cacupBtn.width() || 120
-                        , button_height: cacupBtn.height() || 30
-                        , button_cursor: SWFUpload.CURSOR.HAND
-                        , button_text: '点击上传'
-                        , button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT
-                        , file_queued_handler: function(file) {
-                            this.setButtonText(file.name);
-                        }       
-                        , file_size_limit: EASEMOB_IM_FILESIZE_LIMIT
-                    })
-                );
-                this.uploadShimOptions = {invoked: true};
-                return function() {
-                    compatibalUpload.settings.upload_error_handler = function(file, err){
-                        conn.onError({
-                            type : EASEMOB_IM_UPLOADFILE_ERROR,
-                            msg : '上传图片发生错误'
-                        });
-                    }
-                    compatibalUpload.settings.upload_success_handler = function(file, response){
-                        try{
-                            if(response.indexOf('callback') > -1) {//lte ie9
-                                response = response.slice(9, -1);
-                            }
-                            var res = $.parseJSON(response);
-                            res.filename = file.name;
-                            conn.uploadShimOptions.onFileUploadComplete(res);
-                        } catch (e) {
-                            conn.onError({
-                                type : EASEMOB_IM_UPLOADFILE_ERROR,
-                                msg : '消息解析出错'
-                            });
-                        }
-                    }
-                    compatibalUpload.settings.upload_complete_handler = function(){
-                        compatibalUpload.setButtonText('点击上传');
-                    }
-                    compatibalUpload.settings.upload_start_handler = function(file) {
-                        var checkType = conn.uploadShimOptions.uploadType === 'audio' ? audtype : pictype;
-                        if(!checkType[file.type.slice(1)]) {
-                            conn.onError({
-                                type : EASEMOB_IM_UPLOADFILE_ERROR,
-                                msg : '不支持此图片类型' + file.type
-                            });
-                            compatibalUpload.stopUpload();
-                            return;
-                        }
-                        if(EASEMOB_IM_FILESIZE_LIMIT < file.size) {
-                            conn.onError({
-                                type : EASEMOB_IM_UPLOADFILE_ERROR,
-                                msg : '图片大小超过限制！请上传大小不超过' + Math.floor(EASEMOB_IM_FILESIZE_LIMIT/1024/1024) + 'M的图片'
-                            });
-                            compatibalUpload.stopUpload();
-                            return;
-                        }
-                    }
-                    compatibalUpload.startUpload();
-                }
-            },
-            onBrowserSupport: function() {
+            }
+            //, uploadShim: function(uploadurl) {//自定义使用第三方上传
+            //    var url = uploadurl;
+            //    return function(options) {
+                    /*
+                     * 第三方上传代码
+                    */
+            //    }
+            //}
+            , onBrowserSupport: function() {
                 alert('您的浏览器版本太低，部分功能可能不支持，建议您升级浏览器！');
             }
         });
@@ -509,6 +443,7 @@
     };
     //异常情况下的处理方法
     var handleError = function(e) {
+        e && e.upload && $('#fileModal').modal('hide');
         if (curUserId == null) {
             hiddenWaitLoginedUI();
             alert(e.msg + ",请重新登录");
@@ -943,7 +878,7 @@
                 to : to,
                 onFileUploadError : function(error) {
                     $('#fileModal').modal('hide');
-                    var messageContent = error.msg + ",发送图片文件失败:" + filename;
+                    var messageContent = (error.msg || '') + ",发送图片文件失败:" + filename;
                     appendMsg(curUserId, to, messageContent);
                 },
                 onFileUploadComplete : function(data) {
@@ -1013,7 +948,7 @@
                 to : to,//发给谁
                 onFileUploadError : function(error) {
                     $('#fileModal').modal('hide');
-                    var messageContent = error.msg + ",发送音频失败:" + filename;
+                    var messageContent = (error.msg || '') + ",发送音频失败:" + filename;
                     appendMsg(curUserId, to, messageContent);
                 },
                 onFileUploadComplete : function(data) {
