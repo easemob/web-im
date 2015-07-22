@@ -74,6 +74,7 @@ Bug Fix：
 2. 增加XMPP连接多resource支持。
 3. 实现WebIM SDK Websocket支持。
 4. 增加Token登录。
-4. 改进code，支持多环境快速调试。
+5. 再demo中对低版本浏览器的上传图片和语音播放使用flash做了降级处理，先支持ie7+，语音当前只支持MP3。
+6. 改进code，支持多环境快速调试。
 
 
