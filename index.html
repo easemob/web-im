@@ -11,7 +11,6 @@
 <script type="text/javascript" src="easemob.im-1.0.7.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
 <!--[if lte IE 9]>
-<script type="text/javascript" src="swfupload/swfupload.js"></script>
 <script type="text/javascript" src="jquery.jplayer.min.js"></script>
 <![endif]-->
 <script type="text/javascript">
@@ -143,8 +142,7 @@
             https : false,
             wss: false,
             url: xmppURL,
-            debug: true,
-            enableFlash: true,//低版本浏览器是否开启flash支持上传等功能
+            enableAutoFlash: true,//不支持异步上传文件的浏览器是否开启flash支持上传等功能
             supportAudioType: audtype,
             supportPictureType: pictype,
             //当连接成功时的回调方法
@@ -200,16 +198,14 @@
                 handleError(message);
             }
             //, uploadShim: function(uploadurl) {//自定义使用第三方上传
-            //    var url = uploadurl;
+            //    var url = uploadurl,
+            //        conn = this;
             //    return function(options) {
                     /*
                      * 第三方上传代码
                     */
             //    }
             //}
-            , onBrowserSupport: function() {
-                alert('您的浏览器版本太低，部分功能可能不支持，建议您升级浏览器！');
-            }
         });
         var loginInfo = getLoginInfo();
         if (loginInfo.isLogin) {
