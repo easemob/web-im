@@ -74,7 +74,9 @@ Bug Fix：
 2. 增加XMPP连接多resource支持。
 3. 实现WebIM SDK Websocket支持。
 4. 增加Token登录。
-5. 再demo中对低版本浏览器的上传图片和语音播放使用flash做了降级处理，先支持ie7+，语音当前只支持MP3。
-6. 改进code，支持多环境快速调试。
+5. 在demo中对不支持异步上传的浏览器使用第三方插件（swfupload）提供支持
+6. 对于不支持audio标签的浏览器，使用jPlayer解决无法播放语音的问题，但此方案当前只支持MP3。
+7. 重整目录结构，sdk相关文件在sdk文件夹内部；添加easemob.im.config.js，只需配置此js里面相关字段即可
+8. 改进code，支持多环境快速调试。
 
 
