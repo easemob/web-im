@@ -60,7 +60,7 @@
                     mp3: u
                 });
             },
-            solution: (window.navigator.userAgent.indexOf('MSIE 9') < 0 ? "html, flash" : "flash"),
+            solution: (Easemob.im.Helper.getIEVersion() != 9 ? "html, flash" : "flash"),
             swfPath: "",
             supplied: "mp3"
         });
