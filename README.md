@@ -9,7 +9,7 @@
 更多关于环信的开发文档请见：http://developer.easemob.com
 
 ##目录
-|---README.MD：相关说明
+<pre>|---README.MD：相关说明
 |---easemob.im.config.js：sdk集成需要修改的配置文件
 |---index.html: demo首页，包含sdk基础功能和浏览器兼容性的解决方案
     /*sdk相关文件*/
@@ -27,4 +27,4 @@
     |---json2.js：
     /*sdk支持IE7+依赖文件*/
     |---jplayer/：对于不支持audio标签的浏览器，使用jPlayer解决无法播放语音的问题，但此方案当前只支持MP3
-    |---swfupload/：对不支持异步上传的浏览器使用此组件提供支持
+    |---swfupload/：对不支持异步上传的浏览器使用此组件提供支持</pre>
