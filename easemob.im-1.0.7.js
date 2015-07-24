@@ -10,94 +10,12 @@ if (typeof Easemob == 'undefined') {
 }
 if (typeof Easemob.im == 'undefined') {
     Easemob.im = {};
-    Easemob.im.version="1.0.6";
+    Easemob.im.version="1.0.7";
 }
 if (typeof Easemob.im.Connection !== 'undefined') {
     return;
 }
 
-var uploadShim = function(url) {
-    var cacupBtn = $('input[type="file"]'),
-        u = url;
-
-    if(cacupBtn.length > 0) {
-        var swfupload = new SWFUpload({ 
-            upload_url: u
-            , file_post_name: 'file'
-            , flash_url: "swfupload/swfupload.swf"
-            , button_placeholder_id: cacupBtn.attr('id')
-            , button_width: cacupBtn.width() || 120
-            , button_height: cacupBtn.height() || 30
-            , button_cursor: SWFUpload.CURSOR.HAND
-            , button_text: '点击上传'
-            , button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT
-            , file_queued_handler: function(file) {
-                if(this.getStats().files_queued > 1) {
-                    this.cancelUpload();
-                }
-                this.setButtonText(file.name);
-                this.uploadType = file.type;
-                this.uploadSize = file.size;
-            }
-            , file_size_limit: EASEMOB_IM_FILESIZE_LIMIT
-        });
-        return function(options){
-            var t = options.uploadType,
-                conn = this;
-            
-            swfupload.settings.upload_success_handler = function(file, response){
-                try{
-                    if(response.indexOf('callback') > -1) {//lte ie9
-                        response = response.slice(9, -1);
-                    }
-                    var res = $.parseJSON(response);
-                    res.filename = file.name;
-                    options.onFileUploadComplete && options.onFileUploadComplete(res);
-                } catch (e) {
-                    conn.onError({
-                        type : EASEMOB_IM_UPLOADFILE_ERROR,
-                        msg : '上传图片发生错误',
-                        err: e,
-                        upload: true
-                    });
-                }
-            }
-            swfupload.settings.upload_complete_handler = function(){
-                this.setButtonText('点击上传');
-            }
-            if(swfupload.settings.button_text == '点击上传') {
-                conn.onError({
-                    type : EASEMOB_IM_UPLOADFILE_ERROR,
-                    msg : '请选择文件',
-                    upload: true
-                });
-                return;
-            }
-            var checkType = t === 'audio' ? conn.supportAudioType : conn.supportPictureType;
-            if(!checkType[swfupload.uploadType.slice(1)]) {
-                conn.onError({
-                    type : EASEMOB_IM_UPLOADFILE_ERROR,
-                    msg : '不支持此图片类型' + swfupload.uploadType,
-                    upload: true
-                });
-                swfupload.setButtonText('点击上传');
-                swfupload.cancelUpload();
-                return;
-            }
-            if(EASEMOB_IM_FILESIZE_LIMIT < swfupload.uploadSize) {
-                conn.onError({
-                    type : EASEMOB_IM_UPLOADFILE_ERROR,
-                    msg : '图片大小超过限制！请上传大小不超过' + Math.floor(EASEMOB_IM_FILESIZE_LIMIT/1024/1024) + 'M的图片',
-                    upload: true
-                });
-                swfupload.setButtonText('点击上传');
-                swfupload.cancelUpload();
-                return;
-            }
-            swfupload.startUpload();
-        }
-    }
-}
 var innerBase64 = (function() {
     var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
@@ -380,7 +298,6 @@ function getIEVersion(){
     }
     return null;
 };
-var ieVersion = getIEVersion();
 
 var tepmxhr = xmlrequest();
 var hasSetRequestHeader = (tepmxhr.setRequestHeader || false );
@@ -592,26 +509,22 @@ var hasFlash = (function() {
 var hasFormData = (typeof FormData != 'undefined');
 var isCanUploadFileAsync = (hasSetRequestHeader && hasFormData);
 var isCanUploadFile = isCanUploadFileAsync || hasFlash;
-
+var uploadUrl = '';
+var parseUploadResponse = function(response) {
+    return response.indexOf('callback') > -1 ? //lte ie9
+        response.slice(9, -1) : response;
+}
+var parseDownloadResponse = function(response) {
+    return ((response && response.type && response.type === 'application/json') 
+        || 0 > Object.prototype.toString.call(response).indexOf('Blob')) ? 
+            this.url+'?token=' : window.URL.createObjectURL(response);
+}
 var uploadFn = function(options) {
     options = options || {};
     options.onFileUploadProgress = options.onFileUploadProgress || emptyFn;
     options.onFileUploadComplete = options.onFileUploadComplete || emptyFn;
     options.onFileUploadError = options.onFileUploadError || emptyFn;
     options.onFileUploadCanceled = options.onFileUploadCanceled || emptyFn;
-
-    if (!isCanUploadFileAsync) {
-		if(hasFlash && this.enableAutoFlash) {
-            this.uploadShim(options);       
-        } else {
-            this.onError({
-                type : EASEMOB_IM_UPLOADFILE_BROWSER_ERROR,
-                msg : '当前浏览器不支持异步上传！'
-            });
-        }
-        return;
-    }
-
     var acc = options.accessToken;
     if (!acc) {
         options.onFileUploadError({
@@ -638,6 +551,21 @@ var uploadFn = function(options) {
         });
         return;
     }
+    var apiUrl = options.apiUrl || 'http://a1.easemob.com';
+    var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
+    if (!isCanUploadFileAsync) {
+		if(hasFlash && typeof options.flashUpload === 'function') {
+            options.flashUpload && options.flashUpload(uploadUrl, options); 
+        } else {
+            this.onError({
+                type : EASEMOB_IM_UPLOADFILE_BROWSER_ERROR,
+                msg : '当前浏览器不支持异步上传！'
+            });
+        }
+        return;
+    }
+
+    
     var fileSize = getFileSizeFn(options.fileInputId);
     if(fileSize > EASEMOB_IM_FILESIZE_LIMIT){
         options.onFileUploadError({
@@ -652,8 +580,6 @@ var uploadFn = function(options) {
         });
         return ;
     }
-    var apiUrl = options.apiUrl || 'http://a1.easemob.com';
-    var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
 
     var xhr = xmlrequest();
     var onError = function(e) {
@@ -737,11 +663,7 @@ var isCanDownLoadFile = (hasSetRequestHeader && (hasBlob || hasOverrideMimeType)
 var downloadFn = function(options){
     options.onFileDownloadComplete = options.onFileDownloadComplete || emptyFn;
     options.onFileDownloadError = options.onFileDownloadError || emptyFn;
-
-    if (!isCanDownLoadFile) {
-        options.onFileDownloadComplete(this);
-        return;
-    }
+    
     var accessToken = options.accessToken || '';
     if (!accessToken) {
         options.onFileDownloadError({
@@ -758,6 +680,10 @@ var downloadFn = function(options){
             xhr : xhr,
             e : e
         });
+    }
+    if (!isCanDownLoadFile) {
+        options.onFileDownloadComplete();
+        return;
     }
     var xhr = xmlrequest();
     if("addEventListener" in xhr){
@@ -1055,7 +981,7 @@ var dologin2UserGrid = function(apiUrl,user,pwd,orgName,appName,suc,error) {
     var param = doAjaxRequest(options);
     return param;
 };
-var uploadShimExecuted = false;
+
 var innerCheck = function(options,conn){
     if (conn.isOpened() || conn.isOpening()) {
         conn.onError({
@@ -1116,13 +1042,7 @@ var innerCheck = function(options,conn){
     conn.context.appKey = appKey;
     conn.context.appName = appName;
     conn.context.orgName = orgName;
-
-    if(conn.enableAutoFlash && !isCanUploadFileAsync && hasFlash && !uploadShimExecuted) {
-        $.getScript('swfupload/swfupload.js', function(){
-            conn.uploadShim = conn.uploadShim((options.apiUrl || 'http://a1.easemob.com') + '/' + orgName + '/' + appName + '/chatfiles');
-            uploadShimExecuted = true;
-        });
-    }
+    
     return true;
 };
 var parseMessageType = function(msginfo){
@@ -1265,20 +1185,6 @@ connection.prototype.init = function(options) {
     this.maxRetries = options.maxRetries || 5;
     this.pollingTime = options.pollingTime || 800;
     this.stropheConn = false;
-    this.enableAutoFlash = typeof options.enableAutoFlash !== 'undefined' ? options.enableAutoFlash : true;
-    this.supportAudioType = options.supportAudioType || {
-        "mp3" : true,
-        "wma" : true,
-        "wav" : true,
-        "amr" : true,
-        "avi" : true
-    };
-    this.supportPictureType = options.supportPictureType || {
-        "jpg" : true,
-        "gif" : true,
-        "png" : true,
-        "bmp" : true
-    }
     this.onOpened = options.onOpened || emptyFn;
     this.onClosed = options.onClosed || emptyFn;
     this.onTextMessage = options.onTextMessage || emptyFn;
@@ -1294,7 +1200,6 @@ connection.prototype.init = function(options) {
     this.onError = options.onError || emptyFn;
     this.onReceivedMessage = options.onReceivedMessage || emptyFn;
     this.onInviteMessage = options.onInviteMessage || emptyFn;
-    this.uploadShim = typeof options.uploadShim === 'function' ? options.uploadShim : uploadShim;
 
     this.context = {
         status : STATUS_INIT
@@ -1796,7 +1701,6 @@ connection.prototype.sendPicture = function(options) {
         options.appName = conn.context.appName || '';
         options.orgName = conn.context.orgName || '';
         options.accessToken = conn.context.accessToken || '';
-        options.uploadType = 'pic';
         uploadFn.call(this, options);
         return;
     }
@@ -1903,7 +1807,6 @@ connection.prototype.sendAudio = function(options) {
 	options.appName = this.context.appName || '';
 	options.orgName = this.context.orgName || '';
 	options.accessToken = this.context.accessToken || '';
-    options.uploadType = 'audio';
 	options.onFileUploadComplete = myonComplete;
 
 	if(!isCanUploadFileAsync){
@@ -2356,30 +2259,34 @@ connection.prototype.clear = function() {
 
 Easemob.im.Connection = connection;
 
-if (typeof Easemob.im.Helper == 'undefined') {
-    Easemob.im.Helper = {};
+Easemob.im.Helper = Easemob.im.Helper || {};
 
-    // method
-    Easemob.im.Helper.getFileUrl = getFileUrlFn;
-    Easemob.im.Helper.upload = uploadFn;
-    Easemob.im.Helper.download = downloadFn;
-    Easemob.im.Helper.getFileSize = getFileSizeFn;
-    Easemob.im.Helper.xhr = doAjaxRequest;
-    Easemob.im.Helper.parseTextMessage = parseTextMessageFn;
-    Easemob.im.Helper.login2UserGrid = login2UserGrid;
+// method
+Easemob.im.Helper.getFileUrl = getFileUrlFn;
+Easemob.im.Helper.upload = uploadFn;
+Easemob.im.Helper.download = downloadFn;
+Easemob.im.Helper.getFileSize = getFileSizeFn;
+Easemob.im.Helper.xhr = doAjaxRequest;
+Easemob.im.Helper.parseTextMessage = parseTextMessageFn;
+Easemob.im.Helper.login2UserGrid = login2UserGrid;
+Easemob.im.Helper.parseUploadResponse = parseUploadResponse;
+Easemob.im.Helper.parseDownloadResponse = parseDownloadResponse;
+Easemob.im.Helper.getIEVersion = getIEVersion;
 
-    // attritue
-    Easemob.im.Helper.isCanUploadFile = isCanUploadFile;
-    Easemob.im.Helper.isCanDownLoadFile = isCanDownLoadFile;
-    Easemob.im.Helper.hasSetRequestHeader = hasSetRequestHeader;
-    Easemob.im.Helper.hasOverrideMimeType = hasOverrideMimeType;
+// attritue
+Easemob.im.Helper.isCanUploadFile = isCanUploadFile;
+Easemob.im.Helper.isCanUploadFileAsync = isCanUploadFileAsync;
+Easemob.im.Helper.isCanDownLoadFile = isCanDownLoadFile;
+Easemob.im.Helper.hasSetRequestHeader = hasSetRequestHeader;
+Easemob.im.Helper.hasOverrideMimeType = hasOverrideMimeType;
+Easemob.im.Helper.uploadUrl = '';
 
-    // object
-    Easemob.im.Helper.Base64 = innerBase64;
-    Easemob.im.Helper.EmotionPicData = emotionPicData;
+// object
+Easemob.im.Helper.Base64 = innerBase64;
+Easemob.im.Helper.EmotionPicData = emotionPicData;
 
-    //user
-    Easemob.im.Helper.registerUser = registerUserFn;
-}
+//user
+Easemob.im.Helper.registerUser = registerUserFn;
+
 })(jQuery)
 }
