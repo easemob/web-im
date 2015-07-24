@@ -3,16 +3,16 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>WebIM-DEMO</title>
-<link rel="stylesheet" href="sdk/css/webim.css" />
-<link rel="stylesheet" href="sdk/css/bootstrap.css" />
+<link rel="stylesheet" href="css/webim.css" />
+<link rel="stylesheet" href="css/bootstrap.css" />
 <script src="sdk/jquery-1.11.1.js"></script>
-<script src="sdk/bootstrap.js"></script>
 <script src="sdk/strophe.js"></script>
 <script src="sdk/json2.js"></script>
 <script src="sdk/easemob.im-1.0.7.js"></script>
 <script src="easemob.im.config.js"></script>
+<script src="bootstrap.js"></script>
 <!--[if lte IE 9]>
-<script src="sdk/jquery.jplayer.min.js"></script>
+<script src="sdk/jplayer/jquery.jplayer.min.js"></script>
 <script src="sdk/swfupload/swfupload.js"></script>
 <![endif]-->
 <script type="text/javascript">
@@ -46,7 +46,7 @@
                 });
             },
             solution: (Easemob.im.Helper.getIEVersion() != 9 ? "html, flash" : "flash"),
-            swfPath: "",
+            swfPath: "sdk/jplayer",
             supplied: "mp3"
         });
         d.next().on('click', function(){
@@ -62,7 +62,7 @@
 
         return new SWFUpload({ 
             file_post_name: 'file'
-            , flash_url: "swfupload/swfupload.swf"
+            , flash_url: "sdk/swfupload/swfupload.swf"
             , button_placeholder_id: fileInputId
             , button_width: uploadBtn.width() || 120
             , button_height: uploadBtn.height() || 30
@@ -479,7 +479,7 @@
                         chooseContactDivClick(this);
                     });
                     $('<img>').attr({
-                        "src" : "sdk/img/head/contact_normal.png"
+                        "src" : "img/head/contact_normal.png"
                     }).appendTo(lielem);
                     $('<span>').html(contact.name).appendTo(lielem);
                     $('#contactlistUL').append(lielem);
@@ -651,7 +651,7 @@
             }).click(function() {
                 chooseContactDivClick(this);
             });
-            $('<img>').attr("src", "sdk/img/head/contact_normal.png").appendTo(
+            $('<img>').attr("src", "img/head/contact_normal.png").appendTo(
                     lielem);
             $('<span>').html(userName).appendTo(lielem);
             $('#contactlistUL').append(lielem);
@@ -686,7 +686,7 @@
                 chooseContactDivClick(this);
             });
             $('<img>').attr({
-                'src' : 'sdk/img/head/group_normal.png'
+                'src' : 'img/head/group_normal.png'
             }).appendTo(lielem);
             $('<span>').html(roomsName).appendTo(lielem);
             $('#contactgrouplistUL').append(lielem);
@@ -1721,12 +1721,12 @@
     </div>
 
     <div id="waitLoginmodal" class="modal hide fade" data-backdrop="static">
-        <img src="sdk/img/waitting.gif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;正在努力加载中...</img>
+        <img src="img/waitting.gif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;正在努力加载中...</img>
     </div>
     <div class="content" id="content" style="display: none">
         <div class="leftcontact" id="leftcontact">
             <div id="headerimg" class="leftheader">
-                <span> <img src="sdk/img/head/header2.jpg" alt="logo"
+                <span> <img src="img/head/header2.jpg" alt="logo"
                     class="img-circle" width="60px" height="60px"
                     style="margin-top: -40px; margin-left: 20px" /></span> <span
                     id="login_user" class="login_user_title"> <a
@@ -1805,11 +1805,11 @@
                     <ul class="talkTo">
                         <li id="talkTo"><a href="#"></a></li>
                         <li id="recycle" style="float: right;"><img
-                            src="sdk/img/recycle.png" onclick="clearCurrentChat();"
+                            src="img/recycle.png" onclick="clearCurrentChat();"
                             style="margin-right: 15px; cursor: hand; width: 18px;" title="清屏" /></li>
                         <li id="roomInfo" style="float: right;"><img
                             id="roomMemberImg"
-                            src="sdk/img/head/find_more_friend_addfriend_icon.png"
+                            src="img/head/find_more_friend_addfriend_icon.png"
                             onclick="showRoomMember();"
                             style="margin-right: 15px; cursor: hand; width: 18px; display: none"
                             title="群组成员" /></li>
@@ -1847,7 +1847,7 @@
                 </div>
                 <div class="chat02_bar">
                     <ul>
-                        <li style="right: 5px; top: 5px;"><img src="sdk/img/send_btn.jpg"
+                        <li style="right: 5px; top: 5px;"><img src="img/send_btn.jpg"
                             onclick="sendText()" /></li>
                     </ul>
                 </div>
