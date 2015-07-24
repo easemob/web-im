@@ -9,6 +9,7 @@
 <script type="text/javascript" src="strophe.js"></script>
 <script type="text/javascript" src="json2.js"></script>
 <script type="text/javascript" src="easemob.im-1.0.7.js"></script>
+<script type="text/javascript" src="easemob.im.config.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
 <!--[if lte IE 9]>
@@ -16,20 +17,7 @@
 <script type="text/javascript" src="swfupload/swfupload.js"></script>
 <![endif]-->
 <script type="text/javascript">
-    /*
-        The global value set for xmpp server
-        ws://im-api.easemob.com/ws/
-        ws://im-api.sandbox.easemob.com/ws/
-        http://im-api.easemob.com/http-bind/
-        http://im-api.sandbox.easemob.com/http-bind/
-    */
-    var xmppURL = null;
-    /*
-        The global value set for Easemob backend REST API
-        http://a1.easemob.com
-        http://a1.sdb.easemob.com
-    */
-    var apiURL = null;
+    
     var curUserId = null;
     var curChatUserId = null;
     var conn = null;
@@ -44,7 +32,6 @@
     var groupFlagMark = "group--";
     var groupQuering = false;
     var textSending = false;
-    var appkey = "easemob-demo#chatdemoui";
     var time = 0;
 
     var swfupload = null;
@@ -227,11 +214,9 @@
         conn = new Easemob.im.Connection();
         //初始化连接
         conn.init({
-            https : false,
-            wss: false,
-            url: xmppURL,
-            supportAudioType: audtype,
-            supportPictureType: pictype,
+            https : Easemob.im.config.https,
+            wss: Easemob.im.config.wss,
+            url: Easemob.im.config.xmppURL,
             //当连接成功时的回调方法
             onOpened : function() {
                 handleOpen(conn);
@@ -572,11 +557,11 @@
             showWaitLoginedUI();
             //根据用户名令牌登录系统
             conn.open({
-                apiUrl : apiURL,
+                apiUrl : Easemob.im.config.apiURL,
                 user : user,
                 accessToken : token,    
                 //连接时提供appkey
-                appKey : appkey
+                appKey : Easemob.im.config.appkey
             });
         } else {
             var user = $("#username").val();
@@ -589,11 +574,11 @@
             showWaitLoginedUI();
             //根据用户名密码登录系统
             conn.open({
-                apiUrl : apiURL,
+                apiUrl : Easemob.im.config.apiURL,
                 user : user,
                 pwd : pass,
                 //连接时提供appkey
-                appKey : appkey
+                appKey : Easemob.im.config.appkey
             });         
         }
         return false;
@@ -611,7 +596,7 @@
             username : user,
             password : pass,
             nickname : nickname,
-            appKey : appkey,
+            appKey : Easemob.im.config.appkey,
             success : function(result) {
                 alert("注册成功!");
                 $('#loginmodal').modal('show');
@@ -620,7 +605,7 @@
             error : function(e) {
                 alert(e.error);
             },
-            apiUrl : apiURL
+            apiUrl : Easemob.im.config.apiURL
         };
         Easemob.im.Helper.registerUser(options);
     };
@@ -947,7 +932,7 @@
                 type : 'chat',
                 fileInputId : fileInputId,
                 to : to,
-                apiUrl: apiURL,
+                apiUrl: Easemob.im.config.apiURL,
                 onFileUploadError : function(error) {
                     $('#fileModal').modal('hide');
                     var messageContent = (error.msg || '') + ",发送图片文件失败:" + filename;
@@ -1016,7 +1001,7 @@
                 type : "chat",
                 fileInputId : fileInputId,
                 to : to,//发给谁
-                apiUrl: apiURL,
+                apiUrl: Easemob.im.config.apiURL,
                 onFileUploadError : function(error) {
                     $('#fileModal').modal('hide');
                     var messageContent = (error.msg || '') + ",发送音频失败:" + filename;
