@@ -70,7 +70,7 @@
             , button_text: '点击上传'
             , button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT
             , file_size_limit: 10485760
-            , file_upload_limit: 1
+            , file_upload_limit: 0
             , file_queued_handler: function(file) {
                 if(this.getStats().files_queued > 1) {
                     this.cancelUpload();
