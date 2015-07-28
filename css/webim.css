@@ -486,3 +486,7 @@ label.offline {
 .fade.in {
 	opacity: 1;
 }
+.badgegroup,
+.badge {
+    *margin-top: -30px;
+}

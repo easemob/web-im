@@ -3,7 +3,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>WebIM-DEMO</title>
-<link rel="stylesheet" href="css/webim.css" />
 <link rel="stylesheet" href="css/bootstrap.css" />
 <script src="sdk/jquery-1.11.1.js"></script>
 <script src="sdk/strophe.js"></script>
@@ -11,6 +10,7 @@
 <script src="sdk/easemob.im-1.0.7.js"></script>
 <script src="easemob.im.config.js"></script>
 <script src="bootstrap.js"></script>
+<link rel="stylesheet" href="css/webim.css" />
 <!--[if lte IE 9]>
 <script src="sdk/jplayer/jquery.jplayer.min.js"></script>
 <script src="sdk/swfupload/swfupload.js"></script>
@@ -33,6 +33,7 @@
     var time = 0;
 
     var swfupload = null;
+    var flashFilename = '';
     
     //处理不支持<audio>标签的浏览器，当前只支持MP3
     var playAudioShim = function(dom, url, t) {
@@ -92,6 +93,7 @@
                     this.cancelUpload();
                 } else {
                     this.setButtonText(file.name);
+                    flashFilename = file.name;
                 }
             }
             , upload_error_handler: function(file, code, msg){
@@ -933,7 +935,7 @@
                 apiUrl: Easemob.im.config.apiURL,
                 onFileUploadError : function(error) {
                     $('#fileModal').modal('hide');
-                    var messageContent = (error.msg || '') + ",发送图片文件失败:" + filename;
+                    var messageContent = (error.msg || '') + ",发送图片文件失败:" + (filename||flashFilename);
                     appendMsg(curUserId, to, messageContent);
                 },
                 onFileUploadComplete : function(data) {
@@ -955,7 +957,7 @@
                     appendMsg(curUserId, to, {
                         data : [ {
                             type : 'pic',
-                            filename : filename,
+                            filename : (filename||flashFilename),
                             data : img
                         } ]
                     });
@@ -1002,11 +1004,11 @@
                 apiUrl: Easemob.im.config.apiURL,
                 onFileUploadError : function(error) {
                     $('#fileModal').modal('hide');
-                    var messageContent = (error.msg || '') + ",发送音频失败:" + filename;
+                    var messageContent = (error.msg || '') + ",发送音频失败:" + (filename || flashFilename);
                     appendMsg(curUserId, to, messageContent);
                 },
                 onFileUploadComplete : function(data) {
-                    var messageContent = "发送音频" + filename;
+                    var messageContent = "发送音频" + (filename || flashFilename);
                     $('#fileModal').modal('hide');
                     appendMsg(curUserId, to, messageContent);
                 },
