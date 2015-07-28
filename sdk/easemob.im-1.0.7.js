@@ -507,7 +507,7 @@ var hasFlash = (function() {
 }());
 
 var hasFormData = (typeof FormData != 'undefined');
-var isCanUploadFileAsync = (hasSetRequestHeader && hasFormData);
+var isCanUploadFileAsync = hasSetRequestHeader && hasFormData;
 var isCanUploadFile = isCanUploadFileAsync || hasFlash;
 var uploadUrl = '';
 var parseUploadResponse = function(response) {
@@ -2136,7 +2136,7 @@ connection.prototype.queryRoomInfo = function(options){
                 var field = fields[i];
                 if(field.getAttribute('label') == 'owner'){
                     var mem = {
-                            jid : field.textContent + "@" + domain,
+                            jid : (field.textContent||field.text) + "@" + domain,
                             affiliation : 'owner'
                         };
                     members.push(mem);

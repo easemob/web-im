@@ -58,6 +58,7 @@
     //处理不支持异步上传的浏览器,使用swfupload作为解决方案
     var uploadType = null;
     var uploadShim = function(fileInputId) {
+        var pageTitle = document.title;
         var uploadBtn = $('#' + fileInputId);
         if(typeof SWFUpload === 'undefined' || uploadBtn.length < 1) return;
 
@@ -94,6 +95,11 @@
                 } else {
                     this.setButtonText(file.name);
                     flashFilename = file.name;
+                }
+            }
+            , file_dialog_start_handler: function() {
+                if(Easemob.im.Helper.getIEVersion() < 10) {
+                    document.title = pageTitle;
                 }
             }
             , upload_error_handler: function(file, code, msg){
