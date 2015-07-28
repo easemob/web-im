@@ -38,6 +38,8 @@
     //处理不支持<audio>标签的浏览器，当前只支持MP3
     var playAudioShim = function(dom, url, t) {
         var d = $(dom),
+            play = d.next(),
+            pause = play.next(),
             u = url;
         if(!d.jPlayer) return;
         d.jPlayer({
@@ -48,10 +50,21 @@
             },
             solution: (Easemob.im.Helper.getIEVersion() != 9 ? "html, flash" : "flash"),
             swfPath: "sdk/jplayer",
-            supplied: "mp3"
+            supplied: "mp3",
+            ended: function() {
+                pause.hide();
+                play.show();
+            }
         });
-        d.next().on('click', function(){
+        play.on('click', function(){
             d.jPlayer('play');
+            play.hide();
+            pause.show();
+        });
+        pause.on('click', function(){
+            d.jPlayer('pause');
+            play.show();
+            pause.hide();
         });
     }
     
@@ -1365,7 +1378,7 @@
                     var d = $(lineDiv),
                         t = new Date().getTime();
                     d.append($('<div class="'+t+'"></div>\
-                        <button class="play'+t+'">播放</button>'));
+                        <button class="play'+t+'">播放</button><button style="display:none" class="play'+t+'">暂停</button>'));
                 }
             } else {
                 var eletext = "<p3>" + data + "</p3>";
