@@ -34,6 +34,7 @@
 
     var swfupload = null;
     var flashFilename = '';
+    var audioDom = [];
     
     //处理不支持<audio>标签的浏览器，当前只支持MP3
     var playAudioShim = function(dom, url, t) {
@@ -42,6 +43,7 @@
             pause = play.next(),
             u = url;
         if(!d.jPlayer) return;
+        Easemob.im.Helper.getIEVersion() < 9 && audioDom.push(d);
         d.jPlayer({
             ready: function () {
                 $(this).jPlayer("setMedia", {
@@ -411,6 +413,9 @@
         bothRoster = [];
         toRoster = [];
         hiddenChatUI();
+        for(var i=0,l=audioDom.length;i<l;i++) {
+            if(audioDom[i].jPlayer) audioDom[i].jPlayer('destroy');
+        }
         clearContactUI("contactlistUL", "contactgrouplistUL",
                 "momogrouplistUL", msgCardDivId);
         showLoginUI();
@@ -1763,7 +1768,7 @@
                             <li><a href="javascript:;" onclick="showAddFriend()">添加好友</a></li>
                             <li><a href="javascript:;" onclick="showDelFriend()">删除好友</a></li>
                             <li class="divider"></li>
-                            <li><a href="javascript:;" onclick="logout()">退出</a></li>
+                            <li><a href="javascript:;" onclick="logout();return false;">退出</a></li>
                         </ul>
                     </div>
                 </span>
