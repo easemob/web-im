@@ -490,3 +490,6 @@ label.offline {
 .badge {
     *margin-top: -30px;
 }
+.accordion-inner {
+    *position: relative;
+}

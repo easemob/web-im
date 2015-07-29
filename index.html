@@ -950,6 +950,7 @@
             var opt = {
                 type : 'chat',
                 fileInputId : fileInputId,
+                filename : flashFilename || '',
                 to : to,
                 apiUrl: Easemob.im.config.apiURL,
                 onFileUploadError : function(error) {
@@ -1019,6 +1020,7 @@
             var opt = {
                 type : "chat",
                 fileInputId : fileInputId,
+                filename : flashFilename || '',
                 to : to,//发给谁
                 apiUrl: Easemob.im.config.apiURL,
                 onFileUploadError : function(error) {
@@ -1758,10 +1760,10 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="#" onclick="showAddFriend()">添加好友</a></li>
-                            <li><a href="#" onclick="showDelFriend()">删除好友</a></li>
+                            <li><a href="javascript:;" onclick="showAddFriend()">添加好友</a></li>
+                            <li><a href="javascript:;" onclick="showDelFriend()">删除好友</a></li>
                             <li class="divider"></li>
-                            <li><a href="#" onclick="logout()">退出</a></li>
+                            <li><a href="javascript:;" onclick="logout()">退出</a></li>
                         </ul>
                     </div>
                 </span>
