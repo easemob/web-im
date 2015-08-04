@@ -1170,7 +1170,7 @@ connection.prototype.init = function(options) {
         this.url = options.url || prefix + '://im-api.easemob.com/ws/';
     } else {
         var prefix = options.https ? 'https' : 'http';
-        this.url = (options.url.indexOf('ws:') > 0 ? '' : options.url) || prefix + '://im-api.easemob.com/http-bind/';
+        this.url = ((options.url && options.url.indexOf('ws:') > 0) ? '' : options.url) || prefix + '://im-api.easemob.com/http-bind/';
     }
 
     this.https = options.https || false;
