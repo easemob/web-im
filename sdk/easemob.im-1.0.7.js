@@ -1166,11 +1166,9 @@ var connection = function() {
 }
 connection.prototype.init = function(options) {
     if (window.WebSocket) {
-        var prefix = options.wss ? 'wss' : 'ws';
-        this.url = options.url || prefix + '://im-api.easemob.com/ws/';
+        this.url = options.url || (options.https ? 'wss' : 'ws') + '://im-api.easemob.com/ws/';
     } else {
-        var prefix = options.https ? 'https' : 'http';
-        this.url = ((options.url && options.url.indexOf('ws:') > -1) ? '' : options.url) || prefix + '://im-api.easemob.com/http-bind/';
+        this.url = ((options.url && options.url.indexOf('ws') > -1) ? '' : options.url) || (options.https ? 'https' : 'http') + '://im-api.easemob.com/http-bind/';
     }
 
     this.https = options.https || false;

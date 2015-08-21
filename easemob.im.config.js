@@ -2,7 +2,9 @@ Easemob.im.config = {
     /*
         The global value set for xmpp server
         ws://im-api.easemob.com/ws/
+        wss://im-api.easemob.com/ws/
         http://im-api.easemob.com/http-bind/
+        https://im-api.easemob.com/http-bind/
     */
     xmppURL: 'wss://im-api.easemob.com/ws/',
     /*
@@ -14,6 +16,5 @@ Easemob.im.config = {
         连接时提供appkey
     */
     appkey: "easemob-demo#chatdemoui",
-    https : true,
-    wss: false
+    https : true
 }

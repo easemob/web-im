@@ -231,12 +231,11 @@
         if(!Easemob.im.Helper.isCanUploadFileAsync && typeof uploadShim === 'function') {
             swfupload = uploadShim('fileInput');
         }
-
+        handleConfig();
         conn = new Easemob.im.Connection();
         //初始化连接
         conn.init({
             https : Easemob.im.config.https,
-            wss: Easemob.im.config.wss,
             url: Easemob.im.config.xmppURL,
             //当连接成功时的回调方法
             onOpened : function() {
@@ -354,6 +353,17 @@
             });
         });
     });
+    var handleConfig = function() {
+        if(Easemob.im.Helper.getIEVersion() < 10) {
+            Easemob.im.config.https = location.protocol == 'https:' ? true : false;
+            if(location.protocol == 'http:' && Easemob.im.config.xmppURL.indexOf('https') == 0) {
+                Easemob.im.config.xmppURL = Easemob.im.config.xmppURL.replace(/^https/, 'http');
+            } 
+        }
+        if(location.protocol == 'https:' && Easemob.im.config.xmppURL.indexOf('http') == 0) {
+            Easemob.im.config.xmppURL = Easemob.im.config.xmppURL.replace(/^http/, 'https');
+        }
+    }
     //处理连接时函数,主要是登录成功后对页面元素做处理
     var handleOpen = function(conn) {
         //从连接中获取到当前的登录人注册帐号名
