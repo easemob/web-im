@@ -974,7 +974,6 @@
                     appendMsg(curUserId, to, messageContent);
                 },
                 onFileUploadComplete : function(data) {
-                    $('#fileModal').modal('hide');
                     var file = document.getElementById(fileInputId);
                     if (file && file.files) {
                         var objUrl = getObjectURL(file.files[0]);
@@ -996,6 +995,7 @@
                             data : img
                         } ]
                     });
+                    $('#fileModal').modal('hide');
                 },
                 flashUpload: flashUpload
             };
