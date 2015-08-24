@@ -356,12 +356,21 @@
     var handleConfig = function() {
         if(Easemob.im.Helper.getIEVersion() < 10) {
             Easemob.im.config.https = location.protocol == 'https:' ? true : false;
-            if(location.protocol == 'http:' && Easemob.im.config.xmppURL.indexOf('https') == 0) {
-                Easemob.im.config.xmppURL = Easemob.im.config.xmppURL.replace(/^https/, 'http');
-            } 
-        }
-        if(location.protocol == 'https:' && Easemob.im.config.xmppURL.indexOf('http') == 0) {
-            Easemob.im.config.xmppURL = Easemob.im.config.xmppURL.replace(/^http/, 'https');
+            if(!Easemob.im.config.https) {
+                if(Easemob.im.config.xmppURL.indexOf('https') == 0) {
+                    Easemob.im.config.xmppURL = Easemob.im.config.xmppURL.replace(/^https/, 'http');
+                }
+                if(Easemob.im.config.apiURL.indexOf('https') == 0) {
+                    Easemob.im.config.apiURL = Easemob.im.config.apiURL.replace(/^https/, 'http');
+                }
+            } else {
+                if(Easemob.im.config.xmppURL.indexOf('https') != 0) {
+                    Easemob.im.config.xmppURL = Easemob.im.config.xmppURL.replace(/^http/, 'https');
+                }
+                if(Easemob.im.config.apiURL.indexOf('https') != 0) {
+                    Easemob.im.config.apiURL = Easemob.im.config.apiURL.replace(/^http/, 'https');
+                }
+            }
         }
     }
     //处理连接时函数,主要是登录成功后对页面元素做处理
