@@ -496,8 +496,12 @@ var getFileSizeFn = function(fileInputId){
 };
 
 var hasFlash = (function() {
-    if (/*@cc_on!@*/0) {//ie
-        return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+    if (getIEVersion()) {//ie
+        try {
+            return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+        } catch (ex) {
+            return 0;
+        }
     } else {
         if (navigator.plugins && navigator.plugins.length > 0) {
             return navigator.plugins["Shockwave Flash"];
@@ -1165,13 +1169,22 @@ var STATUS_CLOSED = tempIndex++;
 var connection = function() {
 }
 connection.prototype.init = function(options) {
+    this.https = options.https || (location.protocol == 'https:' ? true : false);
+    
+    var url = options.url.replace(/^https?:|ws:|wss:/, '');
+
     if (window.WebSocket) {
-        this.url = options.url || (options.https ? 'wss' : 'ws') + '://im-api.easemob.com/ws/';
+        options.url = /^wss?:/.test(options.url) && options.url;
+        this.url = options.url ? 
+            (this.https ? 'wss:' : 'ws:') + url 
+            : (this.https ? 'wss:' : 'ws:') + '//im-api.easemob.com/ws/';
     } else {
-        this.url = ((options.url && options.url.indexOf('ws') > -1) ? '' : options.url) || (options.https ? 'https' : 'http') + '://im-api.easemob.com/http-bind/';
+        options.url = !/^wss?:/.test(options.url) && options.url;
+        this.url = options.url ? 
+            location.protocol + url 
+            : location.protocol + '//im-api.easemob.com/http-bind/';
     }
 
-    this.https = options.https || false;
     this.wait = options.wait || 30;
     this.hold = options.hold || 1;
     if(options.route){
@@ -1706,8 +1719,8 @@ connection.prototype.sendPicture = function(options) {
     var image = new Image();
     var imageLoadFn = function() {
         image.onload = null;
-        if (!this.readyState || this.readyState == 'loaded'
-                || this.readyState == 'complete') {
+        if (!this.readyState || this.readyState == 'uninitialized' 
+                || this.readyState == 'loaded' || this.readyState == 'complete') {
             var heigth = image.height;
             var width = image.width;
             options.height = heigth;
