@@ -1182,12 +1182,10 @@ connection.prototype.init = function(options) {
     if (window.WebSocket && can_use_wss) {
         this.url = options.url || (options.https ? 'wss' : 'ws') + '://im-api.easemob.com/ws/';
     } else {
-        options.url = !/^wss?:/.test(options.url) && options.url;
-        this.url = options.url ? 
-            location.protocol + url 
-            : location.protocol + '//im-api.easemob.com/http-bind/';
+        this.url = ((options.url && options.url.indexOf('ws') > -1) ? '' : options.url) || (options.https ? 'https' : 'http') + '://im-api.easemob.com/http-bind/';
     }
 
+    this.https = options.https || false;
     this.wait = options.wait || 30;
     this.hold = options.hold || 1;
     if(options.route){
