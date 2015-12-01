@@ -1035,7 +1035,8 @@ var innerCheck = function(options,conn){
     var jid = appKey + "_" + user + "@" + conn.domain;
 
     //var resource_value = Math.floor(Math.random()*1000);
-    var resource_value = "webim";
+    //var resource_value = "webim";
+    var resource_value = new Date().getTime();
     
     var resource = options.resource || resource_value;
     if(resource != ""){
