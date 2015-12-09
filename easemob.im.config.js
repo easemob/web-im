@@ -11,7 +11,7 @@ Easemob.im.config = {
         The global value set for Easemob backend REST API
         http://a1.easemob.com
     */
-    apiURL: 'http://a1.easemob.com',
+    apiURL: 'https://a1.easemob.com',
     /*
         连接时提供appkey
     */

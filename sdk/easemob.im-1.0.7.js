@@ -1865,7 +1865,7 @@ connection.prototype.sendFileMessage = function(options) {
                 to :    options.to,
                 bodies :[{
                         type : "file",
-                        url : options.url,
+                        url : options.url + '/' + options.uuid,
                         secret : options.secret,
                         filename : options.filename,
                         "file_length" : options.file_length
