@@ -6,15 +6,15 @@ Easemob.im.config = {
         http://im-api.easemob.com/http-bind/
         https://im-api.easemob.com/http-bind/
     */
-    xmppURL: 'ws://im-api.sandbox.easemob.com/ws/',
+    xmppURL: 'wss://im-api.sandbox.easemob.com/ws/',
     /*
         The global value set for Easemob backend REST API
         "http://a1.easemob.com"
     */
-    apiURL: 'http://a1.sdb.easemob.com',
+    apiURL: 'https://a1.sdb.easemob.com',
     /*
         连接时提供appkey
     */
     appkey: "easemob-demo#chatdemoui",
-    https : false
+    https : true
 }
