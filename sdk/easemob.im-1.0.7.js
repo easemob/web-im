@@ -16,15 +16,6 @@ if (typeof Easemob.im.Connection !== 'undefined') {
     return;
 }
 
-function isWeiXin(){
-    var ua = window.navigator.userAgent.toLowerCase();
-    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
-        return true;
-    }else{
-        return false;
-    }
-}
-
 var innerBase64 = (function() {
     var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
@@ -1167,6 +1158,15 @@ var getJid = function(options,conn){
     return jid;
 };
 
+function browserSupportWSS(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.match(/MicroMessenger/i) == 'micromessenger' || ua.match(/qq/i) == 'qq'){
+        return false;
+    }else{
+        return true;
+    }
+}
+
 tempIndex = 0;
 var STATUS_INIT = tempIndex++;
 var STATUS_DOLOGIN_USERGRID = tempIndex++;
@@ -1178,8 +1178,9 @@ var STATUS_CLOSED = tempIndex++;
 var connection = function() {
 }
 connection.prototype.init = function(options) {
-    var is_weixin_ssl = (isWeiXin() && (options.url && options.url.indexOf('wss') > -1));
-    if (window.WebSocket && !is_weixin_ssl) {
+    var can_use_wss = !(!browserSupportWSS() && (options.url && options.url.indexOf('wss') > -1));
+    alert(can_use_wss);
+    if (window.WebSocket && can_use_wss) {
         this.url = options.url || (options.https ? 'wss' : 'ws') + '://im-api.easemob.com/ws/';
     } else {
         this.url = ((options.url && options.url.indexOf('ws') > -1) ? '' : options.url) || (options.https ? 'https' : 'http') + '://im-api.easemob.com/http-bind/';
