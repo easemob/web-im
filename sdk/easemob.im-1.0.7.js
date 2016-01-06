@@ -16,15 +16,6 @@ if (typeof Easemob.im.Connection !== 'undefined') {
     return;
 }
 
-function isWeiXin(){
-    var ua = window.navigator.userAgent.toLowerCase();
-    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
-        return true;
-    }else{
-        return false;
-    }
-}
-
 var innerBase64 = (function() {
     var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
@@ -1187,8 +1178,7 @@ var STATUS_CLOSED = tempIndex++;
 var connection = function() {
 }
 connection.prototype.init = function(options) {
-    var is_weixin_ssl = (isWeiXin() && (options.url && options.url.indexOf('wss') > -1));
-    if (window.WebSocket && !is_weixin_ssl && browserSupportWSS()) {
+    if (window.WebSocket && !isWeiXin() && browserSupportWSS()) {//添加判断QQ内置浏览器的逻辑，如果浏览器不支持WSS，则用HTTPS替换WSS
         this.url = options.url || (options.https ? 'wss' : 'ws') + '://im-api.easemob.com/ws/';
     } else {
         this.url = ((options.url && options.url.indexOf('ws') > -1) ? '' : options.url) || (options.https ? 'https' : 'http') + '://im-api.easemob.com/http-bind/';
