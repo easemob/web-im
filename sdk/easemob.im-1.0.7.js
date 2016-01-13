@@ -496,8 +496,12 @@ var getFileSizeFn = function(fileInputId){
 };
 
 var hasFlash = (function() {
-    if (/*@cc_on!@*/0) {//ie
-        return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+    if (getIEVersion()) {//ie
+        try {
+            return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+        } catch (ex) {
+            return 0;
+        }
     } else {
         if (navigator.plugins && navigator.plugins.length > 0) {
             return navigator.plugins["Shockwave Flash"];
@@ -1154,6 +1158,15 @@ var getJid = function(options,conn){
     return jid;
 };
 
+function browserSupportWSS(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.match(/MicroMessenger/i) == 'micromessenger' || ua.match(/qq/i) == 'qq'){
+        return false;
+    }else{
+        return true;
+    }
+}
+
 tempIndex = 0;
 var STATUS_INIT = tempIndex++;
 var STATUS_DOLOGIN_USERGRID = tempIndex++;
@@ -1165,7 +1178,8 @@ var STATUS_CLOSED = tempIndex++;
 var connection = function() {
 }
 connection.prototype.init = function(options) {
-    if (window.WebSocket) {
+    var can_use_wss = !(!browserSupportWSS() && (options.url && options.url.indexOf('wss') > -1));
+    if (window.WebSocket && can_use_wss) {
         this.url = options.url || (options.https ? 'wss' : 'ws') + '://im-api.easemob.com/ws/';
     } else {
         this.url = ((options.url && options.url.indexOf('ws') > -1) ? '' : options.url) || (options.https ? 'https' : 'http') + '://im-api.easemob.com/http-bind/';
@@ -1706,8 +1720,8 @@ connection.prototype.sendPicture = function(options) {
     var image = new Image();
     var imageLoadFn = function() {
         image.onload = null;
-        if (!this.readyState || this.readyState == 'loaded'
-                || this.readyState == 'complete') {
+        if (!this.readyState || this.readyState == 'uninitialized' 
+                || this.readyState == 'loaded' || this.readyState == 'complete') {
             var heigth = image.height;
             var width = image.width;
             options.height = heigth;
