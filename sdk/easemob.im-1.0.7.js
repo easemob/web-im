@@ -1179,7 +1179,6 @@ var connection = function() {
 }
 connection.prototype.init = function(options) {
     var can_use_wss = !(!browserSupportWSS() && (options.url && options.url.indexOf('wss') > -1));
-    alert(can_use_wss);
     if (window.WebSocket && can_use_wss) {
         this.url = options.url || (options.https ? 'wss' : 'ws') + '://im-api.easemob.com/ws/';
     } else {
