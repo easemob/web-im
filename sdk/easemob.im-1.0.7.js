@@ -1592,6 +1592,12 @@ connection.prototype.handleReceivedMessage = function(message){
 };
 connection.prototype.handleInviteMessage = function(message){
     var form = null;
+
+	var id = message.getAttribute('id') || '';
+    this.sendReceiptsMessage({
+        id : id
+    });
+
     var invitemsg = message.getElementsByTagName('invite');
     if(invitemsg && invitemsg.length>0){
         var fromJid = invitemsg[0].getAttribute('from');
