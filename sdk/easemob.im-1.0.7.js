@@ -3,6 +3,155 @@ if (typeof jQuery == 'undefined') {
 } if(typeof Strophe == 'undefined'){
     alert("need Strophe");
 } else {
+    (function(f) {
+        if (typeof exports === "object" && typeof module !== "undefined") {
+            module.exports = f()
+        } else if (typeof define === "function" && define.amd) {
+            define([], f)
+        } else {
+            var g;
+            if (typeof window !== "undefined") {
+                g = window
+            } else if (typeof global !== "undefined") {
+                g = global
+            } else if (typeof self !== "undefined") {
+                g = self
+            } else {
+                g = this
+            }
+            g.store = f()
+        }
+    })(function() {
+        var define, module, exports;
+        return (function e(t, n, r) {
+            function s(o, u) {
+                if (!n[o]) {
+                    if (!t[o]) {
+                        var a = typeof require == "function" && require;
+                        if (!u && a) return a(o, !0);
+                        if (i) return i(o, !0);
+                        var f = new Error("Cannot find module '" + o + "'");
+                        throw f.code = "MODULE_NOT_FOUND", f
+                    }
+                    var l = n[o] = {
+                        exports: {}
+                    };
+                    t[o][0].call(l.exports, function(e) {
+                        var n = t[o][1][e];
+                        return s(n ? n : e)
+                    }, l, l.exports, e, t, n, r)
+                }
+                return n[o].exports
+            }
+            var i = typeof require == "function" && require;
+            for (var o = 0; o < r.length; o++) s(r[o]);
+            return s
+        })({
+            1: [
+            function(require, module, exports) {
+                (function(global) {
+                    "use strict";
+                    module.exports = function() {
+                        function e() {
+                            try {
+                                return o in n && n[o]
+                            } catch (e) {
+                                return !1
+                            }
+                        }
+                        var t, r = {},
+                n = "undefined" != typeof window ? window : global,
+                i = n.document,
+                o = "localStorage",
+                a = "script";
+                if (r.disabled = !1, r.version = "1.3.20", r.set = function(e, t) {}, r.get = function(e, t) {}, r.has = function(e) {
+                    return void 0 !== r.get(e)
+                }, r.remove = function(e) {}, r.clear = function() {}, r.transact = function(e, t, n) {
+                    null == n && (n = t, t = null), null == t && (t = {});
+                    var i = r.get(e, t);
+                    n(i), r.set(e, i)
+                }, r.getAll = function() {}, r.forEach = function() {}, r.serialize = function(e) {
+                    return JSON.stringify(e)
+                }, r.deserialize = function(e) {
+                    if ("string" == typeof e) try {
+                        return JSON.parse(e)
+                    } catch (t) {
+                        return e || void 0
+                    }
+                }, e()) t = n[o], r.set = function(e, n) {
+                    return void 0 === n ? r.remove(e) : (t.setItem(e, r.serialize(n)), n)
+                }, r.get = function(e, n) {
+                    var i = r.deserialize(t.getItem(e));
+                    return void 0 === i ? n : i
+                }, r.remove = function(e) {
+                    t.removeItem(e)
+                }, r.clear = function() {
+                    t.clear()
+                }, r.getAll = function() {
+                    var e = {};
+                    return r.forEach(function(t, r) {
+                        e[t] = r
+                    }), e
+                }, r.forEach = function(e) {
+                    for (var n = 0; n < t.length; n++) {
+                        var i = t.key(n);
+                        e(i, r.get(i))
+                    }
+                };
+                else if (i && i.documentElement.addBehavior) {
+                    var c, u;
+                    try {
+                        u = new ActiveXObject("htmlfile"), u.open(), u.write("<" + a + ">document.w=window</" + a + '><iframe src="/favicon.ico"></iframe>'), u.close(), c = u.w.frames[0].document, t = c.createElement("div")
+                    } catch (l) {
+                        t = i.createElement("div"), c = i.body
+                    }
+                    var f = function(e) {
+                        return function() {
+                            var n = Array.prototype.slice.call(arguments, 0);
+                            n.unshift(t), c.appendChild(t), t.addBehavior("#default#userData"), t.load(o);
+                            var i = e.apply(r, n);
+                            return c.removeChild(t), i
+                        }
+                    },
+                        d = new RegExp("[!\"#$%&'()*+,/\\\\:;<=>?@[\\]^`{|}~]", "g"),
+                        s = function(e) {
+                            return e.replace(/^d/, "___$&").replace(d, "___")
+                        };
+                    r.set = f(function(e, t, n) {
+                        return t = s(t), void 0 === n ? r.remove(t) : (e.setAttribute(t, r.serialize(n)), e.save(o), n)
+                    }), r.get = f(function(e, t, n) {
+                        t = s(t);
+                        var i = r.deserialize(e.getAttribute(t));
+                        return void 0 === i ? n : i
+                    }), r.remove = f(function(e, t) {
+                        t = s(t), e.removeAttribute(t), e.save(o)
+                    }), r.clear = f(function(e) {
+                        var t = e.XMLDocument.documentElement.attributes;
+                        e.load(o);
+                        for (var r = t.length - 1; r >= 0; r--) e.removeAttribute(t[r].name);
+                        e.save(o)
+                    }), r.getAll = function(e) {
+                        var t = {};
+                        return r.forEach(function(e, r) {
+                            t[e] = r
+                        }), t
+                    }, r.forEach = f(function(e, t) {
+                        for (var n, i = e.XMLDocument.documentElement.attributes, o = 0; n = i[o]; ++o) t(n.name, r.deserialize(e.getAttribute(n.name)))
+                    })
+                }
+                try {
+                    var v = "__storejs__";
+                    r.set(v, v), r.get(v) != v && (r.disabled = !0), r.remove(v)
+                } catch (l) {
+                    r.disabled = !0
+                }
+                return r.enabled = !r.disabled, r
+                    }();
+                }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+            }, {}
+        ]
+        }, {}, [1])(1)
+    });
 
 (function($) {
 if (typeof Easemob == 'undefined') {
@@ -986,6 +1135,315 @@ var dologin2UserGrid = function(apiUrl,user,pwd,orgName,appName,suc,error) {
     return param;
 };
 
+/*
+ * 如果浏览器不支持sessionStorage，那么用url来模拟
+ */
+if(!window.sessionStorage){
+    function parseQuery(search) {
+        var query = {};
+
+        if (typeof search !== "string") {
+            search = window.location.search;
+        }
+
+        search = search.replace(/^\?/g, "");
+
+        if (!search) {
+            return {};
+        }
+
+        var a = search.split("&");
+        var b = null;
+        var i = 0;
+        var iequ;
+        for (; i < a.length; ++i) {
+            iequ = a[i].indexOf("=");
+            if (iequ < 0) iequ = a[i].length;
+            query[decodeURIComponent(a[i].slice(0, iequ))] = decodeURIComponent(a[i].slice(iequ+1));
+        }
+
+        return query;
+    }
+    function stringify(queryObj) {
+
+        if (!queryObj || queryObj.constructor !== Object) {
+            throw new Error("Query object should be an object.");
+        }
+
+        var stringified = "";
+        Object.keys(queryObj).forEach(function(c) {
+            stringified += c + "=" + encodeURIComponent(queryObj[c]) + "&";
+        });
+
+        stringified = stringified.replace(/\&$/g, "");
+        return stringified;
+    }
+
+    function hashCode(str){
+        var h = 0, off = 0;
+        var len = str.length;
+        for(var i = 0; i < len; i++){
+            h += str.charCodeAt(off++);
+        }
+        return h;
+    }
+
+    var _setItem = function(name, value){
+        var searchParsed = parseQuery();
+
+        // Delete the parameter
+        if (value === undefined) {
+            delete searchParsed[name];
+        } else {
+            // Update or add
+            value = encodeURIComponent(value);
+            if (searchParsed[name] === value) {
+                return;
+            }
+            searchParsed[name] = value;
+        }
+
+        var newSearch = "?" + stringify(searchParsed);
+        window.history.replaceState(null, "", newSearch + location.hash);
+
+        return;
+    };
+    var _getItem = function(name){
+        //name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        var results = regex.exec(location.search);
+        var encoded = null;
+
+        if (results === null) {
+            return null;
+        } else {
+            encoded = results[1].replace(/\+/g, " ");
+            return decodeURIComponent(encoded);
+        }
+
+    };
+    var _removeItem = function(name){
+        _setItem(name);
+    };
+    window["sessionStore"] = {
+        setItem: function(name, value){
+            var hash = hashCode(name);
+            var _hash = _getItem("hash");
+            _removeItem(Number(hash));
+            _setItem("hash", hash);
+            _setItem(hash, value);
+        },
+        getItem: function(name){
+            var hash = hashCode(name);
+            var _hash = _getItem("hash");
+            if(hash == Number(_hash)){
+                return _getItem(hash);
+            }else{
+                return null;
+            }
+        },
+        removeItem: function(name){
+            var hash = hashCode(name);
+            _removeItem("hash");
+            _removeItem(hash);
+        }
+    };
+}else{
+    window["sessionStore"] = window.sessionStorage;
+}
+
+var randomNumber = function(start, range){
+    start = start < 0 ? 0 : start;
+    range = range < 0 ? 10 : range;
+    return Math.floor(Math.random()*range) + start;
+};
+var storageEventHandlers = {};
+var addStorageEvent = function(key, handler){
+    if(!storageEventHandlers[key]){
+        storageEventHandlers[key] = {handle: handler, oldValue: {}};
+    }
+};
+var updateCountTimer;
+var updateResCount = function(jid){
+    if(updateCountTimer){
+        clearTimeout(updateCountTimer);
+    }
+    updateCountTimer = setTimeout(function(){
+        var cache = loadResource(jid);
+        if(cache.state.count < 0){
+            cache.state.count = 0;
+        }
+        cache.state.count++;
+        saveResource(jid, cache);
+        clearTimeout(updateCountTimer);
+        updateCountTimer = null;
+    }, randomNumber(800, 400));
+};
+var handleStorageEvent = function(key, newValue, oldValue){
+    var state = typeof(newValue)=="string"?JSON.parse(newValue):newValue;
+    var oldState = typeof(oldValue)=="string"?JSON.parse(oldValue):oldValue;
+    if(state.count == 0 && oldState && oldState.count != 0){
+        updateResCount(key);
+    }else if(updateCountTimer){
+        updateResCount(key);
+    }
+};
+if(window.localStorage){
+    /*
+     *  监听localStorage的事件
+     */
+    var startStorageEventListener = function(){
+        if(window.addEventListener){
+            window.addEventListener("storage", storageEventHandler, true);
+        }else if(window.attachEvent){
+            window.attachEvent("onstorage", storageEventHandler);
+        }
+    };
+    var storageEventHandler = function(e){
+        if(!e){
+            e = window.event;
+        }
+        var res = window.sessionStore.getItem(e.key);
+        res = res ? Number(res) : res;
+        var handler = storageEventHandlers[e.key];
+        if(res && handler){
+            handler.handle(e.key, e.newValue, handler.oldValue);
+            handler.oldValue = e.newValue;
+        }
+        startStorageEventListener();
+    };
+    startStorageEventListener();
+}else{
+    /*
+     *  如果浏览器不支持localStorage，那么用轮训来模拟storage的event
+     */
+    var checkStorageEvent = function(){
+        for(var key in storageEventHandlers){
+            var newValue = store.get(key);
+            var handler = storageEventHandlers[key];
+            if(JSON.stringify(newValue) != JSON.stringify(handler.oldValue)){
+                handler.handle(key, newValue, handler.oldValue);
+                storageEventHandlers[key].oldValue = newValue;
+                //console.log(key + "  new: " + JSON.stringify(newValue) + "  old: " + JSON.stringify(handler.oldValue));
+            }
+        }
+    };
+    setInterval(checkStorageEvent, randomNumber(300, 200));
+}
+
+/*
+ *  load resource and jid info from sessionStorage and localStorage
+ */
+var current_jid;
+var loadResource = function(jid){
+    jid = jid || current_jid;
+    if(!jid){
+        return;
+    }
+    var cache = {
+        res: 0,
+        state: {next: 0, count: -1, last: 0},
+    };
+    var res = window.sessionStore.getItem(jid);
+    if(!!res){
+        cache.res = Number(res);
+    }
+    var state = store.get(jid);
+    if(!!state){
+        cache.state = state;
+    }
+    return cache;
+};
+var saveResource = function(jid, cache){
+    if(!jid){
+        return;
+    }
+    current_jid = jid;
+    window.sessionStore.setItem(jid, cache.res);
+    store.set(jid, cache.state);
+};
+
+/*
+ *  the jid list is used to update resource count
+ */
+var loadJidList = function(){
+    var jlist = store.get("jidList");
+    if(!jlist){
+        jlist = {};
+    }
+    return jlist;
+};
+var saveJidList = function(jlist){
+    store.set("jidList", jlist);
+};
+
+/*
+ * add window load/unload/storage event handler
+ */
+var window_load = false;
+$(window).bind("load", function(){
+    window_load = true;
+    //update resource count of all jid
+    var jlist = loadJidList();
+    for(var jid in jlist){
+        var cache = loadResource(jid);
+        if(cache.state.count != 0){
+            cache.state.count = 0;
+            store.set(jid, cache.state);
+        }
+    }
+});
+/*
+$(window).bind("beforeunload", function(){
+    var cache = loadResource();
+    var resource = cache.res;
+    var count = cache.state.count;
+    // update recource count and save the last closed resource before window unload
+    if(resource > 0 && count > 0){
+        cache.state.count--;
+    }
+    cache.state.last = resource;
+    saveResource(cache);
+});
+*/
+/*
+ *  get resource of jid
+ */
+var page_limit = 8;
+var getResource = function(jid){
+    addStorageEvent(jid, handleStorageEvent);
+    var jlist = loadJidList();
+    jlist[jid] = 1;
+    saveJidList(jlist);
+    var cache = loadResource(jid);
+    var count = cache.state.count;
+    var resource = cache.res;
+
+    if(resource == 0 || cache.state.next == 0){
+        if(count >= page_limit){
+            return 0;
+        }
+        if(cache.state.next == 0){
+            cache.state.next = randomNumber(1, 100)*100;
+        }
+        if(count <= 0 && cache.state.last > 0){
+            resource = cache.state.last;
+        }else{
+            resource = cache.state.next;
+            cache.state.next++;
+        }
+        cache.res = resource;
+    }
+    if(window_load){
+        window_load = false;
+    }
+    cache.state.count = 0;
+    saveResource(jid, cache);
+    updateResCount(jid);
+    return resource;
+};
+
 var innerCheck = function(options,conn){
     if (conn.isOpened() || conn.isOpening()) {
         conn.onError({
@@ -1034,8 +1492,14 @@ var innerCheck = function(options,conn){
     // jid = {appkey}_{username}@domain/resource
     var jid = appKey + "_" + user + "@" + conn.domain;
 
-    //var resource_value = Math.floor(Math.random()*1000);
-    var resource_value = "webim";
+    var resource_value = conn.multiRes?getResource(jid):"webim";
+    if(resource_value == 0){
+        conn.onError({
+            type : EASEMOB_IM_CONNCTION_OPEN_ERROR,
+            msg : '打开的页面数量已经达到上限'
+        });
+        return false;
+    }
     
     var resource = options.resource || resource_value;
     if(resource != ""){
@@ -1062,62 +1526,67 @@ var parseMessageType = function(msginfo){
     }
     return msgtype;
 };
+var onLogin2ImSuccess = function(msg, conn){
+    var handleMessage = function(msginfo){
+        var type = parseMessageType(msginfo);
+        if('received' == type){
+            conn.handleReceivedMessage(msginfo);
+            return true;
+        }else if('invite' == type){
+            conn.handleInviteMessage(msginfo);
+            return true;
+        }else{
+            conn.handleMessage(msginfo);
+            return true;
+        }
+    };
+    var handlePresence = function(msginfo){
+        conn.handlePresence(msginfo);
+        return true;
+    };
+    var handlePing = function(msginfo){
+        conn.handlePing(msginfo);
+        return true;
+    };
+    var handleIq = function(msginfo){
+        conn.handleIq(msginfo);
+        return true;
+    };
+
+    conn.addHandler(handleMessage, null, 'message', null, null,  null);
+    conn.addHandler(handlePresence, null, 'presence', null, null,  null);
+    conn.addHandler(handlePing, "urn:xmpp:ping", 'iq', "get", null,  null);
+    conn.addHandler(handleIq, "jabber:iq:roster", 'iq', "set", null,  null);
+
+    conn.context.status = STATUS_OPENED;
+    var supportRecMessage = [
+        EASEMOB_IM_MESSAGE_REC_TEXT,
+        EASEMOB_IM_MESSAGE_REC_EMOTION ];
+    if (isCanDownLoadFile) {
+        supportRecMessage.push(EASEMOB_IM_MESSAGE_REC_PHOTO);
+        supportRecMessage.push(EASEMOB_IM_MESSAGE_REC_AUDIO_FILE);
+    }
+    var supportSedMessage = [ EASEMOB_IM_MESSAGE_SED_TEXT ];
+    if (isCanUploadFile) {
+        supportSedMessage.push(EASEMOB_IM_MESSAGE_REC_PHOTO);
+        supportSedMessage.push(EASEMOB_IM_MESSAGE_REC_AUDIO_FILE);
+    }
+    conn.notifyVersion();
+    conn.onOpened({
+        canReceive : supportRecMessage,
+        canSend : supportSedMessage,
+        accessToken : conn.context.accessToken
+    });
+}
 var login2ImCallback = function (status,msg,conn){
+    if ((status == Strophe.Status.ATTACHED) || (status == Strophe.Status.CONNECTED)){
+        onLogin2ImSuccess(msg, conn);
+        return;
+    }
     if (status == Strophe.Status.CONNFAIL){
       conn.onError({
             type : EASEMOB_IM_CONNCTION_SERVER_CLOSE_ERROR,
             msg : msg
-        });
-    } else if ((status == Strophe.Status.ATTACHED) || (status == Strophe.Status.CONNECTED)){
-        var handleMessage = function(msginfo){
-            var type = parseMessageType(msginfo);
-            if('received' == type){
-                conn.handleReceivedMessage(msginfo);
-                return true;
-            }else if('invite' == type){
-                conn.handleInviteMessage(msginfo);
-                return true;
-            }else{
-                conn.handleMessage(msginfo);
-                return true;
-            }
-        };
-        var handlePresence = function(msginfo){
-            conn.handlePresence(msginfo);
-            return true;
-        };
-        var handlePing = function(msginfo){
-            conn.handlePing(msginfo);
-            return true;
-        };
-        var handleIq = function(msginfo){
-            conn.handleIq(msginfo);
-            return true;
-        };
-
-        conn.addHandler(handleMessage, null, 'message', null, null,  null);
-        conn.addHandler(handlePresence, null, 'presence', null, null,  null);
-        conn.addHandler(handlePing, "urn:xmpp:ping", 'iq', "get", null,  null);
-        conn.addHandler(handleIq, "jabber:iq:roster", 'iq', "set", null,  null);
-
-        conn.context.status = STATUS_OPENED;
-        var supportRecMessage = [
-           EASEMOB_IM_MESSAGE_REC_TEXT,
-           EASEMOB_IM_MESSAGE_REC_EMOTION ];
-        if (isCanDownLoadFile) {
-            supportRecMessage.push(EASEMOB_IM_MESSAGE_REC_PHOTO);
-            supportRecMessage.push(EASEMOB_IM_MESSAGE_REC_AUDIO_FILE);
-        }
-        var supportSedMessage = [ EASEMOB_IM_MESSAGE_SED_TEXT ];
-        if (isCanUploadFile) {
-            supportSedMessage.push(EASEMOB_IM_MESSAGE_REC_PHOTO);
-            supportSedMessage.push(EASEMOB_IM_MESSAGE_REC_AUDIO_FILE);
-        }
-        conn.notifyVersion();
-        conn.onOpened({
-            canReceive : supportRecMessage,
-            canSend : supportSedMessage,
-            accessToken : conn.context.accessToken
         });
     } else if (status == Strophe.Status.DISCONNECTING) {
         if(conn.isOpened()){// 不是主动关闭
@@ -1160,11 +1629,24 @@ var getJid = function(options,conn){
 
 function browserSupportWSS(){
     var ua = window.navigator.userAgent.toLowerCase();
-    if(ua.match(/MicroMessenger/i) == 'micromessenger' || ua.match(/qq/i) == 'qq'){
+    if(ua.match(/MicroMessenger/i) == 'micromessenger' || ua.match(/qq/i) == 'qq' || !window.WebSocket){
         return false;
     }else{
         return true;
     }
+}
+
+var default_base_url = 'im-api.easemob.com';
+var get_xmpp_url = function(baseUrl, https){
+    var url = {prefix: 'http', base: '://' + (baseUrl || default_base_url), suffix: '/http-bind/'};
+    if(false && window.WebSocket && (!https || browserSupportWSS())){
+        url.prefix = 'ws';
+        url.suffix = '/ws/';
+    }
+    if(https){
+        url.prefix += 's';
+    }
+    return url.prefix + url.base + url.suffix;
 }
 
 tempIndex = 0;
@@ -1178,13 +1660,9 @@ var STATUS_CLOSED = tempIndex++;
 var connection = function() {
 }
 connection.prototype.init = function(options) {
-    if (window.WebSocket && !isWeiXin() && browserSupportWSS()) {//添加判断QQ内置浏览器的逻辑，如果浏览器不支持WSS，则用HTTPS替换WSS
-        this.url = options.url || (options.https ? 'wss' : 'ws') + '://im-api.easemob.com/ws/';
-    } else {
-        this.url = ((options.url && options.url.indexOf('ws') > -1) ? '' : options.url) || (options.https ? 'https' : 'http') + '://im-api.easemob.com/http-bind/';
-    }
-
+    this.multiRes = options.multiRes || false;
     this.https = options.https || false;
+    this.url = get_xmpp_url(options.url, this.https);
     this.wait = options.wait || 30;
     this.hold = options.hold || 1;
     if(options.route){
@@ -1295,8 +1773,8 @@ connection.prototype.open = function(options) {
 };
 connection.prototype.attach = function(options) {
     var pass = innerCheck(options,this);
-    if(pass == false)
-        return;{
+    if(pass == false){
+        return;
     }
     options = options || {};
 
@@ -1971,27 +2449,27 @@ connection.prototype.getRoster = function(options) {
     var conn = this;
     var dom  = $iq({
         type: 'get'
-  }).c('query', {xmlns: 'jabber:iq:roster'});
+    }).c('query', {xmlns: 'jabber:iq:roster'});
 
     options = options || {};
     suc = options.success || this.onRoster;
-  var completeFn = function(ele){
-    var rouster = [];
+    var completeFn = function(ele){
+        var rouster = [];
         var msgBodies = ele.getElementsByTagName("query");
         if(msgBodies&&msgBodies.length>0){
             var queryTag = msgBodies[0];
             rouster = parseFriendFn(queryTag);
         }
-    suc(rouster,ele);
-  };
-  error = options.error || this.onError;
-  var failFn = function(ele){
+        suc(rouster,ele);
+    };
+    error = options.error || this.onError;
+    var failFn = function(ele){
         error({
             type : EASEMOB_IM_CONNCTION_GETROSTER_ERROR,
             msg : '获取联系人信息失败',
             data : ele
         });
-  };
+    };
     if(this.isOpened()){
         this.context.stropheConn.sendIQ(dom.tree(),completeFn,failFn);
     } else {

@@ -16,8 +16,9 @@ var conn = new Easemob.im.Connection();
 ### 初始化连接{#conn_init}
 <pre class="hll"><code class="language-javascript">
 conn.init({
+    multiRes: false, //非必填，需要用到多resource的时候就将此参数设置为 true
     https : true,//非必填，url值未设置时有效，优先采用url配置的参数。默认采用http连接，地址为‘http://im-api.easemob.com/http-bind/’，启用https时传递此值，地址为：‘https://im-api.easemob.com/http-bind/’
-    url ： 'http://im-api.easemob.com/http-bind/',//非必填，默认聊天服务器地址，
+    url ： 'im-api.easemob.com',//非必填，默认聊天服务器地址，
     domain : 'aa.com',//非必填，默认：‘easemob.com’
     wait ： '60',//非必填，连接超时，默认：60，单位seconds
     onOpened : function() {

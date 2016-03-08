@@ -234,6 +234,7 @@
         conn = new Easemob.im.Connection();
         //初始化连接
         conn.init({
+            multiRes: Easemob.im.config.multiRes,
             https : Easemob.im.config.https,
             url: Easemob.im.config.xmppURL,
             //当连接成功时的回调方法
@@ -395,6 +396,7 @@
                         conn.setPresence();//设置用户上线状态，必须调用
                     },
                     error : function(e) {
+                        conn.setPresence();//设置用户上线状态，必须调用
                     }
                 });
             }
