@@ -1345,7 +1345,7 @@
 			};
 
 			if ( https && Utils.isSupportWss ) {
-				url.prefix = 'wss:';
+				url.prefix = 'wss';
 				url.suffix = '/ws/';
             } else {
                 if ( https ) {
