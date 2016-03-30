@@ -4,18 +4,18 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0"/>
 <title>WebIM-DEMO</title>
-<script src="sdk/strophe.js"></script>
-<script src="sdk/easemob.im-2.0.js"></script>
-<script src="sdk/easemob.im.shim.js"></script><!--兼容老版本sdk需引入此文件-->
+<script src="static/sdk/strophe.js"></script>
+<script src="static/sdk/easemob.im-2.0.js"></script>
+<script src="static/sdk/easemob.im.shim.js"></script><!--兼容老版本sdk需引入此文件-->
 
-<script src="easemob.im.config.js"></script>
-<script src="sdk/jquery-1.11.1.js"></script>
-<script src="bootstrap.js"></script>
-<link rel="stylesheet" href="css/bootstrap.css" />
-<link rel="stylesheet" href="css/webim.css" />
+<script src="static/js/easemob.im.config.js"></script>
+<script src="static/js/jquery-1.11.1.js"></script>
+<script src="static/js/bootstrap.js"></script>
+<link rel="stylesheet" href="static/css/bootstrap.css" />
+<link rel="stylesheet" href="static/css/webim.css" />
 <!--[if lte IE 9]>
-<script src="sdk/jplayer/jquery.jplayer.min.js"></script>
-<script src="sdk/swfupload/swfupload.js"></script>
+<script src="static/js/jplayer/jquery.jplayer.min.js"></script>
+<script src="static/js/swfupload/swfupload.js"></script>
 <![endif]-->
 </head>
 <body>
@@ -75,12 +75,12 @@
     </div>
 
     <div id="waitLoginmodal" class="modal hide" data-backdrop="static">
-        <img src="img/waitting.gif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;正在努力加载中...</img>
+        <img src="static/img/waitting.gif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;正在努力加载中...</img>
     </div>
     <div class="content" id="content" style="display: none">
         <div class="leftcontact" id="leftcontact">
             <div id="headerimg" class="leftheader">
-                <span> <img src="img/head/header2.jpg" alt="logo"
+                <span> <img src="static/img/head/header2.jpg" alt="logo"
                     class="img-circle" width="60px" height="60px"
                     style="margin-top: -40px; margin-left: 20px" /></span> <span
                     id="login_user" class="login_user_title"> <a
@@ -131,7 +131,7 @@
                         </div>
                         <div id="collapseTwo" class="accordion-body collapse">
                             <div class="accordion-inner" id="contracgrouplist">
-                                <ul id="contactgrouplistUL" class="chat03_content_ul"></ul>
+                                <ul id="contracgrouplistUL" class="chat03_content_ul"></ul>
                             </div>
                         </div>
                     </div>
@@ -147,6 +147,18 @@
                             </div>
                         </div>
                     </div>
+					<div class="accordion-group">
+                        <div class="accordion-heading">
+                            <a id="accordion4" class="accordion-toggle collapsed"
+                                data-toggle="collapse" data-parent="#accordionDiv"
+                                href="#collapseFour">聊天室</a>
+                        </div>
+                        <div id="collapseFour" class="accordion-body collapse">
+                            <div class="accordion-inner" id="chatRoomList">
+                                <ul id="chatRoomListUL" class="chat03_content_ul"></ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -159,14 +171,14 @@
                     <ul class="talkTo">
                         <li id="talkTo"><a href="#"></a></li>
                         <li id="recycle" style="float: right;"><img
-                            src="img/recycle.png" onclick="clearCurrentChat();"
+                            src="static/img/recycle.png" onclick="clearCurrentChat();"
                             style="margin-right: 15px; cursor: hand; width: 18px;" title="清屏" /></li>
                         <li id="roomInfo" style="float: right;"><img
                             id="roomMemberImg"
-                            src="img/head/find_more_friend_addfriend_icon.png"
+                            src="static/img/head/find_more_friend_addfriend_icon.png"
                             onclick="showRoomMember();"
                             style="margin-right: 15px; cursor: hand; width: 18px; display: none"
-                            title="群组成员" /></li>
+                            title="成员" /></li>
                     </ul>
                 </div>
                 <div id="null-nouser" class="chat01_content"></div>
@@ -201,7 +213,7 @@
                 </div>
                 <div class="chat02_bar">
                     <ul>
-                        <li style="right: 5px; top: 5px;"><img src="img/send_btn.jpg"
+                        <li style="right: 5px; top: 5px;"><img src="static/img/send_btn.jpg"
                             onclick="sendText()" /></li>
                     </ul>
                 </div>
@@ -295,13 +307,13 @@
             <button type="button" class="close" data-dismiss="modal"
                 aria-hidden="true">&times;</button>
             <div class="modal-header">
-                <h3>群组成员</h3>
+                <h3>成员</h3>
             </div>
             <div class="modal-body">
                 <div id="room-member-list" style="height: 100px; overflow-y: auto"></div>
             </div>
         </div>
     </div>
-	<script src="webim.js"></script>
+	<script src="static/js/webim.js"></script>
 </body>
 </html>

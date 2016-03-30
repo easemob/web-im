@@ -668,14 +668,18 @@
                 }
                 var isemotion = false;
                 for ( var i = 0; i < emotions.length; i++ ) {
-                    var tmsg = receiveMsg.substring(0,receiveMsg.indexOf(emotions[i]));
-                    if ( tmsg ) {
+                    var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emotions[i])),
+						existEmotion = Easemob.im.EMOTIONS.map[emotions[i]];
+
+                    if ( tmsg || !existEmotion ) {
                         emessage.push({
                             type: "txt"
                             , data: tmsg
                         });
+						continue;
                     }
-                    var emotion = Easemob.im.EMOTIONS[emotions[i]];
+                    var emotion = Easemob.im.EMOTIONS.map ? Easemob.im.EMOTIONS.path + existEmotion : null;
+
                     if ( emotion ) {
                         isemotion = true;
                         emessage.push({
@@ -827,7 +831,20 @@
                     }
                 }
 
-                var type = options.type || "POST";
+                var type = options.type || "POST",
+					data = options.data || null,
+					tempData = '';
+
+				if ( type.toLowerCase() === 'get' && data ) {
+					for ( var o in data ) {
+						if ( data.hasOwnProperty(o) ) {
+							tempData += o + '=' + data[o] + '&';
+						}
+					}
+					tempData = tempData ? tempData.slice(0, -1) : tempData;
+					options.url += (options.url.indexOf('?') > 0 ? '&' : '?') + (tempData ? tempData + '&' : tempData) + '_v=' + new Date().getTime();
+					data = null, tempData = null;
+				}
                 xhr.open(type, options.url);
 
                 if ( Utils.isCanSetRequestHeader() ) {
@@ -839,7 +856,6 @@
                     }
                 }
 
-                var data = options.data || null;
                 xhr.send(data);
                 return xhr;
             }
@@ -906,6 +922,10 @@
                 , id: message.id
                 , xmlns: "jabber:client"
             }).c("body").t(jsonstr);
+
+			if ( message.roomType ) {
+				dom.up().c("roomtype", { xmlns: "easemob:x:roomtype", type: "chatroom" });
+			}
 
             conn.retry && setTimeout(function () {
                 if ( _msgHash[message.id] ) {
@@ -1708,7 +1728,14 @@
                 var from = msg.from;
                 var too = msg.to;
                 var extmsg = msg.ext || {};
-                var chattype = msginfo.getAttribute('type') || 'chat';
+				var chattype = '';
+				var typeEl = msginfo.getElementsByTagName("roomtype");
+				if ( typeEl.length ) {
+					chattype = typeEl[0].getAttribute('type') || 'chat';
+				} else {
+					chattype = msginfo.getAttribute('type') || 'chat';
+				}
+                
                 var msgBodies = msg.bodies;
                 if ( !msgBodies || msgBodies.length == 0 ) {
                     continue;
@@ -1717,7 +1744,7 @@
                 var type = msgBody.type;
                 if ( "txt" === type ) {
                     var receiveMsg = msgBody.msg;
-                    var emotionsbody = Utils.parseTextMessage(receiveMsg, Easemob.im.EMOTION);
+                    var emotionsbody = Utils.parseTextMessage(receiveMsg, Easemob.im.EMOTIONS);
                     if ( emotionsbody.isemotion ) {
                         this.onEmotionMessage({
                             id: id
@@ -1901,7 +1928,7 @@
                 var appKey = this.context.appKey || '';
                 var toJid = appKey + "_" + message.to + "@" + this.domain;
 
-                if ( message.group && message.group === 'groupchat' ) {
+                if ( message.group ) {
                     toJid = appKey + "_" + message.to + '@conference.' + this.domain;
                 }
                 if ( message.resource ) {
@@ -2038,10 +2065,10 @@
         };
 
         connection.prototype.join = function ( options ) {
-            var roomJid = this.context.appKey+"_"+options.roomId+'@conference.' + this.domain;
-            var room_nick = roomJid+"/"+this.context.userId;
-            var suc =options.success || EMPTYFN;
-            var err =  options.error || EMPTYFN;
+            var roomJid = this.context.appKey + "_" + options.roomId + '@conference.' + this.domain;
+            var room_nick = roomJid + "/" + this.context.userId;
+            var suc = options.success || EMPTYFN;
+            var err = options.error || EMPTYFN;
             var errorFn = function ( ele ) {
                 err({
                     type: EASEMOB_IM_CONNCTION_JOINROOM_ERROR
@@ -2263,6 +2290,93 @@
             };
         };
 
+		//rooms list
+		connection.prototype.getChatRooms = function ( options ) {
+
+			if ( !Utils.isCanSetRequestHeader() ) {
+				conn.onError({
+					type: EASEMOB_IM_CONNCTION_AUTH_ERROR
+					, msg: "当前浏览器不支持聊天室功能"
+				});
+				return;
+			}
+
+            var conn = this,
+				token = options.accessToken || this.context.accessToken;
+
+            if ( token ) {
+                var apiUrl = options.apiUrl || (this.https ? 'https' : 'http') + '://a1.easemob.com';
+                var appName = this.context.appName;
+                var orgName = this.context.orgName;
+
+				if ( !appName || !orgName ) {
+					conn.onError({
+						type: EASEMOB_IM_CONNCTION_AUTH_ERROR
+						, msg: "token无效"
+						, data: null 
+					});
+					return;
+				}
+
+                var suc = function ( data, xhr ) {
+					typeof options.success === 'function' && options.success(data);
+                };
+
+                var error = function ( res, xhr, msg ) {
+                    if ( res.error && res.error_description ) {
+                        conn.onError({
+                            type: EASEMOB_IM_LOAD_CHATROOM_ERROR
+                            , msg: "获取聊天室失败," + res.error_description
+                            , data: res
+                            , xhr: xhr
+                        });
+                    }
+                };
+
+                var opts = {
+                    url: apiUrl + "/" + orgName + "/" + appName + "/chatrooms"
+                    , dataType: 'json'
+					, type: 'get'
+					, headers: {Authorization: 'Bearer ' + token}
+                    , success: suc || EMPTYFN
+                    , error: error || EMPTYFN
+                };
+                Utils.ajax(opts);
+            } else {
+				conn.onError({
+					type: EASEMOB_IM_CONNCTION_AUTH_ERROR
+					, msg: "token无效"
+					, data: null 
+				});               
+            }
+
+        };
+
+		connection.prototype.quitChatRoom = function ( options ) {
+			var roomJid = this.context.appKey + "_" + options.roomId + '@conference.' + this.domain;
+            var room_nick = roomJid + "/" + this.context.userId;
+            var suc = options.success || EMPTYFN;
+            var err = options.error || EMPTYFN;
+            var errorFn = function ( ele ) {
+                err({
+                    type: EASEMOB_IM_CONNCTION_JOINROOM_ERROR
+                    , msg: '退出房间失败'
+                    , data: ele
+                });
+            };
+            var iq = $pres({
+                from: this.context.jid,
+                to: room_nick,
+				type: 'unavailable'
+            })
+			.c("x", { xmlns: Strophe.NS.MUC + '#user' })
+			.c('item', { affiliation: 'none', role: 'none' })
+			.up().up()
+			.c("roomtype", { xmlns: "easemob:x:roomtype", type: "chatroom" });
+
+            this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
+        };
+
         return connection;
     }());
 
@@ -2305,6 +2419,10 @@
     EASEMOB_IM_DOWNLOADFILE_BROWSER_ERROR = tempIndex++;
 
     EASEMOB_IM_RESISTERUSER_ERROR = tempIndex++;
+
+	EASEMOB_IM_LOAD_CHATROOM_ERROR = tempIndex++;
+	EASEMOB_IM_JOIN_CHATROOM_ERROR = tempIndex++;
+	EASEMOB_IM_QUIT_CHATROOM_ERROR = tempIndex++;
 
     tempIndex = 0;
     EASEMOB_IM_MESSAGE_REC_TEXT = tempIndex++;
