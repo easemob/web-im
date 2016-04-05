@@ -63,30 +63,81 @@
             xhr.onreadystatechange = this.func.stropheBind(null, this);
             return xhr;
         };
-       
+
+		var _xmlrequest = function ( crossDomain ) {
+			crossDomain = crossDomain || true;
+			var temp = _createStandardXHR () || _createActiveXHR();
+
+			if ( "withCredentials" in temp ) {
+				return temp;
+			}
+			if ( !crossDomain ) {
+				return temp;
+			}
+			if ( typeof window.XDomainRequest === 'undefined' ) {
+				return temp;
+			}
+			var xhr = new XDomainRequest();
+			xhr.readyState = 0;
+			xhr.status = 100;
+			xhr.onreadystatechange = EMPTYFN;
+			xhr.onload = function () {
+				xhr.readyState = 4;
+				xhr.status = 200;
+
+				var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+				xmlDoc.async = "false";
+				xmlDoc.loadXML(xhr.responseText);
+				xhr.responseXML = xmlDoc;
+				xhr.response = xhr.responseText;
+				xhr.onreadystatechange();
+			};
+			xhr.ontimeout = xhr.onerror = function () {
+				xhr.readyState = 4;
+				xhr.status = 500;
+				xhr.onreadystatechange();
+			};
+			return xhr;
+		};
+
+		var _hasFlash = (function () {
+			if ( 'ActiveXObject' in window ) {
+				try {
+					return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+				} catch ( ex ) {
+					return 0;
+				}
+			} else {
+				if ( navigator.plugins && navigator.plugins.length > 0 ) {
+					return navigator.plugins["Shockwave Flash"];
+				}
+			}
+			return 0;
+		}());
+
+		var _tmpUtilXHR  = _xmlrequest(),
+			_hasFormData = typeof FormData !== 'undefined',
+            _hasBlob = typeof Blob !== 'undefined',
+			_isCanSetRequestHeader = _tmpUtilXHR.setRequestHeader || false,
+			_hasOverrideMimeType = _tmpUtilXHR.overrideMimeType || false,
+			_isCanUploadFileAsync = _isCanSetRequestHeader && _hasFormData,
+			_isCanUploadFile = _isCanUploadFileAsync || _hasFlash,
+            _isCanDownLoadFile = _isCanSetRequestHeader && (_hasBlob || _hasOverrideMimeType);
+
         return {
-            hasFormData: typeof FormData !== 'undefined'
-            , hasBlob: typeof Blob !== 'undefined'
+            hasFormData: _hasFormData
 
-            , isCanSetRequestHeader: function () {
-                return Utils.xmlrequest().setRequestHeader || false;
-            }
+            , hasBlob: _hasBlob
 
-            , hasOverrideMimeType: function () {
-                return Utils.xmlrequest().overrideMimeType || false;
-            }
+            , isCanSetRequestHeader: _isCanSetRequestHeader
 
-            , isCanUploadFileAsync: function () {
-                return Utils.isCanSetRequestHeader() && Utils.hasFormData;
-            }
+            , hasOverrideMimeType: _hasOverrideMimeType
 
-            , isCanUploadFile: function () {
-                return Utils.isCanUploadFileAsync() || Utils.hasFlash;
-            }
+            , isCanUploadFileAsync: _isCanUploadFileAsync
 
-            , isCanDownLoadFile: function () {
-                return Utils.isCanSetRequestHeader() && (Utils.hasBlob || Utils.hasOverrideMimeType());
-            }
+            , isCanUploadFile: _isCanUploadFile
+
+            , isCanDownLoadFile: _isCanDownLoadFile
 
 			, isSupportWss: (function () {
 				var notSupportList = [
@@ -254,11 +305,14 @@
                     , data: ''
                 };
 
-                if ( !Utils.isCanUploadFileAsync() ) {
+				var fileObj = document.getElementById(fileInputId);
+
+                if ( !Utils.isCanUploadFileAsync || !fileObj ) {
                     return uri;
                 }
+
                 if ( window.URL.createObjectURL ) {
-                    var fileItems = document.getElementById(fileInputId).files;
+                    var fileItems = fileObj.files;
                     if (fileItems.length > 0) {
                         var u = fileItems.item(0);
                         uri.data = u;
@@ -301,20 +355,7 @@
                 return fileSize;
             }
 
-            , hasFlash: (function () {
-                if ( 'ActiveXObject' in window ) {
-                    try {
-                        return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-                    } catch ( ex ) {
-                        return 0;
-                    }
-                } else {
-                    if ( navigator.plugins && navigator.plugins.length > 0 ) {
-                        return navigator.plugins["Shockwave Flash"];
-                    }
-                }
-                return 0;
-            }())
+            , hasFlash: _hasFlash
 
             , trim: function ( str ) {
 
@@ -444,7 +485,7 @@
                 var apiUrl = options.apiUrl || 'http://a1.easemob.com';
                 var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
 
-                if ( !Utils.isCanUploadFileAsync() ) {
+                if ( !Utils.isCanUploadFileAsync ) {
                     if ( Utils.hasFlash && typeof options.flashUpload === 'function' ) {
                         options.flashUpload && options.flashUpload(uploadUrl, options); 
                     } else {
@@ -567,7 +608,7 @@
                         , xhr: xhr
                     });
                 }
-                if ( !Utils.isCanDownLoadFile() ) {
+                if ( !Utils.isCanDownLoadFile ) {
                     options.onFileDownloadComplete();
                     return;
                 }
@@ -718,41 +759,7 @@
                 };
             }
 
-            , xmlrequest: function ( crossDomain ) {
-                crossDomain = crossDomain || true;
-                var temp = _createStandardXHR () || _createActiveXHR();
-
-                if ( "withCredentials" in temp ) {
-                    return temp;
-                }
-                if ( !crossDomain ) {
-                    return temp;
-                }
-                if ( typeof window.XDomainRequest === 'undefined' ) {
-                    return temp;
-                }
-                var xhr = new XDomainRequest();
-                xhr.readyState = 0;
-                xhr.status = 100;
-                xhr.onreadystatechange = EMPTYFN;
-                xhr.onload = function () {
-                    xhr.readyState = 4;
-                    xhr.status = 200;
-
-                    var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-                    xmlDoc.async = "false";
-                    xmlDoc.loadXML(xhr.responseText);
-                    xhr.responseXML = xmlDoc;
-                    xhr.response = xhr.responseText;
-                    xhr.onreadystatechange();
-                };
-                xhr.ontimeout = xhr.onerror = function () {
-                    xhr.readyState = 4;
-                    xhr.status = 500;
-                    xhr.onreadystatechange();
-                };
-                return xhr;
-            }
+            , xmlrequest: _xmlrequest
 
             , ajax: function ( options ) {
                 var dataType = options.dataType || 'text';
@@ -823,7 +830,7 @@
                     }
                 }
                 if ( options.mimeType ) {
-                    if ( Utils.hasOverrideMimeType() ) {
+                    if ( Utils.hasOverrideMimeType ) {
                         xhr.overrideMimeType(options.mimeType);
                     } else {
                         error('', xhr, "当前浏览器不支持设置mimeType");
@@ -847,7 +854,7 @@
 				}
                 xhr.open(type, options.url);
 
-                if ( Utils.isCanSetRequestHeader() ) {
+                if ( Utils.isCanSetRequestHeader ) {
                     var headers = options.headers || {};
                     for ( var key in headers ) {
                         if ( headers.hasOwnProperty(key) ) {
@@ -957,7 +964,7 @@
                 if ( data.entities[0]['file-metadata'] ) {
                     var file_len = data.entities[0]['file-metadata']['content-length'];
                     me.msg.file_length = file_len;
-                    me.msg.filetype = data.entities[0]['file-metadata']['content-type']
+                    me.msg.filetype = data.entities[0]['file-metadata']['content-type'];
                     if ( file_len > 204800 ) {
                         me.msg.thumbnail = true;
                     }
@@ -968,8 +975,6 @@
                     , url: data.uri + '/' + data.entities[0]['uuid']
                     , secret: data.entities[0]['share-secret']
                     , filename: me.msg.file.filename
-                    , thumb: data.uri + '/' + data.entities[0].uuid
-                    , thumb_secret: ''
                     , size: {
                         width: me.msg.width
                         , height: me.msg.height
@@ -1240,12 +1245,12 @@
                    EASEMOB_IM_MESSAGE_REC_TEXT,
                    EASEMOB_IM_MESSAGE_REC_EMOTION ];
 
-                if ( Utils.isCanDownLoadFile() ) {
+                if ( Utils.isCanDownLoadFile ) {
                     supportRecMessage.push(EASEMOB_IM_MESSAGE_REC_PHOTO);
                     supportRecMessage.push(EASEMOB_IM_MESSAGE_REC_AUDIO_FILE);
                 }
                 var supportSedMessage = [ EASEMOB_IM_MESSAGE_SED_TEXT ];
-                if ( Utils.isCanUploadFile() ) {
+                if ( Utils.isCanUploadFile ) {
                     supportSedMessage.push(EASEMOB_IM_MESSAGE_REC_PHOTO);
                     supportSedMessage.push(EASEMOB_IM_MESSAGE_REC_AUDIO_FILE);
                 }
@@ -2293,7 +2298,7 @@
 		//rooms list
 		connection.prototype.getChatRooms = function ( options ) {
 
-			if ( !Utils.isCanSetRequestHeader() ) {
+			if ( !Utils.isCanSetRequestHeader ) {
 				conn.onError({
 					type: EASEMOB_IM_CONNCTION_AUTH_ERROR
 					, msg: "当前浏览器不支持聊天室功能"
@@ -2350,6 +2355,31 @@
 				});               
             }
 
+        };
+
+		connection.prototype.joinChatRoom = function ( options ) {
+            var roomJid = this.context.appKey + "_" + options.roomId + '@conference.' + this.domain;
+            var room_nick = roomJid + "/" + this.context.userId;
+            var suc = options.success || EMPTYFN;
+            var err = options.error || EMPTYFN;
+            var errorFn = function ( ele ) {
+                err({
+                    type: EASEMOB_IM_CONNCTION_JOINROOM_ERROR
+                    , msg: '加入聊天室失败'
+                    , data: ele
+                });
+            };
+
+			var iq = $pres({
+                from: this.context.jid,
+                to: room_nick
+            })
+			.c("x", { xmlns: Strophe.NS.MUC + '#user' })
+			.c('item', { affiliation: 'member', role: 'participant' })
+			.up().up()
+			.c("roomtype", { xmlns: "easemob:x:roomtype", type: "chatroom" });
+
+            this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
         };
 
 		connection.prototype.quitChatRoom = function ( options ) {

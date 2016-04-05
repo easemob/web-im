@@ -164,7 +164,7 @@ a:hover {
 	float: left;
 	padding-left: 6px;
 	margin: 12px 20px;
-	_margin-left: 9px;
+	cursor: pointer;
 }
 
 .talkTo li a {
@@ -511,7 +511,6 @@ body {
     left: 0;
     top: 0;
     background: url(../img/bg.jpg) no-repeat;
-    background-size: 100% 100%;
     font: 14px 'Microsoft YaHei', Arial, sans-serif;
 }
 @font-face {

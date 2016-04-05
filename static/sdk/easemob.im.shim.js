@@ -63,10 +63,10 @@
 		return ems;
 	}());
 
-	_im.Helper.getIEVersion = function () {
+	_im.Helper.getIEVersion = (function () {
 		var ua = navigator.userAgent,matches,tridentMap = { '4': 8, '5': 9, '6': 10, '7': 11 };
 		matches = ua.match(/MSIE (\d+)/i);
-		if ( matches&&matches[1] ) {
+		if ( matches && matches[1] ) {
 			return +matches[1];
 		}
 		matches = ua.match(/Trident\/(\d+)/i);
@@ -74,7 +74,7 @@
 			return tridentMap[matches[1]] || null;
 		}
 		return null;
-	};
+	}());
 
 	//MESSAGE
 	_m.txt = function ( id ) {

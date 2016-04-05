@@ -6,7 +6,6 @@ var curChatRoomId = null;
 var msgCardDivId = "chat01";
 var talkToDivId = "talkTo";
 var talkInputId = "talkInputId";
-var fileInputId = "fileInput";
 var bothRoster = [];
 var toRoster = [];
 var maxWidth = 200;
@@ -44,14 +43,14 @@ var playAudioShim = function ( dom, url, t ) {
 		return;
 	}
 
-	Easemob.im.Helper.getIEVersion() < 9 && audioDom.push(d);
+	Easemob.im.Helper.getIEVersion < 9 && audioDom.push(d);
 	d.jPlayer({
 		ready: function () {
 			$(this).jPlayer("setMedia", {
 				mp3: u
 			});
 		},
-		solution: (Easemob.im.Helper.getIEVersion() != 9 ? "html, flash" : "flash"),
+		solution: (Easemob.im.Helper.getIEVersion != 9 ? "html, flash" : "flash"),
 		swfPath: "sdk/jplayer",
 		supplied: "mp3",
 		ended: function () {
@@ -118,7 +117,7 @@ var uploadShim = function ( fileInputId ) {
 			}
 		}
 		, file_dialog_start_handler: function () {
-			if ( Easemob.im.Helper.getIEVersion() < 10 ) {
+			if ( Easemob.im.Helper.getIEVersion < 10 ) {
 				document.title = pageTitle;
 			}
 		}
@@ -273,14 +272,13 @@ $(function() {
 //easemobwebim-sdk注册回调函数列表
 $(document).ready(function() {
 
-	if(!Easemob.im.Helper.isCanUploadFileAsync() && typeof uploadShim === 'function') {
+	if(!Easemob.im.Helper.isCanUploadFileAsync && typeof uploadShim === 'function') {
 		swfupload = uploadShim('fileInput');
 	}
 	conn = new Easemob.im.Connection({
 		multiResources: Easemob.im.config.multiResources,
 		https : Easemob.im.config.https,
-		url: Easemob.im.config.xmppURL,
-		retry: true
+		url: Easemob.im.config.xmppURL
 	});
 	//初始化连接
 	conn.listen({
@@ -303,6 +301,9 @@ $(document).ready(function() {
 		//收到图片消息时的回调方法
 		onPictureMessage : function(message) {
 			handlePictureMessage(message);
+		},
+		onCmdMessage : function(message) {
+			alert(1);
 		},
 		//收到音频消息的回调方法
 		onAudioMessage : function(message) {
@@ -343,18 +344,7 @@ $(document).ready(function() {
 	} else {
 		showLoginUI();
 	}
-	//发送文件的模态窗口
-	$('#fileModal').on('hidden.bs.modal', function(e) {
-		document.getElementById("fileSend").disabled = false;
-		document.getElementById("cancelfileSend").disabled = false;
-		
-		if(!Easemob.im.Helper.isCanUploadFileAsync()) return;
-		var ele = document.getElementById(fileInputId);
-		ele.value = "";
-		if (!window.addEventListener) {
-			ele.outerHTML = ele.outerHTML;
-		}
-	});
+
 	$('#addFridentModal').on('hidden.bs.modal', function(e) {
 		var ele = document.getElementById("addfridentId");
 		ele.value = "";
@@ -864,9 +854,12 @@ var chooseContactDivClick = function(li) {
 		roomId = $(li).attr("roomId");
 
 	if ( curChatRoomId && curChatRoomId != roomId ) {//切换时，退出当前聊天室
+		var source = document.getElementById(curUserId + '-' + chatRoomMark + curChatRoomId);
+		source && (source.innerHTML = '');
 		conn.quitChatRoom({
 			roomId : curRoomId
 		});
+		curChatRoomId = null;
 	}
 
 	if ($(li).attr("type") == groupFlagMark && ('true' != $(li).attr("joined"))) {
@@ -876,7 +869,7 @@ var chooseContactDivClick = function(li) {
 		$(li).attr("joined", "true");
 	} else if ( $(li).attr("type") === chatRoomMark ) {
 		curChatRoomId = roomId;
-		conn.join({
+		conn.joinChatRoom({
 			roomId : roomId
 		});
 	}
@@ -966,18 +959,7 @@ var selectEmotionImg = function(selImg) {
 	txt.value = txt.value + selImg.id;
 	txt.focus();
 };
-var showSendPic = function() {
-	$('#fileModal').modal('toggle');
-	$('#sendfiletype').val('pic');
-	$('#send-file-warning').html("");
-	uploadType = 'pic';
-};
-var showSendAudio = function() {
-	$('#fileModal').modal('toggle');
-	$('#sendfiletype').val('audio');
-	$('#send-file-warning').html("");
-	uploadType = 'audio';
-};
+
 var sendText = function() {
 	if (textSending) {
 		return;
@@ -1008,6 +990,7 @@ var sendText = function() {
 		options.roomType = chatRoomMark;
 		options.to = curRoomId;
 	}
+
 	//easemobwebim-sdk发送文本消息的方法 to为发送给谁，meg为文本消息对象
 	conn.sendTextMessage(options);
 	//当前登录人发送的信息在聊天窗口中原样显示
@@ -1026,45 +1009,59 @@ var pictype = {
 	"png" : true,
 	"bmp" : true
 };
-var sendFile = function() {
-	var type = $("#sendfiletype").val();
-	if (type == 'pic') {
-		sendPic();
-	} else {
-		sendAudio();
-	}
+var send = function ( e ) {
+	var e = (e || window.event),
+		tar = e.target || e.srcElement;
+
+	var fI = $('#fileInput');
+	fI.val('').attr('data-type', tar.getAttribute('type')).click();
 };
+$('#fileInput').on('change', function() {
+
+
+	switch ( $(this).data('type') ) {
+		case 'img':
+			sendPic();
+			break;
+		case 'audio':
+			sendAudio();
+			break;
+		default:
+			sendFile();
+			break;
+	};
+
+});
+
 //发送图片消息时调用方法
 var sendPic = function() {
+
 	var to = curChatUserId;
 	if (to == null) {
 		return;
 	}
 
 	// Easemob.im.Helper.getFileUrl为easemobwebim-sdk获取发送文件对象的方法，fileInputId为 input 标签的id值
-	var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
-	if (Easemob.im.Helper.isCanUploadFileAsync() && (fileObj.url == null || fileObj.url == '')) {
-		$('#send-file-warning').html("<font color='#FF0000'>请选择发送图片</font>");
+	var fileObj = Easemob.im.Helper.getFileUrl('fileInput');
+	if (Easemob.im.Helper.isCanUploadFileAsync && (fileObj.url == null || fileObj.url == '')) {
+		alert("请先选择图片");
 		return;
 	}
 	var filetype = fileObj.filetype;
 	var filename = fileObj.filename;
-	if (!Easemob.im.Helper.isCanUploadFileAsync() || filetype in pictype) {
-		document.getElementById("fileSend").disabled = true;
-		document.getElementById("cancelfileSend").disabled = true;
+	if (!Easemob.im.Helper.isCanUploadFileAsync || filetype in pictype) {
 		var opt = {
 			type : 'chat',
-			fileInputId : fileInputId,
-			filename : flashFilename || '',
+			fileInputId : 'fileInput',
+			filename : flashFilename || filename,
 			to : to,
 			apiUrl: Easemob.im.config.apiURL,
 			onFileUploadError : function(error) {
-				$('#fileModal').modal('hide');
 				var messageContent = (error.msg || '') + ",发送图片文件失败:" + (filename||flashFilename);
 				appendMsg(curUserId, to, messageContent);
 			},
 			onFileUploadComplete : function(data) {
-				var file = document.getElementById(fileInputId);
+				var file = document.getElementById('fileInput');
 				if (file && file.files) {
 					var objUrl = getObjectURL(file.files[0]);
 					if (objUrl) {
@@ -1085,7 +1082,6 @@ var sendPic = function() {
 						data : img
 					} ]
 				});
-				$('#fileModal').modal('hide');
 			},
 			flashUpload: flashUpload
 		};
@@ -1100,7 +1096,7 @@ var sendPic = function() {
 		conn.sendPicture(opt);
 		return;
 	}
-	$('#send-file-warning').html("<font color='#FF0000'>不支持此图片类型" + filetype + "</font>");
+	alert("不支持此图片类型" + filetype);
 };
 var audtype = {
 	"mp3" : true,
@@ -1116,31 +1112,47 @@ var sendAudio = function() {
 		return;
 	}
 	//利用easemobwebim-sdk提供的方法来构造一个file对象
-	var fileObj = Easemob.im.Helper.getFileUrl(fileInputId);
-	if (Easemob.im.Helper.isCanUploadFileAsync() && (fileObj.url == null || fileObj.url == '')) {
-		$('#send-file-warning').html("<font color='#FF0000'>请选择发送音频</font>");
+	var fileObj = Easemob.im.Helper.getFileUrl('fileInput');
+	if (Easemob.im.Helper.isCanUploadFileAsync && (fileObj.url == null || fileObj.url == '')) {
+		alert("请先选择音频");
 		return;
 	}
 	var filetype = fileObj.filetype;
 	var filename = fileObj.filename;
-	if (!Easemob.im.Helper.isCanUploadFileAsync() || filetype in audtype) {
-		document.getElementById("fileSend").disabled = true;
-		document.getElementById("cancelfileSend").disabled = true;
+	if (!Easemob.im.Helper.isCanUploadFileAsync || filetype in audtype) {
 		var opt = {
 			type : "chat",
-			fileInputId : fileInputId,
-			filename : flashFilename || '',
+			fileInputId : 'fileInput',
+			filename : flashFilename || filename,
 			to : to,//发给谁
 			apiUrl: Easemob.im.config.apiURL,
 			onFileUploadError : function(error) {
-				$('#fileModal').modal('hide');
 				var messageContent = (error.msg || '') + ",发送音频失败:" + (filename || flashFilename);
 				appendMsg(curUserId, to, messageContent);
 			},
 			onFileUploadComplete : function(data) {
 				var messageContent = "发送音频" + (filename || flashFilename);
-				$('#fileModal').modal('hide');
-				appendMsg(curUserId, to, messageContent);
+
+				var file = document.getElementById('fileInput');
+				var aud = document.createElement('audio');
+				aud.controls = true;
+
+				if (file && file.files) {
+					var objUrl = getObjectURL(file.files[0]);
+					if (objUrl) {
+						aud.setAttribute('src', objUrl);
+					}
+				} else {
+					aud.setAttribute('src', data.uri + '/' + data.entities[0].uuid);
+				}
+
+				appendMsg(curUserId, to, {
+					data : [ {
+						type : 'audio',
+						filename : (filename || flashFilename),
+						data : aud
+					} ]
+				});
 			},
 			flashUpload: flashUpload
 		};
@@ -1156,7 +1168,57 @@ var sendAudio = function() {
 		conn.sendAudio(opt);
 		return;
 	}
-	$('#send-file-warning').html("<font color='#FF0000'>不支持此音频类型" + filetype + "</font>");
+	alert("不支持此音频类型" + filetype);
+};
+var filetype = {
+	"png" : true,
+	"doc" : true,
+	"zip" : true
+};
+//发送文件消息时调用的方法
+var sendFile = function() {
+	var to = curChatUserId;
+	if (to == null) {
+		return;
+	}
+	//利用easemobwebim-sdk提供的方法来构造一个file对象
+	var fileObj = Easemob.im.Helper.getFileUrl('fileInput');
+	if (Easemob.im.Helper.isCanUploadFileAsync && (fileObj.url == null || fileObj.url == '')) {
+		alert("请选择发送音频");
+		return;
+	}
+	var fileType = fileObj.filetype;
+	var filename = fileObj.filename;
+	if (!Easemob.im.Helper.isCanUploadFileAsync || fileType in filetype) {
+		var opt = {
+			type : "chat",
+			fileInputId : 'fileInput',
+			filename : filename || flashFilename,
+			to : to,//发给谁
+			apiUrl: Easemob.im.config.apiURL,
+			onFileUploadError : function(error) {
+				var messageContent = (error.msg || '') + ",发送文件失败:" + (filename || flashFilename);
+				appendMsg(curUserId, to, messageContent);
+			},
+			onFileUploadComplete : function(data) {
+				var messageContent = "发送文件" + (filename || flashFilename);
+				appendMsg(curUserId, to, messageContent);
+			},
+			flashUpload: flashUpload
+		};
+		//构造完opt对象后调用easemobwebim-sdk中发送音频的方法
+		if (curChatUserId.indexOf(groupFlagMark) >= 0) {
+			opt.type = groupFlagMark;
+			opt.to = curRoomId;
+		} else if (curChatUserId.indexOf(chatRoomMark) >= 0) {
+			opt.type = groupFlagMark;
+			opt.roomType = chatRoomMark;
+			opt.to = curRoomId;
+		}
+		conn.sendFile(opt);
+		return;
+	}
+	alert("不支持此文件类型" + fileType);
 };
 //easemobwebim-sdk收到文本消息的回调方法的实现
 var handleTextMessage = function(message) {
@@ -1281,7 +1343,7 @@ var handleAudioMessage = function(message) {
 	options.onFileDownloadComplete = function(response, xhr) {
 		var objectURL = Easemob.im.Helper.parseDownloadResponse.call(this, response);
 		var audio = document.createElement("audio");
-		if (Easemob.im.Helper.getIEVersion() != 9 && ("src" in audio) && ("controls" in audio)) {
+		if (Easemob.im.Helper.getIEVersion != 9 && ("src" in audio) && ("controls" in audio)) {
 			audio.onload = function() {
 				audio.onload = null;
 				window.URL && window.URL.revokeObjectURL && window.URL.revokeObjectURL(audio.src);
@@ -1443,8 +1505,16 @@ var createMomogrouplistUL = function createMomogrouplistUL(who, message) {
 	lielem.appendChild(spanelem);
 	momogrouplistUL.appendChild(lielem);
 };
+var handleChatRoomMessage = function (contact) {
+	if ( contact.indexOf(chatRoomMark) > -1 ) {
+		return contact.slice(chatRoomMark.length) === curChatRoomId;
+	}
+	return true;
+};
 //显示聊天记录的统一处理方法
 var appendMsg = function(who, contact, message) {
+	if ( !handleChatRoomMessage(contact) ) { return; }
+
 	var contactUL = document.getElementById("contactlistUL");
 	var contactDivId = contact;
 	var contactLi = getContactLi(contactDivId);
