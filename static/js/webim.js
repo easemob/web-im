@@ -282,6 +282,20 @@ $(function() {
 //easemobwebim-sdk注册回调函数列表
 $(document).ready(function() {
 
+	window.alert = (function () {
+		var dom = document.getElementById('alert'),
+			info = dom.getElementsByTagName('span')[0],
+			btn = dom.getElementsByTagName('button')[0];
+
+		btn.onclick = function () {
+			dom.style.display = 'none';
+		};
+		return function ( msg ) {
+			info.innerHTML = msg;
+			dom.style.display = 'block';
+		}
+	}());
+
 	if(!Easemob.im.Helper.isCanUploadFileAsync && typeof uploadShim === 'function') {
 		picshim = uploadShim('sendPicInput', 'pic');
 		audioshim = uploadShim('sendAudioInput', 'aud');
@@ -313,9 +327,6 @@ $(document).ready(function() {
 		//收到图片消息时的回调方法
 		onPictureMessage : function(message) {
 			handlePictureMessage(message);
-		},
-		onCmdMessage : function(message) {
-			alert(1);
 		},
 		//收到音频消息的回调方法
 		onAudioMessage : function(message) {
@@ -1185,9 +1196,20 @@ var sendAudio = function() {
 	alert("不支持此音频类型" + filetype);
 };
 var filetype = {
+	"mp3" : true,
+	"wma" : true,
+	"wav" : true,
+	"amr" : true,
+	"avi" : true,
+	"jpg" : true,
+	"gif" : true,
 	"png" : true,
+	"bmp" : true,
+	"zip" : true,
+	"rar" : true,
 	"doc" : true,
-	"zip" : true
+	"docx" : true,
+	"pdf" : true
 };
 //发送文件消息时调用的方法
 var sendFile = function() {

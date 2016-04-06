@@ -195,8 +195,8 @@
 					<a class="chat02_title_btn ctb03" title="选择图片" onclick="send()" type='img' href="#"></a>
 					<input id='sendAudioInput' class='emim-hide'/>
 					<a class="chat02_title_btn ctb02" title="选择语音" onclick="send()" href="#" type='audio'></a>
-					<input id='sendFileInput' class='emim-hide'/>
-					<a class="chat02_title_btn ctb04" title="选择文件" onclick="send()" href="#"></a>
+					<!--<input id='sendFileInput' class='emim-hide'/>
+					<a class="chat02_title_btn ctb04" title="选择文件" onclick="send()" href="#"></a>-->
 					<label id="chat02_title_t"></label>
                     <div id="wl_faces_box" class="wl_faces_box">
                         <div class="wl_faces_content">
@@ -304,7 +304,8 @@
             </div>
         </div>
     </div>
-	<input type='file' id="fileInput" style='display:none'/>
+	<input type='file' id="fileInput" style='display:none;'/>
+	<div id='alert' class='em-alert' style='display:none;'><span></span><button>好的</button></div>
 	<script src="static/js/webim.js"></script>
 </body>
 </html>
