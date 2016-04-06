@@ -333,6 +333,9 @@ a:hover {
 .ctb02 {
 	background-position: 0 -457px;
 }
+.ctb04 {
+	background-position: 0 -279px;
+}
 
 .chat02_title_t {
 	background: url('../img/icon.png') no-repeat 0px -487px;
@@ -494,8 +497,22 @@ label.offline {
 	padding: 2px;
 }
 
-
-
+.swfupload {
+	position: absolute;
+	z-index: 1;
+}
+#SWFUpload_0 {
+	top: 0;
+	left: 40px;
+}
+#SWFUpload_1 {
+	top: 0;
+	left: 66px;
+}
+#SWFUpload_2 {
+	top: 0;
+	left: 92px;
+}
 /*
     base
 */

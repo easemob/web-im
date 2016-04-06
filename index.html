@@ -4,19 +4,25 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0"/>
 <title>WebIM-DEMO</title>
+<!--sdk-->
 <script src="static/sdk/strophe.js"></script>
-<script src="static/sdk/easemob.im-2.0.js"></script>
-<script src="static/sdk/easemob.im.shim.js"></script><!--兼容老版本sdk需引入此文件-->
+<script src="static/sdk/easemob.im-1.1.js"></script>
+<script src="static/sdk/easemob.im-1.1.shim.js"></script><!--兼容老版本sdk需引入此文件-->
 
+<!--config-->
 <script src="static/js/easemob.im.config.js"></script>
+
+<!--demo-->
 <script src="static/js/jquery-1.11.1.js"></script>
 <script src="static/js/bootstrap.js"></script>
 <link rel="stylesheet" href="static/css/bootstrap.css" />
 <link rel="stylesheet" href="static/css/webim.css" />
+
 <!--[if lte IE 9]>
 <script src="static/js/jplayer/jquery.jplayer.min.js"></script>
 <script src="static/js/swfupload/swfupload.js"></script>
 <![endif]-->
+
 </head>
 <body>
     <div id="loginmodal" class="modal hide in" role="dialog"
@@ -113,9 +119,7 @@
                 <div class="accordion" id="accordionDiv">
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <a id="accordion1" class="accordion-toggle"
-                                data-toggle="collapse" data-parent="#accordionDiv"
-                                href="#collapseOne">我的好友 </a>
+                            <a id="accordion1" class="accordion-toggle" data-toggle="collapse" data-parent="#accordionDiv" href="#collapseOne">我的好友 </a>
                         </div>
                         <div id="collapseOne" class="accordion-body collapse in">
                             <div class="accordion-inner" id="contractlist">
@@ -187,9 +191,12 @@
             <div class="chat02">
                 <div class="chat02_title">
                     <a class="chat02_title_btn ctb01" onclick="showEmotionDialog()" title="选择表情"></a>
+					<input id='sendPicInput' class='emim-hide'/>
 					<a class="chat02_title_btn ctb03" title="选择图片" onclick="send()" type='img' href="#"></a>
+					<input id='sendAudioInput' class='emim-hide'/>
 					<a class="chat02_title_btn ctb02" title="选择语音" onclick="send()" href="#" type='audio'></a>
-					<a class="chat02_title_btn ctb02" title="选择文件" onclick="send()" href="#"></a>
+					<input id='sendFileInput' class='emim-hide'/>
+					<a class="chat02_title_btn ctb04" title="选择文件" onclick="send()" href="#"></a>
 					<label id="chat02_title_t"></label>
                     <div id="wl_faces_box" class="wl_faces_box">
                         <div class="wl_faces_content">

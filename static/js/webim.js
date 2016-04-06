@@ -14,9 +14,11 @@ var chatRoomMark = "chatroom";
 var groupQuering = false;
 var textSending = false;
 var time = 0;
-var swfupload = null;
 var flashFilename = '';
 var audioDom = [];
+var picshim;
+var audioshim;
+var fileshim;
 var PAGELIMIT = 8;
 var pageLimitKey = new Date().getTime();
 
@@ -72,21 +74,19 @@ var playAudioShim = function ( dom, url, t ) {
 
 //处理不支持异步上传的浏览器,使用swfupload作为解决方案
 var uploadType = null;
-var uploadShim = function ( fileInputId ) {
+var uploadShim = function ( fileInputId, type ) {
 	var pageTitle = document.title;
-	var uploadBtn = $('#' + fileInputId);
-	if ( typeof SWFUpload === 'undefined' || uploadBtn.length < 1 ) {
+	if ( typeof SWFUpload === 'undefined' ) {
 		return;
 	}
 
 	return new SWFUpload({ 
 		file_post_name: 'file'
-		, flash_url: "sdk/swfupload/swfupload.swf"
+		, flash_url: "static/js/swfupload/swfupload.swf"
 		, button_placeholder_id: fileInputId
-		, button_width: uploadBtn.width() || 120
-		, button_height: uploadBtn.height() || 30
+		, button_width: 24
+		, button_height: 24
 		, button_cursor: SWFUpload.CURSOR.HAND
-		, button_text: '点击上传'
 		, button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT
 		, file_size_limit: 10485760
 		, file_upload_limit: 0
@@ -95,29 +95,38 @@ var uploadShim = function ( fileInputId ) {
 				this.cancelUpload();
 			}
 
-			var checkType = uploadType === 'audio' ? audtype : pictype;
+			var checkType = window[type + 'type'];
 
 			if ( !checkType[file.type.slice(1)] ) {
 				conn.onError({
 					type : EASEMOB_IM_UPLOADFILE_ERROR,
 					msg : '不支持此文件类型' + file.type
 				});
-				this.setButtonText('点击上传');
 				this.cancelUpload();
 			} else if ( 10485760 < file.size ) {
 				conn.onError({
 					type : EASEMOB_IM_UPLOADFILE_ERROR,
 					msg : '文件大小超过限制！请上传大小不超过10M的文件'
 				});
-				this.setButtonText('点击上传');
 				this.cancelUpload();
 			} else {
-				this.setButtonText(file.name);
 				flashFilename = file.name;
+
+				switch (type) {
+					case 'pic':
+						sendPic();
+						break;
+					case 'aud':
+						sendAudio();
+						break;
+					case 'file':
+						sendFile();
+						break;
+				}
 			}
 		}
 		, file_dialog_start_handler: function () {
-			if ( Easemob.im.Helper.getIEVersion < 10 ) {
+			if ( Easemob.im.Helper.getIEVersion && Easemob.im.Helper.getIEVersion < 10 ) {
 				document.title = pageTitle;
 			}
 		}
@@ -129,7 +138,7 @@ var uploadShim = function ( fileInputId ) {
 			}
 		}
 		, upload_complete_handler: function () {
-			this.setButtonText('点击上传');
+			//this.setButtonText('点击上传');
 		}
 		, upload_success_handler: function ( file, response ) {
 			//处理上传成功的回调
@@ -151,19 +160,20 @@ var uploadShim = function ( fileInputId ) {
 
 
 //提供上传接口
-var flashUpload = function ( url, options ) {
-	if ( swfupload.settings.button_text === '点击上传' ) {
-		conn.onError({
-			type : EASEMOB_IM_UPLOADFILE_ERROR,
-			msg : '请选择文件'
-		});
-		return;
-	}
-	swfupload.setUploadURL(url);
-	swfupload.uploadOptions = options;
-	swfupload.startUpload();
+var flashUpload = function ( swfObj, url, options ) {
+	swfObj.setUploadURL(url);
+	swfObj.uploadOptions = options;
+	swfObj.startUpload();
 };
-
+var flashPicUpload = function ( url, options ) {
+	flashUpload(picshim, url, options);
+};
+var flashAudioUpload = function ( url, options ) {
+	flashUpload(audioshim, url, options);
+};
+var flashFileUpload = function ( url, options ) {
+	flashUpload(fileshim, url, options);
+};
 var handlePageLimit = (function () {
 	if ( Easemob.im.config.multiResources && window.localStorage ) {
 		var keyValue = 'empagecount' + pageLimitKey;
@@ -273,7 +283,9 @@ $(function() {
 $(document).ready(function() {
 
 	if(!Easemob.im.Helper.isCanUploadFileAsync && typeof uploadShim === 'function') {
-		swfupload = uploadShim('fileInput');
+		picshim = uploadShim('sendPicInput', 'pic');
+		audioshim = uploadShim('sendAudioInput', 'aud');
+		fileshim = uploadShim('sendFileInput', 'file');
 	}
 	conn = new Easemob.im.Connection({
 		multiResources: Easemob.im.config.multiResources,
@@ -1057,12 +1069,13 @@ var sendPic = function() {
 			to : to,
 			apiUrl: Easemob.im.config.apiURL,
 			onFileUploadError : function(error) {
-				var messageContent = (error.msg || '') + ",发送图片文件失败:" + (filename||flashFilename);
+				var messageContent = (error.msg || '') + ",发送图片文件失败:" + (filename || flashFilename);
 				appendMsg(curUserId, to, messageContent);
 			},
 			onFileUploadComplete : function(data) {
+
 				var file = document.getElementById('fileInput');
-				if (file && file.files) {
+				if ( Easemob.im.Helper.isCanUploadFileAsync && file && file.files) {
 					var objUrl = getObjectURL(file.files[0]);
 					if (objUrl) {
 						var img = document.createElement("img");
@@ -1072,18 +1085,18 @@ var sendPic = function() {
 				} else {
 					filename = data.filename || '';
 					var img = document.createElement("img");
-					img.src = data.uri + '/' + data.entities[0].uuid + '?token=';
+					img.src = data.uri + '/' + data.entities[0].uuid;
 					img.width = maxWidth;
 				}
 				appendMsg(curUserId, to, {
 					data : [ {
 						type : 'pic',
-						filename : (filename||flashFilename),
+						filename : filename,
 						data : img
 					} ]
 				});
 			},
-			flashUpload: flashUpload
+			flashUpload: flashPicUpload
 		};
 		if (curChatUserId.indexOf(groupFlagMark) >= 0) {
 			opt.type = groupFlagMark;
@@ -1131,13 +1144,13 @@ var sendAudio = function() {
 				appendMsg(curUserId, to, messageContent);
 			},
 			onFileUploadComplete : function(data) {
-				var messageContent = "发送音频" + (filename || flashFilename);
+				var messageContent = "发送音频" + data.filename;
 
 				var file = document.getElementById('fileInput');
 				var aud = document.createElement('audio');
 				aud.controls = true;
 
-				if (file && file.files) {
+				if (Easemob.im.Helper.isCanUploadFileAsync && file && file.files) {
 					var objUrl = getObjectURL(file.files[0]);
 					if (objUrl) {
 						aud.setAttribute('src', objUrl);
@@ -1149,12 +1162,13 @@ var sendAudio = function() {
 				appendMsg(curUserId, to, {
 					data : [ {
 						type : 'audio',
-						filename : (filename || flashFilename),
-						data : aud
+						filename : filename,
+						data : aud,
+						audioShim: !window.Audio
 					} ]
 				});
 			},
-			flashUpload: flashUpload
+			flashUpload: flashAudioUpload
 		};
 		//构造完opt对象后调用easemobwebim-sdk中发送音频的方法
 		if (curChatUserId.indexOf(groupFlagMark) >= 0) {
@@ -1201,10 +1215,10 @@ var sendFile = function() {
 				appendMsg(curUserId, to, messageContent);
 			},
 			onFileUploadComplete : function(data) {
-				var messageContent = "发送文件" + (filename || flashFilename);
+				var messageContent = "发送文件" + data.filename;
 				appendMsg(curUserId, to, messageContent);
 			},
-			flashUpload: flashUpload
+			flashUpload: flashFileUpload
 		};
 		//构造完opt对象后调用easemobwebim-sdk中发送音频的方法
 		if (curChatUserId.indexOf(groupFlagMark) >= 0) {

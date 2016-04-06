@@ -1,6 +1,6 @@
 /**************************************************************************
 ***                             Easemob WebIm Js SDK                    ***
-***                             v2.0                                  ***
+***                             v1.1                                  ***
 **************************************************************************/
 /**
  * Module1: Utility
@@ -17,10 +17,9 @@
 
     var Easemob = Easemob || {};
     Easemob.im = Easemob.im || {};
-    Easemob.im.version = "2.0";
+    Easemob.im.version = "1.1";
 
-    var https = location.protocol === 'https:',
-		MAX_PAGE_LIMIT = 8;//
+    var https = location.protocol === 'https:';
 
     window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -974,11 +973,12 @@
                     type: me.msg.type || 'file'
                     , url: data.uri + '/' + data.entities[0]['uuid']
                     , secret: data.entities[0]['share-secret']
-                    , filename: me.msg.file.filename
+                    , filename: me.msg.file.filename || me.msg.filename
                     , size: {
                         width: me.msg.width
                         , height: me.msg.height
                     }
+					, length: me.msg.file_length
                     , file_length: me.msg.file_length
                     , filetype: me.msg.filetype
                 }

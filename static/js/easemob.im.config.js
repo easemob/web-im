@@ -2,12 +2,12 @@ Easemob.im.config = {
     /*
         The global value set for xmpp server
     */
-    xmppURL: 'im-api.easemob.com',
+    xmppURL: 'im-api.sandbox.easemob.com',
     /*
         The global value set for Easemob backend REST API
         "http://a1.easemob.com"
     */
-    apiURL: 'http://a1.easemob.com',
+    apiURL: 'http://a1.sdb.easemob.com',
     /*
         连接时提供appkey
     */
