@@ -1408,7 +1408,7 @@
         };
 
         connection.prototype.listen = function ( options ) {
-			this.url = _getXmppUrl(options.url, this.https);//just compatible
+			options.url && (this.url = _getXmppUrl(options.url, this.https));//just compatible
             this.onOpened = options.onOpened || EMPTYFN;
             this.onClosed = options.onClosed || EMPTYFN;
             this.onTextMessage = options.onTextMessage || EMPTYFN;

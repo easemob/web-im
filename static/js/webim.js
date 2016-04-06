@@ -1550,6 +1550,7 @@ var handleChatRoomMessage = function (contact) {
 //显示聊天记录的统一处理方法
 var appendMsg = function(who, contact, message) {
 	if ( !handleChatRoomMessage(contact) ) { return; }
+	//if ( !contact.indexOf(chatRoomMark) > -1 ) { return; }
 
 	var contactUL = document.getElementById("contactlistUL");
 	var contactDivId = contact;
