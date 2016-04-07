@@ -975,11 +975,11 @@
                     , secret: data.entities[0]['share-secret']
                     , filename: me.msg.file.filename || me.msg.filename
                     , size: {
-                        width: me.msg.width
-                        , height: me.msg.height
+                        width: me.msg.width || 0
+                        , height: me.msg.height || 0
                     }
-					, length: me.msg.file_length
-                    , file_length: me.msg.file_length
+					, length: me.msg.file_length || 0
+                    , file_length: me.msg.file_length || 0
                     , filetype: me.msg.filetype
                 }
 
@@ -1729,9 +1729,12 @@
             }
             var msgDatas = parseMsgData.data;
             for ( var i in msgDatas ) {
+				if ( !msgDatas.hasOwnProperty(i) ) {
+					continue;
+				}
                 var msg = msgDatas[i];
-                var from = msg.from;
-                var too = msg.to;
+                var from = msg.from.toLowerCase();
+                var too = msg.to.toLowerCase();
                 var extmsg = msg.ext || {};
 				var chattype = '';
 				var typeEl = msginfo.getElementsByTagName("roomtype");

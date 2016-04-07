@@ -285,14 +285,23 @@ $(document).ready(function() {
 	window.alert = (function () {
 		var dom = document.getElementById('alert'),
 			info = dom.getElementsByTagName('span')[0],
-			btn = dom.getElementsByTagName('button')[0];
+			btn = dom.getElementsByTagName('button')[0],
+			st = 0;
 
 		btn.onclick = function () {
+			clearTimeout(st);
 			dom.style.display = 'none';
 		};
+		var delayHide = function () {
+			clearTimeout(st);
+			st = setTimeout(function () {
+				btn.click();
+			}, 3000);
+		}
 		return function ( msg ) {
 			info.innerHTML = msg;
 			dom.style.display = 'block';
+			delayHide();
 		}
 	}());
 
@@ -403,6 +412,7 @@ $(document).ready(function() {
 	});
 	$(function() {
 		$(window).bind('beforeunload', function() {
+			curChatRoomId = null;
 			if (conn) {
 				conn.close();
 				if (navigator.userAgent.indexOf("Firefox") > 0)
@@ -597,6 +607,8 @@ var handleRoster = function(rosterMsg) {
 };
 //异常情况下的处理方法
 var handleError = function(e) {
+	curChatRoomId = null;
+
 	clearPageSign();
 	e && e.upload && $('#fileModal').modal('hide');
 	if (curUserId == null) {
@@ -1041,8 +1053,7 @@ var send = function ( e ) {
 };
 $('#fileInput').on('change', function() {
 
-
-	switch ( $(this).data('type') ) {
+	switch ( this.getAttribute('data-type') ) {
 		case 'img':
 			sendPic();
 			break;
@@ -1053,7 +1064,6 @@ $('#fileInput').on('change', function() {
 			sendFile();
 			break;
 	};
-
 });
 
 //发送图片消息时调用方法
@@ -1291,80 +1301,19 @@ var handlePictureMessage = function(message) {
 		contactDivId = mestype + message.to;
 	}
 	var options = message;
-	// 图片消息下载成功后的处理逻辑
-	options.onFileDownloadComplete = function(response, xhr) {
-		var objectURL = Easemob.im.Helper.parseDownloadResponse.call(this, response);
-		img = document.createElement("img");
-		img.onload = function(e) {
-			img.onload = null;
-			window.URL && window.URL.revokeObjectURL && window.URL.revokeObjectURL(img.src);
-		};
-		img.onerror = function() {
-			img.onerror = null;
-			if (typeof FileReader == 'undefined') {
-				img.alter = "当前浏览器不支持blob方式";
-				return;
-			}
-			img.onerror = function() {
-				img.alter = "当前浏览器不支持blob方式";
-			};
-			var reader = new FileReader();
-			reader.onload = function(event) {
-				img.src = this.result;
-			};
-			reader.readAsDataURL(response);
-		}
-		img.src = objectURL;
-		var pic_real_width = options.width;
-		if (!pic_real_width || pic_real_width == 0) {
-			$("<img/>").attr("src", objectURL).load(function() {
-				pic_real_width = this.width;
-				if (pic_real_width > maxWidth) {
-					img.width = maxWidth;
-				} else {
-					img.width = pic_real_width;
-				}
-				appendMsg(from, contactDivId, {
-					data : [ {
-						type : 'pic',
-						filename : filename || '',
-						data : img
-					} ]
-				});
-			});
-		} else {
-			if (pic_real_width > maxWidth) {
-				img.width = maxWidth;
-			} else {
-				img.width = pic_real_width;
-			}
-			appendMsg(from, contactDivId, {
-				data : [ {
-					type : 'pic',
-					filename : filename || '',
-					data : img
-				} ]
-			});
-		}
-	};
-	
-	var redownLoadFileNum = 0;
-	options.onFileDownloadError = function(e) {
-		//下载失败时只重新下载一次
-		if(redownLoadFileNum < 1){
-		   redownLoadFileNum++;
-			options.accessToken = options_c;
-		   Easemob.im.Helper.download(options);
-		   
-		}else{
-		  appendMsg(from, contactDivId, e.msg + ",下载图片" + filename + "失败");
-		  redownLoadFileNum = 0;
-		}
-	   
-	};
-	//easemobwebim-sdk包装的下载文件对象的统一处理方法。
-	Easemob.im.Helper.download(options);
+
+	var img = document.createElement("img");
+	img.src = message.url;
+	appendMsg(from, contactDivId, {
+		data : [ {
+			type : 'pic',
+			filename : filename || '',
+			data : img
+		} ]
+	});
 };
+
+
 //easemobwebim-sdk收到音频消息回调方法的实现
 var handleAudioMessage = function(message) {
 	var filename = message.filename;
@@ -1375,48 +1324,20 @@ var handleAudioMessage = function(message) {
 	if (mestype == groupFlagMark || mestype == chatRoomMark) {
 		contactDivId = mestype + message.to;
 	}
-	var options = message;
-	options.onFileDownloadComplete = function(response, xhr) {
-		var objectURL = Easemob.im.Helper.parseDownloadResponse.call(this, response);
-		var audio = document.createElement("audio");
-		if (Easemob.im.Helper.getIEVersion != 9 && ("src" in audio) && ("controls" in audio)) {
-			audio.onload = function() {
-				audio.onload = null;
-				window.URL && window.URL.revokeObjectURL && window.URL.revokeObjectURL(audio.src);
-			};
-			audio.onerror = function() {
-				audio.onerror = null;
-				appendMsg(from, contactDivId, "当前浏览器不支持播放此音频:" + (filename || ''));
-			};
-			audio.controls = "controls";
-			audio.src = objectURL;
-			appendMsg(from, contactDivId, {
-				data : [ {
-					type : 'audio',
-					filename : filename || '',
-					data : audio
-				} ]
-			});
-			//audio.play();
-			return;
-		} else {
-			appendMsg(from, contactDivId, {
-				data : [ {
-					type : 'audio',
-					filename : filename || '',
-					data : {currentSrc: objectURL},
-					audioShim: true
-				} ]
-			});
-		}
-	};
-	options.onFileDownloadError = function(e) {
-		appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
-	};
-	options.headers = {
-		"Accept" : "audio/mp3"
-	};
-	Easemob.im.Helper.download(options);
+
+	
+	var audio = document.createElement("audio");
+	audio.controls = "controls";
+	audio.src = message.url;
+
+	appendMsg(from, contactDivId, {
+		data : [ {
+			type : 'audio',
+			filename : filename || '',
+			data : audio,
+			audioShim: !window.Audio
+		} ]
+	});
 };
 //处理收到文件消息
 var handleFileMessage = function(message) {
