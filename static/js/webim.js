@@ -792,6 +792,7 @@ var buildContactDiv = function(contactlistDivId, roster) {
 //构造群组列表
 var buildListRoomDiv = function(contactlistDivId, rooms, type) {
 	var uielem = document.getElementById(contactlistDivId + "UL");
+	uielem.innerHTML = '';
 	var cache = {};
 	for (i = 0; i < rooms.length; i++) {
 		var roomsName = rooms[i].name;
@@ -1391,7 +1392,7 @@ var handleLocationMessage = function(message) {
 		appendMsg(from, from, content);
 	}
 };
-var handleInviteMessage = function(message) {debugger
+var handleInviteMessage = function(message) {
 	var type = message.type;
 	var from = message.from;
 	var roomId = message.roomid;

@@ -716,7 +716,6 @@
                             type: "txt"
                             , data: tmsg
                         });
-						continue;
                     }
                     var emotion = Easemob.im.EMOTIONS.map ? Easemob.im.EMOTIONS.path + existEmotion : null;
 
@@ -1733,6 +1732,10 @@
 					continue;
 				}
                 var msg = msgDatas[i];
+				if ( !msg.from || !msg.to ) {
+					continue;
+				}
+
                 var from = msg.from.toLowerCase();
                 var too = msg.to.toLowerCase();
                 var extmsg = msg.ext || {};
