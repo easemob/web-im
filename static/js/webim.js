@@ -415,10 +415,7 @@ $(document).ready(function() {
 			curChatRoomId = null;
 			if (conn) {
 				conn.close();
-				if (navigator.userAgent.indexOf("Firefox") > 0)
-					return ' ';
-				else
-					return '';
+				return navigator.userAgent.indexOf("Firefox") > 0 ? ' ' : '';
 			}
 		});
 	});
@@ -495,6 +492,7 @@ var handleClosed = function() {
 	curUserId = null;
 	curChatUserId = null;
 	curRoomId = null;
+	curChatRoomId = null;
 	bothRoster = [];
 	toRoster = [];
 	hiddenChatUI();
