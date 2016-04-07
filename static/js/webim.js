@@ -499,7 +499,7 @@ var handleClosed = function() {
 	for(var i=0,l=audioDom.length;i<l;i++) {
 		if(audioDom[i].jPlayer) audioDom[i].jPlayer('destroy');
 	}
-	clearContactUI("contactlistUL", "contactgrouplistUL",
+	clearContactUI("contactlistUL", "contracgrouplistUL",
 			"momogrouplistUL", msgCardDivId);
 	showLoginUI();
 	groupQuering = false;
@@ -934,7 +934,7 @@ var chooseContactDivClick = function(li) {
 var clearContactUI = function(contactlistUL, contactgrouplistUL,momogrouplistUL, contactChatDiv) {
 	//清除左侧联系人内容
 	$('#contactlistUL').empty();
-	$('#contactgrouplistUL').empty();
+	$('#contracgrouplistUL').empty();
 	$('#momogrouplistUL').empty();
 	//处理联系人分组的未读消息处理
 	var accordionChild = $('#accordionDiv').children();
@@ -1401,7 +1401,7 @@ var handleInviteMessage = function(message) {
 				for (i = 0; i < rooms.length; i++) {
 					var roomsName = rooms[i].name;
 					var roomId = rooms[i].roomId;
-					var existRoom = $('#contactgrouplistUL').children(
+					var existRoom = $('#contracgrouplistUL').children(
 							'#' + groupFlagMark + roomId);
 					if (existRoom && existRoom.length == 0) {
 						var lielem = $('<li>').attr({
@@ -1419,7 +1419,7 @@ var handleInviteMessage = function(message) {
 							'src' : 'static/img/head/group_normal.png'
 						}).appendTo(lielem);
 						$('<span>').html(roomsName).appendTo(lielem);
-						$('#contactgrouplistUL').append(lielem);
+						$('#contracgrouplistUL').append(lielem);
 						//return;
 					}
 				}
@@ -1432,7 +1432,7 @@ var handleInviteMessage = function(message) {
 	});
 };
 var cleanListRoomDiv = function cleanListRoomDiv() {
-	$('#contactgrouplistUL').empty();
+	$('#contracgrouplistUL').empty();
 };
 //收到陌生人消息时创建陌生人列表
 var createMomogrouplistUL = function createMomogrouplistUL(who, message) {
