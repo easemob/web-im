@@ -281,6 +281,9 @@ $(function() {
 });
 //easemobwebim-sdk注册回调函数列表
 $(document).ready(function() {
+	if ( Easemob.im.Helper.getIEVersion && Easemob.im.Helper.getIEVersion < 10 ) {
+		$('#em-cr').remove();
+	}
 
 	window.alert = (function () {
 		var dom = document.getElementById('alert'),
@@ -297,7 +300,7 @@ $(document).ready(function() {
 			st = setTimeout(function () {
 				btn.click();
 			}, 3000);
-		}
+		};
 		return function ( msg ) {
 			info.innerHTML = msg;
 			dom.style.display = 'block';
@@ -305,11 +308,7 @@ $(document).ready(function() {
 		}
 	}());
 
-	if(!Easemob.im.Helper.isCanUploadFileAsync && typeof uploadShim === 'function') {
-		picshim = uploadShim('sendPicInput', 'pic');
-		audioshim = uploadShim('sendAudioInput', 'aud');
-		fileshim = uploadShim('sendFileInput', 'file');
-	}
+	
 	conn = new Easemob.im.Connection({
 		multiResources: Easemob.im.config.multiResources,
 		https : Easemob.im.config.https,
@@ -468,6 +467,12 @@ var handleOpen = function(conn) {
 		}
 	});
 
+	if ( !Easemob.im.Helper.isCanUploadFileAsync && typeof uploadShim === 'function' ) {
+		picshim = uploadShim('sendPicInput', 'pic');
+		audioshim = uploadShim('sendAudioInput', 'aud');
+		fileshim = uploadShim('sendFileInput', 'file');
+	}
+
 	//获取聊天室列表
 	conn.getChatRooms({
 		apiUrl: Easemob.im.config.apiURL,
@@ -508,6 +513,17 @@ var handleClosed = function() {
 
 //easemobwebim-sdk中收到联系人订阅请求的处理方法，具体的type值所对应的值请参考xmpp协议规范
 var handlePresence = function(e) {
+	if (e.type == 'unavailable') {
+		var el = null;
+
+		if (e.chatroom) {
+			el = document.getElementById(chatRoomMark + e.from)
+		} else {
+			el = document.getElementById(groupFlagMark + e.from)
+		}
+		el && $(el).remove();
+		return;
+	}
 	//（发送者希望订阅接收者的出席信息），即别人申请加你为好友
 	if (e.type == 'subscribe') {
 		if (e.status) {

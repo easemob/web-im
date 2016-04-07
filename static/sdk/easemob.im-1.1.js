@@ -711,11 +711,18 @@
                     var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emotions[i])),
 						existEmotion = Easemob.im.EMOTIONS.map[emotions[i]];
 
-                    if ( tmsg || !existEmotion ) {
+                    if ( tmsg ) {
                         emessage.push({
                             type: "txt"
                             , data: tmsg
                         });
+                    }
+					if ( !existEmotion ) {
+                        emessage.push({
+                            type: "txt"
+                            , data: emotions[i]
+                        });
+						continue;
                     }
                     var emotion = Easemob.im.EMOTIONS.map ? Easemob.im.EMOTIONS.path + existEmotion : null;
 
@@ -1653,6 +1660,7 @@
                 , fromJid: from
                 , toJid: to
                 , type: type
+				, chatroom: msginfo.getElementsByTagName('roomtype').length ? true : false
             };
 
             var showTags = msginfo.getElementsByTagName("show");
