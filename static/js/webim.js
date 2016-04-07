@@ -513,7 +513,7 @@ var handleClosed = function() {
 
 //easemobwebim-sdk中收到联系人订阅请求的处理方法，具体的type值所对应的值请参考xmpp协议规范
 var handlePresence = function(e) {
-	if (e.type == 'unavailable') {
+	if (e.type == 'unavailable' && e.destroy) {
 		var el = null;
 
 		if (e.chatroom) {

@@ -1661,6 +1661,7 @@
                 , toJid: to
                 , type: type
 				, chatroom: msginfo.getElementsByTagName('roomtype').length ? true : false
+				, destroy: msginfo.getElementsByTagName('destroy').length ? true : false
             };
 
             var showTags = msginfo.getElementsByTagName("show");
