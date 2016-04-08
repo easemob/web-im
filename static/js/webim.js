@@ -195,7 +195,6 @@ var clearPageSign = function () {
 	if ( Easemob.im.config.multiResources && window.localStorage ) {
 		try {
 			localStorage.clear();
-			localStorage.removeItem('empagecount' + pageLimitKey);
 		} catch ( e ) {}
 	}
 };

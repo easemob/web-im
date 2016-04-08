@@ -1348,7 +1348,7 @@
                 return false;
             }
             
-            var jid = appKey + "_" + user + "@" + conn.domain,
+            var jid = appKey + "_" + user.toLowerCase() + "@" + conn.domain,
 				resource = options.resource || 'webim';
 
 			if ( conn.multiResources ) {
