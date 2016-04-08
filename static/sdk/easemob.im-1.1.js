@@ -1375,13 +1375,13 @@
 				suffix: '/http-bind/'
 			};
 
-			if ( https && !Utils.isSupportWss ) {
+			if ( https && Utils.isSupportWss ) {
 				url.prefix = 'wss';
 				url.suffix = '/ws/';
             } else {
                 if ( https ) {
 					url.prefix = 'https';
-				} else if ( !window.WebSocket ) {
+				} else if ( window.WebSocket ) {
 					url.prefix = 'ws';
 					url.suffix = '/ws/';
 				}   
