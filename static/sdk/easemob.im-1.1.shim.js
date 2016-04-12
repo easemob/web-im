@@ -234,6 +234,7 @@
 	var _send = function ( type, options ) {
 		var msg = new _m(type);
 
+		options.id && (msg.id = options.id);
 		msg.set(options);
 		options.type === 'groupchat' && msg.setGroup(options.type);
 		this.send(msg.body);
