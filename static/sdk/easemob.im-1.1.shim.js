@@ -154,6 +154,7 @@
 			, apiUrl: opt.apiUrl
 			, to: opt.to
 			, type : this.type
+			, ext: opt.ext || {}
 			, roomType : opt.roomType
 			, onFileUploadError : opt.onFileUploadError
 			, onFileUploadComplete: opt.onFileUploadComplete
@@ -182,6 +183,7 @@
 			, apiUrl: opt.apiUrl
 			, to: opt.to
 			, type: this.type
+			, ext: opt.ext || {}
 			, roomType : opt.roomType
 			, onFileUploadError : opt.onFileUploadError
 			, onFileUploadComplete: opt.onFileUploadComplete
@@ -210,6 +212,7 @@
 			, apiUrl: opt.apiUrl
 			, to: opt.to
 			, type: this.type
+			, ext: opt.ext || {}
 			, roomType : opt.roomType
 			, onFileUploadError : opt.onFileUploadError
 			, onFileUploadComplete: opt.onFileUploadComplete

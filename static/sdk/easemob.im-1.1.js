@@ -23,7 +23,18 @@
 
     window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
-
+	Strophe.Websocket.prototype._closeSocket = function () {
+		var me = this;
+        if ( me.socket ) {
+			setTimeout(function () {
+				try {
+					me.socket.close();
+				} catch ( e ) {}
+			}, 0);
+		} else {
+			me.socket = null;
+		}
+	}
 
     /**
      * Module1: Utility
