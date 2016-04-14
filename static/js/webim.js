@@ -575,7 +575,6 @@ var handlePresence = function(e) {
 	}
 	//加入聊天室失败
 	if ( e.type == 'joinChatRoomFailed' ) {
-		curChatUserId = null;
 		appendMsg(curUserId, chatRoomMark + e.from, '聊天室加入失败', true);
 		if ( curChatRoomId &&  curChatRoomId == e.from) {
 			curChatRoomId = null;
@@ -585,6 +584,7 @@ var handlePresence = function(e) {
 	}
 	//退出聊天室
 	if ( e.type == 'leaveChatRoom' ) {
+		appendMsg(curUserId, chatRoomMark + e.from, '退出聊天室', true);
 		if ( curChatRoomId &&  curChatRoomId == e.from) {
 			curChatRoomId = null;
 		}
@@ -948,6 +948,8 @@ var chooseContactDivClick = function(li) {
 		roomId = $(li).attr("roomId");
 
 	if ( curChatRoomId && curChatRoomId != roomId ) {//切换时，退出当前聊天室
+		var source = document.getElementById(curUserId + '-' + chatRoomMark + curChatRoomId);
+		source && (source.innerHTML = '', source.style.display = 'none');
 		var clearId = curChatRoomId;
 		conn.quitChatRoom({
 			roomId : curChatRoomId
@@ -1628,7 +1630,7 @@ var appendMsg = function(who, contact, message, onlyPrompt) {
 	if (curChatUserId == null) {
 		setCurrentContact(contact);
 		if (time < 1) {
-			$('#accordion3').click();
+			//$('#accordion3').click();
 			time++;
 		}
 	}
