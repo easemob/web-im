@@ -142,7 +142,10 @@ a:hover {
 	-moz-border-radius: 3px;
 	border-radius: 3px;
 }
-
+#chat01 {
+	width: 562px;
+    height: 354px;
+}
 .chat01_title {
 	background-color: #5D6978;
 	height: 42px;
