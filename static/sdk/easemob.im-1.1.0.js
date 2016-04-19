@@ -1216,6 +1216,14 @@
             return msgtype;
         };
 
+		var _handleQueueMessage = function ( conn ) {
+			for ( var i in _msgHash ) {
+				if ( _msgHash.hasOwnProperty(i) ) {
+					_msgHash[i].send(conn);
+				}
+			}
+		};
+
         var _login2ImCallback = function ( status, msg, conn ) {
             if ( status == Strophe.Status.CONNFAIL ) {
                 conn.onError({
@@ -1272,6 +1280,7 @@
                     supportSedMessage.push(EASEMOB_IM_MESSAGE_REC_AUDIO_FILE);
                 }
                 conn.notifyVersion();
+				conn.retry && _handleQueueMessage(conn);
                 conn.onOpened({
                     canReceive: supportRecMessage
                     , canSend: supportSedMessage
