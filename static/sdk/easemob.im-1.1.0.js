@@ -1376,7 +1376,7 @@
         }
 
 		var _getXmppUrl = function ( baseUrl, https ) {
-			if ( /^(ws|http)s:\/\/?/.test(baseUrl) ) {
+			if ( /^(ws|http)s?:\/\/?/.test(baseUrl) ) {
 				return baseUrl;
 			}
 
