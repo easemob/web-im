@@ -1286,8 +1286,10 @@
                     , canSend: supportSedMessage
                     , accessToken: conn.context.accessToken
                 });
+                conn.heartBeat(conn);
             } else if ( status == Strophe.Status.DISCONNECTING ) {
                 if ( conn.isOpened() ) {// 不是主动关闭
+                    conn.stopHeartBeat(conn);
                     conn.context.status = STATUS_CLOSING;
                     conn.onError({
                         type: EASEMOB_IM_CONNCTION_SERVER_CLOSE_ERROR
@@ -1625,6 +1627,7 @@
             if ( this.isClosed() || this.isClosing() ) {
                 return;
             }
+            this.stopHeartBeat(this);
             this.context.status = STATUS_CLOSING;
             this.context.stropheConn.disconnect();
         };
