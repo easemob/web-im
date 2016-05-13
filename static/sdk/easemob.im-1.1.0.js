@@ -1030,6 +1030,42 @@
      */
     var Connection = (function () {
 
+		var _networkSt;
+		var _listenNetwork = function ( onlineCallback, offlineCallback ) {
+
+			if ( window.addEventListener ) {
+				window.addEventListener('online', onlineCallback);
+				window.addEventListener('offline', offlineCallback);
+
+			} else if ( window.attachEvent ) {
+				if ( document.body ) {
+					document.body.attachEvent('onoffline', offlineCallback);
+					document.body.attachEvent('onoffline', offlineCallback);
+				} else {
+					window.attachEvent('load', function () {
+						document.body.attachEvent('onoffline', offlineCallback);
+						document.body.attachEvent('onoffline', offlineCallback);
+					});
+				}
+			} else {
+				/*var onlineTmp = window.ononline;
+				var offlineTmp = window.onoffline;
+
+				window.attachEvent('ononline', function () {
+					try {
+						typeof onlineTmp === 'function' && onlineTmp();
+					} catch ( e ) {}
+					onlineCallback();
+				});
+				window.attachEvent('onoffline', function () {
+					try {
+						typeof offlineTmp === 'function' && offlineTmp();
+					} catch ( e ) {}
+					offlineCallback();
+				});*/
+			}
+		};
+
         var _parseRoomFn = function ( result ) {
             var rooms = [];
             var items = result.getElementsByTagName("item");
@@ -1450,6 +1486,10 @@
             this.onError = options.onError || EMPTYFN;
             this.onReceivedMessage = options.onReceivedMessage || EMPTYFN;
             this.onInviteMessage = options.onInviteMessage || EMPTYFN;
+            this.onOffline = options.onOffline || EMPTYFN;
+            this.onOnline = options.onOnline || EMPTYFN;
+
+			_listenNetwork(this.onOnline, this.onOffline);
         }
 
         connection.prototype.heartBeat = function ( conn ) {
