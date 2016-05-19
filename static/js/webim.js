@@ -1106,13 +1106,12 @@ var pictype = {
 	"png" : true,
 	"bmp" : true
 };
-var send = function ( e ) {
-	var e = (e || window.event),
-		tar = e.target || e.srcElement;
+var send = function () {
 
 	var fI = $('#fileInput');
-	fI.val('').attr('data-type', tar.getAttribute('type')).click();
+	fI.val('').attr('data-type', this.getAttribute('type')).click();
 };
+$('#sendPicBtn, #sendAudioBtn, #sendFileBtn').on('click', send);
 $('#fileInput').on('change', function() {
 
 	switch ( this.getAttribute('data-type') ) {
