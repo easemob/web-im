@@ -1984,7 +1984,8 @@
             this.onReceivedMessage(message);
 
             var rcv = message.getElementsByTagName('received'),
-                id = undefined;
+                id,
+                mid;
 
             if ( rcv.length > 0 ) {
                 if ( rcv[0].childNodes && rcv[0].childNodes.length > 0 ) {
@@ -1992,10 +1993,11 @@
                 } else {
                     id = rcv[0].innerHTML || rcv[0].innerText;
                 }
+                mid = rcv[0].getAttribute('mid');
             }
             
             if ( _msgHash[id] ) {
-                _msgHash[id].msg.success instanceof Function && _msgHash[id].msg.success(id);
+                _msgHash[id].msg.success instanceof Function && _msgHash[id].msg.success(id, mid);
                 delete _msgHash[id];
             }
         };
