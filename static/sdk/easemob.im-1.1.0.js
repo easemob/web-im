@@ -1711,6 +1711,11 @@
             if ( this.isClosed() ) {
                 return;
             }
+            //TODO: maybe we need add precense ack?
+            //var id = msginfo.getAttribute('id') || '';
+            //this.sendReceiptsMessage({
+            //    id: id
+            //});
 
             var from = msginfo.getAttribute('from') || '';
             var to = msginfo.getAttribute('to') || '';
@@ -2005,6 +2010,10 @@
         connection.prototype.handleInviteMessage = function ( message ) {
             var form = null;
             var invitemsg = message.getElementsByTagName('invite');
+            var id = message.getAttribute('id') || '';
+            this.sendReceiptsMessage({
+                id: id
+            });
 
             if ( invitemsg && invitemsg.length > 0 ) {
                 var fromJid = invitemsg[0].getAttribute('from');
