@@ -1503,7 +1503,7 @@
             }
 
             var options = {
-                to : conn.domain,
+                to : me.domain,
                 type : "normal"
             };
             me.heartBeatID = setInterval(function () {
