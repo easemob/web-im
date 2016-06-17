@@ -512,14 +512,11 @@ var handleClosed = function() {
 
 //easemobwebim-sdk中收到联系人订阅请求的处理方法，具体的type值所对应的值请参考xmpp协议规范
 var handlePresence = function(e) {
-	if (e.type == 'unavailable') {
-		var el = null;
-
-		if (e.chatroom && e.destroy) {
-			el = document.getElementById(chatRoomMark + e.from)
-		} else {
-			el = document.getElementById(groupFlagMark + e.from)
-		}
+	if ( e.type === 'leaveGroup' ) {//群组被踢
+		curRoomId = null;
+		curChatUserId = null;
+		$('#' + curUserId + '-' + groupFlagMark + e.from).remove();
+		var el = document.getElementById(groupFlagMark + e.from)
 		el && $(el).remove();
 		return;
 	}
@@ -567,6 +564,54 @@ var handlePresence = function(e) {
 	//（订阅者的请求被拒绝或以前的订阅被取消），即对方单向的删除了好友
 	if (e.type == 'unsubscribed') {
 		delFriend(e.from);
+		return;
+	}
+
+	//加入聊天室成功
+	if ( e.type == 'joinChatRoomSuccess' ) {
+		curChatRoomId = e.from;
+		appendMsg(curUserId, chatRoomMark + e.from, '聊天室加入成功', true);
+		return;
+	}
+	//加入聊天室失败
+	if ( e.type == 'joinChatRoomFailed' ) {
+		appendMsg(curUserId, chatRoomMark + e.from, '聊天室加入失败', true);
+		if ( curChatRoomId &&  curChatRoomId == e.from) {
+			curChatRoomId = null;
+		}
+		curChatUserId = null;
+		return;
+	}
+	//退出聊天室
+	if ( e.type == 'leaveChatRoom' ) {
+		appendMsg(curUserId, chatRoomMark + e.from, '退出聊天室', true);
+		if ( curChatRoomId &&  curChatRoomId == e.from) {
+			curChatRoomId = null;
+		}
+		curChatUserId = null;
+		return;
+	}
+	//聊天室和群组被删除
+	if ( e.type == 'deleteGroupChat' ) {
+		var targetTmp1 = $('#' + curUserId + '-' + chatRoomMark + e.from),
+			targetTmp2 = $('#' + curUserId + '-' + groupFlagMark + e.from),
+			target = null;
+
+		if ( targetTmp1.length ) {
+			appendMsg(curUserId, chatRoomMark + e.from, '聊天室已被删除', true);
+			target = targetTmp1;
+			if ( curChatRoomId &&  curChatRoomId == e.from) {
+				curChatRoomId = null;
+			}
+			$('#' + chatRoomMark + e.from).remove();
+		} else if ( targetTmp2.length ) {
+			appendMsg(curUserId, groupFlagMark + e.from, '群组已被删除', true);
+			target = targetTmp2;
+			curRoomId = null;
+			$('#' + groupFlagMark + e.from).remove();
+		}
+		curChatUserId = null;
+		setTimeout(function () { target.remove(); }, 1000);
 		return;
 	}
 };
@@ -878,7 +923,7 @@ var showContactChatDiv = function(chatUserId) {
 		$("#roomMemberImg").css('display', 'block');
 	} else if (chatUserId.indexOf(chatRoomMark) >= 0) {
 		dispalyTitle = "聊天室" + $(contactLi).attr('displayname');
-		curRoomId = $(contactLi).attr('roomid');
+		curChatRoomId = $(contactLi).attr('roomid');
 		$("#roomMemberImg").css('display', 'block');
 	} else {
 		dispalyTitle = "与" + chatUserId + "聊天中";
@@ -904,9 +949,10 @@ var chooseContactDivClick = function(li) {
 
 	if ( curChatRoomId && curChatRoomId != roomId ) {//切换时，退出当前聊天室
 		var source = document.getElementById(curUserId + '-' + chatRoomMark + curChatRoomId);
-		source && (source.innerHTML = '');
+		source && (source.innerHTML = '', source.style.display = 'none');
+		var clearId = curChatRoomId;
 		conn.quitChatRoom({
-			roomId : curRoomId
+			roomId : curChatRoomId
 		});
 		curChatRoomId = null;
 	}
@@ -918,6 +964,7 @@ var chooseContactDivClick = function(li) {
 		$(li).attr("joined", "true");
 	} else if ( $(li).attr("type") === chatRoomMark ) {
 		curChatRoomId = roomId;
+		appendMsg(curUserId, chatRoomMark + roomId, '正在加入聊天室...', true);
 		conn.joinChatRoom({
 			roomId : roomId
 		});
@@ -1035,9 +1082,10 @@ var sendText = function() {
 		options.type = groupFlagMark;
 		options.to = curRoomId;
 	} else if (curChatUserId.indexOf(chatRoomMark) >= 0) {
+
 		options.type = groupFlagMark;
 		options.roomType = chatRoomMark;
-		options.to = curRoomId;
+		options.to = curChatRoomId;
 	}
 
 	//easemobwebim-sdk发送文本消息的方法 to为发送给谁，meg为文本消息对象
@@ -1058,13 +1106,12 @@ var pictype = {
 	"png" : true,
 	"bmp" : true
 };
-var send = function ( e ) {
-	var e = (e || window.event),
-		tar = e.target || e.srcElement;
+var send = function () {
 
 	var fI = $('#fileInput');
-	fI.val('').attr('data-type', tar.getAttribute('type')).click();
+	fI.val('').attr('data-type', this.getAttribute('type')).click();
 };
+$('#sendPicBtn, #sendAudioBtn, #sendFileBtn').on('click', send);
 $('#fileInput').on('change', function() {
 
 	switch ( this.getAttribute('data-type') ) {
@@ -1139,7 +1186,7 @@ var sendPic = function() {
 		} else if (curChatUserId.indexOf(chatRoomMark) >= 0) {
 			opt.type = groupFlagMark;
 			opt.roomType = chatRoomMark;
-			opt.to = curRoomId;
+			opt.to = curChatRoomId;
 		}
 		conn.sendPicture(opt);
 		return;
@@ -1210,9 +1257,10 @@ var sendAudio = function() {
 			opt.type = groupFlagMark;
 			opt.to = curRoomId;
 		} else if (curChatUserId.indexOf(chatRoomMark) >= 0) {
+			
 			opt.type = groupFlagMark;
 			opt.roomType = chatRoomMark;
-			opt.to = curRoomId;
+			opt.to = curChatRoomId;
 		}
 		conn.sendAudio(opt);
 		return;
@@ -1273,7 +1321,7 @@ var sendFile = function() {
 		} else if (curChatUserId.indexOf(chatRoomMark) >= 0) {
 			opt.type = groupFlagMark;
 			opt.roomType = chatRoomMark;
-			opt.to = curRoomId;
+			opt.to = curChatRoomId;
 		}
 		conn.sendFile(opt);
 		return;
@@ -1342,7 +1390,8 @@ var handleAudioMessage = function(message) {
 	
 	var audio = document.createElement("audio");
 	audio.controls = "controls";
-	audio.src = message.url;
+	audio.innerHTML = "当前浏览器不支持播放此音频:" + filename;
+	//audio.src = message.url;
 
 	appendMsg(from, contactDivId, {
 		data : [ {
@@ -1351,7 +1400,30 @@ var handleAudioMessage = function(message) {
 			data : audio,
 			audioShim: !window.Audio
 		} ]
-	});
+	});/**/
+
+	var options = message;
+	options.onFileDownloadComplete = function(response, xhr) {
+		var objectURL = Easemob.im.Helper.parseDownloadResponse.call(this, response);
+		if (Easemob.im.Helper.getIEVersion != 9 && window.Audio) {
+			audio.onload = function() {
+				audio.onload = null;
+				window.URL && window.URL.revokeObjectURL && window.URL.revokeObjectURL(audio.src);
+			};
+			audio.onerror = function() {
+				audio.onerror = null;
+			};
+			audio.src = objectURL;
+			return;
+		}
+	};
+	options.onFileDownloadError = function(e) {
+		appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
+	};
+	options.headers = {
+		"Accept" : "audio/mp3"
+	};
+	Easemob.im.Helper.download(options);
 };
 //处理收到文件消息
 var handleFileMessage = function(message) {
@@ -1385,14 +1457,19 @@ var handleVideoMessage = function(message) {
 		contactDivId = mestype + message.to;
 	}
 	var options = message;
-	options.onFileDownloadComplete = function(response, xhr) {
-		var spans = "收到视频消息:" + filename;
-		appendMsg(from, contactDivId, spans);
-	};
-	options.onFileDownloadError = function(e) {
-		appendMsg(from, contactDivId, e.msg + ",下载音频" + filename + "失败");
-	};
-	Easemob.im.Helper.download(options);
+	
+	var video = document.createElement("video");
+	video.controls = "controls";
+	video.src = message.url;
+	video.innerHTML = "收到视频消息:" + options.filename + ', 当前浏览器不支持video，无法播放';
+
+	appendMsg(from, contactDivId, {
+		data : [ {
+			type : 'video',
+			filename : filename || '',
+			data : video
+		} ]
+	});
 };
 var handleLocationMessage = function(message) {
 	var from = message.from;
@@ -1483,7 +1560,7 @@ var handleChatRoomMessage = function (contact) {
 	return true;
 };
 //显示聊天记录的统一处理方法
-var appendMsg = function(who, contact, message) {
+var appendMsg = function(who, contact, message, onlyPrompt) {
 	if ( !handleChatRoomMessage(contact) ) { return; }
 	//if ( !contact.indexOf(chatRoomMark) > -1 ) { return; }
 
@@ -1501,7 +1578,7 @@ var appendMsg = function(who, contact, message) {
 	} else {
 		localMsg = message.data;
 	}
-	var headstr = [ "<p1>" + who + "   <span></span>" + "   </p1>",
+	var headstr = onlyPrompt ? ["<p1>" + message + "</p1>"] : [ "<p1>" + who + "   <span></span>" + "   </p1>",
 			"<p2>" + getLoacalTimeString() + "<b></b><br/></p2>" ];
 	var header = $(headstr.join(''))
 	var lineDiv = document.createElement("div");
@@ -1509,8 +1586,10 @@ var appendMsg = function(who, contact, message) {
 		var ele = header[i];
 		lineDiv.appendChild(ele);
 	}
-	var messageContent = localMsg;
-	for (var i = 0; i < messageContent.length; i++) {
+	var messageContent = localMsg,
+		flg = onlyPrompt ? 0 : messageContent.length;
+
+	for (var i = 0; i < flg; i++) {
 		var msg = messageContent[i];
 		var type = msg.type;
 		var data = msg.data;
@@ -1550,7 +1629,7 @@ var appendMsg = function(who, contact, message) {
 	if (curChatUserId == null) {
 		setCurrentContact(contact);
 		if (time < 1) {
-			$('#accordion3').click();
+			//$('#accordion3').click();
 			time++;
 		}
 	}
@@ -1578,7 +1657,9 @@ var appendMsg = function(who, contact, message) {
 		}
 	}
 	var msgContentDiv = getContactChatDiv(contactDivId);
-	if (curUserId == who) {
+	if ( onlyPrompt ) {
+		lineDiv.style.textAlign = "center";
+	} else if (curUserId == who) {
 		lineDiv.style.textAlign = "right";
 	} else {
 		lineDiv.style.textAlign = "left";
@@ -1768,7 +1849,7 @@ var showRoomMember = function showRoomMember() {
 		return;
 	}
 	groupQuering = true;
-	queryOccupants(curRoomId);
+	queryOccupants(curChatRoomId ? curChatRoomId : curRoomId);
 };
 //根据roomId查询room成员列表
 var queryOccupants = function queryOccupants(roomId) {

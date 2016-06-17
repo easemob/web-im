@@ -1,6 +1,6 @@
 /**************************************************************************
 ***                             Easemob WebIm Js SDK                    ***
-***                             v1.1                                  ***
+***                             v1.1.0                                  ***
 **************************************************************************/
 /**
  * Module1: Utility
@@ -17,7 +17,7 @@
 
     var Easemob = Easemob || {};
     Easemob.im = Easemob.im || {};
-    Easemob.im.version = "1.1";
+    Easemob.im.version = "1.1.0";
 
     var https = location.protocol === 'https:';
 
@@ -1030,6 +1030,42 @@
      */
     var Connection = (function () {
 
+		var _networkSt;
+		var _listenNetwork = function ( onlineCallback, offlineCallback ) {
+
+			if ( window.addEventListener ) {
+				window.addEventListener('online', onlineCallback);
+				window.addEventListener('offline', offlineCallback);
+
+			} else if ( window.attachEvent ) {
+				if ( document.body ) {
+					document.body.attachEvent('onoffline', offlineCallback);
+					document.body.attachEvent('onoffline', offlineCallback);
+				} else {
+					window.attachEvent('load', function () {
+						document.body.attachEvent('onoffline', offlineCallback);
+						document.body.attachEvent('onoffline', offlineCallback);
+					});
+				}
+			} else {
+				/*var onlineTmp = window.ononline;
+				var offlineTmp = window.onoffline;
+
+				window.attachEvent('ononline', function () {
+					try {
+						typeof onlineTmp === 'function' && onlineTmp();
+					} catch ( e ) {}
+					onlineCallback();
+				});
+				window.attachEvent('onoffline', function () {
+					try {
+						typeof offlineTmp === 'function' && offlineTmp();
+					} catch ( e ) {}
+					offlineCallback();
+				});*/
+			}
+		};
+
         var _parseRoomFn = function ( result ) {
             var rooms = [];
             var items = result.getElementsByTagName("item");
@@ -1216,6 +1252,14 @@
             return msgtype;
         };
 
+		var _handleQueueMessage = function ( conn ) {
+			for ( var i in _msgHash ) {
+				if ( _msgHash.hasOwnProperty(i) ) {
+					_msgHash[i].send(conn);
+				}
+			}
+		};
+
         var _login2ImCallback = function ( status, msg, conn ) {
             if ( status == Strophe.Status.CONNFAIL ) {
                 conn.onError({
@@ -1272,13 +1316,16 @@
                     supportSedMessage.push(EASEMOB_IM_MESSAGE_REC_AUDIO_FILE);
                 }
                 conn.notifyVersion();
+				conn.retry && _handleQueueMessage(conn);
                 conn.onOpened({
                     canReceive: supportRecMessage
                     , canSend: supportSedMessage
                     , accessToken: conn.context.accessToken
                 });
+                conn.heartBeat(conn);
             } else if ( status == Strophe.Status.DISCONNECTING ) {
                 if ( conn.isOpened() ) {// 不是主动关闭
+                    conn.stopHeartBeat(conn);
                     conn.context.status = STATUS_CLOSING;
                     conn.onError({
                         type: EASEMOB_IM_CONNCTION_SERVER_CLOSE_ERROR
@@ -1376,7 +1423,7 @@
         }
 
 		var _getXmppUrl = function ( baseUrl, https ) {
-			if ( /^(ws|http)s:\/\/?/.test(baseUrl) ) {
+			if ( /^(ws|http)s?:\/\/?/.test(baseUrl) ) {
 				return baseUrl;
 			}
 
@@ -1441,6 +1488,10 @@
             this.onError = options.onError || EMPTYFN;
             this.onReceivedMessage = options.onReceivedMessage || EMPTYFN;
             this.onInviteMessage = options.onInviteMessage || EMPTYFN;
+            this.onOffline = options.onOffline || EMPTYFN;
+            this.onOnline = options.onOnline || EMPTYFN;
+
+			_listenNetwork(this.onOnline, this.onOffline);
         }
 
         connection.prototype.heartBeat = function ( conn ) {
@@ -1616,6 +1667,7 @@
             if ( this.isClosed() || this.isClosing() ) {
                 return;
             }
+            this.stopHeartBeat(this);
             this.context.status = STATUS_CLOSING;
             this.context.stropheConn.disconnect();
         };
@@ -1659,6 +1711,11 @@
             if ( this.isClosed() ) {
                 return;
             }
+            //TODO: maybe we need add precense ack?
+            //var id = msginfo.getAttribute('id') || '';
+            //this.sendReceiptsMessage({
+            //    id: id
+            //});
 
             var from = msginfo.getAttribute('from') || '';
             var to = msginfo.getAttribute('to') || '';
@@ -1672,7 +1729,6 @@
                 , toJid: to
                 , type: type
 				, chatroom: msginfo.getElementsByTagName('roomtype').length ? true : false
-				, destroy: msginfo.getElementsByTagName('destroy').length ? true : false
             };
 
             var showTags = msginfo.getElementsByTagName("show");
@@ -1684,6 +1740,7 @@
             if ( statusTags && statusTags.length > 0 ) {
                 var statusTag = statusTags[0];
                 info.status = Strophe.getText(statusTag);
+                info.code = statusTag.getAttribute('code');
             }
 
             var priorityTags = msginfo.getElementsByTagName("priority");
@@ -1691,6 +1748,50 @@
                 var priorityTag = priorityTags[0];
                 info.priority  = Strophe.getText(priorityTag);
             }
+
+			var error = msginfo.getElementsByTagName("error");
+            if ( error && error.length > 0 ) {
+                var error = error[0];
+                info.error = {
+					code: error.getAttribute('code')
+				};
+            }
+
+			var destroy = msginfo.getElementsByTagName("destroy");
+            if ( destroy && destroy.length > 0 ) {
+                var destroy = destroy[0];
+                info.destroy = true;
+
+				var reason = destroy.getElementsByTagName("reason");
+				if ( reason && reason.length > 0 ) {
+					info.reason = Strophe.getText(reason[0]);
+				}
+            }
+
+			if ( info.chatroom ) {
+				var reflectUser = from.slice(from.lastIndexOf('/') + 1);
+
+				if ( reflectUser === this.context.userId ) {
+					if ( info.type === '' && !info.code ) {
+						info.type = 'joinChatRoomSuccess';
+					} else if ( info.type === 'unavailable' ) {
+						if ( !info.status ) {//web正常退出
+							info.type = 'leaveChatRoom';
+						} else if ( info.code == 110 ) {//app先退或被管理员踢
+							info.type = 'leaveChatRoom';
+						} else if ( info.error && info.error.code == 406 ) {//聊天室人已满，无法加入
+							info.type = 'joinChatRoomFailed';
+						}
+					}
+				}
+			} else if ( type === 'unavailable' ) {//聊天室被删除没有roomtype, 需要区分群组被踢和解散
+				if ( info.destroy ) {//群组和聊天室被删除
+					info.type = 'deleteGroupChat';
+				} else if ( info.code == 307 ) {//群组被踢
+					info.type = 'leaveGroup';
+				}
+			}
+			
             this.onPresence(info,msginfo);
         };
 
@@ -1888,7 +1989,8 @@
             this.onReceivedMessage(message);
 
             var rcv = message.getElementsByTagName('received'),
-                id = undefined;
+                id,
+                mid;
 
             if ( rcv.length > 0 ) {
                 if ( rcv[0].childNodes && rcv[0].childNodes.length > 0 ) {
@@ -1896,10 +1998,11 @@
                 } else {
                     id = rcv[0].innerHTML || rcv[0].innerText;
                 }
+                mid = rcv[0].getAttribute('mid');
             }
             
             if ( _msgHash[id] ) {
-                _msgHash[id].msg.success instanceof Function && _msgHash[id].msg.success(id);
+                _msgHash[id].msg.success instanceof Function && _msgHash[id].msg.success(id, mid);
                 delete _msgHash[id];
             }
         };
@@ -1907,6 +2010,10 @@
         connection.prototype.handleInviteMessage = function ( message ) {
             var form = null;
             var invitemsg = message.getElementsByTagName('invite');
+            var id = message.getAttribute('id') || '';
+            this.sendReceiptsMessage({
+                id: id
+            });
 
             if ( invitemsg && invitemsg.length > 0 ) {
                 var fromJid = invitemsg[0].getAttribute('from');
