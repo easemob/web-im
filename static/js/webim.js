@@ -317,6 +317,11 @@ $(document).ready(function() {
 	conn.listen({
 		//当连接成功时的回调方法
 		onOpened : function() {
+
+            /*******************************************/
+		    conn.setPresence();//设置用户上线状态，必须调用
+            /*******************************************/
+
 			handleOpen(conn);
 		},
 		//当连接关闭时的回调方法
@@ -457,11 +462,8 @@ var handleOpen = function(conn) {
 							$('#accordion2').click();
 						}
 					}
-					conn.setPresence();//设置用户上线状态，必须调用
 				},
-				error : function(e) {
-					conn.setPresence();//设置用户上线状态，必须调用
-				}
+				error : function(e) {}
 			});
 		}
 	});
@@ -689,7 +691,7 @@ var handleError = function(e) {
 			alert(msg);
 		}
 	}
-	conn.stopHeartBeat(conn);
+	conn.stopHeartBeat();
 };
 //判断要操作的联系人和当前联系人列表的关系
 var contains = function(roster, contact) {
@@ -796,7 +798,7 @@ var showlogin = function() {
 	$('#regist-div-modal').modal('hide');
 };
 var logout = function() {
-	conn.stopHeartBeat(conn);
+	conn.stopHeartBeat();
 	conn.close();
 	clearPageSign();
 };
