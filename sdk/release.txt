@@ -1,6 +1,6 @@
 easemob webim sdk已支持如下功能：
-1.sdk本身已支持IE8+、FireFox、Chrome、Safari之间文本、表情、图片、音频消息相互发送
-2.sdk支持web端之间，web端与app端相互添加、删除好友功能
+1.sdk本身已支持IE10+、FireFox、Chrome、Safari之间文本、表情、图片、音频消息相互发送
+2.sdk支持web端之间，web端与android端相互添加、删除好友功能
 3.sdk支持与ios、android sdk见相互发送文本、图片、音频消息
 4.sdk提供部分公共方法，具体参见quickstart.md
 5.sdk对于消息的处理方式如下：
@@ -80,13 +80,3 @@ Bug Fix：
 8. 改进code，支持多环境快速调试。
 
 
-版本：V1.1 2016-4-6
-
-功能改进：
-1. 将表情包移除sdk，变为可自定义导入配置。
-2. 增加XMPP连接多resource支持的参数。
-3. 对于不支持wss，如qqX5内核浏览器，自动降级为https long polling。
-4. 增加聊天室功能，在线聊天室列表，加入聊天室，退出聊天室等接口 
-5. 与之前版本sdk部分api已不兼容，添加shim.js，做降级支持
-6. 新增消息发送的成功失败回调
-7. 重整目录结构，优化代码，bug fix

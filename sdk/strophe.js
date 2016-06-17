@@ -553,8 +553,8 @@ return {
  *  Returns:
  *    The bound function.
  */
-if (!Function.prototype.stropheBind) {
-    Function.prototype.stropheBind = function (obj /*, arg1, arg2, ... */)
+if (!Function.prototype.bind) {
+    Function.prototype.bind = function (obj /*, arg1, arg2, ... */)
     {
         var func = this;
         var _slice = Array.prototype.slice;
@@ -2197,7 +2197,7 @@ Strophe.Connection = function (service, options)
     this.maxRetries = 5;
 
     // setup onIdle callback every 1/10th of a second
-    this._idleTimeout = setTimeout(this._onIdle.stropheBind(this), 100);
+    this._idleTimeout = setTimeout(this._onIdle.bind(this), 100);
 
     // initialize plugins
     for (var k in Strophe._connectionPlugins) {
@@ -2706,7 +2706,7 @@ Strophe.Connection.prototype = {
 
         this._proto._sendRestart();
 
-        this._idleTimeout = setTimeout(this._onIdle.stropheBind(this), 100);
+        this._idleTimeout = setTimeout(this._onIdle.bind(this), 100);
     },
 
     /** Function: addTimedHandler
@@ -2855,7 +2855,7 @@ Strophe.Connection.prototype = {
             }
             // setup timeout handler
             this._disconnectTimeout = this._addSysTimedHandler(
-                3000, this._onDisconnectTimeout.stropheBind(this));
+                3000, this._onDisconnectTimeout.bind(this));
             this._proto._disconnect(pres);
         } else {
             Strophe.info("Disconnect was called before Strophe connected to the server");
@@ -3167,13 +3167,13 @@ Strophe.Connection.prototype = {
         if (!matched[i].test(this)) continue;
 
         this._sasl_success_handler = this._addSysHandler(
-          this._sasl_success_cb.stropheBind(this), null,
+          this._sasl_success_cb.bind(this), null,
           "success", null, null);
         this._sasl_failure_handler = this._addSysHandler(
-          this._sasl_failure_cb.stropheBind(this), null,
+          this._sasl_failure_cb.bind(this), null,
           "failure", null, null);
         this._sasl_challenge_handler = this._addSysHandler(
-          this._sasl_challenge_cb.stropheBind(this), null,
+          this._sasl_challenge_cb.bind(this), null,
           "challenge", null, null);
 
         this._sasl_mechanism = new matched[i]();
@@ -3206,7 +3206,7 @@ Strophe.Connection.prototype = {
         } else {
           // fall back to legacy authentication
           this._changeConnectStatus(Strophe.Status.AUTHENTICATING, null);
-          this._addSysHandler(this._auth1_cb.stropheBind(this), null, null,
+          this._addSysHandler(this._auth1_cb.bind(this), null, null,
                               null, "_auth_1");
 
           this.send($iq({
@@ -3268,7 +3268,7 @@ Strophe.Connection.prototype = {
         }
         iq.up().c('resource', {}).t(Strophe.getResourceFromJid(this.jid));
 
-        this._addSysHandler(this._auth2_cb.stropheBind(this), null,
+        this._addSysHandler(this._auth2_cb.bind(this), null,
                             null, null, "_auth_2");
 
         this.send(iq.tree());
@@ -3329,15 +3329,15 @@ Strophe.Connection.prototype = {
             while (handlers.length) {
                 this.deleteHandler(handlers.pop());
             }
-            this._sasl_auth1_cb.stropheBind(this)(elem);
+            this._sasl_auth1_cb.bind(this)(elem);
             return false;
         };
         streamfeature_handlers.push(this._addSysHandler(function(elem) {
-            wrapper.stropheBind(this)(streamfeature_handlers, elem);
-        }.stropheBind(this), null, "stream:features", null, null));
+            wrapper.bind(this)(streamfeature_handlers, elem);
+        }.bind(this), null, "stream:features", null, null));
         streamfeature_handlers.push(this._addSysHandler(function(elem) {
-            wrapper.stropheBind(this)(streamfeature_handlers, elem);
-        }.stropheBind(this), Strophe.NS.STREAM, "features", null, null));
+            wrapper.bind(this)(streamfeature_handlers, elem);
+        }.bind(this), Strophe.NS.STREAM, "features", null, null));
 
         // we must send an xmpp:restart now
         this._sendRestart();
@@ -3376,7 +3376,7 @@ Strophe.Connection.prototype = {
             this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
             return false;
         } else {
-            this._addSysHandler(this._sasl_bind_cb.stropheBind(this), null, null,
+            this._addSysHandler(this._sasl_bind_cb.bind(this), null, null,
                                 null, "_bind_auth_2");
 
             var resource = Strophe.getResourceFromJid(this.jid);
@@ -3425,7 +3425,7 @@ Strophe.Connection.prototype = {
                 this.jid = Strophe.getText(jidNode[0]);
 
                 if (this.do_session) {
-                    this._addSysHandler(this._sasl_session_cb.stropheBind(this),
+                    this._addSysHandler(this._sasl_session_cb.bind(this),
                                         null, null, null, "_session_auth_2");
 
                     this.send($iq({type: "set", id: "_session_auth_2"})
@@ -3635,7 +3635,7 @@ Strophe.Connection.prototype = {
 
         // reactivate the timer only if connected
         if (this.connected) {
-            this._idleTimeout = setTimeout(this._onIdle.stropheBind(this), 100);
+            this._idleTimeout = setTimeout(this._onIdle.bind(this), 100);
         }
     }
 };
@@ -3906,7 +3906,7 @@ Strophe.SASLSHA1.prototype.onChallenge = function(connection, challenge, test_cn
     responseText += ",p=" + Base64.encode(SHA1.binb2str(clientKey));
 
     return responseText;
-  }.stropheBind(this);
+  }.bind(this);
 
   return auth_str;
 };
@@ -3997,7 +3997,7 @@ Strophe.SASLMD5.prototype.onChallenge = function(connection, challenge, test_cno
   this.onChallenge = function ()
   {
       return "";
-  }.stropheBind(this);
+  }.bind(this);
 
   return responseText;
 };
@@ -4143,7 +4143,7 @@ Strophe.Request.prototype = {
         }
 
         // use Function.bind() to prepend ourselves as an argument
-        xhr.onreadystatechange = this.func.stropheBind(null, this);
+        xhr.onreadystatechange = this.func.bind(null, this);
 
         return xhr;
     }
@@ -4270,8 +4270,8 @@ Strophe.Bosh.prototype = {
 
         this._requests.push(
             new Strophe.Request(body.tree(),
-                                this._onRequestStateChange.stropheBind(
-                                    this, _connect_cb.stropheBind(this._conn)),
+                                this._onRequestStateChange.bind(
+                                    this, _connect_cb.bind(this._conn)),
                                 body.tree().getAttribute("rid")));
         this._throttledRequestHandler();
     },
@@ -4481,15 +4481,15 @@ Strophe.Bosh.prototype = {
     _no_auth_received: function (_callback)
     {
         if (_callback) {
-            _callback = _callback.stropheBind(this._conn);
+            _callback = _callback.bind(this._conn);
         } else {
-            _callback = this._conn._connect_cb.stropheBind(this._conn);
+            _callback = this._conn._connect_cb.bind(this._conn);
         }
         var body = this._buildBody();
         this._requests.push(
                 new Strophe.Request(body.tree(),
-                    this._onRequestStateChange.stropheBind(
-                        this, _callback.stropheBind(this._conn)),
+                    this._onRequestStateChange.bind(
+                        this, _callback.bind(this._conn)),
                     body.tree().getAttribute("rid")));
         this._throttledRequestHandler();
     },
@@ -4558,8 +4558,8 @@ Strophe.Bosh.prototype = {
             this._conn._data = [];
             this._requests.push(
                 new Strophe.Request(body.tree(),
-                                    this._onRequestStateChange.stropheBind( 
-                                        this, this._conn._dataRecv.stropheBind(this._conn)),
+                                    this._onRequestStateChange.bind(
+                                        this, this._conn._dataRecv.bind(this._conn)),
                                     body.tree().getAttribute("rid")));
             this._throttledRequestHandler();
         }
@@ -4881,8 +4881,8 @@ Strophe.Bosh.prototype = {
         }
 
         var req = new Strophe.Request(body.tree(),
-                                      this._onRequestStateChange.stropheBind(
-                                          this, this._conn._dataRecv.stropheBind(this._conn)),
+                                      this._onRequestStateChange.bind(
+                                          this, this._conn._dataRecv.bind(this._conn)),
                                       body.tree().getAttribute("rid"));
 
         this._requests.push(req);
@@ -4897,7 +4897,7 @@ Strophe.Bosh.prototype = {
     _send: function () {
         clearTimeout(this._conn._idleTimeout);
         this._throttledRequestHandler();
-        this._conn._idleTimeout = setTimeout(this._conn._onIdle.stropheBind(this._conn), 100);
+        this._conn._idleTimeout = setTimeout(this._conn._onIdle.bind(this._conn), 100);
     },
 
     /** PrivateFunction: _sendRestart
@@ -5121,10 +5121,10 @@ Strophe.Websocket.prototype = {
 
         // Create the new WobSocket
         this.socket = new WebSocket(this._conn.service, "xmpp");
-        this.socket.onopen = this._onOpen.stropheBind(this);
-        this.socket.onerror = this._onError.stropheBind(this);
-        this.socket.onclose = this._onClose.stropheBind(this);
-        this.socket.onmessage = this._connect_cb_wrapper.stropheBind(this);
+        this.socket.onopen = this._onOpen.bind(this);
+        this.socket.onerror = this._onError.bind(this);
+        this.socket.onclose = this._onClose.bind(this);
+        this.socket.onmessage = this._connect_cb_wrapper.bind(this);
     },
 
     /** PrivateFunction: _connect_cb
@@ -5214,7 +5214,7 @@ Strophe.Websocket.prototype = {
         } else {
             var string = this._streamWrap(message.data);
             var elem = new DOMParser().parseFromString(string, "text/xml").documentElement;
-            this.socket.onmessage = this._onMessage.stropheBind(this);
+            this.socket.onmessage = this._onMessage.bind(this);
             this._conn._connect_cb(elem, null, message.data);
         }
     },
@@ -5315,7 +5315,7 @@ Strophe.Websocket.prototype = {
         Strophe.error("Server did not send any auth methods");
         this._conn._changeConnectStatus(Strophe.Status.CONNFAIL, "Server did not send any auth methods");
         if (_callback) {
-            _callback = _callback.stropheBind(this._conn);
+            _callback = _callback.bind(this._conn);
             _callback();
         }
         this._conn._doDisconnect();
@@ -5470,7 +5470,7 @@ Strophe.Websocket.prototype = {
     _sendRestart: function ()
     {
         clearTimeout(this._conn._idleTimeout);
-        this._conn._onIdle.stropheBind(this._conn)();
+        this._conn._onIdle.bind(this._conn)();
     }
 };
 return Strophe;
