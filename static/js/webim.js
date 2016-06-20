@@ -119,7 +119,7 @@ var uploadShim = function ( fileInputId, type ) {
 					case 'aud':
 						sendAudio();
 						break;
-					case 'file':
+					default:
 						sendFile();
 						break;
 				}
@@ -1303,6 +1303,7 @@ var filetype = {
 	"amr" : true,
 	"avi" : true,
 	"jpg" : true,
+	"jpeg" : true,
 	"gif" : true,
 	"png" : true,
 	"bmp" : true,
@@ -1310,6 +1311,7 @@ var filetype = {
 	"rar" : true,
 	"doc" : true,
 	"docx" : true,
+	"txt" : true,
 	"pdf" : true
 };
 //发送文件消息时调用的方法
@@ -1338,7 +1340,7 @@ var sendFile = function() {
 				appendMsg(curUserId, to, messageContent);
 			},
 			onFileUploadComplete : function(data) {
-				var messageContent = "发送文件" + data.filename;
+				var messageContent = "发送文件" + (filename || data.filename);
 				appendMsg(curUserId, to, messageContent);
 			},
 			flashUpload: flashFileUpload
