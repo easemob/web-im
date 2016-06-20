@@ -1,4 +1,11 @@
 /** custom login button **/
+.dropdown-menu li {
+    cursor: pointer;
+    padding-left: 10px;
+}
+.dropdown-menu li:hover {
+    background-color: #eee;
+}
 .flatbtn-blu {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
