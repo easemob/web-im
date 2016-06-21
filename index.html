@@ -6,8 +6,8 @@
 <title>WebIM-DEMO</title>
 <!--sdk-->
 <script src="static/sdk/strophe.js"></script>
-<script src="static/sdk/easemob.im-1.1.0.js"></script>
-<script src="static/sdk/easemob.im-1.1.0.shim.js"></script><!--兼容老版本sdk需引入此文件-->
+<script src="static/sdk/easemob.im-1.1.1.js"></script>
+<script src="static/sdk/easemob.im.shim.js"></script><!--兼容老版本(1.0.7含以前版本)sdk需引入此文件-->
 
 <!--config-->
 <script src="static/js/easemob.im.config.js"></script>
@@ -97,10 +97,10 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="javascript:;" onclick="showAddFriend()">添加好友</a></li>
-                            <li><a href="javascript:;" onclick="showDelFriend()">删除好友</a></li>
+                            <li onclick="showAddFriend()">添加好友</li>
+                            <li onclick="showDelFriend()">删除好友</li>
                             <li class="divider"></li>
-                            <li><a href="javascript:;" onclick="logout();return false;">退出</a></li>
+                            <li onclick="logout();">退出</li>
                         </ul>
                     </div>
                 </span>
@@ -195,8 +195,8 @@
 					<a id='sendPicBtn' class="chat02_title_btn ctb03" title="选择图片" type='img' href="#"></a>
 					<input id='sendAudioInput' style='display:none'/>
 					<a id='sendAudioBtn' class="chat02_title_btn ctb02" title="选择语音" href="#" type='audio'></a>
-					<!--<input id='sendFileInput' class='emim-hide'/>
-					<a id='sendFileBtn' class="chat02_title_btn ctb04" title="选择文件" href="#"></a>-->
+					<input id='sendFileInput' class='emim-hide'/>
+					<a id='sendFileBtn' class="chat02_title_btn ctb04" title="选择文件" href="#"></a>
 					<label id="chat02_title_t"></label>
                     <div id="wl_faces_box" class="wl_faces_box">
                         <div class="wl_faces_content">
@@ -281,13 +281,10 @@
                 <h3>订阅通知</h3>
             </div>
             <div class="modal-body">
-                <div id="confirm-block-footer-body"></div>
+                <ul id="confirm-block-footer-body"></ul>
             </div>
             <div class="modal-footer">
-                <button id="confirm-block-footer-confirmButton"
-                    class="btn btn-primary">同意</button>
-                <button id="confirm-block-footer-cancelButton" class="btn"
-                    data-dismiss="modal">拒绝</button>
+                <button id="confirm-block-footer-cancelButton" class="btn" data-dismiss="modal">关闭</button>
             </div>
         </div>
 

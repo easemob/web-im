@@ -119,7 +119,7 @@ var uploadShim = function ( fileInputId, type ) {
 					case 'aud':
 						sendAudio();
 						break;
-					case 'file':
+					default:
 						sendFile();
 						break;
 				}
@@ -516,7 +516,9 @@ var handleClosed = function() {
 var handlePresence = function(e) {
 	if ( e.type === 'leaveGroup' ) {//群组被踢
 		curRoomId = null;
-		curChatUserId = null;
+        if ( curChatUserId === e.from ) {
+            curChatUserId = null;
+        }
 		$('#' + curUserId + '-' + groupFlagMark + e.from).remove();
 		var el = document.getElementById(groupFlagMark + e.from)
 		el && $(el).remove();
@@ -524,6 +526,7 @@ var handlePresence = function(e) {
 	}
 	//（发送者希望订阅接收者的出席信息），即别人申请加你为好友
 	if (e.type == 'subscribe') {
+        var noticWrapper = $('#confirm-block-footer-body');
 		if (e.status) {
 			if (e.status.indexOf('resp:true') > -1) {
 				agreeAddFriend(e.from);
@@ -531,8 +534,8 @@ var handlePresence = function(e) {
 			}
 		}
 		var subscribeMessage = e.from + "请求加你为好友。\n验证消息：" + e.status;
-		showNewNotice(subscribeMessage);
-		$('#confirm-block-footer-confirmButton').click(function() {
+		var cur = showNewNotice(subscribeMessage);
+		cur.find('.confirmButton').click(function() {
 			//同意好友请求
 			agreeAddFriend(e.from);//e.from用户名
 			//反向添加对方好友
@@ -540,10 +543,19 @@ var handlePresence = function(e) {
 				to : e.from,
 				message : "[resp:true]"
 			});
-			$('#confirm-block-div-modal').modal('hide');
+            cur.remove();
+            if ( !noticWrapper.html() ) {
+			    $('#confirm-block-div-modal').modal('hide');
+            }
+		});
+        cur.find('.cancelButton').click(function() {
+			rejectAddFriend(e.from);//拒绝加为好友
+            cur.remove();
+            if ( !noticWrapper.html() ) {
+			    $('#confirm-block-div-modal').modal('hide');
+            }
 		});
 		$('#confirm-block-footer-cancelButton').click(function() {
-			rejectAddFriend(e.from);//拒绝加为好友
 			$('#confirm-block-div-modal').modal('hide');
 		});
 		return;
@@ -572,6 +584,7 @@ var handlePresence = function(e) {
 	//加入聊天室成功
 	if ( e.type == 'joinChatRoomSuccess' ) {
 		curChatRoomId = e.from;
+        curChatUserId || (curChatUserId = chatRoomMark + e.from);
 		appendMsg(curUserId, chatRoomMark + e.from, '聊天室加入成功', true);
 		return;
 	}
@@ -581,7 +594,9 @@ var handlePresence = function(e) {
 		if ( curChatRoomId &&  curChatRoomId == e.from) {
 			curChatRoomId = null;
 		}
-		curChatUserId = null;
+		if ( curChatUserId === 'chatroom' + e.from ) {
+            curChatUserId = null;
+        }
 		return;
 	}
 	//退出聊天室
@@ -590,7 +605,9 @@ var handlePresence = function(e) {
 		if ( curChatRoomId &&  curChatRoomId == e.from) {
 			curChatRoomId = null;
 		}
-		curChatUserId = null;
+        if ( curChatUserId === 'chatroom' + e.from ) {
+            curChatUserId = null;
+        }
 		return;
 	}
 	//聊天室和群组被删除
@@ -606,13 +623,18 @@ var handlePresence = function(e) {
 				curChatRoomId = null;
 			}
 			$('#' + chatRoomMark + e.from).remove();
+            if ( curChatUserId === 'chatroom' + e.from ) {
+                curChatUserId = null;
+            }
 		} else if ( targetTmp2.length ) {
 			appendMsg(curUserId, groupFlagMark + e.from, '群组已被删除', true);
 			target = targetTmp2;
 			curRoomId = null;
 			$('#' + groupFlagMark + e.from).remove();
+            if ( curChatUserId === e.from ) {
+                curChatUserId = null;
+            }
 		}
-		curChatUserId = null;
 		setTimeout(function () { target.remove(); }, 1000);
 		return;
 	}
@@ -631,15 +653,13 @@ var handleRoster = function(rosterMsg) {
 				subscription : "to"
 			});
 		}
-		//app端删除好友后web端要同时判断状态from做删除对方的操作
-		if (contact.subscription == 'from') {
+		if (contact.subscription == 'from' || contact.subscription == 'both') {
 			toRoster.push({
 				name : contact.name,
 				jid : contact.jid,
 				subscription : "from"
 			});
-		}
-		if (contact.subscription == 'both') {
+
 			var isexist = contains(bothRoster, contact);
 			if (!isexist) {
 				var lielem = $('<li>').attr({
@@ -947,16 +967,32 @@ var hiddenContactChatDiv = function(chatUserId) {
 //切换联系人聊天窗口div
 var chooseContactDivClick = function(li) {
 	var chatUserId = li.id,
-		roomId = $(li).attr("roomId");
+		roomId = $(li).attr("roomId"),
+        isChatroom = roomId && $(li).attr("type") === chatRoomMark;
 
-	if ( curChatRoomId && curChatRoomId != roomId ) {//切换时，退出当前聊天室
-		var source = document.getElementById(curUserId + '-' + chatRoomMark + curChatRoomId);
-		source && (source.innerHTML = '', source.style.display = 'none');
-		var clearId = curChatRoomId;
-		conn.quitChatRoom({
-			roomId : curChatRoomId
-		});
-		curChatRoomId = null;
+    if ( curChatRoomId ) {
+        if ( curChatRoomId === roomId ) {
+            return;
+        } else {//切换时，退出当前聊天室
+            $('#' + chatRoomMark + curChatRoomId).css({"background-color": ""});
+            hiddenContactChatDiv(curChatUserId);
+            var source = document.getElementById(curUserId + '-' + chatRoomMark + curChatRoomId);
+            source && (source.innerHTML = '', source.style.display = 'none');
+            var clearId = curChatRoomId;
+            conn.quitChatRoom({
+                roomId : curChatRoomId
+            });
+            curChatRoomId = null;
+        }
+	}
+
+    hiddenContactChatDiv(curChatUserId);
+    if ( isChatroom ) {
+        curChatUserId = null;
+    }
+    if (chatUserId != curChatUserId) {
+        showContactChatDiv(chatUserId);
+		isChatroom || (curChatUserId = chatUserId);
 	}
 
 	if ($(li).attr("type") == groupFlagMark && ('true' != $(li).attr("joined"))) {
@@ -972,15 +1008,6 @@ var chooseContactDivClick = function(li) {
 		});
 	}
 
-	if (chatUserId != curChatUserId) {
-		if (curChatUserId == null) {
-			showContactChatDiv(chatUserId);
-		} else {
-			showContactChatDiv(chatUserId);
-			hiddenContactChatDiv(curChatUserId);
-		}
-		curChatUserId = chatUserId;
-	}
 	//对默认的null-nouser div进行处理,走的这里说明联系人列表肯定不为空所以对默认的聊天div进行处理
 	$('#null-nouser').css({
 		"display" : "none"
@@ -1276,6 +1303,7 @@ var filetype = {
 	"amr" : true,
 	"avi" : true,
 	"jpg" : true,
+	"jpeg" : true,
 	"gif" : true,
 	"png" : true,
 	"bmp" : true,
@@ -1283,6 +1311,7 @@ var filetype = {
 	"rar" : true,
 	"doc" : true,
 	"docx" : true,
+	"txt" : true,
 	"pdf" : true
 };
 //发送文件消息时调用的方法
@@ -1311,7 +1340,7 @@ var sendFile = function() {
 				appendMsg(curUserId, to, messageContent);
 			},
 			onFileUploadComplete : function(data) {
-				var messageContent = "发送文件" + data.filename;
+				var messageContent = "发送文件" + (filename || data.filename);
 				appendMsg(curUserId, to, messageContent);
 			},
 			flashUpload: flashFileUpload
@@ -1629,7 +1658,7 @@ var appendMsg = function(who, contact, message, onlyPrompt) {
 		}
 	}
 	if (curChatUserId == null) {
-		setCurrentContact(contact);
+		onlyPrompt || setCurrentContact(contact);
 		if (time < 1) {
 			//$('#accordion3').click();
 			time++;
@@ -1699,8 +1728,13 @@ var showDelFriend = function() {
 };
 //消息通知操作时条用的方法
 var showNewNotice = function(message) {
-	$('#confirm-block-div-modal').modal('toggle');
-	$('#confirm-block-footer-body').html(message);
+    var modal = $('#confirm-block-div-modal'),
+        node = $("<li>" + message + "<button class='btn btn-primary confirmButton'>同意</button><button class='btn cancelButton'>拒绝</button></li>");
+
+	modal.hasClass('hide') && modal.modal('show');
+	$('#confirm-block-footer-body').append(node);
+
+    return node;
 };
 var showWarning = function(message) {
 	$('#notice-block-div').modal('toggle');

@@ -1,6 +1,6 @@
 /**************************************************************************
 ***                             Easemob WebIm Js SDK                    ***
-***                             v1.1.0                                  ***
+***                             v1.1.1                                  ***
 **************************************************************************/
 /**
  * Module1: Utility
@@ -17,7 +17,7 @@
 
     var Easemob = Easemob || {};
     Easemob.im = Easemob.im || {};
-    Easemob.im.version = "1.1.0";
+    Easemob.im.version = "1.1.1";
 
     var https = location.protocol === 'https:';
 
