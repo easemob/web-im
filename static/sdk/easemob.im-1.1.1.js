@@ -1825,9 +1825,9 @@
             var curJid = this.context.jid;
             var curUser = this.context.userId;
 
-            if ( from !== "" && from !== curJid && curUser !== name ) {
+            /*if ( !from || from === curJid ) {
                 return true;
-			}
+			}*/
 
             var iqresult = $iq({ type: 'result', id: id, from: curJid });
             this.sendCommand(iqresult.tree());
