@@ -285,7 +285,8 @@ a:hover {
 }
 
 .chat-content-p3 {
-	white-space: pre-wrap;
+    word-break: break-all;
+    display: inline-block;
 	border-radius: 5px;
 	background-color: #C0C0C0;
 	position: relative;
