@@ -540,7 +540,7 @@ var handlePresence = function(e) {
         
 		var subscribeMessage = e.from + "请求加你为好友。\n验证消息：" + e.status;
 		var cur = showNewNotice(subscribeMessage, e);
-		cur.find('.confirmButton').click(function() {
+		cur && cur.find('.confirmButton').click(function() {
 			//同意好友请求
 			agreeAddFriend(e.from);//e.from用户名
 			//反向添加对方好友
@@ -552,13 +552,15 @@ var handlePresence = function(e) {
             if ( !noticWrapper.html() ) {
 			    $('#confirm-block-div-modal').modal('hide');
             }
+            delete friendsSub[e.from];
 		});
-        cur.find('.cancelButton').click(function() {
+        cur && cur.find('.cancelButton').click(function() {
 			rejectAddFriend(e.from);//拒绝加为好友
             cur.remove();
             if ( !noticWrapper.html() ) {
 			    $('#confirm-block-div-modal').modal('hide');
             }
+            delete friendsSub[e.from];
 		});
 		$('#confirm-block-footer-cancelButton').click(function() {
 			$('#confirm-block-div-modal').modal('hide');
