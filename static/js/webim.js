@@ -19,6 +19,7 @@ var audioDom = [];
 var picshim;
 var audioshim;
 var fileshim;
+var friendsSub = {};
 var PAGELIMIT = 8;
 var pageLimitKey = new Date().getTime();
 
@@ -368,6 +369,9 @@ $(document).ready(function() {
 		onInviteMessage: function(message) {
 			handleInviteMessage(message);
 		},
+        onOffline: function () {
+            setTimeout(logout, 1000);
+        },
 		//异常时的回调方法
 		onError: function(message) {
 			handleError(message);
@@ -533,8 +537,9 @@ var handlePresence = function(e) {
 				return;
 			}
 		}
+        
 		var subscribeMessage = e.from + "请求加你为好友。\n验证消息：" + e.status;
-		var cur = showNewNotice(subscribeMessage);
+		var cur = showNewNotice(subscribeMessage, e);
 		cur.find('.confirmButton').click(function() {
 			//同意好友请求
 			agreeAddFriend(e.from);//e.from用户名
@@ -635,7 +640,12 @@ var handlePresence = function(e) {
                 curChatUserId = null;
             }
 		}
-		setTimeout(function () { target.remove(); }, 1000);
+        var el = $('#' + groupFlagMark + e.from),
+            el2 = $('#' + chatRoomMark + e.from);
+
+		el && $(el).remove();
+		el2 && $(el2).remove();
+		setTimeout(function () { target && target.remove(); }, 1000);
 		return;
 	}
 };
@@ -689,12 +699,12 @@ var handleRoster = function(rosterMsg) {
 var handleError = function(e) {
 	curChatRoomId = null;
 
+    showLoginUI();
 	clearPageSign();
 	e && e.upload && $('#fileModal').modal('hide');
 	if (curUserId == null) {
 		hiddenWaitLoginedUI();
 		alert(e.msg + ",请重新登录");
-		showLoginUI();
 	} else {
 		var msg = e.msg;
 		if (e.type == EASEMOB_IM_CONNCTION_SERVER_CLOSE_ERROR) {
@@ -818,6 +828,7 @@ var showlogin = function() {
 	$('#regist-div-modal').modal('hide');
 };
 var logout = function() {
+    showLoginUI();
 	conn.stopHeartBeat();
 	conn.close();
 	clearPageSign();
@@ -1170,9 +1181,9 @@ var sendPic = function() {
 		alert("请先选择图片");
 		return;
 	}
-	var filetype = fileObj.filetype;
+	var filetype = fileObj.filetype || '';
 	var filename = fileObj.filename;
-	if (!Easemob.im.Helper.isCanUploadFileAsync || filetype in pictype) {
+	if (!Easemob.im.Helper.isCanUploadFileAsync || filetype.toLowerCase() in pictype) {
 		var opt = {
 			type : 'chat',
 			fileInputId : 'fileInput',
@@ -1241,9 +1252,9 @@ var sendAudio = function() {
 		alert("请先选择音频");
 		return;
 	}
-	var filetype = fileObj.filetype;
+	var filetype = fileObj.filetype || '';
 	var filename = fileObj.filename;
-	if (!Easemob.im.Helper.isCanUploadFileAsync || filetype in audtype) {
+	if (!Easemob.im.Helper.isCanUploadFileAsync || filetype.toLowerCase() in audtype) {
 		var opt = {
 			type : "chat",
 			fileInputId : 'fileInput',
@@ -1326,9 +1337,9 @@ var sendFile = function() {
 		alert("请选择发送音频");
 		return;
 	}
-	var fileType = fileObj.filetype;
+	var fileType = fileObj.filetype || '';
 	var filename = fileObj.filename;
-	if (!Easemob.im.Helper.isCanUploadFileAsync || fileType in filetype) {
+	if (!Easemob.im.Helper.isCanUploadFileAsync || fileType.toLowerCase() in filetype) {
 		var opt = {
 			type : "chat",
 			fileInputId : 'fileInput',
@@ -1598,7 +1609,7 @@ var appendMsg = function(who, contact, message, onlyPrompt) {
 	var contactUL = document.getElementById("contactlistUL");
 	var contactDivId = contact;
 	var contactLi = getContactLi(contactDivId);
-	if (contactLi == null) {
+	if (contactLi == null && contact.indexOf(groupFlagMark) < 0 && contact.indexOf(chatRoomMark) < 0) {
 		createMomogrouplistUL(who, message);
 	}
 	// 消息体 {isemotion:true;body:[{type:txt,msg:ssss}{type:emotion,msg:imgdata}]}
@@ -1626,17 +1637,13 @@ var appendMsg = function(who, contact, message, onlyPrompt) {
 		var data = msg.data;
 		
 		if (type == "emotion") {
-			var eletext = "<p3><img src='" + data + "'/></p3>";
-			var ele = $(eletext);
-			for (var j = 0; j < ele.length; j++) {
-				lineDiv.appendChild(ele[j]);
-			}
+			var ele = $("<p><img src='" + data + "'/></p>");
+			ele.attr("class", "chat-content-p3");
+            lineDiv.appendChild(ele.get(0));
 		} else if (type == "pic" || type == 'audio' || type == 'video') {
-			var filename = msg.filename;
-			var fileele = $("<p3>" + filename + "</p3><br>");
-			for (var j = 0; j < fileele.length; j++) {
-				lineDiv.appendChild(fileele[j]);
-			}
+			var fileele = $("<p>" + msg.filename + "</p>");
+			fileele.attr("class", "chat-content-p3");
+            lineDiv.appendChild(fileele.get(0));
 			data.nodeType && lineDiv.appendChild(data);
 			if(type == 'audio' && msg.audioShim) {
 				var d = $(lineDiv),
@@ -1645,16 +1652,9 @@ var appendMsg = function(who, contact, message, onlyPrompt) {
 					<button class="play'+t+'">播放</button><button style="display:none" class="play'+t+'">暂停</button>'));
 			}
 		} else {
-			var eletext = "<p3>" + data + "</p3>";
-			var ele = $(eletext);
-			ele[0].setAttribute("class", "chat-content-p3");
-			ele[0].setAttribute("className", "chat-content-p3");
-			if (curUserId == who) {
-				ele[0].style.backgroundColor = "#EBEBEB";
-			}
-			for (var j = 0; j < ele.length; j++) {
-				lineDiv.appendChild(ele[j]);
-			}
+			var ele = $("<p>" + data + "</p>");
+			ele.attr("class", "chat-content-p3");
+            lineDiv.appendChild(ele.get(0));
 		}
 	}
 	if (curChatUserId == null) {
@@ -1727,11 +1727,16 @@ var showDelFriend = function() {
 	$('#del-frident-warning').html("");
 };
 //消息通知操作时条用的方法
-var showNewNotice = function(message) {
+var showNewNotice = function(message, e) {
     var modal = $('#confirm-block-div-modal'),
         node = $("<li>" + message + "<button class='btn btn-primary confirmButton'>同意</button><button class='btn cancelButton'>拒绝</button></li>");
 
 	modal.hasClass('hide') && modal.modal('show');
+
+    if ( friendsSub[e.from] ) {
+        return;
+    }
+    friendsSub[e.from] = 1;
 	$('#confirm-block-footer-body').append(node);
 
     return node;
