@@ -192,7 +192,9 @@ a:hover {
 	color: #333;
 	text-decoration: none;
 }
-
+#contractlist11 {
+    overflow: hidden;
+}
 .close_btn {
 	background: url('../img/icon.png') no-repeat 0 0;
 	position: absolute;
@@ -260,7 +262,7 @@ a:hover {
 }
 .chat03_content_ul li > span {
     display: inline-block;
-    max-width: 60%;
+    max-width: 50%;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
