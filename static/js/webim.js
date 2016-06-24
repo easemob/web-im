@@ -318,11 +318,6 @@ $(document).ready(function() {
 	conn.listen({
 		//当连接成功时的回调方法
 		onOpened : function() {
-
-            /*******************************************/
-		    conn.setPresence();//设置用户上线状态，必须调用
-            /*******************************************/
-
 			handleOpen(conn);
 		},
 		//当连接关闭时的回调方法
@@ -458,7 +453,8 @@ var handleOpen = function(conn) {
 			}
 			//获取当前登录人的群组列表
 			conn.listRooms({
-				success : function(rooms) {
+				success: function(rooms) {
+                    conn.setPresence();//设置用户上线状态，必须调用
 					if (rooms && rooms.length > 0) {
 						buildListRoomDiv("contracgrouplist", rooms);//群组列表页面处理
 						if (curChatUserId === null) {
@@ -467,7 +463,9 @@ var handleOpen = function(conn) {
 						}
 					}
 				},
-				error : function(e) {}
+				error: function(e) {
+                    conn.setPresence();//设置用户上线状态，必须调用
+                }
 			});
 		}
 	});
@@ -866,7 +864,8 @@ var buildContactDiv = function(contactlistDivId, roster) {
 			'class' : 'offline',
 			'className' : 'offline',
 			'type' : 'chat',
-			'displayName' : userName
+			'displayName' : userName,
+			'title' : userName
 		}).click(function() {
 			chooseContactDivClick(this);
 		});
@@ -900,6 +899,7 @@ var buildListRoomDiv = function(contactlistDivId, rooms, type) {
 			'className' : 'offline',
 			'type' : type || groupFlagMark,
 			'displayName' : roomsName,
+			'title' : roomsName,
 			'roomId' : roomId,
 			'joined' : 'false'
 		}).click(function() {
@@ -964,7 +964,8 @@ var showContactChatDiv = function(chatUserId) {
 		dispalyTitle = "与" + chatUserId + "聊天中";
 		$("#roomMemberImg").css('display', 'none');
 	}
-	document.getElementById(talkToDivId).children[0].innerHTML = dispalyTitle;
+    var title = $('#' + talkToDivId).find('a');
+	title.html(dispalyTitle).attr('title', dispalyTitle);
 };
 //对上一个联系人的聊天窗口div做隐藏处理，并将联系人列表中选择的联系人背景色置空
 var hiddenContactChatDiv = function(chatUserId) {
@@ -1546,6 +1547,7 @@ var handleInviteMessage = function(message) {
 							'className' : 'offline',
 							'type' : groupFlagMark,
 							'displayName' : roomsName,
+			                'title' : roomsName,
 							'roomId' : roomId,
 							'joined' : 'false'
 						}).click(function() {
@@ -1584,7 +1586,8 @@ var createMomogrouplistUL = function createMomogrouplistUL(who, message) {
 		'class' : 'offline',
 		'className' : 'offline',
 		'type' : 'chat',
-		'displayName' : who
+		'displayName' : who,
+		'title' : who
 	});
 	lielem.onclick = function() {
 		chooseContactDivClick(this);
@@ -1877,7 +1880,7 @@ var removeFriendDomElement = function(userToDel, local) {
 			});
 			displayName = '';
 		}
-		$('#talkTo').html('<a href="#">' + displayName + '</a>');
+		$('#talkTo').html('<a href="javascript:;" title="' + displayName + '">' + displayName + '</a>');
 	}
 };
 //清除聊天记录

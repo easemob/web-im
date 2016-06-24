@@ -178,6 +178,11 @@ a:hover {
 }
 
 .talkTo li a {
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
+    max-width: 300px;
 	padding: 4px 11px 4px 7px;
 	_padding-top: 0px;
 	_padding-bottom: 0px;
@@ -253,7 +258,13 @@ a:hover {
 	position: relative;
 	resize: none;
 }
-
+.chat03_content_ul li > span {
+    display: inline-block;
+    max-width: 60%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
 .chat03_content {
 	height: 480px;
 	text-align: left;
