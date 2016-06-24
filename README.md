@@ -21,7 +21,7 @@
 	sdk/：/*sdk相关文件*/
 		release.txt：各版本更新细节
 		quickstart.md：环信WebIM快速入门文档
-		easemob.im-1.1.js：js sdk
-		easemob.im-1.1.shim.js：支持老版本sdk api
+		easemob.im-1.1.1.js：js sdk
+		easemob.im.shim.js：支持老版本sdk api
 		strophe.js：sdk依赖脚本
 </pre>
