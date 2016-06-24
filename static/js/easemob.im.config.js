@@ -13,7 +13,7 @@ Easemob.im.config = {
     /*
         连接时提供appkey
     */
-    appkey: "easemob-demo#no2",
+    appkey: "easemob-demo#chatdemoui",
     /*
      * 是否使用https
      */
