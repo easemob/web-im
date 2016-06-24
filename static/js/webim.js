@@ -96,9 +96,10 @@ var uploadShim = function ( fileInputId, type ) {
 				this.cancelUpload();
 			}
 
-			var checkType = window[type + 'type'];
+			var checkType = window[type + 'type'],
+                ttype = file.type.slice(1).toLowerCase();
 
-			if ( !checkType[file.type.slice(1)] ) {
+			if ( !checkType[ttype] ) {
 				conn.onError({
 					type : EASEMOB_IM_UPLOADFILE_ERROR,
 					msg : '不支持此文件类型' + file.type
@@ -285,7 +286,7 @@ $(document).ready(function() {
 		$('#em-cr').remove();
 	}
 
-	window.alert = (function () {
+	/*window.alert = (function () {
 		var dom = document.getElementById('alert'),
 			info = dom.getElementsByTagName('span')[0],
 			btn = dom.getElementsByTagName('button')[0],
@@ -306,7 +307,7 @@ $(document).ready(function() {
 			dom.style.display = 'block';
 			delayHide();
 		}
-	}());
+	}());*/
 
 	
 	conn = new Easemob.im.Connection({
@@ -1650,6 +1651,10 @@ var appendMsg = function(who, contact, message, onlyPrompt) {
 			fileele.attr("class", "chat-content-p3");
             lineDiv.appendChild(fileele.get(0));
 			data.nodeType && lineDiv.appendChild(data);
+            $(data).on('load', function(){
+                var last = $(msgContentDiv).children().last().get(0);
+                last && last.scrollIntoView && last.scrollIntoView();
+            });
 			if(type == 'audio' && msg.audioShim) {
 				var d = $(lineDiv),
 					t = new Date().getTime();
@@ -1714,6 +1719,7 @@ var appendMsg = function(who, contact, message, onlyPrompt) {
 			playAudioShim(d.find('.'+t), data.currentSrc, t);
 		}, 0);
 	}
+    
 	msgContentDiv.scrollTop = msgContentDiv.scrollHeight;
 	return lineDiv;
 };
