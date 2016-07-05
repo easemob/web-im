@@ -10,7 +10,6 @@
 		_e = function() {},
 		https = location.protocol === 'https:';
 
-    _im.version = "2.0shim";
 	_im.Helper.download = _im.Helper.downloadFn;
 	_im.EMOTIONS = {
 		path: 'static/img/faces/'

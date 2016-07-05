@@ -383,10 +383,6 @@
                     var emotion = Easemob.im.EMOTIONS,
                         reg = null;
 
-                    msg = msg.replace(/&amp;/g, '&');
-                    msg = msg.replace(/&#39;/g, '\'');
-                    msg = msg.replace(/&lt;/g, '<');
-
                     for ( var face in emotion.map ) {
                         if ( emotion.map.hasOwnProperty(face) ) {
                             while ( msg.indexOf(face) > -1 ) {
