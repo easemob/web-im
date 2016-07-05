@@ -1662,7 +1662,7 @@ var appendMsg = function(who, contact, message, onlyPrompt) {
 					<button class="play'+t+'">播放</button><button style="display:none" class="play'+t+'">暂停</button>'));
 			}
 		} else {
-			var ele = $("<p>" + (curUserId == who ? data : encode(data)) + "</p>");
+			var ele = $("<pre>" + (curUserId == who ? data : encode(data)) + "</pre>");
 			ele.attr("class", "chat-content-p3");
             lineDiv.appendChild(ele.get(0));
 		}
