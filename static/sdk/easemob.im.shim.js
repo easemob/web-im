@@ -184,6 +184,7 @@
 			, type: this.type
 			, ext: opt.ext || {}
 			, roomType : opt.roomType
+            , file_length: opt.file_length
 			, onFileUploadError : opt.onFileUploadError
 			, onFileUploadComplete: opt.onFileUploadComplete
 			, success: opt.success
