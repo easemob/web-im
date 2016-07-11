@@ -8,6 +8,10 @@
 
 更多关于环信的开发文档请见：https://docs.easemob.com
 
+##NPM
+
+npm install easemobim_websdk
+
 ##目录
 <pre>
 |---README.MD：
