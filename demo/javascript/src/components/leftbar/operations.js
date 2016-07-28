@@ -1,4 +1,6 @@
 var React = require("react");
+var AddFriend = require("./addFriend");
+var DelFriend = require("./delFriend");
 
 module.exports = React.createClass({
 
@@ -15,12 +17,16 @@ module.exports = React.createClass({
 	},
 
 	addFriends: function () {
-
+        AddFriend.show();
 	},
 
 	delFriends: function () {
-		this.props.close();
+        DelFriend.show();
 	},
+
+    close: function () {
+        Demo.api.logout();
+    },
 
     render: function () {
 		var className = this.state.hide ? ' ' + this.state.hide : '';
@@ -28,9 +34,9 @@ module.exports = React.createClass({
 			<div>
 				<i className='webim-operations-icon font bigfont' onClick={this.update}>M</i>
 				<ul className={'webim-operations' + className}>
-					<li onClick={this.addFriends}><i className='font smallest'>L</i><span>add friends</span></li>
-					<li onClick={this.delFriends}><i className='font smallest'>C</i><span>delete friends</span></li>
-					<li onClick={this.props.close}><i className='font smallest'>Q</i><span>quit</span></li>
+					<li onClick={this.addFriends}><i className='font smallest'>L</i><span>{Demo.lan.addAFriend}</span></li>
+					<li onClick={this.delFriends}><i className='font smallest'>C</i><span>{Demo.lan.delAFriend}</span></li>
+					<li onClick={this.close}><i className='font smallest'>Q</i><span>{Demo.lan.quit}</span></li>
 				</ul>
 			</div>
         );

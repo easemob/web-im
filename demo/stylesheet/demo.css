@@ -76,16 +76,16 @@ object {
     height: 30px;
     font-size: 30px;
 }
-.webim .hide {
+#main .hide {
     display: none;
 }
-.webim .base-bgcolor {
+#main .base-bgcolor {
     color: #fff;
     border: 1px solid rgb(167, 212, 42);
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     background-color: rgb(178, 221, 76);
 }
-.webim .base-color {
+#main .base-color {
     color: rgb(178, 221, 76);
 }
 /*
@@ -122,6 +122,10 @@ object {
     cursor: pointer;
     border-radius: 2px;
 }
+#main .webim-button.error {
+    background-color: rgb(255, 58, 0);
+    border: 1px solid rgb(255, 58, 0);
+}
 /*
  * input
  */
@@ -131,7 +135,6 @@ input:focus {
 .webim-input {
     box-sizing: border-box;
     font-size: 14px;
-    box-sizing: border-box;
     padding: 0 4px;
     display: inline-block;
     margin: 10px auto 0;
@@ -349,6 +352,7 @@ input:focus {
  * operations
  */
 .webim-operations {
+    z-index: 1;
     position: absolute;
     text-align: left;
     left: 40px;
@@ -535,7 +539,7 @@ input:focus {
     font-size: 14px;
     line-height: 20px;
 }
-.webim-msg-value .emotion {
+.webim-msg-value .emoji {
     width: 32px;
     vertical-align; bottom;
 }
@@ -635,4 +639,84 @@ input:focus {
     from { background-color: rgba(0,0,0,0); }
     50% { background-color: rgba(0,0,0,.1); }
     to { background-color: rgba(0,0,0,0); }
+}
+
+/*
+ * dialog
+ */
+.webim-dialog {
+    z-index: 3;
+    position: absolute;
+    width: 400px;
+    height: 168px;
+    top: 20%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border-radius: 2px;
+    box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 8px 0px;
+    background-color: rgb(255, 255, 255);
+}
+.webim-dialog h3 {
+    line-height: 40px;
+    box-sizing: border-box;
+    padding-left: 10px;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    font-weight: normal;
+}
+.webim-dialog .font {
+    font-size: 20px;
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    width: 20px;
+    height: 20px;
+    color: rgba(0,0,0,.1);
+    cursor: pointer;
+}
+.webim-dialog > div {
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    padding: 10px 10px 20px;
+}
+.webim-dialog .webim-dialog-button {
+    position: absolute;
+    right: 8px;
+    bottom: 2px;
+    width: 80px;
+    height: 26px;
+}
+.webim-dialog .webim-subscribe-button {
+    width: 60px;
+    height: 30px;
+    margin-left: 10px;
+}
+.webim-dialog input {
+    height: 30px;
+    width: 220px;
+}
+.webim-friend-requests {
+    height: auto;
+}
+.webim-friend-requests span {
+    width: 60%;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.webim-friend-requests > div{
+    overflow: auto;
+    max-height: 400px;
+}
+/*
+ * layer
+ */
+.webim-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-color: rgba(0,0,0,.25);
 }

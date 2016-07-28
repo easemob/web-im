@@ -4,27 +4,13 @@ var UI = require('../common/webim-demo');
 
 var Input = UI.Input;
 var Button = UI.Button;
+var submiting = false;
 
 module.exports = React.createClass({
-
-    getInitialState: function () {
-        return {
-            username: '',
-            pwd: '',
-            nickname: ''
-        };
-    },
-
-    getUser: function ( value ) {
-        this.setState({username: value});
-    },
-
-    getPwd: function ( value ) {
-        this.setState({pwd: value});
-    },
-
-    getNickname: function ( value ) {
-        this.setState({nickname : value});
+    keyDown: function ( e ) {
+        if ( e && e.keyCode === 13 ) {
+            this.signup();
+        }
     },
 
     signin: function () {
@@ -34,21 +20,30 @@ module.exports = React.createClass({
             chat: false
         });
     },
+
     signup: function () {
         var me = this;
 
-        if ( !this.state.username || !this.state.pwd || !this.state.nickname ) {
-            Notify.error('empty');
+        if ( submiting ) { return false; }
+
+        var username = this.refs.name.refs.input.value;
+        var pwd = this.refs.auth.refs.input.value;
+        var nickname = this.refs.nickname.refs.input.value;
+
+        if ( !username || !pwd || !nickname ) {
+            Notify.error(Demo.lan.notEmpty);
             return false;
         }
 
+        submiting = true;
         var options = {
-            username : (this.state.username + '').toLowerCase(),
-            password : this.state.pwd,
-            nickname : this.state.nickname,
-            appKey : this.props.config.appkey,
-            success : function () {
-                Notify.success('注册成功!');
+            username: username.toLowerCase(),
+            password: pwd,
+            nickname: nickname,
+            appKey: this.props.config.appkey,
+            success: function () {
+                submiting = false;
+                Notify.success(Demo.lan.signUpSuccessfully);
                 setTimeout(function () {
                     me.props.update({
                         signIn: true,
@@ -57,10 +52,11 @@ module.exports = React.createClass({
                     });
                 }, 1000);
             },
-            error : function ( e ) {
-                Nootify(e);
+            error: function ( e ) {
+                submiting = false;
+                Notify.error(e);
             },
-            apiUrl : this.props.config.apiURL
+            apiUrl: this.props.config.apiURL
         };
         WebIM.utils.registerUser(options);
     },
@@ -69,10 +65,10 @@ module.exports = React.createClass({
         return (
             <div className={this.props.show ? 'webim-sign' : 'webim-sign hide'}>
                 <h2>Sign Up</h2>
-                <Input placeholder='Email' defaultFocus='true' change={this.getUser} />
-                <Input placeholder='Password' change={this.getPwd} />
-                <Input placeholder='Nickname' change={this.getNickname} />
-                <Button text='Sign up' click={this.signup} />
+                <Input ref='name' placeholder={Demo.lan.username} defaultFocus='true' keydown={this.keyDown} />
+                <Input ref='auth' placeholder={Demo.lan.password} type='password' keydown={this.keyDown} />
+                <Input ref='nickname' placeholder={Demo.lan.nickname} keydown={this.keyDown} />
+                <Button text={Demo.lan.signUp} onClick={this.signup} />
                 <p>i have account, <i onClick={this.signin}>sign in</i></p>
             </div>
         );

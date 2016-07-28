@@ -8,26 +8,6 @@ var Checkbox = UI.Checkbox;
 
 module.exports = React.createClass({
 
-    getInitialState: function () {
-        return {
-            username: '',
-            auth: '',
-            type: ''
-        };
-    },
-
-    getUser: function ( value ) {
-        this.setState({username: value});
-    },
-
-    getAuth: function ( value ) {
-        this.setState({auth: value});
-    },
-
-    getAuthType: function ( value ) {
-        this.setState({type: value ? 'token' : 'pwd'});
-    },
-
     keyDown: function ( e ) {
         if ( e && e.keyCode === 13 ) {
             this.signin();
@@ -35,26 +15,31 @@ module.exports = React.createClass({
     },
 
     signin: function () {
-        if ( !this.state.username || !this.state.auth ) {
-            Notify.error('empty');
+        var username = this.refs.name.refs.input.value;
+        var auth = this.refs.auth.refs.input.value;
+        var type = this.refs.token.refs.input.checked;
+
+        if ( !username || !auth ) {
+            Notify.error(Demo.lan.notEmpty);
             return false;
         }
 
         var options = {
             apiUrl : this.props.config.apiURL,
-            user : (this.state.username + '').toLowerCase(),
-            accessToken : this.state.auth,
-            pwd : this.state.auth,
+            user : username.toLowerCase(),
+            accessToken : auth,
+            pwd : auth,
             appKey : this.props.config.appkey
         };
 
-        if ( this.state.type !== 'token' ) {
+        if ( type !== 'token' ) {
             delete options.accessToken;
         }
-        Demo.user = this.state.username;
+        Demo.user = username;
 
         this.props.loading('show');
         Demo.conn.open(options);
+        
     },
 
     signup: function () {
@@ -69,11 +54,11 @@ module.exports = React.createClass({
 
         return (
             <div className={this.props.show ? 'webim-sign' : 'webim-sign hide'}>
-                <h2>Sign In</h2>
-                <Input placeholder='Username' defaultFocus='true' ref='email' change={this.getUser} keydown={this.keyDown} />
-                <Input placeholder='Password' ref='auth' type='password' change={this.getAuth} keydown={this.keyDown} />
-                <Checkbox text='use token signin' ref='token' change={this.getAuthType} />
-                <Button text='Sign in' click={this.signin} />
+                <h2>{Demo.lan.signIn}</h2>
+                <Input placeholder={Demo.lan.username} defaultFocus='true' ref='name' keydown={this.keyDown} />
+                <Input placeholder={Demo.lan.password} ref='auth' type='password' keydown={this.keyDown} />
+                <Checkbox text={Demo.lan.tokenSignin} ref='token' />
+                <Button text={Demo.lan.signIn} onClick={this.signin} />
                 <p>no account, <i onClick={this.signup}>sign up now</i></p>
             </div>
         );

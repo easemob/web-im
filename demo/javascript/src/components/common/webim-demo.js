@@ -4,7 +4,7 @@ var React = require("react");
 exports.Input = React.createClass({
 
     handleChange: function () {
-        this.props.change(this.refs.input.value);
+        typeof this.props.change === 'function' && this.props.change(this.refs.input.value);
     },
 
     componentWillUnmount: function () {
@@ -36,7 +36,7 @@ exports.Button = React.createClass({
 
     render: function () {
         var className = this.props.className ? ' ' + this.props.className : '';
-        return <button className={'webim-button base-bgcolor' + className}  onClick={this.props.click}>{this.props.text}</button>;
+        return <button className={'webim-button base-bgcolor' + className}  onClick={this.props.onClick}>{this.props.text}</button>;
     }
 });
 

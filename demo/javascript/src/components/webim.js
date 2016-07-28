@@ -33,13 +33,18 @@ module.exports = React.createClass({
 	},
 
     render: function () {
+        var props = {};
+
+        props.rosterChange = this.props.rosterChange;
+        props.groupChange = this.props.groupChange;
+        props.chatroomChange = this.props.chatroomChange;
 
         return (
             <div className='webim'>
                 <img className={'webim-logo' + (!this.state.signIn && !this.state.signUp ? ' hide' : '')} src='demo/images/logo.png' />
                 <SignIn show={this.state.signIn} {...this.props} update={this.update} loading={this.loading} />
                 <SignUp show={this.state.signUp} {...this.props} update={this.update} loading={this.loading} />
-                <Chat show={this.state.chat} {...this.props} update={this.update} loading={this.loading} close={this.props.close} />
+                <Chat show={this.state.chat} {...this.props} update={this.update} loading={this.loading} {...props} />
                 <Loading show={this.state.loadingStatus} />
             </div>
         );

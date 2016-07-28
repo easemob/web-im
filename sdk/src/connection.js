@@ -75,7 +75,7 @@
         }
     };
 
-    var _parseRoomFn = function ( result ) {
+    var _parseRoom = function ( result ) {
         var rooms = [];
         var items = result.getElementsByTagName('item');
         if ( items ) {
@@ -94,7 +94,7 @@
         return rooms;
     };
         
-    var _parseRoomOccupantsFn = function ( result ) {
+    var _parseRoomOccupants = function ( result ) {
         var occupants = [];
         var items = result.getElementsByTagName('item');
         if ( items ) {
@@ -171,7 +171,7 @@
         return tempstr;
     };
 
-    var _parseFriendFn = function ( queryTag ) {
+    var _parseFriend = function ( queryTag ) {
         var rouster = [];
         var items = queryTag.getElementsByTagName('item');
         if ( items ) {
@@ -208,7 +208,7 @@
         return rouster;
     };
 
-    var _dologin2IM = function ( options, conn ) {
+    var _login = function ( options, conn ) {
         var accessToken = options.access_token || '';
         if ( accessToken == '' ) {
             var loginfo = _utils.stringify(options);
@@ -235,7 +235,7 @@
         }
 
         var callback = function ( status, msg ) {
-            _login2ImCallback(status, msg, conn);
+            _loginCallback(status, msg, conn);
         };
 
         conn.context.stropheConn = stropheConn;
@@ -260,7 +260,7 @@
         return msgtype;
     };
 
-    var _handleQueueMessage = function ( conn ) {
+    var _handleMessageQueue = function ( conn ) {
         for ( var i in _msgHash ) {
             if ( _msgHash.hasOwnProperty(i) ) {
                 _msgHash[i].send(conn);
@@ -268,7 +268,7 @@
         }
     };
 
-    var _login2ImCallback = function ( status, msg, conn ) {
+    var _loginCallback = function ( status, msg, conn ) {
         if ( status == Strophe.Status.CONNFAIL ) {
             conn.onError({
                 type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR
@@ -312,7 +312,7 @@
 
             var supportRecMessage = [
                _code.WEBIM_MESSAGE_REC_TEXT,
-               _code.WEBIM_MESSAGE_REC_EMOTION ];
+               _code.WEBIM_MESSAGE_REC_EMOJI ];
 
             if ( _utils.isCanDownLoadFile ) {
                 supportRecMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
@@ -324,13 +324,13 @@
                 supportSedMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
             }
             conn.notifyVersion();
-            conn.retry && _handleQueueMessage(conn);
+            conn.retry && _handleMessageQueue(conn);
+            conn.heartBeat();
             conn.onOpened({
                 canReceive: supportRecMessage
                 , canSend: supportSedMessage
                 , accessToken: conn.context.accessToken
             });
-            conn.heartBeat();
         } else if ( status == Strophe.Status.DISCONNECTING ) {
             if ( conn.isOpened() ) {
                 conn.stopHeartBeat();
@@ -372,7 +372,7 @@
         return jid;
     };
 
-    var _innerCheck = function ( options, conn ) {
+    var _validCheck = function ( options, conn ) {
         options = options || {};
 
         if ( options.user == '' ) {
@@ -475,11 +475,11 @@
     };
 
     connection.prototype.listen = function ( options ) {
-        options.url && (this.url = _getXmppUrl(options.url, this.https));//just compatible
+        options.url && (this.url = _getXmppUrl(options.url, this.https));
         this.onOpened = options.onOpened || _utils.emptyfn;
         this.onClosed = options.onClosed || _utils.emptyfn;
         this.onTextMessage = options.onTextMessage || _utils.emptyfn;
-        this.onEmotionMessage = options.onEmotionMessage || _utils.emptyfn;
+        this.onEmojiMessage = options.onEmojiMessage || _utils.emptyfn;
         this.onPictureMessage = options.onPictureMessage || _utils.emptyfn;
         this.onAudioMessage = options.onAudioMessage || _utils.emptyfn;
         this.onVideoMessage = options.onVideoMessage || _utils.emptyfn;
@@ -544,7 +544,7 @@
     };
 
     connection.prototype.open = function ( options ) {
-        var pass = _innerCheck(options,this);
+        var pass = _validCheck(options,this);
 
         if ( !pass ) {
             return;
@@ -558,7 +558,7 @@
 
         if ( options.accessToken ) {
             options.access_token = options.accessToken;
-            _dologin2IM(options,conn);
+            _login(options,conn);
         } else {
             var apiUrl = options.apiUrl;
             var userId = this.context.userId;
@@ -568,7 +568,7 @@
 
             var suc = function ( data, xhr ) {
                 conn.context.status = _code.STATUS_DOLOGIN_IM;
-                _dologin2IM(data,conn);
+                _login(data,conn);
             };
             var error = function ( res, xhr, msg ) {
                 conn.clear();
@@ -608,8 +608,9 @@
 
     };
 
+    // attach to xmpp server
     connection.prototype.attach = function ( options ) {
-        var pass = _innerCheck(options, this);
+        var pass = _validCheck(options, this);
 
         if ( !pass ) {
             return;
@@ -653,7 +654,7 @@
 
         var conn = this;
         var callback = function ( status, msg ) {
-            _login2ImCallback(status,msg,conn);
+            _loginCallback(status,msg,conn);
         };
 
         var jid = this.context.jid;
@@ -710,15 +711,11 @@
         return;
     };
 
+    // handle all types of presence message
     connection.prototype.handlePresence = function ( msginfo ) {
         if ( this.isClosed() ) {
             return;
         }
-        //TODO: maybe we need add precense ack?
-        //var id = msginfo.getAttribute('id') || '';
-        //this.sendReceiptsMessage({
-        //    id: id
-        //});
 
         var from = msginfo.getAttribute('from') || '';
         var to = msginfo.getAttribute('to') || '';
@@ -779,19 +776,19 @@
                 if ( info.type === '' && !info.code ) {
                     info.type = 'joinChatRoomSuccess';
                 } else if ( presence_type === 'unavailable' || info.type === 'unavailable' ) {
-                    if ( !info.status ) {// Web logout normally.   web正常退出
+                    if ( !info.status ) {// logout successfully.
                         info.type = 'leaveChatRoom';
-                    } else if ( info.code == 110 ) {// APP logout or kicked out by the administrator.  app先退或被管理员踢
+                    } else if ( info.code == 110 ) {// logout or dismissied by admin.
                         info.type = 'leaveChatRoom';
-                    } else if ( info.error && info.error.code == 406 ) {// The chat room is full. Cannot join the chat room.  聊天室人已满，无法加入
-                        info.type = 'joinChatRoomFailed';
+                    } else if ( info.error && info.error.code == 406 ) {// The chat room is full.
+                        info.type = 'reachChatRoomCapacity';
                     }
                 }
             }
-        } else if ( presence_type === 'unavailable' || type === 'unavailable' ) {// There is no roomtype when a chat room is deleted.  聊天室被删除没有roomtype, 需要区分群组被踢和解散
-            if ( info.destroy ) {// The group or chat room is deleted.   群组和聊天室被删除
+        } else if ( presence_type === 'unavailable' || type === 'unavailable' ) {// There is no roomtype when a chat room is deleted.
+            if ( info.destroy ) {// Group or Chat room Deleted.
                 info.type = 'deleteGroupChat';
-            } else if ( info.code == 307 || info.code == 321 ) {// Kicked out of a group  群组被踢
+            } else if ( info.code == 307 || info.code == 321 ) {// Dismissed by group.
                 info.type = 'leaveGroup';
             }
         }
@@ -828,7 +825,7 @@
         var msgBodies = e.getElementsByTagName('query');
         if ( msgBodies&&msgBodies.length > 0 ) {
             var queryTag = msgBodies[0];
-            var rouster = _parseFriendFn(queryTag);
+            var rouster = _parseFriend(queryTag);
             this.onRoster(rouster);
         }
         return true;
@@ -840,6 +837,8 @@
         }
 
         var id = msginfo.getAttribute('id') || '';
+
+        // send ack
         this.sendReceiptsMessage({
             id: id
         });
@@ -880,19 +879,19 @@
                 switch ( type ) {
                     case 'txt':
                         var receiveMsg = msgBody.msg;
-                        var emotionsbody = _utils.parseTextMessage(receiveMsg, WebIM.EMOTIONS);
-                        if ( emotionsbody.isemotion ) {
+                        var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
+                        if ( emojibody.isemoji ) {
                             var msg = {
                                 id: id
                                 , type: chattype
                                 , from: from
                                 , to: too
                                 , delay: parseMsgData.delayTimeStamp
-                                , data: emotionsbody.body
+                                , data: emojibody.body
                                 , ext: extmsg
                             };
                             !msg.delay && delete msg.delay;
-                            this.onEmotionMessage(msg);
+                            this.onEmojiMessage(msg);
                         } else {
                             var msg = {
                                 id: id
@@ -1176,7 +1175,7 @@
             var msgBodies = ele.getElementsByTagName('query');
             if ( msgBodies&&msgBodies.length > 0 ) {
                 var queryTag = msgBodies[0];
-                rouster = _parseFriendFn(queryTag);
+                rouster = _parseFriend(queryTag);
             }
             suc(rouster,ele);
         };
@@ -1239,8 +1238,8 @@
      };
 
     connection.prototype.createRoom = function ( options ) {
-        var suc =options.success || _utils.emptyfn;
-        var err =  options.error || _utils.emptyfn;
+        var suc = options.success || _utils.emptyfn;
+        var err = options.error || _utils.emptyfn;
         var roomiq;
 
         roomiq = $iq({
@@ -1285,7 +1284,7 @@
         var error = options.error || this.onError;
         var completeFn = function ( result ) {
             var rooms = [];
-            rooms = _parseRoomFn(result);
+            rooms = _parseRoom(result);
             try {
                 suc(rooms);
             } catch ( e ) {
@@ -1380,7 +1379,7 @@
         var suc =options.success || _utils.emptyfn;
         var completeFn = function ( result ) {
             var occupants = [];
-            occupants = _parseRoomOccupantsFn(result);
+            occupants = _parseRoomOccupants(result);
             suc(occupants);
         }
         var err =  options.error || _utils.emptyfn;

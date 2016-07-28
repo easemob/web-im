@@ -34,8 +34,38 @@ module.exports = React.createClass({
         this.refs.count.style.display = 'none';
         this.refs.count.setAttribute('count', 0);
         this.refs.count.innerText = '';
-        
-        Demo.selected = this.props.username;
+
+        // 重复点击
+        if ( this.props.id === Demo.selected ) {
+            return;
+        }
+
+        if ( Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers' ) {
+            Demo.selected = this.props.id;
+        } else {
+            Demo.selected = this.props.username;
+        }
+
+        // quit previous chatroom
+        if ( Demo.currentChatroom ) {
+            document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
+            document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+
+            Demo.conn.quitChatRoom({
+                roomId : Demo.currentChatroom
+            });
+
+            Demo.currentChatroom = null;
+        }
+
+        if ( Demo.selectedCate === 'chatrooms' ) {
+
+            // join chatroom
+            Demo.conn.joinChatRoom({
+                roomId : this.props.id
+            });
+        }
+
         this.props.update(this.props.username);
     },
 

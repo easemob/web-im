@@ -6,18 +6,31 @@ module.exports = React.createClass({
     render: function () {
         var cur = this.props.cur === this.props.name ?  ' base-color' : '';
 
-        var icon;
+        var icon,
+            describe = '';
 
         switch ( this.props.name ) {
-            case 'group': icon = 'N';break;
-            case 'stranger': icon = 'O';break;
-            case 'chatroom': icon = 'F';break;
-            default: icon = 'E';
+            case 'group':
+                icon = 'N';
+                describe = Demo.lan.groups;
+                break;
+            case 'stranger':
+                icon = 'O';
+                describe = Demo.lan.strangers;
+                break;
+            case 'chatroom':
+                icon = 'F';
+                describe = Demo.lan.chatrooms;
+                break;
+            default:
+                icon = 'E';
+                describe = Demo.lan.friends;
+                break;
         };
 
         return (
             <div id={this.props.name + 's'} className='rel' onClick={this.props.update}>
-                <i className={'webim-' + this.props.name + '-icon font bigfont' + cur}>{icon}</i>
+                <i title={describe} className={'webim-' + this.props.name + '-icon font bigfont' + cur}>{icon}</i>
                 <i ref='count' count='0' className='webim-msg-prompt webim-msg-icon-prompt' style={{display: 'none'}}></i>
             </div>
         );
