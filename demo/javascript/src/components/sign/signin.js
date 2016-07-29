@@ -32,7 +32,7 @@ module.exports = React.createClass({
             appKey : this.props.config.appkey
         };
 
-        if ( type !== 'token' ) {
+        if ( !type ) {
             delete options.accessToken;
         }
         Demo.user = username;

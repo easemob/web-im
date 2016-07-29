@@ -74,7 +74,7 @@ var AudioMsg = React.createClass({
 
         return (
             <div className={'rel ' + this.props.className}>
-                <Avatar src={this.props.src} className={this.props.className} />
+                <Avatar src={this.props.src} className={this.props.className + ' small'} />
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
                 <div className='webim-msg-value'>
                     <span className='webim-msg-icon font'>{icon}</span>
@@ -91,8 +91,8 @@ var AudioMsg = React.createClass({
 
 module.exports = function ( options, sentByMe ) {
     var props = {
-        src: options.avatar || 'demo/images/group_user.png',
-        time: options.time || new Date().toLocaleDateString(),
+        src: options.avatar || 'demo/images/default.png',
+        time: options.time || new Date().toLocaleString(),
         value: options.value || '',
         name: options.name,
         length: options.length || '',
@@ -102,6 +102,8 @@ module.exports = function ( options, sentByMe ) {
     var node = document.createElement('div');
     node.className = 'webim-msg-container rel';
     options.wrapper.appendChild(node);
+
+    Demo.api.scrollIntoView(node);
 
     return ReactDOM.render(
 		<AudioMsg {...props} className={sentByMe ? 'right' : 'left'} />,

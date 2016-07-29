@@ -4,7 +4,7 @@ var React = require("react");
 module.exports = React.createClass({
 
     render: function () {
-        var cur = this.props.cur === this.props.name ?  ' base-color' : '';
+        var cur = this.props.cur === this.props.name ?  ' selected' : '';
 
         var icon,
             describe = '';
@@ -30,7 +30,7 @@ module.exports = React.createClass({
 
         return (
             <div id={this.props.name + 's'} className='rel' onClick={this.props.update}>
-                <i title={describe} className={'webim-' + this.props.name + '-icon font bigfont' + cur}>{icon}</i>
+                <i title={describe} className={'webim-leftbar-icon font small' + cur}>{icon}</i>
                 <i ref='count' count='0' className='webim-msg-prompt webim-msg-icon-prompt' style={{display: 'none'}}></i>
             </div>
         );

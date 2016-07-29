@@ -4,14 +4,17 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "file-loader": "^0.9.0",
     "react": "*"
   },
   "devDependencies": {
-    "line-numbers": "*",
     "babel-core": "*",
     "babel-loader": "*",
-	"babel-preset-es2015": "*",
-	"babel-preset-react": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-react": "*",
+    "css-loader": "^0.23.1",
+    "line-numbers": "*",
+    "style-loader": "^0.13.1",
     "webpack": "*"
   },
   "scripts": {

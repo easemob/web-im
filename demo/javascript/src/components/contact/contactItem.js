@@ -66,11 +66,11 @@ module.exports = React.createClass({
             });
         }
 
-        this.props.update(this.props.username);
+        this.props.update(Demo.selected);
     },
 
     render: function () {
-        var className = this.props.cur === this.props.username ? ' selected' : '';
+        var className = this.props.cur === this.props.id ? ' selected' : '';
 
         return (
             <div id={this.props.id} className={'webim-contact-item' + className} onClick={this.update}>

@@ -1,0 +1,76 @@
+/*
+ * dialog
+ */
+.webim-dialog {
+    z-index: 3;
+    position: absolute;
+    width: 400px;
+    height: 168px;
+    top: 20%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border-radius: 2px;
+    box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 8px 0px;
+    background-color: rgb(255, 255, 255);
+
+    h3 {
+        line-height: 40px;
+        box-sizing: border-box;
+        padding-left: 10px;
+        border-bottom: 1px solid rgba(0,0,0,.1);
+        font-weight: normal;
+    }
+
+    .font {
+        font-size: 20px;
+        position: absolute;
+        right: 6px;
+        top: 6px;
+        width: 20px;
+        height: 20px;
+        color: rgba(0,0,0,.1);
+        cursor: pointer;
+    }
+
+    > div {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+        padding: 10px 10px 20px;
+    }
+
+    .webim-dialog-button {
+        position: absolute;
+        right: 8px;
+        bottom: 2px;
+        width: 80px;
+        height: 26px;
+    }
+
+    .webim-subscribe-button {
+        width: 60px;
+        height: 30px;
+        margin-left: 10px;
+    }
+
+    input {
+        height: 30px;
+        width: 220px;
+    }
+}
+
+.webim-friend-requests {
+    height: auto;
+
+    span {
+        width: 60%;
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    > div{
+        overflow: auto;
+        max-height: 400px;
+    }
+}

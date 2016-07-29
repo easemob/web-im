@@ -70,8 +70,10 @@ module.exports = React.createClass({
                 Demo.api.logout();
             },
             onError: function ( message ) {
-                log('onError', message);
+
+                Notify.error(message.data && message.data.data ? message.data.data : 'Error: type=' + message.type);
                 Demo.api.logout();
+                log('onError', message);
             }
         });
 
@@ -241,7 +243,7 @@ module.exports = React.createClass({
 
         if ( Demo.selectedCate === 'groups' ) {
             msg.setGroup(Demo.groupType);
-        } else if ( chatrooms ) {
+        } else if ( chatroom ) {
             msg.setGroup(Demo.groupType);
         }
 
@@ -292,7 +294,7 @@ module.exports = React.createClass({
 
 		if ( Demo.selectedCate === 'groups' ) {
             msg.setGroup(Demo.groupType);
-        } else if ( chatrooms ) {
+        } else if ( chatroom ) {
             msg.setGroup(Demo.groupType);
         }
 
@@ -360,7 +362,7 @@ module.exports = React.createClass({
 
 		if ( Demo.selectedCate === 'groups' ) {
             msg.setGroup(Demo.groupType);
-        } else if ( chatrooms ) {
+        } else if ( chatroom ) {
             msg.setGroup(Demo.groupType);
         }
 
@@ -373,11 +375,12 @@ module.exports = React.createClass({
                 sendPicture: this.sendPicture,
                 sendAudio: this.sendAudio,
                 sendFile: this.sendFile,
-                cur: this.state.curNode
+                name: ''
             };
 
         for ( var i = 0; i < this.state.friends.length; i++ ) {
             id = this.state.friends[i].name;
+            props.name = id;
 
             windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
                 className={this.state.friends[i].name === this.state.curNode ? '' : 'hide'} />);
@@ -385,20 +388,23 @@ module.exports = React.createClass({
 
         for ( var i = 0; i < this.state.groups.length; i++ ) {
             id = this.state.groups[i].roomId;
+            props.name = this.state.groups[i].name;
 
             windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} 
-                className={this.state.groups[i].name === this.state.curNode ? '' : 'hide'} />);
+                className={id === this.state.curNode ? '' : 'hide'} />);
         }
 
         for ( var i = 0; i < this.state.chatrooms.length; i++ ) {
             id = this.state.chatrooms[i].id;
+            props.name = this.state.chatrooms[i].name;
 
             windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} 
-                className={this.state.chatrooms[i].name === this.state.curNode ? '' : 'hide'} />);
+                className={id === this.state.curNode ? '' : 'hide'} />);
         }
 
         for ( var i = 0; i < this.state.strangers.length; i++ ) {
             id = this.state.strangers[i].name;
+            props.name = id;
 
             windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
                 className={this.state.strangers[i].name === this.state.curNode ? '' : 'hide'} />);

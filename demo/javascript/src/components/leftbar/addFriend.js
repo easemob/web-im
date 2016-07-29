@@ -12,8 +12,13 @@ var Input = UI.Input;
 var AddFriend = React.createClass({
 
 	addFriend: function () {
+
+        var value = this.refs.input.refs.input.value;
+
+        if ( !value ) { return; }
+
         Demo.conn.subscribe({
-            to: this.refs.input.refs.input.value,
+            to: value,
             message: Demo.user + Demo.lan.request
         });
         this.close();

@@ -223,5 +223,11 @@ module.exports = {
         s = s.replace(/\"/g, "&quot;");
         s = s.replace(/\n/g, "<br>");
         return s;
+    },
+
+    scrollIntoView: function ( node ) {
+        setTimeout(function () {
+            node.scrollIntoView(true);
+        }, 50);
     }
 };

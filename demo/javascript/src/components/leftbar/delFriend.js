@@ -15,6 +15,8 @@ var DelFriend = React.createClass({
         var me = this,
             value = this.refs.input.refs.input.value;
 
+        if ( !value ) { return; }
+
         Demo.conn.removeRoster({
 			to: value,
 			success: function () {

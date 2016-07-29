@@ -1,4 +1,5 @@
-var webpack = require('webpack'); 
+var webpack = require('webpack');
+
 module.exports = {
     entry: {
         './sdk/dist/websdk-1.1.2': './sdk/src/connection',
@@ -6,6 +7,7 @@ module.exports = {
     },
     output: {
         path: './',
+        publicPath: './',
         filename: '[name].js'
     },
     resolve: {
@@ -20,7 +22,15 @@ module.exports = {
 				query: {
 					presets: ['es2015', 'stage-2', 'react']
 				}
-			}
+			},
+            {
+                test: /\.scss$/,
+                loader: 'style!css!sass'
+            },
+            {
+                test: /\.svg|woff|eot|ttf$/,
+                loader: require.resolve('file-loader') + '?name=[path][name].[ext]'
+            }
         ]
     }
 }

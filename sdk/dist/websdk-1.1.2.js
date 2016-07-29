@@ -34,7 +34,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "./";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
@@ -50,9 +50,9 @@
 	;(function (window, undefined) {
 
 	    var _version = '1.1.2';
-	    var _code = __webpack_require__(186).code;
-	    var _utils = __webpack_require__(187).utils;
-	    var _msg = __webpack_require__(188);
+	    var _code = __webpack_require__(193).code;
+	    var _utils = __webpack_require__(194).utils;
+	    var _msg = __webpack_require__(195);
 	    var _message = _msg._msg;
 	    var _msgHash = {};
 
@@ -1617,7 +1617,7 @@
 
 /***/ },
 
-/***/ 186:
+/***/ 193:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1704,7 +1704,7 @@
 
 /***/ },
 
-/***/ 187:
+/***/ 194:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1714,7 +1714,7 @@
 	;(function () {
 
 	    var EMPTYFN = function EMPTYFN() {},
-	        _code = __webpack_require__(186).code,
+	        _code = __webpack_require__(193).code,
 	        WEBIM_FILESIZE_LIMIT;
 
 	    var _createStandardXHR = function _createStandardXHR() {
@@ -2507,7 +2507,7 @@
 
 /***/ },
 
-/***/ 188:
+/***/ 195:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2515,7 +2515,7 @@
 	;(function () {
 	    'use strict';
 
-	    var _utils = __webpack_require__(187).utils;
+	    var _utils = __webpack_require__(194).utils;
 	    var Message = function Message(type, id) {
 	        if (!this instanceof Message) {
 	            return new Message(type);

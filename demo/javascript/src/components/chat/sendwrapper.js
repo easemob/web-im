@@ -63,18 +63,20 @@ module.exports = React.createClass({
             roomType: chatroom,
             success: function ( id ) {
                 log('send success', id);
-                me.refs.textarea.value = '';
                 me.state.showEmoji && me.setState({ showEmoji: false });
             }
         });
 
         if ( Demo.selectedCate === 'groups' ) {
             msg.setGroup(Demo.groupType);
-        } else if ( chatrooms ) {
+        } else if ( chatroom ) {
             msg.setGroup(Demo.groupType);
         }
 
         this.props.send(msg.body);
+        this.refs.textarea.value = '';
+
+        return false;
     },
 
     showEmoji: function () {
@@ -115,7 +117,7 @@ module.exports = React.createClass({
 				</div>
                 <ul ref='emoji' onClick={this.selectEmoji} className={showEmoji}></ul>
 				<textarea ref='textarea' onKeydown={this.handleKeyDown}></textarea>
-				<Button className={'webim-send-btn base-bgcolor' + disabled} text={Demo.lan.send} click={this.sendText} />
+				<Button className={'webim-send-btn base-bgcolor' + disabled} text={Demo.lan.send} onClick={this.sendText} />
             </div>
         );
     }

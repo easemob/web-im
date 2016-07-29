@@ -36,7 +36,7 @@ module.exports = React.createClass({
         return (
             <div className={'webim-chatwindow ' + this.props.className}>
                 <p className='webim-chatwindow-title'>
-                    {this.props.cur}
+                    {this.props.name}
                     <i className={'webim-down-icon font smaller' + isGroup} onClick={this.listMember}></i>
                 </p>
 				<ul ref='member' className={'webim-group-memeber' + className}></ul>

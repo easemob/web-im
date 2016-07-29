@@ -1,0 +1,22 @@
+/*
+ * loading
+ */
+.webim-loading {
+    position: absolute;
+    z-index: 3;
+    background-color: #FAFAFA;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+
+    img {
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 24px;
+    }
+}

@@ -54,7 +54,7 @@ module.exports = React.createClass({
             },
             error: function ( e ) {
                 submiting = false;
-                Notify.error(e);
+                Notify.error(e.data);
             },
             apiUrl: this.props.config.apiURL
         };
@@ -63,7 +63,7 @@ module.exports = React.createClass({
 
     render: function () {
         return (
-            <div className={this.props.show ? 'webim-sign' : 'webim-sign hide'}>
+            <div className={this.props.show ? 'webim-sign webim-signup' : 'webim-sign webim-signup hide'}>
                 <h2>Sign Up</h2>
                 <Input ref='name' placeholder={Demo.lan.username} defaultFocus='true' keydown={this.keyDown} />
                 <Input ref='auth' placeholder={Demo.lan.password} type='password' keydown={this.keyDown} />

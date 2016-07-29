@@ -31,6 +31,11 @@ var Subscribe = React.createClass({
             message: '[resp:true]'
         });
 
+        Demo.conn.subscribe({
+            to: name,
+            message: '[resp:true]'
+        });
+
         this.check(li);
 	},
 
