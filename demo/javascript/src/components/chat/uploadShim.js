@@ -47,7 +47,7 @@ module.exports = function ( options ) {
                         this.cancelUpload();
                     }
                     if ( 10485760 < file.size ) {
-                        Notify.error('请上传大小不超过10M的文件');
+                        Notify.error(Demo.lan.exceed);
                         this.cancelUpload();
                     } else if ( Demo.IMGTYPE[file.type.slice(1).toLowerCase()] ) {
                         this.filetype = 'img';
@@ -59,7 +59,7 @@ module.exports = function ( options ) {
                         this.filetype = 'file';
                         startUpload();
                     } else {
-                        Notify.error('不支持此类型' + file.type);
+                        Notify.error(Demo.lan.invalidType + file.type);
                         this.cancelUpload();
                     }
                 }
@@ -68,7 +68,7 @@ module.exports = function ( options ) {
                     && code != SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED 
                     && code != SWFUpload.UPLOAD_ERROR.FILE_VALIDATION_FAILED ) {
                         Demo.api.appendMsg({
-                            data: '文件发送失败',
+                            data: Demo.lan.uploadFileFailed,
                             to: Demo.selected
                         }, 'txt');
                     }
@@ -98,7 +98,7 @@ module.exports = function ( options ) {
                             },
                             file: file,
                             to: Demo.selected,
-                            roomType: Demo.selectedCate === 'chatroom',
+                            roomType: Demo.selectedCate === 'chatrooms',
                             success: function ( id ) {
                                 Demo.api.appendMsg({
                                     data: file.url,
@@ -110,9 +110,9 @@ module.exports = function ( options ) {
 
                         msg.set(opt);
 
-                        if ( Demo.selectedCate === 'group' ) {
+                        if ( Demo.selectedCate === 'groups' ) {
                             msg.setGroup(Demo.groupType);
-                        } else if ( Demo.selectedCate === 'chatroom' ) {
+                        } else if ( Demo.selectedCate === 'chatrooms' ) {
                             msg.setGroup(Demo.groupType);
                         }
 

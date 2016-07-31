@@ -23,7 +23,6 @@ var Notify = React.createClass({
         return (
             <p onClick={this.click} className={'webim-notify' + className}>
                 {this.props.content}
-                <i onClick={this.close}>x</i>
             </p>
         );
     }

@@ -1,12 +1,11 @@
-var React = require("react");
-var ReactDOM = require('react-dom');
-var Webim = require('./components/webim');
-var Emotions = require('./components/chat/emotions');
+require('../../stylesheet/demo.scss');
+
 var Api = require('./api');
+var Emoji = require('./components/chat/emoji');
+var Language = require('./components/language');
 
-// import emotions
-WebIM.EMOTIONS = Emotions;
-
+// import emoji
+WebIM.Emoji = Emoji;
 
 
 // global log method
@@ -15,6 +14,10 @@ window.log = Api.log;
 window.Demo = {
     groupType: 'groupchat'
 };
+
+// import language package
+Demo.lan = Language.English;
+// Demo.lan = Language.Chinese;
 
 // for webview in client
 Demo.api = Api;
@@ -42,6 +45,7 @@ Demo.AUDIOTYPE = {
     amr: 1,
     wmv: 1
 };
+
 // initialize webIM connection
 Demo.conn = new WebIM.connection({
     multiResources: WebIM.config.multiResources,
@@ -49,18 +53,4 @@ Demo.conn = new WebIM.connection({
     url: WebIM.config.xmppURL
 });
 
-var mainNode = document.getElementById('demo');
-
-var render = function () {
-	ReactDOM.render(
-		<Webim config={WebIM.config} close={unMount} />,
-		mainNode
-	);
-};
-
-var unMount = function () {
-    ReactDOM.unmountComponentAtNode(mainNode);
-	render();
-};
-
-render();
+Demo.api.render(document.getElementById('demo'));

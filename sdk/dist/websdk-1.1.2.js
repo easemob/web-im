@@ -34,7 +34,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "./";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
@@ -50,9 +50,9 @@
 	;(function (window, undefined) {
 
 	    var _version = '1.1.2';
-	    var _code = __webpack_require__(182).code;
-	    var _utils = __webpack_require__(183).utils;
-	    var _msg = __webpack_require__(184);
+	    var _code = __webpack_require__(209).code;
+	    var _utils = __webpack_require__(210).utils;
+	    var _msg = __webpack_require__(211);
 	    var _message = _msg._msg;
 	    var _msgHash = {};
 
@@ -122,7 +122,7 @@
 	        }
 	    };
 
-	    var _parseRoomFn = function _parseRoomFn(result) {
+	    var _parseRoom = function _parseRoom(result) {
 	        var rooms = [];
 	        var items = result.getElementsByTagName('item');
 	        if (items) {
@@ -141,7 +141,7 @@
 	        return rooms;
 	    };
 
-	    var _parseRoomOccupantsFn = function _parseRoomOccupantsFn(result) {
+	    var _parseRoomOccupants = function _parseRoomOccupants(result) {
 	        var occupants = [];
 	        var items = result.getElementsByTagName('item');
 	        if (items) {
@@ -218,7 +218,7 @@
 	        return tempstr;
 	    };
 
-	    var _parseFriendFn = function _parseFriendFn(queryTag) {
+	    var _parseFriend = function _parseFriend(queryTag) {
 	        var rouster = [];
 	        var items = queryTag.getElementsByTagName('item');
 	        if (items) {
@@ -255,7 +255,7 @@
 	        return rouster;
 	    };
 
-	    var _dologin2IM = function _dologin2IM(options, conn) {
+	    var _login = function _login(options, conn) {
 	        var accessToken = options.access_token || '';
 	        if (accessToken == '') {
 	            var loginfo = _utils.stringify(options);
@@ -282,7 +282,7 @@
 	        }
 
 	        var callback = function callback(status, msg) {
-	            _login2ImCallback(status, msg, conn);
+	            _loginCallback(status, msg, conn);
 	        };
 
 	        conn.context.stropheConn = stropheConn;
@@ -307,7 +307,7 @@
 	        return msgtype;
 	    };
 
-	    var _handleQueueMessage = function _handleQueueMessage(conn) {
+	    var _handleMessageQueue = function _handleMessageQueue(conn) {
 	        for (var i in _msgHash) {
 	            if (_msgHash.hasOwnProperty(i)) {
 	                _msgHash[i].send(conn);
@@ -315,7 +315,7 @@
 	        }
 	    };
 
-	    var _login2ImCallback = function _login2ImCallback(status, msg, conn) {
+	    var _loginCallback = function _loginCallback(status, msg, conn) {
 	        if (status == Strophe.Status.CONNFAIL) {
 	            conn.onError({
 	                type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
@@ -357,7 +357,7 @@
 
 	            conn.context.status = _code.STATUS_OPENED;
 
-	            var supportRecMessage = [_code.WEBIM_MESSAGE_REC_TEXT, _code.WEBIM_MESSAGE_REC_EMOTION];
+	            var supportRecMessage = [_code.WEBIM_MESSAGE_REC_TEXT, _code.WEBIM_MESSAGE_REC_EMOJI];
 
 	            if (_utils.isCanDownLoadFile) {
 	                supportRecMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
@@ -369,13 +369,13 @@
 	                supportSedMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
 	            }
 	            conn.notifyVersion();
-	            conn.retry && _handleQueueMessage(conn);
+	            conn.retry && _handleMessageQueue(conn);
+	            conn.heartBeat();
 	            conn.onOpened({
 	                canReceive: supportRecMessage,
 	                canSend: supportSedMessage,
 	                accessToken: conn.context.accessToken
 	            });
-	            conn.heartBeat();
 	        } else if (status == Strophe.Status.DISCONNECTING) {
 	            if (conn.isOpened()) {
 	                conn.stopHeartBeat();
@@ -417,7 +417,7 @@
 	        return jid;
 	    };
 
-	    var _innerCheck = function _innerCheck(options, conn) {
+	    var _validCheck = function _validCheck(options, conn) {
 	        options = options || {};
 
 	        if (options.user == '') {
@@ -520,11 +520,11 @@
 	    };
 
 	    connection.prototype.listen = function (options) {
-	        options.url && (this.url = _getXmppUrl(options.url, this.https)); //just compatible
+	        options.url && (this.url = _getXmppUrl(options.url, this.https));
 	        this.onOpened = options.onOpened || _utils.emptyfn;
 	        this.onClosed = options.onClosed || _utils.emptyfn;
 	        this.onTextMessage = options.onTextMessage || _utils.emptyfn;
-	        this.onEmotionMessage = options.onEmotionMessage || _utils.emptyfn;
+	        this.onEmojiMessage = options.onEmojiMessage || _utils.emptyfn;
 	        this.onPictureMessage = options.onPictureMessage || _utils.emptyfn;
 	        this.onAudioMessage = options.onAudioMessage || _utils.emptyfn;
 	        this.onVideoMessage = options.onVideoMessage || _utils.emptyfn;
@@ -588,7 +588,7 @@
 	    };
 
 	    connection.prototype.open = function (options) {
-	        var pass = _innerCheck(options, this);
+	        var pass = _validCheck(options, this);
 
 	        if (!pass) {
 	            return;
@@ -602,7 +602,7 @@
 
 	        if (options.accessToken) {
 	            options.access_token = options.accessToken;
-	            _dologin2IM(options, conn);
+	            _login(options, conn);
 	        } else {
 	            var apiUrl = options.apiUrl;
 	            var userId = this.context.userId;
@@ -612,7 +612,7 @@
 
 	            var suc = function suc(data, xhr) {
 	                conn.context.status = _code.STATUS_DOLOGIN_IM;
-	                _dologin2IM(data, conn);
+	                _login(data, conn);
 	            };
 	            var error = function error(res, xhr, msg) {
 	                conn.clear();
@@ -651,8 +651,9 @@
 	        }
 	    };
 
+	    // attach to xmpp server
 	    connection.prototype.attach = function (options) {
-	        var pass = _innerCheck(options, this);
+	        var pass = _validCheck(options, this);
 
 	        if (!pass) {
 	            return;
@@ -696,7 +697,7 @@
 
 	        var conn = this;
 	        var callback = function callback(status, msg) {
-	            _login2ImCallback(status, msg, conn);
+	            _loginCallback(status, msg, conn);
 	        };
 
 	        var jid = this.context.jid;
@@ -744,15 +745,11 @@
 	        return;
 	    };
 
+	    // handle all types of presence message
 	    connection.prototype.handlePresence = function (msginfo) {
 	        if (this.isClosed()) {
 	            return;
 	        }
-	        //TODO: maybe we need add precense ack?
-	        //var id = msginfo.getAttribute('id') || '';
-	        //this.sendReceiptsMessage({
-	        //    id: id
-	        //});
 
 	        var from = msginfo.getAttribute('from') || '';
 	        var to = msginfo.getAttribute('to') || '';
@@ -814,24 +811,24 @@
 	                    info.type = 'joinChatRoomSuccess';
 	                } else if (presence_type === 'unavailable' || info.type === 'unavailable') {
 	                    if (!info.status) {
-	                        // Web logout normally.   web正常退出
+	                        // logout successfully.
 	                        info.type = 'leaveChatRoom';
 	                    } else if (info.code == 110) {
-	                        // APP logout or kicked out by the administrator.  app先退或被管理员踢
+	                        // logout or dismissied by admin.
 	                        info.type = 'leaveChatRoom';
 	                    } else if (info.error && info.error.code == 406) {
-	                        // The chat room is full. Cannot join the chat room.  聊天室人已满，无法加入
-	                        info.type = 'joinChatRoomFailed';
+	                        // The chat room is full.
+	                        info.type = 'reachChatRoomCapacity';
 	                    }
 	                }
 	            }
 	        } else if (presence_type === 'unavailable' || type === 'unavailable') {
-	            // There is no roomtype when a chat room is deleted.  聊天室被删除没有roomtype, 需要区分群组被踢和解散
+	            // There is no roomtype when a chat room is deleted.
 	            if (info.destroy) {
-	                // The group or chat room is deleted.   群组和聊天室被删除
+	                // Group or Chat room Deleted.
 	                info.type = 'deleteGroupChat';
 	            } else if (info.code == 307 || info.code == 321) {
-	                // Kicked out of a group  群组被踢
+	                // Dismissed by group.
 	                info.type = 'leaveGroup';
 	            }
 	        }
@@ -868,7 +865,7 @@
 	        var msgBodies = e.getElementsByTagName('query');
 	        if (msgBodies && msgBodies.length > 0) {
 	            var queryTag = msgBodies[0];
-	            var rouster = _parseFriendFn(queryTag);
+	            var rouster = _parseFriend(queryTag);
 	            this.onRoster(rouster);
 	        }
 	        return true;
@@ -880,6 +877,8 @@
 	        }
 
 	        var id = msginfo.getAttribute('id') || '';
+
+	        // send ack
 	        this.sendReceiptsMessage({
 	            id: id
 	        });
@@ -920,19 +919,19 @@
 	                switch (type) {
 	                    case 'txt':
 	                        var receiveMsg = msgBody.msg;
-	                        var emotionsbody = _utils.parseTextMessage(receiveMsg, WebIM.EMOTIONS);
-	                        if (emotionsbody.isemotion) {
+	                        var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
+	                        if (emojibody.isemoji) {
 	                            var msg = {
 	                                id: id,
 	                                type: chattype,
 	                                from: from,
 	                                to: too,
 	                                delay: parseMsgData.delayTimeStamp,
-	                                data: emotionsbody.body,
+	                                data: emojibody.body,
 	                                ext: extmsg
 	                            };
 	                            !msg.delay && delete msg.delay;
-	                            this.onEmotionMessage(msg);
+	                            this.onEmojiMessage(msg);
 	                        } else {
 	                            var msg = {
 	                                id: id,
@@ -1216,7 +1215,7 @@
 	            var msgBodies = ele.getElementsByTagName('query');
 	            if (msgBodies && msgBodies.length > 0) {
 	                var queryTag = msgBodies[0];
-	                rouster = _parseFriendFn(queryTag);
+	                rouster = _parseFriend(queryTag);
 	            }
 	            suc(rouster, ele);
 	        };
@@ -1321,7 +1320,7 @@
 	        var error = options.error || this.onError;
 	        var completeFn = function completeFn(result) {
 	            var rooms = [];
-	            rooms = _parseRoomFn(result);
+	            rooms = _parseRoom(result);
 	            try {
 	                suc(rooms);
 	            } catch (e) {
@@ -1414,7 +1413,7 @@
 	        var suc = options.success || _utils.emptyfn;
 	        var completeFn = function completeFn(result) {
 	            var occupants = [];
-	            occupants = _parseRoomOccupantsFn(result);
+	            occupants = _parseRoomOccupants(result);
 	            suc(occupants);
 	        };
 	        var err = options.error || _utils.emptyfn;
@@ -1618,7 +1617,7 @@
 
 /***/ },
 
-/***/ 182:
+/***/ 209:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1705,7 +1704,7 @@
 
 /***/ },
 
-/***/ 183:
+/***/ 210:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1715,7 +1714,7 @@
 	;(function () {
 
 	    var EMPTYFN = function EMPTYFN() {},
-	        _code = __webpack_require__(182).code,
+	        _code = __webpack_require__(209).code,
 	        WEBIM_FILESIZE_LIMIT;
 
 	    var _createStandardXHR = function _createStandardXHR() {
@@ -1933,7 +1932,7 @@
 	            return utils.ajax(options);
 	        },
 
-	        login2UserGrid: function login2UserGrid(options) {
+	        login: function login(options) {
 	            var options = options || {};
 	            var suc = options.success || EMPTYFN;
 	            var err = options.error || EMPTYFN;
@@ -2013,7 +2012,7 @@
 	            }
 	        },
 
-	        getFileSizeFn: function getFileSizeFn(fileInputId) {
+	        getFileSize: function getFileSize(fileInputId) {
 	            var file = document.getElementById(fileInputId);
 	            var fileSize = 0;
 	            if (file) {
@@ -2040,17 +2039,17 @@
 	            return str.trim ? str.trim() : str.replace(/^\s|\s$/g, '');
 	        },
 
-	        parseEmotions: function parseEmotions(msg) {
-	            if (typeof WebIM.EMOTIONS === 'undefined' || typeof WebIM.EMOTIONS.map === 'undefined') {
+	        parseEmoji: function parseEmoji(msg) {
+	            if (typeof WebIM.Emoji === 'undefined' || typeof WebIM.Emoji.map === 'undefined') {
 	                return msg;
 	            } else {
-	                var emotion = WebIM.EMOTIONS,
+	                var emoji = WebIM.Emoji,
 	                    reg = null;
 
-	                for (var face in emotion.map) {
-	                    if (emotion.map.hasOwnProperty(face)) {
+	                for (var face in emoji.map) {
+	                    if (emoji.map.hasOwnProperty(face)) {
 	                        while (msg.indexOf(face) > -1) {
-	                            msg = msg.replace(face, '<img class="emotion" src="' + emotion.path + emotion.map[face] + '" />');
+	                            msg = msg.replace(face, '<img class="emoji" src="' + emoji.path + emoji.map[face] + '" />');
 	                        }
 	                    }
 	                }
@@ -2119,16 +2118,15 @@
 	                return;
 	            }
 
-	            var orgName = options.orgName || this.context.orgName || '';
-	            var appName = options.appName || this.context.appName || '';
+	            var orgName, appName, devInfos;
 	            var appKey = options.appKey || this.context.appKey || '';
-	            if (!orgName && !appName && appKey) {
-	                var devInfos = appKey.split('#');
-	                if (devInfos.length === 2) {
-	                    orgName = devInfos[0];
-	                    appName = devInfos[1];
-	                }
+
+	            if (appKey) {
+	                devInfos = appKey.split('#');
+	                orgName = devInfos[0];
+	                appName = devInfos[1];
 	            }
+
 	            if (!orgName && !appName) {
 	                options.onFileUploadError({
 	                    type: _code.WEBIM_UPLOADFILE_ERROR,
@@ -2329,7 +2327,7 @@
 	            }
 	            if (Object.prototype.toString.call(faces) !== '[object Object]') {
 	                return {
-	                    isemotion: false,
+	                    isemoji: false,
 	                    body: [{
 	                        type: 'txt',
 	                        data: message
@@ -2340,21 +2338,21 @@
 	            var receiveMsg = message;
 	            var emessage = [];
 	            var expr = /\[[^[\]]{2,3}\]/mg;
-	            var emotions = receiveMsg.match(expr);
+	            var emoji = receiveMsg.match(expr);
 
-	            if (!emotions || emotions.length < 1) {
+	            if (!emoji || emoji.length < 1) {
 	                return {
-	                    isemotion: false,
+	                    isemoji: false,
 	                    body: [{
 	                        type: 'txt',
 	                        data: message
 	                    }]
 	                };
 	            }
-	            var isemotion = false;
-	            for (var i = 0; i < emotions.length; i++) {
-	                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emotions[i])),
-	                    existEmotion = WebIM.EMOTIONS.map[emotions[i]];
+	            var isemoji = false;
+	            for (var i = 0; i < emoji.length; i++) {
+	                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emoji[i])),
+	                    existEmoji = WebIM.Emoji.map[emoji[i]];
 
 	                if (tmsg) {
 	                    emessage.push({
@@ -2362,28 +2360,28 @@
 	                        data: tmsg
 	                    });
 	                }
-	                if (!existEmotion) {
+	                if (!existEmoji) {
 	                    emessage.push({
 	                        type: 'txt',
-	                        data: emotions[i]
+	                        data: emoji[i]
 	                    });
 	                    continue;
 	                }
-	                var emotion = WebIM.EMOTIONS.map ? WebIM.EMOTIONS.path + existEmotion : null;
+	                var emoji = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
 
-	                if (emotion) {
-	                    isemotion = true;
+	                if (emoji) {
+	                    isemoji = true;
 	                    emessage.push({
-	                        type: 'emotion',
-	                        data: emotion
+	                        type: 'emoji',
+	                        data: emoji
 	                    });
 	                } else {
 	                    emessage.push({
 	                        type: 'txt',
-	                        data: emotions[i]
+	                        data: emoji[i]
 	                    });
 	                }
-	                var restMsgIndex = receiveMsg.indexOf(emotions[i]) + emotions[i].length;
+	                var restMsgIndex = receiveMsg.indexOf(emoji[i]) + emoji[i].length;
 	                receiveMsg = receiveMsg.substring(restMsgIndex);
 	            }
 	            if (receiveMsg) {
@@ -2392,14 +2390,14 @@
 	                    data: receiveMsg
 	                });
 	            }
-	            if (isemotion) {
+	            if (isemoji) {
 	                return {
-	                    isemotion: isemotion,
+	                    isemoji: isemoji,
 	                    body: emessage
 	                };
 	            }
 	            return {
-	                isemotion: false,
+	                isemoji: false,
 	                body: [{
 	                    type: 'txt',
 	                    data: message
@@ -2509,7 +2507,7 @@
 
 /***/ },
 
-/***/ 184:
+/***/ 211:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2517,7 +2515,7 @@
 	;(function () {
 	    'use strict';
 
-	    var _utils = __webpack_require__(183).utils;
+	    var _utils = __webpack_require__(210).utils;
 	    var Message = function Message(type, id) {
 	        if (!this instanceof Message) {
 	            return new Message(type);

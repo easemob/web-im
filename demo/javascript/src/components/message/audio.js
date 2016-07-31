@@ -27,6 +27,11 @@ var AudioMsg = React.createClass({
             me.refs.audio.onpause = function () {
                 me.setState({ status: 0 });
             };
+
+        };
+
+        options.onFileDownloadError = function () {
+            me.setState({ status: 0 });
         };
 
         options.headers = {
@@ -59,7 +64,7 @@ var AudioMsg = React.createClass({
             me.refs.audio.currentTime = 0;
         }
 
-        if ( !prevState.status && me.state.status && me.state.src ) {
+        if ( me.state.status && me.state.src ) {
             me.refs.audio.src = me.state.src;
         }
     },
@@ -73,8 +78,8 @@ var AudioMsg = React.createClass({
         var icon = this.props.className === 'left' ? 'H' : 'I';
 
         return (
-            <div className={'rel ' + this.props.className}>
-                <Avatar src={this.props.src} className={this.props.className} />
+            <div className={'rel pointer ' + this.props.className}>
+                <Avatar src={this.props.src} className={this.props.className + ' small'} />
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
                 <div className='webim-msg-value'>
                     <span className='webim-msg-icon font'>{icon}</span>
@@ -91,8 +96,8 @@ var AudioMsg = React.createClass({
 
 module.exports = function ( options, sentByMe ) {
     var props = {
-        src: options.avatar || 'demo/images/group_user.png',
-        time: options.time || new Date().toLocaleDateString(),
+        src: options.avatar || 'demo/images/default.png',
+        time: options.time || new Date().toLocaleString(),
         value: options.value || '',
         name: options.name,
         length: options.length || '',
@@ -102,6 +107,8 @@ module.exports = function ( options, sentByMe ) {
     var node = document.createElement('div');
     node.className = 'webim-msg-container rel';
     options.wrapper.appendChild(node);
+
+    Demo.api.scrollIntoView(node);
 
     return ReactDOM.render(
 		<AudioMsg {...props} className={sentByMe ? 'right' : 'left'} />,

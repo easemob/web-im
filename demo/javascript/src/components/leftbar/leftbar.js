@@ -14,6 +14,9 @@ module.exports = React.createClass({
         return null;
     },
 
+    shouldComponentUpdate: function ( nextProps, nextState ) {
+        return nextProps.cur !== Demo.selectedCate;
+    },
 
     updateFriend: function () {
         Demo.selectedCate = 'friends';
@@ -43,7 +46,7 @@ module.exports = React.createClass({
                 <Cate name='group' update={this.updateGroup} cur={this.props.cur} />
                 <Cate name='stranger' update={this.updateStranger} cur={this.props.cur} />
                 <Cate name='chatroom' update={this.updateChatroom} cur={this.props.cur} />
-                <Operations close={this.props.close} />
+                <Operations />
             </div>
         );
     }

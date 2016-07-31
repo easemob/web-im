@@ -217,7 +217,7 @@
             return utils.ajax(options);
         }
 
-        , login2UserGrid: function ( options ) {
+        , login: function ( options ) {
             var options = options || {};
             var suc = options.success || EMPTYFN;
             var err = options.error || EMPTYFN;
@@ -300,7 +300,7 @@
             }
         }
 
-        , getFileSizeFn: function ( fileInputId ) {
+        , getFileSize: function ( fileInputId ) {
             var file = document.getElementById(fileInputId)
             var fileSize = 0;
             if ( file ) {
@@ -329,17 +329,17 @@
                 : str.replace(/^\s|\s$/g, '');
         }
 
-        , parseEmotions: function ( msg ) {
-            if ( typeof WebIM.EMOTIONS === 'undefined' || typeof WebIM.EMOTIONS.map === 'undefined' ) {
+        , parseEmoji: function ( msg ) {
+            if ( typeof WebIM.Emoji === 'undefined' || typeof WebIM.Emoji.map === 'undefined' ) {
                 return msg;
             } else {
-                var emotion = WebIM.EMOTIONS,
+                var emoji = WebIM.Emoji,
                     reg = null;
 
-                for ( var face in emotion.map ) {
-                    if ( emotion.map.hasOwnProperty(face) ) {
+                for ( var face in emoji.map ) {
+                    if ( emoji.map.hasOwnProperty(face) ) {
                         while ( msg.indexOf(face) > -1 ) {
-                            msg = msg.replace(face, '<img class="emotion" src="' + emotion.path + emotion.map[face] + '" />');
+                            msg = msg.replace(face, '<img class="emoji" src="' + emoji.path + emoji.map[face] + '" />');
                         }
                     }
                 }
@@ -422,16 +422,15 @@
                 return;
             }
 
-            var orgName = options.orgName || this.context.orgName || '';
-            var appName = options.appName || this.context.appName || '';
+            var orgName, appName, devInfos;
             var appKey = options.appKey || this.context.appKey || '';
-            if ( !orgName && !appName && appKey ) {
-                var devInfos = appKey.split('#');
-                if ( devInfos.length === 2 ) {
-                    orgName = devInfos[0];
-                    appName = devInfos[1];
-                }
+
+            if ( appKey ) {
+                devInfos = appKey.split('#');
+                orgName = devInfos[0];
+                appName = devInfos[1];
             }
+
             if ( !orgName && !appName ) {
                 options.onFileUploadError({
                     type: _code.WEBIM_UPLOADFILE_ERROR
@@ -632,7 +631,7 @@
             }
             if ( Object.prototype.toString.call(faces) !== '[object Object]' ) {
                 return {
-                    isemotion: false
+                    isemoji: false
                     , body: [
                         {
                             type: 'txt'
@@ -645,11 +644,11 @@
             var receiveMsg = message;
             var emessage = [];
             var expr = /\[[^[\]]{2,3}\]/mg;
-            var emotions = receiveMsg.match(expr);
+            var emoji = receiveMsg.match(expr);
 
-            if ( !emotions || emotions.length < 1 ){
+            if ( !emoji || emoji.length < 1 ){
                 return {
-                    isemotion: false
+                    isemoji: false
                     , body: [
                         {
                             type: 'txt'
@@ -658,10 +657,10 @@
                     ]
                 };
             }
-            var isemotion = false;
-            for ( var i = 0; i < emotions.length; i++ ) {
-                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emotions[i])),
-                    existEmotion = WebIM.EMOTIONS.map[emotions[i]];
+            var isemoji = false;
+            for ( var i = 0; i < emoji.length; i++ ) {
+                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emoji[i])),
+                    existEmoji = WebIM.Emoji.map[emoji[i]];
 
                 if ( tmsg ) {
                     emessage.push({
@@ -669,28 +668,28 @@
                         , data: tmsg
                     });
                 }
-                if ( !existEmotion ) {
+                if ( !existEmoji ) {
                     emessage.push({
                         type: 'txt'
-                        , data: emotions[i]
+                        , data: emoji[i]
                     });
                     continue;
                 }
-                var emotion = WebIM.EMOTIONS.map ? WebIM.EMOTIONS.path + existEmotion : null;
+                var emoji = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
 
-                if ( emotion ) {
-                    isemotion = true;
+                if ( emoji ) {
+                    isemoji = true;
                     emessage.push({
-                        type: 'emotion'
-                        , data: emotion
+                        type: 'emoji'
+                        , data: emoji
                     });
                 } else {
                     emessage.push({
                         type: 'txt'
-                        , data: emotions[i]
+                        , data: emoji[i]
                     });
                 }
-                var restMsgIndex = receiveMsg.indexOf(emotions[i]) + emotions[i].length;
+                var restMsgIndex = receiveMsg.indexOf(emoji[i]) + emoji[i].length;
                 receiveMsg = receiveMsg.substring(restMsgIndex);
             }
             if ( receiveMsg ) {
@@ -699,14 +698,14 @@
                     , data: receiveMsg
                 });
             }
-            if ( isemotion ) {
+            if ( isemoji ) {
                 return {
-                    isemotion: isemotion
+                    isemoji: isemoji
                     , body: emessage
                 };
             }
             return {
-                isemotion: false
+                isemoji: false
                 , body: [
                     {
                         type: 'txt'

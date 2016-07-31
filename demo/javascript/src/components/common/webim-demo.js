@@ -4,7 +4,7 @@ var React = require("react");
 exports.Input = React.createClass({
 
     handleChange: function () {
-        this.props.change(this.refs.input.value);
+        typeof this.props.change === 'function' && this.props.change(this.refs.input.value);
     },
 
     componentWillUnmount: function () {
@@ -36,7 +36,7 @@ exports.Button = React.createClass({
 
     render: function () {
         var className = this.props.className ? ' ' + this.props.className : '';
-        return <button className={'webim-button base-bgcolor' + className}  onClick={this.props.click}>{this.props.text}</button>;
+        return <button className={'webim-button bg-color' + className}  onClick={this.props.onClick}>{this.props.text}</button>;
     }
 });
 
@@ -72,14 +72,30 @@ exports.Radio = React.createClass({
 
 exports.Checkbox = React.createClass({
 
+    getInitialState: function () {
+        return {
+            checked: false
+        };
+    },
+
+    handleClick: function () {
+        this.refs.input.checked = !this.state.checked;
+        this.setState({ checked: !this.state.checked });
+    },
+
     handleChange: function () {
-        this.props.change(this.refs.input.checked);
+        typeof this.props.change === 'function' && this.props.change(this.refs.input.value);
     },
 
     render: function () {
+        var className = this.state.checked ? '' : ' hide';
+
         return (
-            <div>
-                <input ref='input' type='checkbox' className='webim-input' onChange={this.handleChange} />
+            <div className='webim-checkbox'>
+                <i className='bg-color' onClick={this.handleClick}>
+                    <em ref='rec' className={'font small' + className}>W</em>
+                </i>
+                <input ref='input' type='checkbox' className='hide' onChange={this.handleChange} />
                 <span>{this.props.text}</span>
             </div>
         );

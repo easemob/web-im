@@ -1,3 +1,8 @@
+var React = require("react");
+var ReactDOM = require('react-dom');
+
+var Webim = require('./components/webim');
+
 var textMsg = require('./components/message/txt');
 var imgMsg = require('./components/message/img');
 var fileMsg = require('./components/message/file');
@@ -7,6 +12,38 @@ var audioMsg = require('./components/message/audio');
 module.exports = {
     log: function () {
         console.log(arguments);
+    },
+
+    render: function ( node, change ) {
+        this.node = node;
+
+        var props = {};
+        switch ( change ) {
+            case 'roster':
+                props.rosterChange = true;
+                break;
+            case 'group':
+                props.groupChange = true;
+                break;   
+            case 'chatroom':
+                props.chatroomChange = true;
+                break;
+            default: 
+                props = null;
+                break;
+        };
+
+        if ( props ) {
+            ReactDOM.render(<Webim config={WebIM.config} close={this.logout} {...props} />, this.node);
+        } else {
+            ReactDOM.render(<Webim config={WebIM.config} close={this.logout} />, this.node);
+        }
+    },
+
+    logout: function () {
+        Demo.conn.close();
+        ReactDOM.unmountComponentAtNode(this.node);
+        this.render(this.node);
     },
 
     appendMsg: function ( msg, type ) {
@@ -28,20 +65,19 @@ module.exports = {
             return;
         }
 
-        
         switch ( type ) {
             case 'txt':
-                brief = WebIM.utils.parseEmotions(this.encode(data).replace(/\n/mg, ''));
+                brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
                 textMsg({
                     wrapper: targetNode,
                     name: name,
                     value: brief,
                 }, this.sentByMe);
                 break;
-            case 'emotion':
+            case 'emoji':
                 for ( var i = 0, l = data.length; i < l; i++ ) {
-                    brief += data[i].type === 'emotion' 
-                        ? '<img src="' + WebIM.utils.parseEmotions(this.encode(data[i].data)) +'" />'
+                    brief += data[i].type === 'emoji' 
+                        ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) +'" />'
                         : this.encode(data[i].data);
                 }
                 textMsg({
@@ -51,7 +87,7 @@ module.exports = {
                 }, this.sentByMe);
                 break;
             case 'img':
-                brief = '[图片]';
+                brief = '[' + Demo.lan.image + ']';
                 imgMsg({
                     wrapper: targetNode,
                     name: name,
@@ -59,7 +95,7 @@ module.exports = {
                 }, this.sentByMe);
                 break;
             case 'aud':
-                brief = '[音频]';
+                brief = '[' + Demo.lan.audio + ']';
                 audioMsg({
                     wrapper: targetNode,
                     name: name,
@@ -69,11 +105,11 @@ module.exports = {
                 }, this.sentByMe);
                 break;
             case 'cmd':
-                brief = '[命令消息]';
+                brief = '[' + Demo.lan.cmd + ']';
                 log(msg);
                 break;
             case 'file':
-                brief = '[文件]';
+                brief = '[' + Demo.lan.file + ']';
                 fileMsg({
                     wrapper: targetNode,
                     name: name,
@@ -82,7 +118,7 @@ module.exports = {
                 }, this.sentByMe);
                 break;
             case 'loc':
-                brief = '[位置]';
+                brief = '[' + Demo.lan.location + ']';
                 locMsg({
                     wrapper: targetNode,
                     name: name,
@@ -90,7 +126,7 @@ module.exports = {
                 }, this.sentByMe);
                 break;
             case 'video':
-                brief = '[视频]';
+                brief = '[' + Demo.lan.video + ']';
                 break;
             default: break;
         };
@@ -149,7 +185,31 @@ module.exports = {
 
     },
 
-    addContact: function () {
+    updateChatroom: function () {
+        this.render(this.node, 'chatroom');
+    },
+
+    updateRoster: function () {
+        this.render(this.node, 'roster');
+    },
+
+    updateGroup: function ( groupId ) {
+        this.render(this.node, 'group');
+    },
+
+    deleteFriend: function ( username ) {
+        Demo.conn.removeRoster({
+			to: username,
+			success: function () {
+				Demo.conn.unsubscribed({
+					to: username
+				});
+
+                var dom = document.getElementById(username);
+                dom && dom.parentNode.removeChild(dom);
+			},
+			error : function() {}
+		});
     },
 
     encode: function ( str ) {
@@ -163,5 +223,11 @@ module.exports = {
         s = s.replace(/\"/g, "&quot;");
         s = s.replace(/\n/g, "<br>");
         return s;
+    },
+
+    scrollIntoView: function ( node ) {
+        setTimeout(function () {
+            node.scrollIntoView(true);
+        }, 50);
     }
 };

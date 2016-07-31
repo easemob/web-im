@@ -10,16 +10,16 @@ var FileMsg = React.createClass({
 
         return (
             <div className={'rel ' + this.props.className}>
-                <Avatar src={this.props.src} className={this.props.className} />
+                <Avatar src={this.props.src} className={this.props.className + ' small'} />
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
-                <div className='webim-msg-value'>
+                <div className='webim-msg-value' style={{minWidth: '200px'}}>
                     <span className='webim-msg-icon font'>{icon}</span>
                     <div>
                         <p className='webim-msg-header'>File</p>
                         <div>
-                            <span className='webim-msg-header-icon font'>S</span>
+                            <span className='webim-msg-header-icon font small'>S</span>
                             <span className='webim-msg-name'>{this.props.filename}</span>
-                            <a target='_blank' href={this.props.value}>点击下载</a>
+                            <a target='_blank' href={this.props.value}>{Demo.lan.download}</a>
                         </div>
                     </div>
                 </div>
@@ -30,8 +30,8 @@ var FileMsg = React.createClass({
 
 module.exports = function ( options, sentByMe ) {
     var props = {
-        src: options.avatar || 'demo/images/group_user.png',
-        time: options.time || new Date().toLocaleDateString(),
+        src: options.avatar || 'demo/images/default.png',
+        time: options.time || new Date().toLocaleString(),
         value: options.value || '',
         name: options.name,
         filename: options.filename || ''
@@ -40,6 +40,8 @@ module.exports = function ( options, sentByMe ) {
     var node = document.createElement('div');
     node.className = 'webim-msg-container rel';
     options.wrapper.appendChild(node);
+
+    Demo.api.scrollIntoView(node);
 
     return ReactDOM.render(
 		<FileMsg {...props} className={sentByMe ? 'right' : 'left'} />,

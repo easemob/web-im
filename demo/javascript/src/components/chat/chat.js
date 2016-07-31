@@ -2,6 +2,8 @@ var React = require("react");
 var LeftBar = require('../leftbar/leftbar');
 var Contact = require('../contact/contact');
 var ChatWindow = require('../chat/chatwindow');
+var Notify = require('../common/notify');
+var Subscribe = require('./subscribe');
 
 
 
@@ -23,16 +25,15 @@ module.exports = React.createClass({
                 me.getChatroom();
             },
             onClosed: function ( msg ) {
-                if ( msg && msg.reconnect ) {
-
-                }
+                /*if ( msg && msg.reconnect ) {}*/
                 log('onClosed');
+                Demo.api.logout();
             },
             onTextMessage: function ( message ) {
                 Demo.api.appendMsg(message, 'txt');
             },
-            onEmotionMessage: function ( message ) {
-                Demo.api.appendMsg(message, 'emotion');
+            onEmojiMessage: function ( message ) {
+                Demo.api.appendMsg(message, 'emoj');
             },
             onPictureMessage: function ( message ) {
                 Demo.api.appendMsg(message, 'img');
@@ -53,19 +54,25 @@ module.exports = React.createClass({
                 Demo.api.appendMsg(message, 'video');
             },
             onPresence: function ( message ) {
-                log('onPresence');
-                //this.handlePresence(message);
+                me.handlePresence(message);
             },
             onRoster: function ( message ) {
-                log('onRoster');
+                me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function ( message ) {
-                log('onInviteMessage');
+                me.getGroup();
             },
             onOnline: function () {
                 log('online');
             },
+            onOffline: function () {
+                log('offline');
+                Demo.api.logout();
+            },
             onError: function ( message ) {
+
+                Notify.error(message.data && message.data.data ? message.data.data : 'Error: type=' + message.type);
+                Demo.api.logout();
                 log('onError', message);
             }
         });
@@ -80,97 +87,59 @@ module.exports = React.createClass({
         };
     },
 
-    /*handlePresence: function ( msg ) {
+    friendRequest: function ( msg ) {
+        Subscribe.show(msg);
+    },
+
+    componentWillReceiveProps: function ( nextProps ) {
+        if ( nextProps.groupChange ) {
+            this.getGroup();
+        } else if ( nextProps.rosterChange ) {
+            this.getRoster('doNotUpdateGroup');
+        } else if ( nextProps.chatroomChange ) {
+            this.getChatroom();
+        }
+    },
+
+    handlePresence: function ( msg ) {
+        var me = this;
+
         switch ( msg.type )  {
             case 'leaveGroup'://群组被踢
-                debugger
-                Demo.api.removeGroup(msg.to);
+                Demo.api.updateGroup();
                 break;
             case 'subscribe'://别人申请加你为好友
                 debugger
-                Demo.conn.subscribed({//agree
-                    to : msg.from,
-                    message : "[resp:true]"
-                });
-                Demo.conn.unsubscribed({//reject
-                    to : user,
-                    message : getLoacalTimeString()
-                });
+                me.friendRequest(msg);
                 break;
             case 'subscribed'://别人同意你加他为好友
                 debugger
-                /*toRoster.push({
-                    name : e.from,
-                    jid : e.fromJid,
-                    subscription : "to"
-                });
+                me.getRoster('doNotUpdateGroup');
                 break;
             case 'unsubscribe'://删除现有好友
-                debugger
             case 'unsubscribed'://对方单向的删除了好友
                 debugger
-                Demo.conn.removeRoster({
-                    to: msg.from,
-                    groups: [ 'default' ],
-                    success: function () {
-                        Demo.conn.unsubscribed({
-                            to: msg.from
-                        });
-                    }
-                });
                 break;
             case 'joinChatRoomSuccess'://加入聊天室成功
-                debugger
-                Demo.api.appendMsg({
-                    data: '加入聊天室成功',
-                    to: msg.from
-                }, 'txt');
+                Demo.currentChatroom = msg.from;
                 break;
-            case 'joinChatRoomFailed'://加入聊天室失败
-                debugger
-                Demo.api.appendMsg({
-                    data: '加入聊天室失败',
-                    to: msg.from
-                }, 'txt')
+            case 'reachChatRoomCapacity'://加入聊天室失败
+                Demo.currentChatroom = null;
+                Notify.error('加入聊天室失败');
                 break;
             case 'leaveChatRoom'://退出聊天室
-
                 break;
             case 'deleteGroupChat'://聊天室和群组被删除
-                var targetTmp1 = $('#' + curUserId + '-' + chatRoomMark + e.from),
-                    targetTmp2 = $('#' + curUserId + '-' + groupFlagMark + e.from),
-                    target = null;
+                var target = document.getElementById(msg.from);
 
-                if ( targetTmp1.length ) {
-                    appendMsg(curUserId, chatRoomMark + e.from, '聊天室已被删除', true);
-                    target = targetTmp1;
-                    if ( curChatRoomId &&  curChatRoomId == e.from) {
-                        curChatRoomId = null;
-                    }
-                    $('#' + chatRoomMark + e.from).remove();
-                    if ( curChatUserId === 'chatroom' + e.from ) {
-                        curChatUserId = null;
-                    }
-                } else if ( targetTmp2.length ) {
-                    appendMsg(curUserId, groupFlagMark + e.from, '群组已被删除', true);
-                    target = targetTmp2;
-                    curRoomId = null;
-                    $('#' + groupFlagMark + e.from).remove();
-                    if ( curChatUserId === e.from ) {
-                        curChatUserId = null;
-                    }
+                if ( target ) {
+                    Demo.api.updateGroup();
                 }
-                var el = $('#' + groupFlagMark + e.from),
-                    el2 = $('#' + chatRoomMark + e.from);
-
-                el && $(el).remove();
-                el2 && $(el2).remove();
-                setTimeout(function () { target && target.remove(); }, 1000);
                 break;
         };
-    },*/
+    },
 
-    getRoster: function () {
+    getRoster: function ( doNotUpdateGroup ) {
         var me = this,
             conn = Demo.conn,
             friends = [],
@@ -188,15 +157,21 @@ module.exports = React.createClass({
                 }
                 me.setState({ friends: friends });
                 
-                conn.listRooms({
-                    success: function ( rooms ) {
-                        conn.setPresence();
-                        me.setState({ groups: rooms });
-                    },
-                    error: function(e) {
-                        conn.setPresence();
-                    }
-                });
+                doNotUpdateGroup || me.getGroup();
+            }
+        });
+    },
+
+    getGroup: function () {
+        var me = this;
+
+        Demo.conn.listRooms({
+            success: function ( rooms ) {
+                Demo.conn.setPresence();
+                me.setState({ groups: rooms });
+            },
+            error: function(e) {
+                Demo.conn.setPresence();
             }
         });
     },
@@ -218,17 +193,8 @@ module.exports = React.createClass({
         });
     },
 
-    close: function () {
-        Demo.conn.close();
-        this.props.close();
-    },
-
-    componentWillUnmount: function () {
-        
-    },
-
-    update: function ( curNode ) {
-        this.setState({ cur: curNode });
+    update: function ( cur ) {
+        this.setState({ cur: cur });
     },
 
     updateNode: function ( id ) {
@@ -241,20 +207,22 @@ module.exports = React.createClass({
 
     pictureChange: function () {
         var me = this,
+            chatroom = Demo.selectedCate === 'chatrooms',
             url;
 
-        var msg = new WebIM.message.img(Demo.conn.getUniqueId());
+        var msg = new WebIM.message('img', Demo.conn.getUniqueId());
 
         msg.set({
             apiUrl: WebIM.config.apiURL,
             file: WebIM.utils.getFileUrl(me.refs.picture),
             to: Demo.selected,
+            roomType: chatroom,
             onFileUploadError: function ( error ) {
                 log(error);
                 me.refs.picture.value = null;
 
                 Demo.api.appendMsg({
-                    data: '发送图片失败',
+                    data: Demo.lan.sendImageFailed,
                     from: Demo.user,
                     to: Demo.selected
                 }, 'txt');
@@ -273,14 +241,11 @@ module.exports = React.createClass({
             flashUpload: WebIM.flashUpload
         });
 
-		/*if (curChatUserId.indexOf(groupFlagMark) >= 0) {
-			opt.type = groupFlagMark;
-			opt.to = curRoomId;
-		} else if (curChatUserId.indexOf(chatRoomMark) >= 0) {
-			opt.type = groupFlagMark;
-			opt.roomType = chatRoomMark;
-			opt.to = curChatRoomId;
-		}*/
+        if ( Demo.selectedCate === 'groups' ) {
+            msg.setGroup(Demo.groupType);
+        } else if ( chatroom ) {
+            msg.setGroup(Demo.groupType);
+        }
 
 		Demo.conn.send(msg.body);
     },
@@ -291,6 +256,7 @@ module.exports = React.createClass({
 
     sendAudioMsg: function ( file, duration ) {
         var msg = new WebIM.message.audio(Demo.conn.getUniqueId()),
+            chatroom = Demo.selectedCate === 'chatrooms',
             url,
             me = this;
 
@@ -298,13 +264,14 @@ module.exports = React.createClass({
             apiUrl: WebIM.config.apiURL,
             file: file,
             to: Demo.selected,
+            roomType: chatroom,
             length: duration || 0,
             onFileUploadError: function ( error ) {
                 log(error);
                 me.refs.audio.value = null;
 
                 Demo.api.appendMsg({
-                    data: '发送音频失败',
+                    data: Demo.lan.sendAudioFailed,
                     from: Demo.user,
                     to: Demo.selected
                 }, 'txt');
@@ -325,14 +292,11 @@ module.exports = React.createClass({
             flashUpload: WebIM.flashUpload
         });
 
-		/*if (curChatUserId.indexOf(groupFlagMark) >= 0) {
-			opt.type = groupFlagMark;
-			opt.to = curRoomId;
-		} else if (curChatUserId.indexOf(chatRoomMark) >= 0) {
-			opt.type = groupFlagMark;
-			opt.roomType = chatRoomMark;
-			opt.to = curChatRoomId;
-		}*/
+		if ( Demo.selectedCate === 'groups' ) {
+            msg.setGroup(Demo.groupType);
+        } else if ( chatroom ) {
+            msg.setGroup(Demo.groupType);
+        }
 
 		Demo.conn.send(msg.body);
     },
@@ -361,6 +325,7 @@ module.exports = React.createClass({
             url;
 
         var msg = new WebIM.message.file(Demo.conn.getUniqueId()),
+            chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.file),
             filename = file.filename;
 
@@ -369,12 +334,13 @@ module.exports = React.createClass({
             file: file,
             filename: filename,
             to: Demo.selected,
+            roomType: chatroom,
             onFileUploadError: function ( error ) {
                 log(error);
                 me.refs.file.value = null;
 
                 Demo.api.appendMsg({
-                    data: '发送文件失败',
+                    data: Demo.lan.sendFileFailed,
                     from: Demo.user,
                     to: Demo.selected
                 }, 'txt');
@@ -394,14 +360,11 @@ module.exports = React.createClass({
             flashUpload: WebIM.flashUpload
         });
 
-		/*if (curChatUserId.indexOf(groupFlagMark) >= 0) {
-			opt.type = groupFlagMark;
-			opt.to = curRoomId;
-		} else if (curChatUserId.indexOf(chatRoomMark) >= 0) {
-			opt.type = groupFlagMark;
-			opt.roomType = chatRoomMark;
-			opt.to = curChatRoomId;
-		}*/
+		if ( Demo.selectedCate === 'groups' ) {
+            msg.setGroup(Demo.groupType);
+        } else if ( chatroom ) {
+            msg.setGroup(Demo.groupType);
+        }
 
 		Demo.conn.send(msg.body);
     },
@@ -412,11 +375,12 @@ module.exports = React.createClass({
                 sendPicture: this.sendPicture,
                 sendAudio: this.sendAudio,
                 sendFile: this.sendFile,
-                cur: this.state.curNode
+                name: ''
             };
 
         for ( var i = 0; i < this.state.friends.length; i++ ) {
             id = this.state.friends[i].name;
+            props.name = id;
 
             windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
                 className={this.state.friends[i].name === this.state.curNode ? '' : 'hide'} />);
@@ -424,20 +388,23 @@ module.exports = React.createClass({
 
         for ( var i = 0; i < this.state.groups.length; i++ ) {
             id = this.state.groups[i].roomId;
+            props.name = this.state.groups[i].name;
 
-            windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} 
-                className={this.state.groups[i].name === this.state.curNode ? '' : 'hide'} />);
+            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} 
+                className={id === this.state.curNode ? '' : 'hide'} />);
         }
 
         for ( var i = 0; i < this.state.chatrooms.length; i++ ) {
             id = this.state.chatrooms[i].id;
+            props.name = this.state.chatrooms[i].name;
 
-            windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} 
-                className={this.state.chatrooms[i].name === this.state.curNode ? '' : 'hide'} />);
+            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} 
+                className={id === this.state.curNode ? '' : 'hide'} />);
         }
 
         for ( var i = 0; i < this.state.strangers.length; i++ ) {
             id = this.state.strangers[i].name;
+            props.name = id;
 
             windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
                 className={this.state.strangers[i].name === this.state.curNode ? '' : 'hide'} />);
@@ -445,7 +412,7 @@ module.exports = React.createClass({
 
         return (
             <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
-                <LeftBar cur={this.state.cur} update={this.update} close={this.close} />
+                <LeftBar cur={this.state.cur} update={this.update} />
                 <Contact cur={this.state.cur} curNode={this.state.curNode} updateNode={this.updateNode} update={this.update} 
                     friends={this.state.friends} groups={this.state.groups} chatrooms={this.state.chatrooms} strangers={this.state.strangers} />
                 {windows}
