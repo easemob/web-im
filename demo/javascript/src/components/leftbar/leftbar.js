@@ -14,6 +14,9 @@ module.exports = React.createClass({
         return null;
     },
 
+    shouldComponentUpdate: function ( nextProps, nextState ) {
+        return nextProps.cur !== Demo.selectedCate;
+    },
 
     updateFriend: function () {
         Demo.selectedCate = 'friends';

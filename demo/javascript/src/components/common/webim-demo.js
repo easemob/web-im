@@ -93,7 +93,7 @@ exports.Checkbox = React.createClass({
         return (
             <div className='webim-checkbox'>
                 <i className='bg-color' onClick={this.handleClick}>
-                    <em ref='rec' className={'font' + className}>W</em>
+                    <em ref='rec' className={'font small' + className}>W</em>
                 </i>
                 <input ref='input' type='checkbox' className='hide' onChange={this.handleChange} />
                 <span>{this.props.text}</span>

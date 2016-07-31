@@ -27,6 +27,11 @@ var AudioMsg = React.createClass({
             me.refs.audio.onpause = function () {
                 me.setState({ status: 0 });
             };
+
+        };
+
+        options.onFileDownloadError = function () {
+            me.setState({ status: 0 });
         };
 
         options.headers = {
@@ -59,7 +64,7 @@ var AudioMsg = React.createClass({
             me.refs.audio.currentTime = 0;
         }
 
-        if ( !prevState.status && me.state.status && me.state.src ) {
+        if ( me.state.status && me.state.src ) {
             me.refs.audio.src = me.state.src;
         }
     },
@@ -73,7 +78,7 @@ var AudioMsg = React.createClass({
         var icon = this.props.className === 'left' ? 'H' : 'I';
 
         return (
-            <div className={'rel ' + this.props.className}>
+            <div className={'rel pointer ' + this.props.className}>
                 <Avatar src={this.props.src} className={this.props.className + ' small'} />
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
                 <div className='webim-msg-value'>

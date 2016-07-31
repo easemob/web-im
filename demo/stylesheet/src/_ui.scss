@@ -54,8 +54,8 @@
     > i {
         position: relative;
         margin-right: 6px;
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
         border-radius: 2px;
         display: inline-block;
         vertical-align: middle;
@@ -63,12 +63,9 @@
 
         em {
             position: absolute;
-            left: -8px;
-            top: -12px;
+            left: -6px;
+            top: -10px;
             color: #000;
-            width: 36px;
-            height: 36px;
-            font-size: 36px;
         }
     }
 }

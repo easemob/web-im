@@ -32,20 +32,23 @@ module.exports = React.createClass({
          };
     },
 
-    componentDidMount: function () {
-        this.refs.textarea.addEventListener('keydown', this.handleKeyDown);
-    },
-
     handleKeyDown: function ( e ) {
         if ( e && e.keyCode === 13 ) {
-            this.sendText();
+            var me = this;
+
+            setTimeout(function () {
+                me.refs.textarea.value = '';
+            }, 0);
+
+            this.sendText(this.refs.textarea.value);
         }
+
+        return false;
     },
 
-    sendText: function () {
+    sendText: function ( value ) {
         var me = this,
-            chatroom = Demo.selectedCate === 'chatrooms',
-            value = me.refs.textarea.value;
+            chatroom = Demo.selectedCate === 'chatrooms';
 
         if ( !value ) { return; }
 
@@ -74,9 +77,6 @@ module.exports = React.createClass({
         }
 
         this.props.send(msg.body);
-        this.refs.textarea.value = '';
-
-        return false;
     },
 
     showEmoji: function () {
@@ -116,7 +116,7 @@ module.exports = React.createClass({
 					<span className='webim-file-icon font smaller' onClick={this.props.sendFile}>S</span>
 				</div>
                 <ul ref='emoji' onClick={this.selectEmoji} className={showEmoji}></ul>
-				<textarea ref='textarea' onKeydown={this.handleKeyDown}></textarea>
+				<textarea ref='textarea' onKeyDown={this.handleKeyDown}></textarea>
 				<Button className={'webim-send-btn base-bgcolor' + disabled} text={Demo.lan.send} onClick={this.sendText} />
             </div>
         );

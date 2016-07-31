@@ -3,18 +3,19 @@
   "version": "1.2.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {
-    "file-loader": "^0.9.0",
-    "react": "*"
-  },
   "devDependencies": {
+    "react": "*",
+    "react-dom": "*",
     "babel-core": "*",
     "babel-loader": "*",
     "babel-preset-es2015": "*",
     "babel-preset-react": "*",
-    "css-loader": "^0.23.1",
+    "css-loader": "*",
+    "node-sass": "*",
+    "sass-loader": "*",
+    "style-loader": "*",
+    "file-loader": "*",
     "line-numbers": "*",
-    "style-loader": "^0.13.1",
     "webpack": "*"
   },
   "scripts": {

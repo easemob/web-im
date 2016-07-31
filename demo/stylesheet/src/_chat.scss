@@ -28,6 +28,38 @@
         width: 100%;
         padding: 10px 15px;
     }
+
+    .webim-group-memeber {
+        position: absolute;
+        left: 0;    
+        right: 0;
+        top: 40px;
+        margin: auto;
+        border-radius: 2px;
+        width: 200px;
+        overflow: auto;
+        box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;
+        z-index: 2;
+        background: #fff;
+        max-height: 300px;
+
+        li {
+            height: 30px;
+            line-height: 30px;
+            padding: 0 4px;
+            box-sizing: border-box;
+            text-align: left;
+
+            > div {
+                display: inline-block;
+                vertical-align: middle;
+                margin: 0 6px;
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+    }
 }
 .webim-chatwindow-title {
     position: absolute;
@@ -37,6 +69,18 @@
     line-height: 40px;
     text-align: center;
     font-size: 14px;
+
+    i {
+        color: #cccccc;
+        display: inline-block;
+        vertical-align: middle;
+        cursor: pointer;
+        padding-bottom: 15px;
+
+        &.webim-up-icon {
+            transform: rotate(180deg);
+        }
+    }
 }
 .webim-chatwindow-options {
     border-top: 1px solid rgb(242, 242, 242);

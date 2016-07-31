@@ -31,7 +31,7 @@ module.exports = React.createClass({
         return (
             <div id={this.props.name + 's'} className='rel' onClick={this.props.update}>
                 <i title={describe} className={'webim-leftbar-icon font small' + cur}>{icon}</i>
-                <i ref='count' count='0' className='webim-msg-prompt webim-msg-icon-prompt' style={{display: 'none'}}></i>
+                <i className='webim-msg-prompt webim-msg-icon-prompt' style={{display: 'none'}}></i>
             </div>
         );
     }

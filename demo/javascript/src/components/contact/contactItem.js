@@ -15,7 +15,7 @@ module.exports = React.createClass({
 
     handleIconCount: function ( count ) {
         var curCate = document.getElementById(this.props.cate).getElementsByTagName('i')[1];
-        var curCateCount = curCate.getAttribute('count') / 1;
+        var curCateCount = curCate.getAttribute('data-count') / 1;
         curCateCount -= count;
 
         if ( curCateCount > 0 ) {
@@ -28,14 +28,13 @@ module.exports = React.createClass({
     },
 
     update: function () {
-        var count = this.refs.count.getAttribute('count') / 1;
+        var count = this.refs.i.getAttribute('count') / 1;
         this.handleIconCount(count);
 
-        this.refs.count.style.display = 'none';
-        this.refs.count.setAttribute('count', 0);
-        this.refs.count.innerText = '';
+        this.refs.i.style.display = 'none';
+        this.refs.i.setAttribute('count', 0);
+        this.refs.i.innerText = '';
 
-        // 重复点击
         if ( this.props.id === Demo.selected ) {
             return;
         }
@@ -60,6 +59,9 @@ module.exports = React.createClass({
 
         if ( Demo.selectedCate === 'chatrooms' ) {
 
+            document.getElementById('wrapper' + this.props.id).innerHTML = '';
+            document.getElementById(this.props.id).querySelector('em').innerHTML = '';
+
             // join chatroom
             Demo.conn.joinChatRoom({
                 roomId : this.props.id
@@ -75,9 +77,9 @@ module.exports = React.createClass({
         return (
             <div id={this.props.id} className={'webim-contact-item' + className} onClick={this.update}>
                 <Avatar src={this.props.src} />
-                {this.props.username}
+                <span>{this.props.username}</span>
                 <em></em>
-                <i ref='count' count='0' className='webim-msg-prompt' style={{display: 'none'}}></i>
+                <i ref='i' data-count='0' className='webim-msg-prompt' style={{display: 'none'}}></i>
             </div>
         );
     }
