@@ -20,6 +20,11 @@ var DelFriend = React.createClass({
         Demo.conn.removeRoster({
 			to: value,
 			success: function () {
+
+                if ( Demo.roster[value] ) {
+                    delete Demo.roster[value];
+                }
+
 				Demo.conn.unsubscribed({
 					to: value
 				});
