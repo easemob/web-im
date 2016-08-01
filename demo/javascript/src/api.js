@@ -8,6 +8,7 @@ var imgMsg = require('./components/message/img');
 var fileMsg = require('./components/message/file');
 var locMsg = require('./components/message/loc');
 var audioMsg = require('./components/message/audio');
+var videoMsg = require('./components/message/video');
 
 module.exports = {
     log: function () {
@@ -127,6 +128,13 @@ module.exports = {
                 break;
             case 'video':
                 brief = '[' + Demo.lan.video + ']';
+                videoMsg({
+                    wrapper: targetNode,
+                    name: name,
+                    value: data || msg.url,
+                    length: msg.length,
+                    id: msg.id
+                }, this.sentByMe);
                 break;
             default: break;
         };
