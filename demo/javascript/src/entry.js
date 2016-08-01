@@ -22,6 +22,8 @@ Demo.lan = Language.English;
 // for webview in client
 Demo.api = Api;
 
+Demo.roster = {};
+
 Demo.IMGTYPE = {
     gif: 1,
     bmp: 1,

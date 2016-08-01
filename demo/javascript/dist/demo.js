@@ -69,6 +69,8 @@
 	// for webview in client
 	Demo.api = Api;
 
+	Demo.roster = {};
+
 	Demo.IMGTYPE = {
 	    gif: 1,
 	    bmp: 1,
@@ -22631,38 +22633,43 @@
 
 	        switch (msg.type) {
 	            case 'leaveGroup':
-	                //群组被踢
+	                // dismissied by admin
 	                Demo.api.updateGroup();
 	                break;
 	            case 'subscribe':
-	                //别人申请加你为好友
-	                debugger;
-	                me.friendRequest(msg);
+	                // The sender asks the receiver to be a friend.
+	                if (!Demo.roster[msg.from]) {
+	                    me.friendRequest(msg);
+	                }
 	                break;
 	            case 'subscribed':
-	                //别人同意你加他为好友
-	                debugger;
+	                // The receiver accepts the sender's friend request.
+	                if (!Demo.roster[msg.from]) {
+	                    Demo.roster[msg.from] = 1;
+	                }
 	                me.getRoster('doNotUpdateGroup');
 	                break;
-	            case 'unsubscribe': //删除现有好友
+	            case 'unsubscribe': // The sender deletes a friend.
 	            case 'unsubscribed':
-	                //对方单向的删除了好友
-	                debugger;
+	                // The other party has removed you from the friend list.
+	                if (Demo.roster[msg.from]) {
+	                    delete Demo.roster[msg.from];
+	                }
 	                break;
 	            case 'joinChatRoomSuccess':
-	                //加入聊天室成功
+	                // Join the chat room successfully
 	                Demo.currentChatroom = msg.from;
 	                break;
 	            case 'reachChatRoomCapacity':
-	                //加入聊天室失败
+	                // Failed to join the chat room
 	                Demo.currentChatroom = null;
 	                Notify.error('加入聊天室失败');
 	                break;
 	            case 'leaveChatRoom':
-	                //退出聊天室
+	                // Leave the chat room
 	                break;
 	            case 'deleteGroupChat':
-	                //聊天室和群组被删除
+	                // The chat room or group is deleted.
 	                var target = document.getElementById(msg.from);
 
 	                if (target) {
@@ -22683,7 +22690,7 @@
 	                var curroster;
 	                for (var i in roster) {
 	                    var ros = roster[i];
-	                    if (ros.subscription === 'both' || ros.subscription === 'from') {
+	                    if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
 	                        friends.push(ros);
 	                    }
 	                }
@@ -23309,6 +23316,11 @@
 	        Demo.conn.removeRoster({
 	            to: value,
 	            success: function success() {
+
+	                if (Demo.roster[value]) {
+	                    delete Demo.roster[value];
+	                }
+
 	                Demo.conn.unsubscribed({
 	                    to: value
 	                });
