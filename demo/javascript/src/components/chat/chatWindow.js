@@ -27,7 +27,7 @@ module.exports = React.createClass({
                 roomId: me.props.roomId,
                 success: function ( members ) {
                     if ( members && members.length > 0 ) {
-                        me.refs.i.className = 'webim-down-icon font smaller webim-up-icon';
+                        me.refs.i.className = 'webim-down-icon font smaller dib webim-up-icon';
 
                         me.setState({ members: members });
                     }
@@ -35,7 +35,7 @@ module.exports = React.createClass({
                 error : function() {}
             });
         } else {
-            me.refs.i.className = 'webim-down-icon font smaller';
+            me.refs.i.className = 'webim-down-icon font smaller dib';
             me.setState({ members: [] });
         }
     },
@@ -46,7 +46,7 @@ module.exports = React.createClass({
     },
 
     render: function () {
-		var className = this.props.roomId ? '' : 'hide',
+		var className = this.props.roomId ? ' dib' : ' hide',
             props = {
                 sendPicture: this.props.sendPicture,
                 sendAudio: this.props.sendAudio,
