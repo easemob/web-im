@@ -52,7 +52,8 @@ Demo.AUDIOTYPE = {
 Demo.conn = new WebIM.connection({
     multiResources: WebIM.config.multiResources,
     https : WebIM.config.https,
-    url: WebIM.config.xmppURL
+    url: WebIM.config.xmppURL,
+    autoPresence: false
 });
 
 Demo.api.render(document.getElementById('demo'));
