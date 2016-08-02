@@ -88,6 +88,8 @@ module.exports = React.createClass({
     },
 
     friendRequest: function ( msg ) {
+        if ( msg && msg.status === '[resp:true]' ) { return; }
+
         Subscribe.show(msg);
     },
 

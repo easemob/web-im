@@ -22624,6 +22624,10 @@
 	    },
 
 	    friendRequest: function friendRequest(msg) {
+	        if (msg && msg.status === '[resp:true]') {
+	            return;
+	        }
+
 	        Subscribe.show(msg);
 	    },
 
