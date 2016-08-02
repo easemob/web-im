@@ -1,0 +1,45 @@
+<configuration scan="true" scanPeriod="600 seconds" debug="false">
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss} [%-4relative] [%thread] %-5level %logger{30} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 按日期区分的滚动日志 -->
+	<appender name="rootLogger"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>src/main/log/rootLogger.log</file>
+
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%-4relative] [%thread] %-5level
+				%logger{30} - %msg%n</pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>src/main/log/rootLogger.%d{yyyy-MM-dd}.zip
+			</fileNamePattern>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<root level="INFO">
+		<appender-ref ref="rootLogger" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+
+</configuration>  
