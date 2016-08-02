@@ -1,30 +1,26 @@
 WebIM.config = {
     /*
-    * The global value set for xmpp server
+    * XMPP server
     */
     xmppURL: 'im-api.hyphenate.io',
     /*
-    * The global value set for Easemob backend REST API
+    * Hyphenate backend REST API URL
     */
     apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.hyphenate.io',
     /*
-    *  Provide AppKey for connection
-    *  连接时提供appkey
+    * Hyphenate application AppKey
     */
     appkey: "hyphenatedemo#hyphenatedemo",
     /*
-     * Whether to use HTTPS
-     * 是否使用https
+     * use HTTPS?
      */
     https : location.protocol === 'https:',
     /*
-     * Whether to use multiple resources
-     * 是否使用多resource
+     * Multiple resources
      */
     multiResources: false,
     /*
      * Set to auto sign-in
-     * 是否设置自动上线
      */
     autoPresence: true
 };
