@@ -21,5 +21,10 @@ WebIM.config = {
      * Whether to use multiple resources
      * 是否使用多resource
      */
-    multiResources: false
+    multiResources: false,
+    /*
+     * Set to auto sign-in
+     * 是否设置自动上线
+     */
+    autoPresence: true
 };
