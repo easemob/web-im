@@ -1,8 +1,8 @@
 package com.easemob.webim.webim_test;
 
 import java.io.File;
-
 import org.apache.commons.lang3.StringUtils;
+import java.util.List;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -95,6 +95,51 @@ public class FirefoxTest extends WebIMTestBase {
 		String path = screenshotPath + "/" + Thread.currentThread().getStackTrace()[1].getMethodName();
 		super.login(driver, username, password, path, isGetBaseUrl);
 	}
+	@Test(enabled = true, groups = { "sanity_test" },dependsOnMethods = { "loginWebIM" })
+	public void sendGroupMessage(){
+		String path = screenshotPath + "/" + Thread.currentThread().getStackTrace()[1].getMethodName();
+		logger.info("send message");
+		String xpath="//li[@id='groupchat226110031353872832']";
+		WebElement ele = findElement(driver, xpath, path);
+		logger.info("begin send message");
+		xpath="//textarea[@id='talkInputId']";
+		ele=findElement(driver, xpath, path);
+		ele.click();
+		String message="webim_test_sendgroupmessage" + getRandomStr(6);
+		ele.sendKeys(message);
+		xpath="//img[@onclick='sendText()']";
+		ele=findElement(driver, xpath, path);
+		ele.click();
+		xpath="//p[@class='chat-content-p3']";
+		ele=findElement(driver, xpath, path);
+		String get_message=ele.getText();
+		Assert.assertEquals(get_message, message);
+		logger.info("finish send messages");
+		
+	}
+	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "loginWebIM" }, priority = 100)
+	public void getFriendList(){
+		logger.info("get friend list");
+		String path = screenshotPath + "/" + Thread.currentThread().getStackTrace()[1].getMethodName();
+		
+		String xpath="//ul[@id='contactlistUL']";
+		WebElement ele = findElement(driver, xpath, path);
+		List<WebElement> wl = ele.findElements(By.xpath("//li"));
+		Assert.assertTrue(null != wl && wl.size() > 0, "have found friends");
+		sleep(3);
+	}
+	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "loginWebIM" }, priority = 100)
+	public void getGroupList(){
+		logger.info("get group list");
+		String path = screenshotPath + "/" + Thread.currentThread().getStackTrace()[1].getMethodName();
+		
+		String xpath="//ul[@id='contracgrouplistUL']";
+		WebElement ele = findElement(driver, xpath, path);
+		List<WebElement> li = ele.findElements(By.xpath("//li"));
+		Assert.assertTrue(null != li && li.size() > 0, "have found groups");
+		sleep(3);
+	}
+	
 
 	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "loginWebIM", "register" })
 	public void addFriend() {
