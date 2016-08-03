@@ -13,7 +13,8 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import com.google.common.base.Preconditions;
-@Listeners({WebIMBaseListener.class})
+
+@Listeners({ WebIMBaseListener.class })
 @Test(suiteName = "WebIM_Base_Test", testName = "WebIM_Base_Test_on_Firefox", groups = { "Firefox_Group" })
 public class FirefoxTest extends WebIMTestBase {
 	private static final Logger logger = LoggerFactory.getLogger(FirefoxTest.class);
@@ -76,9 +77,15 @@ public class FirefoxTest extends WebIMTestBase {
 	}
 
 	@Test(enabled = true, groups = { "sanity_test" })
-	public void login() {
+	public void loginWebIM() {
 		String path = screenshotPath + "/" + Thread.currentThread().getStackTrace()[1].getMethodName();
 		super.login(driver, username, password, path);
+	}
+
+	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "loginWebIM" }, priority = 100)
+	public void logoutWebIM() {
+		String path = screenshotPath + "/" + Thread.currentThread().getStackTrace()[1].getMethodName();
+		super.logout(driver, path);
 	}
 
 	@AfterClass(alwaysRun = true)
