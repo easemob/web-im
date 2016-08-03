@@ -15,7 +15,7 @@
 	<!-- 按日期区分的滚动日志 -->
 	<appender name="rootLogger"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>src/main/log/rootLogger.log</file>
+		<file>target/rootLogger.log</file>
 
 		<encoder>
 			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%-4relative] [%thread] %-5level

@@ -1,6 +1,7 @@
 package com.easemob.webim.webim_test;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -20,6 +21,22 @@ public class WebIMTestDemo {
 		// driver = new SafariDriver();
 		// System.setProperty("webdriver.chrome.drive", "");
 		// driver = new ChromeDriver();
+		
+//		try {
+//		driver.close();
+//	} catch (Exception e) {
+//		logger.error("catch exception:", e);
+//		WebElement ele = driver.switchTo().activeElement();
+//		ele.click();
+//	}
+		
+//		try {
+//			sleep(3);
+//			JavascriptExecutor oJavaScriptExecutor = (JavascriptExecutor)driver;
+//			oJavaScriptExecutor.executeScript("window.open();");
+//		} catch (Exception e) {
+//			logger.error("catch error: ", e);
+//		}
 	}
 
 	@Test(enabled = false, groups = { "success" })

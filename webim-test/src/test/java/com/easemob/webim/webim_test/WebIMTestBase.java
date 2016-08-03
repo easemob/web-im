@@ -1,7 +1,6 @@
 package com.easemob.webim.webim_test;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.RandomStringUtils;
@@ -19,14 +18,46 @@ import org.testng.Assert;
 import com.google.common.base.Preconditions;
 
 public class WebIMTestBase {
+	public static String PROPERTY_BASE_URL = "BASE_URL";
+	public static String PROPERTY_INTERNAL_BASE_URL = "INTERNAL_BASE_URL";
+	public static String PROPERTY_USER_NAME = "USER_NAME";
+	public static String PROPERTY_INTERNAL_USER_NAME = "INTERNAL_USER_NAME";
+	public static String PROPERTY_USER_PASSWORD = "USER_PASSWORD";
+	public static String PROPERTY_INTERNAL_USER_PASSWORD = "INTERNAL_USER_PASSWORD";
+
 	private static final Logger logger = LoggerFactory.getLogger(WebIMTestBase.class);
 
 	protected WebDriver driver;
-	protected String baseUrl = "http://webim.easemob.com/";
+	// protected String baseUrl = "http://webim.easemob.com/";
+	// protected String baseUrl =
+	// "file:///Users/zhouhu/Documents/workspace/easemob/web-im/index.html";
+	protected String baseUrl;
+	protected String username;
+	protected String password;
 	protected String screenshotPath = "target";
 	protected String screenshotSuffix = "png";
-	
+
 	protected boolean isGetBaseUrl = true;
+
+	public void init() {
+		if (StringUtils.isNotBlank(System.getProperty(PROPERTY_BASE_URL))) {
+			baseUrl = System.getProperty(PROPERTY_BASE_URL);
+		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_BASE_URL))) {
+			baseUrl = System.getProperty(PROPERTY_INTERNAL_BASE_URL);
+		}
+
+		if (StringUtils.isNotBlank(System.getProperty(PROPERTY_USER_NAME))) {
+			username = System.getProperty(PROPERTY_USER_NAME);
+		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_USER_NAME))) {
+			username = System.getProperty(PROPERTY_INTERNAL_USER_NAME);
+		}
+
+		if (StringUtils.isNotBlank(System.getProperty(PROPERTY_USER_PASSWORD))) {
+			password = System.getProperty(PROPERTY_USER_PASSWORD);
+		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_USER_PASSWORD))) {
+			password = System.getProperty(PROPERTY_INTERNAL_USER_PASSWORD);
+		}
+	}
 
 	public void login(WebDriver driver, String username, String password, String path) {
 		Preconditions.checkArgument(null != driver, "webdriver was missing");
@@ -34,7 +65,7 @@ public class WebIMTestBase {
 				"username or password was missing!");
 		if (isGetBaseUrl) {
 			driver.get(baseUrl);
-		}	
+		}
 		driver.manage().window().maximize();
 		sleep(5);
 		logger.info("find username box and input username: {}", username);
@@ -44,6 +75,7 @@ public class WebIMTestBase {
 			screenshot(driver, getPath(path));
 		}
 		Assert.assertNotNull(usernameInput);
+		usernameInput.clear();
 		usernameInput.sendKeys(username);
 
 		logger.info("find password box and input password: {}", password);
@@ -53,6 +85,7 @@ public class WebIMTestBase {
 			screenshot(driver, getPath(path));
 		}
 		Assert.assertNotNull(passwordInput);
+		passwordInput.clear();
 		passwordInput.sendKeys(password);
 
 		logger.info("click login button");
@@ -82,7 +115,6 @@ public class WebIMTestBase {
 		ele.click();
 		sleep(1);
 		xpath = "//li[@onclick='logout();']";
-//		xpath = "//div[@id='headerimg']/span[3]/div/ul/li[4]/a";
 		ele = findElement(driver, xpath, path);
 		ele.click();
 		sleep(3);
@@ -90,10 +122,12 @@ public class WebIMTestBase {
 		xpath = "//button[@class='flatbtn-blu'][@tabindex='4']";
 		findElement(driver, xpath, path);
 	}
+
 	public String getPath(String path) {
 		return path + "_" + System.currentTimeMillis() + "." + screenshotSuffix;
 	}
 
+	@SuppressWarnings("static-access")
 	public void sleep(int seconds) {
 		logger.info("Start to sleep {} seconds...", seconds);
 		try {

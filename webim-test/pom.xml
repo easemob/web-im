@@ -120,10 +120,37 @@
 						<threadCount>4</threadCount> -->
 					<!-- <suiteXmlFiles> <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile> 
 						</suiteXmlFiles> -->
-					<properties>
-						<SystemParam>true</SystemParam>
-					</properties>
+					<systemPropertyVariables>
+						<INTERNAL_BASE_URL>http://webim.easemob.com</INTERNAL_BASE_URL>
+						<INTERNAL_USER_NAME>webim001</INTERNAL_USER_NAME>
+						<INTERNAL_USER_PASSWORD>asd</INTERNAL_USER_PASSWORD>
+						<INTERNAL_USER_TOKEN></INTERNAL_USER_TOKEN>
+					</systemPropertyVariables>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<!-- <archive>
+						<manifest>
+							<mainClass>com.my.examples.logback.logback_demo.LogbackTest</mainClass>
+						</manifest>
+					</archive> -->
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>assembly</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
