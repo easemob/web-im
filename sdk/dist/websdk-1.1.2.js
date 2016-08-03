@@ -515,7 +515,7 @@
 	        this.inactivity = options.inactivity || 30;
 	        this.heartBeatWait = options.heartBeatWait || 60000;
 	        this.maxRetries = options.maxRetries || 5;
-	        this.isAutoLogin = options.isAutoLogin === false ? options.isAutoLogin : true;
+	        this.isAutoLogin = options.isAutoLogin === false ? false : true;
 	        this.pollingTime = options.pollingTime || 800;
 	        this.stropheConn = false;
 	        this.context = { status: _code.STATUS_INIT };
