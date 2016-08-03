@@ -1,26 +1,29 @@
 WebIM.config = {
     /*
-    * XMPP server
-    */
+     * XMPP server
+     */
     xmppURL: 'im-api.hyphenate.io',
     /*
-    * Hyphenate backend REST API URL
-    */
+     * Backend REST API URL
+     */
     apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.hyphenate.io',
     /*
-    * Hyphenate application AppKey
-    */
+     * Application AppKey
+     */
     appkey: "hyphenatedemo#hyphenatedemo",
     /*
-     * use HTTPS?
+     * Whether to use HTTPS
+     * @parameter {Boolean} true or false
      */
-    https : location.protocol === 'https:',
+    https : '',
     /*
      * Multiple resources
+     * true: A visitor can sign in to multiple webpages and receive messages at all the webpages.
+     * false: A visitor can sign in to only one webpage and receive messages at the webpage.
      */
     multiResources: false,
     /*
      * Set to auto sign-in
      */
-    autoPresence: true
+    isAutoLogin: true
 };

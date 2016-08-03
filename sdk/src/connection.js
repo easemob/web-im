@@ -326,7 +326,7 @@
             conn.notifyVersion();
             conn.retry && _handleMessageQueue(conn);
             conn.heartBeat();
-            conn.autoPresence && conn.setPresence();
+            conn.isAutoLogin && conn.setPresence();
             conn.onOpened({
                 canReceive: supportRecMessage
                 , canSend: supportSedMessage
@@ -470,7 +470,7 @@
         this.inactivity = options.inactivity || 30;
         this.heartBeatWait = options.heartBeatWait || 60000;
         this.maxRetries = options.maxRetries || 5;
-        this.autoPresence = options.autoPresence === false ? options.autoPresence : true;
+        this.isAutoLogin = options.isAutoLogin === false ? false : true;
         this.pollingTime = options.pollingTime || 800;
         this.stropheConn = false;
         this.context = { status: _code.STATUS_INIT };

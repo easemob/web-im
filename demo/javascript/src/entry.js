@@ -51,9 +51,9 @@ Demo.AUDIOTYPE = {
 // initialize webIM connection
 Demo.conn = new WebIM.connection({
     multiResources: WebIM.config.multiResources,
-    https : WebIM.config.https,
+    https : typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
     url: WebIM.config.xmppURL,
-    autoPresence: false
+    isAutoLogin: false
 });
 
 Demo.api.render(document.getElementById('demo'));
