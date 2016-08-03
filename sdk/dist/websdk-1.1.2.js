@@ -457,7 +457,7 @@
 	        var jid = appKey + '_' + user.toLowerCase() + '@' + conn.domain,
 	            resource = options.resource || 'webim';
 
-	        if (conn.multiResources) {
+	        if (conn.isMultiLoginSessions) {
 	            resource += user + new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000);
 	        }
 
@@ -504,7 +504,7 @@
 
 	        var options = options || {};
 
-	        this.multiResources = options.multiResources || false;
+	        this.isMultiLoginSessions = options.isMultiLoginSessions || false;
 	        this.wait = options.wait || 30;
 	        this.retry = options.retry || false;
 	        this.https = options.https || location.protocol === 'https:';
@@ -2369,13 +2369,13 @@
 	                    });
 	                    continue;
 	                }
-	                var emoji = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
+	                var emojiStr = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
 
-	                if (emoji) {
+	                if (emojiStr) {
 	                    isemoji = true;
 	                    emessage.push({
 	                        type: 'emoji',
-	                        data: emoji
+	                        data: emojiStr
 	                    });
 	                } else {
 	                    emessage.push({

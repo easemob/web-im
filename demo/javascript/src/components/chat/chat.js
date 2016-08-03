@@ -33,7 +33,7 @@ module.exports = React.createClass({
                 Demo.api.appendMsg(message, 'txt');
             },
             onEmojiMessage: function ( message ) {
-                Demo.api.appendMsg(message, 'emoj');
+                Demo.api.appendMsg(message, 'emoji');
             },
             onPictureMessage: function ( message ) {
                 Demo.api.appendMsg(message, 'img');
@@ -235,7 +235,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function ( data ) {
-                url = data.uri + data.entities[0].uuid;
+                url = data.uri + '/' + data.entities[0].uuid;
                 me.refs.picture.value = null;
             },
             success: function ( id ) {
@@ -284,7 +284,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function ( data ) {
-                url = data.uri + data.entities[0].uuid;
+                url = data.uri + '/' + data.entities[0].uuid;
                 me.refs.audio.value = null;
             },
             success: function ( id, sid ) {
@@ -353,7 +353,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function ( data ) {
-                url = data.uri + data.entities[0].uuid;
+                url = data.uri + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
             },
             success: function ( id ) {

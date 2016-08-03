@@ -16,7 +16,7 @@ module.exports = React.createClass({
         var className = this.props.className ? ' ' + this.props.className : '';
         return (
             <div className={'webim-avatar-icon' + className}>
-                <img className='w100' src={src} />
+                <img className='w100' src={src} title={this.props.title} />
             </div>
         );
     }

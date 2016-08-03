@@ -675,13 +675,13 @@
                     });
                     continue;
                 }
-                var emoji = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
+                var emojiStr = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
 
-                if ( emoji ) {
+                if ( emojiStr ) {
                     isemoji = true;
                     emessage.push({
                         type: 'emoji'
-                        , data: emoji
+                        , data: emojiStr
                     });
                 } else {
                     emessage.push({

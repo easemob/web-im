@@ -50,7 +50,7 @@ Demo.AUDIOTYPE = {
 
 // initialize webIM connection
 Demo.conn = new WebIM.connection({
-    multiResources: WebIM.config.multiResources,
+    isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
     https : typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
     url: WebIM.config.xmppURL,
     isAutoLogin: false
