@@ -31,6 +31,7 @@ var AudioMsg = React.createClass({
         };
 
         options.onFileDownloadError = function () {
+            me.stop();
             me.setState({ status: 0 });
         };
 

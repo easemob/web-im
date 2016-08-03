@@ -34,23 +34,23 @@ module.exports = React.createClass({
 
     handleKeyDown: function ( e ) {
         if ( e && e.keyCode === 13 ) {
-            var me = this;
-
-            setTimeout(function () {
-                me.refs.textarea.value = '';
-            }, 0);
-
-            this.sendText(this.refs.textarea.value);
+            this.sendText();
         }
 
         return false;
     },
 
-    sendText: function ( value ) {
+    sendText: function () {
         var me = this,
+            value = this.refs.textarea.value,
             chatroom = Demo.selectedCate === 'chatrooms';
 
         if ( !value ) { return; }
+
+        setTimeout(function () {
+            me.refs.textarea.value = '';
+        }, 0);
+
 
         if ( chatroom && Demo.currentChatroom !== Demo.selected ) {
             
