@@ -22760,13 +22760,18 @@
 	    pictureChange: function pictureChange() {
 	        var me = this,
 	            chatroom = Demo.selectedCate === 'chatrooms',
+	            file = WebIM.utils.getFileUrl(me.refs.picture),
 	            url;
+
+	        if (!file.filename) {
+	            return false;
+	        }
 
 	        var msg = new WebIM.message('img', Demo.conn.getUniqueId());
 
 	        msg.set({
 	            apiUrl: WebIM.config.apiURL,
-	            file: WebIM.utils.getFileUrl(me.refs.picture),
+	            file: file,
 	            to: Demo.selected,
 	            roomType: chatroom,
 	            onFileUploadError: function onFileUploadError(error) {
@@ -22857,6 +22862,10 @@
 	        var me = this,
 	            file = WebIM.utils.getFileUrl(me.refs.audio);
 
+	        if (!file.filename) {
+	            return false;
+	        }
+
 	        if ((WebIM.utils.getIEVersion === null || WebIM.utils.getIEVersion > 9) && window.Audio) {
 
 	            var audio = document.createElement('audio');
@@ -22874,12 +22883,15 @@
 
 	    fileChange: function fileChange() {
 	        var me = this,
-	            url;
-
-	        var msg = new WebIM.message.file(Demo.conn.getUniqueId()),
+	            url,
+	            msg = new WebIM.message('file', Demo.conn.getUniqueId()),
 	            chatroom = Demo.selectedCate === 'chatrooms',
 	            file = WebIM.utils.getFileUrl(me.refs.file),
 	            filename = file.filename;
+
+	        if (!file.filename) {
+	            return false;
+	        }
 
 	        msg.set({
 	            apiUrl: WebIM.config.apiURL,
