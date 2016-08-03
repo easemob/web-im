@@ -20,13 +20,13 @@ var AudioMsg = React.createClass({
         options.onFileDownloadComplete = function ( response ) {
             var objectURL = WebIM.utils.parseDownloadResponse.call(Demo.conn, response);
 
+            me.refs.audio.onended = function () {
+                me.setState({ status: 0 });
+            };
+
             if ( (WebIM.utils.getIEVersion === null || WebIM.utils.getIEVersion > 9) && window.Audio ) {
                 me.setState({ src: objectURL });
             }
-
-            me.refs.audio.onpause = function () {
-                me.setState({ status: 0 });
-            };
 
         };
 
@@ -49,9 +49,12 @@ var AudioMsg = React.createClass({
             if ( audios[i] && audios[i].getAttribute('id') !== this.props.id ) {
                 audios[i].pause();
                 audios[i].currentTime = 0;
-                log('stop:', audios[i].getAttribute('id'));
             }
         }
+    },
+
+    shouldComponentUpdate: function ( nextProps, nextState ) {
+        return nextState.src !== this.state.src || nextState.status !== this.state.status;
     },
 
     componentDidUpdate: function ( prevProps, prevState ) {
@@ -59,14 +62,17 @@ var AudioMsg = React.createClass({
 
         if ( me.state.status ) {
             me.refs.bg.className = 'webim-audio-slash slash';
+
+            if ( me.state.src ) {
+                if ( !me.refs.audio.src ) {
+                    me.refs.audio.src = me.state.src;
+                }
+                me.refs.audio.play();
+            }
         } else {
             me.refs.bg.className = 'webim-audio-slash';
             me.refs.audio.pause();
             me.refs.audio.currentTime = 0;
-        }
-
-        if ( me.state.status && me.state.src ) {
-            me.refs.audio.src = me.state.src;
         }
     },
 
@@ -89,7 +95,7 @@ var AudioMsg = React.createClass({
                     </div>
                     <div ref='bg' className='webim-audio-slash' onClick={this.toggle}></div>
                 </div>
-                <audio id={this.props.id} ref='audio' className='hide' autoPlay />
+                <audio id={this.props.id} ref='audio' className='hide' />
             </div>
         );
     }
