@@ -22237,11 +22237,12 @@
 	            React.createElement(
 	                'p',
 	                null,
-	                'no account, ',
+	                Demo.lan.noaccount,
+	                ', ',
 	                React.createElement(
 	                    'i',
 	                    { onClick: this.signup },
-	                    'sign up now'
+	                    Demo.lan.signupnow
 	                )
 	            )
 	        );
@@ -22507,7 +22508,7 @@
 	            React.createElement(
 	                'h2',
 	                null,
-	                'Sign Up'
+	                Demo.lan.signUp
 	            ),
 	            React.createElement(Input, { ref: 'name', placeholder: Demo.lan.username, defaultFocus: 'true', keydown: this.keyDown }),
 	            React.createElement(Input, { ref: 'auth', placeholder: Demo.lan.password, type: 'password', keydown: this.keyDown }),
@@ -22516,11 +22517,12 @@
 	            React.createElement(
 	                'p',
 	                null,
-	                'i have account, ',
+	                Demo.lan.haveaccount,
+	                ', ',
 	                React.createElement(
 	                    'i',
 	                    { onClick: this.signin },
-	                    'sign in'
+	                    Demo.lan.signIn
 	                )
 	            )
 	        );
@@ -24762,7 +24764,10 @@
 	    location: 'Location',
 	    video: 'Video',
 	    cmd: 'Command',
-	    download: 'Download'
+	    download: 'Download',
+	    noaccount: 'No account',
+	    signupnow: 'Sign up now',
+	    haveaccount: 'i have account'
 	};
 
 	exports.Chinese = {
@@ -24800,7 +24805,10 @@
 	    location: '位置',
 	    video: '视频',
 	    cmd: '命令消息',
-	    download: '点击下载'
+	    download: '点击下载',
+	    noaccount: '没有账号',
+	    signupnow: '现在注册',
+	    haveaccount: '已有账号'
 	};
 
 /***/ }
