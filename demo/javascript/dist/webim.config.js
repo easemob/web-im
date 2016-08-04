@@ -2,15 +2,15 @@ WebIM.config = {
     /*
      * XMPP server
      */
-    xmppURL: 'im-api.sandbox.easemob.com',
+    xmppURL: 'im-api.hyphenate.io',
     /*
      * Backend REST API URL
      */
-    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.sdb.easemob.com',
+    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.hyphenate.io',
     /*
      * Application AppKey
      */
-    appkey: "easemob-demo#chatdemoui",
+    appkey: 'hyphenatedemo#hyphenatedemo',
     /*
      * Whether to use HTTPS
      * @parameter {Boolean} true or false
@@ -25,5 +25,5 @@ WebIM.config = {
     /*
      * Set to auto sign-in
      */
-    isAutoLogin: true
+    isAutoLogin: true 
 };
