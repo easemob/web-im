@@ -16,8 +16,8 @@ window.Demo = {
 };
 
 // import language package
-Demo.lan = Language.English;
-// Demo.lan = Language.Chinese;
+// Demo.lan = Language.English;
+Demo.lan = Language.Chinese;
 
 // for webview in client
 Demo.api = Api;

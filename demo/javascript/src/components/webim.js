@@ -50,7 +50,7 @@ module.exports = React.createClass({
                     <Chat show={this.state.chat} {...this.props} update={this.update} loading={this.loading} {...props} />
                     <Loading show={this.state.loadingStatus} />
                 </div>
-                <footer className='copyright'>© 2016 Hyphenate.io</footer>
+                <footer className='copyright'>© 2016 环信科技</footer>
             </div>
         );
     }
