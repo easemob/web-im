@@ -59,7 +59,7 @@ module.exports = React.createClass({
                 <Input placeholder={Demo.lan.password} ref='auth' type='password' keydown={this.keyDown} />
                 <Checkbox text={Demo.lan.tokenSignin} ref='token' />
                 <Button text={Demo.lan.signIn} onClick={this.signin} />
-                <p>no account, <i onClick={this.signup}>sign up now</i></p>
+                <p>{Demo.lan.noaccount}, <i onClick={this.signup}>{Demo.lan.signupnow}</i></p>
             </div>
         );
     }

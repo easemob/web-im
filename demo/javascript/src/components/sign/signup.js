@@ -64,12 +64,12 @@ module.exports = React.createClass({
     render: function () {
         return (
             <div className={this.props.show ? 'webim-sign webim-signup' : 'webim-sign webim-signup hide'}>
-                <h2>Sign Up</h2>
+                <h2>{Demo.lan.signUp}</h2>
                 <Input ref='name' placeholder={Demo.lan.username} defaultFocus='true' keydown={this.keyDown} />
                 <Input ref='auth' placeholder={Demo.lan.password} type='password' keydown={this.keyDown} />
                 <Input ref='nickname' placeholder={Demo.lan.nickname} keydown={this.keyDown} />
                 <Button text={Demo.lan.signUp} onClick={this.signup} />
-                <p>i have account, <i onClick={this.signin}>sign in</i></p>
+                <p>{Demo.lan.haveaccount}, <i onClick={this.signin}>{Demo.lan.signIn}</i></p>
             </div>
         );
     }

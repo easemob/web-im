@@ -34,6 +34,9 @@ exports.English = {
     video: 'Video',
     cmd: 'Command',
     download: 'Download',
+    noaccount: 'No account',
+    signupnow: 'Sign up now',
+    haveaccount: 'i have account'
 };
 
 exports.Chinese = {
@@ -72,4 +75,7 @@ exports.Chinese = {
     video: '视频',
     cmd: '命令消息',
     download: '点击下载',
+    noaccount: '没有账号',
+    signupnow: '现在注册',
+    haveaccount: '已有账号'
 };
