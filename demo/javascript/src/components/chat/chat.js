@@ -222,6 +222,11 @@ module.exports = React.createClass({
             return false;
         }
 
+        if ( !Demo.IMGTYPE[file.filetype.toLowerCase()] ) {
+            Notify.error(Demo.lan.invalidType + file.filetype);
+            return;
+        }
+
         var msg = new WebIM.message('img', Demo.conn.getUniqueId());
 
         msg.set({
@@ -267,7 +272,7 @@ module.exports = React.createClass({
     },
 
     sendAudioMsg: function ( file, duration ) {
-        var msg = new WebIM.message.audio(Demo.conn.getUniqueId()),
+        var msg = new WebIM.message('audio', Demo.conn.getUniqueId()),
             chatroom = Demo.selectedCate === 'chatrooms',
             url,
             me = this;
@@ -321,14 +326,22 @@ module.exports = React.createClass({
             return false;
         }
 
+        if ( !Demo.AUDIOTYPE[file.filetype.toLowerCase()] ) {
+            Notify.error(Demo.lan.invalidType + file.filetype);
+            return;
+        }
+
         if ( (WebIM.utils.getIEVersion === null || WebIM.utils.getIEVersion > 9) && window.Audio ) {
 
             var audio = document.createElement('audio');
 
             audio.oncanplay = function () {
+                log('audio_length:' + this.duration);
                 me.sendAudioMsg(file, Math.ceil(this.duration));
+                audio = null;
             }
             audio.src = file.url;
+            log('audio loading...');
         }
     },
 
@@ -345,6 +358,11 @@ module.exports = React.createClass({
 
         if ( !file.filename ) {
             return false;
+        }
+
+        if ( !Demo.FILETYPE[file.filetype.toLowerCase()] ) {
+            Notify.error(Demo.lan.invalidType + file.filetype);
+            return;
         }
 
         msg.set({

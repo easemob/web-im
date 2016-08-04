@@ -272,7 +272,7 @@
             try {
                 if ( window.URL.createObjectURL ) {
                     var fileItems = fileObj.files;
-                    if (fileItems.length > 0) {
+                    if ( fileItems.length > 0 ) {
                         var u = fileItems.item(0);
                         uri.data = u;
                         uri.url = window.URL.createObjectURL(u);
@@ -284,7 +284,7 @@
                     var pos1 = u.lastIndexOf('/');
                     var pos2 = u.lastIndexOf('\\');
                     var pos = Math.max(pos1, pos2)
-                    if (pos < 0)
+                    if ( pos < 0 )
                         uri.filename = u;
                     else
                         uri.filename = u.substring(pos + 1);
