@@ -219,11 +219,13 @@ module.exports = React.createClass({
             url;
 
         if ( !file.filename ) {
+            me.refs.picture.value = null;
             return false;
         }
 
         if ( !Demo.IMGTYPE[file.filetype.toLowerCase()] ) {
-            Notify.error(Demo.lan.invalidType + file.filetype);
+            me.refs.picture.value = null;
+            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
             return;
         }
 
@@ -323,11 +325,13 @@ module.exports = React.createClass({
             file = WebIM.utils.getFileUrl(me.refs.audio);
 
         if ( !file.filename ) {
+            me.refs.audio.value = null;
             return false;
         }
 
         if ( !Demo.AUDIOTYPE[file.filetype.toLowerCase()] ) {
-            Notify.error(Demo.lan.invalidType + file.filetype);
+            me.refs.audio.value = null;
+            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
             return;
         }
 
@@ -357,11 +361,13 @@ module.exports = React.createClass({
             filename = file.filename;
 
         if ( !file.filename ) {
+            me.refs.file.value = null;
             return false;
         }
 
         if ( !Demo.FILETYPE[file.filetype.toLowerCase()] ) {
-            Notify.error(Demo.lan.invalidType + file.filetype);
+            me.refs.file.value = null;
+            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
             return;
         }
 
