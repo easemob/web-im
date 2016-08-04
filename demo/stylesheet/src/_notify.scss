@@ -1,0 +1,37 @@
+/*
+ * notify
+ */
+.webim-notify {
+    z-index: 3;
+    position: fixed;
+    top: 10px;
+    word-wrap: break-word;
+    padding: 4px;
+    width: 50%;
+    color: #fff;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    max-width: 90%;
+    min-height: 30px;
+    border-radius: 2px;
+    line-height: 30px;
+    text-align: center;
+    box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 6px 0px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    border: 0px none rgb(0, 0, 0);
+
+    &.success {
+        background-color: rgb(174, 218, 62);
+    }
+
+    &.error {
+        background-color: rgb(255, 58, 0);
+    }
+
+    i {
+        position: absolute;
+        right: 10px;
+        top: 9px;
+    }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "webim",
+  "version": "1.2.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "gulp": "latest",
+    "gulp-mocha": "*",
+    "react": "*",
+    "react-dom": "*",
+    "babel-core": "*",
+    "babel-loader": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-react": "*",
+    "css-loader": "*",
+    "node-sass": "*",
+    "sass-loader": "*",
+    "style-loader": "*",
+    "file-loader": "*",
+    "line-numbers": "*",
+    "webpack": "*"
+  },
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "license": "ISC"
+}
