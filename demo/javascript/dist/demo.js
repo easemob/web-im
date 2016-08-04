@@ -523,6 +523,7 @@
 	    },
 
 	    logout: function logout() {
+	        Demo.conn.stopHeartBeat();
 	        Demo.conn.close();
 	        ReactDOM.unmountComponentAtNode(this.node);
 	        this.render(this.node);
@@ -22767,6 +22768,11 @@
 	            return false;
 	        }
 
+	        if (!Demo.IMGTYPE[file.filetype.toLowerCase()]) {
+	            Notify.error(Demo.lan.invalidType + file.filetype);
+	            return;
+	        }
+
 	        var msg = new WebIM.message('img', Demo.conn.getUniqueId());
 
 	        msg.set({
@@ -22812,7 +22818,7 @@
 	    },
 
 	    sendAudioMsg: function sendAudioMsg(file, duration) {
-	        var msg = new WebIM.message.audio(Demo.conn.getUniqueId()),
+	        var msg = new WebIM.message('audio', Demo.conn.getUniqueId()),
 	            chatroom = Demo.selectedCate === 'chatrooms',
 	            url,
 	            me = this;
@@ -22866,14 +22872,22 @@
 	            return false;
 	        }
 
+	        if (!Demo.AUDIOTYPE[file.filetype.toLowerCase()]) {
+	            Notify.error(Demo.lan.invalidType + file.filetype);
+	            return;
+	        }
+
 	        if ((WebIM.utils.getIEVersion === null || WebIM.utils.getIEVersion > 9) && window.Audio) {
 
 	            var audio = document.createElement('audio');
 
 	            audio.oncanplay = function () {
+	                log('audio_length:' + this.duration);
 	                me.sendAudioMsg(file, Math.ceil(this.duration));
+	                audio = null;
 	            };
 	            audio.src = file.url;
+	            log('audio loading...');
 	        }
 	    },
 
@@ -22891,6 +22905,11 @@
 
 	        if (!file.filename) {
 	            return false;
+	        }
+
+	        if (!Demo.FILETYPE[file.filetype.toLowerCase()]) {
+	            Notify.error(Demo.lan.invalidType + file.filetype);
+	            return;
 	        }
 
 	        msg.set({

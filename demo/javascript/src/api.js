@@ -42,6 +42,7 @@ module.exports = {
     },
 
     logout: function () {
+        Demo.conn.stopHeartBeat()
         Demo.conn.close();
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
