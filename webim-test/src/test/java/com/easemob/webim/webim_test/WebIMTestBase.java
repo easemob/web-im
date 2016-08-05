@@ -41,20 +41,31 @@ public class WebIMTestBase {
 		if (StringUtils.isNotBlank(System.getProperty(PROPERTY_BASE_URL))) {
 			baseUrl = System.getProperty(PROPERTY_BASE_URL);
 		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_BASE_URL))) {
-			baseUrl = System.getProperty(PROPERTY_INTERNAL_BASE_URL);
-		}
+			String path = System.getProperty(PROPERTY_INTERNAL_BASE_URL);
+			//find local index.html
+			if (!path.contains("index.html")) {
+				File file = new File(path);
+				if (file.isDirectory()) {
 
+					baseUrl = "file://" + file.getParentFile().getAbsolutePath() + System.getProperty("file.separator") + "index.html";
+				}
+			} else {
+				baseUrl = System.getProperty(PROPERTY_INTERNAL_BASE_URL);
+			}
+		}
+		logger.info("Initial base url: {}", baseUrl);
 		if (StringUtils.isNotBlank(System.getProperty(PROPERTY_USER_NAME))) {
 			username = System.getProperty(PROPERTY_USER_NAME);
 		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_USER_NAME))) {
 			username = System.getProperty(PROPERTY_INTERNAL_USER_NAME);
 		}
-
+		logger.info("Initial username: {}", username);
 		if (StringUtils.isNotBlank(System.getProperty(PROPERTY_USER_PASSWORD))) {
 			password = System.getProperty(PROPERTY_USER_PASSWORD);
 		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_USER_PASSWORD))) {
 			password = System.getProperty(PROPERTY_INTERNAL_USER_PASSWORD);
 		}
+		logger.info("Initial password: {}", password);
 	}
 
 	public void login(WebDriver driver, String username, String password, String path, boolean isGetBaseUrl) {
