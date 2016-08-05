@@ -1,11 +1,13 @@
 package com.easemob.webim.webim_test;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -59,10 +61,14 @@ public class WebIMTestBase {
 		}
 	}
 
-	public void login(WebDriver driver, String username, String password, String path) {
+	public void login(WebDriver driver, String username, String password, String path, boolean isGetBaseUrl) {
 		Preconditions.checkArgument(null != driver, "webdriver was missing");
 		Preconditions.checkArgument(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password),
 				"username or password was missing!");
+		WebElement we = checkLogin(driver);
+		if (null != we && we.isDisplayed()) {
+			return;
+		}
 		if (isGetBaseUrl) {
 			driver.get(baseUrl);
 		}
@@ -99,12 +105,93 @@ public class WebIMTestBase {
 		sleep(10);
 
 		logger.info("check if login webim successfully");
-		xpath = "//a[@id='accordion1']";
-		WebElement ele = findElementByXpath(driver, xpath);
+		// xpath = "//a[@id='accordion1']";
+		// WebElement ele = findElementByXpath(driver, xpath);
+		WebElement ele = checkLogin(driver);
 		if (null == ele) {
 			screenshot(driver, getPath(path));
 		}
 		Assert.assertNotNull(ele);
+	}
+
+	public WebElement checkLogin(WebDriver driver) {
+		String xpath = "//a[@id='accordion1']";
+		WebElement ele = null;
+		try {
+			ele = findElementByXpath(driver, xpath);
+		} catch (Exception e) {
+			logger.error("Failed to check login page", e);
+			ele = null;
+		}
+		return ele;
+	}
+
+	public WebElement findSpecialFriend(WebDriver driver, String username, String path) {
+		Preconditions.checkArgument(null != driver, "webdriver was missing");
+		Preconditions.checkArgument(StringUtils.isNotBlank(username), "friend name was missing!");
+		String xpath = "//a[@id='accordion1']";
+		WebElement ele = findElement(driver, xpath, path);
+		if (ele.getAttribute("class").equals("accordion-toggle collapsed")) {
+			ele.click();
+		}
+		sleep(3);
+		xpath = "//ul[@id='contactlistUL']/li[@id='" + username + "']";
+		ele = findElement(driver, xpath, path);
+		if (!StringUtils.isNotBlank(ele.getAttribute("style"))) {
+			ele.click();
+		}
+		return ele;
+	}
+
+	public void checkChatMsg(WebDriver driver, String username1, String username2, String msg, String path) {
+		Preconditions.checkArgument(null != driver, "webdriver was missing");
+		Preconditions.checkArgument(StringUtils.isNotBlank(username1) && StringUtils.isNotBlank(username2),
+				"username1 or username2 was missing");
+		Preconditions.checkArgument(StringUtils.isNotBlank(msg), "message was missing");
+		WebElement wet = checkLogin(driver);
+		Assert.assertTrue(null != wet && wet.isDisplayed(), "check login web page");
+		String xpath = "//div[@id='" + username1 + "-" + username2 + "']";
+		WebElement ele = findElement(driver, xpath, path);
+		try {
+			List<WebElement> eles = ele.findElements(By.xpath("//p[@class='chat-content-p3']"));
+			for (WebElement we : eles) {
+				if (we.getText().contains(msg)) {
+					logger.info("find message: {}", msg);
+					return;
+				}
+			}
+			Assert.assertTrue(false,
+					"find chat log: user1: " + username1 + ", user2: " + username2 + ", message: " + msg);
+		} catch (Exception e) {
+			logger.error("Failed to find chat log: user1: {}, user2: {}, message: {}", username1, username2, msg, e);
+			Assert.assertTrue(false,
+					"find chat log: user1: " + username1 + ", user2: " + username2 + ", message: " + msg);
+		}
+	}
+
+	public void sendFile(WebDriver driver, String filePath, String data_type, String path) {
+		Preconditions.checkArgument(null != driver, "webdriver was missing");
+		Preconditions.checkArgument(StringUtils.isNotBlank(filePath) && StringUtils.isNotBlank(data_type),
+				"file path or data type was missing");
+		logger.info("find file input");
+		String xpath = "//input[@id='fileInput']";
+		WebElement ele = findElement(driver, xpath, path);
+		sleep(1);
+		logger.info("reset file input property");
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		jse.executeScript("$('#fileInput').show(); $('#fileInput').attr('data-type', '" + data_type + "');");
+		sleep(3);
+		File file = new File(filePath);
+		String str = null;
+		if (file.exists()) {
+			logger.info("find resource file: {}", file.getAbsolutePath());
+			str = file.getAbsolutePath();
+		}
+		Assert.assertNotNull(str, "resource file path");
+		ele.sendKeys(str);
+		sleep(10);
+		logger.info("set back file input property");
+		jse.executeScript("$('#fileInput').hide();");
 	}
 
 	public void logout(WebDriver driver, String path) {
@@ -170,24 +257,6 @@ public class WebIMTestBase {
 	}
 
 	public String getRandomStr(int count) {
-		return RandomStringUtils.randomAlphanumeric(count);
-	}
-
-	public static void main(String[] args) throws InterruptedException {
-		WebDriver driver = new FirefoxDriver();
-		// WebDriver driver = new SafariDriver();
-
-		String baseUrl = "http://webim.easemob.com";
-		// driver.navigate().to(baseUrl);
-		driver.get(baseUrl);
-		driver.manage().window().maximize();
-		logger.info("window title1: " + driver.getTitle() + ", handle = " + driver.getWindowHandle());
-		Thread.currentThread().sleep(3000L);
-		WebDriver driver2 = new FirefoxDriver();
-		driver2.get(baseUrl);
-		logger.info("window title2: " + driver.getTitle() + ", handle = " + driver.getWindowHandle());
-		Thread.currentThread().sleep(3000L);
-		driver.close();
-		driver2.close();
+		return RandomStringUtils.randomAlphanumeric(count).toLowerCase();
 	}
 }
