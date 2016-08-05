@@ -2,11 +2,11 @@ WebIM.config = {
     /*
      * XMPP server
      */
-    xmppURL: 'im-api.sandbox.easemob.com',
+    xmppURL: 'im-api.easemob.com',
     /*
      * Backend REST API URL
      */
-    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.sdb.easemob.com',
+    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
     /*
      * Application AppKey
      */
