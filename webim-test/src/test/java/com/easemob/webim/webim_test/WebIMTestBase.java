@@ -12,7 +12,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -30,9 +29,6 @@ public class WebIMTestBase {
 	private static final Logger logger = LoggerFactory.getLogger(WebIMTestBase.class);
 
 	protected WebDriver driver;
-	// protected String baseUrl = "http://webim.easemob.com/";
-	// protected String baseUrl =
-	// "file:///Users/zhouhu/Documents/workspace/easemob/web-im/index.html";
 	protected String baseUrl;
 	protected String username;
 	protected String password;
@@ -258,5 +254,55 @@ public class WebIMTestBase {
 
 	public String getRandomStr(int count) {
 		return RandomStringUtils.randomAlphanumeric(count).toLowerCase();
+	}
+	
+	public WebElement findSpecialGroup(WebDriver driver, String groupId, String path) {
+		Preconditions.checkArgument(null != driver, "webdriver was missing");
+		String xpath = "//a[@id='accordion2']";
+		WebElement ele = findElement(driver, xpath, path);
+		if (ele.getAttribute("class").equals("accordion-toggle collapsed")) {
+			ele.click();
+			sleep(1);
+		}
+		if (StringUtils.isNotBlank(groupId)) {
+			logger.info("select group: {}", groupId);
+			xpath = "//ul[@id='contracgrouplistUL']/li[@id='" + groupId + "']";
+		} else {
+			logger.info("select first group");
+			xpath = "//ul[@id='contracgrouplistUL']/li[1]";
+		}
+		ele = findElement(driver, xpath, path);
+		if (!StringUtils.isNotBlank(ele.getAttribute("style"))) {
+			ele.click();
+			sleep(1);
+		}
+		return ele;
+	}
+	
+	public WebElement findSpecialChatroom(WebDriver driver, String chatroomId, String path) {
+		Preconditions.checkArgument(null != driver, "webdriver was missing");
+		String xpath = "//a[@id='accordion4']";
+		WebElement ele = findElement(driver, xpath, path);
+		if (ele.getAttribute("class").equals("accordion-toggle collapsed")) {
+			ele.click();
+			sleep(1);
+		}
+		if (StringUtils.isNotBlank(chatroomId)) {
+			logger.info("select chatroom: {}", chatroomId);
+			xpath = "//ul[@id='chatRoomListUL']/li[@id='" + chatroomId + "']";
+		} else {
+			logger.info("select first chatroom");
+			xpath = "//ul[@id='chatRoomListUL']/li[1]";
+		}
+		ele = findElement(driver, xpath, path);
+		if (!StringUtils.isNotBlank(ele.getAttribute("style"))) {
+			ele.click();
+			sleep(5);
+		}
+		return ele;
+	}
+	
+	public String getScreenshotPath(String name) {
+		return screenshotPath + "/" + name;
 	}
 }
