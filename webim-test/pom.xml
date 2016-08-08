@@ -16,9 +16,15 @@
 		<testng-version>6.9.10</testng-version>
 		<logback-version>1.1.7</logback-version>
 		<slf4j-version>1.7.21</slf4j-version>
+		<xml-api-version>1.4.01</xml-api-version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>${xml-api-version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
@@ -28,6 +34,12 @@
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
 			<version>${selenium-version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xml-apis</groupId>
+					<artifactId>xml-apis</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
@@ -136,11 +148,8 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<!-- <archive>
-						<manifest>
-							<mainClass>com.my.examples.logback.logback_demo.LogbackTest</mainClass>
-						</manifest>
-					</archive> -->
+					<!-- <archive> <manifest> <mainClass>com.my.examples.logback.logback_demo.LogbackTest</mainClass> 
+						</manifest> </archive> -->
 				</configuration>
 				<executions>
 					<execution>
