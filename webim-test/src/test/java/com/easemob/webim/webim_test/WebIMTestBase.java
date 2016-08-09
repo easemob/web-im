@@ -46,7 +46,6 @@ public class WebIMTestBase {
 			if (!path.contains("index.html")) {
 				File file = new File(path);
 				if (file.isDirectory()) {
-
 					baseUrl = "file://" + file.getParentFile().getAbsolutePath() + System.getProperty("file.separator") + "index.html";
 				}
 			} else {
