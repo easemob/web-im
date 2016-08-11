@@ -23,6 +23,7 @@ Demo.lan = Language.Chinese;
 Demo.api = Api;
 
 Demo.roster = {};
+Demo.strangers = {};
 
 Demo.IMGTYPE = {
     gif: 1,

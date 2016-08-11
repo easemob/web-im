@@ -93,6 +93,19 @@ module.exports = React.createClass({
         Subscribe.show(msg);
     },
 
+    componentDidUpdate: function ( prevProps, prevState ) {
+        for ( var o in Demo.strangers ) {
+            if ( Demo.strangers.hasOwnProperty(o) ) {
+                var msg = null;
+
+
+                while ( msg = Demo.strangers[o].pop() ) {
+                    Demo.api.appendMsg(msg.msg, msg.type);
+                }
+            }
+        }
+    },
+
     componentWillReceiveProps: function ( nextProps ) {
         if ( nextProps.groupChange ) {
             this.getGroup();
@@ -100,6 +113,8 @@ module.exports = React.createClass({
             this.getRoster('doNotUpdateGroup');
         } else if ( nextProps.chatroomChange ) {
             this.getChatroom();
+        } else if ( nextProps.strangerChange ) {
+            this.getStrangers();
         }
     },
 
@@ -146,6 +161,17 @@ module.exports = React.createClass({
         };
     },
 
+    getStrangers: function () {
+        var strangers = [];
+
+        for ( var o in Demo.strangers ) {
+            if ( Demo.strangers.hasOwnProperty(o) ) {
+                strangers.push({ name: o });
+            }
+        }
+        this.setState({ strangers, strangers });
+    },
+
     getRoster: function ( doNotUpdateGroup ) {
         var me = this,
             conn = Demo.conn,
@@ -159,7 +185,7 @@ module.exports = React.createClass({
                     var ros = roster[i];
                     if ( ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to' ) {
                         friends.push(ros);
-                        
+                        Demo.roster[ros.name] = 1;
                     }
                 }
                 me.setState({ friends: friends });
