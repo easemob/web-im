@@ -1,7 +1,7 @@
 package com.easemob.webim.webim_test;
 
 import java.io.File;
-import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 
+import com.easemob.webim.test.utils.Cluster;
+import com.easemob.webim.test.utils.ConfigFileUtils;
 import com.easemob.webim.test.utils.VelocityUtils;
 import com.google.common.base.Preconditions;
 
@@ -28,6 +30,14 @@ public class WebIMTestBase {
 	public static String PROPERTY_INTERNAL_USER_NAME = "INTERNAL_USER_NAME";
 	public static String PROPERTY_USER_PASSWORD = "USER_PASSWORD";
 	public static String PROPERTY_INTERNAL_USER_PASSWORD = "INTERNAL_USER_PASSWORD";
+	public static String PROPERTY_CLUSTER = "CLUSTER";
+	public static String PROPERTY_INTERNAL_CLUSTER = "INTERNAL_CLUSTER";
+	public static String PROPERTY_XMPP = "XMPP";
+	public static String PROPERTY_INTERNAL_XMPP = "INTERNAL_XMPP";
+	public static String PROPERTY_URLAPI = "URLAPI";
+	public static String PROPERTY_INTERNAL_URLAPI = "INTERNAL_URLAPI";
+	public static String PROPERTY_APPKEY = "APPKEY";
+	public static String PROPERTY_INTERNAL_APPKEY = "INTERNAL_APPKEY";
 
 	public static Boolean REGRATION_TEST_RESULT = null;
 
@@ -39,34 +49,69 @@ public class WebIMTestBase {
 	protected String password;
 	protected String screenshotPath = "target";
 	protected String screenshotSuffix = "png";
+	protected String cluster;
+	protected String xmpp;
+	protected String urlapi;
+	protected String appkey;
 
 	protected boolean isGetBaseUrl = true;
 
 	public void init() {
-		if (StringUtils.isNotBlank(System.getProperty(PROPERTY_BASE_URL))) {
-			baseUrl = System.getProperty(PROPERTY_BASE_URL);
-		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_BASE_URL))) {
-			String path = System.getProperty(PROPERTY_INTERNAL_BASE_URL);
-			// find local index.html
-			if (!path.contains("index.html")) {
-				File file = new File(path);
-				if (file.isDirectory()) {
-					baseUrl = "file://" + file.getParentFile().getAbsolutePath() + System.getProperty("file.separator")
-							+ "index.html";
-				}
-			} else {
+		if (StringUtils.isNotBlank(System.getenv(PROPERTY_CLUSTER))) {
+			cluster = System.getenv(PROPERTY_CLUSTER);
+		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_CLUSTER))) {
+			cluster = System.getProperty(PROPERTY_INTERNAL_CLUSTER);
+		}
+		logger.info("Initial cluster: {}", cluster);
+
+		if (Cluster.isLegalEnum(cluster)) {
+			logger.info("cluster: {} indecate local configuration file should be reconfigured", cluster);
+
+			if (StringUtils.isNotBlank(System.getenv(PROPERTY_XMPP))) {
+				xmpp = System.getenv(PROPERTY_XMPP);
+			} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_XMPP))) {
+				xmpp = System.getProperty(PROPERTY_INTERNAL_XMPP);
+			}
+			logger.info("Initial xmpp: {}", xmpp);
+
+			if (StringUtils.isNotBlank(System.getenv(PROPERTY_URLAPI))) {
+				urlapi = System.getenv(PROPERTY_URLAPI);
+			} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_URLAPI))) {
+				urlapi = System.getProperty(PROPERTY_INTERNAL_URLAPI);
+			}
+			logger.info("Initial urlapi: {}", urlapi);
+
+			if (StringUtils.isNotBlank(System.getenv(PROPERTY_APPKEY))) {
+				appkey = System.getenv(PROPERTY_APPKEY);
+			} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_APPKEY))) {
+				appkey = System.getProperty(PROPERTY_INTERNAL_APPKEY);
+			}
+			logger.info("Initial appkey: {}", appkey);
+
+			String configfile = getLocalConfigfile();
+			logger.info("Reconfig local configuration file: {}", configfile);
+			ConfigFileUtils.changeConfigFile(configfile, xmpp, urlapi, appkey);
+			logger.info("new configuration file: {}, value: {}", configfile, ConfigFileUtils.readFile(configfile));
+
+			baseUrl = getLocalBaseUrl();
+		} else {
+			if (StringUtils.isNotBlank(System.getenv(PROPERTY_BASE_URL))) {
+				baseUrl = System.getenv(PROPERTY_BASE_URL);
+			} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_BASE_URL))) {
 				baseUrl = System.getProperty(PROPERTY_INTERNAL_BASE_URL);
 			}
 		}
 		logger.info("Initial base url: {}", baseUrl);
-		if (StringUtils.isNotBlank(System.getProperty(PROPERTY_USER_NAME))) {
-			username = System.getProperty(PROPERTY_USER_NAME);
+
+		if (StringUtils.isNotBlank(System.getenv(PROPERTY_USER_NAME))) {
+			username = System.getenv(PROPERTY_USER_NAME);
 		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_USER_NAME))) {
 			username = System.getProperty(PROPERTY_INTERNAL_USER_NAME);
 		}
 		logger.info("Initial username: {}", username);
-		if (StringUtils.isNotBlank(System.getProperty(PROPERTY_USER_PASSWORD))) {
-			password = System.getProperty(PROPERTY_USER_PASSWORD);
+
+		if (StringUtils.isNotBlank(System.getenv(PROPERTY_USER_PASSWORD))) {
+			password = System.getenv(PROPERTY_USER_PASSWORD);
 		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_USER_PASSWORD))) {
 			password = System.getProperty(PROPERTY_INTERNAL_USER_PASSWORD);
 		}
@@ -321,7 +366,7 @@ public class WebIMTestBase {
 	public String getScreenshotPath(String name) {
 		return screenshotPath + "/" + name;
 	}
-	
+
 	public String getCommandMsg(String file, Map<String, Object> map) {
 		logger.info("Configure template file: {}", file);
 		String result = null;
@@ -333,4 +378,16 @@ public class WebIMTestBase {
 		}
 		return result;
 	}
+
+	private String getLocalBaseUrl() {
+		return "file://" + Paths.get(System.getProperty("user.dir")).getParent().toAbsolutePath()
+				+ System.getProperty("file.separator") + "index.html";
+	}
+
+	private String getLocalConfigfile() {
+		return Paths.get(System.getProperty("user.dir")).getParent().toAbsolutePath()
+				+ System.getProperty("file.separator") + "static" + System.getProperty("file.separator") + "js"
+				+ System.getProperty("file.separator") + "easemob.im.config.js";
+	}
+
 }

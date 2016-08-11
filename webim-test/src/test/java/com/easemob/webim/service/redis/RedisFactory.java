@@ -37,8 +37,8 @@ public class RedisFactory {
 	public static URI getRedisURI() throws URISyntaxException {
 		URI uri = null;
 		String uristr = null;
-		if (StringUtils.isNotBlank(System.getProperty(REDIS_URI))) {
-			uristr = System.getProperty(REDIS_URI);
+		if (StringUtils.isNotBlank(System.getenv(REDIS_URI))) {
+			uristr = System.getenv(REDIS_URI);
 		} else if (StringUtils.isNotBlank(System.getProperty(INTERNAL_REDIS_URI))) {
 			uristr = System.getProperty(INTERNAL_REDIS_URI);
 		}

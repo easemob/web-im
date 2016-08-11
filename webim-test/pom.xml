@@ -154,6 +154,10 @@
 					<!-- <suiteXmlFiles> <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile> 
 						</suiteXmlFiles> -->
 					<systemPropertyVariables>
+						<INTERNAL_CLUSTER>none</INTERNAL_CLUSTER>
+						<INTERNAL_XMPP>XMPP</INTERNAL_XMPP>
+						<INTERNAL_URLAPI>urlapi</INTERNAL_URLAPI>
+						<INTERNAL_APPKEY>appkey</INTERNAL_APPKEY>
 						<INTERNAL_BASE_URL>${basedir}</INTERNAL_BASE_URL>
 						<INTERNAL_USER_NAME>webim001</INTERNAL_USER_NAME>
 						<INTERNAL_USER_PASSWORD>asd</INTERNAL_USER_PASSWORD>
