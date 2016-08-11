@@ -70,6 +70,7 @@
 	Demo.api = Api;
 
 	Demo.roster = {};
+	Demo.strangers = {};
 
 	Demo.IMGTYPE = {
 	    gif: 1,
@@ -492,9 +493,13 @@
 	var videoMsg = __webpack_require__(207);
 
 	module.exports = {
-	    log: function log() {
-	        console.log(arguments);
-	    },
+	    log: function () {
+	        if (typeof console !== 'undefined' && console.log) {
+	            return function () {
+	                console.log.apply(window.console, arguments);
+	            };
+	        } else return function () {};
+	    }(),
 
 	    render: function render(node, change) {
 	        this.node = node;
@@ -509,6 +514,9 @@
 	                break;
 	            case 'chatroom':
 	                props.chatroomChange = true;
+	                break;
+	            case 'stranger':
+	                props.strangerChange = true;
 	                break;
 	            default:
 	                props = null;
@@ -544,81 +552,121 @@
 	            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
 	            targetNode = document.getElementById('wrapper' + targetId);
 
-	        if (msg.type !== 'chat' && !targetNode) {
+	        if (msg.type !== 'chat') {
 	            return;
+	        }
+
+	        if (!targetNode) {
+	            Demo.strangers[targetId] = Demo.strangers[targetId] || [];
 	        }
 
 	        switch (type) {
 	            case 'txt':
-	                brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
-	                textMsg({
-	                    wrapper: targetNode,
-	                    name: name,
-	                    value: brief
-	                }, this.sentByMe);
+	                if (!targetNode) {
+	                    Demo.strangers[targetId].push({ msg: msg, type: 'txt' });
+	                } else {
+	                    brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
+	                    textMsg({
+	                        wrapper: targetNode,
+	                        name: name,
+	                        value: brief
+	                    }, this.sentByMe);
+	                }
 	                break;
 	            case 'emoji':
-	                for (var i = 0, l = data.length; i < l; i++) {
-	                    brief += data[i].type === 'emoji' ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />' : this.encode(data[i].data);
+	                if (!targetNode) {
+	                    Demo.strangers[targetId].push({ msg: msg, type: 'emoji' });
+	                } else {
+	                    for (var i = 0, l = data.length; i < l; i++) {
+	                        brief += data[i].type === 'emoji' ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />' : this.encode(data[i].data);
+	                    }
+	                    textMsg({
+	                        wrapper: targetNode,
+	                        name: name,
+	                        value: brief
+	                    }, this.sentByMe);
 	                }
-	                textMsg({
-	                    wrapper: targetNode,
-	                    name: name,
-	                    value: brief
-	                }, this.sentByMe);
 	                break;
 	            case 'img':
-	                brief = '[' + Demo.lan.image + ']';
-	                imgMsg({
-	                    wrapper: targetNode,
-	                    name: name,
-	                    value: data || msg.url
-	                }, this.sentByMe);
+	                if (!targetNode) {
+	                    Demo.strangers[targetId].push({ msg: msg, type: 'img' });
+	                } else {
+	                    brief = '[' + Demo.lan.image + ']';
+	                    imgMsg({
+	                        wrapper: targetNode,
+	                        name: name,
+	                        value: data || msg.url
+	                    }, this.sentByMe);
+	                }
 	                break;
 	            case 'aud':
-	                brief = '[' + Demo.lan.audio + ']';
-	                audioMsg({
-	                    wrapper: targetNode,
-	                    name: name,
-	                    value: data || msg.url,
-	                    length: msg.length,
-	                    id: msg.id
-	                }, this.sentByMe);
+	                if (!targetNode) {
+	                    Demo.strangers[targetId].push({ msg: msg, type: 'aud' });
+	                } else {
+	                    brief = '[' + Demo.lan.audio + ']';
+	                    audioMsg({
+	                        wrapper: targetNode,
+	                        name: name,
+	                        value: data || msg.url,
+	                        length: msg.length,
+	                        id: msg.id
+	                    }, this.sentByMe);
+	                }
 	                break;
 	            case 'cmd':
-	                brief = '[' + Demo.lan.cmd + ']';
-	                log(msg);
+	                if (!targetNode) {
+	                    Demo.strangers[targetId].push({ msg: msg, type: 'cmd' });
+	                } else {
+	                    brief = '[' + Demo.lan.cmd + ']';
+	                }
 	                break;
 	            case 'file':
-	                brief = '[' + Demo.lan.file + ']';
-	                fileMsg({
-	                    wrapper: targetNode,
-	                    name: name,
-	                    value: data || msg.url,
-	                    filename: msg.filename
-	                }, this.sentByMe);
+	                if (!targetNode) {
+	                    Demo.strangers[targetId].push({ msg: msg, type: 'file' });
+	                } else {
+	                    brief = '[' + Demo.lan.file + ']';
+	                    fileMsg({
+	                        wrapper: targetNode,
+	                        name: name,
+	                        value: data || msg.url,
+	                        filename: msg.filename
+	                    }, this.sentByMe);
+	                }
 	                break;
 	            case 'loc':
-	                brief = '[' + Demo.lan.location + ']';
-	                locMsg({
-	                    wrapper: targetNode,
-	                    name: name,
-	                    value: data || msg.addr
-	                }, this.sentByMe);
+	                if (!targetNode) {
+	                    Demo.strangers[targetId].push({ msg: msg, type: 'loc' });
+	                } else {
+	                    brief = '[' + Demo.lan.location + ']';
+	                    locMsg({
+	                        wrapper: targetNode,
+	                        name: name,
+	                        value: data || msg.addr
+	                    }, this.sentByMe);
+	                }
 	                break;
 	            case 'video':
-	                brief = '[' + Demo.lan.video + ']';
-	                videoMsg({
-	                    wrapper: targetNode,
-	                    name: name,
-	                    value: data || msg.url,
-	                    length: msg.length,
-	                    id: msg.id
-	                }, this.sentByMe);
+	                if (!targetNode) {
+	                    Demo.strangers[targetId].push({ msg: msg, type: 'video' });
+	                } else {
+	                    brief = '[' + Demo.lan.video + ']';
+	                    videoMsg({
+	                        wrapper: targetNode,
+	                        name: name,
+	                        value: data || msg.url,
+	                        length: msg.length,
+	                        id: msg.id
+	                    }, this.sentByMe);
+	                }
 	                break;
 	            default:
 	                break;
 	        };
+
+	        if (!targetNode) {
+	            this.render(this.node, 'stranger');
+	            return;
+	        }
 
 	        // show brief
 	        this.appendBrief(targetId, brief);
@@ -634,7 +682,7 @@
 	                    return;
 	                }
 	                var contact = document.getElementById(msg.from),
-	                    cate = contact ? 'friends' : 'strangers';
+	                    cate = Demo.roster[msg.from] ? 'friends' : 'strangers';
 
 	                this.addCount(msg.from, cate);
 	                break;
@@ -22537,6 +22585,8 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 	var React = __webpack_require__(9);
 	var LeftBar = __webpack_require__(189);
 	var Contact = __webpack_require__(195);
@@ -22634,6 +22684,18 @@
 	        Subscribe.show(msg);
 	    },
 
+	    componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+	        for (var o in Demo.strangers) {
+	            if (Demo.strangers.hasOwnProperty(o)) {
+	                var msg = null;
+
+	                while (msg = Demo.strangers[o].pop()) {
+	                    Demo.api.appendMsg(msg.msg, msg.type);
+	                }
+	            }
+	        }
+	    },
+
 	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 	        if (nextProps.groupChange) {
 	            this.getGroup();
@@ -22641,6 +22703,8 @@
 	            this.getRoster('doNotUpdateGroup');
 	        } else if (nextProps.chatroomChange) {
 	            this.getChatroom();
+	        } else if (nextProps.strangerChange) {
+	            this.getStrangers();
 	        }
 	    },
 
@@ -22695,6 +22759,17 @@
 	        };
 	    },
 
+	    getStrangers: function getStrangers() {
+	        var strangers = [];
+
+	        for (var o in Demo.strangers) {
+	            if (Demo.strangers.hasOwnProperty(o)) {
+	                strangers.push({ name: o });
+	            }
+	        }
+	        this.setState(_defineProperty({ strangers: strangers }, 'strangers', strangers));
+	    },
+
 	    getRoster: function getRoster(doNotUpdateGroup) {
 	        var me = this,
 	            conn = Demo.conn,
@@ -22708,6 +22783,7 @@
 	                    var ros = roster[i];
 	                    if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
 	                        friends.push(ros);
+	                        Demo.roster[ros.name] = 1;
 	                    }
 	                }
 	                me.setState({ friends: friends });
