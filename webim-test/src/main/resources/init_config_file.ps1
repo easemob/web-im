@@ -3,10 +3,13 @@ $baseurl=$env:EXTERNAL_BASE_URL
 $username=$env:USER_NAME
 $password=$env:USER_PASSWORD
 $redisuri=$env:REDIS_URI
+$workspace=$env:WORKSPACE
+
+echo "workspace: $workspace"
 echo "webim cluster: $cluster"
 
-$file="D:\jenkins\workspace\$env:JOB_NAME\static\js\easemob.im.config.js"
-$properties_file="D:\jenkins\workspace\$env:JOB_NAME\webim.properties"
+$file="$workspace\static\js\easemob.im.config.js"
+$properties_file="$workspace\webim.properties"
 
 if (Test-Path $properties_file) {
   echo "Remove old properties file: $properties_file"
@@ -57,7 +60,7 @@ foreach ($i in $content) {
 }
 
 echo "modify webim BASE_URL"
-$baseurl="file://D:\jenkins\workspace\$env:JOB_NAME\index.html"
+$baseurl="file://$workspace\index.html"
 echo "new BASE_URL: $baseurl"
 
 echo "set env variable: WEBIM_CLUSTER: $cluster, BASE_URL: $baseurl, USER_NAME: $username, USER_PASSWORD: $password"
