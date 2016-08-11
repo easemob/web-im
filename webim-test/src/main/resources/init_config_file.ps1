@@ -2,6 +2,7 @@ $cluster=$env:WEBIM_CLUSTER
 $baseurl=$env:EXTERNAL_BASE_URL
 $username=$env:USER_NAME
 $password=$env:USER_PASSWORD
+$redisuri=$env:REDIS_URI
 echo "webim cluster: $cluster"
 
 $file="D:\jenkins\workspace\$env:JOB_NAME\static\js\easemob.im.config.js"
@@ -33,6 +34,7 @@ if ($cluster -ceq "ebs") {
   echo "set env variable: WEBIM_CLUSTER: $cluster, BASE_URL: $baseurl, USER_NAME: $username, USER_PASSWORD: $password"
   "BASE_URL = $baseurl" | Out-File -encoding utf8 -Append $properties_file
   "WEBIM_CLUSTER = $cluster" | Out-File -encoding utf8 -Append $properties_file
+  "REDIS_URI = $redisuri" | Out-File -encoding utf8 -Append $properties_file
   exit
 }
 
@@ -61,4 +63,5 @@ echo "new BASE_URL: $baseurl"
 echo "set env variable: WEBIM_CLUSTER: $cluster, BASE_URL: $baseurl, USER_NAME: $username, USER_PASSWORD: $password"
 "BASE_URL = $baseurl" | Out-File -encoding utf8 -Append $properties_file
 "WEBIM_CLUSTER = $cluster" | Out-File -encoding utf8 -Append $properties_file
+"REDIS_URI = $redisuri" | Out-File -encoding utf8 -Append $properties_file
 echo "Successful to rewrite config file: $file, webim cluster: $cluster"

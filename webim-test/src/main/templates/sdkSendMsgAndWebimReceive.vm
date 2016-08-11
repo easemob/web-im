@@ -1,0 +1,19 @@
+#set ( $var = $count )
+{
+  "init":"{'cmdID':'0001', 'cmdName':'login','username':'$username2','password':'$password2'}",
+  "conditioned":
+  [
+    {"condition":"{'eventType':'command', 'cmdName':'login', 'username':'$username2','errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'sendmessage','to':'$username1','messageType':'text','content':'$message','chatType':'single'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 send $username1 message: ${message}"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'sendmessage', 'to':'$username2','errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'logout'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 logout"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'logout', 'errCode':'0'}",
+      "command":"{'cmdName':'exit'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 exit"
+    }
+  ]
+}

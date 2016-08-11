@@ -13,16 +13,17 @@ public class WebIMBaseListener implements ITestListener {
 	@Override
 	public void onTestStart(ITestResult result) {
 		logger.info("**************Start Test: " + result.getMethod().getMethodName() + " **************");
+		WebIMTestBase.REGRATION_TEST_RESULT = null;
  	}
 
 	@Override
 	public void onTestSuccess(ITestResult result) {
-		logger.info("**************Success Test: " + result.getMethod().getMethodName() + " **************");		
+		logger.info("**************Success Test: " + result.getMethod().getMethodName() + " **************");
 	}
 
 	@Override
 	public void onTestFailure(ITestResult result) {
-		logger.info("**************Fail Test: " + result.getMethod().getMethodName() + " **************");		
+		logger.info("**************Fail Test: " + result.getMethod().getMethodName() + " **************");
 	}
 
 	@Override

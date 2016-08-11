@@ -1,7 +1,9 @@
 package com.easemob.webim.webim_test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.RandomStringUtils;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 
+import com.easemob.webim.test.utils.VelocityUtils;
 import com.google.common.base.Preconditions;
 
 public class WebIMTestBase {
@@ -25,6 +28,8 @@ public class WebIMTestBase {
 	public static String PROPERTY_INTERNAL_USER_NAME = "INTERNAL_USER_NAME";
 	public static String PROPERTY_USER_PASSWORD = "USER_PASSWORD";
 	public static String PROPERTY_INTERNAL_USER_PASSWORD = "INTERNAL_USER_PASSWORD";
+
+	public static Boolean REGRATION_TEST_RESULT = null;
 
 	private static final Logger logger = LoggerFactory.getLogger(WebIMTestBase.class);
 
@@ -42,11 +47,12 @@ public class WebIMTestBase {
 			baseUrl = System.getProperty(PROPERTY_BASE_URL);
 		} else if (StringUtils.isNotBlank(System.getProperty(PROPERTY_INTERNAL_BASE_URL))) {
 			String path = System.getProperty(PROPERTY_INTERNAL_BASE_URL);
-			//find local index.html
+			// find local index.html
 			if (!path.contains("index.html")) {
 				File file = new File(path);
 				if (file.isDirectory()) {
-					baseUrl = "file://" + file.getParentFile().getAbsolutePath() + System.getProperty("file.separator") + "index.html";
+					baseUrl = "file://" + file.getParentFile().getAbsolutePath() + System.getProperty("file.separator")
+							+ "index.html";
 				}
 			} else {
 				baseUrl = System.getProperty(PROPERTY_INTERNAL_BASE_URL);
@@ -265,7 +271,7 @@ public class WebIMTestBase {
 	public String getRandomStr(int count) {
 		return RandomStringUtils.randomAlphanumeric(count).toLowerCase();
 	}
-	
+
 	public WebElement findSpecialGroup(WebDriver driver, String groupId, String path) {
 		Preconditions.checkArgument(null != driver, "webdriver was missing");
 		String xpath = "//a[@id='accordion2']";
@@ -288,7 +294,7 @@ public class WebIMTestBase {
 		}
 		return ele;
 	}
-	
+
 	public WebElement findSpecialChatroom(WebDriver driver, String chatroomId, String path) {
 		Preconditions.checkArgument(null != driver, "webdriver was missing");
 		String xpath = "//a[@id='accordion4']";
@@ -311,8 +317,20 @@ public class WebIMTestBase {
 		}
 		return ele;
 	}
-	
+
 	public String getScreenshotPath(String name) {
 		return screenshotPath + "/" + name;
+	}
+	
+	public String getCommandMsg(String file, Map<String, Object> map) {
+		logger.info("Configure template file: {}", file);
+		String result = null;
+		try {
+			result = VelocityUtils.merge(file, map);
+		} catch (Exception e) {
+			logger.error("Failed to configure template file: {}", file, e);
+			result = null;
+		}
+		return result;
 	}
 }

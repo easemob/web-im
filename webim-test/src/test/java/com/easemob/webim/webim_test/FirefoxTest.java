@@ -41,7 +41,7 @@ public class FirefoxTest extends WebIMTestBase {
 		driver = new FirefoxDriver();
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, priority = -100)
+	@Test(enabled = true, priority = -100)
 	public void register() {
 		Preconditions.checkArgument(null != driver, "webdriver was missing");
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -85,13 +85,13 @@ public class FirefoxTest extends WebIMTestBase {
 		isGetBaseUrl = false;
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" })
+	@Test(enabled = true)
 	public void loginWebIM() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		super.login(driver, username, password, path, isGetBaseUrl);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "loginWebIM", "register" })
+	@Test(enabled = true, dependsOnMethods = { "loginWebIM", "register" })
 	public void addFriend() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		logger.info("click add friend button");
@@ -117,7 +117,7 @@ public class FirefoxTest extends WebIMTestBase {
 		sleep(5);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "addFriend" })
+	@Test(enabled = true, dependsOnMethods = { "addFriend" })
 	public void getFriendList() {
 		logger.info("get friend list");
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -127,14 +127,14 @@ public class FirefoxTest extends WebIMTestBase {
 		Assert.assertTrue(null != wl && wl.size() > 0, "have found friends");
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "getFriendList" })
+	@Test(enabled = true, dependsOnMethods = { "getFriendList" })
 	public void loginWebIMWithNewUser() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		driver2 = new FirefoxDriver();
 		super.login(driver2, username2, password2, path, true);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "loginWebIMWithNewUser" })
+	@Test(enabled = true, dependsOnMethods = { "loginWebIMWithNewUser" })
 	public void receiveAddFriendConfirmMsg() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		String xpath = "//button[@class='btn btn-primary confirmButton']";
@@ -155,7 +155,7 @@ public class FirefoxTest extends WebIMTestBase {
 		}
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "receiveAddFriendConfirmMsg" })
+	@Test(enabled = true, dependsOnMethods = { "receiveAddFriendConfirmMsg" })
 	public void sendOffLineMsg() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		super.login(driver, username, password, path, isGetBaseUrl);
@@ -177,7 +177,7 @@ public class FirefoxTest extends WebIMTestBase {
 		checkChatMsg(driver, username, username2, msg, path);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "sendOffLineMsg" })
+	@Test(enabled = true, dependsOnMethods = { "sendOffLineMsg" })
 	public void receiveOffLineMsg() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		driver2 = new FirefoxDriver();
@@ -188,7 +188,7 @@ public class FirefoxTest extends WebIMTestBase {
 		checkChatMsg(driver2, username2, username, msg, path);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "receiveOffLineMsg" })
+	@Test(enabled = true, dependsOnMethods = { "receiveOffLineMsg" })
 	public void sendOnLineMsg() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		super.login(driver, username, password, path, isGetBaseUrl);
@@ -209,7 +209,7 @@ public class FirefoxTest extends WebIMTestBase {
 		checkChatMsg(driver, username, username2, msg, path);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "sendOnLineMsg" })
+	@Test(enabled = true, dependsOnMethods = { "sendOnLineMsg" })
 	public void receiveOnLineMsg() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		logger.info("find special friend: {}", username);
@@ -226,7 +226,7 @@ public class FirefoxTest extends WebIMTestBase {
 		}
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "receiveOnLineMsg" })
+	@Test(enabled = true, dependsOnMethods = { "receiveOnLineMsg" })
 	public void sendOffLineImg() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		logger.info("find special friend: {}", username2);
@@ -241,7 +241,7 @@ public class FirefoxTest extends WebIMTestBase {
 		checkChatMsg(driver, username, username2, fp, path);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "sendOffLineImg" })
+	@Test(enabled = true, dependsOnMethods = { "sendOffLineImg" })
 	public void receiveOffLineImg() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		driver2 = new FirefoxDriver();
@@ -262,7 +262,7 @@ public class FirefoxTest extends WebIMTestBase {
 		}
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "receiveOffLineImg" })
+	@Test(enabled = true, dependsOnMethods = { "receiveOffLineImg" })
 	public void sendOffLineAudio() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		logger.info("find special friend: {}", username2);
@@ -277,7 +277,7 @@ public class FirefoxTest extends WebIMTestBase {
 		checkChatMsg(driver, username, username2, fp, path);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "sendOffLineAudio" })
+	@Test(enabled = true, dependsOnMethods = { "sendOffLineAudio" })
 	public void receiveOffLineAudio() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		driver2 = new FirefoxDriver();
@@ -298,7 +298,7 @@ public class FirefoxTest extends WebIMTestBase {
 		}
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "receiveOffLineAudio" })
+	@Test(enabled = true, dependsOnMethods = { "receiveOffLineAudio" })
 	public void sendOffLineFile() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		logger.info("find special friend: {}", username2);
@@ -313,7 +313,7 @@ public class FirefoxTest extends WebIMTestBase {
 		checkChatMsg(driver, username, username2, fp, path);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "sendOffLineFile" })
+	@Test(enabled = true, dependsOnMethods = { "sendOffLineFile" })
 	public void receiveOffLineFile() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		driver2 = new FirefoxDriver();
@@ -334,7 +334,7 @@ public class FirefoxTest extends WebIMTestBase {
 		}
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "receiveOffLineFile" }, priority = 100)
+	@Test(enabled = true, dependsOnMethods = { "receiveOffLineFile" }, priority = 100)
 	public void getGroupList() {
 		logger.info("get group list");
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -344,7 +344,7 @@ public class FirefoxTest extends WebIMTestBase {
 		Assert.assertTrue(null != li && li.size() > 0, "have found groups");
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "getGroupList" })
+	@Test(enabled = true, dependsOnMethods = { "getGroupList" })
 	public void sendGroupMessage() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		logger.info("select first group to send message");
@@ -366,7 +366,7 @@ public class FirefoxTest extends WebIMTestBase {
 		checkChatMsg(driver, username, groupId, msg, path);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "sendGroupMessage" })
+	@Test(enabled = true, dependsOnMethods = { "sendGroupMessage" })
 	public void getChatroomList() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		logger.info("get chatroom list");
@@ -382,7 +382,7 @@ public class FirefoxTest extends WebIMTestBase {
 		Assert.assertTrue(null != wes && wes.size() > 0, "have found chatrooms");
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "getChatroomList" })
+	@Test(enabled = true, dependsOnMethods = { "getChatroomList" })
 	public void sendchatmessage() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		logger.info("select first chatroom to send message");
@@ -404,7 +404,7 @@ public class FirefoxTest extends WebIMTestBase {
 		// checkChatMsg(driver, username, chatroomId, msg, path);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "sendchatmessage" })
+	@Test(enabled = true, dependsOnMethods = { "sendchatmessage" })
 	public void deleteUser() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		super.login(driver, username, password, path, isGetBaseUrl);
@@ -431,7 +431,7 @@ public class FirefoxTest extends WebIMTestBase {
 		sleep(5);
 	}
 
-	@Test(enabled = true, groups = { "sanity_test" }, dependsOnMethods = { "deleteUser" }, priority = 100)
+	@Test(enabled = true, dependsOnMethods = { "deleteUser" }, priority = 100)
 	public void logoutWebIM() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		super.logout(driver, path);
