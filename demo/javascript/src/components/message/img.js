@@ -22,7 +22,7 @@ var ImgMsg = React.createClass({
             <div className={'rel ' + this.props.className}>
                 <Avatar src={this.props.src} className={this.props.className + ' small'} />
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
-                <div className='webim-msg-value'>
+                <div className='webim-msg-value webim-img-msg-wrapper'>
                     <span className='webim-msg-icon font'>{icon}</span>
                     <div><img ref='img' className='webim-msg-img' src={this.props.value} onClick={this.show} /></div>
                 </div>

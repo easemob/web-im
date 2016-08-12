@@ -107,7 +107,7 @@
     display: inline-block;
     cursor: pointer;
     margin-bottom: 10px;
-    color: $gcolor;
+    color: $grayColor;
 }
 .webim-operations-icon:hover,
 .webim-leftbar-icon:hover,
@@ -116,7 +116,7 @@
     color: $color;
 }
 .webim-operations-icon {
-    color: $gcolor;
+    color: $grayColor;
     position: absolute;
     margin-bottom: 0;
     bottom: 10px;
@@ -142,6 +142,7 @@
 
     i {
         margin: 0 10px;
+        color: $grayColor;
     }
 
     span {
@@ -156,10 +157,25 @@
         &:hover {
             color: $color;
             background-color: rgb(242, 242, 242);
+
+            i {
+                color: $color;
+            }
+        }
+
+        &:nth-child(2) {
+            i {
+                display: inline-block;
+                margin-top: -4px;
+                vertical-align: top;
+            }
         }
 
         &:last-child:hover {
             color: rgb(233, 1, 1);
+            i {
+                color: rgb(233, 1, 1);
+            }
         }
     }
 }

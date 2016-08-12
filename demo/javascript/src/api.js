@@ -11,9 +11,13 @@ var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
 
 module.exports = {
-    log: function () {
-        console.log(arguments);
-    },
+    log: (function () {
+        if ( typeof console !== 'undefined' && console.log ) {
+            return function () {
+                console.log.apply(window.console, arguments);
+            };
+        } else return function () {};
+    }()),
 
     render: function ( node, change ) {
         this.node = node;
@@ -28,6 +32,9 @@ module.exports = {
                 break;   
             case 'chatroom':
                 props.chatroomChange = true;
+                break;
+            case 'stranger':
+                props.strangerChange = true;
                 break;
             default: 
                 props = null;
@@ -63,82 +70,121 @@ module.exports = {
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
             targetNode = document.getElementById('wrapper' + targetId);
 
-        if ( msg.type !== 'chat' && !targetNode ) {
+
+        if ( !this.sentByMe && msg.type === 'chat' && !targetNode ) {
+            Demo.strangers[targetId] = Demo.strangers[targetId] || [];
+        } else if ( !targetNode ) {
             return;
         }
 
         switch ( type ) {
             case 'txt':
-                brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
-                textMsg({
-                    wrapper: targetNode,
-                    name: name,
-                    value: brief,
-                }, this.sentByMe);
+                if ( !targetNode ) {
+                    Demo.strangers[targetId].push({ msg: msg, type: 'txt' });
+                } else {
+                    brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
+                    textMsg({
+                        wrapper: targetNode,
+                        name: name,
+                        value: brief,
+                    }, this.sentByMe);
+                }
                 break;
             case 'emoji':
-                for ( var i = 0, l = data.length; i < l; i++ ) {
-                    brief += data[i].type === 'emoji' 
-                        ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) +'" />'
-                        : this.encode(data[i].data);
+                if ( !targetNode ) {
+                    Demo.strangers[targetId].push({ msg: msg, type: 'emoji' });
+                } else {
+                    for ( var i = 0, l = data.length; i < l; i++ ) {
+                        brief += data[i].type === 'emoji' 
+                            ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) +'" />'
+                            : this.encode(data[i].data);
+                    }
+                    textMsg({
+                        wrapper: targetNode,
+                        name: name,
+                        value: brief,
+                    }, this.sentByMe);
                 }
-                textMsg({
-                    wrapper: targetNode,
-                    name: name,
-                    value: brief,
-                }, this.sentByMe);
                 break;
             case 'img':
-                brief = '[' + Demo.lan.image + ']';
-                imgMsg({
-                    wrapper: targetNode,
-                    name: name,
-                    value: data || msg.url,
-                }, this.sentByMe);
+                if ( !targetNode ) {
+                    Demo.strangers[targetId].push({ msg: msg, type: 'img' });
+                } else {
+                    brief = '[' + Demo.lan.image + ']';
+                    imgMsg({
+                        wrapper: targetNode,
+                        name: name,
+                        value: data || msg.url,
+                    }, this.sentByMe);
+                }
                 break;
             case 'aud':
-                brief = '[' + Demo.lan.audio + ']';
-                audioMsg({
-                    wrapper: targetNode,
-                    name: name,
-                    value: data || msg.url,
-                    length: msg.length,
-                    id: msg.id
-                }, this.sentByMe);
+                if ( !targetNode ) {
+                    Demo.strangers[targetId].push({ msg: msg, type: 'aud' });
+                } else {
+                    brief = '[' + Demo.lan.audio + ']';
+                    audioMsg({
+                        wrapper: targetNode,
+                        name: name,
+                        value: data || msg.url,
+                        length: msg.length,
+                        id: msg.id
+                    }, this.sentByMe);
+                }
                 break;
             case 'cmd':
-                brief = '[' + Demo.lan.cmd + ']';
-                log(msg);
+                if ( !targetNode ) {
+                    Demo.strangers[targetId].push({ msg: msg, type: 'cmd' });
+                } else {
+                    brief = '[' + Demo.lan.cmd + ']';
+                }
                 break;
             case 'file':
-                brief = '[' + Demo.lan.file + ']';
-                fileMsg({
-                    wrapper: targetNode,
-                    name: name,
-                    value: data || msg.url,
-                    filename: msg.filename
-                }, this.sentByMe);
+                if ( !targetNode ) {
+                    Demo.strangers[targetId].push({ msg: msg, type: 'file' });
+                } else {
+                    brief = '[' + Demo.lan.file + ']';
+                    fileMsg({
+                        wrapper: targetNode,
+                        name: name,
+                        value: data || msg.url,
+                        filename: msg.filename
+                    }, this.sentByMe);
+                }
                 break;
             case 'loc':
-                brief = '[' + Demo.lan.location + ']';
-                locMsg({
-                    wrapper: targetNode,
-                    name: name,
-                    value: data || msg.addr
-                }, this.sentByMe);
+                if ( !targetNode ) {
+                    Demo.strangers[targetId].push({ msg: msg, type: 'loc' });
+                } else {
+                    brief = '[' + Demo.lan.location + ']';
+                    locMsg({
+                        wrapper: targetNode,
+                        name: name,
+                        value: data || msg.addr
+                    }, this.sentByMe);
+                }
                 break;
             case 'video':
-                brief = '[' + Demo.lan.video + ']';
-                videoMsg({
-                    wrapper: targetNode,
-                    name: name,
-                    value: data || msg.url,
-                    length: msg.length,
-                    id: msg.id
-                }, this.sentByMe);
+                if ( !targetNode ) {
+                    Demo.strangers[targetId].push({ msg: msg, type: 'video' });
+                } else {
+                    brief = '[' + Demo.lan.video + ']';
+                    videoMsg({
+                        wrapper: targetNode,
+                        name: name,
+                        value: data || msg.url,
+                        length: msg.length,
+                        id: msg.id
+                    }, this.sentByMe);
+                }
                 break;
             default: break;
         };
+
+        if ( !targetNode ) {
+            this.render(this.node, 'stranger');
+            return;
+        }
 
         // show brief
         this.appendBrief( targetId, brief);
@@ -152,8 +198,8 @@ module.exports = {
             case 'chat':
                 if ( this.sentByMe ) { return; }
                 var contact = document.getElementById(msg.from),
-                    cate = contact ? 'friends' : 'strangers';
-                
+                    cate = Demo.roster[msg.from] ? 'friends' : 'strangers';
+
                 this.addCount(msg.from, cate);
                 break;
             case 'groupchat':

@@ -35,6 +35,7 @@
         right: 0;
         top: 40px;
         margin: auto;
+        padding: 10px 7px;
         border-radius: 2px;
         width: 200px;
         overflow: auto;
@@ -74,7 +75,8 @@
         color: #cccccc;
         vertical-align: middle;
         cursor: pointer;
-        padding-bottom: 15px;
+        margin-left: 10px;
+        padding-bottom: 22px;
 
         &.webim-up-icon {
             transform: rotate(180deg);
@@ -93,7 +95,7 @@
 
     > span {
         margin-left: 6px;
-        color: $gcolor;
+        color: $grayColor;
         cursor: pointer;
     }
 

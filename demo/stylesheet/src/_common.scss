@@ -1,4 +1,5 @@
 html, body, section, article, h1, h2, h3, h4, h5, h6, p, div, i, em, span, ul, li, ol {
+    font-family: $fontFamily;
     margin: 0;
     padding: 0;
 }
@@ -8,18 +9,22 @@ html, body {
     height: 100%;
     font-size: 13px;
     overflow-y: hidden;
-    font-family: sans-serif, 'Microsoft YaHei', 'Arial';
     background-color: rgb(250,250,250);
     border: 1px solid rgba(250,250,250,0);
     -webkit-font-smoothing: antialiased;
 }
 
-input, button, textarea {
+input, button {
     outline: none;
-    resize: none;
     &:focus {
         border: 1px solid $color;
+        box-shadow: $inputShadow;
     }
+}
+
+textarea {
+    outline: none;
+    resize: none;
 }
 
 ul, ol, li {
@@ -41,6 +46,14 @@ ul, ol, li {
 .w100 {
     width: 100%;
     height: 100%;
+}
+
+.pad0 {
+    padding: 0;
+}
+
+.top50 {
+    margin-top: 50px;
 }
 
 .rel {
@@ -80,6 +93,12 @@ object {
         width: 30px;
         height: 30px;
         font-size: 30px;
+    }
+
+    &.xsmaller {
+        width: 26px;
+        height: 26px;
+        font-size: 26px;
     }
 
     &.smaller {
@@ -129,9 +148,10 @@ object {
 }
 
 .copyright {
+    z-index: 3;
     position: absolute;
     width: 100%;
     bottom: 10px;
     text-align: center;
-    color: $gcolor;
+    color: $grayColor;
 }
