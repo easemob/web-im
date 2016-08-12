@@ -9,7 +9,8 @@ module.exports = React.createClass({
         var me = this;
 
         return {
-            members: []
+            members: [],
+            memberShowStatus: false
          };
     },
 
@@ -27,16 +28,16 @@ module.exports = React.createClass({
                 roomId: me.props.roomId,
                 success: function ( members ) {
                     if ( members && members.length > 0 ) {
-                        me.refs.i.className = 'webim-down-icon font smaller dib webim-up-icon';
+                        me.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
 
-                        me.setState({ members: members });
+                        me.setState({ members: members, memberShowStatus: true });
                     }
                 },
                 error : function() {}
             });
         } else {
-            me.refs.i.className = 'webim-down-icon font smaller dib';
-            me.setState({ members: [] });
+            me.refs.i.className = 'webim-down-icon font smallest dib';
+            me.setState({ members: [], memberShowStatus: false });
         }
     },
 
@@ -52,6 +53,7 @@ module.exports = React.createClass({
                 sendAudio: this.props.sendAudio,
                 sendFile: this.props.sendFile
             },
+            memberStatus = this.state.memberShowStatus ? '' : ' hide',
             roomMember = [];
 
         for ( var i = 0, l = this.state.members.length; i < l; i++ ) {
@@ -65,9 +67,9 @@ module.exports = React.createClass({
             <div className={'webim-chatwindow ' + this.props.className}>
                 <p className='webim-chatwindow-title'>
                     {this.props.name}
-                    <i ref='i' className={'webim-down-icon font smaller' + className} onClick={this.listMember}>D</i>
+                    <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
                 </p>
-				<ul ref='member' className='webim-group-memeber'>{roomMember}</ul>
+				<ul ref='member' className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>
                 <div id={this.props.id} ref='wrapper' className='webim-chatwindow-msg'></div>
                 <SendWrapper send={this.send} {...props} />
             </div>

@@ -43,7 +43,7 @@ exports.Chinese = {
     signIn: '登录',
     username: '用户名',
     password: '密码',
-    tokenSignin: 'token登录',
+    tokenSignin: '使用token登录',
     nickname: '昵称',
     signUp: '注册',
     signUpSuccessfully: '注册成功',

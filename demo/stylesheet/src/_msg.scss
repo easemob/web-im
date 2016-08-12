@@ -15,14 +15,18 @@
         }
 
         .webim-msg-icon {
-            color: $dcolor;
+            color: $msgBgColor;
             right: -40px;
         }
 
         .webim-msg-value {
             float: right;
             margin: 6px 10px 0 0;
-            background-color: $dcolor;
+            background-color: $msgBgColor;
+        }
+
+        .webim-msg-header {
+            text-align: right;
         }
     }
 
@@ -43,6 +47,10 @@
             float: left;
             margin: 6px 0 0 10px;
         }
+
+        .webim-msg-header {
+            text-align: left;
+        }
     }
 }
 .webim-msg-icon {
@@ -61,6 +69,10 @@
 
     video {
         width: 100%;
+    }
+
+    &.webim-img-msg-wrapper {
+        padding: 1px;
     }
 
     > div,
@@ -99,6 +111,7 @@
     max-width: 100%;
     vertical-align: middle;
     cursor: pointer;
+    border-radius: 4px;
 }
 .webim-msg-header {
     line-height: 30px;

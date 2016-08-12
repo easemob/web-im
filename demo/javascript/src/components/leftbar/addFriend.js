@@ -34,7 +34,7 @@ var AddFriend = React.createClass({
             <div className='webim-friend-options'>
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog'>
-                    <h3>Add Friend</h3>
+                    <h3>{Demo.lan.addAFriend}</h3>
                     <div ref='content'>
                         <Input defaultFocus='true' ref='input' placeholder={Demo.lan.username} />
                     </div>

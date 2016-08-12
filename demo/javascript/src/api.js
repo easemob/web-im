@@ -70,7 +70,7 @@ module.exports = {
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
             targetNode = document.getElementById('wrapper' + targetId);
 
-        if ( msg.type !== 'chat' ) {
+        if ( !this.sentByMe && msg.type !== 'chat' ) {
             return;
         }
 

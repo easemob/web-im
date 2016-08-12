@@ -44,7 +44,7 @@ var DelFriend = React.createClass({
             <div className='webim-friend-options'>
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog'>
-                    <h3>Delete Friend</h3>
+                    <h3>{Demo.lan.delAFriend}</h3>
                     <div ref='content'>
                         <Input defaultFocus='true' ref='input' placeholder={Demo.lan.username} />
                     </div>
