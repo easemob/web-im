@@ -5,6 +5,7 @@ module.exports = React.createClass({
 
     render: function () {
         var cur = this.props.cur === this.props.name ?  ' selected' : '';
+        var topClass = '';
 
         var icon,
             describe = '';
@@ -24,12 +25,13 @@ module.exports = React.createClass({
                 break;
             default:
                 icon = 'E';
+                topClass = ' top50';
                 describe = Demo.lan.friends;
                 break;
         };
 
         return (
-            <div id={this.props.name + 's'} className='rel' onClick={this.props.update}>
+            <div id={this.props.name + 's'} className={'rel' + topClass} onClick={this.props.update}>
                 <i title={describe} className={'webim-leftbar-icon font small' + cur}>{icon}</i>
                 <i className='webim-msg-prompt webim-msg-icon-prompt' style={{display: 'none'}}></i>
             </div>

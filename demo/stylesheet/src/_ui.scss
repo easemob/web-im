@@ -15,6 +15,10 @@
         background-color: rgb(255, 58, 0);
         border: 1px solid rgb(255, 58, 0);
     }
+
+    &:hover {
+        background-color: $buttonActiveColor;
+    }
 }
 
 /*
@@ -42,7 +46,7 @@
 .webim-checkbox {
 
     text-align: left;
-    margin-bottom: 10px;
+    margin: 10px 0 10px 5px;
     padding-left: 50px;
     box-sizing: border-box;
 
@@ -59,9 +63,27 @@
         border-radius: 2px;
         display: inline-block;
         vertical-align: middle;
+        border: 1px solid $grayColor;
         cursor: pointer;
 
+        &:hover {
+            background-color: #fff;
+            em {
+                display: inline-block;
+                color: $grayColor;
+            }
+        }
+
+        &.checked {
+            background-color: $lightColor;
+            em {
+                display: inline-block;
+                color: #000;
+            }
+        }
+
         em {
+            display: none;
             position: absolute;
             left: -6px;
             top: -10px;

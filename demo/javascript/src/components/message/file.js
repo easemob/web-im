@@ -15,7 +15,7 @@ var FileMsg = React.createClass({
                 <div className='webim-msg-value' style={{minWidth: '200px'}}>
                     <span className='webim-msg-icon font'>{icon}</span>
                     <div>
-                        <p className='webim-msg-header'>File</p>
+                        <p className='webim-msg-header'>{Demo.lan.file}</p>
                         <div>
                             <span className='webim-msg-header-icon font small'>S</span>
                             <span className='webim-msg-name'>{this.props.filename}</span>

@@ -79,8 +79,17 @@ exports.Checkbox = React.createClass({
     },
 
     handleClick: function () {
+        this.toggleChecked();
         this.refs.input.checked = !this.state.checked;
         this.setState({ checked: !this.state.checked });
+    },
+
+    toggleChecked: function () {
+        if ( this.refs.i.className ) {
+            this.refs.i.className = '';
+        } else {
+            this.refs.i.className = 'checked';
+        }
     },
 
     handleChange: function () {
@@ -92,7 +101,7 @@ exports.Checkbox = React.createClass({
 
         return (
             <div className='webim-checkbox'>
-                <i className='bg-color' onClick={this.handleClick}>
+                <i ref='i' onClick={this.handleClick}>
                     <em ref='rec' className={'font small' + className}>W</em>
                 </i>
                 <input ref='input' type='checkbox' className='hide' onChange={this.handleChange} />
