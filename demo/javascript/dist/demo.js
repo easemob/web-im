@@ -552,12 +552,10 @@
 	            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
 	            targetNode = document.getElementById('wrapper' + targetId);
 
-	        if (!this.sentByMe && msg.type !== 'chat') {
-	            return;
-	        }
-
-	        if (!targetNode) {
+	        if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
 	            Demo.strangers[targetId] = Demo.strangers[targetId] || [];
+	        } else if (!targetNode) {
+	            return;
 	        }
 
 	        switch (type) {
