@@ -58,19 +58,12 @@ public class ConfigFileUtils {
 		if (line.contains("xmppURL: ")) {
 			return line.replaceAll("'.*',", "'" + xmpp + "',");
 		}
-		if (line.contains("apiURL: protocol + //")) {
+		if (line.contains("apiURL: protocol + '//")) {
 			return line.replaceAll("'//.*',", "'//" + urlapi + "',");
 		}
 		if (line.contains("appkey: ")) {
 			return line.replaceAll("\".*\",", "\"" + appkey + "\",");
 		}
 		return line;
-	}
-	
-	public static void main(String[] args) {
-		String filename = "/Users/zhouhu/Documents/workspace/easemob/web-im/static/js/temp.js";
-		ConfigFileUtils.changeConfigFile(filename, "xmpp.zhouhu", "a1.zhouhu.com", "zhou#hu");
-		StringBuffer sb = ConfigFileUtils.readFile(filename);
-		System.out.println("str = " + sb.toString());
 	}
 }
