@@ -40,6 +40,7 @@ public class WebIMTestBase {
 	public static String PROPERTY_INTERNAL_APPKEY = "INTERNAL_APPKEY";
 
 	public static Boolean REGRATION_TEST_RESULT = null;
+	public static String GROUP_ID = null;
 
 	private static final Logger logger = LoggerFactory.getLogger(WebIMTestBase.class);
 
@@ -55,6 +56,8 @@ public class WebIMTestBase {
 	protected String appkey;
 
 	protected boolean isGetBaseUrl = true;
+	protected static final String GROUP_PREFIX = "groupchat";
+	protected static final String CHATROOM_PREFIX = "chatroom";
 
 	public void init() {
 		if (StringUtils.isNotBlank(System.getenv(PROPERTY_CLUSTER))) {
@@ -188,6 +191,8 @@ public class WebIMTestBase {
 		Preconditions.checkArgument(StringUtils.isNotBlank(username), "friend name was missing!");
 		String xpath = "//a[@id='accordion1']";
 		WebElement ele = findElement(driver, xpath, path);
+		ele.click();
+		sleep(1);
 		if (ele.getAttribute("class").equals("accordion-toggle collapsed")) {
 			ele.click();
 		}
@@ -196,8 +201,28 @@ public class WebIMTestBase {
 		ele = findElement(driver, xpath, path);
 		if (!StringUtils.isNotBlank(ele.getAttribute("style"))) {
 			ele.click();
+		} else {
+			WebElement flag = findFriendNewMessageFlag(ele);
+			if (null != flag) {
+				ele.click();
+			}
 		}
 		return ele;
+	}
+
+	public boolean findNoExistingFriend(WebDriver driver, String username, String path) {
+		Preconditions.checkArgument(null != driver, "webdriver was missing");
+		Preconditions.checkArgument(StringUtils.isNotBlank(username), "friend name was missing!");
+		String xpath = "//a[@id='accordion1']";
+		WebElement ele = findElement(driver, xpath, path);
+		ele.click();
+		sleep(1);
+		if (ele.getAttribute("class").equals("accordion-toggle collapsed")) {
+			ele.click();
+		}
+		sleep(3);
+		xpath = "//ul[@id='contactlistUL']/li[@id='" + username + "']";
+		return findNoExistingElement(driver, xpath);
 	}
 
 	public void checkChatMsg(WebDriver driver, String username1, String username2, String msg, String path) {
@@ -215,6 +240,66 @@ public class WebIMTestBase {
 				if (we.getText().contains(msg)) {
 					logger.info("find message: {}", msg);
 					return;
+				}
+			}
+			Assert.assertTrue(false,
+					"find chat log: user1: " + username1 + ", user2: " + username2 + ", message: " + msg);
+		} catch (Exception e) {
+			logger.error("Failed to find chat log: user1: {}, user2: {}, message: {}", username1, username2, msg, e);
+			Assert.assertTrue(false,
+					"find chat log: user1: " + username1 + ", user2: " + username2 + ", message: " + msg);
+		}
+	}
+
+	public void checkNoExistingChatMsg(WebDriver driver, String username1, String username2, String msg, String path) {
+		Preconditions.checkArgument(null != driver, "webdriver was missing");
+		Preconditions.checkArgument(StringUtils.isNotBlank(username1) && StringUtils.isNotBlank(username2),
+				"username1 or username2 was missing");
+		Preconditions.checkArgument(StringUtils.isNotBlank(msg), "message was missing");
+		WebElement wet = checkLogin(driver);
+		Assert.assertTrue(null != wet && wet.isDisplayed(), "check login web page");
+		String xpath = "//div[@id='" + username1 + "-" + username2 + "']";
+		WebElement ele = findElement(driver, xpath, path);
+		try {
+			List<WebElement> eles = ele.findElements(By.xpath("//p[@class='chat-content-p3']"));
+			for (WebElement we : eles) {
+				if (we.getText().contains(msg)) {
+					logger.info("find message: {}", msg);
+					Assert.assertTrue(false,
+							"Can't find chat log: user1: " + username1 + ", user2: " + username2 + ", message: " + msg);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Failed to find chat log: user1: {}, user2: {}, message: {}", username1, username2, msg, e);
+			Assert.assertTrue(false,
+					"Can't find chat log: user1: " + username1 + ", user2: " + username2 + ", message: " + msg);
+		}
+	}
+
+	public void checkMsgSender(WebDriver driver, String username1, String username2, String msg, String path) {
+		Preconditions.checkArgument(null != driver, "webdriver was missing");
+		Preconditions.checkArgument(StringUtils.isNotBlank(username1) && StringUtils.isNotBlank(username2),
+				"username1 or username2 was missing");
+		Preconditions.checkArgument(StringUtils.isNotBlank(msg), "message was missing");
+		WebElement wet = checkLogin(driver);
+		Assert.assertTrue(null != wet && wet.isDisplayed(), "check login web page");
+		String xpath = "//div[@id='" + username1 + "-" + username2 + "']";
+		WebElement ele = findElement(driver, xpath, path);
+		try {
+			List<WebElement> eles = ele.findElements(By.xpath("//div[@style='text-align: left;'"));
+			for (WebElement we : eles) {
+				List<WebElement> eps = we.findElements(By.xpath("//p[@class='chat-content-p3']"));
+				List<WebElement> ep1s = we.findElements(By.xpath("//p1"));
+				for (WebElement ep : eps) {
+					if (ep.getText().contains(msg)) {
+						logger.info("find message: {}", msg);
+						for (WebElement ep1 : ep1s) {
+							if (ep1.getText().contains(username2)) {
+								logger.info("find user: {}", username2);
+								return;
+							}
+						}
+					}
 				}
 			}
 			Assert.assertTrue(false,
@@ -303,6 +388,17 @@ public class WebIMTestBase {
 		return element;
 	}
 
+	public List<WebElement> findElementsByXpath(WebDriver driver, String xpath) {
+		List<WebElement> wel = null;
+		try {
+			wel = driver.findElements(By.xpath(xpath));
+		} catch (Exception e) {
+			logger.error("Failed to find elements: xpath[{}]", xpath, e);
+			return null;
+		}
+		return wel;
+	}
+
 	public WebElement findElement(WebDriver driver, String xpath, String path) {
 		WebElement element = findElementByXpath(driver, xpath);
 		if (null == element) {
@@ -313,6 +409,14 @@ public class WebIMTestBase {
 		return element;
 	}
 
+	public boolean findNoExistingElement(WebDriver driver, String xpath) {
+		List<WebElement> wel = findElementsByXpath(driver, xpath);
+		if (null == wel || wel.size() <= 0) {
+			return false;
+		}
+		return true;
+	}
+
 	public String getRandomStr(int count) {
 		return RandomStringUtils.randomAlphanumeric(count).toLowerCase();
 	}
@@ -321,6 +425,39 @@ public class WebIMTestBase {
 		Preconditions.checkArgument(null != driver, "webdriver was missing");
 		String xpath = "//a[@id='accordion2']";
 		WebElement ele = findElement(driver, xpath, path);
+		ele.click();
+		sleep(1);
+		if (ele.getAttribute("class").equals("accordion-toggle collapsed")) {
+			ele.click();
+			sleep(1);
+		}
+		if (StringUtils.isNotBlank(groupId)) {
+			groupId = GROUP_PREFIX + groupId;
+			logger.info("select group: {}", groupId);
+			xpath = "//ul[@id='contracgrouplistUL']/li[@id='" + groupId + "']";
+		} else {
+			logger.info("select first group");
+			xpath = "//ul[@id='contracgrouplistUL']/li[1]";
+		}
+		ele = findElement(driver, xpath, path);
+		if (!StringUtils.isNotBlank(ele.getAttribute("style"))) {
+			ele.click();
+			sleep(1);
+		} else {
+			WebElement flag = findGroupNewMessageFlag(ele);
+			if (null != flag) {
+				ele.click();
+			}
+		}
+		return ele;
+	}
+
+	public boolean findNoExistingGroup(WebDriver driver, String groupId, String path) {
+		Preconditions.checkArgument(null != driver, "webdriver was missing");
+		String xpath = "//a[@id='accordion2']";
+		WebElement ele = findElement(driver, xpath, path);
+		ele.click();
+		sleep(1);
 		if (ele.getAttribute("class").equals("accordion-toggle collapsed")) {
 			ele.click();
 			sleep(1);
@@ -332,23 +469,21 @@ public class WebIMTestBase {
 			logger.info("select first group");
 			xpath = "//ul[@id='contracgrouplistUL']/li[1]";
 		}
-		ele = findElement(driver, xpath, path);
-		if (!StringUtils.isNotBlank(ele.getAttribute("style"))) {
-			ele.click();
-			sleep(1);
-		}
-		return ele;
+		return findNoExistingElement(driver, xpath);
 	}
 
 	public WebElement findSpecialChatroom(WebDriver driver, String chatroomId, String path) {
 		Preconditions.checkArgument(null != driver, "webdriver was missing");
 		String xpath = "//a[@id='accordion4']";
 		WebElement ele = findElement(driver, xpath, path);
+		ele.click();
+		sleep(1);
 		if (ele.getAttribute("class").equals("accordion-toggle collapsed")) {
 			ele.click();
 			sleep(1);
 		}
 		if (StringUtils.isNotBlank(chatroomId)) {
+			chatroomId = CHATROOM_PREFIX + chatroomId;
 			logger.info("select chatroom: {}", chatroomId);
 			xpath = "//ul[@id='chatRoomListUL']/li[@id='" + chatroomId + "']";
 		} else {
@@ -379,6 +514,10 @@ public class WebIMTestBase {
 		return result;
 	}
 
+	public String getLocationMsg() {
+		return getRandomStr(16);
+	}
+
 	private String getLocalBaseUrl() {
 		return "file://" + Paths.get(System.getProperty("user.dir")).getParent().toAbsolutePath()
 				+ System.getProperty("file.separator") + "index.html";
@@ -388,6 +527,24 @@ public class WebIMTestBase {
 		return Paths.get(System.getProperty("user.dir")).getParent().toAbsolutePath()
 				+ System.getProperty("file.separator") + "static" + System.getProperty("file.separator") + "js"
 				+ System.getProperty("file.separator") + "easemob.im.config.js";
+	}
+
+	private WebElement findFriendNewMessageFlag(WebElement element) {
+		String xpath = "//span[@class='badge']";
+		List<WebElement> eles = element.findElements(By.xpath(xpath));
+		if (null == eles || eles.size() <= 0) {
+			return null;
+		}
+		return eles.get(0);
+	}
+
+	private WebElement findGroupNewMessageFlag(WebElement element) {
+		String xpath = "//span[@class='badge']";
+		List<WebElement> eles = element.findElements(By.xpath(xpath));
+		if (null == eles || eles.size() <= 0) {
+			return null;
+		}
+		return eles.get(0);
 	}
 
 }

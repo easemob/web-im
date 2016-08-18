@@ -35,12 +35,13 @@ public class PubSubServiceImpl implements PubSubService {
 
     private ScheduledExecutorService thread = Executors.newScheduledThreadPool(1);
 
-    public void init() throws URISyntaxException {
+    public void init(Set<String> channels) throws URISyntaxException {
     	URI uri = RedisFactory.getRedisURI();
     	PubSubJedisPool = RedisFactory.createJedisPool(uri);
     	listener = new PubSubListener();
-        Set<String> channels = new HashSet<String>();
-        channels.add(RedisChannel.RESULT_CHANNLE_1.getChannel());
+//        Set<String> channels = new HashSet<String>();
+//        channels.add(RedisChannel.RESULT_CHANNLE_1.getChannel());
+//        channels.add(RedisChannel.RESULT_CHANNLE_2.getChannel());
         if (null != channels && channels.size() > 0) {
             listener.addChannels(channels.toArray(new String[channels.size()]));
             subscribeChannels();

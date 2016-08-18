@@ -4,12 +4,12 @@
   "init":"{'cmdID':'00001','cmdName':'login','username':'$username2','password':'$password2'}",
   "conditioned":
   [
-    {"condition":"{'eventType':'push','pushName':'onContactInvited','contactID':'$username'}",
-      "command":"{'cmdID':'00002','cmdName':'acceptinvitation','contactID':'$username'}",
+    {"condition":"{'eventType':'command', 'cmdName':'login', 'username':'$username2','errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'addcontact','contactID':'$username','inviteMessage':'hello'}",
       #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 adds $username as a friend"
     },
-    {"condition":"{'eventType':'command','cmdName':'acceptinvitation','errCode':'0'}",
-      "command":"{'cmdID':'00001','cmdName':'logout'}",
+    {"condition":"{'eventType':'push', 'pushName':'onContactAdded', 'contactID':'$username'}",
+      "command":"{'cmdID':'0001','cmdName':'logout'}",
       #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 logout"
     },
     {"condition":"{'eventType':'command', 'cmdName':'logout', 'errCode':'0'}",

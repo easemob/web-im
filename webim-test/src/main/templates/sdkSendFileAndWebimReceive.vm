@@ -5,8 +5,8 @@
   "conditioned":
   [
     {"condition":"{'eventType':'command', 'cmdName':'login', 'username':'$username2','errCode':'0'}",
-      "command":"{'cmdID':'0001','cmdName':'sendmessage','to':'$username','messageType':'text','content':'$message','chatType':'single'}",
-      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 send $username message: ${message}"
+      "command":"{'cmdID':'0001','cmdName':'sendmessage','to':'$username','messageType':'file','content':'$file','chatType':'single'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 send $username file: ${file}"
     },
     {"condition":"{'eventType':'message', 'pushName':'onMessageStatusChanged','errCode':'0'}",
       "command":"{'cmdID':'0001','cmdName':'logout'}",

@@ -6,6 +6,8 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
+import com.easemob.webim.service.pubsub.ResultChannel1Processor;
+
 public class WebIMBaseListener implements ITestListener {
 	
 	private static final Logger logger = LoggerFactory.getLogger(WebIMBaseListener.class);
@@ -14,6 +16,10 @@ public class WebIMBaseListener implements ITestListener {
 	public void onTestStart(ITestResult result) {
 		logger.info("**************Start Test: " + result.getMethod().getMethodName() + " **************");
 		WebIMTestBase.REGRATION_TEST_RESULT = null;
+		WebIMTestBase.GROUP_ID = null;
+		ResultChannel1Processor.setSuccess(null);
+		ResultChannel1Processor.setFailure(null);
+		ResultChannel1Processor.setOthers(null);
  	}
 
 	@Override

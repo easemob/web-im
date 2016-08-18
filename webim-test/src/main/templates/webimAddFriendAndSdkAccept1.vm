@@ -1,20 +1,20 @@
 #set ( $var = $count )
 {
   "timeout":"$timeout",
-  "init":"{'cmdID':'00001','cmdName':'login','username':'$username2','password':'$password2'}",
+  "init":"{'cmdID':'00001','cmdName':'login','username':'$username3','password':'$password3'}",
   "conditioned":
   [
     {"condition":"{'eventType':'push','pushName':'onContactInvited','contactID':'$username'}",
       "command":"{'cmdID':'00002','cmdName':'acceptinvitation','contactID':'$username'}",
-      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 adds $username as a friend"
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username3 adds $username as a friend"
     },
     {"condition":"{'eventType':'command','cmdName':'acceptinvitation','errCode':'0'}",
       "command":"{'cmdID':'00001','cmdName':'logout'}",
-      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 logout"
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username3 logout"
     },
     {"condition":"{'eventType':'command', 'cmdName':'logout', 'errCode':'0'}",
       "command":"{'cmdName':'exit'}",
-      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 exit"
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username3 exit"
     }
   ]
 }

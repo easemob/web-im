@@ -5,15 +5,15 @@
   "conditioned":
   [
     {"condition":"{'eventType':'command', 'cmdName':'login', 'username':'$username2','errCode':'0'}",
-      "command":"{'cmdID':'0001','cmdName':'sendmessage','to':'$username','messageType':'text','content':'$message','chatType':'single'}",
-      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 send $username message: ${message}"
+      "command":"{'cmdID':'0001','cmdName':'creategroup','cmdID':'123456','subject':'$groupname','description':'test','welcomeMessage':'test','style':'memberInvite','members':['$username','$username3'],'maxUserCount':'100'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: create group: ${groupname}, owner: ${username2}, member: ${username}"
     },
-    {"condition":"{'eventType':'message', 'pushName':'onMessageStatusChanged','errCode':'0'}",
+    {"condition":"{'eventType':'command', 'cmdName':'creategroup', 'groupOwner':'$username2','errCode':'0'}",
       "command":"{'cmdID':'0001','cmdName':'logout'}",
       #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 logout"
     },
     {"condition":"{'eventType':'command', 'cmdName':'logout', 'errCode':'0'}",
-      "command":"{'cmdName':'exit'}",
+      "command":"{'cmdID':'0001','cmdName':'exit'}",
       #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 exit"
     }
   ]

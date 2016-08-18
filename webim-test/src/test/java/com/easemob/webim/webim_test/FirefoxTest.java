@@ -405,7 +405,7 @@ public class FirefoxTest extends WebIMTestBase {
 	}
 
 	@Test(enabled = true, dependsOnMethods = { "sendchatmessage" })
-	public void deleteUser() {
+	public void deleteFriend() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		super.login(driver, username, password, path, isGetBaseUrl);
 		logger.info("click delete friend button");
@@ -431,7 +431,7 @@ public class FirefoxTest extends WebIMTestBase {
 		sleep(5);
 	}
 
-	@Test(enabled = true, dependsOnMethods = { "deleteUser" }, priority = 100)
+	@Test(enabled = true, dependsOnMethods = { "deleteFriend" }, priority = 100)
 	public void logoutWebIM() {
 		String path = getScreenshotPath(Thread.currentThread().getStackTrace()[1].getMethodName());
 		super.logout(driver, path);
