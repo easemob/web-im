@@ -1,0 +1,16 @@
+#set ( $var = $count )
+{
+  "timeout":"$timeout",
+  "init":"{'cmdID':'00001','cmdName':'login','username':'$username2','password':'$password2'}",
+  "conditioned":
+  [
+    {"condition":"{'eventType':'push','pushName':'onContactInvited','contactID':'$username'}",
+      "command":"{'cmdID':'00002','cmdName':'acceptinvitation','contactID':'$username'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: start to add friend: $username2"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'acceptinvitation', 'errCode':'0'}",
+      "command":"{'cmdName':'exit'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 adds $username as a friend"
+    }
+  ]
+}

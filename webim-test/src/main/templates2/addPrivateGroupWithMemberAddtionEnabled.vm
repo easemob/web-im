@@ -1,0 +1,16 @@
+#set ( $var = $count )
+{
+  "timeout":"$timeout",
+  "init":"{'cmdID':'0001', 'cmdName':'login','username':'$username2','password':'$password2'}",
+  "conditioned":
+  [
+    {"condition":"{'eventType':'command', 'cmdName':'login', 'username':'$username2','errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'creategroup','cmdID':'123456','subject':'$groupname','description':'test','welcomeMessage':'test','style':'memberInvite','members':['$username','$username3'],'maxUserCount':'100'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: start to create group: owner: ${username2}"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'creategroup', 'groupOwner':'$username2','errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'exit'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: create group: ${groupname}, owner: ${username2}, member: ${username}"
+    }
+  ]
+}

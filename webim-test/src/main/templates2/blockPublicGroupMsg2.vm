@@ -1,0 +1,12 @@
+#set ( $var = $count )
+{
+  "timeout":"$timeout",
+  "init":"{'cmdID':'0001', 'cmdName':'login','username':'$username3','password':'$password3'}",
+  "conditioned":
+  [
+  {"condition":"{'eventType':'NOT_EXIST'}",
+      "command":"{'cmdID':'00002','cmdName':'NOT_EXIST'}",
+      "output":"TESTCASE_1_STEP_1_OVER"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+#set ( $var = $count )
+{
+  "timeout":"$timeout",
+  "init":"{'cmdID':'0001', 'cmdName':'login','username':'$username','password':'$password'}",
+  "conditioned":
+  [
+    {"condition":"{'eventType':'command', 'cmdName':'login', 'username':'$username','errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'removefromblanklist','cmdID':'123456','contactID':'$username2'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: remove friend: ${username2} from user: ${username} blacklist"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'removefromblanklist', 'errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'logout'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username logout"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'logout', 'errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'exit'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username exit"
+    }
+  ]
+}

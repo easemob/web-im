@@ -1,0 +1,28 @@
+#set ( $var = $count )
+{
+  "timeout":"$timeout",
+  "init":"{'cmdID':'0001', 'cmdName':'login','username':'$username2','password':'$password2'}",
+  "conditioned":
+  [
+    {"condition":"{'eventType':'command', 'cmdName':'login', 'username':'$username2','errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'fetchallchatrooms'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: fetchallchatrooms"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'fetchallchatrooms', 'errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'joinchatroom','chatroomID':'$chatroomId'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: join chatroom: $chatroomId"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'joinchatroom', 'errCode':'0'}",
+      "command":"{'cmdName':'sendmessage','chatType':'chatroom','to':'$chatroomId','messageType':'text','content':'$message'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: send message: chatroomId: ${chatroomId}, message: ${message}"
+    },
+    {"condition":"{'eventType':'message', 'pushName':'onMessageStatusChanged','errCode':'0'}",
+      "command":"{'cmdName':'logout'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: onMessageStatusChanged"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'logout', 'errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'exit'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: logout"
+    }
+  ]
+}

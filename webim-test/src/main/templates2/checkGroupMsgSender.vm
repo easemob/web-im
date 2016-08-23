@@ -1,0 +1,20 @@
+#set ( $var = $count )
+{
+  "timeout":"$timeout",
+  "init":"{'cmdID':'0001', 'cmdName':'login','username':'$username2','password':'$password2'}",
+  "conditioned":
+  [
+    {"condition":"{'eventType':'command', 'cmdName':'login', 'username':'$username2','errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'sendmessage','to':'$groupId','messageType':'text','content':'$message','chatType':'group'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: send message: groupId: ${groupId}, message: $message"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'sendmessage', 'to':'$groupId','errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'logout'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 logout"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'logout', 'errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'exit'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 exit"
+    }
+  ]
+}

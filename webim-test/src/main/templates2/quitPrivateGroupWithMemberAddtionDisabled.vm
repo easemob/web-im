@@ -1,0 +1,28 @@
+#set ( $var = $count )
+{
+  "timeout":"$timeout",
+  "init":"{'cmdID':'0001', 'cmdName':'login','username':'$username2','password':'$password2'}",
+  "conditioned":
+  [
+    {"condition":"{'eventType':'command', 'cmdName':'login', 'username':'$username2','errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'fetchallmygroups'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: fetch user: ${username2} all groups"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'fetchallmygroups', 'errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'groupwithid','groupID':'$groupId'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: get groupId: ${groupId} details"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'groupwithid', 'errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'removegroupmembers','cmdID':'123456','groupID':'$groupId','members':['$username']}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: remove group member: groupId: ${groupId}, owner: ${username2}, member: ${username}"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'removegroupmembers', 'errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'logout'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 logout"
+    },
+    {"condition":"{'eventType':'command', 'cmdName':'logout', 'errCode':'0'}",
+      "command":"{'cmdID':'0001','cmdName':'exit'}",
+      #set ( $var = $var + 1 )"output":"casename: ${casename}, step: step_${var}, result: $username2 exit"
+    }
+  ]
+}
