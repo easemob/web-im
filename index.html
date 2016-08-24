@@ -9,6 +9,14 @@
     <script src='sdk/dist/strophe.js'></script>
     <script src='sdk/dist/websdk-1.1.2.js'></script>
 
+    <script>
+        // only support Chrome
+        window.chromeBrowser = /Chrome/.test(navigator.userAgent);
+        if ( window.chromeBrowser ) {
+            document.write("<script src='sdk/dist/webrtc-1.0.0.js'><\/script>");
+        } 
+    </script>
+
     <!--config-->
     <script src="demo/javascript/dist/webim.config.js"></script>
 

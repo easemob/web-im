@@ -50,9 +50,9 @@
 	;(function (window, undefined) {
 
 	    var _version = '1.1.2';
-	    var _code = __webpack_require__(218).code;
-	    var _utils = __webpack_require__(219).utils;
-	    var _msg = __webpack_require__(220);
+	    var _code = __webpack_require__(219).code;
+	    var _utils = __webpack_require__(220).utils;
+	    var _msg = __webpack_require__(221);
 	    var _message = _msg._msg;
 	    var _msgHash = {};
 
@@ -1619,7 +1619,7 @@
 
 /***/ },
 
-/***/ 218:
+/***/ 219:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1706,7 +1706,7 @@
 
 /***/ },
 
-/***/ 219:
+/***/ 220:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1716,7 +1716,7 @@
 	;(function () {
 
 	    var EMPTYFN = function EMPTYFN() {},
-	        _code = __webpack_require__(218).code,
+	        _code = __webpack_require__(219).code,
 	        WEBIM_FILESIZE_LIMIT;
 
 	    var _createStandardXHR = function _createStandardXHR() {
@@ -2509,7 +2509,7 @@
 
 /***/ },
 
-/***/ 220:
+/***/ 221:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2517,7 +2517,7 @@
 	;(function () {
 	    'use strict';
 
-	    var _utils = __webpack_require__(219).utils;
+	    var _utils = __webpack_require__(220).utils;
 	    var Message = function Message(type, id) {
 	        if (!this instanceof Message) {
 	            return new Message(type);

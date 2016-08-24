@@ -18,6 +18,14 @@ module.exports = React.createClass({
         
     },
 
+    call: function () {
+        Demo.call.makeVideoCall(Demo.selected);
+    },
+
+    acceptCall: function () {
+        Demo.call.acceptCall();
+    },
+
     listMember: function () {
         var me = this;
 
@@ -66,6 +74,8 @@ module.exports = React.createClass({
         return (
             <div className={'webim-chatwindow ' + this.props.className}>
                 <p className='webim-chatwindow-title'>
+                    <i className={'webim-call-icon font'} onClick={this.call}>R</i>
+                    <i className={'webim-accept-icon font'} onClick={this.acceptCall}>R</i>
                     {this.props.name}
                     <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
                 </p>

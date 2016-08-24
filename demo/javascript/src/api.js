@@ -51,6 +51,11 @@ module.exports = {
     logout: function () {
         Demo.conn.stopHeartBeat()
         Demo.conn.close();
+
+        Demo.selected = null;
+        Demo.user = null;
+        Demo.call = null;
+        
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
     },

@@ -95,6 +95,7 @@ var _Call = {
             }, 
             fail: function (error) {
                 _logger.debug("iq to server error", error);
+                self.onError(error);
             }
         });
         
@@ -156,6 +157,7 @@ var _Call = {
             webRtc: new WebRTC({
                 onGotLocalStream: self.listener.onGotLocalStream,
                 onGotRemoteStream: self.listener.onGotRemoteStream,
+                onError: self.listener.onError
             }),
 
             api: self.api,

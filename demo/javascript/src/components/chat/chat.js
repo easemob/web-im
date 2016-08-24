@@ -3,8 +3,8 @@ var LeftBar = require('../leftbar/leftbar');
 var Contact = require('../contact/contact');
 var ChatWindow = require('../chat/chatwindow');
 var Notify = require('../common/notify');
+var RTCChannel = require('../common/rtcChannel');
 var Subscribe = require('./subscribe');
-
 
 
 module.exports = React.createClass({
@@ -25,8 +25,8 @@ module.exports = React.createClass({
                 me.getChatroom();
             },
             onClosed: function ( msg ) {
-                /*if ( msg && msg.reconnect ) {}*/
                 log('onClosed');
+                me.channel.close();
                 Demo.api.logout();
             },
             onTextMessage: function ( message ) {
@@ -70,6 +70,7 @@ module.exports = React.createClass({
                 Demo.api.logout();
             },
             onError: function ( message ) {
+                /*if ( msg && msg.reconnect ) {}*/
 
                 Notify.error(message.data && message.data.data ? message.data.data : 'Error: type=' + message.type);
                 Demo.api.logout();
@@ -104,6 +105,54 @@ module.exports = React.createClass({
                 }
             }
         }
+    },
+
+    componentDidMount: function () {
+        if ( window.chromeBrowser && WebIM.WebRTC ) {
+            this.initWebRTC();
+            this.channel = new RTCChannel(this.refs.rtcWrapper);
+        }
+    },
+
+    initWebRTC: function () {
+
+        if ( Demo.call ) {
+            return;
+        }
+
+        var me = this;
+
+        var logger = WebIM.WebRTC.Util.logger;
+
+        Demo.call = new WebIM.WebRTC.Call({
+            connection : Demo.conn,
+               
+            mediaStreamConstaints: {
+                audio: true,
+                video: true
+            },
+            
+            listener: {
+                onAcceptCall: function ( from, options ) {
+                    debugger
+                },
+                onGotRemoteStream: function ( stream ) {
+                    me.channel.setRemote(stream);
+                },
+                onGotLocalStream: function ( stream ) {
+                    me.channel.setLocal(stream);
+                },
+                onRinging: function ( caller ) {
+                    debugger
+                },
+                onTermCall: function () {
+                    me.channel.close();
+                },
+                onError: function ( e ) {
+                    Notify.error(e && e.message ? e.message : 'An error occured when calling webrtc');
+                }
+            }
+        });
     },
 
     componentWillReceiveProps: function ( nextProps ) {
@@ -488,6 +537,7 @@ module.exports = React.createClass({
                 <input ref='audio' onChange={this.audioChange} type='file' className='hide' />
                 <input ref='file' onChange={this.fileChange} type='file' className='hide' />
                 <input id='uploadShim' type='file' className='hide' />
+                <div ref='rtcWrapper'></div>
             </div>
         );
     }

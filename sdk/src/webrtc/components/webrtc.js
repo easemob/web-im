@@ -262,6 +262,7 @@ var _WebRTC = {
             .then(self.onCreateMedia)
             .catch(function (e) {
                 _logger.debug('getUserMedia() error: ', e);
+                self.onError(e);
             });
     },
     

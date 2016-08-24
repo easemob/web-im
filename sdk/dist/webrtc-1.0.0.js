@@ -49,10 +49,10 @@
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	__webpack_require__(211);
+	__webpack_require__(212);
 
-	var Util = __webpack_require__(212);
-	var Call = __webpack_require__(213);
+	var Util = __webpack_require__(213);
+	var Call = __webpack_require__(214);
 
 	window.WebIM = WebIM || {};
 	WebIM.WebRTC = WebIM.WebRTC || {};
@@ -66,11 +66,11 @@
 	        return WebIM.WebRTC;
 	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(210)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(211)(module)))
 
 /***/ },
 
-/***/ 210:
+/***/ 211:
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -87,7 +87,7 @@
 
 /***/ },
 
-/***/ 211:
+/***/ 212:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var require;var require;"use strict";
@@ -2479,7 +2479,7 @@
 
 /***/ },
 
-/***/ 212:
+/***/ 213:
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2892,16 +2892,16 @@
 
 /***/ },
 
-/***/ 213:
+/***/ 214:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Util = __webpack_require__(212);
-	var RTCIQHandler = __webpack_require__(214);
-	var API = __webpack_require__(215);
-	var WebRTC = __webpack_require__(216);
-	var CommonPattern = __webpack_require__(217);
+	var Util = __webpack_require__(213);
+	var RTCIQHandler = __webpack_require__(215);
+	var API = __webpack_require__(216);
+	var WebRTC = __webpack_require__(217);
+	var CommonPattern = __webpack_require__(218);
 
 	var RouteTo = API.RouteTo;
 	var Api = API.Api;
@@ -2988,6 +2988,7 @@
 	            },
 	            fail: function fail(error) {
 	                _logger.debug("iq to server error", error);
+	                self.onError(error);
 	            }
 	        });
 
@@ -3045,7 +3046,8 @@
 
 	            webRtc: new WebRTC({
 	                onGotLocalStream: self.listener.onGotLocalStream,
-	                onGotRemoteStream: self.listener.onGotRemoteStream
+	                onGotRemoteStream: self.listener.onGotRemoteStream,
+	                onError: self.listener.onError
 	            }),
 
 	            api: self.api,
@@ -3065,7 +3067,7 @@
 
 /***/ },
 
-/***/ 214:
+/***/ 215:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3074,7 +3076,7 @@
 	 * IQ Message，IM -> CMServer --> IM
 	 */
 
-	var _util = __webpack_require__(212);
+	var _util = __webpack_require__(213);
 	var _logger = _util.logger;
 
 	var CONFERENCE_XMLNS = "urn:xmpp:media-conference";
@@ -3310,7 +3312,7 @@
 
 /***/ },
 
-/***/ 215:
+/***/ 216:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3320,7 +3322,7 @@
 	/**
 	 * API 
 	 */
-	var _util = __webpack_require__(212);
+	var _util = __webpack_require__(213);
 	var _logger = _util.logger;
 
 	var _RouteTo = {
@@ -3942,7 +3944,7 @@
 
 /***/ },
 
-/***/ 216:
+/***/ 217:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3967,7 +3969,7 @@
 	 * streamA >>>>>>>>>>> | <<<<< see A seeB <<<<<<<<<<< | <<<<<
 	 * streamB |
 	 */
-	var _util = __webpack_require__(212);
+	var _util = __webpack_require__(213);
 	var _logger = _util.logger;
 
 	var _SDPSection = {
@@ -4198,6 +4200,7 @@
 
 	        return navigator.mediaDevices.getUserMedia(constaints || self.mediaStreamConstaints).then(gotStream).then(self.onCreateMedia).catch(function (e) {
 	            _logger.debug('getUserMedia() error: ', e);
+	            self.onError(e);
 	        });
 	    },
 
@@ -4460,7 +4463,7 @@
 
 /***/ },
 
-/***/ 217:
+/***/ 218:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4468,8 +4471,8 @@
 	/**
 	 * P2P
 	 */
-	var _util = __webpack_require__(212);
-	var RouteTo = __webpack_require__(215).RouteTo;
+	var _util = __webpack_require__(213);
+	var RouteTo = __webpack_require__(216).RouteTo;
 	var _logger = _util.logger;
 
 	var P2PRouteTo = RouteTo({

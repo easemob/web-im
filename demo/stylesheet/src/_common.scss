@@ -155,3 +155,54 @@ object {
     text-align: center;
     color: $grayColor;
 }
+
+.webim-rtc-video {
+    z-index: 3;
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: $inputShadow;
+
+    video {
+        position: absolute;
+
+        &.webim-rtc-video-full {
+            z-index: 1;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            right: auto;
+            bottom: auto;
+        }
+
+        &.webim-rtc-video-corner {
+            z-index: 2;
+            top: auto;
+            left: auto;
+            right: 0;
+            bottom: 0;
+            width: 100px;
+            height: 100px;
+        }
+    }
+
+    i {
+        z-index: 2;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        background-color: rgba(255,255,255,.8);
+        width: 40px;
+        height: 40px;
+        font-style: normal;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 40px;
+        font-size: 40px;
+        color: rgba(0,0,0,.3);
+        cursor: pointer;
+    }
+}
