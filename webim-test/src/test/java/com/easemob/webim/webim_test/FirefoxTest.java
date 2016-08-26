@@ -142,9 +142,7 @@ public class FirefoxTest extends WebIMTestBase {
 		ele.click();
 		sleep(3);
 		logger.info("find new friend: {}", username);
-		xpath = "//ul[@id='contactlistUL']/li[@id='" + username + "']";
-		ele = findElement(driver2, xpath, path);
-
+		findSpecialFriend(driver, username, path);
 		logger.info("quit driver");
 		if (null != driver2) {
 			try {

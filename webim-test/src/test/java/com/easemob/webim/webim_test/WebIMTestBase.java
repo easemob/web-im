@@ -224,6 +224,30 @@ public class WebIMTestBase {
 		xpath = "//ul[@id='contactlistUL']/li[@id='" + username + "']";
 		return findNoExistingElement(driver, xpath);
 	}
+	
+	public WebElement findSpecialStranger(WebDriver driver, String username, String path) {
+		Preconditions.checkArgument(null != driver, "webdriver was missing");
+		Preconditions.checkArgument(StringUtils.isNotBlank(username), "friend name was missing!");
+		String xpath = "//a[@id='accordion3']";
+		WebElement ele = findElement(driver, xpath, path);
+		ele.click();
+		sleep(1);
+		if (ele.getAttribute("class").equals("accordion-toggle collapsed")) {
+			ele.click();
+		}
+		sleep(3);
+		xpath = "//ul[@id='momogrouplistUL']/li[@id='" + username + "']";
+		ele = findElement(driver, xpath, path);
+		if (!StringUtils.isNotBlank(ele.getAttribute("style"))) {
+			ele.click();
+		} else {
+			WebElement flag = findStrangerNewMessageFlag(ele);
+			if (null != flag) {
+				ele.click();
+			}
+		}
+		return ele;
+	}
 
 	public void checkChatMsg(WebDriver driver, String username1, String username2, String msg, String path) {
 		Preconditions.checkArgument(null != driver, "webdriver was missing");
@@ -518,7 +542,7 @@ public class WebIMTestBase {
 		return getRandomStr(16);
 	}
 
-	private String getLocalBaseUrl() {
+	protected String getLocalBaseUrl() {
 		return "file://" + Paths.get(System.getProperty("user.dir")).getParent().toAbsolutePath()
 				+ System.getProperty("file.separator") + "index.html";
 	}
@@ -539,6 +563,15 @@ public class WebIMTestBase {
 	}
 
 	private WebElement findGroupNewMessageFlag(WebElement element) {
+		String xpath = "//span[@class='badge']";
+		List<WebElement> eles = element.findElements(By.xpath(xpath));
+		if (null == eles || eles.size() <= 0) {
+			return null;
+		}
+		return eles.get(0);
+	}
+	
+	private WebElement findStrangerNewMessageFlag(WebElement element) {
 		String xpath = "//span[@class='badge']";
 		List<WebElement> eles = element.findElements(By.xpath(xpath));
 		if (null == eles || eles.size() <= 0) {

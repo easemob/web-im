@@ -39,9 +39,16 @@ public class PubSubServiceImpl implements PubSubService {
     	URI uri = RedisFactory.getRedisURI();
     	PubSubJedisPool = RedisFactory.createJedisPool(uri);
     	listener = new PubSubListener();
-//        Set<String> channels = new HashSet<String>();
-//        channels.add(RedisChannel.RESULT_CHANNLE_1.getChannel());
-//        channels.add(RedisChannel.RESULT_CHANNLE_2.getChannel());
+        if (null != channels && channels.size() > 0) {
+            listener.addChannels(channels.toArray(new String[channels.size()]));
+            subscribeChannels();
+        }
+    }
+    
+    public void init(Set<String> channels, String uristr) throws URISyntaxException {
+    	URI uri = new URI(uristr);
+    	PubSubJedisPool = RedisFactory.createJedisPool(uri);
+    	listener = new PubSubListener();
         if (null != channels && channels.size() > 0) {
             listener.addChannels(channels.toArray(new String[channels.size()]));
             subscribeChannels();

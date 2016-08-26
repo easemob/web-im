@@ -69,6 +69,9 @@ public class PubSubListener extends JedisPubSub {
 		} else if (channel.equals(RedisChannel.RESULT_CHANNLE_2.getChannel())) {
 			processors.put(channel, new ResultChannel2Processor());
 			return processors.get(channel);
+		} else if (channel.equals(RedisChannel.RESULT_CHANNLE_3.getChannel())) {
+			processors.put(channel, new ResultChannel3Processor());
+			return processors.get(channel);
 		}
 		logger.warn("Can't find any processor for channel: {}", channel);
 		return null;

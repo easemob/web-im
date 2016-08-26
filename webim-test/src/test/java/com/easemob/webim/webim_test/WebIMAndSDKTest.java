@@ -62,7 +62,7 @@ public class WebIMAndSDKTest extends WebIMTestBase {
 	private String chatroom = "twy-room1";
 	private String chatroomId = "114715680632209992";
 
-	@BeforeClass
+	@BeforeClass(alwaysRun = true)
 	public void beforeClass() throws URISyntaxException {
 		logger.info("Start to webim and sdk integration test...");
 		init();
