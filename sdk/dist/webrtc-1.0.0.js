@@ -49,10 +49,10 @@
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	__webpack_require__(212);
+	__webpack_require__(213);
 
-	var Util = __webpack_require__(213);
-	var Call = __webpack_require__(214);
+	var Util = __webpack_require__(214);
+	var Call = __webpack_require__(215);
 
 	window.WebIM = WebIM || {};
 	WebIM.WebRTC = WebIM.WebRTC || {};
@@ -66,11 +66,11 @@
 	        return WebIM.WebRTC;
 	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(211)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(212)(module)))
 
 /***/ },
 
-/***/ 211:
+/***/ 212:
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -87,7 +87,7 @@
 
 /***/ },
 
-/***/ 212:
+/***/ 213:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var require;var require;"use strict";
@@ -2479,7 +2479,7 @@
 
 /***/ },
 
-/***/ 213:
+/***/ 214:
 /***/ function(module, exports) {
 
 	'use strict';
@@ -2892,16 +2892,16 @@
 
 /***/ },
 
-/***/ 214:
+/***/ 215:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Util = __webpack_require__(213);
-	var RTCIQHandler = __webpack_require__(215);
-	var API = __webpack_require__(216);
-	var WebRTC = __webpack_require__(217);
-	var CommonPattern = __webpack_require__(218);
+	var Util = __webpack_require__(214);
+	var RTCIQHandler = __webpack_require__(216);
+	var API = __webpack_require__(217);
+	var WebRTC = __webpack_require__(218);
+	var CommonPattern = __webpack_require__(219);
 
 	var RouteTo = API.RouteTo;
 	var Api = API.Api;
@@ -3067,7 +3067,7 @@
 
 /***/ },
 
-/***/ 215:
+/***/ 216:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3076,7 +3076,7 @@
 	 * IQ Message，IM -> CMServer --> IM
 	 */
 
-	var _util = __webpack_require__(213);
+	var _util = __webpack_require__(214);
 	var _logger = _util.logger;
 
 	var CONFERENCE_XMLNS = "urn:xmpp:media-conference";
@@ -3312,7 +3312,7 @@
 
 /***/ },
 
-/***/ 216:
+/***/ 217:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3322,7 +3322,7 @@
 	/**
 	 * API 
 	 */
-	var _util = __webpack_require__(213);
+	var _util = __webpack_require__(214);
 	var _logger = _util.logger;
 
 	var _RouteTo = {
@@ -3944,7 +3944,7 @@
 
 /***/ },
 
-/***/ 217:
+/***/ 218:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3969,7 +3969,7 @@
 	 * streamA >>>>>>>>>>> | <<<<< see A seeB <<<<<<<<<<< | <<<<<
 	 * streamB |
 	 */
-	var _util = __webpack_require__(213);
+	var _util = __webpack_require__(214);
 	var _logger = _util.logger;
 
 	var _SDPSection = {
@@ -4463,7 +4463,7 @@
 
 /***/ },
 
-/***/ 218:
+/***/ 219:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4471,8 +4471,8 @@
 	/**
 	 * P2P
 	 */
-	var _util = __webpack_require__(213);
-	var RouteTo = __webpack_require__(216).RouteTo;
+	var _util = __webpack_require__(214);
+	var RouteTo = __webpack_require__(217).RouteTo;
 	var _logger = _util.logger;
 
 	var P2PRouteTo = RouteTo({

@@ -158,12 +158,18 @@ object {
 
 .webim-rtc-video {
     z-index: 3;
-    position: absolute;
+    cursor: pointer;
+    position: fixed;
     width: 400px;
     height: 400px;
+    margin: auto;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
     overflow: hidden;
     border-radius: 4px;
-    box-shadow: $inputShadow;
+    background-color: $grayColor;
 
     video {
         position: absolute;
@@ -192,17 +198,17 @@ object {
     i {
         z-index: 2;
         position: absolute;
-        right: 10px;
-        top: 10px;
-        background-color: rgba(255,255,255,.8);
-        width: 40px;
-        height: 40px;
+        right: 6px;
+        top: 6px;
+        background-color: rgba(255,255,255,.2);
         font-style: normal;
         border-radius: 50%;
         text-align: center;
-        line-height: 40px;
-        font-size: 40px;
-        color: rgba(0,0,0,.3);
+        color: rgba(0,0,0,.2);
         cursor: pointer;
+
+        &:hover {
+            color: #e90101;
+        }
     }
 }

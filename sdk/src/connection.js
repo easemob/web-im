@@ -269,12 +269,21 @@
     };
 
     var _loginCallback = function ( status, msg, conn ) {
+        var conflict, error;
+
+        if ( msg === 'conflict' ) {
+            conflict = true;
+        }
+
         if ( status == Strophe.Status.CONNFAIL ) {
-            conn.onError({
+            error = {
                 type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR
                 , msg: msg
                 , reconnect: true
-            });
+            };
+
+            conflict && (error.conflict = true);
+            conn.onError(error);
         } else if ( status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED ) {
             var handleMessage = function ( msginfo ) {
                 var type = _parseMessageType(msginfo);
@@ -336,25 +345,35 @@
             if ( conn.isOpened() ) {
                 conn.stopHeartBeat();
                 conn.context.status = _code.STATUS_CLOSING;
-                conn.onError({
+
+                error = {
                     type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR
                     , msg: msg
                     , reconnect: true
-                });
+                };
+                
+                conflict && (error.conflict = true);
+                conn.onError(error);
             }
         } else if ( status == Strophe.Status.DISCONNECTED ) {
             conn.context.status = _code.STATUS_CLOSED;
             conn.clear();
             conn.onClosed();
         } else if ( status == Strophe.Status.AUTHFAIL ) {
-            conn.onError({
+            error = {
                 type: _code.WEBIM_CONNCTION_AUTH_ERROR
-            });
+            };
+
+            conflict && (error.conflict = true);
+            conn.onError(error);
             conn.clear();
         } else if ( status == Strophe.Status.ERROR ) {
-            conn.onError({
+            error = {
                 type: _code.WEBIM_CONNCTION_SERVER_ERROR
-            });
+            };
+
+            conflict && (error.conflict = true);
+            conn.onError(error);
         }
     };
 
@@ -502,7 +521,9 @@
     connection.prototype.heartBeat = function () {
         var me = this;
 
-        if ( me.heartBeatID ) {
+        var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
+
+        if ( me.heartBeatID || !isNeed ) {
             return;
         }
 
@@ -516,6 +537,11 @@
     };
 
     connection.prototype.sendHeartBeatMessage = function ( options ) {
+
+        if ( !this.isOpened() ) {
+            return;
+        }
+
         var json = {},
             jsonstr = _utils.stringify(json),
             dom = $msg({
@@ -1245,7 +1271,7 @@
         var roomiq;
 
         roomiq = $iq({
-            to: options.rooomName,
+            to: options.roomName,
             type: 'set'
         })
         .c('query', { xmlns: Strophe.NS.MUC_OWNER })

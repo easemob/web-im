@@ -24,7 +24,9 @@ var Channel = React.createClass({
             local.getVideoTracks()[0].stop();
         }
 
-        Demo.call.endCall();
+        try {
+            Demo.call.endCall();
+        } catch ( e ) {}
 
         this.props.close();
     },
@@ -35,7 +37,6 @@ var Channel = React.createClass({
         } else {
             this.setState({local: true, remote: false});
         }
-        return false;
     },
 
     setStream: function () {
@@ -72,7 +73,7 @@ var Channel = React.createClass({
             <div ref='rtc' className='webim-rtc-video'>
                 <video ref='localVideo' className={localClassName} onClick={this.toggle}/>
                 <video ref='remoteVideo' className={remoteClassName} onClick={this.toggle}/>
-                <i className='font' onClick={this.close}>x</i>
+                <i className='font small' onClick={this.close}>Q</i>
             </div>
         );
     }

@@ -50,9 +50,9 @@
 	;(function (window, undefined) {
 
 	    var _version = '1.1.2';
-	    var _code = __webpack_require__(219).code;
-	    var _utils = __webpack_require__(220).utils;
-	    var _msg = __webpack_require__(221);
+	    var _code = __webpack_require__(212).code;
+	    var _utils = __webpack_require__(213).utils;
+	    var _msg = __webpack_require__(214);
 	    var _message = _msg._msg;
 	    var _msgHash = {};
 
@@ -316,12 +316,21 @@
 	    };
 
 	    var _loginCallback = function _loginCallback(status, msg, conn) {
+	        var conflict, error;
+
+	        if (msg === 'conflict') {
+	            conflict = true;
+	        }
+
 	        if (status == Strophe.Status.CONNFAIL) {
-	            conn.onError({
+	            error = {
 	                type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
 	                msg: msg,
 	                reconnect: true
-	            });
+	            };
+
+	            conflict && (error.conflict = true);
+	            conn.onError(error);
 	        } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
 	            var handleMessage = function handleMessage(msginfo) {
 	                var type = _parseMessageType(msginfo);
@@ -381,25 +390,35 @@
 	            if (conn.isOpened()) {
 	                conn.stopHeartBeat();
 	                conn.context.status = _code.STATUS_CLOSING;
-	                conn.onError({
+
+	                error = {
 	                    type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
 	                    msg: msg,
 	                    reconnect: true
-	                });
+	                };
+
+	                conflict && (error.conflict = true);
+	                conn.onError(error);
 	            }
 	        } else if (status == Strophe.Status.DISCONNECTED) {
 	            conn.context.status = _code.STATUS_CLOSED;
 	            conn.clear();
 	            conn.onClosed();
 	        } else if (status == Strophe.Status.AUTHFAIL) {
-	            conn.onError({
+	            error = {
 	                type: _code.WEBIM_CONNCTION_AUTH_ERROR
-	            });
+	            };
+
+	            conflict && (error.conflict = true);
+	            conn.onError(error);
 	            conn.clear();
 	        } else if (status == Strophe.Status.ERROR) {
-	            conn.onError({
+	            error = {
 	                type: _code.WEBIM_CONNCTION_SERVER_ERROR
-	            });
+	            };
+
+	            conflict && (error.conflict = true);
+	            conn.onError(error);
 	        }
 	    };
 
@@ -547,7 +566,9 @@
 	    connection.prototype.heartBeat = function () {
 	        var me = this;
 
-	        if (me.heartBeatID) {
+	        var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
+
+	        if (me.heartBeatID || !isNeed) {
 	            return;
 	        }
 
@@ -561,6 +582,11 @@
 	    };
 
 	    connection.prototype.sendHeartBeatMessage = function (options) {
+
+	        if (!this.isOpened()) {
+	            return;
+	        }
+
 	        var json = {},
 	            jsonstr = _utils.stringify(json),
 	            dom = $msg({
@@ -1285,7 +1311,7 @@
 	        var roomiq;
 
 	        roomiq = $iq({
-	            to: options.rooomName,
+	            to: options.roomName,
 	            type: 'set'
 	        }).c('query', { xmlns: Strophe.NS.MUC_OWNER }).c('x', { xmlns: 'jabber:x:data', type: 'submit' });
 
@@ -1619,7 +1645,7 @@
 
 /***/ },
 
-/***/ 219:
+/***/ 212:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1706,7 +1732,7 @@
 
 /***/ },
 
-/***/ 220:
+/***/ 213:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1716,7 +1742,7 @@
 	;(function () {
 
 	    var EMPTYFN = function EMPTYFN() {},
-	        _code = __webpack_require__(219).code,
+	        _code = __webpack_require__(212).code,
 	        WEBIM_FILESIZE_LIMIT;
 
 	    var _createStandardXHR = function _createStandardXHR() {
@@ -2324,9 +2350,10 @@
 	        },
 
 	        parseTextMessage: function parseTextMessage(message, faces) {
-	            if (typeof message !== 'string' || typeof faces === 'undefined') {
+	            if (typeof message !== 'string') {
 	                return;
 	            }
+
 	            if (Object.prototype.toString.call(faces) !== '[object Object]') {
 	                return {
 	                    isemoji: false,
@@ -2509,7 +2536,7 @@
 
 /***/ },
 
-/***/ 221:
+/***/ 214:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2517,7 +2544,7 @@
 	;(function () {
 	    'use strict';
 
-	    var _utils = __webpack_require__(220).utils;
+	    var _utils = __webpack_require__(213).utils;
 	    var Message = function Message(type, id) {
 	        if (!this instanceof Message) {
 	            return new Message(type);
@@ -2744,20 +2771,11 @@
 	                dom.up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
 	            }
 
-	            conn.retry && setTimeout(function () {
+	            setTimeout(function () {
 	                if (typeof _msgHash !== 'undefined' && _msgHash[message.id]) {
-	                    if (typeof _msgHash[message.id].timeout === 'undefined') {
-	                        _msgHash[message.id].timeout = 2;
-	                    }
-	                    if (_msgHash[message.id].timeout === 0) {
-	                        _msgHash[message.id].timeout = 2;
-	                        _msgHash[message.id].msg.fail instanceof Function && _msgHash[message.id].msg.fail(message.id);
-	                    } else {
-	                        _msgHash[message.id].timeout -= 1;
-	                        _send(message);
-	                    }
+	                    _msgHash[message.id].msg.fail instanceof Function && _msgHash[message.id].msg.fail(message.id);
 	                }
-	            }, 20000);
+	            }, 60000);
 	            conn.sendCommand(dom.tree(), message.id);
 	        };
 

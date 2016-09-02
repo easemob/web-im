@@ -50,7 +50,7 @@ module.exports = (function ( window ) {
         var _start = function ( ev ) {
 
             var e = window.event || ev;
-            
+
             var data = me.dom.getBoundingClientRect();
 
             me._dragFlag = true;
@@ -59,7 +59,6 @@ module.exports = (function ( window ) {
             me._width = document.documentElement.clientWidth;
             me._height = document.documentElement.clientHeight;
 
-            // dom position
             me._startPosition.x = e.clientX - data.left;
             me._startPosition.y = e.clientY - data.top;
 
