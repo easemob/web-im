@@ -155,3 +155,60 @@ object {
     text-align: center;
     color: $grayColor;
 }
+
+.webim-rtc-video {
+    z-index: 3;
+    cursor: pointer;
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    margin: auto;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+    border-radius: 4px;
+    background-color: $grayColor;
+
+    video {
+        position: absolute;
+
+        &.webim-rtc-video-full {
+            z-index: 1;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            right: auto;
+            bottom: auto;
+        }
+
+        &.webim-rtc-video-corner {
+            z-index: 2;
+            top: auto;
+            left: auto;
+            right: 0;
+            bottom: 0;
+            width: 100px;
+            height: 100px;
+        }
+    }
+
+    i {
+        z-index: 2;
+        position: absolute;
+        right: 6px;
+        top: 6px;
+        background-color: rgba(255,255,255,.2);
+        font-style: normal;
+        border-radius: 50%;
+        text-align: center;
+        color: rgba(0,0,0,.2);
+        cursor: pointer;
+
+        &:hover {
+            color: #e90101;
+        }
+    }
+}

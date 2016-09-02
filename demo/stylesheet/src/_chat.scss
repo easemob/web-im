@@ -81,6 +81,17 @@
         &.webim-up-icon {
             transform: rotate(180deg);
         }
+
+        &.webim-call-icon {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        &.webim-accept-icon {
+            position: absolute;
+            left: 40px;
+            top: 0;
+        }
     }
 }
 .webim-chatwindow-options {
@@ -143,4 +154,10 @@
             margin: 2px 3px 0 3px;;
         }
     }
+}
+#test {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 2222;
 }

@@ -626,9 +626,10 @@
         }
 
         , parseTextMessage: function ( message, faces ) {
-            if ( typeof message !== 'string' || typeof faces === 'undefined' ) {
+            if ( typeof message !== 'string' ) {
                 return;
             }
+
             if ( Object.prototype.toString.call(faces) !== '[object Object]' ) {
                 return {
                     isemoji: false
