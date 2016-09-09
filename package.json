@@ -21,7 +21,8 @@
     "webpack": "*"
   },
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "start":"webpack"
   },
   "repository": {
     "type": "git",
