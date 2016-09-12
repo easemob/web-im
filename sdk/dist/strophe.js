@@ -1460,7 +1460,7 @@ console.log("this is strophe2");
             /* jshint ignore:start */
             log: function (level, msg) {
                 console.log(level, msg);
-                //return;
+                return;
             },
             /* jshint ignore:end */
 
@@ -5361,7 +5361,7 @@ console.log("this is strophe2");
                     // wait for the </stream:stream> tag before we close the connection
                     return;
                 }
-                Strophe.log("strophe._onMessage:", message.data);
+                Strophe.log("", message.data);
                 this._conn._dataRecv(elem, message.data);
             },
 

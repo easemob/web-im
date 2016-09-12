@@ -36,6 +36,12 @@ exports.English = {
     download: 'Download',
     noaccount: 'No account',
     signupnow: 'Sign up now',
+    addGroup: 'Add Group',
+    addGroupMember: 'Add Member',
+    groupName: 'Group Name',
+    groupInfo: 'Group Info',
+    groupPermission: 'Group Permission',
+    groupMemberPermission: 'Group Member Permission',
     haveaccount: 'i have account'
 };
 
@@ -77,5 +83,11 @@ exports.Chinese = {
     download: '点击下载',
     noaccount: '没有账号',
     signupnow: '现在注册',
+    addGroup: '添加群组',
+    addGroupMember: '添加成员',
+    groupName: '群组名',
+    groupInfo: '群组简介',
+    groupPermission: '群组权限(公有群,私有群)',
+    groupMemberPermission: '成员权限(审批/随便加;不允许邀请/允许)',
     haveaccount: '已有账号'
 };
