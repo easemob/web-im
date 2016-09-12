@@ -1,9 +1,10 @@
 node_modules
 .DS_Store
 .gitignore
-.gitignore.swp
 .idea/*
+*.swp
 demo/javascript/dist/webim.config.js
 demo/javascript/dist/demo.js
 sdk/dist/websdk-1.1.2.js
+sdk/dist/webrtc-1.0.0.js
 
