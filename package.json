@@ -8,6 +8,7 @@
     "gulp-mocha": "*",
     "react": "*",
     "react-dom": "*",
+    "react-select-box": "*",
     "babel-core": "*",
     "babel-loader": "*",
     "babel-preset-es2015": "*",
