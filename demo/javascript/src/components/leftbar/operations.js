@@ -34,7 +34,7 @@ module.exports = React.createClass({
     },
 
     render: function () {
-		var className = this.state.hide ? ' ' + this.state.hide : '';
+        var className = this.state.hide ? ' ' + this.state.hide : '';
         return (
 			<div>
 				<i className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
@@ -42,7 +42,7 @@ module.exports = React.createClass({
 					<li onClick={this.addFriends}><i className='font smallest'>L</i><span>{Demo.lan.addAFriend}</span></li>
 					<li onClick={this.delFriends}><i className='font smallest'>C</i><span>{Demo.lan.delAFriend}</span></li>
 					<li onClick={this.addGroup}><i className='font smallest'>L</i><span>{Demo.lan.addGroup}</span></li>
-					<li onClick={this.close}><i className='font smallest'>Q</i><span>{Demo.lan.quit}</span></li>
+					<li onClick={this.close}><i className='font smallest'>Q</i><span>{Demo.lan.quit}({this.props.username})</span></li>
 				</ul>
 			</div>
         );
