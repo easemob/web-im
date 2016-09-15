@@ -42,6 +42,10 @@ exports.English = {
     groupInfo: 'Group Info',
     groupPermission: 'Group Permission',
     groupMemberPermission: 'Group Member Permission',
+    groupAddMember: 'Invite Member',
+    groupChangeName: 'Change Name',
+    groupDismiss: 'Dissmiss',
+    groupQuit: 'Quit',
     haveaccount: 'i have account'
 };
 
@@ -89,5 +93,9 @@ exports.Chinese = {
     groupInfo: '群组简介',
     groupPermission: '群组权限(公有群,私有群)',
     groupMemberPermission: '成员权限(审批/随便加;不允许邀请/允许)',
+    groupAddMember: '邀请成员',
+    groupChangeName: '修改名称',
+    groupDismiss: '解散群组',
+    groupQuit: '退出群组',
     haveaccount: '已有账号'
 };
