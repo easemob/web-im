@@ -9,6 +9,7 @@ var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var Input = UI.Input;
 var Checkbox = UI.Checkbox;
+var Radio = UI.Radio;
 
 
 import MultipleSelectBoxList  from '../common/multiSelectBoxList';
@@ -46,14 +47,16 @@ var FridendList = React.createClass({
 var AddGroup = React.createClass({
     getInitialState: function () {
         return {
+            selectedOption: 'option1',
+            selectedOption2: 'option3',
             colors: []
         }
     },
     addSubmit: function () {
         var value = this.refs.input.refs.input.value;
         var info = this.refs.textarea.value;
-        var permission_group = this.refs.permission_group.refs.input.checked;
-        var permission_member = this.refs.permission_member.refs.input.checked;
+        var permission_group = this.state.selectedOption;
+        var permission_member = this.state.selectedOption2;
         var friendsSelected = this.refs.friendList.refs.multiSelected.label();
         log(value, info, permission_group, permission_member, friendsSelected);
         if (!value) {
@@ -70,7 +73,16 @@ var AddGroup = React.createClass({
     close: function () {
         typeof this.props.onClose === 'function' && this.props.onClose();
     },
-
+    handleOptionChange: function (changeEvent) {
+        this.setState({
+            selectedOption: changeEvent.target.value
+        });
+    },
+    handleOptionChange2: function (changeEvent) {
+        this.setState({
+            selectedOption2: changeEvent.target.value
+        });
+    },
     render: function () {
         return (
             <div className='webim-friend-options'>
@@ -81,8 +93,34 @@ var AddGroup = React.createClass({
                         <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupName} />
                         <br/>
                         <textarea ref='textarea' placeholder={Demo.lan.groupInfo}></textarea>
-                        <Checkbox text={Demo.lan.groupPermission} ref='permission_group' />
-                        <Checkbox text={Demo.lan.groupMemberPermission}  ref='permission_member' />
+                        <br/>
+                        <br/>
+                        <div >
+                            <label>
+                                {Demo.lan.groupPermission}:
+                            </label>
+                            <label>
+                                <input className="radio" type="radio" value="option1" checked={this.state.selectedOption === 'option1'} onChange={this.handleOptionChange} />
+                                <span className="radio_span">公有群</span>
+                            </label>
+                            <label>
+                                <input className="radio" type="radio" value="option2" checked={this.state.selectedOption === 'option2'} onChange={this.handleOptionChange} />
+                                <span className="radio_span">私有群</span>
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                {Demo.lan.groupMemberPermission}:
+                            </label>
+                            <label>
+                                <input className="radio" type="radio" value="option3" checked={this.state.selectedOption2 === 'option3'} onChange={this.handleOptionChange2} />
+                                <span className="radio_span">{this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'}</span>
+                            </label>
+                            <label>
+                                <input className="radio" type="radio" value="option4" checked={this.state.selectedOption2 === 'option4'} onChange={this.handleOptionChange2} />
+                                <span className="radio_span">{this.state.selectedOption === 'option1' ? '随便加' : '允许'}</span>
+                            </label>
+                        </div>
                     </div>
                     <div>
                         <FridendList ref="friendList" optionData={Demo.roster} />

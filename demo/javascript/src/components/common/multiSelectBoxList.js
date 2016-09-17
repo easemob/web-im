@@ -30,7 +30,7 @@ const addClass = (fullClassName = '', className) => {
 };
 
 
-module.exports = React.createClass({
+var MultipleSelectBoxList = React.createClass({
     getInitialState: function () {
         return {
             id: 'react-multi-select-box-' + (++idInc),
@@ -385,3 +385,4 @@ module.exports = React.createClass({
 });
 
 
+module.exports = MultipleSelectBoxList;
