@@ -3,6 +3,8 @@
   下面的css都是为了快速实现功能，覆盖旧有属性的各种trick
   后期需要找专门的css人员整理一遍，合并入正常的文件，然后删除本文件!
 */
+@import './multiple-select-box.scss';
+
 .webim-chatwindow .webim-operations-icon {
   top: 5px;
   left: auto;
@@ -17,3 +19,21 @@
   z-index: 2; //避免ul列表被下面的msg窗口挡住 不能选取
 }
 
+//
+//.example-enter {
+//  opacity: 0.01;
+//}
+//
+//.example-enter.example-enter-active {
+//  opacity: 1;
+//  transition: opacity 500ms ease-in;
+//}
+//
+//.example-leave {
+//  opacity: 1;
+//}
+//
+//.example-leave.example-leave-active {
+//  opacity: 0.01;
+//  transition: opacity 300ms ease-in;
+//}

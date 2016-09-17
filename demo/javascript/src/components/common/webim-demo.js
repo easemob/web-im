@@ -8,39 +8,35 @@ exports.Input = React.createClass({
     },
 
     componentWillUnmount: function () {
-        if ( this.props.keydown ) {
+        if (this.props.keydown) {
             this.refs.input.removeEventListener('keydown', this.props.keydown);
         }
         this.refs.input = null;
     },
 
     componentDidMount: function () {
-        if ( this.props.keydown ) {
+        if (this.props.keydown) {
             this.refs.input.addEventListener('keydown', this.props.keydown);
         }
-        if ( this.props.defaultFocus ) {
+        if (this.props.defaultFocus) {
             this.refs.input.focus();
         }
     },
 
     render: function () {
-        var type = this.props.type || 'text'; 
+        var type = this.props.type || 'text';
         return <input className='webim-input'  type={type}  defaultValue={this.props.text} ref='input' placeholder={this.props.placeholder} onChange={this.handleChange} />;
     }
 });
-
-
 
 
 exports.Button = React.createClass({
 
     render: function () {
         var className = this.props.className ? ' ' + this.props.className : '';
-        return <button className={'webim-button bg-color' + className}  onClick={this.props.onClick}>{this.props.text}</button>;
+        return <button className={'webim-button bg-color' + className}  ref='button' onClick={this.props.onClick}>{this.props.text}</button>;
     }
 });
-
-
 
 
 exports.SmallButton = React.createClass({
@@ -50,9 +46,6 @@ exports.SmallButton = React.createClass({
         return <button className={'webim-button small' + className}  onClick={this.props.click}>{this.props.text}</button>;
     }
 });
-
-
-
 
 
 exports.Radio = React.createClass({
@@ -67,9 +60,6 @@ exports.Radio = React.createClass({
 });
 
 
-
-
-
 exports.Checkbox = React.createClass({
 
     getInitialState: function () {
@@ -81,11 +71,11 @@ exports.Checkbox = React.createClass({
     handleClick: function () {
         this.toggleChecked();
         this.refs.input.checked = !this.state.checked;
-        this.setState({ checked: !this.state.checked });
+        this.setState({checked: !this.state.checked});
     },
 
     toggleChecked: function () {
-        if ( this.refs.i.className ) {
+        if (this.refs.i.className) {
             this.refs.i.className = '';
         } else {
             this.refs.i.className = 'checked';

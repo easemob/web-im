@@ -10,35 +10,36 @@ var Button = UI.Button;
 var Input = UI.Input;
 var Checkbox = UI.Checkbox;
 
-var SelectBox = React.createFactory(require('react-select-box'));
-var div = React.createElement.bind(null,'div');
-var option = React.createElement.bind(null,'option');
 
-var SelectBoxNode = React.createClass({
+import MultipleSelectBoxList  from '../common/multiSelectBoxList';
+
+var FridendList = React.createClass({
+
     getInitialState: function () {
-        return {
-            friends: []
+        //TODO: 每次都要重新计算 需要变成全局变量
+        var options = [];
+        var id = 0;
+        for (var name  in this.props.optionData) {
+            options.push({"id": id++, "text": name});
         }
+        return {
+            options: options,
+            value: []
+        };
     },
-    handleMultiChange: function (friends) {
-        this.setState({ friends: friends })
-    },
-    render: function() {
-        var optionNodes = Object.keys(Demo.roster).map(function(name) {
-            return (<option value={name} key={name}>{name}</option>);
-        });
+    render: function () {
         return (
-            SelectBox(
-                {
-                    label: Demo.lan.addGroupMember,
-                    onChange: this.handleMultiChange,
-                    value: this.state.friends,
-                    multiple: true,
-                    ref:'select'
-                },
-                optionNodes
-            )
-        );
+            <div className="container">
+                <MultipleSelectBoxList
+                    ref="multiSelected"
+                    options={this.state.options}
+                    value={this.state.value}
+                    nameText={Demo.lan.groupMemberLabel}
+                    label={Demo.lan.addGroupMember}
+                    selectedLabel={Demo.lan.selectedLabel}
+                />
+            </div>
+        )
     }
 });
 
@@ -53,9 +54,11 @@ var AddGroup = React.createClass({
         var info = this.refs.textarea.value;
         var permission_group = this.refs.permission_group.refs.input.checked;
         var permission_member = this.refs.permission_member.refs.input.checked;
-        var friendsSelected = this.refs.SelectBoxNode.refs.select.value();
-        log(value,info,permission_group,permission_member,friendsSelected);
-        if ( !value ) { return; }
+        var friendsSelected = this.refs.friendList.refs.multiSelected.label();
+        log(value, info, permission_group, permission_member, friendsSelected);
+        if (!value) {
+            return;
+        }
 
         Demo.conn.subscribe({
             to: value,
@@ -82,7 +85,7 @@ var AddGroup = React.createClass({
                         <Checkbox text={Demo.lan.groupMemberPermission}  ref='permission_member' />
                     </div>
                     <div>
-                        <SelectBoxNode ref='SelectBoxNode'/>
+                        <FridendList ref="friendList" optionData={Demo.roster} />
                     </div>
                     <Button text={Demo.lan.add} onClick={this.addSubmit} className='webim-dialog-button' />
                     <span className='font' onClick={this.close}>A</span>
@@ -96,8 +99,8 @@ module.exports = {
     show: function () {
         ReactDOM.render(
             <AddGroup onClose={this.close} />,
-            dom 
-        );       
+            dom
+        );
     },
 
     close: function () {
