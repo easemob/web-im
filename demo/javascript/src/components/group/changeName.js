@@ -9,20 +9,20 @@ var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var Input = UI.Input;
 
-var AddMember = React.createClass({
+var ChangeName = React.createClass({
 
-    addMember: function () {
+    addFriend: function () {
 
         var value = this.refs.input.refs.input.value;
 
         if (!value) {
             return;
         }
-
-        Demo.conn.subscribe({
-            to: value,
-            message: Demo.user + Demo.lan.request
-        });
+        log("groupChangeName:", value);
+        //Demo.conn.subscribe({
+        //    to: value,
+        //    message: Demo.user + Demo.lan.request
+        //});
         this.close();
     },
 
@@ -36,11 +36,11 @@ var AddMember = React.createClass({
             <div className='webim-friend-options'>
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog'>
-                    <h3>{Demo.lan.addAMember}</h3>
+                    <h3>{Demo.lan.groupChangeName}</h3>
                     <div ref='content'>
-                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.username} />
+                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupName} />
                     </div>
-                    <Button text={Demo.lan.add} onClick={this.addMember} className='webim-dialog-button' />
+                    <Button text={Demo.lan.confirm} onClick={this.addFriend} className='webim-dialog-button' />
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>
@@ -51,7 +51,7 @@ var AddMember = React.createClass({
 module.exports = {
     show: function () {
         ReactDOM.render(
-            <AddMember onClose={this.close} />,
+            <ChangeName onClose={this.close} />,
             dom
         );
     },
@@ -59,4 +59,4 @@ module.exports = {
     close: function () {
         ReactDOM.unmountComponentAtNode(dom);
     }
-}
+};

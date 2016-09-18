@@ -1,7 +1,7 @@
 var React = require("react");
-//var AddFriend = require("./addFriend");
-//var DelFriend = require("./delFriend");
-//var AddGroup = require("./addGroup");
+
+var ChangeName = require("../group/changeName");
+var InviteMember = require("../group/inviteMember");
 
 module.exports = React.createClass({
 
@@ -17,19 +17,21 @@ module.exports = React.createClass({
         });
     },
 
-    groupAddMember: function () {
-        log('groupAddMember');
-        //DelFriend.show();
+    inviteMember: function () {
+        log('inviteMember');
+        InviteMember.show();
+        this.update();
     },
 
-    groupChangeName: function () {
-        log('groupChangeName');
-        //Demo.api.logout();
+    changeName: function () {
+        ChangeName.show();
+        this.update();
     },
 
     cancel: function () {
         log('cancel');
-        //AddGroup.show();
+        //TODO:发送退出群组指令
+        this.update();
     },
 
     render: function () {
@@ -39,11 +41,11 @@ module.exports = React.createClass({
             <div>
                 <i className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
                 <ul className={'webim-operations' + className}>
-                    <li onClick={this.groupAddMember}>
+                    <li onClick={this.inviteMember}>
                         <i className='font smallest'>F</i>
-                        <span>{Demo.lan.groupAddMember}</span>
+                        <span>{Demo.lan.groupInviteMember}</span>
                     </li>
-                    <li onClick={this.groupChangeName}>
+                    <li onClick={this.changeName}>
                         <i className='font smallest'>B</i>
                         <span>{Demo.lan.groupChangeName}</span>
                     </li>
