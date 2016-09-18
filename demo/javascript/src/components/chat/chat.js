@@ -1,7 +1,7 @@
 var React = require("react");
 var LeftBar = require('../leftbar/leftbar');
 var Contact = require('../contact/contact');
-var ChatWindow = require('../chat/chatwindow');
+var ChatWindow = require('../chat/chatWindow');
 var Notify = require('../common/notify');
 var RTCChannel = require('../common/rtcChannel');
 var Subscribe = require('./subscribe');
@@ -24,42 +24,42 @@ module.exports = React.createClass({
                 me.getRoster();
                 me.getChatroom();
             },
-            onClosed: function ( msg ) {
+            onClosed: function (msg) {
                 log('onClosed');
                 me.channel.close();
                 Demo.api.logout();
             },
-            onTextMessage: function ( message ) {
+            onTextMessage: function (message) {
                 Demo.api.appendMsg(message, 'txt');
             },
-            onEmojiMessage: function ( message ) {
+            onEmojiMessage: function (message) {
                 Demo.api.appendMsg(message, 'emoji');
             },
-            onPictureMessage: function ( message ) {
+            onPictureMessage: function (message) {
                 Demo.api.appendMsg(message, 'img');
             },
-            onCmdMessage: function ( message ) {
+            onCmdMessage: function (message) {
                 Demo.api.appendMsg(message, 'cmd');
             },
-            onAudioMessage: function ( message ) {
+            onAudioMessage: function (message) {
                 Demo.api.appendMsg(message, 'aud');
             },
-            onLocationMessage: function ( message ) {
+            onLocationMessage: function (message) {
                 Demo.api.appendMsg(message, 'loc');
             },
-            onFileMessage: function ( message ) {
+            onFileMessage: function (message) {
                 Demo.api.appendMsg(message, 'file');
             },
-            onVideoMessage: function ( message ) {
+            onVideoMessage: function (message) {
                 Demo.api.appendMsg(message, 'video');
             },
-            onPresence: function ( message ) {
+            onPresence: function (message) {
                 me.handlePresence(message);
             },
-            onRoster: function ( message ) {
+            onRoster: function (message) {
                 me.getRoster('doNotUpdateGroup');
             },
-            onInviteMessage: function ( message ) {
+            onInviteMessage: function (message) {
                 me.getGroup();
             },
             onOnline: function () {
@@ -69,7 +69,7 @@ module.exports = React.createClass({
                 log('offline');
                 Demo.api.logout();
             },
-            onError: function ( message ) {
+            onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
 
                 Notify.error(message.data && message.data.data ? message.data.data : 'Error: type=' + message.type);
@@ -88,19 +88,21 @@ module.exports = React.createClass({
         };
     },
 
-    friendRequest: function ( msg ) {
-        if ( msg && msg.status === '[resp:true]' ) { return; }
+    friendRequest: function (msg) {
+        if (msg && msg.status === '[resp:true]') {
+            return;
+        }
 
         Subscribe.show(msg);
     },
 
-    componentDidUpdate: function ( prevProps, prevState ) {
-        for ( var o in Demo.strangers ) {
-            if ( Demo.strangers.hasOwnProperty(o) ) {
+    componentDidUpdate: function (prevProps, prevState) {
+        for (var o in Demo.strangers) {
+            if (Demo.strangers.hasOwnProperty(o)) {
                 var msg = null;
 
 
-                while ( msg = Demo.strangers[o].pop() ) {
+                while (msg = Demo.strangers[o].pop()) {
                     Demo.api.appendMsg(msg.msg, msg.type);
                 }
             }
@@ -108,7 +110,7 @@ module.exports = React.createClass({
     },
 
     componentDidMount: function () {
-        if ( window.chromeBrowser && WebIM.WebRTC ) {
+        if (window.chromeBrowser && WebIM.WebRTC) {
             this.initWebRTC();
             this.channel = new RTCChannel(this.refs.rtcWrapper);
         }
@@ -116,7 +118,7 @@ module.exports = React.createClass({
 
     initWebRTC: function () {
 
-        if ( Demo.call ) {
+        if (Demo.call) {
             return;
         }
 
@@ -125,69 +127,69 @@ module.exports = React.createClass({
         var logger = WebIM.WebRTC.Util.logger;
 
         Demo.call = new WebIM.WebRTC.Call({
-            connection : Demo.conn,
-               
+            connection: Demo.conn,
+
             mediaStreamConstaints: {
                 audio: true,
                 video: true
             },
-            
+
             listener: {
-                onAcceptCall: function ( from, options ) {
+                onAcceptCall: function (from, options) {
                     debugger
                 },
-                onGotRemoteStream: function ( stream ) {
+                onGotRemoteStream: function (stream) {
                     me.channel.setRemote(stream);
                 },
-                onGotLocalStream: function ( stream ) {
+                onGotLocalStream: function (stream) {
                     me.channel.setLocal(stream);
                 },
-                onRinging: function ( caller ) {
+                onRinging: function (caller) {
                     debugger
                 },
                 onTermCall: function () {
                     me.channel.close();
                 },
-                onError: function ( e ) {
+                onError: function (e) {
                     Notify.error(e && e.message ? e.message : 'An error occured when calling webrtc');
                 }
             }
         });
     },
 
-    componentWillReceiveProps: function ( nextProps ) {
-        if ( nextProps.groupChange ) {
+    componentWillReceiveProps: function (nextProps) {
+        if (nextProps.groupChange) {
             this.getGroup();
-        } else if ( nextProps.rosterChange ) {
+        } else if (nextProps.rosterChange) {
             this.getRoster('doNotUpdateGroup');
-        } else if ( nextProps.chatroomChange ) {
+        } else if (nextProps.chatroomChange) {
             this.getChatroom();
-        } else if ( nextProps.strangerChange ) {
+        } else if (nextProps.strangerChange) {
             this.getStrangers();
         }
     },
 
-    handlePresence: function ( msg ) {
+    handlePresence: function (msg) {
         var me = this;
 
-        switch ( msg.type )  {
+        switch (msg.type) {
             case 'leaveGroup':// dismissied by admin
                 Demo.api.updateGroup();
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
-                if ( !Demo.roster[msg.from] ) {
+                if (!Demo.roster[msg.from]) {
                     me.friendRequest(msg);
                 }
                 break;
             case 'subscribed':// The receiver accepts the sender's friend request.
-                if ( !Demo.roster[msg.from] ) {
+                if (!Demo.roster[msg.from]) {
                     Demo.roster[msg.from] = 1;
                 }
                 me.getRoster('doNotUpdateGroup');
                 break;
             case 'unsubscribe':// The sender deletes a friend.
             case 'unsubscribed':// The other party has removed you from the friend list.
-                if ( Demo.roster[msg.from] ) {
+                if (Demo.roster[msg.from]) {
                     delete Demo.roster[msg.from];
                 }
                 break;
@@ -203,42 +205,43 @@ module.exports = React.createClass({
             case 'deleteGroupChat':// The chat room or group is deleted.
                 var target = document.getElementById(msg.from);
 
-                if ( target ) {
+                if (target) {
                     Demo.api.updateGroup();
                 }
                 break;
-        };
+        }
+        ;
     },
 
     getStrangers: function () {
         var strangers = [];
 
-        for ( var o in Demo.strangers ) {
-            if ( Demo.strangers.hasOwnProperty(o) ) {
-                strangers.push({ name: o });
+        for (var o in Demo.strangers) {
+            if (Demo.strangers.hasOwnProperty(o)) {
+                strangers.push({name: o});
             }
         }
-        this.setState({ strangers, strangers });
+        this.setState({strangers, strangers});
     },
 
-    getRoster: function ( doNotUpdateGroup ) {
+    getRoster: function (doNotUpdateGroup) {
         var me = this,
             conn = Demo.conn,
             friends = [],
             groups = [];
 
         conn.getRoster({
-            success : function ( roster ) {
+            success: function (roster) {
                 var curroster;
-                for ( var i in roster ) {
+                for (var i in roster) {
                     var ros = roster[i];
-                    if ( ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to' ) {
+                    if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
                         friends.push(ros);
                         Demo.roster[ros.name] = 1;
                     }
                 }
-                me.setState({ friends: friends });
-                
+                me.setState({friends: friends});
+
                 doNotUpdateGroup || me.getGroup();
             }
         });
@@ -248,11 +251,11 @@ module.exports = React.createClass({
         var me = this;
 
         Demo.conn.listRooms({
-            success: function ( rooms ) {
+            success: function (rooms) {
                 Demo.conn.setPresence();
-                me.setState({ groups: rooms });
+                me.setState({groups: rooms});
             },
-            error: function(e) {
+            error: function (e) {
                 Demo.conn.setPresence();
             }
         });
@@ -261,26 +264,26 @@ module.exports = React.createClass({
     getChatroom: function () {
         var me = this;
 
-	    Demo.conn.getChatRooms({
+        Demo.conn.getChatRooms({
             apiUrl: WebIM.config.apiURL,
-            success: function ( list ) {
+            success: function (list) {
 
-                if ( list.data && list.data.length > 0 ) {
-                    me.setState({ chatrooms: list.data });
+                if (list.data && list.data.length > 0) {
+                    me.setState({chatrooms: list.data});
                 }
             },
-            error: function ( e ) {
+            error: function (e) {
                 log(e);
             }
         });
     },
 
-    update: function ( cur ) {
-        this.setState({ cur: cur });
+    update: function (cur) {
+        this.setState({cur: cur});
     },
 
-    updateNode: function ( id ) {
-        this.setState({ curNode: id });
+    updateNode: function (id) {
+        this.setState({curNode: id});
     },
 
     sendPicture: function () {
@@ -293,12 +296,12 @@ module.exports = React.createClass({
             file = WebIM.utils.getFileUrl(me.refs.picture),
             url;
 
-        if ( !file.filename ) {
+        if (!file.filename) {
             me.refs.picture.value = null;
             return false;
         }
 
-        if ( !Demo.IMGTYPE[file.filetype.toLowerCase()] ) {
+        if (!Demo.IMGTYPE[file.filetype.toLowerCase()]) {
             me.refs.picture.value = null;
             Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
             return;
@@ -311,7 +314,7 @@ module.exports = React.createClass({
             file: file,
             to: Demo.selected,
             roomType: chatroom,
-            onFileUploadError: function ( error ) {
+            onFileUploadError: function (error) {
                 log(error);
                 me.refs.picture.value = null;
 
@@ -321,11 +324,11 @@ module.exports = React.createClass({
                     to: Demo.selected
                 }, 'txt');
             },
-            onFileUploadComplete: function ( data ) {
+            onFileUploadComplete: function (data) {
                 url = data.uri + '/' + data.entities[0].uuid;
                 me.refs.picture.value = null;
             },
-            success: function ( id ) {
+            success: function (id) {
                 Demo.api.appendMsg({
                     data: url,
                     from: Demo.user,
@@ -335,20 +338,20 @@ module.exports = React.createClass({
             flashUpload: WebIM.flashUpload
         });
 
-        if ( Demo.selectedCate === 'groups' ) {
+        if (Demo.selectedCate === 'groups') {
             msg.setGroup(Demo.groupType);
-        } else if ( chatroom ) {
+        } else if (chatroom) {
             msg.setGroup(Demo.groupType);
         }
 
-		Demo.conn.send(msg.body);
+        Demo.conn.send(msg.body);
     },
 
     sendAudio: function () {
         this.refs.audio.click();
     },
 
-    sendAudioMsg: function ( file, duration ) {
+    sendAudioMsg: function (file, duration) {
         var msg = new WebIM.message('audio', Demo.conn.getUniqueId()),
             chatroom = Demo.selectedCate === 'chatrooms',
             url,
@@ -360,7 +363,7 @@ module.exports = React.createClass({
             to: Demo.selected,
             roomType: chatroom,
             length: duration || 0,
-            onFileUploadError: function ( error ) {
+            onFileUploadError: function (error) {
                 log(error);
                 me.refs.audio.value = null;
 
@@ -370,11 +373,11 @@ module.exports = React.createClass({
                     to: Demo.selected
                 }, 'txt');
             },
-            onFileUploadComplete: function ( data ) {
+            onFileUploadComplete: function (data) {
                 url = data.uri + '/' + data.entities[0].uuid;
                 me.refs.audio.value = null;
             },
-            success: function ( id, sid ) {
+            success: function (id, sid) {
                 Demo.api.appendMsg({
                     data: url,
                     from: Demo.user,
@@ -386,31 +389,31 @@ module.exports = React.createClass({
             flashUpload: WebIM.flashUpload
         });
 
-		if ( Demo.selectedCate === 'groups' ) {
+        if (Demo.selectedCate === 'groups') {
             msg.setGroup(Demo.groupType);
-        } else if ( chatroom ) {
+        } else if (chatroom) {
             msg.setGroup(Demo.groupType);
         }
 
-		Demo.conn.send(msg.body);
+        Demo.conn.send(msg.body);
     },
 
     audioChange: function () {
         var me = this,
             file = WebIM.utils.getFileUrl(me.refs.audio);
 
-        if ( !file.filename ) {
+        if (!file.filename) {
             me.refs.audio.value = null;
             return false;
         }
 
-        if ( !Demo.AUDIOTYPE[file.filetype.toLowerCase()] ) {
+        if (!Demo.AUDIOTYPE[file.filetype.toLowerCase()]) {
             me.refs.audio.value = null;
             Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
             return;
         }
 
-        if ( (WebIM.utils.getIEVersion === null || WebIM.utils.getIEVersion > 9) && window.Audio ) {
+        if ((WebIM.utils.getIEVersion === null || WebIM.utils.getIEVersion > 9) && window.Audio) {
 
             var audio = document.createElement('audio');
 
@@ -435,12 +438,12 @@ module.exports = React.createClass({
             file = WebIM.utils.getFileUrl(me.refs.file),
             filename = file.filename;
 
-        if ( !file.filename ) {
+        if (!file.filename) {
             me.refs.file.value = null;
             return false;
         }
 
-        if ( !Demo.FILETYPE[file.filetype.toLowerCase()] ) {
+        if (!Demo.FILETYPE[file.filetype.toLowerCase()]) {
             me.refs.file.value = null;
             Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
             return;
@@ -452,7 +455,7 @@ module.exports = React.createClass({
             filename: filename,
             to: Demo.selected,
             roomType: chatroom,
-            onFileUploadError: function ( error ) {
+            onFileUploadError: function (error) {
                 log(error);
                 me.refs.file.value = null;
 
@@ -462,11 +465,11 @@ module.exports = React.createClass({
                     to: Demo.selected
                 }, 'txt');
             },
-            onFileUploadComplete: function ( data ) {
+            onFileUploadComplete: function (data) {
                 url = data.uri + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
             },
-            success: function ( id ) {
+            success: function (id) {
                 Demo.api.appendMsg({
                     data: url,
                     filename: filename,
@@ -477,17 +480,17 @@ module.exports = React.createClass({
             flashUpload: WebIM.flashUpload
         });
 
-		if ( Demo.selectedCate === 'groups' ) {
+        if (Demo.selectedCate === 'groups') {
             msg.setGroup(Demo.groupType);
-        } else if ( chatroom ) {
+        } else if (chatroom) {
             msg.setGroup(Demo.groupType);
         }
 
-		Demo.conn.send(msg.body);
+        Demo.conn.send(msg.body);
     },
 
     render: function () {
-        var windows = [], id, 
+        var windows = [], id,
             props = {
                 sendPicture: this.sendPicture,
                 sendAudio: this.sendAudio,
@@ -495,7 +498,7 @@ module.exports = React.createClass({
                 name: ''
             };
 
-        for ( var i = 0; i < this.state.friends.length; i++ ) {
+        for (var i = 0; i < this.state.friends.length; i++) {
             id = this.state.friends[i].name;
             props.name = id;
 
@@ -503,23 +506,23 @@ module.exports = React.createClass({
                 className={this.state.friends[i].name === this.state.curNode ? '' : 'hide'} />);
         }
 
-        for ( var i = 0; i < this.state.groups.length; i++ ) {
+        for (var i = 0; i < this.state.groups.length; i++) {
             id = this.state.groups[i].roomId;
             props.name = this.state.groups[i].name;
 
-            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} 
+            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props}
                 className={id === this.state.curNode ? '' : 'hide'} />);
         }
 
-        for ( var i = 0; i < this.state.chatrooms.length; i++ ) {
+        for (var i = 0; i < this.state.chatrooms.length; i++) {
             id = this.state.chatrooms[i].id;
             props.name = this.state.chatrooms[i].name;
 
-            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} 
+            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props}
                 className={id === this.state.curNode ? '' : 'hide'} />);
         }
 
-        for ( var i = 0; i < this.state.strangers.length; i++ ) {
+        for (var i = 0; i < this.state.strangers.length; i++) {
             id = this.state.strangers[i].name;
             props.name = id;
 
@@ -530,7 +533,7 @@ module.exports = React.createClass({
         return (
             <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
                 <LeftBar cur={this.state.cur} update={this.update} />
-                <Contact cur={this.state.cur} curNode={this.state.curNode} updateNode={this.updateNode} update={this.update} 
+                <Contact cur={this.state.cur} curNode={this.state.curNode} updateNode={this.updateNode} update={this.update}
                     friends={this.state.friends} groups={this.state.groups} chatrooms={this.state.chatrooms} strangers={this.state.strangers} />
                 {windows}
                 <input ref='picture' onChange={this.pictureChange} type='file' className='hide' />
