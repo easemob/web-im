@@ -1,0 +1,30 @@
+/*
+  说明:
+  下面的css都是为了快速实现功能，覆盖旧有属性的各种trick
+  后期需要找专门的css人员整理一遍，合并入正常的文件，然后删除本文件!
+*/
+@import './multiple-select-box.scss';
+
+.webim-chatwindow .webim-operations-icon {
+  top: 5px;
+  left: auto;
+  right: 10px;
+  bottom: 0px;
+}
+
+.webim-chatwindow .webim-operations {
+  left: 520px;
+  top: 10px;
+  bottom: auto;
+  z-index: 2; //避免ul列表被下面的msg窗口挡住 不能选取
+}
+
+.webim-friend-options span.radio_span {
+  width: 80px;
+  display: inline-block;
+}
+
+.webim-friend-options input.radio {
+  height: 10px;
+  width: 20px;
+}

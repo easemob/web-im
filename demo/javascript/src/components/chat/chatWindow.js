@@ -2,6 +2,7 @@ var React = require("react");
 var SendWrapper = require('./sendwrapper');
 var Notify = require('../common/notify');
 var Avatar = require('../common/avatar');
+var Operations = require('./operations');
 
 module.exports = React.createClass({
 
@@ -11,43 +12,52 @@ module.exports = React.createClass({
         return {
             members: [],
             memberShowStatus: false
-         };
+        };
     },
 
-    componentWillReceiveProps: function ( nextProps ) {
-        
+    componentWillReceiveProps: function (nextProps) {
+
+    },
+
+    call: function () {
+        Demo.call.makeVideoCall(Demo.selected);
+    },
+
+    acceptCall: function () {
+        Demo.call.acceptCall();
     },
 
     listMember: function () {
         var me = this;
 
 
-        if ( me.refs.i.className.indexOf('up') < 0 ) {
+        if (me.refs.i.className.indexOf('up') < 0) {
 
             Demo.conn.queryRoomMember({
                 roomId: me.props.roomId,
-                success: function ( members ) {
-                    if ( members && members.length > 0 ) {
+                success: function (members) {
+                    if (members && members.length > 0) {
                         me.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
 
-                        me.setState({ members: members, memberShowStatus: true });
+                        me.setState({members: members, memberShowStatus: true});
                     }
                 },
-                error : function() {}
+                error: function () {
+                }
             });
         } else {
             me.refs.i.className = 'webim-down-icon font smallest dib';
-            me.setState({ members: [], memberShowStatus: false });
+            me.setState({members: [], memberShowStatus: false});
         }
     },
 
-    send: function ( msg ) {
+    send: function (msg) {
         Demo.conn.send(msg);
         Demo.api.appendMsg(msg, 'txt');
     },
 
     render: function () {
-		var className = this.props.roomId ? ' dib' : ' hide',
+        var className = this.props.roomId ? ' dib' : ' hide',
             props = {
                 sendPicture: this.props.sendPicture,
                 sendAudio: this.props.sendAudio,
@@ -56,20 +66,33 @@ module.exports = React.createClass({
             memberStatus = this.state.memberShowStatus ? '' : ' hide',
             roomMember = [];
 
-        for ( var i = 0, l = this.state.members.length; i < l; i++ ) {
+        for (var i = 0, l = this.state.members.length; i < l; i++) {
             var jid = this.state.members[i].jid,
                 username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
 
-            roomMember.push(<li key={i}><Avatar src='demo/images/default.png' /><span>{username}</span></li>);
+            roomMember.push(<li key={i}>
+                <Avatar src='demo/images/default.png' />
+                <span>{username}</span>
+            </li>);
         }
+
+        /*
+         <p className='webim-chatwindow-title'>
+         <i className={'webim-call-icon font'} onClick={this.call}>R</i>
+         <i className={'webim-accept-icon font'} onClick={this.acceptCall}>R</i>
+         {this.props.name}
+         <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
+         </p>
+         */
 
         return (
             <div className={'webim-chatwindow ' + this.props.className}>
-                <p className='webim-chatwindow-title'>
+                <div className='webim-chatwindow-title'>
                     {this.props.name}
                     <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
-                </p>
-				<ul ref='member' className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>
+                </div>
+                <Operations />
+                <ul ref='member' className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>
                 <div id={this.props.id} ref='wrapper' className='webim-chatwindow-msg'></div>
                 <SendWrapper send={this.send} {...props} />
             </div>

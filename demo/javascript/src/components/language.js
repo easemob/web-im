@@ -36,7 +36,21 @@ exports.English = {
     download: 'Download',
     noaccount: 'No account',
     signupnow: 'Sign up now',
-    haveaccount: 'i have account'
+    addGroup: 'Add Group',
+    addGroupMember: 'Add Member',
+    selectedLabel: "Selected",
+    groupMemberLabel: "Member",
+    groupName: 'Group Name',
+    groupInfo: 'Group Info',
+    groupPermission: 'Group Permission',
+    groupMemberPermission: 'Group Member Permission',
+    groupInviteMember: 'Invite Member',
+    groupChangeName: 'Change Name',
+    groupDismiss: 'Dissmiss',
+    groupQuit: 'Quit',
+    haveaccount: 'i have account',
+    confirm: "confirm",
+    cancel: "cancel",
 };
 
 exports.Chinese = {
@@ -77,5 +91,19 @@ exports.Chinese = {
     download: '点击下载',
     noaccount: '没有账号',
     signupnow: '现在注册',
-    haveaccount: '已有账号'
+    addGroup: '添加群组',
+    addGroupMember: '添加成员',
+    selectedLabel: "选中",
+    groupMemberLabel: "成员",
+    groupName: '群组名',
+    groupInfo: '群组简介',
+    groupPermission: '群组权限',
+    groupMemberPermission: '成员权限',
+    groupInviteMember: '邀请成员',
+    groupChangeName: '修改名称',
+    groupDismiss: '解散群组',
+    groupQuit: '退出群组',
+    haveaccount: '已有账号',
+    confirm: "确定",
+    cancel: "取消",
 };

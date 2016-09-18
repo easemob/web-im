@@ -236,21 +236,12 @@
 				dom.up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
 			}
 
-            conn.retry && setTimeout(function () {
+            setTimeout(function () {
                 if ( typeof _msgHash !== 'undefined' && _msgHash[message.id] ) {
-                    if ( typeof _msgHash[message.id].timeout === 'undefined' ) {
-                        _msgHash[message.id].timeout = 2;
-                    }
-                    if ( _msgHash[message.id].timeout === 0 ) {
-                        _msgHash[message.id].timeout = 2;
-                        _msgHash[message.id].msg.fail instanceof Function 
-                        && _msgHash[message.id].msg.fail(message.id);
-                    } else {
-                        _msgHash[message.id].timeout -= 1;
-                        _send(message);
-                    }
+                    _msgHash[message.id].msg.fail instanceof Function 
+                    && _msgHash[message.id].msg.fail(message.id);
                 }
-            }, 20000);
+            }, 60000);
             conn.sendCommand(dom.tree(), message.id);
         }
 

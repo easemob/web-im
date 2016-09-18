@@ -2,11 +2,13 @@ WebIM.config = {
     /*
      * XMPP server
      */
-    xmppURL: 'im-api.sandbox.easemob.com',
+    xmppURL: 'im-api.easemob.com',
+    // xmppURL: '172.17.2.172:5280',
     /*
      * Backend REST API URL
      */
-    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.sdb.easemob.com',
+    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
+    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//172.17.2.172:8080',
     /*
      * Application AppKey
      */
@@ -25,5 +27,5 @@ WebIM.config = {
     /*
      * Set to auto sign-in
      */
-    isAutoLogin: true 
+    isAutoLogin: true
 };
