@@ -30,30 +30,57 @@ module.exports = React.createClass({
                 Demo.api.logout();
             },
             onTextMessage: function (message) {
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                    message = eval('(' + message + ')');
+                }
                 Demo.api.appendMsg(message, 'txt');
             },
             onEmojiMessage: function (message) {
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                    message = eval('(' + message + ')');
+                }
                 Demo.api.appendMsg(message, 'emoji');
             },
             onPictureMessage: function (message) {
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                    message = eval('(' + message + ')');
+                }
                 Demo.api.appendMsg(message, 'img');
             },
             onCmdMessage: function (message) {
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                    message = eval('(' + message + ')');
+                }
                 Demo.api.appendMsg(message, 'cmd');
             },
             onAudioMessage: function (message) {
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                    message = eval('(' + message + ')');
+                }
                 Demo.api.appendMsg(message, 'aud');
             },
             onLocationMessage: function (message) {
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                    message = eval('(' + message + ')');
+                }
                 Demo.api.appendMsg(message, 'loc');
             },
             onFileMessage: function (message) {
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                    message = eval('(' + message + ')');
+                }
                 Demo.api.appendMsg(message, 'file');
             },
             onVideoMessage: function (message) {
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                    message = eval('(' + message + ')');
+                }
                 Demo.api.appendMsg(message, 'video');
             },
             onPresence: function (message) {
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                    message = eval('(' + message + ')');
+                }
                 me.handlePresence(message);
             },
             onRoster: function (message) {
@@ -229,53 +256,92 @@ module.exports = React.createClass({
             conn = Demo.conn,
             friends = [],
             groups = [];
-
-        conn.getRoster({
-            success: function (roster) {
-                var curroster;
-                for (var i in roster) {
-                    var ros = roster[i];
-                    if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
-                        friends.push(ros);
-                        Demo.roster[ros.name] = 1;
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"getRoster"}',
+                function success(str) {
+                    var roster = eval('(' + str + ')');
+                    for (var i in roster) {
+                        var ros = roster[i];
+                        if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
+                            friends.push(ros);
+                            Demo.roster[ros.name] = 1;
+                        }
                     }
-                }
-                me.setState({friends: friends});
+                    me.setState({friends: friends});
 
-                doNotUpdateGroup || me.getGroup();
-            }
-        });
+                    doNotUpdateGroup || me.getGroup();
+                },
+                function failure(errCode, errMessage) {
+                    alert(errCode);
+                });
+        } else {
+            conn.getRoster({
+                success: function (roster) {
+                    var curroster;
+                    for (var i in roster) {
+                        var ros = roster[i];
+                        if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
+                            friends.push(ros);
+                            Demo.roster[ros.name] = 1;
+                        }
+                    }
+                    me.setState({friends: friends});
+
+                    doNotUpdateGroup || me.getGroup();
+                }
+            });
+        }
     },
 
     getGroup: function () {
         var me = this;
-
-        Demo.conn.listRooms({
-            success: function (rooms) {
-                Demo.conn.setPresence();
-                me.setState({groups: rooms});
-            },
-            error: function (e) {
-                Demo.conn.setPresence();
-            }
-        });
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"getGroup"}',
+                function success(str) {
+                    var rooms = eval('(' + str + ')');
+                    me.setState({groups: rooms});
+                },
+                function failure(errCode, errMessage) {
+                    alert(errCode);
+                });
+        } else {
+            Demo.conn.listRooms({
+                success: function (rooms) {
+                    Demo.conn.setPresence();
+                    me.setState({groups: rooms});
+                },
+                error: function (e) {
+                    Demo.conn.setPresence();
+                }
+            });
+        }
     },
 
     getChatroom: function () {
         var me = this;
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"getChatroom"}',
+                function success(str) {
+                    var rooms = eval('(' + str + ')');
+                    me.setState({chatrooms: rooms});
+                },
+                function failure(errCode, errMessage) {
+                    alert(errCode);
+                });
+        } else {
+            Demo.conn.getChatRooms({
+                apiUrl: WebIM.config.apiURL,
+                success: function (list) {
 
-        Demo.conn.getChatRooms({
-            apiUrl: WebIM.config.apiURL,
-            success: function (list) {
-
-                if (list.data && list.data.length > 0) {
-                    me.setState({chatrooms: list.data});
+                    if (list.data && list.data.length > 0) {
+                        me.setState({chatrooms: list.data});
+                    }
+                },
+                error: function (e) {
+                    log(e);
                 }
-            },
-            error: function (e) {
-                log(e);
-            }
-        });
+            });
+        }
     },
 
     update: function (cur) {
@@ -287,7 +353,11 @@ module.exports = React.createClass({
     },
 
     sendPicture: function () {
-        this.refs.picture.click();
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            this.sendFileImpl("img");
+        } else {
+            this.refs.picture.click();
+        }
     },
 
     pictureChange: function () {
@@ -348,7 +418,11 @@ module.exports = React.createClass({
     },
 
     sendAudio: function () {
-        this.refs.audio.click();
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            this.sendFileImpl("aud");
+        } else {
+            this.refs.audio.click();
+        }
     },
 
     sendAudioMsg: function (file, duration) {
@@ -428,9 +502,33 @@ module.exports = React.createClass({
     },
 
     sendFile: function () {
-        this.refs.file.click();
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            this.sendFileImpl("file");
+        } else {
+            this.refs.file.click();
+        }
     },
+    sendFileImpl: function (type) {
+        //this.refs.file.click();
+        var is_chatroom = Demo.selectedCate === 'chatrooms' ? "true" : "false";
+        var is_group = (Demo.selectedCate === 'chatrooms' || Demo.selectedCate === 'groups') ? "groupchat" : "singlechat";
+        WebIM.doQuery('{"type":"sendFileMessage","to":"' + Demo.selected + '","message_type":"' + type + '","group":"' + is_group + '","roomType":"' + is_chatroom + '"}',
+            function (response) {
+                var pathSplitted = decodeURI(response).split("\\");
 
+                response = response.replace(/\\/ig, "/");
+                var fileurl = 'file:///' + response;
+                Demo.api.appendMsg({
+                    data: fileurl,
+                    filename: pathSplitted[pathSplitted.length - 1],
+                    from: Demo.user,
+                    to: Demo.selected
+                }, type);
+            },
+            function (code, msg) {
+                alert(code + " - " + msg);
+            });
+    },
     fileChange: function () {
         var me = this, url,
             msg = new WebIM.message('file', Demo.conn.getUniqueId()),

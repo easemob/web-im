@@ -11,7 +11,7 @@ var Input = UI.Input;
 
 var ChangeName = React.createClass({
 
-    addFriend: function () {
+    changeName: function () {
 
         var value = this.refs.input.refs.input.value;
 
@@ -40,7 +40,7 @@ var ChangeName = React.createClass({
                     <div ref='content'>
                         <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupName} />
                     </div>
-                    <Button text={Demo.lan.confirm} onClick={this.addFriend} className='webim-dialog-button' />
+                    <Button text={Demo.lan.confirm} onClick={this.changeName} className='webim-dialog-button' />
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>

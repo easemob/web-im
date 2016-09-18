@@ -51,6 +51,8 @@ exports.English = {
     haveaccount: 'i have account',
     confirm: "confirm",
     cancel: "cancel",
+    contact_added: 'Contact added!',
+    contact_deleted: 'Contact deleted!'
 };
 
 exports.Chinese = {
@@ -106,4 +108,6 @@ exports.Chinese = {
     haveaccount: '已有账号',
     confirm: "确定",
     cancel: "取消",
+    contact_added: '已发送添加请求!',
+    contact_deleted: '好友已删除!'
 };

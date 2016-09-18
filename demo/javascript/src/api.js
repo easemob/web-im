@@ -12,36 +12,38 @@ var videoMsg = require('./components/message/video');
 
 module.exports = {
     log: (function () {
-        if ( typeof console !== 'undefined' && console.log ) {
+        if (typeof console !== 'undefined' && console.log) {
             return function () {
                 console.log.apply(window.console, arguments);
             };
-        } else return function () {};
+        } else return function () {
+        };
     }()),
 
-    render: function ( node, change ) {
+    render: function (node, change) {
         this.node = node;
 
         var props = {};
-        switch ( change ) {
+        switch (change) {
             case 'roster':
                 props.rosterChange = true;
                 break;
             case 'group':
                 props.groupChange = true;
-                break;   
+                break;
             case 'chatroom':
                 props.chatroomChange = true;
                 break;
             case 'stranger':
                 props.strangerChange = true;
                 break;
-            default: 
+            default:
                 props = null;
                 break;
-        };
+        }
+        ;
 
-        if ( props ) {
+        if (props) {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout} {...props} />, this.node);
         } else {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout} />, this.node);
@@ -49,19 +51,22 @@ module.exports = {
     },
 
     logout: function () {
-        Demo.conn.stopHeartBeat()
-        Demo.conn.close();
-
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            //do nothing
+        } else {
+            Demo.conn.stopHeartBeat();
+            Demo.conn.close();
+        }
         Demo.selected = null;
         Demo.user = null;
         Demo.call = null;
-        
+
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
     },
 
-    appendMsg: function ( msg, type ) {
-        if ( !msg ) {
+    appendMsg: function (msg, type) {
+        if (!msg) {
             return;
         }
         msg.from = msg.from || Demo.user;
@@ -76,16 +81,16 @@ module.exports = {
             targetNode = document.getElementById('wrapper' + targetId);
 
 
-        if ( !this.sentByMe && msg.type === 'chat' && !targetNode ) {
+        if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
-        } else if ( !targetNode ) {
+        } else if (!targetNode) {
             return;
         }
 
-        switch ( type ) {
+        switch (type) {
             case 'txt':
-                if ( !targetNode ) {
-                    Demo.strangers[targetId].push({ msg: msg, type: 'txt' });
+                if (!targetNode) {
+                    Demo.strangers[targetId].push({msg: msg, type: 'txt'});
                 } else {
                     brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
                     textMsg({
@@ -96,12 +101,12 @@ module.exports = {
                 }
                 break;
             case 'emoji':
-                if ( !targetNode ) {
-                    Demo.strangers[targetId].push({ msg: msg, type: 'emoji' });
+                if (!targetNode) {
+                    Demo.strangers[targetId].push({msg: msg, type: 'emoji'});
                 } else {
-                    for ( var i = 0, l = data.length; i < l; i++ ) {
-                        brief += data[i].type === 'emoji' 
-                            ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) +'" />'
+                    for (var i = 0, l = data.length; i < l; i++) {
+                        brief += data[i].type === 'emoji'
+                            ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />'
                             : this.encode(data[i].data);
                     }
                     textMsg({
@@ -112,8 +117,8 @@ module.exports = {
                 }
                 break;
             case 'img':
-                if ( !targetNode ) {
-                    Demo.strangers[targetId].push({ msg: msg, type: 'img' });
+                if (!targetNode) {
+                    Demo.strangers[targetId].push({msg: msg, type: 'img'});
                 } else {
                     brief = '[' + Demo.lan.image + ']';
                     imgMsg({
@@ -124,8 +129,8 @@ module.exports = {
                 }
                 break;
             case 'aud':
-                if ( !targetNode ) {
-                    Demo.strangers[targetId].push({ msg: msg, type: 'aud' });
+                if (!targetNode) {
+                    Demo.strangers[targetId].push({msg: msg, type: 'aud'});
                 } else {
                     brief = '[' + Demo.lan.audio + ']';
                     audioMsg({
@@ -138,15 +143,15 @@ module.exports = {
                 }
                 break;
             case 'cmd':
-                if ( !targetNode ) {
-                    Demo.strangers[targetId].push({ msg: msg, type: 'cmd' });
+                if (!targetNode) {
+                    Demo.strangers[targetId].push({msg: msg, type: 'cmd'});
                 } else {
                     brief = '[' + Demo.lan.cmd + ']';
                 }
                 break;
             case 'file':
-                if ( !targetNode ) {
-                    Demo.strangers[targetId].push({ msg: msg, type: 'file' });
+                if (!targetNode) {
+                    Demo.strangers[targetId].push({msg: msg, type: 'file'});
                 } else {
                     brief = '[' + Demo.lan.file + ']';
                     fileMsg({
@@ -158,8 +163,8 @@ module.exports = {
                 }
                 break;
             case 'loc':
-                if ( !targetNode ) {
-                    Demo.strangers[targetId].push({ msg: msg, type: 'loc' });
+                if (!targetNode) {
+                    Demo.strangers[targetId].push({msg: msg, type: 'loc'});
                 } else {
                     brief = '[' + Demo.lan.location + ']';
                     locMsg({
@@ -170,8 +175,8 @@ module.exports = {
                 }
                 break;
             case 'video':
-                if ( !targetNode ) {
-                    Demo.strangers[targetId].push({ msg: msg, type: 'video' });
+                if (!targetNode) {
+                    Demo.strangers[targetId].push({msg: msg, type: 'video'});
                 } else {
                     brief = '[' + Demo.lan.video + ']';
                     videoMsg({
@@ -183,25 +188,29 @@ module.exports = {
                     }, this.sentByMe);
                 }
                 break;
-            default: break;
-        };
+            default:
+                break;
+        }
+        ;
 
-        if ( !targetNode ) {
+        if (!targetNode) {
             this.render(this.node, 'stranger');
             return;
         }
 
         // show brief
-        this.appendBrief( targetId, brief);
+        this.appendBrief(targetId, brief);
 
-        if ( msg.type === 'cmd' ) {
+        if (msg.type === 'cmd') {
             return;
         }
 
         // show count
-        switch ( msg.type ) {
+        switch (msg.type) {
             case 'chat':
-                if ( this.sentByMe ) { return; }
+                if (this.sentByMe) {
+                    return;
+                }
                 var contact = document.getElementById(msg.from),
                     cate = Demo.roster[msg.from] ? 'friends' : 'strangers';
 
@@ -212,17 +221,18 @@ module.exports = {
 
                 this.addCount(msg.to, cate);
                 break;
-        };
-        
+        }
+        ;
+
     },
 
-    appendBrief: function ( id, value ) {
+    appendBrief: function (id, value) {
         var cur = document.getElementById(id);
         cur.querySelector('em').innerHTML = value;
     },
 
-    addCount: function ( id, cate ) {
-        if ( Demo.selectedCate !== cate ) {
+    addCount: function (id, cate) {
+        if (Demo.selectedCate !== cate) {
             var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
             curCate.style.display = 'block';
 
@@ -233,14 +243,14 @@ module.exports = {
             cur.innerText = curCount > 999 ? '...' : curCount + '';
             cur.style.display = 'block';
         } else {
-            if ( !this.sentByMe && id !== Demo.selected ) {
+            if (!this.sentByMe && id !== Demo.selected) {
                 var cur = document.getElementById(id).querySelector('i');
                 var curCount = cur.getAttribute('count') / 1;
                 curCount++;
                 cur.setAttribute('count', curCount);
                 cur.innerText = curCount > 999 ? '...' : curCount + '';
                 cur.style.display = 'block';
-            }    
+            }
         }
 
     },
@@ -253,27 +263,28 @@ module.exports = {
         this.render(this.node, 'roster');
     },
 
-    updateGroup: function ( groupId ) {
+    updateGroup: function (groupId) {
         this.render(this.node, 'group');
     },
 
-    deleteFriend: function ( username ) {
+    deleteFriend: function (username) {
         Demo.conn.removeRoster({
-			to: username,
-			success: function () {
-				Demo.conn.unsubscribed({
-					to: username
-				});
+            to: username,
+            success: function () {
+                Demo.conn.unsubscribed({
+                    to: username
+                });
 
                 var dom = document.getElementById(username);
                 dom && dom.parentNode.removeChild(dom);
-			},
-			error : function() {}
-		});
+            },
+            error: function () {
+            }
+        });
     },
 
-    encode: function ( str ) {
-        if ( !str || str.length === 0 ) {
+    encode: function (str) {
+        if (!str || str.length === 0) {
             return '';
         }
         var s = '';
@@ -285,7 +296,7 @@ module.exports = {
         return s;
     },
 
-    scrollIntoView: function ( node ) {
+    scrollIntoView: function (node) {
         setTimeout(function () {
             node.scrollIntoView(true);
         }, 50);

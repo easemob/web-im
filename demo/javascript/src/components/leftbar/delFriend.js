@@ -11,28 +11,40 @@ var Input = UI.Input;
 
 var DelFriend = React.createClass({
 
-	delFriend: function () {
+    delFriend: function () {
         var me = this,
             value = this.refs.input.refs.input.value;
 
-        if ( !value ) { return; }
+        if (!value) {
+            return;
+        }
 
-        Demo.conn.removeRoster({
-			to: value,
-			success: function () {
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"delFriend","to":"' + value + '"}',
+                function success(str) {
+                    alert(Demo.lan.contact_deleted);
+                },
+                function failure(errCode, errMessage) {
+                    alert(errCode);
+                });
+        } else {
+            Demo.conn.removeRoster({
+                to: value,
+                success: function () {
+                    if (Demo.roster[value]) {
+                        delete Demo.roster[value];
+                    }
 
-                if ( Demo.roster[value] ) {
-                    delete Demo.roster[value];
+                    Demo.conn.unsubscribed({
+                        to: value
+                    });
+                },
+                error: function () {
                 }
-
-				Demo.conn.unsubscribed({
-					to: value
-				});
-			},
-			error : function() {}
-		});
+            });
+        }
         me.close();
-	},
+    },
 
     close: function () {
         typeof this.props.onClose === 'function' && this.props.onClose();
@@ -60,11 +72,11 @@ module.exports = {
     show: function () {
         ReactDOM.render(
             <DelFriend onClose={this.close} />,
-            dom 
-        );       
+            dom
+        );
     },
 
     close: function () {
         ReactDOM.unmountComponentAtNode(dom);
     }
-}
+};
