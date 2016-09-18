@@ -1,14 +1,21 @@
+/**
+  * webim.config.js 不进git
+  * 每人都在本机拷贝粘贴webim.config.js.demo 为 webim.config.js
+  * 然后配置自己的config
+  * 这样不会影响其他人和线上服务器的config
+  *
+  */
+var WebIM = {};
+
 WebIM.config = {
     /*
      * XMPP server
      */
     xmppURL: 'im-api.easemob.com',
-    // xmppURL: '172.17.2.172:5280',
     /*
      * Backend REST API URL
      */
     apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
-    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//172.17.2.172:8080',
     /*
      * Application AppKey
      */
@@ -17,13 +24,23 @@ WebIM.config = {
      * Whether to use HTTPS
      * @parameter {Boolean} true or false
      */
-    https: '',
+    https: false,
     /*
      * isMultiLoginSessions
      * true: A visitor can sign in to multiple webpages and receive messages at all the webpages.
      * false: A visitor can sign in to only one webpage and receive messages at the webpage.
      */
     isMultiLoginSessions: false,
+    /**
+     * Whether to use window.doQuery()
+     * @parameter {Boolean} true or false
+     */
+    isWindowSDK: false,
+    /**
+     * Whether to console.log in strophe.log()
+     * @parameter {Boolean} true or false
+     */
+    isDebug: false,
     /*
      * Set to auto sign-in
      */

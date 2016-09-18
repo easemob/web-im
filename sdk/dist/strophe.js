@@ -17,7 +17,6 @@
  * on page reload, these references will still be available to callbacks
  * that are still executing.
  */
-console.log("this is strophe2");
 /* jshint ignore:start */
 (function (callback) {
     /* jshint ignore:end */
@@ -1459,8 +1458,9 @@ console.log("this is strophe2");
              */
             /* jshint ignore:start */
             log: function (level, msg) {
-                console.log(level, msg);
-                return;
+                if (WebIM !== undefined && WebIM.config.isDebug === true) {
+                    console.log(level, msg);
+                }
             },
             /* jshint ignore:end */
 
