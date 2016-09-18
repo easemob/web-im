@@ -1,4 +1,5 @@
-;(function ( window, undefined ) {
+;
+(function (window, undefined) {
 
     var _version = '1.1.2';
     var _code = require('./status').code;
@@ -9,7 +10,7 @@
 
     window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
-    if ( window.XDomainRequest ) {
+    if (window.XDomainRequest) {
         XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
         XDomainRequest.prototype.send = function () {
             XDomainRequest.prototype.oldsend.apply(this, arguments);
@@ -18,36 +19,37 @@
     }
 
     Strophe.Request.prototype._newXHR = function () {
-        var xhr =  _utils.xmlrequest(true);
-        if ( xhr.overrideMimeType ) {
+        var xhr = _utils.xmlrequest(true);
+        if (xhr.overrideMimeType) {
             xhr.overrideMimeType('text/xml');
         }
         xhr.onreadystatechange = this.func.stropheBind(null, this);
         return xhr;
     };
 
-	Strophe.Websocket.prototype._closeSocket = function () {
-		var me = this;
-        if ( me.socket ) {
-			setTimeout(function () {
-				try {
-					me.socket.close();
-				} catch ( e ) {}
-			}, 0);
-		} else {
-			me.socket = null;
-		}
-	};
+    Strophe.Websocket.prototype._closeSocket = function () {
+        var me = this;
+        if (me.socket) {
+            setTimeout(function () {
+                try {
+                    me.socket.close();
+                } catch (e) {
+                }
+            }, 0);
+        } else {
+            me.socket = null;
+        }
+    };
 
     var _networkSt;
-    var _listenNetwork = function ( onlineCallback, offlineCallback ) {
+    var _listenNetwork = function (onlineCallback, offlineCallback) {
 
-        if ( window.addEventListener ) {
+        if (window.addEventListener) {
             window.addEventListener('online', onlineCallback);
             window.addEventListener('offline', offlineCallback);
 
-        } else if ( window.attachEvent ) {
-            if ( document.body ) {
+        } else if (window.attachEvent) {
+            if (document.body) {
                 document.body.attachEvent('onoffline', offlineCallback);
                 document.body.attachEvent('onoffline', offlineCallback);
             } else {
@@ -58,28 +60,28 @@
             }
         } else {
             /*var onlineTmp = window.ononline;
-            var offlineTmp = window.onoffline;
+             var offlineTmp = window.onoffline;
 
-            window.attachEvent('ononline', function () {
-                try {
-                    typeof onlineTmp === 'function' && onlineTmp();
-                } catch ( e ) {}
-                onlineCallback();
-            });
-            window.attachEvent('onoffline', function () {
-                try {
-                    typeof offlineTmp === 'function' && offlineTmp();
-                } catch ( e ) {}
-                offlineCallback();
-            });*/
+             window.attachEvent('ononline', function () {
+             try {
+             typeof onlineTmp === 'function' && onlineTmp();
+             } catch ( e ) {}
+             onlineCallback();
+             });
+             window.attachEvent('onoffline', function () {
+             try {
+             typeof offlineTmp === 'function' && offlineTmp();
+             } catch ( e ) {}
+             offlineCallback();
+             });*/
         }
     };
 
-    var _parseRoom = function ( result ) {
+    var _parseRoom = function (result) {
         var rooms = [];
         var items = result.getElementsByTagName('item');
-        if ( items ) {
-            for ( var i = 0; i < items.length; i++ ) {
+        if (items) {
+            for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 var roomJid = item.getAttribute('jid');
                 var tmp = roomJid.split('@')[0];
@@ -93,12 +95,12 @@
         }
         return rooms;
     };
-        
-    var _parseRoomOccupants = function ( result ) {
+
+    var _parseRoomOccupants = function (result) {
         var occupants = [];
         var items = result.getElementsByTagName('item');
-        if ( items ) {
-            for ( var i = 0; i < items.length; i++ ) {
+        if (items) {
+            for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 var room = {
                     jid: item.getAttribute('jid')
@@ -110,75 +112,77 @@
         return occupants;
     };
 
-    var _parseResponseMessage = function ( msginfo ) {
-        var parseMsgData = { errorMsg: true, data: [] };
+    var _parseResponseMessage = function (msginfo) {
+        var parseMsgData = {errorMsg: true, data: []};
 
         var msgBodies = msginfo.getElementsByTagName('body');
-        if ( msgBodies ) {
-            for ( var i = 0; i < msgBodies.length; i++ ) {
+        if (msgBodies) {
+            for (var i = 0; i < msgBodies.length; i++) {
                 var msgBody = msgBodies[i];
                 var childNodes = msgBody.childNodes;
-                if ( childNodes && childNodes.length > 0 ) {
+                if (childNodes && childNodes.length > 0) {
                     var childNode = msgBody.childNodes[0];
-                    if ( childNode.nodeType == Strophe.ElementType.TEXT ) {
-                        var jsondata = childNode.wholeText ||childNode.nodeValue;
+                    if (childNode.nodeType == Strophe.ElementType.TEXT) {
+                        var jsondata = childNode.wholeText || childNode.nodeValue;
                         jsondata = jsondata.replace('\n', '<br>');
                         try {
                             var data = eval('(' + jsondata + ')');
                             parseMsgData.errorMsg = false;
                             parseMsgData.data = [data];
-                        } catch ( e ) {}
+                        } catch (e) {
+                        }
                     }
                 }
             }
 
             var delayTags = msginfo.getElementsByTagName('delay');
-            if ( delayTags && delayTags.length > 0 ) {
+            if (delayTags && delayTags.length > 0) {
                 var delayTag = delayTags[0];
                 var delayMsgTime = delayTag.getAttribute('stamp');
-                if ( delayMsgTime ) {
+                if (delayMsgTime) {
                     parseMsgData.delayTimeStamp = delayMsgTime;
                 }
             }
         } else {
             var childrens = msginfo.childNodes;
-            if ( childrens && childrens.length>0 ) {
+            if (childrens && childrens.length > 0) {
                 var child = msginfo.childNodes[0];
-                if ( child.nodeType == Strophe.ElementType.TEXT ) {
+                if (child.nodeType == Strophe.ElementType.TEXT) {
                     try {
                         var data = eval('(' + child.nodeValue + ')');
                         parseMsgData.errorMsg = false;
                         parseMsgData.data = [data];
-                    } catch ( e ) {}
+                    } catch (e) {
+                    }
                 }
             }
         }
         return parseMsgData;
     };
 
-    var _parseNameFromJidFn = function ( jid, domain ) {
+    var _parseNameFromJidFn = function (jid, domain) {
         domain = domain || '';
         var tempstr = jid;
         var findex = tempstr.indexOf('_');
 
-        if ( findex !== -1 ) {
-            tempstr = tempstr.substring(findex+1);
+        if (findex !== -1) {
+            tempstr = tempstr.substring(findex + 1);
         }
         var atindex = tempstr.indexOf('@' + domain);
-        if ( atindex !== -1 ) {
-            tempstr = tempstr.substring(0,atindex);
+        if (atindex !== -1) {
+            tempstr = tempstr.substring(0, atindex);
         }
         return tempstr;
     };
 
-    var _parseFriend = function ( queryTag ) {
+    var _parseFriend = function (queryTag) {
         var rouster = [];
         var items = queryTag.getElementsByTagName('item');
-        if ( items ) {
-            for( var i = 0; i < items.length; i++ ) {
+        if (items) {
+            for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 var jid = item.getAttribute('jid');
-                if ( !jid ) {
+                if (!jid) {
                     continue;
                 }
                 var subscription = item.getAttribute('subscription');
@@ -187,18 +191,18 @@
                     , jid: jid
                 };
                 var ask = item.getAttribute('ask');
-                if ( ask ) {
+                if (ask) {
                     friend.ask = ask;
                 }
                 var name = item.getAttribute('name');
-                if ( name ) {
+                if (name) {
                     friend.name = name;
                 } else {
                     var n = _parseNameFromJidFn(jid);
                     friend.name = n;
                 }
                 var groups = [];
-                Strophe.forEachChild(item, 'group',function ( group ) {
+                Strophe.forEachChild(item, 'group', function (group) {
                     groups.push(Strophe.getText(group));
                 });
                 friend.groups = groups;
@@ -208,9 +212,9 @@
         return rouster;
     };
 
-    var _login = function ( options, conn ) {
+    var _login = function (options, conn) {
         var accessToken = options.access_token || '';
-        if ( accessToken == '' ) {
+        if (accessToken == '') {
             var loginfo = _utils.stringify(options);
             conn.onError({
                 type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
@@ -222,9 +226,9 @@
         conn.context.accessToken = options.access_token;
         conn.context.accessTokenExpires = options.expires_in;
         var stropheConn = null;
-        if ( conn.isOpening() && conn.context.stropheConn ) {
+        if (conn.isOpening() && conn.context.stropheConn) {
             stropheConn = conn.context.stropheConn;
-        } else if ( conn.isOpened() && conn.context.stropheConn ) {
+        } else if (conn.isOpened() && conn.context.stropheConn) {
             return;
         } else {
             stropheConn = new Strophe.Connection(conn.url, {
@@ -234,48 +238,48 @@
             });
         }
 
-        var callback = function ( status, msg ) {
+        var callback = function (status, msg) {
             _loginCallback(status, msg, conn);
         };
 
         conn.context.stropheConn = stropheConn;
-        if ( conn.route ) {
+        if (conn.route) {
             stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold, conn.route);
         } else {
             stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold);
         }
     };
 
-    var _parseMessageType = function ( msginfo ) {
+    var _parseMessageType = function (msginfo) {
         var msgtype = 'normal';
         var receiveinfo = msginfo.getElementsByTagName('received');
-        if ( receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === 'urn:xmpp:receipts' ) {
+        if (receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
             msgtype = 'received';
         } else {
-            var inviteinfo =  msginfo.getElementsByTagName('invite');
-            if ( inviteinfo && inviteinfo.length > 0 ) {
+            var inviteinfo = msginfo.getElementsByTagName('invite');
+            if (inviteinfo && inviteinfo.length > 0) {
                 msgtype = 'invite';
             }
         }
         return msgtype;
     };
 
-    var _handleMessageQueue = function ( conn ) {
-        for ( var i in _msgHash ) {
-            if ( _msgHash.hasOwnProperty(i) ) {
+    var _handleMessageQueue = function (conn) {
+        for (var i in _msgHash) {
+            if (_msgHash.hasOwnProperty(i)) {
                 _msgHash[i].send(conn);
             }
         }
     };
 
-    var _loginCallback = function ( status, msg, conn ) {
+    var _loginCallback = function (status, msg, conn) {
         var conflict, error;
 
-        if ( msg === 'conflict' ) {
+        if (msg === 'conflict') {
             conflict = true;
         }
 
-        if ( status == Strophe.Status.CONNFAIL ) {
+        if (status == Strophe.Status.CONNFAIL) {
             error = {
                 type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR
                 , msg: msg
@@ -284,14 +288,14 @@
 
             conflict && (error.conflict = true);
             conn.onError(error);
-        } else if ( status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED ) {
-            var handleMessage = function ( msginfo ) {
+        } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
+            var handleMessage = function (msginfo) {
                 var type = _parseMessageType(msginfo);
 
-                if ( 'received' === type ) {
+                if ('received' === type) {
                     conn.handleReceivedMessage(msginfo);
                     return true;
-                } else if ( 'invite' === type ) {
+                } else if ('invite' === type) {
                     conn.handleInviteMessage(msginfo);
                     return true;
                 } else {
@@ -299,36 +303,36 @@
                     return true;
                 }
             };
-            var handlePresence = function ( msginfo ) {
+            var handlePresence = function (msginfo) {
                 conn.handlePresence(msginfo);
                 return true;
             };
-            var handlePing = function ( msginfo ) {
+            var handlePing = function (msginfo) {
                 conn.handlePing(msginfo);
                 return true;
             };
-            var handleIq = function ( msginfo ) {
+            var handleIq = function (msginfo) {
                 conn.handleIq(msginfo);
                 return true;
             };
 
-            conn.addHandler(handleMessage, null, 'message', null, null,  null);
-            conn.addHandler(handlePresence, null, 'presence', null, null,  null);
-            conn.addHandler(handlePing, 'urn:xmpp:ping', 'iq', 'get', null,  null);
-            conn.addHandler(handleIq, 'jabber:iq:roster', 'iq', 'set', null,  null);
+            conn.addHandler(handleMessage, null, 'message', null, null, null);
+            conn.addHandler(handlePresence, null, 'presence', null, null, null);
+            conn.addHandler(handlePing, 'urn:xmpp:ping', 'iq', 'get', null, null);
+            conn.addHandler(handleIq, 'jabber:iq:roster', 'iq', 'set', null, null);
 
             conn.context.status = _code.STATUS_OPENED;
 
             var supportRecMessage = [
-               _code.WEBIM_MESSAGE_REC_TEXT,
-               _code.WEBIM_MESSAGE_REC_EMOJI ];
+                _code.WEBIM_MESSAGE_REC_TEXT,
+                _code.WEBIM_MESSAGE_REC_EMOJI];
 
-            if ( _utils.isCanDownLoadFile ) {
+            if (_utils.isCanDownLoadFile) {
                 supportRecMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
                 supportRecMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
             }
-            var supportSedMessage = [ _code.WEBIM_MESSAGE_SED_TEXT ];
-            if ( _utils.isCanUploadFile ) {
+            var supportSedMessage = [_code.WEBIM_MESSAGE_SED_TEXT];
+            if (_utils.isCanUploadFile) {
                 supportSedMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
                 supportSedMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
             }
@@ -341,8 +345,8 @@
                 , canSend: supportSedMessage
                 , accessToken: conn.context.accessToken
             });
-        } else if ( status == Strophe.Status.DISCONNECTING ) {
-            if ( conn.isOpened() ) {
+        } else if (status == Strophe.Status.DISCONNECTING) {
+            if (conn.isOpened()) {
                 conn.stopHeartBeat();
                 conn.context.status = _code.STATUS_CLOSING;
 
@@ -351,15 +355,15 @@
                     , msg: msg
                     , reconnect: true
                 };
-                
+
                 conflict && (error.conflict = true);
                 conn.onError(error);
             }
-        } else if ( status == Strophe.Status.DISCONNECTED ) {
+        } else if (status == Strophe.Status.DISCONNECTED) {
             conn.context.status = _code.STATUS_CLOSED;
             conn.clear();
             conn.onClosed();
-        } else if ( status == Strophe.Status.AUTHFAIL ) {
+        } else if (status == Strophe.Status.AUTHFAIL) {
             error = {
                 type: _code.WEBIM_CONNCTION_AUTH_ERROR
             };
@@ -367,7 +371,7 @@
             conflict && (error.conflict = true);
             conn.onError(error);
             conn.clear();
-        } else if ( status == Strophe.Status.ERROR ) {
+        } else if (status == Strophe.Status.ERROR) {
             error = {
                 type: _code.WEBIM_CONNCTION_SERVER_ERROR
             };
@@ -377,14 +381,14 @@
         }
     };
 
-    var _getJid = function ( options, conn ) {
+    var _getJid = function (options, conn) {
         var jid = options.toJid || '';
 
-        if ( jid === '' ) {
+        if (jid === '') {
             var appKey = conn.context.appKey || '';
             var toJid = appKey + '_' + options.to + '@' + conn.domain;
 
-            if ( options.resource ) {
+            if (options.resource) {
                 toJid = toJid + '/' + options.resource;
             }
             jid = toJid;
@@ -392,10 +396,10 @@
         return jid;
     };
 
-    var _validCheck = function ( options, conn ) {
+    var _validCheck = function (options, conn) {
         options = options || {};
 
-        if ( options.user == '' ) {
+        if (options.user == '') {
             conn.onError({
                 type: _code.WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR
             });
@@ -406,7 +410,7 @@
         var appKey = options.appKey || '';
         var devInfos = appKey.split('#');
 
-        if ( devInfos.length !== 2 ) {
+        if (devInfos.length !== 2) {
             conn.onError({
                 type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
             });
@@ -415,37 +419,38 @@
         var orgName = devInfos[0];
         var appName = devInfos[1];
 
-        if ( !orgName ) {
+        if (!orgName) {
             conn.onError({
                 type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
             });
             return false;
         }
-        if ( !appName ) {
+        if (!appName) {
             conn.onError({
                 type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
             });
             return false;
         }
-        
+
         var jid = appKey + '_' + user.toLowerCase() + '@' + conn.domain,
             resource = options.resource || 'webim';
 
-        if ( conn.isMultiLoginSessions ) {
+        if (conn.isMultiLoginSessions) {
             resource += user + new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000);
         }
 
-        conn.context.jid = jid + '/' + resource;/*jid: {appkey}_{username}@domain/resource*/
+        conn.context.jid = jid + '/' + resource;
+        /*jid: {appkey}_{username}@domain/resource*/
         conn.context.userId = user;
         conn.context.appKey = appKey;
         conn.context.appName = appName;
         conn.context.orgName = orgName;
-        
+
         return true;
     };
 
-    var _getXmppUrl = function ( baseUrl, https ) {
-        if ( /^(ws|http)s?:\/\/?/.test(baseUrl) ) {
+    var _getXmppUrl = function (baseUrl, https) {
+        if (/^(ws|http)s?:\/\/?/.test(baseUrl)) {
             return baseUrl;
         }
 
@@ -455,24 +460,24 @@
             suffix: '/http-bind/'
         };
 
-        if ( https && _utils.isSupportWss ) {
+        if (https && _utils.isSupportWss) {
             url.prefix = 'wss';
             url.suffix = '/ws/';
         } else {
-            if ( https ) {
+            if (https) {
                 url.prefix = 'https';
-            } else if ( window.WebSocket ) {
+            } else if (window.WebSocket) {
                 url.prefix = 'ws';
                 url.suffix = '/ws/';
-            }   
+            }
         }
 
         return url.prefix + url.base + url.suffix;
     };
 
     //class
-    var connection = function ( options ) {
-        if ( !this instanceof connection ) {
+    var connection = function (options) {
+        if (!this instanceof connection) {
             return new connection(options);
         }
 
@@ -492,10 +497,10 @@
         this.isAutoLogin = options.isAutoLogin === false ? false : true;
         this.pollingTime = options.pollingTime || 800;
         this.stropheConn = false;
-        this.context = { status: _code.STATUS_INIT };
+        this.context = {status: _code.STATUS_INIT};
     };
 
-    connection.prototype.listen = function ( options ) {
+    connection.prototype.listen = function (options) {
         options.url && (this.url = _getXmppUrl(options.url, this.https));
         this.onOpened = options.onOpened || _utils.emptyfn;
         this.onClosed = options.onClosed || _utils.emptyfn;
@@ -523,32 +528,32 @@
 
         var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
 
-        if ( me.heartBeatID || !isNeed ) {
+        if (me.heartBeatID || !isNeed) {
             return;
         }
 
         var options = {
-            to : me.domain,
-            type : 'normal'
+            to: me.domain,
+            type: 'normal'
         };
         me.heartBeatID = setInterval(function () {
             me.sendHeartBeatMessage(options);
         }, me.heartBeatWait);
     };
 
-    connection.prototype.sendHeartBeatMessage = function ( options ) {
+    connection.prototype.sendHeartBeatMessage = function (options) {
 
-        if ( !this.isOpened() ) {
+        if (!this.isOpened()) {
             return;
         }
 
         var json = {},
             jsonstr = _utils.stringify(json),
             dom = $msg({
-                to : options.to,
-                type : options.type,
-                id : this.getUniqueId(),
-                xmlns : 'jabber:client'
+                to: options.to,
+                type: options.type,
+                id: this.getUniqueId(),
+                xmlns: 'jabber:client'
             }).c('body').t(jsonstr);
 
         this.sendCommand(dom.tree());
@@ -559,7 +564,7 @@
     };
 
 
-    connection.prototype.sendReceiptsMessage = function ( options ) {
+    connection.prototype.sendReceiptsMessage = function (options) {
         var dom = $msg({
             from: this.context.jid || ''
             , to: this.domain
@@ -571,83 +576,93 @@
         this.sendCommand(dom.tree());
     };
 
-    connection.prototype.open = function ( options ) {
-        var pass = _validCheck(options,this);
-
-        if ( !pass ) {
-            return;
-        }
-        
-        var conn = this;
-
-        if ( conn.isOpening() || conn.isOpened() ) {
-            return;
-        }
-
-        if ( options.accessToken ) {
-            options.access_token = options.accessToken;
-            _login(options,conn);
+    connection.prototype.open = function (options) {
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}',
+                function (response) {
+                    Demo.conn.onOpened();
+                },
+                function (code, msg) {
+                    alert(code + " - " + msg);
+                });
         } else {
-            var apiUrl = options.apiUrl;
-            var userId = this.context.userId;
-            var pwd = options.pwd || '';
-            var appName = this.context.appName;
-            var orgName = this.context.orgName;
+            var pass = _validCheck(options, this);
 
-            var suc = function ( data, xhr ) {
-                conn.context.status = _code.STATUS_DOLOGIN_IM;
-                _login(data,conn);
-            };
-            var error = function ( res, xhr, msg ) {
-                conn.clear();
+            if (!pass) {
+                return;
+            }
 
-                if ( res.error && res.error_description ) {
-                    conn.onError({
-                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
-                        , data: res
-                        , xhr: xhr
-                    });
-                } else {
-                    conn.onError({
-                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
-                        , data: res
-                        , xhr: xhr
-                    });
-                }
-            };
-            this.context.status = _code.STATUS_DOLOGIN_USERGRID;
+            var conn = this;
 
-            var loginJson = {
-                grant_type: 'password'
-                , username: userId
-                , password: pwd
-            };
-            var loginfo = _utils.stringify(loginJson);
+            if (conn.isOpening() || conn.isOpened()) {
+                return;
+            }
 
-            var options = {
-                url: apiUrl + '/' + orgName + '/' + appName + '/token'
-                , dataType: 'json'
-                , data: loginfo
-                , success: suc || _utils.emptyfn
-                , error: error || _utils.emptyfn
-            };
-            _utils.ajax(options);
+            if (options.accessToken) {
+                options.access_token = options.accessToken;
+                _login(options, conn);
+            } else {
+                var apiUrl = options.apiUrl;
+                var userId = this.context.userId;
+                var pwd = options.pwd || '';
+                var appName = this.context.appName;
+                var orgName = this.context.orgName;
+
+                var suc = function (data, xhr) {
+                    conn.context.status = _code.STATUS_DOLOGIN_IM;
+                    _login(data, conn);
+                };
+                var error = function (res, xhr, msg) {
+                    conn.clear();
+
+                    if (res.error && res.error_description) {
+                        conn.onError({
+                            type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
+                            , data: res
+                            , xhr: xhr
+                        });
+                    } else {
+                        conn.onError({
+                            type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
+                            , data: res
+                            , xhr: xhr
+                        });
+                    }
+                };
+                this.context.status = _code.STATUS_DOLOGIN_USERGRID;
+
+                var loginJson = {
+                    grant_type: 'password'
+                    , username: userId
+                    , password: pwd
+                };
+                var loginfo = _utils.stringify(loginJson);
+
+                var options = {
+                    url: apiUrl + '/' + orgName + '/' + appName + '/token'
+                    , dataType: 'json'
+                    , data: loginfo
+                    , success: suc || _utils.emptyfn
+                    , error: error || _utils.emptyfn
+                };
+                _utils.ajax(options);
+            }
         }
 
     };
 
     // attach to xmpp server
-    connection.prototype.attach = function ( options ) {
+    connection.prototype.attach = function (options) {
         var pass = _validCheck(options, this);
 
-        if ( !pass ) {
+        if (!pass) {
             return;
         }
 
         options = options || {};
 
         var accessToken = options.accessToken || '';
-        if ( accessToken == '' ) {
+        if (accessToken == '') {
             this.onError({
                 type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
             });
@@ -655,7 +670,7 @@
         }
 
         var sid = options.sid || '';
-        if ( sid === '') {
+        if (sid === '') {
             this.onError({
                 type: _code.WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR
             });
@@ -663,7 +678,7 @@
         }
 
         var rid = options.rid || '';
-        if ( rid === '') {
+        if (rid === '') {
             this.onError({
                 type: _code.WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR
             });
@@ -681,8 +696,8 @@
         this.context.status = _code.STATUS_DOLOGIN_IM;
 
         var conn = this;
-        var callback = function ( status, msg ) {
-            _loginCallback(status,msg,conn);
+        var callback = function (status, msg) {
+            _loginCallback(status, msg, conn);
         };
 
         var jid = this.context.jid;
@@ -693,43 +708,53 @@
     };
 
     connection.prototype.close = function () {
-        var status = this.context.status;
-        if ( status == _code.STATUS_INIT ) {
-            return;
-        }
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"logout"}',
+                function (response) {
+                    Demo.conn.onClosed();
+                },
+                function (code, msg) {
+                    alert(code + " - " + msg);
+                });
+        } else {
+            var status = this.context.status;
+            if (status == _code.STATUS_INIT) {
+                return;
+            }
 
-        if ( this.isClosed() || this.isClosing() ) {
-            return;
+            if (this.isClosed() || this.isClosing()) {
+                return;
+            }
+            this.stopHeartBeat();
+            this.context.status = _code.STATUS_CLOSING;
+            this.context.stropheConn.disconnect();
         }
-        this.stopHeartBeat();
-        this.context.status = _code.STATUS_CLOSING;
-        this.context.stropheConn.disconnect();
     };
 
-    connection.prototype.addHandler = function ( handler, ns, name, type, id, from, options ) {
+    connection.prototype.addHandler = function (handler, ns, name, type, id, from, options) {
         this.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
     };
 
-    connection.prototype.notifyVersion = function ( suc, fail ) {
-        var jid = _getJid({},this);
+    connection.prototype.notifyVersion = function (suc, fail) {
+        var jid = _getJid({}, this);
         var dom = $iq({
             from: this.context.jid || ''
             , to: this.domain
             , type: 'result'
         })
-        .c('query', { xmlns: 'jabber:iq:version' })
-        .c('name')
-        .t('easemob')
-        .up()
-        .c('version')
-        .t(_version)
-        .up()
-        .c('os')
-        .t('webim');
+            .c('query', {xmlns: 'jabber:iq:version'})
+            .c('name')
+            .t('easemob')
+            .up()
+            .c('version')
+            .t(_version)
+            .up()
+            .c('os')
+            .t('webim');
 
         var suc = suc || _utils.emptyfn;
         var error = fail || this.onError;
-        var failFn = function ( ele ) {
+        var failFn = function (ele) {
             error({
                 type: _code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR
                 , data: ele
@@ -740,8 +765,8 @@
     };
 
     // handle all types of presence message
-    connection.prototype.handlePresence = function ( msginfo ) {
-        if ( this.isClosed() ) {
+    connection.prototype.handlePresence = function (msginfo) {
+        if (this.isClosed()) {
             return;
         }
 
@@ -761,25 +786,25 @@
         };
 
         var showTags = msginfo.getElementsByTagName('show');
-        if ( showTags && showTags.length > 0 ) {
+        if (showTags && showTags.length > 0) {
             var showTag = showTags[0];
             info.show = Strophe.getText(showTag);
         }
         var statusTags = msginfo.getElementsByTagName('status');
-        if ( statusTags && statusTags.length > 0 ) {
+        if (statusTags && statusTags.length > 0) {
             var statusTag = statusTags[0];
             info.status = Strophe.getText(statusTag);
             info.code = statusTag.getAttribute('code');
         }
 
         var priorityTags = msginfo.getElementsByTagName('priority');
-        if ( priorityTags && priorityTags.length > 0 ) {
+        if (priorityTags && priorityTags.length > 0) {
             var priorityTag = priorityTags[0];
-            info.priority  = Strophe.getText(priorityTag);
+            info.priority = Strophe.getText(priorityTag);
         }
 
         var error = msginfo.getElementsByTagName('error');
-        if ( error && error.length > 0 ) {
+        if (error && error.length > 0) {
             var error = error[0];
             info.error = {
                 code: error.getAttribute('code')
@@ -787,45 +812,45 @@
         }
 
         var destroy = msginfo.getElementsByTagName('destroy');
-        if ( destroy && destroy.length > 0 ) {
+        if (destroy && destroy.length > 0) {
             var destroy = destroy[0];
             info.destroy = true;
 
             var reason = destroy.getElementsByTagName('reason');
-            if ( reason && reason.length > 0 ) {
+            if (reason && reason.length > 0) {
                 info.reason = Strophe.getText(reason[0]);
             }
         }
 
-        if ( info.chatroom ) {
+        if (info.chatroom) {
             var reflectUser = from.slice(from.lastIndexOf('/') + 1);
 
-            if ( reflectUser === this.context.userId ) {
-                if ( info.type === '' && !info.code ) {
+            if (reflectUser === this.context.userId) {
+                if (info.type === '' && !info.code) {
                     info.type = 'joinChatRoomSuccess';
-                } else if ( presence_type === 'unavailable' || info.type === 'unavailable' ) {
-                    if ( !info.status ) {// logout successfully.
+                } else if (presence_type === 'unavailable' || info.type === 'unavailable') {
+                    if (!info.status) {// logout successfully.
                         info.type = 'leaveChatRoom';
-                    } else if ( info.code == 110 ) {// logout or dismissied by admin.
+                    } else if (info.code == 110) {// logout or dismissied by admin.
                         info.type = 'leaveChatRoom';
-                    } else if ( info.error && info.error.code == 406 ) {// The chat room is full.
+                    } else if (info.error && info.error.code == 406) {// The chat room is full.
                         info.type = 'reachChatRoomCapacity';
                     }
                 }
             }
-        } else if ( presence_type === 'unavailable' || type === 'unavailable' ) {// There is no roomtype when a chat room is deleted.
-            if ( info.destroy ) {// Group or Chat room Deleted.
+        } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
+            if (info.destroy) {// Group or Chat room Deleted.
                 info.type = 'deleteGroupChat';
-            } else if ( info.code == 307 || info.code == 321 ) {// Dismissed by group.
+            } else if (info.code == 307 || info.code == 321) {// Dismissed by group.
                 info.type = 'leaveGroup';
             }
         }
-        
-        this.onPresence(info,msginfo);
+
+        this.onPresence(info, msginfo);
     };
 
-    connection.prototype.handlePing = function ( e ) {
-        if ( this.isClosed() ) {
+    connection.prototype.handlePing = function (e) {
+        if (this.isClosed()) {
             return;
         }
         var id = e.getAttribute('id');
@@ -840,18 +865,18 @@
         this.sendCommand(dom.tree());
     };
 
-    connection.prototype.handleIq = function ( e ) {
+    connection.prototype.handleIq = function (e) {
         var id = e.getAttribute('id');
         var from = e.getAttribute('from') || '';
         var name = _parseNameFromJidFn(from);
         var curJid = this.context.jid;
         var curUser = this.context.userId;
 
-        var iqresult = $iq({ type: 'result', id: id, from: curJid });
+        var iqresult = $iq({type: 'result', id: id, from: curJid});
         this.sendCommand(iqresult.tree());
 
         var msgBodies = e.getElementsByTagName('query');
-        if ( msgBodies&&msgBodies.length > 0 ) {
+        if (msgBodies && msgBodies.length > 0) {
             var queryTag = msgBodies[0];
             var rouster = _parseFriend(queryTag);
             this.onRoster(rouster);
@@ -859,8 +884,8 @@
         return true;
     };
 
-    connection.prototype.handleMessage = function ( msginfo ) {
-        if ( this.isClosed() ) {
+    connection.prototype.handleMessage = function (msginfo) {
+        if (this.isClosed()) {
             return;
         }
 
@@ -871,17 +896,17 @@
             id: id
         });
         var parseMsgData = _parseResponseMessage(msginfo);
-        if ( parseMsgData.errorMsg ) {
+        if (parseMsgData.errorMsg) {
             this.handlePresence(msginfo);
             return;
         }
         var msgDatas = parseMsgData.data;
-        for ( var i in msgDatas ) {
-            if ( !msgDatas.hasOwnProperty(i) ) {
+        for (var i in msgDatas) {
+            if (!msgDatas.hasOwnProperty(i)) {
                 continue;
             }
             var msg = msgDatas[i];
-            if ( !msg.from || !msg.to ) {
+            if (!msg.from || !msg.to) {
                 continue;
             }
 
@@ -890,25 +915,25 @@
             var extmsg = msg.ext || {};
             var chattype = '';
             var typeEl = msginfo.getElementsByTagName('roomtype');
-            if ( typeEl.length ) {
+            if (typeEl.length) {
                 chattype = typeEl[0].getAttribute('type') || 'chat';
             } else {
                 chattype = msginfo.getAttribute('type') || 'chat';
             }
-            
+
             var msgBodies = msg.bodies;
-            if ( !msgBodies || msgBodies.length == 0 ) {
+            if (!msgBodies || msgBodies.length == 0) {
                 continue;
             }
             var msgBody = msg.bodies[0];
             var type = msgBody.type;
 
             try {
-                switch ( type ) {
+                switch (type) {
                     case 'txt':
                         var receiveMsg = msgBody.msg;
                         var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
-                        if ( emojibody.isemoji ) {
+                        if (emojibody.isemoji) {
                             var msg = {
                                 id: id
                                 , type: chattype
@@ -937,7 +962,7 @@
                     case 'img':
                         var rwidth = 0;
                         var rheight = 0;
-                        if ( msgBody.size ) {
+                        if (msgBody.size) {
                             rwidth = msgBody.size.width;
                             rheight = msgBody.size.height;
                         }
@@ -1042,23 +1067,24 @@
                         !msg.delay && delete msg.dealy;
                         this.onCmdMessage(msg);
                         break;
-                };
-            } catch ( e ) {
+                }
+                ;
+            } catch (e) {
                 this.onError({
-                    type : _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-                    , data: e 
+                    type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
+                    , data: e
                 });
-            }           
+            }
         }
     };
 
-    connection.prototype.handleReceivedMessage = function ( message ) {
+    connection.prototype.handleReceivedMessage = function (message) {
         try {
             this.onReceivedMessage(message);
-        } catch ( e ) {
+        } catch (e) {
             this.onError({
-                type : _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-                , data: e 
+                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
+                , data: e
             });
         }
 
@@ -1066,29 +1092,29 @@
             id,
             mid;
 
-        if ( rcv.length > 0 ) {
-            if ( rcv[0].childNodes && rcv[0].childNodes.length > 0 ) {
+        if (rcv.length > 0) {
+            if (rcv[0].childNodes && rcv[0].childNodes.length > 0) {
                 id = rcv[0].childNodes[0].nodeValue;
             } else {
                 id = rcv[0].innerHTML || rcv[0].innerText;
             }
             mid = rcv[0].getAttribute('mid');
         }
-        
-        if ( _msgHash[id] ) {
+
+        if (_msgHash[id]) {
             try {
                 _msgHash[id].msg.success instanceof Function && _msgHash[id].msg.success(id, mid);
-            } catch ( e ) {
+            } catch (e) {
                 this.onError({
-                    type : _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-                    , data: e 
+                    type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
+                    , data: e
                 });
             }
             delete _msgHash[id];
         }
     };
 
-    connection.prototype.handleInviteMessage = function ( message ) {
+    connection.prototype.handleInviteMessage = function (message) {
         var form = null;
         var invitemsg = message.getElementsByTagName('invite');
         var id = message.getAttribute('id') || '';
@@ -1096,15 +1122,15 @@
             id: id
         });
 
-        if ( invitemsg && invitemsg.length > 0 ) {
+        if (invitemsg && invitemsg.length > 0) {
             var fromJid = invitemsg[0].getAttribute('from');
             form = _parseNameFromJidFn(fromJid);
         }
         var xmsg = message.getElementsByTagName('x');
         var roomid = null;
-        if ( xmsg && xmsg.length > 0 ) {
-            for ( var i = 0; i < xmsg.length; i++ ) {
-                if ( 'jabber:x:conference' === xmsg[i].namespaceURI ) {
+        if (xmsg && xmsg.length > 0) {
+            for (var i = 0; i < xmsg.length; i++) {
+                if ('jabber:x:conference' === xmsg[i].namespaceURI) {
                     var roomjid = xmsg[i].getAttribute('jid');
                     roomid = _parseNameFromJidFn(roomjid);
                 }
@@ -1117,62 +1143,73 @@
         });
     };
 
-    connection.prototype.sendCommand = function ( dom, id ) {
-        if ( this.isOpened() ) {
+    connection.prototype.sendCommand = function (dom, id) {
+
+        if (this.isOpened()) {
             this.context.stropheConn.send(dom);
         } else {
             this.onError({
-                type : _code.WEBIM_CONNCTION_DISCONNECTED
+                type: _code.WEBIM_CONNCTION_DISCONNECTED
                 , reconnect: true
             });
         }
     };
 
-    connection.prototype.getUniqueId = function ( prefix ) {
+    connection.prototype.getUniqueId = function (prefix) {
         var cdate = new Date();
-        var offdate = new Date(2010,1,1);
-        var offset = cdate.getTime()-offdate.getTime();
+        var offdate = new Date(2010, 1, 1);
+        var offset = cdate.getTime() - offdate.getTime();
         var hexd = parseInt(offset).toString(16);
 
-        if ( typeof prefix === 'string' || typeof prefix === 'number' ) {
+        if (typeof prefix === 'string' || typeof prefix === 'number') {
             return prefix + '_' + hexd;
         } else {
             return 'WEBIM_' + hexd;
         }
     };
-    
-    connection.prototype.send = function ( message ) {
-        if ( Object.prototype.toString.call(message) === '[object Object]' ) {
-            var appKey = this.context.appKey || '';
-            var toJid = appKey + '_' + message.to + '@' + this.domain;
 
-            if ( message.group ) {
-                toJid = appKey + '_' + message.to + '@conference.' + this.domain;
-            }
-            if ( message.resource ) {
-                toJid = toJid + '/' + message.resource;
-            }
+    connection.prototype.send = function (message) {
+        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + message.msg + '","group":"' + message.group + '","roomType":"' + message.roomType + '"}',
+                function (response) {
+                    //alert(response);
+                },
+                function (code, msg) {
+                    alert(code + " - " + msg);
+                });
+        } else {
+            if (Object.prototype.toString.call(message) === '[object Object]') {
+                var appKey = this.context.appKey || '';
+                var toJid = appKey + '_' + message.to + '@' + this.domain;
 
-            message.toJid = toJid;
-            message.id = message.id || this.getUniqueId();
-            _msgHash[message.id] = new _message(message);
-            _msgHash[message.id].send(this);
-        } else if ( typeof message === 'string' ) {
-            _msgHash[message] && _msgHash[message].send(this);
+                if (message.group) {
+                    toJid = appKey + '_' + message.to + '@conference.' + this.domain;
+                }
+                if (message.resource) {
+                    toJid = toJid + '/' + message.resource;
+                }
+
+                message.toJid = toJid;
+                message.id = message.id || this.getUniqueId();
+                _msgHash[message.id] = new _message(message);
+                _msgHash[message.id].send(this);
+            } else if (typeof message === 'string') {
+                _msgHash[message] && _msgHash[message].send(this);
+            }
         }
     };
 
-    connection.prototype.addRoster = function ( options ) {
+    connection.prototype.addRoster = function (options) {
         var jid = _getJid(options, this);
         var name = options.name || '';
         var groups = options.groups || '';
 
         var iq = $iq({type: 'set'});
-        iq.c('query', {xmlns:'jabber:iq:roster'});
+        iq.c('query', {xmlns: 'jabber:iq:roster'});
         iq.c('item', {jid: jid, name: name});
 
-        if ( groups ) {
-            for ( var i = 0; i < groups.length; i++ ) {
+        if (groups) {
+            for (var i = 0; i < groups.length; i++) {
                 iq.c('group').t(groups[i]).up();
             }
         }
@@ -1181,41 +1218,44 @@
         this.context.stropheConn.sendIQ(iq.tree(), suc, error);
     };
 
-    connection.prototype.removeRoster = function ( options ) {
-        var jid = _getJid(options,this);
-        var iq = $iq({ type: 'set' }).c('query', { xmlns: 'jabber:iq:roster' }).c('item', { jid: jid, subscription: 'remove' });
+    connection.prototype.removeRoster = function (options) {
+        var jid = _getJid(options, this);
+        var iq = $iq({type: 'set'}).c('query', {xmlns: 'jabber:iq:roster'}).c('item', {
+            jid: jid,
+            subscription: 'remove'
+        });
 
         var suc = options.success || _utils.emptyfn;
         var error = options.error || _utils.emptyfn;
         this.context.stropheConn.sendIQ(iq, suc, error);
     };
 
-    connection.prototype.getRoster = function ( options ) {
+    connection.prototype.getRoster = function (options) {
         var conn = this;
-        var dom  = $iq({
+        var dom = $iq({
             type: 'get'
-        }).c('query', { xmlns: 'jabber:iq:roster' });
+        }).c('query', {xmlns: 'jabber:iq:roster'});
 
         var options = options || {};
         var suc = options.success || this.onRoster;
-        var completeFn = function ( ele ) {
+        var completeFn = function (ele) {
             var rouster = [];
             var msgBodies = ele.getElementsByTagName('query');
-            if ( msgBodies&&msgBodies.length > 0 ) {
+            if (msgBodies && msgBodies.length > 0) {
                 var queryTag = msgBodies[0];
                 rouster = _parseFriend(queryTag);
             }
-            suc(rouster,ele);
+            suc(rouster, ele);
         };
         var error = options.error || this.onError;
-        var failFn = function ( ele ) {
+        var failFn = function (ele) {
             error({
                 type: _code.WEBIM_CONNCTION_GETROSTER_ERROR
                 , data: ele
             });
         };
-        if ( this.isOpened() ) {
-            this.context.stropheConn.sendIQ(dom.tree(),completeFn,failFn);
+        if (this.isOpened()) {
+            this.context.stropheConn.sendIQ(dom.tree(), completeFn, failFn);
         } else {
             error({
                 type: _code.WEBIM_CONNCTION_DISCONNECTED
@@ -1223,49 +1263,49 @@
         }
     };
 
-    connection.prototype.subscribe = function ( options ) {
+    connection.prototype.subscribe = function (options) {
         var jid = _getJid(options, this);
-        var pres = $pres({ to: jid, type: 'subscribe' });
-        if ( options.message ) {
+        var pres = $pres({to: jid, type: 'subscribe'});
+        if (options.message) {
             pres.c('status').t(options.message).up();
         }
-        if ( options.nick ) {
-            pres.c('nick', { 'xmlns': 'http://jabber.org/protocol/nick' }).t(options.nick);
+        if (options.nick) {
+            pres.c('nick', {'xmlns': 'http://jabber.org/protocol/nick'}).t(options.nick);
         }
         this.sendCommand(pres.tree());
     };
 
-    connection.prototype.subscribed = function ( options ) {
-        var jid = _getJid(options,this);
+    connection.prototype.subscribed = function (options) {
+        var jid = _getJid(options, this);
         var pres = $pres({to: jid, type: 'subscribed'});
 
-        if ( options.message ) {
+        if (options.message) {
             pres.c('status').t(options.message).up();
         }
         this.sendCommand(pres.tree());
     };
 
-    connection.prototype.unsubscribe = function ( options ) {
-        var jid = _getJid(options,this);
+    connection.prototype.unsubscribe = function (options) {
+        var jid = _getJid(options, this);
         var pres = $pres({to: jid, type: 'unsubscribe'});
 
-        if ( options.message ) {
+        if (options.message) {
             pres.c('status').t(options.message);
         }
         this.sendCommand(pres.tree());
     };
 
-    connection.prototype.unsubscribed = function ( options ) {
-        var jid = _getJid(options,this);
-        var pres = $pres({ to: jid, type: 'unsubscribed' });
+    connection.prototype.unsubscribed = function (options) {
+        var jid = _getJid(options, this);
+        var pres = $pres({to: jid, type: 'unsubscribed'});
 
-        if ( options.message ) {
+        if (options.message) {
             pres.c('status').t(options.message).up();
         }
         this.sendCommand(pres.tree());
-     };
+    };
 
-    connection.prototype.createRoom = function ( options ) {
+    connection.prototype.createRoom = function (options) {
         var suc = options.success || _utils.emptyfn;
         var err = options.error || _utils.emptyfn;
         var roomiq;
@@ -1274,18 +1314,18 @@
             to: options.roomName,
             type: 'set'
         })
-        .c('query', { xmlns: Strophe.NS.MUC_OWNER })
-        .c('x', { xmlns: 'jabber:x:data', type: 'submit' });
+            .c('query', {xmlns: Strophe.NS.MUC_OWNER})
+            .c('x', {xmlns: 'jabber:x:data', type: 'submit'});
 
         return this.context.stropheConn.sendIQ(roomiq.tree(), suc, err);
     };
 
-    connection.prototype.join = function ( options ) {
+    connection.prototype.join = function (options) {
         var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
         var room_nick = roomJid + '/' + this.context.userId;
         var suc = options.success || _utils.emptyfn;
         var err = options.error || _utils.emptyfn;
-        var errorFn = function ( ele ) {
+        var errorFn = function (ele) {
             err({
                 type: _code.WEBIM_CONNCTION_JOINROOM_ERROR
                 , data: ele
@@ -1295,35 +1335,35 @@
             from: this.context.jid,
             to: room_nick
         })
-        .c('x', { xmlns: Strophe.NS.MUC });
+            .c('x', {xmlns: Strophe.NS.MUC});
 
         this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
     };
 
-    connection.prototype.listRooms = function ( options ) {
+    connection.prototype.listRooms = function (options) {
         var iq = $iq({
-          to: options.server||'conference.' + this.domain,
-          from: this.context.jid,
-          type: 'get'
+            to: options.server || 'conference.' + this.domain,
+            from: this.context.jid,
+            type: 'get'
         })
-        .c('query', { xmlns: Strophe.NS.DISCO_ITEMS });
+            .c('query', {xmlns: Strophe.NS.DISCO_ITEMS});
 
         var suc = options.success || _utils.emptyfn;
         var error = options.error || this.onError;
-        var completeFn = function ( result ) {
+        var completeFn = function (result) {
             var rooms = [];
             rooms = _parseRoom(result);
             try {
                 suc(rooms);
-            } catch ( e ) {
+            } catch (e) {
                 error({
                     type: _code.WEBIM_CONNCTION_GETROOM_ERROR,
                     data: e
                 });
             }
         }
-        var err =  options.error || _utils.emptyfn;
-        var errorFn = function ( ele ) {
+        var err = options.error || _utils.emptyfn;
+        var errorFn = function (ele) {
             err({
                 type: _code.WEBIM_CONNCTION_GETROOM_ERROR
                 , data: ele
@@ -1332,22 +1372,22 @@
         this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
     };
 
-    connection.prototype.queryRoomMember = function ( options ) {
+    connection.prototype.queryRoomMember = function (options) {
         var domain = this.domain;
         var members = [];
-        var iq= $iq({
-          to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain
-          , type: 'get'
+        var iq = $iq({
+            to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain
+            , type: 'get'
         })
-        .c('query', { xmlns: Strophe.NS.MUC + '#admin' })
-        .c('item', { affiliation: 'member' });
+            .c('query', {xmlns: Strophe.NS.MUC + '#admin'})
+            .c('item', {affiliation: 'member'});
 
-        var suc =options.success || _utils.emptyfn;
-        var completeFn = function ( result ) {
+        var suc = options.success || _utils.emptyfn;
+        var completeFn = function (result) {
             var items = result.getElementsByTagName('item');
 
-            if ( items ) {
-                for ( var i = 0; i < items.length; i++ ) {
+            if (items) {
+                for (var i = 0; i < items.length; i++) {
                     var item = items[i];
                     var mem = {
                         jid: item.getAttribute('jid')
@@ -1358,8 +1398,8 @@
             }
             suc(members);
         };
-        var err =  options.error || _utils.emptyfn;
-        var errorFn = function ( ele ) {
+        var err = options.error || _utils.emptyfn;
+        var errorFn = function (ele) {
             err({
                 type: _code.WEBIM_CONNCTION_GETROOMMEMBER_ERROR
                 , data: ele
@@ -1368,21 +1408,21 @@
         this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
     };
 
-    connection.prototype.queryRoomInfo = function ( options ) {
+    connection.prototype.queryRoomInfo = function (options) {
         var domain = this.domain;
-        var iq= $iq({
-          to:  this.context.appKey + '_' + options.roomId + '@conference.' + domain,
-          type: 'get'
-        }).c('query', { xmlns: Strophe.NS.DISCO_INFO });
+        var iq = $iq({
+            to: this.context.appKey + '_' + options.roomId + '@conference.' + domain,
+            type: 'get'
+        }).c('query', {xmlns: Strophe.NS.DISCO_INFO});
 
-        var suc =options.success || _utils.emptyfn;
+        var suc = options.success || _utils.emptyfn;
         var members = [];
-        var completeFn = function ( result ) {
+        var completeFn = function (result) {
             var fields = result.getElementsByTagName('field');
-            if ( fields ) {
-                for ( var i = 0; i < fields.length; i++ ) {
+            if (fields) {
+                for (var i = 0; i < fields.length; i++) {
                     var field = fields[i];
-                    if ( field.getAttribute('label') === 'owner' ) {
+                    if (field.getAttribute('label') === 'owner') {
                         var mem = {
                             jid: (field.textContent || field.text) + '@' + domain
                             , affiliation: 'owner'
@@ -1393,8 +1433,8 @@
             }
             suc(members);
         };
-        var err =  options.error || _utils.emptyfn;
-        var errorFn = function ( ele ) {
+        var err = options.error || _utils.emptyfn;
+        var errorFn = function (ele) {
             err({
                 type: _code.WEBIM_CONNCTION_GETROOMINFO_ERROR
                 , data: ele
@@ -1403,42 +1443,42 @@
         this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
     };
 
-    connection.prototype.queryRoomOccupants = function ( options ) {
-        var suc =options.success || _utils.emptyfn;
-        var completeFn = function ( result ) {
+    connection.prototype.queryRoomOccupants = function (options) {
+        var suc = options.success || _utils.emptyfn;
+        var completeFn = function (result) {
             var occupants = [];
             occupants = _parseRoomOccupants(result);
             suc(occupants);
         }
-        var err =  options.error || _utils.emptyfn;
-        var errorFn = function ( ele ) {
+        var err = options.error || _utils.emptyfn;
+        var errorFn = function (ele) {
             err({
                 type: _code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR
                 , data: ele
             });
         };
         var attrs = {
-          xmlns: Strophe.NS.DISCO_ITEMS
+            xmlns: Strophe.NS.DISCO_ITEMS
         };
         var info = $iq({
-          from: this.context.jid
-          , to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain
-          , type: 'get'
+            from: this.context.jid
+            , to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain
+            , type: 'get'
         }).c('query', attrs);
         this.context.stropheConn.sendIQ(info.tree(), completeFn, errorFn);
     };
 
-    connection.prototype.setUserSig = function ( desc ) {
-        var dom = $pres({ xmlns: 'jabber:client' });
+    connection.prototype.setUserSig = function (desc) {
+        var dom = $pres({xmlns: 'jabber:client'});
         desc = desc || '';
         dom.c('status').t(desc);
         this.sendCommand(dom.tree());
     };
 
-    connection.prototype.setPresence = function ( type, status ) {
-        var dom = $pres({ xmlns: 'jabber:client' });
-        if ( type ) {
-            if ( status ) {
+    connection.prototype.setPresence = function (type, status) {
+        var dom = $pres({xmlns: 'jabber:client'});
+        if (type) {
+            if (status) {
                 dom.c('show').t(type);
                 dom.up().c('status').t(status);
             } else {
@@ -1449,31 +1489,31 @@
     };
 
     connection.prototype.getPresence = function () {
-        var dom = $pres({ xmlns: 'jabber:client' });
+        var dom = $pres({xmlns: 'jabber:client'});
         var conn = this;
         this.sendCommand(dom.tree());
     };
 
-    connection.prototype.ping = function ( options ) {
+    connection.prototype.ping = function (options) {
         var options = options || {};
-        var jid = _getJid(options,this);
+        var jid = _getJid(options, this);
 
         var dom = $iq({
             from: this.context.jid || ''
             , to: jid
             , type: 'get'
-        }).c('ping', { xmlns: 'urn:xmpp:ping' });
+        }).c('ping', {xmlns: 'urn:xmpp:ping'});
 
         var suc = options.success || _utils.emptyfn;
         var error = options.error || this.onError;
-        var failFn = function ( ele ) {
+        var failFn = function (ele) {
             error({
                 type: _code.WEBIM_CONNCTION_PING_ERROR
                 , data: ele
             });
         };
-        if ( this.isOpened() ) {
-            this.context.stropheConn.sendIQ(dom.tree(),suc,failFn);
+        if (this.isOpened()) {
+            this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
         } else {
             error({
                 type: _code.WEBIM_CONNCTION_DISCONNECTED
@@ -1507,9 +1547,9 @@
         };
     };
 
-    connection.prototype.getChatRooms = function ( options ) {
+    connection.prototype.getChatRooms = function (options) {
 
-        if ( !_utils.isCanSetRequestHeader ) {
+        if (!_utils.isCanSetRequestHeader) {
             conn.onError({
                 type: _code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR
             });
@@ -1519,24 +1559,24 @@
         var conn = this,
             token = options.accessToken || this.context.accessToken;
 
-        if ( token ) {
+        if (token) {
             var apiUrl = options.apiUrl;
             var appName = this.context.appName;
             var orgName = this.context.orgName;
 
-            if ( !appName || !orgName ) {
+            if (!appName || !orgName) {
                 conn.onError({
                     type: _code.WEBIM_CONNCTION_AUTH_ERROR
                 });
                 return;
             }
 
-            var suc = function ( data, xhr ) {
+            var suc = function (data, xhr) {
                 typeof options.success === 'function' && options.success(data);
             };
 
-            var error = function ( res, xhr, msg ) {
-                if ( res.error && res.error_description ) {
+            var error = function (res, xhr, msg) {
+                if (res.error && res.error_description) {
                     conn.onError({
                         type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR
                         , msg: res.error_description
@@ -1558,17 +1598,17 @@
         } else {
             conn.onError({
                 type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
-            });               
+            });
         }
 
     };
 
-    connection.prototype.joinChatRoom = function ( options ) {
+    connection.prototype.joinChatRoom = function (options) {
         var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
         var room_nick = roomJid + '/' + this.context.userId;
         var suc = options.success || _utils.emptyfn;
         var err = options.error || _utils.emptyfn;
-        var errorFn = function ( ele ) {
+        var errorFn = function (ele) {
             err({
                 type: _code.WEBIM_CONNCTION_JOINCHATROOM_ERROR
                 , data: ele
@@ -1579,20 +1619,20 @@
             from: this.context.jid,
             to: room_nick
         })
-        .c('x', { xmlns: Strophe.NS.MUC + '#user' })
-        .c('item', { affiliation: 'member', role: 'participant' })
-        .up().up()
-        .c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+            .c('x', {xmlns: Strophe.NS.MUC + '#user'})
+            .c('item', {affiliation: 'member', role: 'participant'})
+            .up().up()
+            .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
 
         this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
     };
 
-    connection.prototype.quitChatRoom = function ( options ) {
+    connection.prototype.quitChatRoom = function (options) {
         var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
         var room_nick = roomJid + '/' + this.context.userId;
         var suc = options.success || _utils.emptyfn;
         var err = options.error || _utils.emptyfn;
-        var errorFn = function ( ele ) {
+        var errorFn = function (ele) {
             err({
                 type: _code.WEBIM_CONNCTION_QUITCHATROOM_ERROR
                 , data: ele
@@ -1603,10 +1643,10 @@
             to: room_nick,
             type: 'unavailable'
         })
-        .c('x', { xmlns: Strophe.NS.MUC + '#user' })
-        .c('item', { affiliation: 'none', role: 'none' })
-        .up().up()
-        .c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+            .c('x', {xmlns: Strophe.NS.MUC + '#user'})
+            .c('item', {affiliation: 'none', role: 'none'})
+            .up().up()
+            .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
 
         this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
     };
@@ -1616,4 +1656,16 @@
     WebIM.utils = _utils;
     WebIM.statusCode = _code;
     WebIM.message = _msg.message;
+    WebIM.doQuery = function (str, suc, fail) {
+        if (typeof window.cefQuery === 'undefined') {
+            return;
+        }
+        window.cefQuery({
+                request: str,
+                persistent: false,
+                onSuccess: suc,
+                onFailure: fail
+            }
+        );
+    };
 }(window, undefined));

@@ -1458,7 +1458,7 @@
              */
             /* jshint ignore:start */
             log: function (level, msg) {
-                if (WebIM !== undefined && WebIM.config.isDebug === true) {
+                if (typeof WebIM !== 'undefined' && WebIM.config.isDebug === true) {
                     console.log(level, msg);
                 }
             },
