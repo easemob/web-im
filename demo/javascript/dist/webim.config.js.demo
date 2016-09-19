@@ -41,6 +41,12 @@ WebIM.config = {
      * @parameter {Boolean} true or false
      */
     isDebug: false,
+    /**
+     * 自动登录账户
+     */
+    autoSignIn: false,
+    autoSignInName: 'xxx',
+    autoSignInPwd: 'xxx',
     /*
      * Set to auto sign-in
      */
