@@ -27,7 +27,6 @@ module.exports = React.createClass({
             onClosed: function (msg) {
                 log('onClosed');
                 me.channel.close();
-                Demo.api.logout();
             },
             onTextMessage: function (message) {
                 if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
