@@ -93,7 +93,12 @@ module.exports = React.createClass({
             },
             onOffline: function () {
                 log('offline');
-                Demo.api.logout();
+                //TODO:@lhr for windowSDK offline
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+
+                } else {
+                    Demo.api.logout();
+                }
             },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
@@ -236,7 +241,7 @@ module.exports = React.createClass({
                 }
                 break;
         }
-        ;
+
     },
 
     getStrangers: function () {
