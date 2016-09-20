@@ -31,10 +31,8 @@ module.exports = React.createClass({
         if (this.refs.i.className.indexOf('up') < 0) {
             var me = this;
             if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
-                //TODO:@李宏儒 群组的聊天窗口上方的成员下拉列表
-                WebIM.doQuery('{"type":"getRoster"}',
+                WebIM.doQuery('{"type":"groupMembers","id":"' + me.props.roomId + '"}',
                     function success(str) {
-                        //var str = '{"wenke":1,"wenke2":1}';
                         var members = eval('(' + str + ')');
                         if (members && members.length > 0) {
                             me.refreshMemberList(members);
