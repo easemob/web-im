@@ -63,7 +63,9 @@ module.exports = React.createClass({
                 <h2>{Demo.lan.signIn}</h2>
                 <Input placeholder={Demo.lan.username} defaultFocus='true' ref='name' keydown={this.keyDown} />
                 <Input placeholder={Demo.lan.password} ref='auth' type='password' keydown={this.keyDown} />
-                <Checkbox text={Demo.lan.tokenSignin} ref='token' />
+                <div className={WebIM.config.isWindowSDK ? 'hide' : ''}>
+                    <Checkbox text={Demo.lan.tokenSignin} ref='token' />
+                </div>
                 <Button ref='button' text={Demo.lan.signIn} onClick={this.signin} />
                 <p>{Demo.lan.noaccount},
                     <i onClick={this.signup}>{Demo.lan.signupnow}</i>
