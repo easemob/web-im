@@ -52,7 +52,12 @@ module.exports = {
 
     logout: function () {
         if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
-            //do nothing
+            WebIM.doQuery('{"type":"logout"}',
+                function(response) {
+                },
+                function(code, msg) {
+                    alert("logout failed:" + msg);
+                });
         } else {
             Demo.conn.stopHeartBeat();
             Demo.conn.close();
