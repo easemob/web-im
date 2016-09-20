@@ -708,27 +708,17 @@
     };
 
     connection.prototype.close = function () {
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
-            WebIM.doQuery('{"type":"logout"}',
-                function (response) {
-                    Demo.conn.onClosed();
-                },
-                function (code, msg) {
-                    alert(code + " - " + msg);
-                });
-        } else {
-            var status = this.context.status;
-            if (status == _code.STATUS_INIT) {
-                return;
-            }
-
-            if (this.isClosed() || this.isClosing()) {
-                return;
-            }
-            this.stopHeartBeat();
-            this.context.status = _code.STATUS_CLOSING;
-            this.context.stropheConn.disconnect();
+        var status = this.context.status;
+        if (status == _code.STATUS_INIT) {
+            return;
         }
+
+        if (this.isClosed() || this.isClosing()) {
+            return;
+        }
+        this.stopHeartBeat();
+        this.context.status = _code.STATUS_CLOSING;
+        this.context.stropheConn.disconnect();
     };
 
     connection.prototype.addHandler = function (handler, ns, name, type, id, from, options) {
