@@ -606,6 +606,7 @@ module.exports = React.createClass({
         for (var i = 0; i < this.state.groups.length; i++) {
             id = this.state.groups[i].roomId;
             props.name = this.state.groups[i].name;
+            props.showOptions = true;   //群组显示设置按钮
 
             windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props}
                 className={id === this.state.curNode ? '' : 'hide'} />);

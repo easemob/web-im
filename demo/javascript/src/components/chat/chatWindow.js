@@ -105,7 +105,9 @@ module.exports = React.createClass({
                     {this.props.name}
                     <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
                 </div>
-                <Operations />
+                <div className={this.props.showOptions ? '' : 'hide'}>
+                    <Operations />
+                </div>
                 <ul ref='member' className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>
                 <div id={this.props.id} ref='wrapper' className='webim-chatwindow-msg'></div>
                 <SendWrapper send={this.send} {...props} />

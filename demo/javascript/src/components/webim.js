@@ -17,20 +17,20 @@ module.exports = React.createClass({
         };
     },
 
-	update: function ( state ) {
-		this.setState({
-			signIn: state.signIn,
-			signUp: state.signUp,
-			chat: state.chat,
-			loadingStatus: state.loadingStatus,
-			content: state.content,
-			status: state.status
-		});
-	},
+    update: function (state) {
+        this.setState({
+            signIn: state.signIn,
+            signUp: state.signUp,
+            chat: state.chat,
+            loadingStatus: state.loadingStatus,
+            content: state.content,
+            status: state.status
+        });
+    },
 
-	loading: function ( status ) {
-		this.setState({ loadingStatus: status });
-	},
+    loading: function (status) {
+        this.setState({loadingStatus: status});
+    },
 
     render: function () {
         var props = {};
