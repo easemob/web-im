@@ -41,7 +41,7 @@ module.exports = {
                 props = null;
                 break;
         }
-        ;
+
 
         if (props) {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout} {...props} />, this.node);
@@ -53,9 +53,9 @@ module.exports = {
     logout: function () {
         if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"logout"}',
-                function(response) {
+                function (response) {
                 },
-                function(code, msg) {
+                function (code, msg) {
                     alert("logout failed:" + msg);
                 });
         } else {
@@ -196,7 +196,7 @@ module.exports = {
             default:
                 break;
         }
-        ;
+
 
         if (!targetNode) {
             this.render(this.node, 'stranger');
@@ -227,7 +227,7 @@ module.exports = {
                 this.addCount(msg.to, cate);
                 break;
         }
-        ;
+
 
     },
 

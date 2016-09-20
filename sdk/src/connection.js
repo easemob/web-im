@@ -566,12 +566,12 @@
 
     connection.prototype.sendReceiptsMessage = function (options) {
         var dom = $msg({
-            from: this.context.jid || ''
-            , to: this.domain
-            , id: options.id || ''
+            from: this.context.jid || '',
+            to: this.domain,
+            id: options.id || ''
         }).c('received', {
-            xmlns: 'urn:xmpp:receipts'
-            , id: options.id || ''
+            xmlns: 'urn:xmpp:receipts',
+            id: options.id || ''
         });
         this.sendCommand(dom.tree());
     };
@@ -639,11 +639,11 @@
                 var loginfo = _utils.stringify(loginJson);
 
                 var options = {
-                    url: apiUrl + '/' + orgName + '/' + appName + '/token'
-                    , dataType: 'json'
-                    , data: loginfo
-                    , success: suc || _utils.emptyfn
-                    , error: error || _utils.emptyfn
+                    url: apiUrl + '/' + orgName + '/' + appName + '/token',
+                    dataType: 'json',
+                    data: loginfo,
+                    success: suc || _utils.emptyfn,
+                    error: error || _utils.emptyfn
                 };
                 _utils.ajax(options);
             }
