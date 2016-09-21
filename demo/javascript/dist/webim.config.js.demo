@@ -1,8 +1,8 @@
 /**
-  * webim.config.js 不进git
-  * 每人都在本机拷贝粘贴webim.config.js.demo 为 webim.config.js
-  * 然后配置自己的config
-  * 这样不会影响其他人和线上服务器的config
+  * git do not control webim.config.js
+  * everyone should copy webim.config.js.demo to webim.config.js
+  * and have their own configs.
+  * In this way , others won't be influenced by this config while git pull.
   *
   */
 var WebIM = {};
@@ -42,7 +42,8 @@ WebIM.config = {
      */
     isDebug: false,
     /**
-     * 自动登录账户
+     * With autoSignIn as true,  autoSignInName and autoSignInPwd right configed,
+     * You can auto signed in each time you refresh the page in dev model.
      */
     autoSignIn: false,
     autoSignInName: 'xxx',
