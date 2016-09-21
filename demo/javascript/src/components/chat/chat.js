@@ -93,7 +93,12 @@ module.exports = React.createClass({
             },
             onOffline: function () {
                 log('offline');
-                Demo.api.logout();
+                //TODO:@lhr for windowSDK offline
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+
+                } else {
+                    Demo.api.logout();
+                }
             },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
@@ -236,7 +241,7 @@ module.exports = React.createClass({
                 }
                 break;
         }
-        ;
+
     },
 
     getStrangers: function () {
@@ -606,9 +611,8 @@ module.exports = React.createClass({
         for (var i = 0; i < this.state.groups.length; i++) {
             id = this.state.groups[i].roomId;
             props.name = this.state.groups[i].name;
-            props.showOptions = true;   //群组显示设置按钮
 
-            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props}
+            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} showOptions={true}
                 className={id === this.state.curNode ? '' : 'hide'} />);
         }
 

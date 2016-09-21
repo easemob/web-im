@@ -7,8 +7,8 @@ var Button = UI.Button;
 var submiting = false;
 
 module.exports = React.createClass({
-    keyDown: function ( e ) {
-        if ( e && e.keyCode === 13 ) {
+    keyDown: function (e) {
+        if (e && e.keyCode === 13) {
             this.signup();
         }
     },
@@ -24,16 +24,19 @@ module.exports = React.createClass({
     signup: function () {
         var me = this;
 
-        if ( submiting ) { return false; }
+        if (submiting) {
+            return false;
+        }
 
         var username = this.refs.name.refs.input.value;
         var pwd = this.refs.auth.refs.input.value;
         var nickname = this.refs.nickname.refs.input.value;
 
-        if ( !username || !pwd || !nickname ) {
+        if (!username || !pwd || !nickname) {
             Notify.error(Demo.lan.notEmpty);
             return false;
         }
+
 
         submiting = true;
         var options = {
@@ -41,6 +44,7 @@ module.exports = React.createClass({
             password: pwd,
             nickname: nickname,
             appKey: this.props.config.appkey,
+            apiUrl: this.props.config.apiURL,
             success: function () {
                 submiting = false;
                 Notify.success(Demo.lan.signUpSuccessfully);
@@ -52,11 +56,10 @@ module.exports = React.createClass({
                     });
                 }, 1000);
             },
-            error: function ( e ) {
+            error: function (e) {
                 submiting = false;
                 Notify.error(e.data);
-            },
-            apiUrl: this.props.config.apiURL
+            }
         };
         WebIM.utils.registerUser(options);
     },
@@ -69,7 +72,9 @@ module.exports = React.createClass({
                 <Input ref='auth' placeholder={Demo.lan.password} type='password' keydown={this.keyDown} />
                 <Input ref='nickname' placeholder={Demo.lan.nickname} keydown={this.keyDown} />
                 <Button text={Demo.lan.signUp} onClick={this.signup} />
-                <p>{Demo.lan.haveaccount}, <i onClick={this.signin}>{Demo.lan.signIn}</i></p>
+                <p>{Demo.lan.haveaccount},
+                    <i onClick={this.signin}>{Demo.lan.signIn}</i>
+                </p>
             </div>
         );
     }
