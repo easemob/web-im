@@ -42,6 +42,10 @@ WebIM.config = {
      */
     isDebug: false,
     /**
+     * webrtc supports Chrome and https only
+     */
+    isWebRTC: /Chrome/.test(navigator.userAgent) && /^https\:$/.test(window.location.protocol),
+    /**
      * With autoSignIn as true,  autoSignInName and autoSignInPwd right configed,
      * You can auto signed in each time you refresh the page in dev model.
      */

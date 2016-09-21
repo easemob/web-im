@@ -97,12 +97,21 @@ module.exports = React.createClass({
          </p>
          */
 
-        return (
-            <div className={'webim-chatwindow ' + this.props.className}>
-                <div className='webim-chatwindow-title'>
+         /*
+         <div className='webim-chatwindow-title'>
                     {this.props.name}
                     <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
                 </div>
+         */
+
+        return (
+            <div className={'webim-chatwindow ' + this.props.className}>
+                <p className='webim-chatwindow-title'>
+                 <i className={'webim-call-icon font'} onClick={this.call}>R</i>
+                 <i className={'webim-accept-icon font'} onClick={this.acceptCall}>R</i>
+                 {this.props.name}
+                 <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
+                 </p>
                 <div className={this.props.showOptions ? '' : 'hide'}>
                     <Operations />
                 </div>

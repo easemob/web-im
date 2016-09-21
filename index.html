@@ -17,10 +17,8 @@
 <script src='sdk/dist/strophe.js'></script>
 <!--sdk-->
 <script src='sdk/dist/websdk-1.1.2.js'></script>
-<!--webrtc only support Chrome-->
 <script>
-    window.chromeBrowser = /Chrome/.test(navigator.userAgent);
-    if (window.chromeBrowser) {
+    if (WebIM.config.isWebRTC) {
         document.write("<script src='sdk/dist/webrtc-1.0.0.js'><\/script>");
     }
 </script>
