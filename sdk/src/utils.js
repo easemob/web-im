@@ -198,12 +198,10 @@
                 return;
             }
 
-            //TODO:@lhr for  windowSDK  注册提交的地方
-            var me = this;
             if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
-                WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}',
+                WebIM.doQuery('{"type":"createAccount","id":"' + options.username + '","password":"' + options.password + '"}',
                     function (response) {
-                        me.suc();
+                        suc();
                     },
                     function (code, msg) {
                         alert("registerUser" + code + " - " + msg);

@@ -92,9 +92,15 @@ module.exports = React.createClass({
             },
             onOffline: function () {
                 log('offline');
-                //TODO:@lhr for windowSDK offline
                 if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
-
+                WebIM.doQuery('{"type":"logout"}',
+                    function (response) {
+                        Demo.api.logout();
+                    },
+                    function (code, msg) {
+                        alert("logout failed:" + msg);
+                    });
+ 
                 } else {
                     Demo.api.logout();
                 }
