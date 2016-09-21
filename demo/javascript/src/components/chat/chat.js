@@ -6,7 +6,6 @@ var Notify = require('../common/notify');
 var RTCChannel = require('../common/rtcChannel');
 var Subscribe = require('./subscribe');
 
-
 module.exports = React.createClass({
 
     getInitialState: function () {
@@ -102,12 +101,29 @@ module.exports = React.createClass({
             },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
-
-                Notify.error(message.data && message.data.data ? message.data.data : 'Error: type=' + message.type);
-                Demo.api.logout();
                 log('onError', message);
+                var text = '';
+                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                    message = eval('(' + message + ')');
+                    text = message.desc;
+                    //do nothing
+                } else {
+                    if (message.data && message.data.data) {
+                        text = message.data.data;
+                    } else {
+                        //offline by multi login
+                        if (message.type == 7 || message.type == 8) {
+                            text = me.getObjectKey(WebIM.statusCode, message.type);
+                        } else {
+                            text = 'Error: type=' + message.type;
+                        }
+                    }
+                    Demo.api.logout();
+                }
+                Notify.error('onError:' + text);
             }
         });
+
 
         return {
             cur: 'friend',
@@ -118,7 +134,14 @@ module.exports = React.createClass({
             strangers: []
         };
     },
-
+    getObjectKey: function (obj, val) {
+        for (var key in obj) {
+            if (obj[key] == val) {
+                return key;
+            }
+        }
+        return '';
+    },
     friendRequest: function (msg) {
         if (msg && msg.status === '[resp:true]') {
             return;
