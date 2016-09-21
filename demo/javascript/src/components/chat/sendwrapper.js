@@ -12,28 +12,28 @@ module.exports = React.createClass({
 
         var emoji = WebIM.Emoji;
         var data = emoji.map;
-		var path = emoji.path;
+        var path = emoji.path;
 
-        for ( var i in data ) {
-            if ( data.hasOwnProperty(i) ) {
+        for (var i in data) {
+            if (data.hasOwnProperty(i)) {
                 emojiArr.push('<li key="' + i + '" class="webim-emoji-item"><img src="' + path + data[i] + '" /></li>');
             }
         }
 
         WebIM.flashUpload = UploadShim({fileInputId: 'uploadShim'}).flashUpload;
 
-        return { 
+        return {
             send: false,
             showEmoji: false,
             emoji: {
                 data: emojiArr,
                 path: path
             }
-         };
+        };
     },
 
-    handleKeyDown: function ( e ) {
-        if ( e && e.keyCode === 13 ) {
+    handleKeyDown: function (e) {
+        if (e && e.keyCode === 13) {
             this.sendText();
         }
 
@@ -45,15 +45,17 @@ module.exports = React.createClass({
             value = this.refs.textarea.value,
             chatroom = Demo.selectedCate === 'chatrooms';
 
-        if ( !value ) { return; }
+        if (!value) {
+            return;
+        }
 
         setTimeout(function () {
             me.refs.textarea.value = '';
         }, 0);
 
 
-        if ( chatroom && Demo.currentChatroom !== Demo.selected ) {
-            
+        if (chatroom && Demo.currentChatroom !== Demo.selected) {
+
             Notify.error(Demo.lan.notin);
             return false;
         }
@@ -64,15 +66,15 @@ module.exports = React.createClass({
             msg: value,
             to: Demo.selected,
             roomType: chatroom,
-            success: function ( id ) {
+            success: function (id) {
                 log('send success', id);
-                me.state.showEmoji && me.setState({ showEmoji: false });
+                me.state.showEmoji && me.setState({showEmoji: false});
             }
         });
 
-        if ( Demo.selectedCate === 'groups' ) {
+        if (Demo.selectedCate === 'groups') {
             msg.setGroup(Demo.groupType);
-        } else if ( chatroom ) {
+        } else if (chatroom) {
             msg.setGroup(Demo.groupType);
         }
 
@@ -81,43 +83,54 @@ module.exports = React.createClass({
 
     showEmoji: function () {
 
-        if ( this.state.showEmoji ) {
-            this.setState({ showEmoji: false });
+        if (this.state.showEmoji) {
+            this.setState({showEmoji: false});
         } else {
 
-            if ( !this.refs.emoji.innerHTML ) {
+            if (!this.refs.emoji.innerHTML) {
                 var str = '';
 
-                for ( var i = 0; i < this.state.emoji.data.length; i++ ) {
+                for (var i = 0; i < this.state.emoji.data.length; i++) {
                     str += this.state.emoji.data[i];
                 }
                 this.refs.emoji.innerHTML = str;
             }
-            this.setState({ showEmoji: true });
+            this.setState({showEmoji: true});
         }
     },
 
-    selectEmoji: function ( e ) {
+    selectEmoji: function (e) {
         var value = e.target.parentNode.getAttribute('key');
         this.refs.textarea.value += value;
     },
 
+    call: function () {
+        Demo.call.makeVideoCall(Demo.selected);
+    },
+
+    acceptCall: function () {
+        Demo.call.acceptCall();
+    },
     render: function () {
 
         var showEmoji = this.state.showEmoji ? '' : ' hide',
             disabled = this.state.send ? '' : ' disabled';
 
+        var roomMember = [];
+        roomMember.push(<span key='1' className='webim-audio-icon font smaller' onClick={this.call}>R</span>);
+        roomMember.push(<span key='2' className='webim-audio-icon font smaller' onClick={this.acceptCall}>R</span>);
         return (
             <div className='webim-send-wrapper'>
                 <div className='webim-chatwindow-options'>
-					<span className='webim-emoji-icon font smaller' onClick={this.showEmoji}>J</span>
-					<span className='webim-picture-icon font smaller' onClick={this.props.sendPicture}>K</span>
-					<span className='webim-audio-icon font smaller' onClick={this.props.sendAudio}>R</span>
-					<span className='webim-file-icon font smaller' onClick={this.props.sendFile}>S</span>
-				</div>
+                    <span className='webim-emoji-icon font smaller' onClick={this.showEmoji}>J</span>
+                    <span className='webim-picture-icon font smaller' onClick={this.props.sendPicture}>K</span>
+                    <span className='webim-audio-icon font smaller' onClick={this.props.sendAudio}>R</span>
+                    <span className='webim-file-icon font smaller' onClick={this.props.sendFile}>S</span>
+                    {roomMember}
+                </div>
                 <ul ref='emoji' onClick={this.selectEmoji} className={showEmoji}></ul>
-				<textarea ref='textarea' onKeyDown={this.handleKeyDown}></textarea>
-				<Button className={'webim-send-btn base-bgcolor' + disabled} text={Demo.lan.send} onClick={this.sendText} />
+                <textarea ref='textarea' onKeyDown={this.handleKeyDown}></textarea>
+                <Button className={'webim-send-btn base-bgcolor' + disabled} text={Demo.lan.send} onClick={this.sendText} />
             </div>
         );
     }

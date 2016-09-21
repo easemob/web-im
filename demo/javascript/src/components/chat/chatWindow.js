@@ -19,14 +19,6 @@ module.exports = React.createClass({
 
     },
 
-    call: function () {
-        Demo.call.makeVideoCall(Demo.selected);
-    },
-
-    acceptCall: function () {
-        Demo.call.acceptCall();
-    },
-
     listMember: function () {
         if (this.refs.i.className.indexOf('up') < 0) {
             var me = this;
@@ -88,30 +80,12 @@ module.exports = React.createClass({
             </li>);
         }
 
-        /*
-         <p className='webim-chatwindow-title'>
-         <i className={'webim-call-icon font'} onClick={this.call}>R</i>
-         <i className={'webim-accept-icon font'} onClick={this.acceptCall}>R</i>
-         {this.props.name}
-         <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
-         </p>
-         */
-
-         /*
-         <div className='webim-chatwindow-title'>
+        return (
+            <div className={'webim-chatwindow ' + this.props.className}>
+                <div className='webim-chatwindow-title'>
                     {this.props.name}
                     <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
                 </div>
-         */
-
-        return (
-            <div className={'webim-chatwindow ' + this.props.className}>
-                <p className='webim-chatwindow-title'>
-                 <i className={'webim-call-icon font'} onClick={this.call}>R</i>
-                 <i className={'webim-accept-icon font'} onClick={this.acceptCall}>R</i>
-                 {this.props.name}
-                 <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
-                 </p>
                 <div className={this.props.showOptions ? '' : 'hide'}>
                     <Operations />
                 </div>
