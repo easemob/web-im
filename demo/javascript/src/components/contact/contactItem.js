@@ -49,13 +49,13 @@ module.exports = React.createClass({
         if (Demo.currentChatroom) {
             document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
             document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
-            if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"quitChatroom","id":"' + Demo.currentChatroom + '"}',
                     function success(str) {
                         //do nothing
                     },
                     function failure(errCode, errMessage) {
-                        alert(errCode);
+                        Notify.error('update currentChatroom:' + errCode);
                     });
             } else {
                 Demo.conn.quitChatRoom({
@@ -72,13 +72,13 @@ module.exports = React.createClass({
             document.getElementById(this.props.id).querySelector('em').innerHTML = '';
 
             // join chatroom
-            if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"joinChatroom","id":"' + this.props.id + '"}',
                     function success(str) {
                         Demo.currentChatroom = str;
                     },
                     function failure(errCode, errMessage) {
-                        alert(errCode);
+                        Notify.error('update chatrooms:' + errCode);
                     });
             } else {
                 Demo.conn.joinChatRoom({

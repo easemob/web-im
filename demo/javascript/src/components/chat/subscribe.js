@@ -25,13 +25,13 @@ var Subscribe = React.createClass({
         var li = e.target.parentNode,
             name = li.getAttribute('id');
 
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"acceptInvitation","to":"' + name + '"}',
                 function success(str) {
                     //do nothing
                 },
                 function failure(errCode, errMessage) {
-                    alert(errCode);
+                    Notify.error('agree:' + errCode);
                 });
         } else {
             Demo.conn.subscribed({
@@ -52,13 +52,13 @@ var Subscribe = React.createClass({
         var li = e.target.parentNode,
             name = li.getAttribute('id');
 
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"declineInvitation","to":"' + name + '"}',
                 function success(str) {
                     //do nothing
                 },
                 function failure(errCode, errMessage) {
-                    alert(errCode);
+                    Notify.error('reject:' + errCode);
                 });
         } else {
             Demo.conn.unsubscribed({

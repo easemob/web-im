@@ -19,13 +19,13 @@ var DelFriend = React.createClass({
             return;
         }
 
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"delFriend","to":"' + value + '"}',
                 function success(str) {
                     alert(Demo.lan.contact_deleted);
                 },
                 function failure(errCode, errMessage) {
-                    alert(errCode);
+                    Notify.error('delFriend:' + errCode);
                 });
         } else {
             Demo.conn.removeRoster({

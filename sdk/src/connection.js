@@ -577,13 +577,13 @@
     };
 
     connection.prototype.open = function (options) {
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}',
                 function (response) {
                     Demo.conn.onOpened();
                 },
                 function (code, msg) {
-                    alert(code + " - " + msg);
+                    Notify.error('open:' + code + " - " + msg);
                 });
         } else {
             var pass = _validCheck(options, this);
@@ -1159,13 +1159,12 @@
     };
 
     connection.prototype.send = function (message) {
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + message.msg + '","group":"' + message.group + '","roomType":"' + message.roomType + '"}',
                 function (response) {
-                    //alert(response);
                 },
                 function (code, msg) {
-                    alert(code + " - " + msg);
+                    Notify.error('send:' + code + " - " + msg);
                 });
         } else {
             if (Object.prototype.toString.call(message) === '[object Object]') {

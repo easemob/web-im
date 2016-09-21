@@ -30,7 +30,7 @@ module.exports = React.createClass({
     listMember: function () {
         if (this.refs.i.className.indexOf('up') < 0) {
             var me = this;
-            if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"groupMembers","id":"' + me.props.roomId + '"}',
                     function success(str) {
                         var members = eval('(' + str + ')');
@@ -39,7 +39,7 @@ module.exports = React.createClass({
                         }
                     },
                     function failure(errCode, errMessage) {
-                        alert("listMember" + errCode);
+                        Notify.error("listMember:" + errCode);
                     });
             } else {
                 Demo.conn.queryRoomMember({

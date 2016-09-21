@@ -18,13 +18,13 @@ var AddMember = React.createClass({
         if (!value) {
             return;
         }
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"addFriend","to":"' + value + '","message":"' + Demo.user + Demo.lan.request + '"}',
                 function success(str) {
                     alert(Demo.lan.contact_added);
                 },
                 function failure(errCode, errMessage) {
-                    alert(errCode);
+                    Notify.error('addMember:' + errCode);
                 });
         } else {
             Demo.conn.subscribe({

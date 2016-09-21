@@ -28,55 +28,55 @@ module.exports = React.createClass({
                 me.channel.close();
             },
             onTextMessage: function (message) {
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 Demo.api.appendMsg(message, 'txt');
             },
             onEmojiMessage: function (message) {
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 Demo.api.appendMsg(message, 'emoji');
             },
             onPictureMessage: function (message) {
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 Demo.api.appendMsg(message, 'img');
             },
             onCmdMessage: function (message) {
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 Demo.api.appendMsg(message, 'cmd');
             },
             onAudioMessage: function (message) {
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 Demo.api.appendMsg(message, 'aud');
             },
             onLocationMessage: function (message) {
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 Demo.api.appendMsg(message, 'loc');
             },
             onFileMessage: function (message) {
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 Demo.api.appendMsg(message, 'file');
             },
             onVideoMessage: function (message) {
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 Demo.api.appendMsg(message, 'video');
             },
             onPresence: function (message) {
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 me.handlePresence(message);
@@ -92,15 +92,15 @@ module.exports = React.createClass({
             },
             onOffline: function () {
                 log('offline');
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
-                WebIM.doQuery('{"type":"logout"}',
-                    function (response) {
-                        Demo.api.logout();
-                    },
-                    function (code, msg) {
-                        alert("logout failed:" + msg);
-                    });
- 
+                if (WebIM.config.isWindowSDK) {
+                    WebIM.doQuery('{"type":"logout"}',
+                        function (response) {
+                            Demo.api.logout();
+                        },
+                        function (code, msg) {
+                            Notify.error("onOffline:" + msg);
+                        });
+
                 } else {
                     Demo.api.logout();
                 }
@@ -109,7 +109,7 @@ module.exports = React.createClass({
                 /*if ( msg && msg.reconnect ) {}*/
                 log('onError', message);
                 var text = '';
-                if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+                if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                     text = message.desc;
                     //do nothing
@@ -121,7 +121,7 @@ module.exports = React.createClass({
                         if (message.type == 7 || message.type == 8) {
                             text = me.getObjectKey(WebIM.statusCode, message.type);
                         } else {
-                            text = 'Error: type=' + message.type;
+                            text = 'type=' + message.type;
                         }
                     }
                     Demo.api.logout();
@@ -289,7 +289,7 @@ module.exports = React.createClass({
             conn = Demo.conn,
             friends = [],
             groups = [];
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getRoster"}',
                 function success(str) {
                     var roster = eval('(' + str + ')');
@@ -305,7 +305,7 @@ module.exports = React.createClass({
                     doNotUpdateGroup || me.getGroup();
                 },
                 function failure(errCode, errMessage) {
-                    alert(errCode);
+                    Notify.error('getRoster:' + errCode);
                 });
         } else {
             conn.getRoster({
@@ -328,14 +328,14 @@ module.exports = React.createClass({
 
     getGroup: function () {
         var me = this;
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getGroup"}',
                 function success(str) {
                     var rooms = eval('(' + str + ')');
                     me.setState({groups: rooms});
                 },
                 function failure(errCode, errMessage) {
-                    alert(errCode);
+                    Notify.error('getGroup:' + errCode);
                 });
         } else {
             Demo.conn.listRooms({
@@ -352,26 +352,25 @@ module.exports = React.createClass({
 
     getChatroom: function () {
         var me = this;
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getChatroom"}',
                 function success(str) {
                     var rooms = eval('(' + str + ')');
                     me.setState({chatrooms: rooms});
                 },
                 function failure(errCode, errMessage) {
-                    alert(errCode);
+                    Notify.error('getChatroom:' + errCode);
                 });
         } else {
             Demo.conn.getChatRooms({
                 apiUrl: WebIM.config.apiURL,
                 success: function (list) {
-
                     if (list.data && list.data.length > 0) {
                         me.setState({chatrooms: list.data});
                     }
                 },
                 error: function (e) {
-                    log(e);
+                    Notify.error('getChatroom:' + e);
                 }
             });
         }
@@ -386,7 +385,7 @@ module.exports = React.createClass({
     },
 
     sendPicture: function () {
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             this.sendFileImpl("img");
         } else {
             this.refs.picture.click();
@@ -451,7 +450,7 @@ module.exports = React.createClass({
     },
 
     sendAudio: function () {
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             this.sendFileImpl("aud");
         } else {
             this.refs.audio.click();
@@ -535,7 +534,7 @@ module.exports = React.createClass({
     },
 
     sendFile: function () {
-        if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+        if (WebIM.config.isWindowSDK) {
             this.sendFileImpl("file");
         } else {
             this.refs.file.click();

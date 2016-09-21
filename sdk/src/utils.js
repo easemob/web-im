@@ -198,13 +198,13 @@
                 return;
             }
 
-            if (typeof WebIM.config.isWindowSDK === 'boolean' && WebIM.config.isWindowSDK) {
+            if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"createAccount","id":"' + options.username + '","password":"' + options.password + '"}',
                     function (response) {
                         suc();
                     },
                     function (code, msg) {
-                        alert("registerUser" + code + " - " + msg);
+                        Notify.error("registerUser:" + code + " - " + msg);
                     });
             } else {
                 var https = options.https || https;
