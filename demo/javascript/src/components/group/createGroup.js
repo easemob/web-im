@@ -10,7 +10,7 @@ var Button = UI.Button;
 var Input = UI.Input;
 var Checkbox = UI.Checkbox;
 var Radio = UI.Radio;
-
+var Notify = require('../common/notify');
 
 import MultipleSelectBoxList  from '../common/multiSelectBoxList';
 
@@ -44,7 +44,7 @@ var FridendList = React.createClass({
     }
 });
 
-var AddGroup = React.createClass({
+var CreateGroup = React.createClass({
     getInitialState: function () {
         return {
             selectedOption: 'option1',
@@ -52,7 +52,7 @@ var AddGroup = React.createClass({
             colors: []
         }
     },
-    addSubmit: function () {
+    onSubmit: function () {
         var value = this.refs.input.refs.input.value;
         var info = this.refs.textarea.value;
         var permission_group = this.state.selectedOption;
@@ -60,13 +60,25 @@ var AddGroup = React.createClass({
         var friendsSelected = this.refs.friendList.refs.multiSelected.label();
         log(value, info, permission_group, permission_member, friendsSelected);
         if (!value) {
+            Notify.error("群组名不能为空");
             return;
         }
+        if (WebIM.config.isWindowSDK) {
+            //TODO:@lhr 添加群组提交
+            WebIM.doQuery('{"type":"createGroup"}',
+                function (response) {
+                },
+                function (code, msg) {
+                    Notify.error("onSubmit:" + msg);
+                });
+        } else {
+            //Demo.conn.subscribe({
+            //    to: value,
+            //    message: Demo.user + Demo.lan.request
+            //});
+        }
 
-        Demo.conn.subscribe({
-            to: value,
-            message: Demo.user + Demo.lan.request
-        });
+
         this.close();
     },
 
@@ -125,7 +137,7 @@ var AddGroup = React.createClass({
                     <div>
                         <FridendList ref="friendList" optionData={Demo.roster} />
                     </div>
-                    <Button text={Demo.lan.add} onClick={this.addSubmit} className='webim-dialog-button' />
+                    <Button text={Demo.lan.add} onClick={this.onSubmit} className='webim-dialog-button' />
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>
@@ -136,7 +148,7 @@ var AddGroup = React.createClass({
 module.exports = {
     show: function () {
         ReactDOM.render(
-            <AddGroup onClose={this.close} />,
+            <CreateGroup onClose={this.close} />,
             dom
         );
     },
@@ -144,4 +156,4 @@ module.exports = {
     close: function () {
         ReactDOM.unmountComponentAtNode(dom);
     }
-}
+};
