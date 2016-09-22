@@ -8,21 +8,29 @@ componentsNode.appendChild(dom);
 var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var Input = UI.Input;
+var Notify = require('../common/notify');
 
-var ChangeName = React.createClass({
+var ChangeGroupSubject = React.createClass({
 
-    changeName: function () {
+    onSubmit: function () {
 
         var value = this.refs.input.refs.input.value;
 
         if (!value) {
+            Notify.error("群组名不能为空");
             return;
         }
-        log("groupChangeName:", value);
-        //Demo.conn.subscribe({
-        //    to: value,
-        //    message: Demo.user + Demo.lan.request
-        //});
+        log("ChangeGroupSubject:", value);
+        if (WebIM.config.isWindowSDK) {
+            //TODO:@lhr 修改群名称
+            WebIM.doQuery('{"type":"changeGroupSubject"}',
+                function (response) {
+                },
+                function (code, msg) {
+                    Notify.error("changeGroupSubject:" + code);
+                });
+        } else {
+        }
         this.close();
     },
 
@@ -36,11 +44,11 @@ var ChangeName = React.createClass({
             <div className='webim-friend-options'>
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog'>
-                    <h3>{Demo.lan.groupChangeName}</h3>
+                    <h3>{Demo.lan.changeGroupSubject}</h3>
                     <div ref='content'>
-                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupName} />
+                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupSubject} />
                     </div>
-                    <Button text={Demo.lan.confirm} onClick={this.changeName} className='webim-dialog-button' />
+                    <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button' />
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>
@@ -51,7 +59,7 @@ var ChangeName = React.createClass({
 module.exports = {
     show: function () {
         ReactDOM.render(
-            <ChangeName onClose={this.close} />,
+            <ChangeGroupSubject onClose={this.close} />,
             dom
         );
     },

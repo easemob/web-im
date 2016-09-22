@@ -1,7 +1,8 @@
 var React = require("react");
 
-var ChangeName = require("../group/changeName");
-var InviteMember = require("../group/inviteMember");
+var ChangeGroupSubject = require("../group/changeGroupSubject");
+var ChangeGroupDescription = require("../group/changeGroupDescription");
+var AddGroupMembers = require("../group/addGroupMembers");
 
 module.exports = React.createClass({
 
@@ -17,14 +18,18 @@ module.exports = React.createClass({
         });
     },
 
-    inviteMember: function () {
-        log('inviteMember');
-        InviteMember.show();
+    addGroupMembers: function () {
+        log('addGroupMembers');
+        AddGroupMembers.show();
         this.update();
     },
 
-    changeName: function () {
-        ChangeName.show();
+    changeGroupSubject: function () {
+        ChangeGroupSubject.show();
+        this.update();
+    },
+    changeGroupDescription: function () {
+        ChangeGroupDescription.show();
         this.update();
     },
 
@@ -36,7 +41,7 @@ module.exports = React.createClass({
                 function (response) {
                 },
                 function (code, msg) {
-                    Notify.error("destroyGroup:" + msg);
+                    Notify.error("destroyGroup:" + code);
                 });
         } else {
         }
@@ -51,7 +56,7 @@ module.exports = React.createClass({
                 function (response) {
                 },
                 function (code, msg) {
-                    Notify.error("leaveGroup:" + msg);
+                    Notify.error("leaveGroup:" + code);
                 });
         } else {
         }
@@ -73,13 +78,17 @@ module.exports = React.createClass({
             <div>
                 <i className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
                 <ul className={'webim-operations' + className}>
-                    <li onClick={this.inviteMember}>
+                    <li onClick={this.addGroupMembers}>
                         <i className='font smallest'>F</i>
-                        <span>{Demo.lan.groupInviteMember}</span>
+                        <span>{Demo.lan.addGroupMembers}</span>
                     </li>
-                    <li onClick={this.changeName}>
+                    <li onClick={this.changeGroupSubject}>
                         <i className='font smallest'>B</i>
-                        <span>{Demo.lan.groupChangeName}</span>
+                        <span>{Demo.lan.changeGroupSubject}</span>
+                    </li>
+                    <li onClick={this.changeGroupDescription}>
+                        <i className='font smallest'>B</i>
+                        <span>{Demo.lan.changeGroupDescription}</span>
                     </li>
                     <li onClick={this.destroyGroup}>
                         <i className='font smallest'>Q</i>

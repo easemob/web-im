@@ -2,6 +2,7 @@ var React = require("react");
 var AddFriend = require("./addFriend");
 var DelFriend = require("./delFriend");
 var CreateGroup = require("../group/createGroup");
+var JoinPublicGroup = require("../group/joinPublicGroup");
 
 module.exports = React.createClass({
 
@@ -19,18 +20,26 @@ module.exports = React.createClass({
 
     addFriends: function () {
         AddFriend.show();
+        this.update();
     },
 
     delFriends: function () {
         DelFriend.show();
-    },
-
-    close: function () {
-        Demo.api.logout();
+        this.update();
     },
 
     createGroup: function () {
         CreateGroup.show();
+        this.update();
+    },
+
+    joinPublicGroup: function () {
+        JoinPublicGroup.show();
+        this.update();
+    },
+
+    logout: function () {
+        Demo.api.logout();
     },
 
     render: function () {
@@ -51,7 +60,11 @@ module.exports = React.createClass({
                         <i className='font smallest'>L</i>
                         <span>{Demo.lan.createGroup}</span>
                     </li>
-                    <li onClick={this.close}>
+                    <li onClick={this.joinPublicGroup}>
+                        <i className='font smallest'>L</i>
+                        <span>{Demo.lan.joinPublicGroup}</span>
+                    </li>
+                    <li onClick={this.logout}>
                         <i className='font smallest'>Q</i>
                         <span>{Demo.lan.quit}({this.props.username})</span>
                     </li>

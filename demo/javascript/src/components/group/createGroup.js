@@ -17,7 +17,6 @@ import MultipleSelectBoxList  from '../common/multiSelectBoxList';
 var FridendList = React.createClass({
 
     getInitialState: function () {
-        //TODO: 每次都要重新计算 需要变成全局变量
         var options = [];
         var id = 0;
         for (var name  in this.props.optionData) {
@@ -69,13 +68,9 @@ var CreateGroup = React.createClass({
                 function (response) {
                 },
                 function (code, msg) {
-                    Notify.error("onSubmit:" + msg);
+                    Notify.error("onSubmit:" + code);
                 });
         } else {
-            //Demo.conn.subscribe({
-            //    to: value,
-            //    message: Demo.user + Demo.lan.request
-            //});
         }
 
 
@@ -100,11 +95,11 @@ var CreateGroup = React.createClass({
             <div className='webim-friend-options'>
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog webim-dialog-2'>
-                    <h3>{Demo.lan.addGroup}</h3>
+                    <h3>{Demo.lan.createGroup}</h3>
                     <div ref='content'>
-                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupName} />
+                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupSubject} />
                         <br/>
-                        <textarea ref='textarea' placeholder={Demo.lan.groupInfo}></textarea>
+                        <textarea ref='textarea' placeholder={Demo.lan.groupDescription}></textarea>
                         <br/>
                         <br/>
                         <div >

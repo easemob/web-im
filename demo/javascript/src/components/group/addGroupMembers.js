@@ -15,7 +15,6 @@ import MultipleSelectBoxList  from '../common/multiSelectBoxList';
 var FridendList = React.createClass({
 
     getInitialState: function () {
-        //TODO: 每次都要重新计算 需要变成全局变量
         var options = [];
         var id = 0;
         for (var name  in this.props.optionData) {
@@ -42,20 +41,26 @@ var FridendList = React.createClass({
     }
 });
 
-var InviteMember = React.createClass({
+var AddGroupMembers = React.createClass({
 
-    inviteMember: function () {
+    onSubmit: function () {
 
         var value = this.refs.friendList.refs.multiSelected.label();
 
         if (!value) {
             return;
         }
-        log("inviteMember:", value);
-        //Demo.conn.subscribe({
-        //    to: value,
-        //    message: Demo.user + Demo.lan.request
-        //});
+        log("AddGroupMembers:", value);
+        if (WebIM.config.isWindowSDK) {
+            //TODO:@lhr 邀请群成员
+            WebIM.doQuery('{"type":"addGroupMembers"}',
+                function (response) {
+                },
+                function (code, msg) {
+                    Notify.error("AddGroupMembers:" + code);
+                });
+        } else {
+        }
         this.close();
     },
 
@@ -69,11 +74,11 @@ var InviteMember = React.createClass({
             <div className='webim-friend-options'>
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog'>
-                    <h3>{Demo.lan.groupInviteMember}</h3>
+                    <h3>{Demo.lan.addGroupMembers}</h3>
                     <div>
                         <FridendList ref="friendList" optionData={Demo.roster} />
                     </div>
-                    <Button text={Demo.lan.confirm} onClick={this.inviteMember} className='webim-dialog-button' />
+                    <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button' />
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>
@@ -84,7 +89,7 @@ var InviteMember = React.createClass({
 module.exports = {
     show: function () {
         ReactDOM.render(
-            <InviteMember onClose={this.close} />,
+            <AddGroupMembers onClose={this.close} />,
             dom
         );
     },
@@ -92,4 +97,4 @@ module.exports = {
     close: function () {
         ReactDOM.unmountComponentAtNode(dom);
     }
-}
+};
