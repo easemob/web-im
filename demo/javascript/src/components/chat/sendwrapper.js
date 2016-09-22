@@ -117,8 +117,10 @@ module.exports = React.createClass({
             disabled = this.state.send ? '' : ' disabled';
 
         var roomMember = [];
-        roomMember.push(<span key='1' className='webim-audio-icon font smaller' onClick={this.call}>R</span>);
-        roomMember.push(<span key='2' className='webim-audio-icon font smaller' onClick={this.acceptCall}>R</span>);
+        if (WebIM.config.isWebRTC) {
+            roomMember.push(<span key='1' className='webim-audio-icon font smaller' onClick={this.call}>R</span>);
+            roomMember.push(<span key='2' className='webim-audio-icon font smaller' onClick={this.acceptCall}>R</span>);
+        }
         return (
             <div className='webim-send-wrapper'>
                 <div className='webim-chatwindow-options'>
