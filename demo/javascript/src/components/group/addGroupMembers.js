@@ -50,7 +50,7 @@ var AddGroupMembers = React.createClass({
         if (!value) {
             return;
         }
-        log("AddGroupMembers:", value);
+        log("AddGroupMembers:", value, this.props.roomId);
         if (WebIM.config.isWindowSDK) {
             //TODO:@lhr 邀请群成员
             WebIM.doQuery('{"type":"addGroupMembers"}',
@@ -76,9 +76,9 @@ var AddGroupMembers = React.createClass({
                 <div className='webim-dialog'>
                     <h3>{Demo.lan.addGroupMembers}</h3>
                     <div>
-                        <FridendList ref="friendList" optionData={Demo.roster} />
+                        <FridendList ref="friendList" optionData={Demo.roster}/>
                     </div>
-                    <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button' />
+                    <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button'/>
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>
@@ -87,9 +87,9 @@ var AddGroupMembers = React.createClass({
 });
 
 module.exports = {
-    show: function () {
+    show: function (roomId) {
         ReactDOM.render(
-            <AddGroupMembers onClose={this.close} />,
+            <AddGroupMembers onClose={this.close} roomId={roomId}/>,
             dom
         );
     },

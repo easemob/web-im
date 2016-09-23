@@ -20,16 +20,16 @@ module.exports = React.createClass({
 
     addGroupMembers: function () {
         log('addGroupMembers');
-        AddGroupMembers.show();
+        AddGroupMembers.show(this.props.roomId);
         this.update();
     },
 
     changeGroupSubject: function () {
-        ChangeGroupSubject.show();
+        ChangeGroupSubject.show(this.props.roomId);
         this.update();
     },
     changeGroupDescription: function () {
-        ChangeGroupDescription.show();
+        ChangeGroupDescription.show(this.props.roomId);
         this.update();
     },
 
