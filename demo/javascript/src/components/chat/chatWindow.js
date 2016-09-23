@@ -75,7 +75,7 @@ module.exports = React.createClass({
                 username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
 
             roomMember.push(<li key={i}>
-                <Avatar src='demo/images/default.png' />
+                <Avatar src='demo/images/default.png'/>
                 <span>{username}</span>
             </li>);
         }
@@ -87,7 +87,7 @@ module.exports = React.createClass({
                     <i ref='i' className={'webim-down-icon font smallest' + className} onClick={this.listMember}>D</i>
                 </div>
                 <div className={this.props.showOptions ? '' : 'hide'}>
-                    <Operations />
+                    <Operations roomId={this.props.roomId}/>
                 </div>
                 <ul ref='member' className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>
                 <div id={this.props.id} ref='wrapper' className='webim-chatwindow-msg'></div>

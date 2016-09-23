@@ -633,7 +633,7 @@ module.exports = React.createClass({
             props.name = id;
 
             windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
-                className={this.state.friends[i].name === this.state.curNode ? '' : 'hide'} />);
+                                     className={this.state.friends[i].name === this.state.curNode ? '' : 'hide'}/>);
         }
 
         for (var i = 0; i < this.state.groups.length; i++) {
@@ -641,7 +641,7 @@ module.exports = React.createClass({
             props.name = this.state.groups[i].name;
 
             windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} showOptions={true}
-                className={id === this.state.curNode ? '' : 'hide'} />);
+                                     className={id === this.state.curNode ? '' : 'hide'}/>);
         }
 
         for (var i = 0; i < this.state.chatrooms.length; i++) {
@@ -649,7 +649,7 @@ module.exports = React.createClass({
             props.name = this.state.chatrooms[i].name;
 
             windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props}
-                className={id === this.state.curNode ? '' : 'hide'} />);
+                                     className={id === this.state.curNode ? '' : 'hide'}/>);
         }
 
         for (var i = 0; i < this.state.strangers.length; i++) {
@@ -657,19 +657,21 @@ module.exports = React.createClass({
             props.name = id;
 
             windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
-                className={this.state.strangers[i].name === this.state.curNode ? '' : 'hide'} />);
+                                     className={this.state.strangers[i].name === this.state.curNode ? '' : 'hide'}/>);
         }
 
         return (
             <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
-                <LeftBar cur={this.state.cur} update={this.update} />
-                <Contact cur={this.state.cur} curNode={this.state.curNode} updateNode={this.updateNode} update={this.update}
-                    friends={this.state.friends} groups={this.state.groups} chatrooms={this.state.chatrooms} strangers={this.state.strangers} />
+                <LeftBar cur={this.state.cur} update={this.update}/>
+                <Contact cur={this.state.cur} curNode={this.state.curNode} updateNode={this.updateNode}
+                         update={this.update}
+                         friends={this.state.friends} groups={this.state.groups} chatrooms={this.state.chatrooms}
+                         strangers={this.state.strangers}/>
                 {windows}
-                <input ref='picture' onChange={this.pictureChange} type='file' className='hide' />
-                <input ref='audio' onChange={this.audioChange} type='file' className='hide' />
-                <input ref='file' onChange={this.fileChange} type='file' className='hide' />
-                <input id='uploadShim' type='file' className='hide' />
+                <input ref='picture' onChange={this.pictureChange} type='file' className='hide'/>
+                <input ref='audio' onChange={this.audioChange} type='file' className='hide'/>
+                <input ref='file' onChange={this.fileChange} type='file' className='hide'/>
+                <input id='uploadShim' type='file' className='hide'/>
                 <div ref='rtcWrapper'></div>
             </div>
         );

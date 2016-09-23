@@ -34,7 +34,7 @@ module.exports = React.createClass({
     },
 
     destroyGroup: function () {
-        log('destroyGroup');
+        log('destroyGroup:' + this.props.roomId);
         if (WebIM.config.isWindowSDK) {
             //TODO:@lhr 解散群组
             WebIM.doQuery('{"type":"destroyGroup"}',
@@ -49,7 +49,7 @@ module.exports = React.createClass({
     },
 
     leaveGroup: function () {
-        log('leaveGroup');
+        log('leaveGroup:' + this.props.roomId);
         if (WebIM.config.isWindowSDK) {
             //TODO:@lhr 退出群组
             WebIM.doQuery('{"type":"leaveGroup"}',

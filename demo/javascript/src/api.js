@@ -46,7 +46,7 @@ module.exports = {
         if (props) {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout} {...props} />, this.node);
         } else {
-            ReactDOM.render(<Webim config={WebIM.config} close={this.logout} />, this.node);
+            ReactDOM.render(<Webim config={WebIM.config} close={this.logout}/>, this.node);
         }
     },
 
