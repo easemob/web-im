@@ -63,8 +63,14 @@ var CreateGroup = React.createClass({
             return;
         }
         if (WebIM.config.isWindowSDK) {
-            //TODO:@lhr 添加群组提交
-            WebIM.doQuery('{"type":"createGroup"}',
+            var styles = ["PUBLIC_JOIN_APPROVAL","PUBLIC_JOIN_OPEN","PRIVATE_OWNER_INVITE","PRIVATE_MEMBER_INVITE"];
+            var option1 = permission_group == "option1"?0:1;
+            var option2 = permission_member == "option3"?0:1;
+            var style = styles[option1*2+option2];
+
+            friendsSelected = '["' + friendsSelected.replace(/, /g, '","') + '"]';
+
+            WebIM.doQuery('{"type":"createGroup","subject":"'+ value + '","description":"'+ info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + friendsSelected +'}',
                 function (response) {
                 },
                 function (code, msg) {
