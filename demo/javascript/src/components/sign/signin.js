@@ -38,7 +38,18 @@ module.exports = React.createClass({
         Demo.user = username;
 
         this.props.loading('show');
-        Demo.conn.open(options);
+
+        if (WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}',
+                function (response) {
+                    Demo.conn.onOpened();
+                },
+                function (code, msg) {
+                    Notify.error('open:' + code + " - " + msg);
+                });
+        } else {
+            Demo.conn.open(options);
+        }
 
     },
 
@@ -61,12 +72,12 @@ module.exports = React.createClass({
         return (
             <div className={this.props.show ? 'webim-sign' : 'webim-sign hide'}>
                 <h2>{Demo.lan.signIn}</h2>
-                <Input placeholder={Demo.lan.username} defaultFocus='true' ref='name' keydown={this.keyDown} />
-                <Input placeholder={Demo.lan.password} ref='auth' type='password' keydown={this.keyDown} />
+                <Input placeholder={Demo.lan.username} defaultFocus='true' ref='name' keydown={this.keyDown}/>
+                <Input placeholder={Demo.lan.password} ref='auth' type='password' keydown={this.keyDown}/>
                 <div className={WebIM.config.isWindowSDK ? 'hide' : ''}>
-                    <Checkbox text={Demo.lan.tokenSignin} ref='token' />
+                    <Checkbox text={Demo.lan.tokenSignin} ref='token'/>
                 </div>
-                <Button ref='button' text={Demo.lan.signIn} onClick={this.signin} />
+                <Button ref='button' text={Demo.lan.signIn} onClick={this.signin}/>
                 <p>{Demo.lan.noaccount},
                     <i onClick={this.signup}>{Demo.lan.signupnow}</i>
                 </p>

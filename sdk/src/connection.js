@@ -577,77 +577,69 @@
     };
 
     connection.prototype.open = function (options) {
-        if (WebIM.config.isWindowSDK) {
-            WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}',
-                function (response) {
-                    Demo.conn.onOpened();
-                },
-                function (code, msg) {
-                    Notify.error('open:' + code + " - " + msg);
-                });
-        } else {
-            var pass = _validCheck(options, this);
 
-            if (!pass) {
-                return;
-            }
+        var pass = _validCheck(options, this);
 
-            var conn = this;
-
-            if (conn.isOpening() || conn.isOpened()) {
-                return;
-            }
-
-            if (options.accessToken) {
-                options.access_token = options.accessToken;
-                _login(options, conn);
-            } else {
-                var apiUrl = options.apiUrl;
-                var userId = this.context.userId;
-                var pwd = options.pwd || '';
-                var appName = this.context.appName;
-                var orgName = this.context.orgName;
-
-                var suc = function (data, xhr) {
-                    conn.context.status = _code.STATUS_DOLOGIN_IM;
-                    _login(data, conn);
-                };
-                var error = function (res, xhr, msg) {
-                    conn.clear();
-
-                    if (res.error && res.error_description) {
-                        conn.onError({
-                            type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
-                            , data: res
-                            , xhr: xhr
-                        });
-                    } else {
-                        conn.onError({
-                            type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
-                            , data: res
-                            , xhr: xhr
-                        });
-                    }
-                };
-                this.context.status = _code.STATUS_DOLOGIN_USERGRID;
-
-                var loginJson = {
-                    grant_type: 'password'
-                    , username: userId
-                    , password: pwd
-                };
-                var loginfo = _utils.stringify(loginJson);
-
-                var options = {
-                    url: apiUrl + '/' + orgName + '/' + appName + '/token',
-                    dataType: 'json',
-                    data: loginfo,
-                    success: suc || _utils.emptyfn,
-                    error: error || _utils.emptyfn
-                };
-                _utils.ajax(options);
-            }
+        if (!pass) {
+            return;
         }
+
+        var conn = this;
+
+        if (conn.isOpening() || conn.isOpened()) {
+            return;
+        }
+
+        if (options.accessToken) {
+            options.access_token = options.accessToken;
+            _login(options, conn);
+        } else {
+            var apiUrl = options.apiUrl;
+            var userId = this.context.userId;
+            var pwd = options.pwd || '';
+            var appName = this.context.appName;
+            var orgName = this.context.orgName;
+
+            var suc = function (data, xhr) {
+                conn.context.status = _code.STATUS_DOLOGIN_IM;
+                _login(data, conn);
+            };
+            var error = function (res, xhr, msg) {
+                conn.clear();
+
+                if (res.error && res.error_description) {
+                    conn.onError({
+                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
+                        , data: res
+                        , xhr: xhr
+                    });
+                } else {
+                    conn.onError({
+                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
+                        , data: res
+                        , xhr: xhr
+                    });
+                }
+            };
+            this.context.status = _code.STATUS_DOLOGIN_USERGRID;
+
+            var loginJson = {
+                grant_type: 'password'
+                , username: userId
+                , password: pwd
+            };
+            var loginfo = _utils.stringify(loginJson);
+
+            var options = {
+                url: apiUrl + '/' + orgName + '/' + appName + '/token',
+                dataType: 'json',
+                data: loginfo,
+                success: suc || _utils.emptyfn,
+                error: error || _utils.emptyfn
+            };
+            _utils.ajax(options);
+        }
+
 
     };
 
