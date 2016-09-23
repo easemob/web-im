@@ -40,11 +40,13 @@ module.exports = React.createClass({
         this.props.loading('show');
 
         if (WebIM.config.isWindowSDK) {
+            var me = this;
             WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}',
                 function (response) {
                     Demo.conn.onOpened();
                 },
                 function (code, msg) {
+                    me.props.loading('hide');
                     Notify.error('open:' + code + " - " + msg);
                 });
         } else {
