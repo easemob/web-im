@@ -95,10 +95,9 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     WebIM.doQuery('{"type":"logout"}',
                         function (response) {
-                            Demo.api.logout();
+                            Notify.error("Network connection is broken. reconnecting...");
                         },
                         function (code, msg) {
-                            Notify.error("onOffline:" + msg);
                         });
 
                 } else {
@@ -112,6 +111,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                     text = message.desc;
+                    Demo.api.logout();
                     //do nothing
                 } else {
                     if (message.data && message.data.data) {
@@ -293,6 +293,8 @@ module.exports = React.createClass({
             WebIM.doQuery('{"type":"getRoster"}',
                 function success(str) {
                     var roster = eval('(' + str + ')');
+                    Demo.roster = [];
+
                     for (var i in roster) {
                         var ros = roster[i];
                         if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
