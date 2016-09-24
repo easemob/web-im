@@ -84,7 +84,7 @@ module.exports = {
             name = this.sendByMe ? Demo.user : msg.from,
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
             targetNode = document.getElementById('wrapper' + targetId);
-
+        data = decodeURI(data);
 
         if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
