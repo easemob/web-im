@@ -40,7 +40,7 @@ module.exports = React.createClass({
 
         return (
             <div>
-                <div className='webim'>
+                <div className={'webim' + (WebIM.config.isWindowSDK ? ' webim_isWindowSDK' : '')}>
                     <div className={'webim-logo' + (!this.state.signIn && !this.state.signUp ? ' hide' : '')}>
                         <img src='demo/images/logo.png'/>
                     </div>
@@ -50,7 +50,7 @@ module.exports = React.createClass({
                           loading={this.loading} {...props} />
                     <Loading show={this.state.loadingStatus}/>
                 </div>
-                <footer className='copyright'>© 2016 环信科技</footer>
+                <footer className={'copyright' + (WebIM.config.isWindowSDK ? ' hide' : '')}>© 2016 环信科技</footer>
             </div>
         );
     }

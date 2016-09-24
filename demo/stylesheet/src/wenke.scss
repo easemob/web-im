@@ -13,7 +13,8 @@
 }
 
 .webim-chatwindow .webim-operations {
-  left: 520px;
+  left: inherit;
+  right: 40px;
   top: 10px;
   bottom: auto;
   z-index: 2; //避免ul列表被下面的msg窗口挡住 不能选取
@@ -27,4 +28,18 @@
 .webim-friend-options input.radio {
   height: 10px;
   width: 20px;
+}
+
+.webim_isWindowSDK {
+  //position:
+  top: 0;
+  bottom: 0;
+}
+
+.webim_isWindowSDK .webim-chat {
+  //box-shadow:
+  max-width: 100%;
+  min-width: 100%;
+  max-height: 100%;
+  width: 100%;
 }
