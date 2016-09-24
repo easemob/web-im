@@ -20,14 +20,13 @@ var ChangeGroupDescription = React.createClass({
             Notify.error("群组名不能为空");
             return;
         }
-        log("ChangeGroupSubject:", value, this.props.roomId);
+        log("ChangeGroupDescription:", value, this.props.roomId);
         if (WebIM.config.isWindowSDK) {
-            //TODO:@lhr 修改群名称
-            WebIM.doQuery('{"type":"changeGroupSubject"}',
+            WebIM.doQuery('{"type":"changeGroupDescription", "id":"' + this.props.roomId + '", "description":"' + value + '"}',
                 function (response) {
                 },
                 function (code, msg) {
-                    Notify.error("changeGroupSubject:" + code);
+                    Notify.error("changeGroupDescription:" + code);
                 });
         } else {
         }

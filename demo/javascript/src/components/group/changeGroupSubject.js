@@ -22,8 +22,7 @@ var ChangeGroupSubject = React.createClass({
         }
         log("ChangeGroupSubject:", value, this.props.roomId);
         if (WebIM.config.isWindowSDK) {
-            //TODO:@lhr 修改群名称
-            WebIM.doQuery('{"type":"changeGroupSubject"}',
+            WebIM.doQuery('{"type":"changeGroupSubject", "id":"' + this.props.roomId + '", "subject":"' + value + '"}',
                 function (response) {
                 },
                 function (code, msg) {
