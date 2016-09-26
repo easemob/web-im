@@ -60,7 +60,7 @@ module.exports = React.createClass({
             },
             error: function (e) {
                 me.submiting = false;
-                Notify.error(e.data);
+                Notify.error(e.data || "registerUser error! Please check the network and try again!");
             }
         };
         if (WebIM.config.isWindowSDK) {
