@@ -198,35 +198,26 @@
                 return;
             }
 
-            if (WebIM.config.isWindowSDK) {
-                WebIM.doQuery('{"type":"createAccount","id":"' + options.username + '","password":"' + options.password + '"}',
-                    function (response) {
-                        suc();
-                    },
-                    function (code, msg) {
-                        alert("registerUser:" + code + " - " + msg);
-                    });
-            } else {
-                var https = options.https || https;
-                var apiUrl = options.apiUrl;
-                var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
 
-                var userjson = {
-                    username: options.username,
-                    password: options.password,
-                    nickname: options.nickname || ''
-                };
+            var https = options.https || https;
+            var apiUrl = options.apiUrl;
+            var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
 
-                var userinfo = utils.stringify(userjson);
-                var options = {
-                    url: restUrl,
-                    dataType: 'json',
-                    data: userinfo,
-                    success: suc,
-                    error: err
-                };
-                return utils.ajax(options);
-            }
+            var userjson = {
+                username: options.username,
+                password: options.password,
+                nickname: options.nickname || ''
+            };
+
+            var userinfo = utils.stringify(userjson);
+            var options = {
+                url: restUrl,
+                dataType: 'json',
+                data: userinfo,
+                success: suc,
+                error: err
+            };
+            return utils.ajax(options);
         },
         login: function (options) {
             var options = options || {};

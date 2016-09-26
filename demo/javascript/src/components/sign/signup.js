@@ -40,6 +40,7 @@ module.exports = React.createClass({
 
 
         this.submiting = true;
+
         var options = {
             username: username.toLowerCase(),
             password: pwd,
@@ -62,7 +63,18 @@ module.exports = React.createClass({
                 Notify.error(e.data);
             }
         };
-        WebIM.utils.registerUser(options);
+        if (WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"createAccount","id":"' + options.username + '","password":"' + options.password + '"}',
+                function (response) {
+                    options.success();
+                },
+                function (code, msg) {
+                    me.submiting = false;
+                    alert("registerUser:" + code + " - " + msg);
+                });
+        } else {
+            WebIM.utils.registerUser(options);
+        }
     },
 
     render: function () {
