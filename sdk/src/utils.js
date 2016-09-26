@@ -198,35 +198,26 @@
                 return;
             }
 
-            if (WebIM.config.isWindowSDK) {
-                WebIM.doQuery('{"type":"createAccount","id":"' + options.username + '","password":"' + options.password + '"}',
-                    function (response) {
-                        suc();
-                    },
-                    function (code, msg) {
-                        alert("registerUser:" + code + " - " + msg);
-                    });
-            } else {
-                var https = options.https || https;
-                var apiUrl = options.apiUrl;
-                var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
 
-                var userjson = {
-                    username: options.username,
-                    password: options.password,
-                    nickname: options.nickname || ''
-                };
+            var https = options.https || https;
+            var apiUrl = options.apiUrl;
+            var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
 
-                var userinfo = utils.stringify(userjson);
-                var options = {
-                    url: restUrl,
-                    dataType: 'json',
-                    data: userinfo,
-                    success: suc,
-                    error: err
-                };
-                return utils.ajax(options);
-            }
+            var userjson = {
+                username: options.username,
+                password: options.password,
+                nickname: options.nickname || ''
+            };
+
+            var userinfo = utils.stringify(userjson);
+            var options = {
+                url: restUrl,
+                dataType: 'json',
+                data: userinfo,
+                success: suc,
+                error: err
+            };
+            return utils.ajax(options);
         },
         login: function (options) {
             var options = options || {};
@@ -360,21 +351,23 @@
         },
 
         parseLink: function (msg) {
+
             var reg = /(https?\:\/\/|www\.)([a-zA-Z0-9-]+(\.[a-zA-Z0-9]+)+)(\:[0-9]{2,4})?\/?((\.[:_0-9a-zA-Z-]+)|[:_0-9a-zA-Z-]*\/?)*\??[:_#@*&%0-9a-zA-Z-/=]*/gm;
-            var res = msg.match(reg);
-            var src = res && res[0] ? res[0] : '';
-            if (res && res.length) {
-                var prefix = /^https?:\/\//.test(src);
-                msg = msg.replace(reg
-                    , "<a href='"
-                    + (prefix
-                        ? src
-                        : '\/\/' + src)
+
+            msg = msg.replace(reg, function (v) {
+
+                var prefix = /^https?/gm.test(v);
+
+                return "<a href='"
+                    + (prefix ? v : '//' + v)
                     + "' target='_blank'>"
-                    + src
-                    + "</a>");
-            }
+                    + v
+                    + "</a>";
+
+            });
+
             return msg;
+
         },
 
         parseJSON: function (data) {
