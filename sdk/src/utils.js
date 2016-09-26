@@ -204,7 +204,7 @@
                         suc();
                     },
                     function (code, msg) {
-                        Notify.error("registerUser:" + code + " - " + msg);
+                        alert("registerUser:" + code + " - " + msg);
                     });
             } else {
                 var https = options.https || https;
