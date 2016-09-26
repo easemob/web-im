@@ -1,6 +1,3 @@
-
-require('./components/adapter');
-
 var Util = require('./components/utils');
 var Call = require('./components/call');
 
