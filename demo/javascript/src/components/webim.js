@@ -42,7 +42,7 @@ module.exports = React.createClass({
             <div>
                 <div className={'webim' + (WebIM.config.isWindowSDK ? ' webim_isWindowSDK' : '')}>
                     <div className={'webim-logo' + (!this.state.signIn && !this.state.signUp ? ' hide' : '')}>
-                        <img src='demo/images/logo.png'/>
+                        <img src={'demo/images/logo' + (WebIM.config.isWindowSDK ? '-windowSDK' : '') + '.png'}/>
                     </div>
                     <SignIn show={this.state.signIn} {...this.props} update={this.update} loading={this.loading}/>
                     <SignUp show={this.state.signUp} {...this.props} update={this.update} loading={this.loading}/>
