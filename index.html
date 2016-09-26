@@ -19,6 +19,7 @@
 <script src='sdk/dist/websdk-1.1.2.js'></script>
 <script>
     if (WebIM.config.isWebRTC) {
+        document.write("<script src='sdk/dist/adapter.js'><\/script>");
         document.write("<script src='sdk/dist/webrtc-1.0.0.js'><\/script>");
     }
 </script>

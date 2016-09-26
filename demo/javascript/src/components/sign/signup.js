@@ -21,10 +21,11 @@ module.exports = React.createClass({
         });
     },
 
+    submiting: false,
     signup: function () {
         var me = this;
 
-        if (submiting) {
+        if (this.submiting) {
             return false;
         }
 
@@ -32,13 +33,13 @@ module.exports = React.createClass({
         var pwd = this.refs.auth.refs.input.value;
         var nickname = this.refs.nickname.refs.input.value;
 
-        if (!username || !pwd || !nickname) {
+        if (!username || !pwd) {
             Notify.error(Demo.lan.notEmpty);
             return false;
         }
 
 
-        submiting = true;
+        this.submiting = true;
         var options = {
             username: username.toLowerCase(),
             password: pwd,
@@ -46,7 +47,7 @@ module.exports = React.createClass({
             appKey: this.props.config.appkey,
             apiUrl: this.props.config.apiURL,
             success: function () {
-                submiting = false;
+                me.submiting = false;
                 Notify.success(Demo.lan.signUpSuccessfully);
                 setTimeout(function () {
                     me.props.update({
@@ -57,7 +58,7 @@ module.exports = React.createClass({
                 }, 1000);
             },
             error: function (e) {
-                submiting = false;
+                me.submiting = false;
                 Notify.error(e.data);
             }
         };
@@ -65,13 +66,16 @@ module.exports = React.createClass({
     },
 
     render: function () {
+        log(WebIM.config.isWindowSDK);
         return (
             <div className={this.props.show ? 'webim-sign webim-signup' : 'webim-sign webim-signup hide'}>
                 <h2>{Demo.lan.signUp}</h2>
-                <Input ref='name' placeholder={Demo.lan.username} defaultFocus='true' keydown={this.keyDown} />
-                <Input ref='auth' placeholder={Demo.lan.password} type='password' keydown={this.keyDown} />
-                <Input ref='nickname' placeholder={Demo.lan.nickname} keydown={this.keyDown} />
-                <Button text={Demo.lan.signUp} onClick={this.signup} />
+                <Input ref='name' placeholder={Demo.lan.username} defaultFocus='true' keydown={this.keyDown}/>
+                <Input ref='auth' placeholder={Demo.lan.password} type='password' keydown={this.keyDown}/>
+                <div className={WebIM.config.isWindowSDK ? 'hide' : ''}>
+                    <Input ref='nickname' placeholder={Demo.lan.nickname} keydown={this.keyDown}/>
+                </div>
+                <Button text={Demo.lan.signUp} onClick={this.signup}/>
                 <p>{Demo.lan.haveaccount},
                     <i onClick={this.signin}>{Demo.lan.signIn}</i>
                 </p>
