@@ -13,6 +13,11 @@
 </section>
 <!--config-->
 <script src="demo/javascript/dist/webim.config.js"></script>
+<script>
+    if (WebIM.config.isWindowSDK) {
+        document.title = "环信Demo";
+    }
+</script>
 <!--A JavaScript library for XMPP over Websocket-->
 <script src='sdk/dist/strophe.js'></script>
 <!--sdk-->
