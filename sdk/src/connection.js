@@ -1156,7 +1156,7 @@
                 function (response) {
                 },
                 function (code, msg) {
-                    Notify.error('send:' + code + " - " + msg);
+                    alert('send:' + code + " - " + msg);
                 });
         } else {
             if (Object.prototype.toString.call(message) === '[object Object]') {
