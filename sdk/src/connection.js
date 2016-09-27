@@ -519,6 +519,7 @@
         this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
         this.onOffline = options.onOffline || _utils.emptyfn;
         this.onOnline = options.onOnline || _utils.emptyfn;
+        this.onCreateGroup = options.onCreateGroup || _utils.emptyfn;
 
         _listenNetwork(this.onOnline, this.onOffline);
     };
@@ -1630,6 +1631,32 @@
             .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
 
         this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
+    };
+
+    connection.prototype.joinPublicGroup = function (options) {
+        //<message to="easemob-demo#chatdemoui_18601036584@easemob.com"
+        // from="easemob-demo#chatdemoui_wk3368@easemob.com"
+        // id="0005AF60-44A4-4A9C-9154-92F935B2DBDF">
+        //  <x xmlns="http://jabber.org/protocol/muc#user">
+        //    <apply to="easemob-demo#chatdemoui_1420348135307@conference.easemob.com" from="easemob-demo#chatdemoui_wk3368@easemob.com" toNick="qqq">
+        //      <reason>d</reason>
+        //   </apply>
+        //  </x>
+        // </message>
+        var dom = $msg({
+            to: this.context.appKey + '_' + options.to + '@conference.' + this.domain,
+            from: this.context.jid,
+            id: this.getUniqueId()
+        }).c('x', {xmlns: Strophe.NS.MUC + '#user'})
+            .c('apply', {
+                to: this.context.appKey + '_' + options.to + '@conference.' + this.domain,
+                from: this.context.jid,
+                toNick: 'qwer'
+            })
+            .c('reason', 'dd');
+
+        this.sendCommand(dom.tree());
+
     };
 
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};

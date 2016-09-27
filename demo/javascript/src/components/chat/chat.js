@@ -104,6 +104,9 @@ module.exports = React.createClass({
                     Demo.api.logout();
                 }
             },
+            onCreateGroup: function () {
+                me.getGroup();
+            },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
                 log('onError', message);
