@@ -63,20 +63,32 @@ var CreateGroup = React.createClass({
             return;
         }
         if (WebIM.config.isWindowSDK) {
-            var styles = ["PUBLIC_JOIN_APPROVAL","PUBLIC_JOIN_OPEN","PRIVATE_OWNER_INVITE","PRIVATE_MEMBER_INVITE"];
-            var option1 = permission_group == "option1"?0:1;
-            var option2 = permission_member == "option3"?0:1;
-            var style = styles[option1*2+option2];
+            var styles = ["PUBLIC_JOIN_APPROVAL", "PUBLIC_JOIN_OPEN", "PRIVATE_OWNER_INVITE", "PRIVATE_MEMBER_INVITE"];
+            var option1 = permission_group == "option1" ? 0 : 1;
+            var option2 = permission_member == "option3" ? 0 : 1;
+            var style = styles[option1 * 2 + option2];
 
             friendsSelected = '["' + friendsSelected.replace(/, /g, '","') + '"]';
 
-            WebIM.doQuery('{"type":"createGroup","subject":"'+ value + '","description":"'+ info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + friendsSelected +'}',
+            WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + friendsSelected + '}',
                 function (response) {
+                    alert('createGroup successfully');
+                    WebIM.doQuery('{"type":"getGroup"}',
+                        function success(str) {
+                            Dom.conn.onCreateGroup();
+                        },
+                        function failure(errCode, errMessage) {
+                            Notify.error('getGroup:' + errCode);
+                        });
                 },
                 function (code, msg) {
                     Notify.error("onSubmit:" + code);
                 });
         } else {
+            Demo.conn.createGroup({
+                to: value,
+                message: Demo.user + Demo.lan.request
+            });
         }
 
 
@@ -103,7 +115,7 @@ var CreateGroup = React.createClass({
                 <div className='webim-dialog webim-dialog-2'>
                     <h3>{Demo.lan.createGroup}</h3>
                     <div ref='content'>
-                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupSubject} />
+                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupSubject}/>
                         <br/>
                         <textarea ref='textarea' placeholder={Demo.lan.groupDescription}></textarea>
                         <br/>
@@ -113,11 +125,15 @@ var CreateGroup = React.createClass({
                                 {Demo.lan.groupPermission}:
                             </label>
                             <label>
-                                <input className="radio" type="radio" value="option1" checked={this.state.selectedOption === 'option1'} onChange={this.handleOptionChange} />
+                                <input className="radio" type="radio" value="option1"
+                                       checked={this.state.selectedOption === 'option1'}
+                                       onChange={this.handleOptionChange}/>
                                 <span className="radio_span">公有群</span>
                             </label>
                             <label>
-                                <input className="radio" type="radio" value="option2" checked={this.state.selectedOption === 'option2'} onChange={this.handleOptionChange} />
+                                <input className="radio" type="radio" value="option2"
+                                       checked={this.state.selectedOption === 'option2'}
+                                       onChange={this.handleOptionChange}/>
                                 <span className="radio_span">私有群</span>
                             </label>
                         </div>
@@ -126,19 +142,25 @@ var CreateGroup = React.createClass({
                                 {Demo.lan.groupMemberPermission}:
                             </label>
                             <label>
-                                <input className="radio" type="radio" value="option3" checked={this.state.selectedOption2 === 'option3'} onChange={this.handleOptionChange2} />
-                                <span className="radio_span">{this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'}</span>
+                                <input className="radio" type="radio" value="option3"
+                                       checked={this.state.selectedOption2 === 'option3'}
+                                       onChange={this.handleOptionChange2}/>
+                                <span
+                                    className="radio_span">{this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'}</span>
                             </label>
                             <label>
-                                <input className="radio" type="radio" value="option4" checked={this.state.selectedOption2 === 'option4'} onChange={this.handleOptionChange2} />
-                                <span className="radio_span">{this.state.selectedOption === 'option1' ? '随便加' : '允许'}</span>
+                                <input className="radio" type="radio" value="option4"
+                                       checked={this.state.selectedOption2 === 'option4'}
+                                       onChange={this.handleOptionChange2}/>
+                                <span
+                                    className="radio_span">{this.state.selectedOption === 'option1' ? '随便加' : '允许'}</span>
                             </label>
                         </div>
                     </div>
                     <div>
-                        <FridendList ref="friendList" optionData={Demo.roster} />
+                        <FridendList ref="friendList" optionData={Demo.roster}/>
                     </div>
-                    <Button text={Demo.lan.add} onClick={this.onSubmit} className='webim-dialog-button' />
+                    <Button text={Demo.lan.add} onClick={this.onSubmit} className='webim-dialog-button'/>
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>
@@ -149,7 +171,7 @@ var CreateGroup = React.createClass({
 module.exports = {
     show: function () {
         ReactDOM.render(
-            <CreateGroup onClose={this.close} />,
+            <CreateGroup onClose={this.close}/>,
             dom
         );
     },
