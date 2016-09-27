@@ -2533,7 +2533,7 @@
              */
             send: function (elem) {
                 if (WebIM.config.isDebug) {
-                    console.log('send:', Strophe.serialize(elem));
+                    console.log(new Date().toString().substring(16, 24), 'send:', Strophe.serialize(elem));
                 }
                 if (elem === null) {
                     return;
@@ -5329,7 +5329,7 @@
              */
             _onMessage: function (message) {
                 if (WebIM.config.isDebug) {
-                    console.log('recv:', message.data);
+                    console.log(new Date().toString().substring(16, 24), 'recv:', message.data);
                 }
                 var elem, data;
                 // check for closing stream
