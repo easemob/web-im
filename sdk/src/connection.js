@@ -1636,6 +1636,124 @@
         this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
     };
 
+    connection.prototype._onReceiveInviteFromGroup = function () {
+        var options = {
+            title: "test",
+            msg: "ssss",
+            agree: function () {
+                alert("agree");
+            },
+            reject: function () {
+                alert("reject");
+            }
+        };
+        this.onConfirmPop(options);
+    };
+    connection.prototype._nReceiveInviteAcceptionFromGroup = function () {
+        var options = {
+            title: "test",
+            msg: "ssss",
+            agree: function () {
+                alert("agree");
+            },
+            reject: function () {
+                alert("reject");
+            }
+        };
+        this.onConfirmPop(options);
+    };
+    connection.prototype._onReceiveInviteDeclineFromGroup = function () {
+        var options = {
+            title: "test",
+            msg: "ssss",
+            agree: function () {
+                alert("agree");
+            },
+            reject: function () {
+                alert("reject");
+            }
+        };
+        this.onConfirmPop(options);
+    };
+    connection.prototype._onAutoAcceptInvitationFromGroup = function () {
+        var options = {
+            title: "test",
+            msg: "ssss",
+            agree: function () {
+                alert("agree");
+            },
+            reject: function () {
+                alert("reject");
+            }
+        };
+        this.onConfirmPop(options);
+    };
+    connection.prototype._onLeaveGroup = function () {
+        var options = {
+            title: "test",
+            msg: "ssss",
+            agree: function () {
+                alert("agree");
+            },
+            reject: function () {
+                alert("reject");
+            }
+        };
+        this.onConfirmPop(options);
+    };
+    connection.prototype._onReceiveJoinGroupApplication = function () {
+        var options = {
+            title: "test",
+            msg: "ssss",
+            agree: function () {
+                alert("agree");
+            },
+            reject: function () {
+                alert("reject");
+            }
+        };
+        this.onConfirmPop(options);
+    };
+    connection.prototype._onReceiveAcceptionFromGroup = function () {
+        var options = {
+            title: "test",
+            msg: "ssss",
+            agree: function () {
+                alert("agree");
+            },
+            reject: function () {
+                alert("reject");
+            }
+        };
+        this.onConfirmPop(options);
+    };
+    connection.prototype._onReceiveRejectionFromGroup = function () {
+        var options = {
+            title: "test",
+            msg: "ssss",
+            agree: function () {
+                alert("agree");
+            },
+            reject: function () {
+                alert("reject");
+            }
+        };
+        this.onConfirmPop(options);
+    };
+    connection.prototype._onUpdateMyGroupList = function () {
+        var options = {
+            title: "test",
+            msg: "ssss",
+            agree: function () {
+                alert("agree");
+            },
+            reject: function () {
+                alert("reject");
+            }
+        };
+        this.onConfirmPop(options);
+    };
+
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
     WebIM.connection = connection;
     WebIM.utils = _utils;

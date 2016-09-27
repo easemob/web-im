@@ -46,9 +46,9 @@ var ConfirmPop = React.createClass({
     render: function () {
         var requests = [];
 
-
+        var i = 0;
         requests.push(
-            <li>
+            <li id={i} key={i}>
                 <span>{this.props.data.msg}</span>
                 <Button text={Demo.lan.agree} onClick={this.agree} className='webim-subscribe-button'/>
                 <Button text={Demo.lan.reject} onClick={this.reject} className='error webim-subscribe-button'/>
