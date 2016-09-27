@@ -30,6 +30,10 @@ var JoinPublicGroup = React.createClass({
                     Notify.error("JoinPublicGroup:" + code);
                 });
         } else {
+            Demo.conn.joinPublicGroup({
+                to: value,
+                message: Demo.user + Demo.lan.request
+            });
         }
         this.close();
     },
