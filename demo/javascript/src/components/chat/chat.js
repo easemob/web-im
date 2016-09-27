@@ -104,9 +104,6 @@ module.exports = React.createClass({
                     Demo.api.logout();
                 }
             },
-            onCreateGroup: function () {
-                me.getGroup();
-            },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
                 log('onError', message);
@@ -255,6 +252,10 @@ module.exports = React.createClass({
                 if (Demo.roster[msg.from]) {
                     delete Demo.roster[msg.from];
                 }
+                break;
+            case 'joinPublicGroupSuccess':
+                console.log('joinPublicGroupSuccess');
+                Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
                 Demo.currentChatroom = msg.from;

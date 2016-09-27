@@ -519,7 +519,6 @@
         this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
         this.onOffline = options.onOffline || _utils.emptyfn;
         this.onOnline = options.onOnline || _utils.emptyfn;
-        this.onCreateGroup = options.onCreateGroup || _utils.emptyfn;
 
         _listenNetwork(this.onOnline, this.onOffline);
     };
@@ -752,7 +751,6 @@
         if (this.isClosed()) {
             return;
         }
-
         var from = msginfo.getAttribute('from') || '';
         var to = msginfo.getAttribute('to') || '';
         var type = msginfo.getAttribute('type') || '';
@@ -760,13 +758,14 @@
         var fromUser = _parseNameFromJidFn(from);
         var toUser = _parseNameFromJidFn(to);
         var info = {
-            from: fromUser
-            , to: toUser
-            , fromJid: from
-            , toJid: to
-            , type: type
-            , chatroom: msginfo.getElementsByTagName('roomtype').length ? true : false
+            from: fromUser,
+            to: toUser,
+            fromJid: from,
+            toJid: to,
+            type: type,
+            chatroom: msginfo.getElementsByTagName('roomtype').length ? true : false
         };
+
 
         var showTags = msginfo.getElementsByTagName('show');
         if (showTags && showTags.length > 0) {
@@ -821,14 +820,17 @@
                     }
                 }
             }
-        } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
-            if (info.destroy) {// Group or Chat room Deleted.
-                info.type = 'deleteGroupChat';
-            } else if (info.code == 307 || info.code == 321) {// Dismissed by group.
-                info.type = 'leaveGroup';
+        } else {
+            if (type == "" && !info.status && !info.error) {
+                info.type = 'joinPublicGroupSuccess';
+            } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
+                if (info.destroy) {// Group or Chat room Deleted.
+                    info.type = 'deleteGroupChat';
+                } else if (info.code == 307 || info.code == 321) {// Dismissed by group.
+                    info.type = 'leaveGroup';
+                }
             }
         }
-
         this.onPresence(info, msginfo);
     };
 
@@ -1302,15 +1304,15 @@
         return this.context.stropheConn.sendIQ(roomiq.tree(), suc, err);
     };
 
-    connection.prototype.join = function (options) {
+    connection.prototype.joinPublicGroup = function (options) {
         var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
         var room_nick = roomJid + '/' + this.context.userId;
         var suc = options.success || _utils.emptyfn;
         var err = options.error || _utils.emptyfn;
         var errorFn = function (ele) {
             err({
-                type: _code.WEBIM_CONNCTION_JOINROOM_ERROR
-                , data: ele
+                type: _code.WEBIM_CONNCTION_JOINROOM_ERROR,
+                data: ele
             });
         };
         var iq = $pres({
@@ -1631,32 +1633,6 @@
             .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
 
         this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
-    };
-
-    connection.prototype.joinPublicGroup = function (options) {
-        //<message to="easemob-demo#chatdemoui_18601036584@easemob.com"
-        // from="easemob-demo#chatdemoui_wk3368@easemob.com"
-        // id="0005AF60-44A4-4A9C-9154-92F935B2DBDF">
-        //  <x xmlns="http://jabber.org/protocol/muc#user">
-        //    <apply to="easemob-demo#chatdemoui_1420348135307@conference.easemob.com" from="easemob-demo#chatdemoui_wk3368@easemob.com" toNick="qqq">
-        //      <reason>d</reason>
-        //   </apply>
-        //  </x>
-        // </message>
-        var dom = $msg({
-            to: this.context.appKey + '_' + options.to + '@conference.' + this.domain,
-            from: this.context.jid,
-            id: this.getUniqueId()
-        }).c('x', {xmlns: Strophe.NS.MUC + '#user'})
-            .c('apply', {
-                to: this.context.appKey + '_' + options.to + '@conference.' + this.domain,
-                from: this.context.jid,
-                toNick: 'qwer'
-            })
-            .c('reason', 'dd');
-
-        this.sendCommand(dom.tree());
-
     };
 
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
