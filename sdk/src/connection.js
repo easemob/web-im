@@ -519,6 +519,7 @@
         this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
         this.onOffline = options.onOffline || _utils.emptyfn;
         this.onOnline = options.onOnline || _utils.emptyfn;
+        this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
 
         _listenNetwork(this.onOnline, this.onOffline);
     };

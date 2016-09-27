@@ -5,6 +5,7 @@ var ChatWindow = require('../chat/chatWindow');
 var Notify = require('../common/notify');
 var RTCChannel = require('../common/rtcChannel');
 var Subscribe = require('./subscribe');
+var ConfirmPop = require('./confirmPop');
 
 module.exports = React.createClass({
 
@@ -12,6 +13,9 @@ module.exports = React.createClass({
         var me = this;
 
         Demo.conn.listen({
+            onConfirmPop: function (options) {
+                me.confirmPop(options);
+            },
             onOpened: function () {
                 me.props.update({
                     signIn: false,
@@ -148,7 +152,15 @@ module.exports = React.createClass({
         }
         return '';
     },
+    confirmPop: function (options) {
+        console.log('comfirmPop', options);
+
+
+        ConfirmPop.show(options);
+    },
+
     friendRequest: function (msg) {
+        console.log('friendRequest', msg);
         if (msg && msg.status === '[resp:true]') {
             return;
         }
