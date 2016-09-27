@@ -8,6 +8,7 @@ componentsNode.appendChild(dom);
 var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var Input = UI.Input;
+var Notify = require('../common/notify');
 
 var DelFriend = React.createClass({
 
@@ -16,6 +17,12 @@ var DelFriend = React.createClass({
             value = this.refs.input.refs.input.value;
 
         if (!value) {
+            return;
+        }
+
+        if (value == Demo.user) {
+            Notify.error(Demo.lan.delFriendSelfInvalid);
+            this.close();
             return;
         }
 
@@ -58,9 +65,9 @@ var DelFriend = React.createClass({
                 <div className='webim-dialog'>
                     <h3>{Demo.lan.delAFriend}</h3>
                     <div ref='content'>
-                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.username} />
+                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.username}/>
                     </div>
-                    <Button text={Demo.lan.delete} onClick={this.delFriend} className='webim-dialog-button' />
+                    <Button text={Demo.lan.delete} onClick={this.delFriend} className='webim-dialog-button'/>
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>
@@ -71,7 +78,7 @@ var DelFriend = React.createClass({
 module.exports = {
     show: function () {
         ReactDOM.render(
-            <DelFriend onClose={this.close} />,
+            <DelFriend onClose={this.close}/>,
             dom
         );
     },

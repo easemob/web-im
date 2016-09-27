@@ -54,7 +54,11 @@ exports.English = {
     confirm: "confirm",
     cancel: "cancel",
     contact_added: 'Contact added!',
-    contact_deleted: 'Contact deleted!'
+    contact_deleted: 'Contact deleted!',
+    addFriendSelfInvalid: 'Can\'t add youself as friend',
+    delFriendSelfInvalid: 'Can\'t del youself as friend',
+
+    last: ''
 };
 
 exports.Chinese = {
@@ -113,5 +117,8 @@ exports.Chinese = {
     confirm: "确定",
     cancel: "取消",
     contact_added: '已发送添加请求!',
-    contact_deleted: '好友已删除!'
+    contact_deleted: '好友已删除!',
+    addFriendSelfInvalid: '不能添加自己为好友',
+    delFriendSelfInvalid: '该好友不存在',
+    last: ''
 };
