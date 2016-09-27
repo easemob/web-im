@@ -75,7 +75,7 @@ var CreateGroup = React.createClass({
                     alert('createGroup successfully');
                     WebIM.doQuery('{"type":"getGroup"}',
                         function success(str) {
-                            Dom.conn.onCreateGroup();
+                            Demo.api.updateGroup();
                         },
                         function failure(errCode, errMessage) {
                             Notify.error('getGroup:' + errCode);
@@ -85,10 +85,11 @@ var CreateGroup = React.createClass({
                     Notify.error("onSubmit:" + code);
                 });
         } else {
-            Demo.conn.createGroup({
-                to: value,
-                message: Demo.user + Demo.lan.request
-            });
+
+            // Demo.conn.createGroup({
+            //     to: value,
+            //     message: Demo.user + Demo.lan.request
+            // });
         }
 
 

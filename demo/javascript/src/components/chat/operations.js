@@ -38,6 +38,7 @@ module.exports = React.createClass({
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"destroyGroup","id":"' + this.props.roomId + '"}',
                 function (response) {
+                    Demo.api.updateGroup();
                 },
                 function (code, msg) {
                     Notify.error("destroyGroup:" + code);
@@ -52,6 +53,7 @@ module.exports = React.createClass({
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"leaveGroup","id":"' + this.props.roomId + '"}',
                 function (response) {
+                    Demo.api.updateGroup();
                 },
                 function (code, msg) {
                     Notify.error("leaveGroup:" + code);

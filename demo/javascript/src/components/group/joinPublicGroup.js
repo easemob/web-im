@@ -25,14 +25,19 @@ var JoinPublicGroup = React.createClass({
             //TODO:@lhr 申请加入群组
             WebIM.doQuery('{"type":"joinPublicGroup"}',
                 function (response) {
+                    Demo.api.updateGroup();
                 },
                 function (code, msg) {
-                    Notify.error("JoinPublicGroup:" + code);
+                    Notify.error("JoinPublicGroup error:" + code);
                 });
         } else {
             Demo.conn.joinPublicGroup({
-                to: value,
-                message: Demo.user + Demo.lan.request
+                roomId: value,
+                success: function () {
+                },
+                error: function (e) {
+                    Notify.error("JoinPublicGroup error:" + e);
+                }
             });
         }
         this.close();
@@ -50,9 +55,9 @@ var JoinPublicGroup = React.createClass({
                 <div className='webim-dialog'>
                     <h3>{Demo.lan.joinPublicGroup}</h3>
                     <div ref='content'>
-                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupSubject} />
+                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupSubject}/>
                     </div>
-                    <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button' />
+                    <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button'/>
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>
@@ -63,7 +68,7 @@ var JoinPublicGroup = React.createClass({
 module.exports = {
     show: function () {
         ReactDOM.render(
-            <JoinPublicGroup onClose={this.close} />,
+            <JoinPublicGroup onClose={this.close}/>,
             dom
         );
     },

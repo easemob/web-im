@@ -5,6 +5,7 @@ var ChatWindow = require('../chat/chatWindow');
 var Notify = require('../common/notify');
 var RTCChannel = require('../common/rtcChannel');
 var Subscribe = require('./subscribe');
+var ConfirmPop = require('./confirmPop');
 
 module.exports = React.createClass({
 
@@ -12,6 +13,9 @@ module.exports = React.createClass({
         var me = this;
 
         Demo.conn.listen({
+            onConfirmPop: function (options) {
+                me.confirmPop(options);
+            },
             onOpened: function () {
                 me.props.update({
                     signIn: false,
@@ -104,9 +108,6 @@ module.exports = React.createClass({
                     Demo.api.logout();
                 }
             },
-            onCreateGroup: function () {
-                me.getGroup();
-            },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
                 log('onError', message);
@@ -151,7 +152,15 @@ module.exports = React.createClass({
         }
         return '';
     },
+    confirmPop: function (options) {
+        console.log('comfirmPop', options);
+
+
+        ConfirmPop.show(options);
+    },
+
     friendRequest: function (msg) {
+        console.log('friendRequest', msg);
         if (msg && msg.status === '[resp:true]') {
             return;
         }
@@ -255,6 +264,10 @@ module.exports = React.createClass({
                 if (Demo.roster[msg.from]) {
                     delete Demo.roster[msg.from];
                 }
+                break;
+            case 'joinPublicGroupSuccess':
+                console.log('joinPublicGroupSuccess');
+                Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
                 Demo.currentChatroom = msg.from;
