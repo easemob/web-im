@@ -8,7 +8,7 @@ componentsNode.appendChild(dom);
 var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var Input = UI.Input;
-
+var Notify = require('../common/notify');
 
 import MultipleSelectBoxList  from '../common/multiSelectBoxList';
 
