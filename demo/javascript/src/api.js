@@ -135,16 +135,26 @@ module.exports = {
                 break;
             case 'aud':
                 if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'aud'});
+                    Demo.strangers[targetId].push({msg: msg, type: type});
                 } else {
-                    brief = '[' + Demo.lan.audio + ']';
-                    audioMsg({
-                        wrapper: targetNode,
-                        name: name,
-                        value: data || msg.url,
-                        length: msg.length,
-                        id: msg.id
-                    }, this.sentByMe);
+                    if (WebIM.config.isWindowSDK) {
+                        brief = '[' + Demo.lan.file + ']';
+                        fileMsg({
+                            wrapper: targetNode,
+                            name: name,
+                            value: data || msg.url,
+                            filename: msg.filename
+                        }, this.sentByMe);
+                    } else {
+                        brief = '[' + Demo.lan.audio + ']';
+                        audioMsg({
+                            wrapper: targetNode,
+                            name: name,
+                            value: data || msg.url,
+                            length: msg.length,
+                            id: msg.id
+                        }, this.sentByMe);
+                    }
                 }
                 break;
             case 'cmd':
@@ -181,16 +191,26 @@ module.exports = {
                 break;
             case 'video':
                 if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'video'});
+                    Demo.strangers[targetId].push({msg: msg, type: type});
                 } else {
-                    brief = '[' + Demo.lan.video + ']';
-                    videoMsg({
-                        wrapper: targetNode,
-                        name: name,
-                        value: data || msg.url,
-                        length: msg.length,
-                        id: msg.id
-                    }, this.sentByMe);
+                    if (WebIM.config.isWindowSDK) {
+                        brief = '[' + Demo.lan.file + ']';
+                        fileMsg({
+                            wrapper: targetNode,
+                            name: name,
+                            value: data || msg.url,
+                            filename: msg.filename
+                        }, this.sentByMe);
+                    } else {
+                        brief = '[' + Demo.lan.video + ']';
+                        videoMsg({
+                            wrapper: targetNode,
+                            name: name,
+                            value: data || msg.url,
+                            length: msg.length,
+                            id: msg.id
+                        }, this.sentByMe);
+                    }
                 }
                 break;
             default:
