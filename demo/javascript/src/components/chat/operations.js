@@ -25,19 +25,6 @@ module.exports = React.createClass({
     },
 
     changeGroupSubject: function () {
-        var options = {
-            title: "test",
-            msg: "ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss",
-            agree: function () {
-                alert("agree");
-            },
-            // reject: function () {
-            //     alert("reject");
-            // }
-        };
-        Demo.conn.onConfirmPop(options);
-
-        return;
         ChangeGroupSubject.show(this.props.roomId);
         this.update();
     },
