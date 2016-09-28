@@ -66,8 +66,9 @@ module.exports = React.createClass({
 
     render: function () {
         var className = this.state.hide ? ' ' + this.state.hide : '';
-        //var acttionName = (this.props.admin == 1) ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
-        //var actionMethod = (this.props.admin == 1) ? this.destroyGroup : this.leaveGroup;
+        console.log('admin', this.props.admin);
+        var acttionName = (this.props.admin == 1) ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
+        var actionMethod = (this.props.admin == 1) ? this.destroyGroup : this.leaveGroup;
         /*
          <li onClick={actionMethod}>
          <i className='font smallest'>Q</i>
@@ -90,13 +91,9 @@ module.exports = React.createClass({
                         <i className='font smallest'>B</i>
                         <span>{Demo.lan.changeGroupDescription}</span>
                     </li>
-                    <li onClick={this.destroyGroup}>
+                    <li onClick={actionMethod}>
                         <i className='font smallest'>Q</i>
-                        <span>{Demo.lan.destroyGroup}</span>
-                    </li>
-                    <li onClick={this.leaveGroup}>
-                        <i className='font smallest'>Q</i>
-                        <span>{Demo.lan.leaveGroup}</span>
+                        <span>{acttionName}</span>
                     </li>
                 </ul>
             </div>

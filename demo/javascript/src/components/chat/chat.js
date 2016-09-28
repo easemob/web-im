@@ -668,7 +668,8 @@ module.exports = React.createClass({
             id = this.state.groups[i].roomId;
             props.name = this.state.groups[i].name;
 
-            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} showOptions={true}
+            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} winType='group'
+                                     showOptions={true}
                                      className={id === this.state.curNode ? '' : 'hide'}/>);
         }
 
