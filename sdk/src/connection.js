@@ -520,6 +520,10 @@
         this.onOffline = options.onOffline || _utils.emptyfn;
         this.onOnline = options.onOnline || _utils.emptyfn;
         this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
+        //for WindowSDK
+        this.onGetGroup = options.onGetGroup || _utils.emptyfn;
+        this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
+
 
         _listenNetwork(this.onOnline, this.onOffline);
     };
@@ -1572,13 +1576,14 @@
             };
 
             var opts = {
-                url: apiUrl + '/' + orgName + '/' + appName + '/chatrooms'
-                , dataType: 'json'
-                , type: 'get'
-                , headers: {Authorization: 'Bearer ' + token}
-                , success: suc || _utils.emptyfn
-                , error: error || _utils.emptyfn
+                url: apiUrl + '/' + orgName + '/' + appName + '/chatrooms',
+                dataType: 'json',
+                type: 'GET',
+                headers: {'Authorization': 'Bearer ' + token},
+                success: suc || _utils.emptyfn,
+                error: error || _utils.emptyfn
             };
+            // console.log(opts);
             _utils.ajax(opts);
         } else {
             conn.onError({
@@ -1649,7 +1654,7 @@
         };
         this.onConfirmPop(options);
     };
-    connection.prototype._nReceiveInviteAcceptionFromGroup = function () {
+    connection.prototype._onReceiveInviteAcceptionFromGroup = function () {
         var options = {
             title: "test",
             msg: "ssss",
@@ -1741,17 +1746,11 @@
         this.onConfirmPop(options);
     };
     connection.prototype._onUpdateMyGroupList = function () {
-        var options = {
-            title: "test",
-            msg: "ssss",
-            agree: function () {
-                alert("agree");
-            },
-            reject: function () {
-                alert("reject");
-            }
-        };
-        this.onConfirmPop(options);
+        var options = {};
+        this.onUpdateMyGroupList(options);
+    };
+    connection.prototype._onGetGroup = function () {
+        this.onGetGroup();
     };
 
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};

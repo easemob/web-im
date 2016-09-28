@@ -13,6 +13,12 @@ module.exports = React.createClass({
         var me = this;
 
         Demo.conn.listen({
+            onUpdateMyGroupList: function (options) {
+                me.updateMyGroupList(options);
+            },
+            onGetGroup: function () {
+                me.getGroup();
+            },
             onConfirmPop: function (options) {
                 me.confirmPop(options);
             },
@@ -157,6 +163,10 @@ module.exports = React.createClass({
 
 
         ConfirmPop.show(options);
+    },
+    updateMyGroupList: function (options) {
+        //TODO:@lhr
+        console.log('updateMyGroupList', options);
     },
 
     friendRequest: function (msg) {
