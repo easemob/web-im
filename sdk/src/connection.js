@@ -521,7 +521,6 @@
         this.onOnline = options.onOnline || _utils.emptyfn;
         this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
         //for WindowSDK
-        this.onGetGroup = options.onGetGroup || _utils.emptyfn;
         this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
 
 
@@ -1641,116 +1640,121 @@
         this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
     };
 
-    connection.prototype._onReceiveInviteFromGroup = function () {
+    connection.prototype._onReceiveInviteFromGroup = function (info) {
+        info = eval('(' + info + ')');
         var options = {
-            title: "test",
-            msg: "ssss",
-            agree: function () {
-                alert("agree");
+            title: "Group invitation",
+            msg: info.user + " invites you to join into group:" + info.group_id,
+            agree: function agree() {
+			WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
+            }, function (code, msg) {
+                Notify.error("acceptInvitationFromGroup error:" + msg);
+            });
             },
-            reject: function () {
-                alert("reject");
+            reject: function reject() {
+			WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
+            }, function (code, msg) {
+                Notify.error("declineInvitationFromGroup error:" + msg);
+            });
+            }
+        };
+
+        this.onConfirmPop(options);
+    };
+    connection.prototype._onReceiveInviteAcceptionFromGroup = function (info) {
+        info = eval('(' + info + ')');
+        var options = {
+            title: "Group invitation response",
+            msg: info.user + " agreed to join into group:" + info.group_id,
+            agree: function agree() {
+            },
+            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
     };
-    connection.prototype._onReceiveInviteAcceptionFromGroup = function () {
+    connection.prototype._onReceiveInviteDeclineFromGroup = function (info) {
+        info = eval('(' + info + ')');
         var options = {
-            title: "test",
-            msg: "ssss",
-            agree: function () {
-                alert("agree");
+            title: "Group invitation response",
+            msg: info.user + " rejected to join into group:" + info.group_id,
+            agree: function agree() {
             },
-            reject: function () {
-                alert("reject");
+            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
     };
-    connection.prototype._onReceiveInviteDeclineFromGroup = function () {
+    connection.prototype._onAutoAcceptInvitationFromGroup = function (info) {
+        info = eval('(' + info + ')');
         var options = {
-            title: "test",
-            msg: "ssss",
-            agree: function () {
-                alert("agree");
+            title: "Group invitation",
+            msg: "You had joined into the group:" + info.group_name + " automatically.Inviter:" + info.user,
+            agree: function agree() {
             },
-            reject: function () {
-                alert("reject");
+            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
     };
-    connection.prototype._onAutoAcceptInvitationFromGroup = function () {
+    connection.prototype._onLeaveGroup = function (info) {
+        info = eval('(' + info + ')');
         var options = {
-            title: "test",
-            msg: "ssss",
-            agree: function () {
-                alert("agree");
+            title: "Group notification",
+            msg: "You have been out of the group:" + info.group_id + ".Reason:" + info.msg,
+            agree: function agree() {
             },
-            reject: function () {
-                alert("reject");
+            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
     };
-    connection.prototype._onLeaveGroup = function () {
+    connection.prototype._onReceiveJoinGroupApplication = function (info) {
+        info = eval('(' + info + ')');
         var options = {
-            title: "test",
-            msg: "ssss",
-            agree: function () {
-                alert("agree");
+            title: "Group join application",
+            msg: info.user + " applys to join into group:" + info.group_id,
+            agree: function agree() {
+			WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
+            }, function (code, msg) {
+                Notify.error("acceptJoinGroupApplication error:" + msg);
+            });
             },
-            reject: function () {
-                alert("reject");
+            reject: function reject() {
+			WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
+            }, function (code, msg) {
+                Notify.error("declineJoinGroupApplication error:" + msg);
+            });
             }
         };
         this.onConfirmPop(options);
     };
-    connection.prototype._onReceiveJoinGroupApplication = function () {
+    connection.prototype._onReceiveAcceptionFromGroup = function (info) {
+        info = eval('(' + info + ')');
         var options = {
-            title: "test",
-            msg: "ssss",
-            agree: function () {
-                alert("agree");
+            title: "Group notification",
+            msg: "You had joined into the group:" + info.group_name + ".",
+            agree: function agree() {
             },
-            reject: function () {
-                alert("reject");
-            }
-        };
-        this.onConfirmPop(options);
-    };
-    connection.prototype._onReceiveAcceptionFromGroup = function () {
-        var options = {
-            title: "test",
-            msg: "ssss",
-            agree: function () {
-                alert("agree");
-            },
-            reject: function () {
-                alert("reject");
+            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
     };
     connection.prototype._onReceiveRejectionFromGroup = function () {
+        info = eval('(' + info + ')');
         var options = {
-            title: "test",
-            msg: "ssss",
-            agree: function () {
-                alert("agree");
+            title: "Group notification",
+            msg: "You have been rejected to join into the group:" + info.group_name + ".",
+            agree: function agree() {
             },
-            reject: function () {
-                alert("reject");
+            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
     };
-    connection.prototype._onUpdateMyGroupList = function () {
-        var options = {};
+    connection.prototype._onUpdateMyGroupList = function (options) {
         this.onUpdateMyGroupList(options);
-    };
-    connection.prototype._onGetGroup = function () {
-        this.onGetGroup();
     };
 
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};

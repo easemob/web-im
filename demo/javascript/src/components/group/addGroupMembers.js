@@ -52,15 +52,14 @@ var AddGroupMembers = React.createClass({
         }
         log("AddGroupMembers:", value, this.props.roomId);
         if (WebIM.config.isWindowSDK) {
-            //TODO:@lhr 邀请群成员
-            WebIM.doQuery('{"type":"addGroupMembers"}',
-                function (response) {
-                },
-                function (code, msg) {
-                    Notify.error("AddGroupMembers:" + code);
-                });
-        } else {
-        }
+            var friendsSelected = '["' + value.replace(/, /g, '","') + '"]';
+
+            WebIM.doQuery('{"type":"addGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + friendsSelected + '}', function (response) {
+            }, function (code, msg) {
+                Notify.error("onSubmit:code:" + code+" " + msg);
+            });
+
+        } else {}
         this.close();
     },
 

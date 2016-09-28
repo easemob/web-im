@@ -16,9 +16,6 @@ module.exports = React.createClass({
             onUpdateMyGroupList: function (options) {
                 me.updateMyGroupList(options);
             },
-            onGetGroup: function () {
-                me.getGroup();
-            },
             onConfirmPop: function (options) {
                 me.confirmPop(options);
             },
@@ -165,7 +162,9 @@ module.exports = React.createClass({
         ConfirmPop.show(options);
     },
     updateMyGroupList: function (options) {
-        //TODO:@lhr
+        var rooms = eval('(' + options + ')');
+        this.setState({groups: rooms});
+
         console.log('updateMyGroupList', options);
     },
 
