@@ -72,14 +72,7 @@ var CreateGroup = React.createClass({
 
             WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + friendsSelected + '}',
                 function (response) {
-                    alert('createGroup successfully');
-                    WebIM.doQuery('{"type":"getGroup"}',
-                        function success(str) {
-                            Demo.api.updateGroup();
-                        },
-                        function failure(errCode, errMessage) {
-                            Notify.error('getGroup:' + errCode);
-                        });
+	                Notify.error('createGroup successfully');
                 },
                 function (code, msg) {
                     Notify.error("onSubmit:" + code);
