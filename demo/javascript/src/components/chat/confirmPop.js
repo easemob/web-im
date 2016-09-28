@@ -50,7 +50,7 @@ var ConfirmPop = React.createClass({
         if (this.props.data.hasOwnProperty('reject')) {
             requests.push(
                 <li id={i} key={i}>
-                    <span className="windowSDK">{this.props.data.msg}</span>
+                    <span>{this.props.data.msg}</span>
                     <br/>
                     <Button text={Demo.lan.agree} onClick={this.agree} className='webim-subscribe-button'/>
                     <Button text={Demo.lan.reject} onClick={this.reject} className='error webim-subscribe-button'/>
@@ -59,7 +59,7 @@ var ConfirmPop = React.createClass({
         } else {
             requests.push(
                 <li id={i} key={i}>
-                    <span className="windowSDK">{this.props.data.msg}</span>
+                    <span>{this.props.data.msg}</span>
                     <br/>
                     <Button text={Demo.lan.confirm} onClick={this.agree} className='webim-subscribe-button'/>
                 </li>
@@ -70,7 +70,7 @@ var ConfirmPop = React.createClass({
         return (
             <div>
                 <div ref='layer' className='webim-layer'></div>
-                <div className='webim-dialog webim-friend-requests'>
+                <div className='webim-dialog webim-friend-requests-widnowSDK'>
                     <h3>{this.props.data.title}</h3>
                     <div ref='content'>
                         <ul>{requests}</ul>
