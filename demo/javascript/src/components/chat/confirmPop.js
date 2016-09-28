@@ -47,13 +47,24 @@ var ConfirmPop = React.createClass({
         var requests = [];
 
         var i = 0;
-        requests.push(
-            <li id={i} key={i}>
-                <span>{this.props.data.msg}</span>
-                <Button text={Demo.lan.agree} onClick={this.agree} className='webim-subscribe-button'/>
-                <Button text={Demo.lan.reject} onClick={this.reject} className='error webim-subscribe-button'/>
-            </li>
-        );
+        if (this.props.data.hasOwnProperty('reject')) {
+            requests.push(
+                <li id={i} key={i}>
+                    <span className="windowSDK">{this.props.data.msg}</span>
+                    <br/>
+                    <Button text={Demo.lan.agree} onClick={this.agree} className='webim-subscribe-button'/>
+                    <Button text={Demo.lan.reject} onClick={this.reject} className='error webim-subscribe-button'/>
+                </li>
+            );
+        } else {
+            requests.push(
+                <li id={i} key={i}>
+                    <span className="windowSDK">{this.props.data.msg}</span>
+                    <br/>
+                    <Button text={Demo.lan.confirm} onClick={this.agree} className='webim-subscribe-button'/>
+                </li>
+            );
+        }
 
 
         return (
