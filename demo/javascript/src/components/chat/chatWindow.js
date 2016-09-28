@@ -10,24 +10,40 @@ module.exports = React.createClass({
         var me = this;
         //only group window
         if (this.props.winType == 'group') {
-            Demo.conn.queryRoomInfo({
-                roomId: me.props.roomId,
-                success: function (members) {
-                    console.log('Demo.conn.queryRoomInfo', me.props.roomId);
-                    console.log(members);
-                    if (members && members.length > 0) {
-                        me.owner = members;
-                        var jid = members[0].jid;
-                        var username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
-                        if (members[0].affiliation == 'owner' && username == Demo.user) {
-                            me.setState({admin: 1});
+            if (WebIM.config.isWindowSDK) {
+                WebIM.doQuery('{"type":"groupOwners","id":"' + me.props.roomId + '"}',
+                    function success(str) {
+                        var members = eval('(' + str + ')');
+                        if (members && members.length > 0) {
+                            me.owner = members;
+                            var jid = members[0].jid;
+                            var username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+                            if (members[0].affiliation == 'owner' && username == Demo.user) {
+                                me.setState({admin: 1});
+                            }
                         }
+                    },
+                    function failure(errCode, errMessage) {
+                        Notify.error("queryRoomInfo:" + errCode);
+                    });
+            } else {
+                Demo.conn.queryRoomInfo({
+                    roomId: me.props.roomId,
+                    success: function (members) {
+                        if (members && members.length > 0) {
+                            me.owner = members;
+                            var jid = members[0].jid;
+                            var username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+                            if (members[0].affiliation == 'owner' && username == Demo.user) {
+                                me.setState({admin: 1});
+                            }
+                        }
+                    },
+                    error: function () {
+                        Notify.error('queryRoomInfo error', me.props.roomId);
                     }
-                },
-                error: function () {
-                    Notify.error('queryRoomInfo error', me.props.roomId);
-                }
-            });
+                });
+            }
         }
         return {
             admin: 0,
