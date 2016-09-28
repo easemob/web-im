@@ -1667,8 +1667,6 @@
             title: "Group invitation response",
             msg: info.user + " agreed to join into group:" + info.group_id,
             agree: function agree() {
-            },
-            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
@@ -1679,8 +1677,6 @@
             title: "Group invitation response",
             msg: info.user + " rejected to join into group:" + info.group_id,
             agree: function agree() {
-            },
-            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
@@ -1691,8 +1687,6 @@
             title: "Group invitation",
             msg: "You had joined into the group:" + info.group_name + " automatically.Inviter:" + info.user,
             agree: function agree() {
-            },
-            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
@@ -1703,8 +1697,6 @@
             title: "Group notification",
             msg: "You have been out of the group:" + info.group_id + ".Reason:" + info.msg,
             agree: function agree() {
-            },
-            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
@@ -1735,8 +1727,6 @@
             title: "Group notification",
             msg: "You had joined into the group:" + info.group_name + ".",
             agree: function agree() {
-            },
-            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
@@ -1747,8 +1737,6 @@
             title: "Group notification",
             msg: "You have been rejected to join into the group:" + info.group_name + ".",
             agree: function agree() {
-            },
-            reject: function reject() {
             }
         };
         this.onConfirmPop(options);
