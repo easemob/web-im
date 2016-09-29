@@ -16,7 +16,7 @@ module.exports = React.createClass({
 
     getGroupOwner: function (cb_type) {
         //only group window
-        if (this.props.winType == 'group') {
+        if (this.props.chatType == 'groupChat') {
             var me = this;
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"groupOwner","id":"' + me.props.roomId + '"}',
@@ -117,6 +117,7 @@ module.exports = React.createClass({
         this.setState({members: this.state.owner.concat(members), memberShowStatus: true});
     },
     send: function (msg) {
+        msg.chatType = this.props.chatType;
         Demo.conn.send(msg);
         Demo.api.appendMsg(msg, 'txt');
     },

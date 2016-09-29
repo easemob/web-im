@@ -1646,16 +1646,16 @@
             title: "Group invitation",
             msg: info.user + " invites you to join into group:" + info.group_id,
             agree: function agree() {
-			WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-            }, function (code, msg) {
-                Notify.error("acceptInvitationFromGroup error:" + msg);
-            });
+                WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
+                }, function (code, msg) {
+                    Notify.error("acceptInvitationFromGroup error:" + msg);
+                });
             },
             reject: function reject() {
-			WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-            }, function (code, msg) {
-                Notify.error("declineInvitationFromGroup error:" + msg);
-            });
+                WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
+                }, function (code, msg) {
+                    Notify.error("declineInvitationFromGroup error:" + msg);
+                });
             }
         };
 
@@ -1707,16 +1707,16 @@
             title: "Group join application",
             msg: info.user + " applys to join into group:" + info.group_id,
             agree: function agree() {
-			WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-            }, function (code, msg) {
-                Notify.error("acceptJoinGroupApplication error:" + msg);
-            });
+                WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
+                }, function (code, msg) {
+                    Notify.error("acceptJoinGroupApplication error:" + msg);
+                });
             },
             reject: function reject() {
-			WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-            }, function (code, msg) {
-                Notify.error("declineJoinGroupApplication error:" + msg);
-            });
+                WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
+                }, function (code, msg) {
+                    Notify.error("declineJoinGroupApplication error:" + msg);
+                });
             }
         };
         this.onConfirmPop(options);
