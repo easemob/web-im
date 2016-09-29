@@ -3,6 +3,7 @@ var React = require("react");
 var ChangeGroupSubject = require("../group/changeGroupSubject");
 var ChangeGroupDescription = require("../group/changeGroupDescription");
 var AdminGroupMembers = require("../group/adminGroupMembers");
+var Notify = require('../common/notify');
 
 module.exports = React.createClass({
 
@@ -13,6 +14,11 @@ module.exports = React.createClass({
     },
 
     update: function () {
+        var me = this;
+        if (this.props.owner.length == 0) {
+            this.props.getGroupOwner('opertion');
+            return;
+        }
         this.setState({
             hide: this.state.hide ? '' : ' hide'
         });
@@ -71,7 +77,7 @@ module.exports = React.createClass({
 
         return (
             <div>
-                <i className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
+                <i ref='switch' className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
                 <ul className={'webim-operations' + className}>
                     <li onClick={this.adminGroupMembers} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>F</i>

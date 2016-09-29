@@ -74,7 +74,7 @@ var FridendList = React.createClass({
     },
     render: function () {
         return (
-            <div className="container" ref={(ref) => this.myTextInput = ref}>
+            <div className="container">
                 <MultipleSelectBoxList
                     ref="multiSelected"
                     options={this.state.options}
