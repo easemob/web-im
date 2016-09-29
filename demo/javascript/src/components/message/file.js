@@ -10,6 +10,7 @@ var FileMsg = React.createClass({
         var links = [];
         if (WebIM.config.isWindowSDK) {
             var dirPath = this.props.value.substring(0, this.props.value.lastIndexOf('/'));
+            dirPath = dirPath.replace("file:", "location:");
             links.push(<a target='_blank' href={this.props.value} key='0'>{Demo.lan.openFile}</a>);
             links.push(<a target='_blank' href={dirPath} key='1' className='dir'>{Demo.lan.openDir}</a>);
         } else {

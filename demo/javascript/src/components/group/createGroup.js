@@ -35,7 +35,7 @@ var FridendList = React.createClass({
                     options={this.state.options}
                     value={this.state.value}
                     nameText={Demo.lan.groupMemberLabel}
-                    label={Demo.lan.addGroupMember}
+                    label={Demo.lan.chooseGroupMember}
                     selectedLabel={Demo.lan.selectedLabel}
                 />
             </div>
@@ -72,7 +72,7 @@ var CreateGroup = React.createClass({
 
             WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + friendsSelected + '}',
                 function (response) {
-	                Notify.error('createGroup successfully');
+                    Notify.error('createGroup successfully');
                 },
                 function (code, msg) {
                     Notify.error("onSubmit:" + code);

@@ -15,10 +15,48 @@ import MultipleSelectBoxList  from '../common/multiSelectBoxList';
 var FridendList = React.createClass({
 
     getInitialState: function () {
+        var me = this;
+        if (WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"groupMembers","id":"' + me.props.roomId + '"}',
+                function success(str) {
+                    var members = eval('(' + str + ')');
+                    if (members && members.length > 0) {
+                        var values = [];
+                        for (var i = 0, l = members.length; i < l; i++) {
+                            var jid = members[i].jid,
+                                username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+                            values.push({"id": username, "text": username});
+                        }
+                        me.setState({value: values});
+                    }
+                },
+                function failure(errCode, errMessage) {
+                    Notify.error("FridendList queryRoomMember:" + errCode);
+                });
+        } else {
+            Demo.conn.queryRoomMember({
+                roomId: me.props.roomId,
+                success: function (members) {
+                    if (members && members.length > 0) {
+                        var values = [];
+                        for (var i = 0, l = members.length; i < l; i++) {
+                            var jid = members[i].jid,
+                                username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+                            values.push({"id": username, "text": username});
+                        }
+
+                        me.setState({value: values});
+                    }
+                },
+                error: function (e) {
+                    Notify.error("FridendList queryRoomMember:" + e);
+                }
+            });
+        }
+
         var options = [];
-        var id = 0;
         for (var name  in this.props.optionData) {
-            options.push({"id": id++, "text": name});
+            options.push({"id": name, "text": name});
         }
         return {
             options: options,
@@ -33,7 +71,7 @@ var FridendList = React.createClass({
                     options={this.state.options}
                     value={this.state.value}
                     nameText={Demo.lan.groupMemberLabel}
-                    label={Demo.lan.addGroupMember}
+                    label={Demo.lan.chooseGroupMember}
                     selectedLabel={Demo.lan.selectedLabel}
                 />
             </div>
@@ -41,7 +79,7 @@ var FridendList = React.createClass({
     }
 });
 
-var AddGroupMembers = React.createClass({
+var AdminGroupMembers = React.createClass({
 
     onSubmit: function () {
 
@@ -50,16 +88,17 @@ var AddGroupMembers = React.createClass({
         if (!value) {
             return;
         }
-        log("AddGroupMembers:", value, this.props.roomId);
+        log("AdminGroupMembers:", value, this.props.roomId);
         if (WebIM.config.isWindowSDK) {
             var friendsSelected = '["' + value.replace(/, /g, '","') + '"]';
 
             WebIM.doQuery('{"type":"addGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + friendsSelected + '}', function (response) {
             }, function (code, msg) {
-                Notify.error("onSubmit:code:" + code+" " + msg);
+                Notify.error("onSubmit:code:" + code + " " + msg);
             });
 
-        } else {}
+        } else {
+        }
         this.close();
     },
 
@@ -73,9 +112,9 @@ var AddGroupMembers = React.createClass({
             <div className='webim-friend-options'>
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog'>
-                    <h3>{Demo.lan.addGroupMembers}</h3>
+                    <h3>{Demo.lan.adminGroupMembers}</h3>
                     <div>
-                        <FridendList ref="friendList" optionData={Demo.roster}/>
+                        <FridendList ref="friendList" optionData={Demo.roster} roomId={this.props.roomId}/>
                     </div>
                     <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button'/>
                     <span className='font' onClick={this.close}>A</span>
@@ -88,7 +127,7 @@ var AddGroupMembers = React.createClass({
 module.exports = {
     show: function (roomId) {
         ReactDOM.render(
-            <AddGroupMembers onClose={this.close} roomId={roomId}/>,
+            <AdminGroupMembers onClose={this.close} roomId={roomId}/>,
             dom
         );
     },
