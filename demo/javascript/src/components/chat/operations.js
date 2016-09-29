@@ -66,28 +66,22 @@ module.exports = React.createClass({
 
     render: function () {
         var className = this.state.hide ? ' ' + this.state.hide : '';
-        console.log('admin', this.props.admin);
         var acttionName = (this.props.admin == 1) ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
         var actionMethod = (this.props.admin == 1) ? this.destroyGroup : this.leaveGroup;
-        /*
-         <li onClick={actionMethod}>
-         <i className='font smallest'>Q</i>
-         <span>{acttionName}</span>
-         </li>
-         * */
+
         return (
             <div>
                 <i className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
                 <ul className={'webim-operations' + className}>
-                    <li onClick={this.addGroupMembers}>
+                    <li onClick={this.addGroupMembers} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>F</i>
                         <span>{Demo.lan.addGroupMembers}</span>
                     </li>
-                    <li onClick={this.changeGroupSubject}>
+                    <li onClick={this.changeGroupSubject} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>B</i>
                         <span>{Demo.lan.changeGroupSubject}</span>
                     </li>
-                    <li onClick={this.changeGroupDescription}>
+                    <li onClick={this.changeGroupDescription} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>B</i>
                         <span>{Demo.lan.changeGroupDescription}</span>
                     </li>
