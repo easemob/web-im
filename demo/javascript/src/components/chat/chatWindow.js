@@ -68,7 +68,6 @@ module.exports = React.createClass({
     },
 
     preListMember: function () {
-        var me = this;
         if (this.state.owner.length == 0) {
             this.getGroupOwner('listMember');
         } else {
