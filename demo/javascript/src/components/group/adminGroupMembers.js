@@ -22,12 +22,14 @@ var FridendList = React.createClass({
                     var members = eval('(' + str + ')');
                     if (members && members.length > 0) {
                         var values = [];
+                        var values_old = [];
                         for (var i = 0, l = members.length; i < l; i++) {
                             var jid = members[i].jid,
                                 username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
                             values.push({"id": username, "text": username});
+                            values_old.push(username);
                         }
-                        me.setState({value: values});
+                        me.setState({value: values, value_old: values_old});
                     }
                 },
                 function failure(errCode, errMessage) {
@@ -39,13 +41,16 @@ var FridendList = React.createClass({
                 success: function (members) {
                     if (members && members.length > 0) {
                         var values = [];
+                        var values_old = [];
                         for (var i = 0, l = members.length; i < l; i++) {
                             var jid = members[i].jid,
                                 username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
                             values.push({"id": username, "text": username});
+                            values_old.push(username);
                         }
 
-                        me.setState({value: values});
+                        me.setState({value: values, value_old: values_old});
+                        console.log(me.state.value_old);
                     }
                 },
                 error: function (e) {
@@ -60,12 +65,16 @@ var FridendList = React.createClass({
         }
         return {
             options: options,
-            value: []
+            value: [],
+            value_old: []
         };
+    },
+    getValueOld: function () {
+        return this.state.value_old;
     },
     render: function () {
         return (
-            <div className="container">
+            <div className="container" ref={(ref) => this.myTextInput = ref}>
                 <MultipleSelectBoxList
                     ref="multiSelected"
                     options={this.state.options}
@@ -73,6 +82,7 @@ var FridendList = React.createClass({
                     nameText={Demo.lan.groupMemberLabel}
                     label={Demo.lan.chooseGroupMember}
                     selectedLabel={Demo.lan.selectedLabel}
+                    value_old={this.state.value_old}
                 />
             </div>
         )
@@ -89,6 +99,23 @@ var AdminGroupMembers = React.createClass({
             return;
         }
         log("AdminGroupMembers:", value, this.props.roomId);
+        var value_old = this.refs.friendList.getValueOld();
+        var value_new = value.split(",");
+        var value_add = [];
+        var value_del = [];
+        for (var i = 0, l = value_new.length; i < l; i++) {
+            if (!value_old.includes(value_new[i])) {
+                value_add.push(value_new[i]);
+            }
+        }
+        for (var i = 0, l = value_old.length; i < l; i++) {
+            if (!value_new.includes(value_old[i])) {
+                value_del.push(value_old[i]);
+            }
+        }
+        console.log('add', value_add);
+        console.log('del', value_del);
+        //TODO:@lhr  value_add 和 value_del 需要分成两个doQuery 处理
         if (WebIM.config.isWindowSDK) {
             var friendsSelected = '["' + value.replace(/, /g, '","') + '"]';
 
