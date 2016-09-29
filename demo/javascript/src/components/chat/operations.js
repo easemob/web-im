@@ -2,7 +2,7 @@ var React = require("react");
 
 var ChangeGroupSubject = require("../group/changeGroupSubject");
 var ChangeGroupDescription = require("../group/changeGroupDescription");
-var AddGroupMembers = require("../group/addGroupMembers");
+var AdminGroupMembers = require("../group/adminGroupMembers");
 
 module.exports = React.createClass({
 
@@ -18,9 +18,9 @@ module.exports = React.createClass({
         });
     },
 
-    addGroupMembers: function () {
+    adminGroupMembers: function () {
         log('addGroupMembers');
-        AddGroupMembers.show(this.props.roomId);
+        AdminGroupMembers.show(this.props.roomId);
         this.update();
     },
 
@@ -73,9 +73,9 @@ module.exports = React.createClass({
             <div>
                 <i className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
                 <ul className={'webim-operations' + className}>
-                    <li onClick={this.addGroupMembers} className={this.props.admin ? '' : 'hide'}>
+                    <li onClick={this.adminGroupMembers} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>F</i>
-                        <span>{Demo.lan.addGroupMembers}</span>
+                        <span>{Demo.lan.adminGroupMembers}</span>
                     </li>
                     <li onClick={this.changeGroupSubject} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>B</i>
