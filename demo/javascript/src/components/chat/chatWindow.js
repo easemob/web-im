@@ -26,7 +26,7 @@ module.exports = React.createClass({
                         if (str == Demo.user) {
                             admin = 1;
                         }
-                        me.setState({admin: 1, owner: owner});
+                        me.setState({admin: admin, owner: owner});
                         if (cb_type == 'listMember') {
                             me.listMember();
                         } else {

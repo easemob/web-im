@@ -8,7 +8,6 @@ var Notify = require('../common/notify');
 module.exports = React.createClass({
 
     getInitialState: function () {
-        var me = this;
 
         return {hide: 'hide'};
     },
