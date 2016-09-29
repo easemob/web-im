@@ -14,7 +14,7 @@ module.exports = React.createClass({
         return null;
     },
 
-    shouldComponentUpdate: function ( nextProps, nextState ) {
+    shouldComponentUpdate: function (nextProps, nextState) {
         return nextProps.cur !== Demo.selectedCate;
     },
 
@@ -41,12 +41,13 @@ module.exports = React.createClass({
     render: function () {
         return (
             <div className='webim-leftbar'>
-                <Avatar className='webim-profile-avatar small' title={Demo.user} />
-                <Cate name='friend' update={this.updateFriend} cur={this.props.cur} />
-                <Cate name='group' update={this.updateGroup} cur={this.props.cur} />
-                <Cate name='chatroom' update={this.updateChatroom} cur={this.props.cur} />
-                <Cate name='stranger' update={this.updateStranger} cur={this.props.cur} />
-                <Operations username={Demo.user} />
+                <Avatar className='webim-profile-avatar small' title={Demo.user}/>
+                <div className='username'>{Demo.user}</div>
+                <Cate name='friend' update={this.updateFriend} cur={this.props.cur}/>
+                <Cate name='group' update={this.updateGroup} cur={this.props.cur}/>
+                <Cate name='chatroom' update={this.updateChatroom} cur={this.props.cur}/>
+                <Cate name='stranger' update={this.updateStranger} cur={this.props.cur}/>
+                <Operations username={Demo.user}/>
             </div>
         );
     }
