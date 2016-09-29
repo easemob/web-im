@@ -59,6 +59,9 @@ module.exports = React.createClass({
                         var members = eval('(' + str + ')');
                         if (members && members.length > 0) {
                             me.refreshMemberList(members);
+                        } else {
+                            //trigger adding owner to members
+                            me.refreshMemberList([]);
                         }
                     },
                     function failure(errCode, errMessage) {
@@ -70,6 +73,9 @@ module.exports = React.createClass({
                     success: function (members) {
                         if (members && members.length > 0) {
                             me.refreshMemberList(members);
+                        } else {
+                            //trigger adding owner to members
+                            me.refreshMemberList([]);
                         }
                     },
                     error: function () {
@@ -83,9 +89,6 @@ module.exports = React.createClass({
     },
 
     refreshMemberList: function (members) {
-        console.log('refreshMemberList');
-        console.log(this.owner);
-        console.log(members);
         this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
         this.setState({members: this.owner.concat(members), memberShowStatus: true});
     },
