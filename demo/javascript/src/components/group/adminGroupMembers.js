@@ -117,9 +117,15 @@ var AdminGroupMembers = React.createClass({
         console.log('del', value_del);
         //TODO:@lhr  value_add 和 value_del 需要分成两个doQuery 处理
         if (WebIM.config.isWindowSDK) {
-            var friendsSelected = '["' + value.replace(/, /g, '","') + '"]';
+            var value_add = '["' + value_add.join('","') + '"]';
+            var value_del = '["' + value_del.join('","') + '"]';
 
-            WebIM.doQuery('{"type":"addGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + friendsSelected + '}', function (response) {
+            WebIM.doQuery('{"type":"addGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + value_add + '}', function (response) {
+            }, function (code, msg) {
+                Notify.error("onSubmit:code:" + code + " " + msg);
+            });
+
+            WebIM.doQuery('{"type":"removeGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + value_del + '}', function (response) {
             }, function (code, msg) {
                 Notify.error("onSubmit:code:" + code + " " + msg);
             });

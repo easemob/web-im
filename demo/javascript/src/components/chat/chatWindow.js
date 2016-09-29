@@ -5,7 +5,7 @@ var Avatar = require('../common/avatar');
 var Operations = require('./operations');
 
 module.exports = React.createClass({
-    owner: null,
+    owner: [],
     getInitialState: function () {
         var me = this;
         //only group window
