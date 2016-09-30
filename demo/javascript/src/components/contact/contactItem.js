@@ -28,12 +28,12 @@ module.exports = React.createClass({
     },
 
     update: function () {
-        var count = this.refs.i.getAttribute('count') / 1;
+        var count = this.refs['i'].getAttribute('count') / 1;
         this.handleIconCount(count);
 
-        this.refs.i.style.display = 'none';
-        this.refs.i.setAttribute('count', 0);
-        this.refs.i.innerText = '';
+        this.refs['i'].style.display = 'none';
+        this.refs['i'].setAttribute('count', 0);
+        this.refs['i'].innerText = '';
 
         if (this.props.id === Demo.selected) {
             return;
@@ -95,10 +95,10 @@ module.exports = React.createClass({
 
         return (
             <div id={this.props.id} className={'webim-contact-item' + className} onClick={this.update}>
-                <Avatar src={this.props.src} />
+                <Avatar src={this.props.src}/>
                 <span>{this.props.username}</span>
                 <em></em>
-                <i ref='i' data-count='0' className='webim-msg-prompt' style={{display: 'none'}}></i>
+                <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>
             </div>
         );
     }

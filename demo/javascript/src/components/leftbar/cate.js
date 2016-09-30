@@ -4,13 +4,13 @@ var React = require("react");
 module.exports = React.createClass({
 
     render: function () {
-        var cur = this.props.cur === this.props.name ?  ' selected' : '';
+        var cur = this.props.cur === this.props.name ? ' selected' : '';
         var topClass = '';
 
         var icon,
             describe = '';
 
-        switch ( this.props.name ) {
+        switch (this.props.name) {
             case 'group':
                 icon = 'N';
                 describe = Demo.lan.groups;
@@ -28,7 +28,7 @@ module.exports = React.createClass({
                 topClass = ' top50';
                 describe = Demo.lan.friends;
                 break;
-        };
+        }
 
         return (
             <div id={this.props.name + 's'} className={'rel' + topClass} onClick={this.props.update}>
