@@ -411,9 +411,9 @@ module.exports = React.createClass({
         this.setState({curNode: id});
     },
 
-    sendPicture: function () {
+    sendPicture: function (chatType) {
         if (WebIM.config.isWindowSDK) {
-            this.sendFileImpl("img");
+            this.sendFileImpl("img", chatType);
         } else {
             this.refs.picture.click();
         }
@@ -476,9 +476,9 @@ module.exports = React.createClass({
         Demo.conn.send(msg.body);
     },
 
-    sendAudio: function () {
+    sendAudio: function (chatType) {
         if (WebIM.config.isWindowSDK) {
-            this.sendFileImpl("aud");
+            this.sendFileImpl("aud", chatType);
         } else {
             this.refs.audio.click();
         }
@@ -560,18 +560,18 @@ module.exports = React.createClass({
         }
     },
 
-    sendFile: function () {
+    sendFile: function (chatType) {
         if (WebIM.config.isWindowSDK) {
-            this.sendFileImpl("file");
+            this.sendFileImpl("file", chatType);
         } else {
             this.refs.file.click();
         }
     },
-    sendFileImpl: function (type) {
+    sendFileImpl: function (type, chatType) {
         //this.refs.file.click();
         var is_chatroom = Demo.selectedCate === 'chatrooms' ? "true" : "false";
         var is_group = (Demo.selectedCate === 'chatrooms' || Demo.selectedCate === 'groups') ? "groupchat" : "singlechat";
-        WebIM.doQuery('{"type":"sendFileMessage","to":"' + Demo.selected + '","message_type":"' + type + '","group":"' + is_group + '","roomType":"' + is_chatroom + '"}',
+        WebIM.doQuery('{"type":"sendFileMessage","to":"' + Demo.selected + '","message_type":"' + type + '","group":"' + is_group + '","chatType":"' + chatType + '","roomType":"' + is_chatroom + '"}',
             function (response) {
                 var pathSplitted = decodeURI(response).split("\\");
 

@@ -60,7 +60,9 @@ module.exports = React.createClass({
         }
 
         setTimeout(function () {
-            me.refs.textarea.value = '';
+            if (me.refs['textarea']) {
+                me.refs['textarea'].value = '';
+            }
         }, 0);
 
 
@@ -121,6 +123,15 @@ module.exports = React.createClass({
     acceptCall: function () {
         Demo.call.acceptCall();
     },
+    sendPicture: function () {
+        this.props.sendPicture(this.props.chatType);
+    },
+    sendAudio: function () {
+        this.props.sendAudio(this.props.chatType);
+    },
+    sendFile: function () {
+        this.props.sendFile(this.props.chatType);
+    },
     render: function () {
 
         var showEmoji = this.state.showEmoji ? '' : ' hide',
@@ -135,9 +146,9 @@ module.exports = React.createClass({
             <div className='webim-send-wrapper'>
                 <div className='webim-chatwindow-options'>
                     <span className='webim-emoji-icon font smaller' onClick={this.showEmoji}>J</span>
-                    <span className='webim-picture-icon font smaller' onClick={this.props.sendPicture}>K</span>
-                    <span className='webim-audio-icon font smaller' onClick={this.props.sendAudio}>R</span>
-                    <span className='webim-file-icon font smaller' onClick={this.props.sendFile}>S</span>
+                    <span className='webim-picture-icon font smaller' onClick={this.sendPicture}>K</span>
+                    <span className='webim-audio-icon font smaller' onClick={this.sendAudio}>R</span>
+                    <span className='webim-file-icon font smaller' onClick={this.sendFile}>S</span>
                     {roomMember}
                 </div>
                 <ul ref='emoji' onClick={this.selectEmoji} className={showEmoji}></ul>

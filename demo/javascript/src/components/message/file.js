@@ -10,10 +10,10 @@ var FileMsg = React.createClass({
         var links = [];
         if (WebIM.config.isWindowSDK) {
             var dirPath = this.props.value.replace("file:", "location:");
-            links.push(<a target='_blank' href={this.props.value} key='0'>{Demo.lan.openFile}</a>);
-            links.push(<a target='_blank' href={dirPath} key='1' className='dir'>{Demo.lan.openDir}</a>);
+            links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.openFile}</a>);
+            links.push(<a target='_blank' key='1' href={dirPath} className='dir'>{Demo.lan.openDir}</a>);
         } else {
-            links.push(<a target='_blank' href={this.props.value}>{Demo.lan.download}</a>);
+            links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.download}</a>);
         }
 
         return (

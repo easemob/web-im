@@ -125,6 +125,7 @@ module.exports = React.createClass({
     render: function () {
         var className = this.props.roomId ? ' dib' : ' hide',
             props = {
+                chatType: this.props.chatType,
                 sendPicture: this.props.sendPicture,
                 sendAudio: this.props.sendAudio,
                 sendFile: this.props.sendFile
