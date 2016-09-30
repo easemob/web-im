@@ -100,13 +100,7 @@ module.exports = React.createClass({
             onOffline: function () {
                 log('offline');
                 if (WebIM.config.isWindowSDK) {
-                    WebIM.doQuery('{"type":"logout"}',
-                        function (response) {
-                            Notify.error("Network connection is broken. reconnecting...");
-                        },
-                        function (code, msg) {
-                        });
-
+                    Notify.error("Network connection is broken. reconnecting...");
                 } else {
                     Demo.api.logout();
                 }
@@ -118,7 +112,9 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                     text = message.desc;
-                    Demo.api.logout();
+                    if (message.code == '206'){
+                        Demo.api.logout();
+                    }
                     //do nothing
                 } else {
                     if (message.data && message.data.data) {
