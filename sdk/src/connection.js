@@ -23,23 +23,10 @@
         if (xhr.overrideMimeType) {
             xhr.overrideMimeType('text/xml');
         }
-        xhr.onreadystatechange = this.func.stropheBind(null, this);
+        xhr.onreadystatechange = Strophe.Request.func.stropheBind(null, Strophe.Request);
         return xhr;
     };
 
-    Strophe.Websocket.prototype._closeSocket = function () {
-        var me = this;
-        if (me.socket) {
-            setTimeout(function () {
-                try {
-                    me.socket.close();
-                } catch (e) {
-                }
-            }, 0);
-        } else {
-            me.socket = null;
-        }
-    };
 
     var _networkSt;
     var _listenNetwork = function (onlineCallback, offlineCallback) {
@@ -1159,7 +1146,7 @@
 
     connection.prototype.send = function (message) {
         if (WebIM.config.isWindowSDK) {
-            WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}', 
+            WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
                 function (response) {
                 },
                 function (code, msg) {
