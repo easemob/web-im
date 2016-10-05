@@ -219,12 +219,11 @@
             return;
         } else {
             stropheConn = new Strophe.Connection(conn.url, {
-                inactivity: conn.inactivity
-                , maxRetries: conn.maxRetries
-                , pollingTime: conn.pollingTime
+                inactivity: conn.inactivity,
+                maxRetries: conn.maxRetries,
+                pollingTime: conn.pollingTime
             });
         }
-
         var callback = function (status, msg) {
             _loginCallback(status, msg, conn);
         };
@@ -479,7 +478,7 @@
         this.route = options.route || null;
         this.domain = options.domain || 'easemob.com';
         this.inactivity = options.inactivity || 30;
-        this.heartBeatWait = options.heartBeatWait || 60000;
+        this.heartBeatWait = options.heartBeatWait;
         this.maxRetries = options.maxRetries || 5;
         this.isAutoLogin = options.isAutoLogin === false ? false : true;
         this.pollingTime = options.pollingTime || 800;
@@ -517,7 +516,8 @@
     connection.prototype.heartBeat = function () {
         var me = this;
 
-        var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
+        //var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
+        var isNeed = true;
 
         if (me.heartBeatID || !isNeed) {
             return;
@@ -533,7 +533,6 @@
     };
 
     connection.prototype.sendHeartBeatMessage = function (options) {
-
         if (!this.isOpened()) {
             return;
         }
@@ -671,7 +670,8 @@
         var stropheConn = new Strophe.Connection(this.url, {
             inactivity: this.inactivity,
             maxRetries: this.maxRetries,
-            pollingTime: this.pollingTime
+            pollingTime: this.pollingTime,
+            heartBeatWait: this.heartBeatWait
         });
 
         this.context.accessToken = accessToken;
