@@ -59,7 +59,6 @@ module.exports = {
                     Notify.error("logout:" + msg);
                 });
         } else {
-            Demo.conn.stopHeartBeat();
             Demo.conn.close();
         }
         Demo.selected = null;

@@ -28,7 +28,6 @@
     };
 
 
-    var _networkSt;
     var _listenNetwork = function (onlineCallback, offlineCallback) {
 
         if (window.addEventListener) {
@@ -204,9 +203,9 @@
         if (accessToken == '') {
             var loginfo = _utils.stringify(options);
             conn.onError({
-                type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
-                , data: options
-                , xhr: xhr
+                type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
+                data: options,
+                xhr: xhr
             });
             return;
         }
@@ -519,17 +518,17 @@
         //var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
         var isNeed = true;
 
-        if (me.heartBeatID || !isNeed) {
+        if (this.heartBeatID || !isNeed) {
             return;
         }
 
         var options = {
-            to: me.domain,
+            to: this.domain,
             type: 'normal'
         };
-        me.heartBeatID = setInterval(function () {
+        this.heartBeatID = setInterval(function () {
             me.sendHeartBeatMessage(options);
-        }, me.heartBeatWait);
+        }, this.heartBeatWait);
     };
 
     connection.prototype.sendHeartBeatMessage = function (options) {
@@ -550,7 +549,9 @@
     };
 
     connection.prototype.stopHeartBeat = function () {
-        this.heartBeatID = clearInterval(this.heartBeatID);
+        if (this.heartBeatID) {
+            this.heartBeatID = clearInterval(this.heartBeatID);
+        }
     };
 
 
@@ -599,24 +600,24 @@
 
                 if (res.error && res.error_description) {
                     conn.onError({
-                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
-                        , data: res
-                        , xhr: xhr
+                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
+                        data: res,
+                        xhr: xhr
                     });
                 } else {
                     conn.onError({
-                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
-                        , data: res
-                        , xhr: xhr
+                        type: _code.WEBIM_CONNCTION_OPEN_ERROR,
+                        data: res,
+                        xhr: xhr
                     });
                 }
             };
             this.context.status = _code.STATUS_DOLOGIN_USERGRID;
 
             var loginJson = {
-                grant_type: 'password'
-                , username: userId
-                , password: pwd
+                grant_type: 'password',
+                username: userId,
+                password: pwd
             };
             var loginfo = _utils.stringify(loginJson);
 
@@ -633,7 +634,7 @@
 
     };
 
-    // attach to xmpp server
+    // attach to xmpp server for BOSH
     connection.prototype.attach = function (options) {
         var pass = _validCheck(options, this);
 
@@ -691,6 +692,8 @@
     };
 
     connection.prototype.close = function () {
+        this.stopHeartBeat();
+
         var status = this.context.status;
         if (status == _code.STATUS_INIT) {
             return;
@@ -699,7 +702,7 @@
         if (this.isClosed() || this.isClosing()) {
             return;
         }
-        this.stopHeartBeat();
+
         this.context.status = _code.STATUS_CLOSING;
         this.context.stropheConn.disconnect();
     };
