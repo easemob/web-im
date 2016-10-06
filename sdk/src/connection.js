@@ -326,9 +326,9 @@
             conn.heartBeat();
             conn.isAutoLogin && conn.setPresence();
             conn.onOpened({
-                canReceive: supportRecMessage
-                , canSend: supportSedMessage
-                , accessToken: conn.context.accessToken
+                canReceive: supportRecMessage,
+                canSend: supportSedMessage,
+                accessToken: conn.context.accessToken
             });
         } else if (status == Strophe.Status.DISCONNECTING) {
             if (conn.isOpened()) {
@@ -336,9 +336,9 @@
                 conn.context.status = _code.STATUS_CLOSING;
 
                 error = {
-                    type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR
-                    , msg: msg
-                    , reconnect: true
+                    type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
+                    msg: msg,
+                    reconnect: true
                 };
 
                 conflict && (error.conflict = true);
@@ -549,7 +549,7 @@
     };
 
     connection.prototype.stopHeartBeat = function () {
-        if (this.heartBeatID) {
+        if (typeof this.heartBeatID == "number") {
             this.heartBeatID = clearInterval(this.heartBeatID);
         }
     };
@@ -1556,10 +1556,10 @@
             var error = function (res, xhr, msg) {
                 if (res.error && res.error_description) {
                     conn.onError({
-                        type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR
-                        , msg: res.error_description
-                        , data: res
-                        , xhr: xhr
+                        type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,
+                        msg: res.error_description,
+                        data: res,
+                        xhr: xhr
                     });
                 }
             };
