@@ -1,4 +1,5 @@
-;(function () {
+;
+(function () {
     var connIndex = 0,
         uploadIndex = 100,
         downloadIndex = 200,
@@ -13,8 +14,8 @@
         WEBIM_CONNCTION_ATTACH_ERROR: connIndex++,
         WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: connIndex++,
         WEBIM_CONNCTION_REOPEN_ERROR: connIndex++,
-        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: connIndex++,
-        WEBIM_CONNCTION_SERVER_ERROR: connIndex++,
+        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: connIndex++,  //offline by multi login
+        WEBIM_CONNCTION_SERVER_ERROR: connIndex++,        //offline by multi login
         WEBIM_CONNCTION_IQ_ERROR: connIndex++,
 
         WEBIM_CONNCTION_PING_ERROR: connIndex++,
