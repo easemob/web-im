@@ -78,7 +78,6 @@ module.exports = React.createClass({
     },
 
     render: function () {
-        log(WebIM.config.isWindowSDK);
         return (
             <div className={this.props.show ? 'webim-sign webim-signup' : 'webim-sign webim-signup hide'}>
                 <h2>{Demo.lan.signUp}</h2>

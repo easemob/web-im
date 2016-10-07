@@ -14,8 +14,8 @@
         WEBIM_CONNCTION_ATTACH_ERROR: connIndex++,
         WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: connIndex++,
         WEBIM_CONNCTION_REOPEN_ERROR: connIndex++,
-        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: connIndex++,  //offline by multi login
-        WEBIM_CONNCTION_SERVER_ERROR: connIndex++,        //offline by multi login
+        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: connIndex++,  //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+        WEBIM_CONNCTION_SERVER_ERROR: connIndex++,        //8: offline by multi login
         WEBIM_CONNCTION_IQ_ERROR: connIndex++,
 
         WEBIM_CONNCTION_PING_ERROR: connIndex++,
@@ -24,7 +24,7 @@
         WEBIM_CONNCTION_CROSSDOMAIN_ERROR: connIndex++,
         WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: connIndex++,
         WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: connIndex++,
-        WEBIM_CONNCTION_DISCONNECTED: connIndex++,
+        WEBIM_CONNCTION_DISCONNECTED: connIndex++,    //16: server-side close the websocket connection
         WEBIM_CONNCTION_AJAX_ERROR: connIndex++,
         WEBIM_CONNCTION_JOINROOM_ERROR: connIndex++,
         WEBIM_CONNCTION_GETROOM_ERROR: connIndex++,

@@ -95,10 +95,10 @@ module.exports = React.createClass({
                 me.getGroup();
             },
             onOnline: function () {
-                log('online');
+                log(ts(), 'online');
             },
             onOffline: function () {
-                log('offline');
+                log(ts(), 'offline');
                 if (WebIM.config.isWindowSDK) {
                     Notify.error("Network connection is broken. reconnecting...");
                 } else {
