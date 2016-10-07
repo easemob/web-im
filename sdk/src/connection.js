@@ -36,11 +36,11 @@
 
         } else if (window.attachEvent) {
             if (document.body) {
-                document.body.attachEvent('onoffline', offlineCallback);
+                document.body.attachEvent('ononline', onlineCallback);
                 document.body.attachEvent('onoffline', offlineCallback);
             } else {
                 window.attachEvent('load', function () {
-                    document.body.attachEvent('onoffline', offlineCallback);
+                    document.body.attachEvent('ononline', onlineCallback);
                     document.body.attachEvent('onoffline', offlineCallback);
                 });
             }
@@ -72,9 +72,9 @@
                 var roomJid = item.getAttribute('jid');
                 var tmp = roomJid.split('@')[0];
                 var room = {
-                    jid: roomJid
-                    , name: item.getAttribute('name')
-                    , roomId: tmp.split('_')[1]
+                    jid: roomJid,
+                    name: item.getAttribute('name'),
+                    roomId: tmp.split('_')[1]
                 };
                 rooms.push(room);
             }
@@ -89,8 +89,8 @@
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 var room = {
-                    jid: item.getAttribute('jid')
-                    , name: item.getAttribute('name')
+                    jid: item.getAttribute('jid'),
+                    name: item.getAttribute('name')
                 };
                 occupants.push(room);
             }
@@ -173,8 +173,8 @@
                 }
                 var subscription = item.getAttribute('subscription');
                 var friend = {
-                    subscription: subscription
-                    , jid: jid
+                    subscription: subscription,
+                    jid: jid
                 };
                 var ask = item.getAttribute('ask');
                 if (ask) {
@@ -612,6 +612,9 @@
                     });
                 }
             };
+            var connect_callback = function (status, condition) {
+                console.log('Strophe.connection.prototype.open connect_callback', status, condition);
+            };
             this.context.status = _code.STATUS_DOLOGIN_USERGRID;
 
             var loginJson = {
@@ -625,6 +628,7 @@
                 url: apiUrl + '/' + orgName + '/' + appName + '/token',
                 dataType: 'json',
                 data: loginfo,
+                connect_callback: connect_callback,
                 success: suc || _utils.emptyfn,
                 error: error || _utils.emptyfn
             };
@@ -1116,20 +1120,19 @@
             }
         }
         this.onInviteMessage({
-            type: 'invite'
-            , from: form
-            , roomid: roomid
+            type: 'invite',
+            from: form,
+            roomid: roomid
         });
     };
 
     connection.prototype.sendCommand = function (dom, id) {
-
         if (this.isOpened()) {
             this.context.stropheConn.send(dom);
         } else {
             this.onError({
-                type: _code.WEBIM_CONNCTION_DISCONNECTED
-                , reconnect: true
+                type: _code.WEBIM_CONNCTION_DISCONNECTED,
+                reconnect: true
             });
         }
     };
