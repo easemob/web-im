@@ -533,6 +533,7 @@
         this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
         //for WindowSDK
         this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
+        this.onUpdateMyRoster = options.onUpdateMyRoster || _utils.emptyfn;
 
 
         _listenNetwork(this.onOnline, this.onOffline);
@@ -1761,6 +1762,9 @@
     };
     connection.prototype._onUpdateMyGroupList = function (options) {
         this.onUpdateMyGroupList(options);
+    };
+    connection.prototype._onUpdateMyRoster = function (options) {
+        this.onUpdateMyRoster(options);
     };
 
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
