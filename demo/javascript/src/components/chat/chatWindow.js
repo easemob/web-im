@@ -1,5 +1,5 @@
 var React = require("react");
-var SendWrapper = require('./sendwrapper');
+var SendWrapper = require('./sendWrapper');
 var Notify = require('../common/notify');
 var Avatar = require('../common/avatar');
 var Operations = require('./operations');
