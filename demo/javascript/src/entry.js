@@ -54,7 +54,8 @@ Demo.conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
     https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
     url: WebIM.config.xmppURL,
-    isAutoLogin: false
+    isAutoLogin: false,
+    heartBeatWait: WebIM.config.heartBeatWait || 4500
 });
 
 Demo.api.render(document.getElementById('demo'));

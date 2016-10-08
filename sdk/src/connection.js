@@ -23,25 +23,11 @@
         if (xhr.overrideMimeType) {
             xhr.overrideMimeType('text/xml');
         }
-        xhr.onreadystatechange = this.func.stropheBind(null, this);
+        xhr.onreadystatechange = Strophe.Request.func.stropheBind(null, Strophe.Request);
         return xhr;
     };
 
-    Strophe.Websocket.prototype._closeSocket = function () {
-        var me = this;
-        if (me.socket) {
-            setTimeout(function () {
-                try {
-                    me.socket.close();
-                } catch (e) {
-                }
-            }, 0);
-        } else {
-            me.socket = null;
-        }
-    };
 
-    var _networkSt;
     var _listenNetwork = function (onlineCallback, offlineCallback) {
 
         if (window.addEventListener) {
@@ -50,11 +36,11 @@
 
         } else if (window.attachEvent) {
             if (document.body) {
-                document.body.attachEvent('onoffline', offlineCallback);
+                document.body.attachEvent('ononline', onlineCallback);
                 document.body.attachEvent('onoffline', offlineCallback);
             } else {
                 window.attachEvent('load', function () {
-                    document.body.attachEvent('onoffline', offlineCallback);
+                    document.body.attachEvent('ononline', onlineCallback);
                     document.body.attachEvent('onoffline', offlineCallback);
                 });
             }
@@ -86,9 +72,9 @@
                 var roomJid = item.getAttribute('jid');
                 var tmp = roomJid.split('@')[0];
                 var room = {
-                    jid: roomJid
-                    , name: item.getAttribute('name')
-                    , roomId: tmp.split('_')[1]
+                    jid: roomJid,
+                    name: item.getAttribute('name'),
+                    roomId: tmp.split('_')[1]
                 };
                 rooms.push(room);
             }
@@ -103,8 +89,8 @@
             for (var i = 0; i < items.length; i++) {
                 var item = items[i];
                 var room = {
-                    jid: item.getAttribute('jid')
-                    , name: item.getAttribute('name')
+                    jid: item.getAttribute('jid'),
+                    name: item.getAttribute('name')
                 };
                 occupants.push(room);
             }
@@ -187,8 +173,8 @@
                 }
                 var subscription = item.getAttribute('subscription');
                 var friend = {
-                    subscription: subscription
-                    , jid: jid
+                    subscription: subscription,
+                    jid: jid
                 };
                 var ask = item.getAttribute('ask');
                 if (ask) {
@@ -217,9 +203,9 @@
         if (accessToken == '') {
             var loginfo = _utils.stringify(options);
             conn.onError({
-                type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
-                , data: options
-                , xhr: xhr
+                type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
+                data: options,
+                xhr: xhr
             });
             return;
         }
@@ -232,12 +218,11 @@
             return;
         } else {
             stropheConn = new Strophe.Connection(conn.url, {
-                inactivity: conn.inactivity
-                , maxRetries: conn.maxRetries
-                , pollingTime: conn.pollingTime
+                inactivity: conn.inactivity,
+                maxRetries: conn.maxRetries,
+                pollingTime: conn.pollingTime
             });
         }
-
         var callback = function (status, msg) {
             _loginCallback(status, msg, conn);
         };
@@ -341,9 +326,9 @@
             conn.heartBeat();
             conn.isAutoLogin && conn.setPresence();
             conn.onOpened({
-                canReceive: supportRecMessage
-                , canSend: supportSedMessage
-                , accessToken: conn.context.accessToken
+                canReceive: supportRecMessage,
+                canSend: supportSedMessage,
+                accessToken: conn.context.accessToken
             });
         } else if (status == Strophe.Status.DISCONNECTING) {
             if (conn.isOpened()) {
@@ -351,9 +336,9 @@
                 conn.context.status = _code.STATUS_CLOSING;
 
                 error = {
-                    type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR
-                    , msg: msg
-                    , reconnect: true
+                    type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
+                    msg: msg,
+                    reconnect: true
                 };
 
                 conflict && (error.conflict = true);
@@ -492,7 +477,7 @@
         this.route = options.route || null;
         this.domain = options.domain || 'easemob.com';
         this.inactivity = options.inactivity || 30;
-        this.heartBeatWait = options.heartBeatWait || 60000;
+        this.heartBeatWait = options.heartBeatWait;
         this.maxRetries = options.maxRetries || 5;
         this.isAutoLogin = options.isAutoLogin === false ? false : true;
         this.pollingTime = options.pollingTime || 800;
@@ -530,23 +515,23 @@
     connection.prototype.heartBeat = function () {
         var me = this;
 
-        var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
+        //var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
+        var isNeed = true;
 
-        if (me.heartBeatID || !isNeed) {
+        if (this.heartBeatID || !isNeed) {
             return;
         }
 
         var options = {
-            to: me.domain,
+            to: this.domain,
             type: 'normal'
         };
-        me.heartBeatID = setInterval(function () {
+        this.heartBeatID = setInterval(function () {
             me.sendHeartBeatMessage(options);
-        }, me.heartBeatWait);
+        }, this.heartBeatWait);
     };
 
     connection.prototype.sendHeartBeatMessage = function (options) {
-
         if (!this.isOpened()) {
             return;
         }
@@ -564,7 +549,9 @@
     };
 
     connection.prototype.stopHeartBeat = function () {
-        this.heartBeatID = clearInterval(this.heartBeatID);
+        if (typeof this.heartBeatID == "number") {
+            this.heartBeatID = clearInterval(this.heartBeatID);
+        }
     };
 
 
@@ -613,24 +600,27 @@
 
                 if (res.error && res.error_description) {
                     conn.onError({
-                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
-                        , data: res
-                        , xhr: xhr
+                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
+                        data: res,
+                        xhr: xhr
                     });
                 } else {
                     conn.onError({
-                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR
-                        , data: res
-                        , xhr: xhr
+                        type: _code.WEBIM_CONNCTION_OPEN_ERROR,
+                        data: res,
+                        xhr: xhr
                     });
                 }
+            };
+            var connect_callback = function (status, condition) {
+                console.log('Strophe.connection.prototype.open connect_callback', status, condition);
             };
             this.context.status = _code.STATUS_DOLOGIN_USERGRID;
 
             var loginJson = {
-                grant_type: 'password'
-                , username: userId
-                , password: pwd
+                grant_type: 'password',
+                username: userId,
+                password: pwd
             };
             var loginfo = _utils.stringify(loginJson);
 
@@ -638,6 +628,7 @@
                 url: apiUrl + '/' + orgName + '/' + appName + '/token',
                 dataType: 'json',
                 data: loginfo,
+                connect_callback: connect_callback,
                 success: suc || _utils.emptyfn,
                 error: error || _utils.emptyfn
             };
@@ -647,7 +638,7 @@
 
     };
 
-    // attach to xmpp server
+    // attach to xmpp server for BOSH
     connection.prototype.attach = function (options) {
         var pass = _validCheck(options, this);
 
@@ -684,7 +675,8 @@
         var stropheConn = new Strophe.Connection(this.url, {
             inactivity: this.inactivity,
             maxRetries: this.maxRetries,
-            pollingTime: this.pollingTime
+            pollingTime: this.pollingTime,
+            heartBeatWait: this.heartBeatWait
         });
 
         this.context.accessToken = accessToken;
@@ -704,6 +696,8 @@
     };
 
     connection.prototype.close = function () {
+        this.stopHeartBeat();
+
         var status = this.context.status;
         if (status == _code.STATUS_INIT) {
             return;
@@ -712,7 +706,7 @@
         if (this.isClosed() || this.isClosing()) {
             return;
         }
-        this.stopHeartBeat();
+
         this.context.status = _code.STATUS_CLOSING;
         this.context.stropheConn.disconnect();
     };
@@ -1126,20 +1120,19 @@
             }
         }
         this.onInviteMessage({
-            type: 'invite'
-            , from: form
-            , roomid: roomid
+            type: 'invite',
+            from: form,
+            roomid: roomid
         });
     };
 
     connection.prototype.sendCommand = function (dom, id) {
-
         if (this.isOpened()) {
             this.context.stropheConn.send(dom);
         } else {
             this.onError({
-                type: _code.WEBIM_CONNCTION_DISCONNECTED
-                , reconnect: true
+                type: _code.WEBIM_CONNCTION_DISCONNECTED,
+                reconnect: true
             });
         }
     };
@@ -1159,7 +1152,7 @@
 
     connection.prototype.send = function (message) {
         if (WebIM.config.isWindowSDK) {
-            WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}', 
+            WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
                 function (response) {
                 },
                 function (code, msg) {
@@ -1566,10 +1559,10 @@
             var error = function (res, xhr, msg) {
                 if (res.error && res.error_description) {
                     conn.onError({
-                        type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR
-                        , msg: res.error_description
-                        , data: res
-                        , xhr: xhr
+                        type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,
+                        msg: res.error_description,
+                        data: res,
+                        xhr: xhr
                     });
                 }
             };
@@ -1761,5 +1754,36 @@
                 onFailure: fail
             }
         );
+    };
+
+    /**
+     *
+     * Strophe.Websocket has a bug while logout:
+     * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
+     * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
+     * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+     * 3 "Websocket error [object Event]"
+     * _changeConnectStatus
+     * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
+     *
+     * this will trigger socket.onError, therefore _doDisconnect again.
+     * Fix it by overide this function and do not send closeString !
+     */
+    Strophe.Websocket.prototype._disconnect = function (pres) {
+        if (this.socket && this.socket.readyState !== WebSocket.CLOSED) {
+            if (pres) {
+                this._conn.send(pres);
+            }
+            //var close = $build("close", {"xmlns": Strophe.NS.FRAMING});
+            //this._conn.xmlOutput(close);
+            //var closeString = Strophe.serialize(close);
+            //this._conn.rawOutput(closeString);
+            //try {
+            //    this.socket.send(closeString);
+            //} catch (e) {
+            //    Strophe.info("Couldn't send <close /> tag.");
+            //}
+        }
+        this._conn._doDisconnect();
     };
 }(window, undefined));

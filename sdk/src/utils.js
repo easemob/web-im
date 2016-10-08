@@ -242,18 +242,18 @@
             var apiUrl = options.apiUrl;
 
             var loginJson = {
-                grant_type: 'password'
-                , username: user
-                , password: pwd
+                grant_type: 'password',
+                username: user,
+                password: pwd
             };
             var loginfo = utils.stringify(loginJson);
 
             var options = {
-                url: apiUrl + '/' + orgName + '/' + appName + '/token'
-                , dataType: 'json'
-                , data: loginfo
-                , success: suc
-                , error: err
+                url: apiUrl + '/' + orgName + '/' + appName + '/token',
+                dataType: 'json',
+                data: loginfo,
+                success: suc,
+                error: err
             };
             return utils.ajax(options);
         },
@@ -261,10 +261,10 @@
         getFileUrl: function (fileInputId) {
 
             var uri = {
-                url: ''
-                , filename: ''
-                , filetype: ''
-                , data: ''
+                url: '',
+                filename: '',
+                filetype: '',
+                data: ''
             };
 
             var fileObj = typeof fileInputId === 'string' ? document.getElementById(fileInputId) : fileInputId;
@@ -286,7 +286,7 @@
                     uri.url = u;
                     var pos1 = u.lastIndexOf('/');
                     var pos2 = u.lastIndexOf('\\');
-                    var pos = Math.max(pos1, pos2)
+                    var pos = Math.max(pos1, pos2);
                     if (pos < 0)
                         uri.filename = u;
                     else
@@ -304,7 +304,7 @@
         },
 
         getFileSize: function (fileInputId) {
-            var file = document.getElementById(fileInputId)
+            var file = document.getElementById(fileInputId);
             var fileSize = 0;
             if (file) {
                 if (file.files) {
@@ -478,9 +478,9 @@
             var xhr = utils.xmlrequest();
             var onError = function (e) {
                 options.onFileUploadError({
-                    type: _code.WEBIM_UPLOADFILE_ERROR
-                    , id: options.id
-                    , xhr: xhr
+                    type: _code.WEBIM_UPLOADFILE_ERROR,
+                    id: options.id,
+                    xhr: xhr
                 });
             };
             if (xhr.upload) {
@@ -501,10 +501,10 @@
                         }
                     } catch (e) {
                         options.onFileUploadError({
-                            type: _code.WEBIM_UPLOADFILE_ERROR
-                            , data: xhr.responseText
-                            , id: options.id
-                            , xhr: xhr
+                            type: _code.WEBIM_UPLOADFILE_ERROR,
+                            data: xhr.responseText,
+                            id: options.id,
+                            xhr: xhr
                         });
                     }
                 }, false);
@@ -518,18 +518,18 @@
                                 options.onFileUploadComplete(json);
                             } catch (e) {
                                 options.onFileUploadError({
-                                    type: _code.WEBIM_UPLOADFILE_ERROR
-                                    , data: xhr.responseText
-                                    , id: options.id
-                                    , xhr: xhr
+                                    type: _code.WEBIM_UPLOADFILE_ERROR,
+                                    data: xhr.responseText,
+                                    id: options.id,
+                                    xhr: xhr
                                 });
                             }
                         } else {
                             options.onFileUploadError({
-                                type: _code.WEBIM_UPLOADFILE_ERROR
-                                , data: xhr.responseText
-                                , id: options.id
-                                , xhr: xhr
+                                type: _code.WEBIM_UPLOADFILE_ERROR,
+                                data: xhr.responseText,
+                                id: options.id,
+                                xhr: xhr
                             });
                         }
                     } else {
@@ -558,17 +558,17 @@
             var accessToken = options.accessToken || this.context.accessToken;
             if (!accessToken) {
                 options.onFileDownloadError({
-                    type: _code.WEBIM_DOWNLOADFILE_NO_LOGIN
-                    , id: options.id
+                    type: _code.WEBIM_DOWNLOADFILE_NO_LOGIN,
+                    id: options.id
                 });
                 return;
             }
 
             var onError = function (e) {
                 options.onFileDownloadError({
-                    type: _code.WEBIM_DOWNLOADFILE_ERROR
-                    , id: options.id
-                    , xhr: xhr
+                    type: _code.WEBIM_DOWNLOADFILE_ERROR,
+                    id: options.id,
+                    xhr: xhr
                 });
             };
 
@@ -589,17 +589,17 @@
                             options.onFileDownloadComplete(xhr.response, xhr);
                         } else {
                             options.onFileDownloadError({
-                                type: _code.WEBIM_DOWNLOADFILE_ERROR
-                                , id: options.id
-                                , xhr: xhr
+                                type: _code.WEBIM_DOWNLOADFILE_ERROR,
+                                id: options.id,
+                                xhr: xhr
                             });
                         }
                     } else {
                         xhr.abort();
                         options.onFileDownloadError({
-                            type: _code.WEBIM_DOWNLOADFILE_ERROR
-                            , id: options.id
-                            , xhr: xhr
+                            type: _code.WEBIM_DOWNLOADFILE_ERROR,
+                            id: options.id,
+                            xhr: xhr
                         });
                     }
                 }
@@ -616,10 +616,10 @@
             }
 
             var innerHeaer = {
-                'X-Requested-With': 'XMLHttpRequest'
-                , 'Accept': 'application/octet-stream'
-                , 'share-secret': options.secret
-                , 'Authorization': 'Bearer ' + accessToken
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/octet-stream',
+                'share-secret': options.secret,
+                'Authorization': 'Bearer ' + accessToken
             };
             var headers = options.headers || {};
             for (var key in headers) {
@@ -640,11 +640,11 @@
 
             if (Object.prototype.toString.call(faces) !== '[object Object]') {
                 return {
-                    isemoji: false
-                    , body: [
+                    isemoji: false,
+                    body: [
                         {
-                            type: 'txt'
-                            , data: message
+                            type: 'txt',
+                            data: message
                         }
                     ]
                 };
@@ -660,8 +660,8 @@
                     isemoji: false,
                     body: [
                         {
-                            type: 'txt'
-                            , data: message
+                            type: 'txt',
+                            data: message
                         }
                     ]
                 };
@@ -673,8 +673,8 @@
 
                 if (tmsg) {
                     emessage.push({
-                        type: 'txt'
-                        , data: tmsg
+                        type: 'txt',
+                        data: tmsg
                     });
                 }
                 if (!existEmoji) {
