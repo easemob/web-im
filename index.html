@@ -13,24 +13,25 @@
 </section>
 <!--config-->
 <script src="demo/javascript/dist/webim.config.js"></script>
-<!--A JavaScript library for XMPP over Websocket-->
-<script src='sdk/dist/strophe.js'></script>
-<!--<script src='sdk/dist/strophe-1.2.8.min.js'></script>-->
 <script>
     if (WebIM.config.isWindowSDK) {
         document.title = "环信Demo";
     }
     if (WebIM.config.isDebug) {
+        document.write("<script src='sdk/dist/strophe.js'><\/script>");
         document.write("<script src='demo/javascript/dist/debug.js'><\/script>");
+    } else {
+        <!--A JavaScript library for XMPP over Websocket-->
+        document.write("<script src='sdk/dist/strophe-1.2.8.min.js'><\/script>");
     }
 </script>
-
 <!--sdk-->
 <script src='sdk/dist/websdk-1.1.2.js'></script>
+<!--webrtc-->
 <script>
     if (WebIM.config.isWebRTC) {
-        document.write("<script src='sdk/dist/adapter.js'><\/script>");
-        document.write("<script src='sdk/dist/webrtc-1.0.0.js'><\/script>");
+        document.write("<script src='webrtc/dist/adapter.js'><\/script>");
+        document.write("<script src='webrtc/dist/webrtc-1.0.0.js'><\/script>");
     }
 </script>
 <!--[if lte IE 9]>

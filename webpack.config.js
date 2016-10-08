@@ -4,7 +4,7 @@ module.exports = {
     entry: {
         './sdk/dist/websdk-1.1.2': './sdk/src/connection',
         './demo/javascript/dist/demo': './demo/javascript/src/entry',
-        './sdk/dist/webrtc-1.0.0': './sdk/src/webrtc/webrtc'
+        './webrtc/dist/webrtc-1.0.0': './webrtc/src/webrtc'
     },
     output: {
         path: './',
@@ -17,13 +17,13 @@ module.exports = {
     module: {
         loaders: [
             {
-				test: /\.js|jsx$/,
-				loader: 'babel',
-				exclude: /node_modules/,
-				query: {
-					presets: ['es2015', 'react']
-				}
-			},
+                test: /\.js|jsx$/,
+                loader: 'babel',
+                exclude: /node_modules/,
+                query: {
+                    presets: ['es2015', 'react']
+                }
+            },
             {
                 test: /\.scss$/,
                 loader: 'style!css!sass'
