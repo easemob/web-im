@@ -5,7 +5,7 @@
  * In this way , others won't be influenced by this config while git pull.
  *
  */
-window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
+var WebIM = {};
 
 WebIM.config = {
     /*
@@ -46,18 +46,11 @@ WebIM.config = {
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
      */
-    isDebug: false,
+    isDebug: true,
     /**
      * webrtc supports Chrome and https only
      */
     isWebRTC: /Chrome/.test(navigator.userAgent) && /^https\:$/.test(window.location.protocol),
-    /**
-     * With autoSignIn as true,  autoSignInName and autoSignInPwd right configed,
-     * You can auto signed in each time you refresh the page in dev model.
-     */
-    autoSignIn: false,
-    autoSignInName: 'xxx',
-    autoSignInPwd: 'xxx',
     /*
      * Set to auto sign-in
      */

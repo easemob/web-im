@@ -67,7 +67,7 @@
                     }
 
                     output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) +
-                    keyStr.charAt(enc3) + keyStr.charAt(enc4);
+                        keyStr.charAt(enc3) + keyStr.charAt(enc4);
                 } while (i < input.length);
 
                 return output;
@@ -280,8 +280,8 @@
             var triplet, j;
             for (var i = 0; i < binarray.length * 4; i += 3) {
                 triplet = (((binarray[i >> 2] >> 8 * (3 - i % 4)) & 0xFF) << 16) |
-                (((binarray[i + 1 >> 2] >> 8 * (3 - (i + 1) % 4)) & 0xFF) << 8 ) |
-                ((binarray[i + 2 >> 2] >> 8 * (3 - (i + 2) % 4)) & 0xFF);
+                    (((binarray[i + 1 >> 2] >> 8 * (3 - (i + 1) % 4)) & 0xFF) << 8 ) |
+                    ((binarray[i + 2 >> 2] >> 8 * (3 - (i + 2) % 4)) & 0xFF);
                 for (j = 0; j < 4; j++) {
                     if (i * 8 + j * 6 > binarray.length * 32) {
                         str += "=";
@@ -386,7 +386,7 @@
             var str = "";
             for (var i = 0; i < binarray.length * 4; i++) {
                 str += hex_tab.charAt((binarray[i >> 2] >> ((i % 4) * 8 + 4)) & 0xF) +
-                hex_tab.charAt((binarray[i >> 2] >> ((i % 4) * 8  )) & 0xF);
+                    hex_tab.charAt((binarray[i >> 2] >> ((i % 4) * 8  )) & 0xF);
             }
             return str;
         };
@@ -1636,7 +1636,7 @@
                 for (i = 0; i < elem.attributes.length; i++) {
                     if (elem.attributes[i].nodeName != "_realname") {
                         result += " " + elem.attributes[i].nodeName +
-                        "='" + Strophe.xmlescape(elem.attributes[i].value) + "'";
+                            "='" + Strophe.xmlescape(elem.attributes[i].value) + "'";
                     }
                 }
 
@@ -2032,16 +2032,16 @@
                 } catch (e) {
                     if (e.sourceURL) {
                         Strophe.fatal("error: " + this.handler +
-                        " " + e.sourceURL + ":" +
-                        e.line + " - " + e.name + ": " + e.message);
+                            " " + e.sourceURL + ":" +
+                            e.line + " - " + e.name + ": " + e.message);
                     } else if (e.fileName) {
                         if (typeof(console) != "undefined") {
                             console.trace();
                             console.error(this.handler, " - error - ", e, e.message);
                         }
                         Strophe.fatal("error: " + this.handler + " " +
-                        e.fileName + ":" + e.lineNumber + " - " +
-                        e.name + ": " + e.message);
+                            e.fileName + ":" + e.lineNumber + " - " +
+                            e.name + ": " + e.message);
                     } else {
                         Strophe.fatal("error: " + e.message + "\n" + e.stack);
                     }
@@ -3012,7 +3012,7 @@
                                 plugin.statusChanged(status, condition);
                             } catch (err) {
                                 Strophe.error("" + k + " plugin caused an exception " +
-                                "changing status: " + err);
+                                    "changing status: " + err);
                             }
                         }
                     }
@@ -3024,7 +3024,7 @@
                         this.connect_callback(status, condition);
                     } catch (e) {
                         Strophe.error("User connection callback caused an " +
-                        "exception: " + e);
+                            "exception: " + e);
                     }
                 }
             },
@@ -3262,7 +3262,7 @@
                 this._authentication.legacy_auth =
                     bodyWrap.getElementsByTagName("auth").length > 0;
                 found_authentication = this._authentication.legacy_auth ||
-                matched.length > 0;
+                    matched.length > 0;
                 if (!found_authentication) {
                     this._proto._no_auth_received(_callback);
                     return;
@@ -4093,9 +4093,9 @@
             responseText += 'cnonce=' + this._quote(cnonce) + ',';
             responseText += 'digest-uri=' + this._quote(digest_uri) + ',';
             responseText += 'response=' + MD5.hexdigest(MD5.hexdigest(A1) + ":" +
-            nonce + ":00000001:" +
-            cnonce + ":auth:" +
-            MD5.hexdigest(A2)) + ",";
+                    nonce + ":00000001:" +
+                    cnonce + ":auth:" +
+                    MD5.hexdigest(A2)) + ",";
             responseText += 'qop=auth';
 
             this.onChallenge = function () {
@@ -4267,7 +4267,7 @@
                         Strophe.error("invalid response received");
                         Strophe.error("responseText: " + this.xhr.responseText);
                         Strophe.error("responseXML: " +
-                        Strophe.serialize(this.xhr.responseXML));
+                            Strophe.serialize(this.xhr.responseXML));
                         throw "parsererror";
                     }
                 } else if (this.xhr.responseText) {
@@ -4623,7 +4623,7 @@
             _hitError: function (reqStatus) {
                 this.errors++;
                 Strophe.warn("request errored, status: " + reqStatus +
-                ", number of errors: " + this.errors);
+                    ", number of errors: " + this.errors);
                 if (this.errors > 4) {
                     this._conn._onDisconnectTimeout();
                 }
@@ -4686,7 +4686,7 @@
                 if (this._conn.authenticated && this._requests.length === 0 &&
                     data.length === 0 && !this._conn.disconnecting) {
                     Strophe.info("no requests during idle cycle, sending " +
-                    "blank request");
+                        "blank request");
                     data.push(null);
                 }
 
@@ -4731,9 +4731,9 @@
 
                     if (time_elapsed > Math.floor(Strophe.TIMEOUT * this.wait)) {
                         Strophe.warn("Request " +
-                        this._requests[0].id +
-                        " timed out, over " + Math.floor(Strophe.TIMEOUT * this.wait) +
-                        " seconds since last activity");
+                            this._requests[0].id +
+                            " timed out, over " + Math.floor(Strophe.TIMEOUT * this.wait) +
+                            " seconds since last activity");
                         this._throttledRequestHandler();
                     }
                 }
@@ -4753,8 +4753,8 @@
              */
             _onRequestStateChange: function (func, req) {
                 Strophe.debug("request id " + req.id +
-                "." + req.sends + " state changed to " +
-                req.xhr.readyState);
+                    "." + req.sends + " state changed to " +
+                    req.xhr.readyState);
 
                 if (req.abort) {
                     req.abort = false;
@@ -4790,8 +4790,8 @@
                         // remove from internal queue
                         this._removeRequest(req);
                         Strophe.debug("request id " +
-                        req.id +
-                        " should now be removed");
+                            req.id +
+                            " should now be removed");
                     }
 
                     // request succeeded
@@ -4810,15 +4810,15 @@
 
                         // call handler
                         Strophe.debug("request id " +
-                        req.id + "." +
-                        req.sends + " got 200");
+                            req.id + "." +
+                            req.sends + " got 200");
                         func(req);
                         this.errors = 0;
                     } else {
                         Strophe.error("request id " +
-                        req.id + "." +
-                        req.sends + " error " + reqStatus +
-                        " happened");
+                            req.id + "." +
+                            req.sends + " error " + reqStatus +
+                            " happened");
                         if (reqStatus === 0 ||
                             (reqStatus >= 400 && reqStatus < 600) ||
                             reqStatus >= 12000) {
@@ -4857,7 +4857,7 @@
                     }
                 } catch (e) {
                     Strophe.error("caught an error in _requests[" + i +
-                    "], reqStatus: " + reqStatus);
+                        "], reqStatus: " + reqStatus);
                 }
 
                 if (typeof(reqStatus) == "undefined") {
@@ -4882,8 +4882,8 @@
                     requestCompletedWithServerError) {
                     if (secondaryTimeout) {
                         Strophe.error("Request " +
-                        this._requests[i].id +
-                        " timed out (secondary), restarting");
+                            this._requests[i].id +
+                            " timed out (secondary), restarting");
                     }
                     req.abort = true;
                     req.xhr.abort();
@@ -4899,7 +4899,7 @@
 
                 if (req.xhr.readyState === 0) {
                     Strophe.debug("request id " + req.id +
-                    "." + req.sends + " posting");
+                        "." + req.sends + " posting");
 
                     try {
                         var contentType = this._conn.options.contentType || "text/xml; charset=utf-8";
@@ -4963,9 +4963,9 @@
                     }
                 } else {
                     Strophe.debug("_processRequest: " +
-                    (i === 0 ? "first" : "second") +
-                    " request has readyState of " +
-                    req.xhr.readyState);
+                        (i === 0 ? "first" : "second") +
+                        " request has readyState of " +
+                        req.xhr.readyState);
                 }
             },
 
@@ -5088,10 +5088,10 @@
             _throttledRequestHandler: function () {
                 if (!this._requests) {
                     Strophe.debug("_throttledRequestHandler called with " +
-                    "undefined requests");
+                        "undefined requests");
                 } else {
                     Strophe.debug("_throttledRequestHandler called with " +
-                    this._requests.length + " requests");
+                        this._requests.length + " requests");
                 }
 
                 if (!this._requests || this._requests.length === 0) {
@@ -5104,7 +5104,7 @@
 
                 if (this._requests.length > 1 &&
                     Math.abs(this._requests[0].rid -
-                    this._requests[1].rid) < this.window) {
+                        this._requests[1].rid) < this.window) {
                     this._processRequest(1);
                 }
             }
@@ -5351,6 +5351,9 @@
              */
             _connect_cb_wrapper: function (message) {
                 if (message.data.indexOf("<open ") === 0 || message.data.indexOf("<?xml") === 0) {
+                    if (WebIM.config.isDebug) {
+                        console.log(ts() + 'recv1:', message.data);
+                    }
                     // Strip the XML Declaration, if there is one
                     var data = message.data.replace(/^(<\?.*?\?>\s*)*/, "");
                     if (data === '') return;
@@ -5378,6 +5381,9 @@
                         this._conn._doDisconnect();
                     }
                 } else {
+                    if (WebIM.config.isDebug) {
+                        console.log(ts() + 'recv2:', message.data);
+                    }
                     var string = this._streamWrap(message.data);
                     var elem = new DOMParser().parseFromString(string, "text/xml").documentElement;
                     this.socket.onmessage = this._onMessage.bind(this);
@@ -5560,6 +5566,9 @@
              * (string) message - The websocket message.
              */
             _onMessage: function (message) {
+                if (WebIM.config.isDebug) {
+                    console.log(ts() + 'recv:', message.data);
+                }
                 var elem, data;
                 // check for closing stream
                 var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
