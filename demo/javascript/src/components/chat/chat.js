@@ -158,6 +158,19 @@ module.exports = React.createClass({
     //for WindosSDK
     //TODO:@lhr 
     updateMyRoster: function (options) {
+        var friends = [];
+        var roster = eval('(' + options + ')');
+        Demo.roster = [];
+        for (var i in roster) 
+        {
+            var ros = roster[i];
+            if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') 
+            {
+                friends.push(ros);
+                Demo.roster[ros.name] = 1;
+            }
+        }
+        this.setState({ friends: friends });
         console.log('updateMyRoster', options);
     },
     //for WindosSDK
