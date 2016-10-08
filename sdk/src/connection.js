@@ -23,8 +23,34 @@
         if (xhr.overrideMimeType) {
             xhr.overrideMimeType('text/xml');
         }
-        xhr.onreadystatechange = Strophe.Request.func.stropheBind(null, Strophe.Request);
+        //TODO: need to be verified in IE8
+        xhr.onreadystatechange = Strophe.Request.func.bind(null, Strophe.Request);
         return xhr;
+    };
+
+    /**
+     *
+     * Strophe.Websocket has a bug while logout:
+     * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
+     * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
+     * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+     * 3 "Websocket error [object Event]"
+     *
+     * this will trigger socket.onError, therefore _doDisconnect again.
+     * Fix it by overide this function and make sure socket.close after 2 xml send finished!
+     */
+    Strophe.Websocket.prototype._closeSocket = function () {
+        if (this.socket) {
+            var me = this;
+            setTimeout(function () {
+                try {
+                    me.socket.close();
+                } catch (e) {
+                }
+            }, 0);
+        } else {
+            this.socket = null;
+        }
     };
 
 
@@ -514,9 +540,8 @@
 
     connection.prototype.heartBeat = function () {
         var me = this;
-
-        //var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
-        var isNeed = true;
+        //IE8: strophe auto switch from ws to BOSH, need heartbeat
+        var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
 
         if (this.heartBeatID || !isNeed) {
             return;
@@ -1342,14 +1367,14 @@
                     data: e
                 });
             }
-        }
+        };
         var err = options.error || _utils.emptyfn;
         var errorFn = function (ele) {
             err({
                 type: _code.WEBIM_CONNCTION_GETROOM_ERROR
                 , data: ele
             });
-        }
+        };
         this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
     };
 
@@ -1754,36 +1779,5 @@
                 onFailure: fail
             }
         );
-    };
-
-    /**
-     *
-     * Strophe.Websocket has a bug while logout:
-     * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
-     * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
-     * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
-     * 3 "Websocket error [object Event]"
-     * _changeConnectStatus
-     * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
-     *
-     * this will trigger socket.onError, therefore _doDisconnect again.
-     * Fix it by overide this function and do not send closeString !
-     */
-    Strophe.Websocket.prototype._disconnect = function (pres) {
-        if (this.socket && this.socket.readyState !== WebSocket.CLOSED) {
-            if (pres) {
-                this._conn.send(pres);
-            }
-            //var close = $build("close", {"xmlns": Strophe.NS.FRAMING});
-            //this._conn.xmlOutput(close);
-            //var closeString = Strophe.serialize(close);
-            //this._conn.rawOutput(closeString);
-            //try {
-            //    this.socket.send(closeString);
-            //} catch (e) {
-            //    Strophe.info("Couldn't send <close /> tag.");
-            //}
-        }
-        this._conn._doDisconnect();
     };
 }(window, undefined));
