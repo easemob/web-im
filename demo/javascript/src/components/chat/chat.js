@@ -327,17 +327,18 @@ module.exports = React.createClass({
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getRoster"}',
                 function success(str) {
-                    var roster = eval('(' + str + ')');
                     Demo.roster = [];
-
-                    for (var i in roster) {
-                        var ros = roster[i];
-                        if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
-                            friends.push(ros);
-                            Demo.roster[ros.name] = 1;
-                        }
+                    if(str){
+                        var roster = eval('(' + str + ')');
+                        for (var i in roster) {
+                            var ros = roster[i];
+                            if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
+                                friends.push(ros);
+                                Demo.roster[ros.name] = 1;
+                            }
+                        }                        
                     }
-                    me.setState({friends: friends});
+                    me.setState({ friends: friends });
 
                     doNotUpdateGroup || me.getGroup();
                 },
