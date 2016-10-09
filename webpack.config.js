@@ -14,6 +14,15 @@ module.exports = {
     resolve: {
         extensions: ['', '.js', '.jsx']
     },
+    // to avoid:
+    // Warning: It looks like you're using a minified copy of the development build of React ...
+    plugins: [
+        new webpack.DefinePlugin({
+            "process.env": {
+                NODE_ENV: JSON.stringify("production")
+            }
+        })
+    ],
     module: {
         loaders: [
             {
@@ -34,4 +43,5 @@ module.exports = {
             }
         ]
     }
-}
+};
+
