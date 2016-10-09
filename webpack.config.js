@@ -14,6 +14,15 @@ module.exports = {
     resolve: {
         extensions: ['', '.js', '.jsx']
     },
+    // to avoid:
+    // Warning: It looks like you're using a minified copy of the development build of React ...
+    plugins: [
+        new webpack.DefinePlugin({
+            "process.env": {
+                NODE_ENV: JSON.stringify("production")
+            }
+        })
+    ],
     module: {
         loaders: [
             {
@@ -21,7 +30,7 @@ module.exports = {
                 loader: 'babel',
                 exclude: /node_modules/,
                 query: {
-                    presets: ['es2015', 'react']
+                    presets: ['react', 'stage-0', 'stage-1', 'stage-2', 'stage-3', 'es2015']
                 }
             },
             {
@@ -34,4 +43,5 @@ module.exports = {
             }
         ]
     }
-}
+};
+

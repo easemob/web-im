@@ -3,6 +3,7 @@ node_modules
 /.project
 .idea/*
 *.swp
+publish.sh
 demo/javascript/dist/demo.js
 demo/javascript/dist/debug.js
 demo/javascript/dist/webim.config.js

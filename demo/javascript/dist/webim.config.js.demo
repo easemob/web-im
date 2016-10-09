@@ -46,7 +46,7 @@ WebIM.config = {
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
      */
-    isDebug: true,
+    isDebug: false,
     /**
      * webrtc supports Chrome and https only
      */
