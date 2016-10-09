@@ -28,6 +28,7 @@
         return xhr;
     };
 
+
     /**
      *
      * Strophe.Websocket has a bug while logout:
@@ -35,9 +36,12 @@
      * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
      * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
      * 3 "Websocket error [object Event]"
+     * _changeConnectStatus
+     * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
      *
      * this will trigger socket.onError, therefore _doDisconnect again.
-     * Fix it by overide this function and make sure socket.close after 2 xml send finished!
+     * Fix it by overide  _disconnect and _onMessage
+     * as follows:
      */
     Strophe.Websocket.prototype._closeSocket = function () {
         if (this.socket) {
@@ -51,6 +55,85 @@
         } else {
             this.socket = null;
         }
+    };
+
+    Strophe.Websocket.prototype._disconnect = function (pres) {
+        if (this.socket && this.socket.readyState !== WebSocket.CLOSED) {
+            if (pres) {
+                this._conn.send(pres);
+            }
+            var close = $build("close", {"xmlns": Strophe.NS.FRAMING});
+            this._conn.xmlOutput(close);
+            var closeString = Strophe.serialize(close);
+            this._conn.rawOutput(closeString);
+            try {
+                this.socket.send(closeString);
+            } catch (e) {
+                Strophe.info("Couldn't send <close /> tag.");
+            }
+        }
+        // should not call _doDisconnect() at this point.
+        // _onMessage will call it when receive the <close />
+        // this._conn._doDisconnect();
+    };
+
+    Strophe.Websocket.prototype._onMessage = function (message) {
+        if (WebIM.config.isDebug) {
+            console.log(ts() + 'recv:', message.data);
+        }
+        var elem, data;
+        // check for closing stream
+        // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
+        // if (message.data === close) {
+        //     this._conn.rawInput(close);
+        //     this._conn.xmlInput(message);
+        //     if (!this._conn.disconnecting) {
+        //         this._conn._doDisconnect();
+        //     }
+        //     return;
+        //
+        // send and receive close xml: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/>
+        // so we can't judge whether message.data equals close by === simply.
+        if (message.data.indexOf("<close ") === 0) {
+            elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
+            var see_uri = elem.getAttribute("see-other-uri");
+            if (see_uri) {
+                this._conn._changeConnectStatus(Strophe.Status.REDIRECT, "Received see-other-uri, resetting connection");
+                this._conn.reset();
+                this._conn.service = see_uri;
+                this._connect();
+            } else {
+                // if (!this._conn.disconnecting) {
+                this._conn._doDisconnect();
+                // }
+            }
+            return;
+        } else if (message.data.search("<open ") === 0) {
+            // This handles stream restarts
+            elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
+            if (!this._handleStreamStart(elem)) {
+                return;
+            }
+        } else {
+            data = this._streamWrap(message.data);
+            elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
+        }
+
+        if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
+            return;
+        }
+
+        //handle unavailable presence stanza before disconnecting
+        if (this._conn.disconnecting &&
+            elem.firstChild.nodeName === "presence" &&
+            elem.firstChild.getAttribute("type") === "unavailable") {
+            this._conn.xmlInput(elem);
+            this._conn.rawInput(Strophe.serialize(elem));
+            // if we are already disconnecting we will ignore the unavailable stanza and
+            // wait for the </stream:stream> tag before we close the connection
+            return;
+        }
+        this._conn._dataRecv(elem, message.data);
     };
 
 

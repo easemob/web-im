@@ -35,6 +35,9 @@ module.exports = React.createClass({
             },
             onClosed: function (msg) {
                 log('onClosed');
+                //demo:跳转到登陆页 或者 自动重连
+                Demo.api.logout();
+                //webRTC:断线处理
                 me.channel.close();
             },
             onTextMessage: function (message) {
@@ -161,16 +164,14 @@ module.exports = React.createClass({
         var friends = [];
         var roster = eval('(' + options + ')');
         Demo.roster = [];
-        for (var i in roster) 
-        {
+        for (var i in roster) {
             var ros = roster[i];
-            if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') 
-            {
+            if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
                 friends.push(ros);
                 Demo.roster[ros.name] = 1;
             }
         }
-        this.setState({ friends: friends });
+        this.setState({friends: friends});
         console.log('updateMyRoster', options);
     },
     //for WindosSDK
