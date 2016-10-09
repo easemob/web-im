@@ -11,14 +11,13 @@ var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
 
 module.exports = {
-    log: (function () {
-        if (typeof console !== 'undefined' && console.log) {
-            return function () {
-                console.log.apply(window.console, arguments);
-            };
-        } else return function () {
-        };
-    }()),
+    log: function () {
+        if (typeof window === 'object') {
+            if (typeof console !== 'undefined' && typeof console.log === 'function') {
+                console.log.apply(console, arguments);
+            }
+        }
+    },
 
     render: function (node, change) {
         this.node = node;
