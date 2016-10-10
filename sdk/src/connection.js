@@ -74,7 +74,7 @@
         }
         // should not call _doDisconnect() at this point.
         // _onMessage will call it when receive the <close />
-        // this._conn._doDisconnect();
+        this._conn._doDisconnect();
     };
 
     Strophe.Websocket.prototype._onMessage = function (message) {
@@ -456,7 +456,11 @@
         } else if (status == Strophe.Status.DISCONNECTED) {
             conn.context.status = _code.STATUS_CLOSED;
             conn.clear();
-            conn.onClosed();
+            error = {
+                type: _code.WEBIM_CONNCTION_SERVER_ERROR   //8: offline by multi login
+                //type: _code.WEBIM_CONNCTION_DISCONNECTED //16: server-side close the websocket connection
+            };
+            conn.onError(error);
         } else if (status == Strophe.Status.AUTHFAIL) {
             error = {
                 type: _code.WEBIM_CONNCTION_AUTH_ERROR
