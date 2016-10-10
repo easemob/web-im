@@ -1,10 +1,28 @@
 var React = require("react");
 var ReactDOM = require('react-dom');
 var Avatar = require('../common/avatar');
-
+var _utils = require('../../../../../sdk/src/utils').utils;
 
 var FileMsg = React.createClass({
-
+    download: function () {
+        var suc = function (data, xhr) {
+            console.log('suc');
+            console.log(data);
+        };
+        var error = function (res, xhr, msg) {
+            console.log('error');
+            console.log(res)
+        };
+        var options = {
+            url: this.props.value,
+            dataType: 'json',
+            type: 'GET',
+            headers: {'Authorization': 'Bearer ' + Demo.conn.context.accessToken},
+            success: suc || _utils.emptyfn,
+            error: error || _utils.emptyfn
+        };
+        _utils.ajax(options);
+    },
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
         var links = [];
@@ -14,6 +32,7 @@ var FileMsg = React.createClass({
             links.push(<a target='_blank' key='1' href={dirPath} className='dir'>{Demo.lan.openDir}</a>);
         } else {
             links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.download}</a>);
+            //links.push(<a key='0' href="javascript:void(0)" onClick={this.download}>{Demo.lan.download}</a>);
         }
 
         return (
