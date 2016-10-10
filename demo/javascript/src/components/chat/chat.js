@@ -108,6 +108,9 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     Notify.error("Network connection is broken. reconnecting...");
                 } else {
+                    var type = 7;
+                    var text = me.getObjectKey(WebIM.statusCode, type) + ' ' + ' type=' + type;
+                    Notify.error('onError:' + text);
                     Demo.api.logout();
                 }
             },
@@ -329,7 +332,7 @@ module.exports = React.createClass({
             WebIM.doQuery('{"type":"getRoster"}',
                 function success(str) {
                     Demo.roster = [];
-                    if(str){
+                    if (str) {
                         var roster = eval('(' + str + ')');
                         for (var i in roster) {
                             var ros = roster[i];
@@ -337,9 +340,9 @@ module.exports = React.createClass({
                                 friends.push(ros);
                                 Demo.roster[ros.name] = 1;
                             }
-                        }                        
+                        }
                     }
-                    me.setState({ friends: friends });
+                    me.setState({friends: friends});
 
                     doNotUpdateGroup || me.getGroup();
                 },
