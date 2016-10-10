@@ -20,12 +20,11 @@ var DelFriend = React.createClass({
             return;
         }
 
-        if (value == Demo.user) {
-            Notify.error(Demo.lan.delFriendSelfInvalid);
+        if (value == Demo.user || !Demo.roster[value]) {
+            Notify.error(value + ' ' + Demo.lan.delFriendSelfInvalid);
             this.close();
             return;
         }
-
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"delFriend","to":"' + value + '"}',
                 function success(str) {
