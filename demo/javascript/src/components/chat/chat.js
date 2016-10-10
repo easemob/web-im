@@ -38,7 +38,9 @@ module.exports = React.createClass({
                 //demo:跳转到登陆页 或者 自动重连
                 Demo.api.logout();
                 //webRTC:断线处理
-                me.channel.close();
+                if (WebIM.config.isWebRTC) {
+                    me.channel.close();
+                }
             },
             onTextMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
