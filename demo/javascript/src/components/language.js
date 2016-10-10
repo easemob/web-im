@@ -59,7 +59,7 @@ exports.English = {
     contact_deleted: 'Contact deleted!',
     addFriendSelfInvalid: 'Can\'t add youself as friend',
     delFriendSelfInvalid: 'Can\'t del youself as friend',
-
+    addFriendRepeat: 'is friend already',
     last: ''
 };
 
@@ -124,5 +124,6 @@ exports.Chinese = {
     contact_deleted: '好友已删除!',
     addFriendSelfInvalid: '不能添加自己为好友',
     delFriendSelfInvalid: '该好友不存在',
+    addFriendRepeat: '已经是好友',
     last: ''
 };

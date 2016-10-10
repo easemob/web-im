@@ -17,13 +17,20 @@ var AddMember = React.createClass({
         var value = this.refs.input.refs.input.value;
 
         if (!value) {
-
+            Notify.error(Demo.lan.username + Demo.lan.notEmpty);
+            return;
         }
         if (value == Demo.user) {
             Notify.error(Demo.lan.addFriendSelfInvalid);
             this.close();
             return;
         }
+        if (Demo.roster[value] == 1) {
+            Notify.error(value + ' ' + Demo.lan.addFriendRepeat);
+            return;
+        }
+
+
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"addFriend","to":"' + value + '","message":"' + Demo.user + Demo.lan.request + '"}',
                 function success(str) {
