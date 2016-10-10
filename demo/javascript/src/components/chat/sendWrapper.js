@@ -113,7 +113,9 @@ module.exports = React.createClass({
 
     selectEmoji: function (e) {
         var value = e.target.parentNode.getAttribute('key');
-        this.refs.textarea.value += value;
+        if (value != null) {
+            this.refs.textarea.value += value;
+        }
     },
 
     call: function () {
