@@ -4,6 +4,24 @@ var Avatar = require('../common/avatar');
 var _utils = require('../../../../../sdk/src/utils').utils;
 
 var FileMsg = React.createClass({
+    getInitialState: function () {
+        var me = this;
+        Demo.api.listen({
+            onUpdateFileUrl: function (options) {
+                me.updateFileUrl(options);
+            }
+        });
+
+        return {
+            value: this.props.value
+        };
+    },
+    updateFileUrl: function (options) {
+        console.log('updateFileUrl');
+        console.log(options);
+        this.setState({value: options.url});
+    },
+
     download: function () {
         var suc = function (data, xhr) {
             console.log('suc');
@@ -24,14 +42,26 @@ var FileMsg = React.createClass({
         _utils.ajax(options);
     },
     render: function () {
+        console.log('id=', this.props.id);
+        console.log(this.state.value);
         var icon = this.props.className === 'left' ? 'H' : 'I';
         var links = [];
         if (WebIM.config.isWindowSDK) {
-            var dirPath = this.props.value.replace("file:", "location:");
-            links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.openFile}</a>);
-            links.push(<a target='_blank' key='1' href={dirPath} className='dir'>{Demo.lan.openDir}</a>);
+            if (this.state.value == "") {
+                links.push(<a key='0' href="javascript:void(0)">{Demo.lan.FileLoading}</a>);
+            } else {
+                var dirPath = this.state.value.replace("file:", "location:");
+                links.push(<a target='_blank' key='0' href={this.state.value}>{Demo.lan.openFile}</a>);
+                links.push(<a target='_blank' key='1' href={dirPath} className='dir'>{Demo.lan.openDir}</a>);
+            }
+
         } else {
-            links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.download}</a>);
+            if (this.state.value == "") {
+                links.push(<a key='0' href="javascript:void(0)">{Demo.lan.FileLoading}</a>);
+            } else {
+                links.push(<a target='_blank' key='0' href={this.state.value}>{Demo.lan.download}</a>);
+            }
+            // links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.download}</a>);
             //links.push(<a key='0' href="javascript:void(0)" onClick={this.download}>{Demo.lan.download}</a>);
         }
 
@@ -43,7 +73,7 @@ var FileMsg = React.createClass({
                     <span className='webim-msg-icon font'>{icon}</span>
                     <div>
                         <p className='webim-msg-header'>{Demo.lan.file}</p>
-                        <div>
+                        <div id={this.props.id}>
                             <span className='webim-msg-header-icon font small'>S</span>
                             <span className='webim-msg-name'>{this.props.filename}</span>
                             {links}
@@ -57,6 +87,7 @@ var FileMsg = React.createClass({
 
 module.exports = function (options, sentByMe) {
     var props = {
+        id: options.id,
         src: options.avatar || 'demo/images/default.png',
         time: options.time || new Date().toLocaleString(),
         value: options.value || '',

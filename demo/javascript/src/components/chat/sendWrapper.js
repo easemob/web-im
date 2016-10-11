@@ -133,16 +133,92 @@ module.exports = React.createClass({
     sendFile: function () {
         this.props.sendFile(this.props.chatType);
     },
+    sendFileNull: function () {
+        var accessToken = "YWMtSA8qRGz0Eea8me-22m8DgQAAAVgFH60HdKgMuwEMxH74_zGVP2sCxMnsE_w",
+            ext = {weichat: {originType: "webim"}},
+            file_length = 0,
+            filename = "home.css.zip",
+            from = "wk3368",
+            id = "251695734842196412",
+            secret = "2wTA2o97Eearx0GpFzl9MqIIlV3rvbaNWYZvGY9VBs7njhgV",
+            to = "wenke",
+            type = "chat",
+            url = "";
+
+        var msg = {
+            id: id
+            , type: type
+            , from: from
+            , to: to
+            , url: url
+            , secret: secret
+            , filename: filename
+            , file_length: file_length
+            , accessToken: accessToken || ''
+            , ext: ext
+        };
+        console.log('sendFileNull');
+        console.log(msg);
+        Demo.api.appendMsg(msg, 'file');
+
+    },
+    sendFileUrl: function () {
+
+        var accessToken = "YWMtSA8qRGz0Eea8me-22m8DgQAAAVgFH60HdKgMuwEMxH74_zGVP2sCxMnsE_w",
+            ext = {weichat: {originType: "webim"}},
+            file_length = 0,
+            filename = "home.css.zip",
+            from = "wk3368",
+            id = "251695734842196412",
+            secret = "2wTA2o97Eearx0GpFzl9MqIIlV3rvbaNWYZvGY9VBs7njhgV",
+            to = "wenke",
+            type = "chat",
+            url = "https://a1.easemob.com/easemob-demo/chatdemoui/chatfiles/022f7b20-8f84-11e6-b249-fd50802617e8";
+
+        var msg = {
+            id: id
+            , type: type
+            , from: from
+            , to: to
+            , url: url
+            , secret: secret
+            , filename: filename
+            , file_length: file_length
+            , accessToken: accessToken || ''
+            , ext: ext
+        };
+        console.log('sendFileUrl');
+        console.log(msg);
+        var cur = document.getElementById(msg.id);
+        console.log(cur);
+        if (cur) {
+            console.log('已经存在，update');
+            Demo.api.onUpdateFileUrl({url: msg.url});
+        } else {
+            Demo.api.appendMsg(msg, 'file');
+        }
+
+    },
     render: function () {
 
         var showEmoji = this.state.showEmoji ? '' : ' hide',
             disabled = this.state.send ? '' : ' disabled';
 
         var roomMember = [];
+        var keyValue = 0;
         if (WebIM.config.isWebRTC) {
-            roomMember.push(<span key='1' className='webim-audio-icon font smaller' onClick={this.call}>R</span>);
-            roomMember.push(<span key='2' className='webim-audio-icon font smaller' onClick={this.acceptCall}>R</span>);
+            roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
+                                  onClick={this.call}>R</span>);
+            roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
+                                  onClick={this.acceptCall}>R</span>);
         }
+        //send file test
+
+
+        roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
+                              onClick={this.sendFileNull}>R</span>);
+        roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
+                              onClick={this.sendFileUrl}>R</span>);
         return (
             <div className='webim-send-wrapper'>
                 <div className='webim-chatwindow-options'>

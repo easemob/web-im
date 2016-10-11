@@ -167,13 +167,22 @@ module.exports = {
                 if (!targetNode) {
                     Demo.strangers[targetId].push({msg: msg, type: 'file'});
                 } else {
-                    brief = '[' + Demo.lan.file + ']';
-                    fileMsg({
-                        wrapper: targetNode,
-                        name: name,
-                        value: data || msg.url,
-                        filename: msg.filename
-                    }, this.sentByMe);
+                    var cur = document.getElementById(msg.id);
+                    if (cur) {
+                        Demo.api.onUpdateFileUrl({url: msg.url});
+                        return;
+                    } else {
+                        brief = '[' + Demo.lan.file + ']';
+                        fileMsg({
+                            id: msg.id,
+                            wrapper: targetNode,
+                            name: name,
+                            value: data || msg.url,
+                            filename: msg.filename
+                        }, this.sentByMe);
+                    }
+
+
                 }
                 break;
             case 'loc':
@@ -254,6 +263,7 @@ module.exports = {
         var cur = document.getElementById(id);
         cur.querySelector('em').innerHTML = value;
     },
+
 
     addCount: function (id, cate) {
         if (Demo.selectedCate !== cate) {
@@ -337,5 +347,10 @@ module.exports = {
         setTimeout(function () {
             node.scrollIntoView(true);
         }, 50);
+    },
+    listen: function (options) {
+        this.onUpdateFileUrl = options.onUpdateFileUrl;
     }
-};
+
+}
+;
