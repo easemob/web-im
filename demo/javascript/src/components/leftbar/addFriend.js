@@ -27,6 +27,7 @@ var AddMember = React.createClass({
         }
         if (Demo.roster[value] == 1) {
             Notify.error(value + ' ' + Demo.lan.addFriendRepeat);
+            this.close();
             return;
         }
 

@@ -111,7 +111,7 @@ module.exports = React.createClass({
                     Notify.error("Network connection is broken. reconnecting...");
                 } else {
                     var type = 7;
-                    var text = me.getObjectKey(WebIM.statusCode, type) + ' ' + ' type=' + type;
+                    var text = Demo.api.getObjectKey(WebIM.statusCode, type) + ' ' + ' type=' + type;
                     Notify.error('onError:' + text);
                     Demo.api.logout();
                 }
@@ -131,7 +131,7 @@ module.exports = React.createClass({
                     if (message.data && message.data.data) {
                         text = message.data.data;
                     } else {
-                        text = me.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
+                        text = Demo.api.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
                     }
                     Demo.api.logout();
                 }
@@ -148,14 +148,6 @@ module.exports = React.createClass({
             chatrooms: [],
             strangers: []
         };
-    },
-    getObjectKey: function (obj, val) {
-        for (var key in obj) {
-            if (obj[key] == val) {
-                return key;
-            }
-        }
-        return '';
     },
     confirmPop: function (options) {
         console.log('comfirmPop', options);

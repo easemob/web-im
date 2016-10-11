@@ -367,6 +367,7 @@
     };
 
     var _loginCallback = function (status, msg, conn) {
+        console.log('_loginCallback', Demo.api.getObjectKey(Strophe.Status, status), msg);
         var conflict, error;
 
         if (msg === 'conflict') {
@@ -721,9 +722,7 @@
                     });
                 }
             };
-            var connect_callback = function (status, condition) {
-                console.log('Strophe.connection.prototype.open connect_callback', status, condition);
-            };
+
             this.context.status = _code.STATUS_DOLOGIN_USERGRID;
 
             var loginJson = {
@@ -737,7 +736,6 @@
                 url: apiUrl + '/' + orgName + '/' + appName + '/token',
                 dataType: 'json',
                 data: loginfo,
-                connect_callback: connect_callback,
                 success: suc || _utils.emptyfn,
                 error: error || _utils.emptyfn
             };

@@ -318,7 +318,14 @@ module.exports = {
         s = s.replace(/\n/g, "<br>");
         return s;
     },
-
+    getObjectKey: function (obj, val) {
+        for (var key in obj) {
+            if (obj[key] == val) {
+                return key;
+            }
+        }
+        return '';
+    },
     scrollIntoView: function (node) {
         setTimeout(function () {
             node.scrollIntoView(true);
