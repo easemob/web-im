@@ -8,7 +8,6 @@ componentsNode.appendChild(dom);
 var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var Input = UI.Input;
-var Notify = require('../common/notify');
 
 var AddMember = React.createClass({
 
@@ -17,16 +16,16 @@ var AddMember = React.createClass({
         var value = this.refs.input.refs.input.value;
 
         if (!value) {
-            Notify.error(Demo.lan.username + Demo.lan.notEmpty);
+            Demo.api.NotifyError(Demo.lan.username + Demo.lan.notEmpty);
             return;
         }
         if (value == Demo.user) {
-            Notify.error(Demo.lan.addFriendSelfInvalid);
+            Demo.api.NotifyError(Demo.lan.addFriendSelfInvalid);
             this.close();
             return;
         }
         if (Demo.roster[value] == 1) {
-            Notify.error(value + ' ' + Demo.lan.addFriendRepeat);
+            Demo.api.NotifyError(value + ' ' + Demo.lan.addFriendRepeat);
             this.close();
             return;
         }
@@ -38,7 +37,7 @@ var AddMember = React.createClass({
                     alert(Demo.lan.contact_added);
                 },
                 function failure(errCode, errMessage) {
-                    Notify.error('addMember:' + errCode);
+                    Demo.api.NotifyError('addMember:' + errCode);
                 });
         } else {
             Demo.conn.subscribe({

@@ -2,7 +2,6 @@ var React = require("react");
 var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var UploadShim = require('./uploadShim');
-var Notify = require('../common/notify');
 
 
 module.exports = React.createClass({
@@ -68,7 +67,7 @@ module.exports = React.createClass({
 
         if (chatroom && Demo.currentChatroom !== Demo.selected) {
 
-            Notify.error(Demo.lan.notin);
+            Demo.api.NotifyError(Demo.lan.notin);
             return false;
         }
 

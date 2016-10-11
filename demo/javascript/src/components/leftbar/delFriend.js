@@ -8,7 +8,6 @@ componentsNode.appendChild(dom);
 var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var Input = UI.Input;
-var Notify = require('../common/notify');
 
 var DelFriend = React.createClass({
 
@@ -21,7 +20,7 @@ var DelFriend = React.createClass({
         }
 
         if (value == Demo.user || !Demo.roster[value]) {
-            Notify.error(value + ' ' + Demo.lan.delFriendSelfInvalid);
+            Demo.api.NotifyError(value + ' ' + Demo.lan.delFriendSelfInvalid);
             this.close();
             return;
         }
@@ -31,7 +30,7 @@ var DelFriend = React.createClass({
                     alert(Demo.lan.contact_deleted);
                 },
                 function failure(errCode, errMessage) {
-                    Notify.error('delFriend:' + errCode);
+                    Demo.api.NotifyError('delFriend:' + errCode);
                 });
         } else {
             Demo.conn.removeRoster({

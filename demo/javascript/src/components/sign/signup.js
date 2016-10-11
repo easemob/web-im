@@ -1,5 +1,4 @@
 var React = require("react");
-var Notify = require('../common/notify');
 var UI = require('../common/webim-demo');
 
 var Input = UI.Input;
@@ -34,7 +33,7 @@ module.exports = React.createClass({
         var nickname = this.refs.nickname.refs.input.value;
 
         if (!username || !pwd) {
-            Notify.error(Demo.lan.notEmpty);
+            Demo.api.NotifyError(Demo.lan.notEmpty);
             return false;
         }
 
@@ -49,7 +48,7 @@ module.exports = React.createClass({
             apiUrl: this.props.config.apiURL,
             success: function () {
                 me.submiting = false;
-                Notify.success(Demo.lan.signUpSuccessfully);
+                Demo.api.NotifySuccess(Demo.lan.signUpSuccessfully);
                 setTimeout(function () {
                     me.props.update({
                         signIn: true,
@@ -60,7 +59,7 @@ module.exports = React.createClass({
             },
             error: function (e) {
                 me.submiting = false;
-                Notify.error(e.data || "registerUser error! Please check the network and try again!");
+                Demo.api.NotifyError(e.data || "registerUser error! Please check the network and try again!");
             }
         };
         if (WebIM.config.isWindowSDK) {

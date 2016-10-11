@@ -20,7 +20,7 @@ module.exports = React.createClass({
         var type = this.refs.token.refs.input.checked;
 
         if (!username || !auth) {
-            Notify.error(Demo.lan.notEmpty);
+            Demo.api.NotifyError(Demo.lan.notEmpty);
             return false;
         }
 
@@ -47,7 +47,7 @@ module.exports = React.createClass({
                 },
                 function (code, msg) {
                     me.props.loading('hide');
-                    Notify.error('open:' + code + " - " + msg);
+                    Demo.api.NotifyError('open:' + code + " - " + msg);
                 });
         } else {
             Demo.conn.open(options);

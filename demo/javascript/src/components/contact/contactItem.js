@@ -55,7 +55,7 @@ module.exports = React.createClass({
                         //do nothing
                     },
                     function failure(errCode, errMessage) {
-                        Notify.error('update currentChatroom:' + errCode);
+                        Demo.api.NotifyError('update currentChatroom:' + errCode);
                     });
             } else {
                 Demo.conn.quitChatRoom({
@@ -78,7 +78,7 @@ module.exports = React.createClass({
                         Demo.currentChatroom = str;
                     },
                     function failure(errCode, errMessage) {
-                        Notify.error('update chatrooms:' + errCode);
+                        Demo.api.NotifyError('update chatrooms:' + errCode);
                     });
             } else {
                 Demo.conn.joinChatRoom({

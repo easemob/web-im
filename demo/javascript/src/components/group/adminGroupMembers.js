@@ -8,7 +8,6 @@ componentsNode.appendChild(dom);
 var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var Input = UI.Input;
-var Notify = require('../common/notify');
 
 import MultipleSelectBoxList  from '../common/multiSelectBoxList';
 
@@ -33,7 +32,7 @@ var FridendList = React.createClass({
                     }
                 },
                 function failure(errCode, errMessage) {
-                    Notify.error("FridendList queryRoomMember:" + errCode);
+                    Demo.api.NotifyError("FridendList queryRoomMember:" + errCode);
                 });
         } else {
             Demo.conn.queryRoomMember({
@@ -54,7 +53,7 @@ var FridendList = React.createClass({
                     }
                 },
                 error: function (e) {
-                    Notify.error("FridendList queryRoomMember:" + e);
+                    Demo.api.NotifyError("FridendList queryRoomMember:" + e);
                 }
             });
         }
@@ -117,16 +116,18 @@ var AdminGroupMembers = React.createClass({
         console.log('del', value_del);
         //TODO:@lhr  value_add 和 value_del 需要分成两个doQuery 处理
         if (WebIM.config.isWindowSDK) {
-            if(value_add.length > 0){
+            if (value_add.length > 0) {
                 var value_add = '["' + value_add.join('","') + '"]';
-                WebIM.doQuery('{"type":"addGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + value_add + '}', function (response) {}, function (code, msg) {
-                    Notify.error("onSubmit:code:" + code + " " + msg);
-                });                    
+                WebIM.doQuery('{"type":"addGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + value_add + '}', function (response) {
+                }, function (code, msg) {
+                    Demo.api.NotifyError("onSubmit:code:" + code + " " + msg);
+                });
             }
-            if(value_del.length > 0){
+            if (value_del.length > 0) {
                 var value_del = '["' + value_del.join('","') + '"]';
-                WebIM.doQuery('{"type":"removeGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + value_del + '}', function (response) {}, function (code, msg) {
-                    Notify.error("onSubmit:code:" + code + " " + msg);
+                WebIM.doQuery('{"type":"removeGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + value_del + '}', function (response) {
+                }, function (code, msg) {
+                    Demo.api.NotifyError("onSubmit:code:" + code + " " + msg);
                 });
             }
 

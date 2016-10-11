@@ -1,6 +1,5 @@
 var React = require("react");
 var SendWrapper = require('./sendWrapper');
-var Notify = require('../common/notify');
 var Avatar = require('../common/avatar');
 var Operations = require('./operations');
 
@@ -34,7 +33,7 @@ module.exports = React.createClass({
                         }
                     },
                     function failure(errCode, errMessage) {
-                        Notify.error("queryRoomInfo:" + errCode);
+                        Demo.api.NotifyError("queryRoomInfo:" + errCode);
                     });
             } else {
                 Demo.conn.queryRoomInfo({
@@ -56,7 +55,7 @@ module.exports = React.createClass({
                         }
                     },
                     error: function () {
-                        Notify.error('queryRoomInfo error', me.props.roomId);
+                        Demo.api.NotifyError('queryRoomInfo error', me.props.roomId);
                     }
                 });
             }
@@ -89,7 +88,7 @@ module.exports = React.createClass({
                         }
                     },
                     function failure(errCode, errMessage) {
-                        Notify.error("listMember:" + errCode);
+                        Demo.api.NotifyError("listMember:" + errCode);
                     });
             } else {
                 Demo.conn.queryRoomMember({

@@ -3,7 +3,6 @@ var React = require("react");
 var ChangeGroupSubject = require("../group/changeGroupSubject");
 var ChangeGroupDescription = require("../group/changeGroupDescription");
 var AdminGroupMembers = require("../group/adminGroupMembers");
-var Notify = require('../common/notify');
 
 module.exports = React.createClass({
 
@@ -46,7 +45,7 @@ module.exports = React.createClass({
                     Demo.api.updateGroup();
                 },
                 function (code, msg) {
-                    Notify.error("destroyGroup:" + code);
+                    Demo.api.NotifyError("destroyGroup:" + code);
                 });
         } else {
         }
@@ -61,7 +60,7 @@ module.exports = React.createClass({
                     Demo.api.updateGroup();
                 },
                 function (code, msg) {
-                    Notify.error("leaveGroup:" + code);
+                    Demo.api.NotifyError("leaveGroup:" + code);
                 });
         } else {
         }

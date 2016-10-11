@@ -2,7 +2,6 @@ var React = require("react");
 var LeftBar = require('../leftbar/leftbar');
 var Contact = require('../contact/contact');
 var ChatWindow = require('../chat/chatWindow');
-var Notify = require('../common/notify');
 var RTCChannel = require('../common/rtcChannel');
 var Subscribe = require('./subscribe');
 var ConfirmPop = require('./confirmPop');
@@ -108,11 +107,11 @@ module.exports = React.createClass({
             onOffline: function () {
                 log(ts(), 'offline');
                 if (WebIM.config.isWindowSDK) {
-                    Notify.error("Network connection is broken. reconnecting...");
+                    Demo.api.NotifyError("Network connection is broken. reconnecting...");
                 } else {
                     var type = 7;
                     var text = Demo.api.getObjectKey(WebIM.statusCode, type) + ' ' + ' type=' + type;
-                    Notify.error('onError:' + text);
+                    Demo.api.NotifyError('onError:' + text);
                     Demo.api.logout();
                 }
             },
@@ -135,7 +134,7 @@ module.exports = React.createClass({
                     }
                     Demo.api.logout();
                 }
-                Notify.error('onError:' + text);
+                Demo.api.NotifyError('onError:' + text);
             }
         });
 
@@ -240,7 +239,7 @@ module.exports = React.createClass({
                     me.channel.close();
                 },
                 onError: function (e) {
-                    Notify.error(e && e.message ? e.message : 'An error occured when calling webrtc');
+                    Demo.api.NotifyError(e && e.message ? e.message : 'An error occured when calling webrtc');
                 }
             }
         });
@@ -291,7 +290,7 @@ module.exports = React.createClass({
                 break;
             case 'reachChatRoomCapacity':// Failed to join the chat room
                 Demo.currentChatroom = null;
-                Notify.error('加入聊天室失败');
+                Demo.api.NotifyError('加入聊天室失败');
                 break;
             case 'leaveChatRoom':// Leave the chat room
                 break;
@@ -341,7 +340,7 @@ module.exports = React.createClass({
                     doNotUpdateGroup || me.getGroup();
                 },
                 function failure(errCode, errMessage) {
-                    Notify.error('getRoster:' + errCode);
+                    Demo.api.NotifyError('getRoster:' + errCode);
                 });
         } else {
             conn.getRoster({
@@ -371,7 +370,7 @@ module.exports = React.createClass({
                     me.setState({groups: rooms});
                 },
                 function failure(errCode, errMessage) {
-                    Notify.error('getGroup:' + errCode);
+                    Demo.api.NotifyError('getGroup:' + errCode);
                 });
         } else {
             Demo.conn.listRooms({
@@ -395,7 +394,7 @@ module.exports = React.createClass({
                     me.setState({chatrooms: rooms});
                 },
                 function failure(errCode, errMessage) {
-                    Notify.error('getChatroom:' + errCode);
+                    Demo.api.NotifyError('getChatroom:' + errCode);
                 });
         } else {
             Demo.conn.getChatRooms({
@@ -406,7 +405,7 @@ module.exports = React.createClass({
                     }
                 },
                 error: function (e) {
-                    Notify.error('getChatroom:' + e);
+                    Demo.api.NotifyError('getChatroom:' + e);
                 }
             });
         }
@@ -441,7 +440,7 @@ module.exports = React.createClass({
 
         if (!Demo.IMGTYPE[file.filetype.toLowerCase()]) {
             me.refs.picture.value = null;
-            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
+            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
             return;
         }
 
@@ -551,7 +550,7 @@ module.exports = React.createClass({
 
         if (!Demo.AUDIOTYPE[file.filetype.toLowerCase()]) {
             me.refs.audio.value = null;
-            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
+            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
             return;
         }
 
@@ -611,7 +610,7 @@ module.exports = React.createClass({
 
         if (!Demo.FILETYPE[file.filetype.toLowerCase()]) {
             me.refs.file.value = null;
-            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
+            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
             return;
         }
 

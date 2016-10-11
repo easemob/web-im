@@ -8,7 +8,6 @@ componentsNode.appendChild(dom);
 var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var Input = UI.Input;
-var Notify = require('../common/notify');
 
 var ChangeGroupDescription = React.createClass({
 
@@ -17,7 +16,7 @@ var ChangeGroupDescription = React.createClass({
         var value = this.refs.input.refs.input.value;
 
         if (!value) {
-            Notify.error("群组名不能为空");
+            Demo.api.NotifyError("群组名不能为空");
             return;
         }
         log("ChangeGroupDescription:", value, this.props.roomId);
@@ -26,7 +25,7 @@ var ChangeGroupDescription = React.createClass({
                 function (response) {
                 },
                 function (code, msg) {
-                    Notify.error("changeGroupDescription:" + code);
+                    Demo.api.NotifyError("changeGroupDescription:" + code);
                 });
         } else {
         }

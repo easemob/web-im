@@ -31,7 +31,7 @@ var Subscribe = React.createClass({
                     //do nothing
                 },
                 function failure(errCode, errMessage) {
-                    Notify.error('agree:' + errCode);
+                    Demo.api.NotifyError('agree:' + errCode);
                 });
         } else {
             Demo.conn.subscribed({
@@ -58,7 +58,7 @@ var Subscribe = React.createClass({
                     //do nothing
                 },
                 function failure(errCode, errMessage) {
-                    Notify.error('reject:' + errCode);
+                    Demo.api.NotifyError('reject:' + errCode);
                 });
         } else {
             Demo.conn.unsubscribed({

@@ -8,7 +8,6 @@ componentsNode.appendChild(dom);
 var UI = require('../common/webim-demo');
 var Button = UI.Button;
 var Input = UI.Input;
-var Notify = require('../common/notify');
 
 var JoinPublicGroup = React.createClass({
 
@@ -17,7 +16,7 @@ var JoinPublicGroup = React.createClass({
         var value = this.refs.input.refs.input.value;
 
         if (!value) {
-            Notify.error("群组名不能为空");
+            Demo.api.NotifyError("群组名不能为空");
             return;
         }
         log("JoinPublicGroup:", value);
@@ -28,7 +27,7 @@ var JoinPublicGroup = React.createClass({
                     Demo.api.updateGroup();
                 },
                 function (code, msg) {
-                    Notify.error("JoinPublicGroup error:" + code);
+                    Demo.api.NotifyError("JoinPublicGroup error:" + code);
                 });
         } else {
             Demo.conn.joinPublicGroup({
@@ -36,7 +35,7 @@ var JoinPublicGroup = React.createClass({
                 success: function () {
                 },
                 error: function (e) {
-                    Notify.error("JoinPublicGroup error:" + e);
+                    Demo.api.NotifyError("JoinPublicGroup error:" + e);
                 }
             });
         }

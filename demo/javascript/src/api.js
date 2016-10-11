@@ -56,7 +56,7 @@ module.exports = {
                 function (response) {
                 },
                 function (code, msg) {
-                    Notify.error("logout:" + msg);
+                    Demo.api.NotifyError("logout:" + msg);
                 });
         } else {
             Demo.conn.close();
@@ -329,6 +329,9 @@ module.exports = {
     },
     NotifyError: function (msg) {
         Notify.error(msg);
+    },
+    NotifySuccess: function (msg) {
+        Notify.success(msg);
     },
     scrollIntoView: function (node) {
         setTimeout(function () {

@@ -10,7 +10,6 @@ var Button = UI.Button;
 var Input = UI.Input;
 var Checkbox = UI.Checkbox;
 var Radio = UI.Radio;
-var Notify = require('../common/notify');
 
 import MultipleSelectBoxList  from '../common/multiSelectBoxList';
 
@@ -59,7 +58,7 @@ var CreateGroup = React.createClass({
         var friendsSelected = this.refs.friendList.refs.multiSelected.label();
         log(value, info, permission_group, permission_member, friendsSelected);
         if (!value) {
-            Notify.error("群组名不能为空");
+            Demo.api.NotifyError("群组名不能为空");
             return;
         }
         if (WebIM.config.isWindowSDK) {
@@ -72,10 +71,10 @@ var CreateGroup = React.createClass({
 
             WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + friendsSelected + '}',
                 function (response) {
-                    Notify.error('createGroup successfully');
+                    Demo.api.NotifyError('createGroup successfully');
                 },
                 function (code, msg) {
-                    Notify.error("onSubmit:" + code);
+                    Demo.api.NotifyError("onSubmit:" + code);
                 });
         } else {
 
