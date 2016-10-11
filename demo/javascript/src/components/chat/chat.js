@@ -81,8 +81,6 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                console.log('onFileMessage');
-                console.log(message);
                 Demo.api.appendMsg(message, 'file');
             },
             onVideoMessage: function (message) {

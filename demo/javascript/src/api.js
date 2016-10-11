@@ -137,13 +137,20 @@ module.exports = {
                     Demo.strangers[targetId].push({msg: msg, type: type});
                 } else {
                     if (WebIM.config.isWindowSDK) {
-                        brief = '[' + Demo.lan.file + ']';
-                        fileMsg({
-                            wrapper: targetNode,
-                            name: name,
-                            value: data || msg.url,
-                            filename: msg.filename
-                        }, this.sentByMe);
+                        var cur = document.getElementById('file_' + msg.id);
+                        if (cur) {
+                            Demo.api.onUpdateFileUrl({url: msg.url});
+                            return;
+                        } else {
+                            brief = '[' + Demo.lan.file + ']';
+                            fileMsg({
+                                id: msg.id,
+                                wrapper: targetNode,
+                                name: name,
+                                value: data || msg.url,
+                                filename: msg.filename
+                            }, this.sentByMe);
+                        }
                     } else {
                         brief = '[' + Demo.lan.audio + ']';
                         audioMsg({
@@ -167,10 +174,21 @@ module.exports = {
                 if (!targetNode) {
                     Demo.strangers[targetId].push({msg: msg, type: 'file'});
                 } else {
-                    var cur = document.getElementById(msg.id);
-                    if (cur) {
-                        Demo.api.onUpdateFileUrl({url: msg.url});
-                        return;
+                    if (WebIM.config.isWindowSDK) {
+                        var cur = document.getElementById('file_' + msg.id);
+                        if (cur) {
+                            Demo.api.onUpdateFileUrl({url: msg.url});
+                            return;
+                        } else {
+                            brief = '[' + Demo.lan.file + ']';
+                            fileMsg({
+                                id: msg.id,
+                                wrapper: targetNode,
+                                name: name,
+                                value: data || msg.url,
+                                filename: msg.filename
+                            }, this.sentByMe);
+                        }
                     } else {
                         brief = '[' + Demo.lan.file + ']';
                         fileMsg({
@@ -202,13 +220,20 @@ module.exports = {
                     Demo.strangers[targetId].push({msg: msg, type: type});
                 } else {
                     if (WebIM.config.isWindowSDK) {
-                        brief = '[' + Demo.lan.file + ']';
-                        fileMsg({
-                            wrapper: targetNode,
-                            name: name,
-                            value: data || msg.url,
-                            filename: msg.filename
-                        }, this.sentByMe);
+                        var cur = document.getElementById('file_' + msg.id);
+                        if (cur) {
+                            Demo.api.onUpdateFileUrl({url: msg.url});
+                            return;
+                        } else {
+                            brief = '[' + Demo.lan.file + ']';
+                            fileMsg({
+                                id: msg.id,
+                                wrapper: targetNode,
+                                name: name,
+                                value: data || msg.url,
+                                filename: msg.filename
+                            }, this.sentByMe);
+                        }
                     } else {
                         brief = '[' + Demo.lan.video + ']';
                         videoMsg({
@@ -352,5 +377,4 @@ module.exports = {
         this.onUpdateFileUrl = options.onUpdateFileUrl;
     }
 
-}
-;
+};

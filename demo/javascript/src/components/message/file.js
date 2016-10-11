@@ -17,8 +17,6 @@ var FileMsg = React.createClass({
         };
     },
     updateFileUrl: function (options) {
-        console.log('updateFileUrl');
-        console.log(options);
         this.setState({value: options.url});
     },
 
@@ -42,8 +40,6 @@ var FileMsg = React.createClass({
         _utils.ajax(options);
     },
     render: function () {
-        console.log('id=', this.props.id);
-        console.log(this.state.value);
         var icon = this.props.className === 'left' ? 'H' : 'I';
         var links = [];
         if (WebIM.config.isWindowSDK) {
@@ -56,12 +52,7 @@ var FileMsg = React.createClass({
             }
 
         } else {
-            if (this.state.value == "") {
-                links.push(<a key='0' href="javascript:void(0)">{Demo.lan.FileLoading}</a>);
-            } else {
-                links.push(<a target='_blank' key='0' href={this.state.value}>{Demo.lan.download}</a>);
-            }
-            // links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.download}</a>);
+            links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.download}</a>);
             //links.push(<a key='0' href="javascript:void(0)" onClick={this.download}>{Demo.lan.download}</a>);
         }
 
@@ -73,7 +64,7 @@ var FileMsg = React.createClass({
                     <span className='webim-msg-icon font'>{icon}</span>
                     <div>
                         <p className='webim-msg-header'>{Demo.lan.file}</p>
-                        <div id={this.props.id}>
+                        <div id={'file_' + this.props.id}>
                             <span className='webim-msg-header-icon font small'>S</span>
                             <span className='webim-msg-name'>{this.props.filename}</span>
                             {links}
