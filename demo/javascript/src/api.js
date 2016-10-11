@@ -9,6 +9,7 @@ var fileMsg = require('./components/message/file');
 var locMsg = require('./components/message/loc');
 var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
+var Notify = require('./components/common/notify');
 
 module.exports = {
     log: function () {
@@ -325,6 +326,9 @@ module.exports = {
             }
         }
         return '';
+    },
+    NotifyError: function (msg) {
+        Notify.error(msg);
     },
     scrollIntoView: function (node) {
         setTimeout(function () {

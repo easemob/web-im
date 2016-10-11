@@ -1263,7 +1263,7 @@
                 function (response) {
                 },
                 function (code, msg) {
-                    alert('send:' + code + " - " + msg);
+                    Demo.api.NotifyError('send:' + code + " - " + msg);
                 });
         } else {
             if (Object.prototype.toString.call(message) === '[object Object]') {
@@ -1748,13 +1748,14 @@
             agree: function agree() {
                 WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
                 }, function (code, msg) {
-                    Notify.error("acceptInvitationFromGroup error:" + msg);
+                    Demo.api.NotifyError("acceptInvitationFromGroup error:" + msg);
                 });
+
             },
             reject: function reject() {
                 WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
                 }, function (code, msg) {
-                    Notify.error("declineInvitationFromGroup error:" + msg);
+                    Demo.api.NotifyError("declineInvitationFromGroup error:" + msg);
                 });
             }
         };
@@ -1809,13 +1810,13 @@
             agree: function agree() {
                 WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
                 }, function (code, msg) {
-                    Notify.error("acceptJoinGroupApplication error:" + msg);
+                    Demo.api.NotifyError("acceptJoinGroupApplication error:" + msg);
                 });
             },
             reject: function reject() {
                 WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
                 }, function (code, msg) {
-                    Notify.error("declineJoinGroupApplication error:" + msg);
+                    Demo.api.NotifyError("declineJoinGroupApplication error:" + msg);
                 });
             }
         };
