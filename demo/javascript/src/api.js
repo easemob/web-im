@@ -124,12 +124,31 @@ module.exports = {
                 if (!targetNode) {
                     Demo.strangers[targetId].push({msg: msg, type: 'img'});
                 } else {
-                    brief = '[' + Demo.lan.image + ']';
-                    imgMsg({
-                        wrapper: targetNode,
-                        name: name,
-                        value: data || msg.url,
-                    }, this.sentByMe);
+                    if (WebIM.config.isWindowSDK) {
+                        var cur = document.getElementById('file_' + msg.id);
+                        if (cur) {
+                            var listenerName = 'onUpdateFileUrl' + msg.id;
+                            Demo.api[listenerName]({url: msg.url});
+                            Demo.api[listenerName] = null;
+                            return;
+                        } else {
+                            brief = '[' + Demo.lan.image + ']';
+                            imgMsg({
+                                id: msg.id,
+                                wrapper: targetNode,
+                                name: name,
+                                value: data || msg.url,
+                            }, this.sentByMe);
+                        }
+                    } else {
+                        brief = '[' + Demo.lan.image + ']';
+                        imgMsg({
+                            id: msg.id,
+                            wrapper: targetNode,
+                            name: name,
+                            value: data || msg.url,
+                        }, this.sentByMe);
+                    }
                 }
                 break;
             case 'aud':
@@ -140,8 +159,10 @@ module.exports = {
                         var cur = document.getElementById('file_' + msg.id);
                         if (cur) {
                             var listenerName = 'onUpdateFileUrl' + msg.id;
-                            Demo.api[listenerName]({url: msg.url});
-                            Demo.api[listenerName] = null;
+                            if (Demo.api[listenerName]) {
+                                Demo.api[listenerName]({url: msg.url});
+                                Demo.api[listenerName] = null;
+                            }
                             return;
                         } else {
                             brief = '[' + Demo.lan.file + ']';
@@ -180,8 +201,10 @@ module.exports = {
                         var cur = document.getElementById('file_' + msg.id);
                         if (cur) {
                             var listenerName = 'onUpdateFileUrl' + msg.id;
-                            Demo.api[listenerName]({url: msg.url});
-                            Demo.api[listenerName] = null;
+                            if (Demo.api[listenerName]) {
+                                Demo.api[listenerName]({url: msg.url});
+                                Demo.api[listenerName] = null;
+                            }
                             return;
                         } else {
                             brief = '[' + Demo.lan.file + ']';
@@ -227,8 +250,10 @@ module.exports = {
                         var cur = document.getElementById('file_' + msg.id);
                         if (cur) {
                             var listenerName = 'onUpdateFileUrl' + msg.id;
-                            Demo.api[listenerName]({url: msg.url});
-                            Demo.api[listenerName] = null;
+                            if (Demo.api[listenerName]) {
+                                Demo.api[listenerName]({url: msg.url});
+                                Demo.api[listenerName] = null;
+                            }
                             return;
                         } else {
                             brief = '[' + Demo.lan.file + ']';

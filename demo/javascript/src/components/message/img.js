@@ -4,7 +4,21 @@ var Avatar = require('../common/avatar');
 
 
 var ImgMsg = React.createClass({
+    getInitialState: function () {
+        var me = this;
+        var options = {};
+        options['onUpdateFileUrl' + this.props.id] = function (options) {
+            me.updateFileUrl(options);
+        };
+        Demo.api.listen(options);
 
+        return {
+            value: this.props.value
+        };
+    },
+    updateFileUrl: function (options) {
+        this.setState({value: options.url});
+    },
     show: function () {
         var dom = document.createElement('div');
         dom.className = 'webim-img-expand';
@@ -17,22 +31,33 @@ var ImgMsg = React.createClass({
 
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
+        var imgs = [];
+        if (WebIM.config.isWindowSDK) {
+            if (this.state.value == "") {
+                imgs.push(<span>{Demo.lan.image}{Demo.lan.FileLoading}</span>);
+            } else {
+                imgs.push(<img ref='img' className='webim-msg-img' src={this.state.value} onClick={this.show}/>);
+            }
 
+        } else {
+            imgs.push(<img ref='img' className='webim-msg-img' src={this.props.value} onClick={this.show}/>);
+        }
         return (
             <div className={'rel ' + this.props.className}>
-                <Avatar src={this.props.src} className={this.props.className + ' small'} />
+                <Avatar src={this.props.src} className={this.props.className + ' small'}/>
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
                 <div className='webim-msg-value webim-img-msg-wrapper'>
                     <span className='webim-msg-icon font'>{icon}</span>
-                    <div><img ref='img' className='webim-msg-img' src={this.props.value} onClick={this.show} /></div>
+                    <div id={'file_' + this.props.id}>{imgs}</div>
                 </div>
             </div>
         );
     }
 });
 
-module.exports = function ( options, sentByMe ) {
+module.exports = function (options, sentByMe) {
     var props = {
+        id: options.id,
         src: options.avatar || 'demo/images/default.png',
         time: options.time || new Date().toLocaleString(),
         value: options.value || '',
@@ -46,7 +71,7 @@ module.exports = function ( options, sentByMe ) {
     Demo.api.scrollIntoView(node);
 
     return ReactDOM.render(
-		<ImgMsg {...props} className={sentByMe ? 'right' : 'left'} />,
-	    node	
-	);
+        <ImgMsg {...props} className={sentByMe ? 'right' : 'left'}/>,
+        node
+    );
 };
