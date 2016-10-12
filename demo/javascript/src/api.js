@@ -128,8 +128,12 @@ module.exports = {
                         var cur = document.getElementById('file_' + msg.id);
                         if (cur) {
                             var listenerName = 'onUpdateFileUrl' + msg.id;
-                            Demo.api[listenerName]({url: msg.url});
-                            Demo.api[listenerName] = null;
+                            if (Demo.api[listenerName]) {
+                                Demo.api[listenerName]({url: msg.url});
+                                Demo.api[listenerName] = null;
+                            } else {
+                                console.log('listenerName not exists:' + msg.id);
+                            }
                             return;
                         } else {
                             brief = '[' + Demo.lan.image + ']';
@@ -162,6 +166,8 @@ module.exports = {
                             if (Demo.api[listenerName]) {
                                 Demo.api[listenerName]({url: msg.url});
                                 Demo.api[listenerName] = null;
+                            } else {
+                                console.log('listenerName not exists:' + msg.id);
                             }
                             return;
                         } else {
@@ -204,6 +210,8 @@ module.exports = {
                             if (Demo.api[listenerName]) {
                                 Demo.api[listenerName]({url: msg.url});
                                 Demo.api[listenerName] = null;
+                            } else {
+                                console.log('listenerName not exists:' + msg.id);
                             }
                             return;
                         } else {
@@ -253,6 +261,8 @@ module.exports = {
                             if (Demo.api[listenerName]) {
                                 Demo.api[listenerName]({url: msg.url});
                                 Demo.api[listenerName] = null;
+                            } else {
+                                console.log('listenerName not exists:' + msg.id);
                             }
                             return;
                         } else {
