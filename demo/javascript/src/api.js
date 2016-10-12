@@ -64,6 +64,8 @@ module.exports = {
         Demo.selected = null;
         Demo.user = null;
         Demo.call = null;
+        Demo.roster = {};
+        Demo.strangers = {};
 
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
