@@ -6,11 +6,11 @@ var _utils = require('../../../../../sdk/src/utils').utils;
 var FileMsg = React.createClass({
     getInitialState: function () {
         var me = this;
-        Demo.api.listen({
-            onUpdateFileUrl: function (options) {
-                me.updateFileUrl(options);
-            }
-        });
+        var options = {};
+        options['onUpdateFileUrl' + this.props.id] = function (options) {
+            me.updateFileUrl(options);
+        };
+        Demo.api.listen(options);
 
         return {
             value: this.props.value

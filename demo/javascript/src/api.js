@@ -139,7 +139,9 @@ module.exports = {
                     if (WebIM.config.isWindowSDK) {
                         var cur = document.getElementById('file_' + msg.id);
                         if (cur) {
-                            Demo.api.onUpdateFileUrl({url: msg.url});
+                            var listenerName = 'onUpdateFileUrl' + msg.id;
+                            Demo.api[listenerName]({url: msg.url});
+                            Demo.api[listenerName] = null;
                             return;
                         } else {
                             brief = '[' + Demo.lan.file + ']';
@@ -177,7 +179,9 @@ module.exports = {
                     if (WebIM.config.isWindowSDK) {
                         var cur = document.getElementById('file_' + msg.id);
                         if (cur) {
-                            Demo.api.onUpdateFileUrl({url: msg.url});
+                            var listenerName = 'onUpdateFileUrl' + msg.id;
+                            Demo.api[listenerName]({url: msg.url});
+                            Demo.api[listenerName] = null;
                             return;
                         } else {
                             brief = '[' + Demo.lan.file + ']';
@@ -222,7 +226,9 @@ module.exports = {
                     if (WebIM.config.isWindowSDK) {
                         var cur = document.getElementById('file_' + msg.id);
                         if (cur) {
-                            Demo.api.onUpdateFileUrl({url: msg.url});
+                            var listenerName = 'onUpdateFileUrl' + msg.id;
+                            Demo.api[listenerName]({url: msg.url});
+                            Demo.api[listenerName] = null;
                             return;
                         } else {
                             brief = '[' + Demo.lan.file + ']';
@@ -374,7 +380,9 @@ module.exports = {
         }, 50);
     },
     listen: function (options) {
-        this.onUpdateFileUrl = options.onUpdateFileUrl;
+        for (var key in options) {
+            this[key] = options[key];
+        }
     }
 
 };
