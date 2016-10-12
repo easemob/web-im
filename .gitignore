@@ -3,10 +3,9 @@ node_modules
 /.project
 .idea/*
 *.swp
-publish.sh
 demo/javascript/dist/demo.js
 demo/javascript/dist/debug.js
 demo/javascript/dist/webim.config.js
 sdk/dist/websdk-1.1.2.js
 webrtc/dist/webrtc-1.0.0.js
-
+publish/*
