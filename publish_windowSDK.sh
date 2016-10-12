@@ -13,8 +13,7 @@ cp favicon.ico publish/
 cp index.html publish/
 
 #windowSDK
-rm -rf publish/demo/stylesheet/src
-rm publish/demo/javascript/dist/debug.js
+rm publish/demo/stylesheet/src/*.scss
 rm publish/demo/javascript/dist/webim.config.js.demo
 rm publish/sdk/dist/strophe.js
 rm -rf publish/webrtc
