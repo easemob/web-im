@@ -17,7 +17,17 @@ rm publish/demo/javascript/dist/webim.config.js.demo
 
 file_conf="./demo/javascript/dist/webim.config.js"
 
-# 非debug模式 需要1.删除debug.js 2.strophe.js->strophe-1.2.8.min.js
+
+# windowSDK: delete webRTC associated files
+isWindowSDK=`grep 'isWindowSDK' ./demo/javascript/dist/webim.config.js |awk -F ':' '{printf("%s",$2)}' |awk -F ',' '{printf("%s",$1)}'`
+echo isWindowSDK=${isWindowSDK##* }
+if [ ${isWindowSDK##* } == 'true' ]
+then
+    rm -rf publish/webrtc
+    sed -i '30,36d' publish/index.html
+fi
+
+# not debug mode: 1.delete debug.js, 2.strophe.js->strophe-1.2.8.min.js
 isDebug=`grep 'isDebug' ./demo/javascript/dist/webim.config.js |awk -F ':' '{printf("%s",$2)}' |awk -F ',' '{printf("%s",$1)}'`
 echo isDebug=${isDebug##* }
 if [ ${isDebug##* } == 'false' ]
@@ -27,12 +37,5 @@ then
     sed -i '20,23d' publish/index.html
 fi
 
-# windowSDK 需要删除webRTC相关
-isWindowSDK=`grep 'isWindowSDK' ./demo/javascript/dist/webim.config.js |awk -F ':' '{printf("%s",$2)}' |awk -F ',' '{printf("%s",$1)}'`
-echo isWindowSDK=${isWindowSDK##* }
-if [ ${isWindowSDK##* } == 'true' ]
-then
-    rm -rf publish/webrtc
-    sed -i '30,36d' publish/index.html
-fi
-echo 'publish finished!'
+
+echo 'publish done!'
