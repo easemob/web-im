@@ -316,7 +316,7 @@ module.exports = {
                 this.addCount(msg.from, cate);
                 break;
             case 'groupchat':
-                var cate = msg.roomtype ? 'chatrooms' : 'groups';
+                var cate = msg.roomtype ? msg.roomtype : 'groups';
 
                 this.addCount(msg.to, cate);
                 break;
