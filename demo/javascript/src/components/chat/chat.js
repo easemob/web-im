@@ -584,7 +584,8 @@ module.exports = React.createClass({
         var is_group = (Demo.selectedCate === 'chatrooms' || Demo.selectedCate === 'groups') ? "groupchat" : "singlechat";
         WebIM.doQuery('{"type":"sendFileMessage","to":"' + Demo.selected + '","message_type":"' + type + '","group":"' + is_group + '","chatType":"' + chatType + '","roomType":"' + is_chatroom + '"}',
             function (response) {
-                var pathSplitted = decodeURI(response).split("\\");
+                response = decodeURI(response);
+                var pathSplitted = response.split("\\");
 
                 response = response.replace(/\\/ig, "/");
                 var fileurl = 'file:///' + response;
