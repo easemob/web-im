@@ -366,7 +366,10 @@ module.exports = React.createClass({
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getGroup"}',
                 function success(str) {
-                    var rooms = eval('(' + str + ')');
+                    var rooms = [];
+                    if(str){
+                        rooms = eval('(' + str + ')');
+                    }
                     me.setState({groups: rooms});
                 },
                 function failure(errCode, errMessage) {
