@@ -366,7 +366,10 @@ module.exports = React.createClass({
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getGroup"}',
                 function success(str) {
-                    var rooms = eval('(' + str + ')');
+                    var rooms = [];
+                    if(str){
+                        rooms = eval('(' + str + ')');
+                    }
                     me.setState({groups: rooms});
                 },
                 function failure(errCode, errMessage) {
@@ -581,7 +584,8 @@ module.exports = React.createClass({
         var is_group = (Demo.selectedCate === 'chatrooms' || Demo.selectedCate === 'groups') ? "groupchat" : "singlechat";
         WebIM.doQuery('{"type":"sendFileMessage","to":"' + Demo.selected + '","message_type":"' + type + '","group":"' + is_group + '","chatType":"' + chatType + '","roomType":"' + is_chatroom + '"}',
             function (response) {
-                var pathSplitted = decodeURI(response).split("\\");
+                response = decodeURI(response);
+                var pathSplitted = response.split("\\");
 
                 response = response.replace(/\\/ig, "/");
                 var fileurl = 'file:///' + response;
