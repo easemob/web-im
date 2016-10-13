@@ -584,18 +584,21 @@ module.exports = React.createClass({
         var is_group = (Demo.selectedCate === 'chatrooms' || Demo.selectedCate === 'groups') ? "groupchat" : "singlechat";
         WebIM.doQuery('{"type":"sendFileMessage","to":"' + Demo.selected + '","message_type":"' + type + '","group":"' + is_group + '","chatType":"' + chatType + '","roomType":"' + is_chatroom + '"}',
             function (response) {
-                response = decodeURI(response);
-                var pathSplitted = response.split("\\");
+                var res = eval('(' + response + ')');
 
-                response = response.replace(/\\/ig, "/");
-                var fileurl = 'file:///' + response;
+                var url = decodeURI(res.url);
+                var pathSplitted = url.split("\\");
+
+                url = url.replace(/\\/ig, "/");
+                var fileurl = 'file:///' + url;
                 Demo.api.appendMsg({
+                    id:res.id,
                     data: fileurl,
                     filename: pathSplitted[pathSplitted.length - 1],
                     from: Demo.user,
                     to: Demo.selected
                 }, type);
-            },
+           },
             function (code, msg) {
                 alert(code + " - " + msg);
             });
