@@ -61,3 +61,8 @@
   width: 100%;
   overflow: hidden;
 }
+
+//消息发送失败的时候加个红色惊叹号 <span className='webim-file-icon font smaller red'>k</span>
+span.red {
+  color: rgb(255, 42, 0);
+}

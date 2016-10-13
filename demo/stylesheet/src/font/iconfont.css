@@ -1,10 +1,10 @@
 
 @font-face {font-family: "webim";
-  src: url('iconfont.eot?t=1472199380'); /* IE9*/
-  src: url('iconfont.eot?t=1472199380#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('iconfont.woff?t=1472199380') format('woff'), /* chrome, firefox */
-  url('iconfont.ttf?t=1472199380') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('iconfont.svg?t=1472199380#webim') format('svg'); /* iOS 4.1- */
+  src: url('iconfont.eot?t=1476332924'); /* IE9*/
+  src: url('iconfont.eot?t=1476332924#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('iconfont.woff?t=1476332924') format('woff'), /* chrome, firefox */
+  url('iconfont.ttf?t=1476332924') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('iconfont.svg?t=1476332924#webim') format('svg'); /* iOS 4.1- */
 }
 
 .webim {
@@ -34,10 +34,12 @@
 .webim-H:before { content: "\48"; }
 .webim-I:before { content: "\49"; }
 .webim-V:before { content: "\56"; }
+.webim-j:before { content: "\6a"; }
 .webim-S:before { content: "\53"; }
 .webim-b:before { content: "\62"; }
 .webim-c:before { content: "\63"; }
 .webim-O:before { content: "\4f"; }
+.webim-k:before { content: "\6b"; }
 .webim-M:before { content: "\4d"; }
 .webim-P:before { content: "\50"; }
 .webim-W:before { content: "\57"; }
