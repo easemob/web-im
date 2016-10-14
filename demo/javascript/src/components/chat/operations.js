@@ -24,7 +24,7 @@ module.exports = React.createClass({
 
     adminGroupMembers: function () {
         log('addGroupMembers');
-        AdminGroupMembers.show(this.props.roomId);
+        AdminGroupMembers.show(this.props.roomId, this.props.settings);
         this.update();
     },
 
@@ -73,13 +73,22 @@ module.exports = React.createClass({
         var acttionName = (this.props.admin == 1) ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
         var actionMethod = (this.props.admin == 1) ? this.destroyGroup : this.leaveGroup;
 
+        var adminMember = false;
+        var adminMemberLaebl = '';
+        if (this.props.admin) {
+            adminMember = true;
+            adminMemberLaebl = Demo.lan.adminGroupMembers;
+        } else if (this.props.settings == "PRIVATE_MEMBER_INVITE") {
+            adminMember = true;
+            adminMemberLaebl = Demo.lan.inviteGroupMembers;
+        }
         return (
             <div>
                 <i ref='switch' className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
                 <ul className={'webim-operations' + className}>
-                    <li onClick={this.adminGroupMembers} className={this.props.admin ? '' : 'hide'}>
+                    <li onClick={this.adminGroupMembers} className={adminMember ? '' : 'hide'}>
                         <i className='font smallest'>F</i>
-                        <span>{Demo.lan.adminGroupMembers}</span>
+                        <span>{adminMemberLaebl}</span>
                     </li>
                     <li onClick={this.changeGroupSubject} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>B</i>

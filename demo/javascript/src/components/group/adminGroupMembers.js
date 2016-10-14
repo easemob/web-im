@@ -114,6 +114,10 @@ var AdminGroupMembers = React.createClass({
         }
         console.log('add', value_add);
         console.log('del', value_del);
+        if (this.props.value == "PRIVATE_MEMBER_INVITE" && value_del.length > 0) {
+            Demo.api.NotifyError("权限不够，不能删除私有群成员");
+            return;
+        }
         //TODO:@lhr  value_add 和 value_del 需要分成两个doQuery 处理
         if (WebIM.config.isWindowSDK) {
             if (value_add.length > 0) {
@@ -159,9 +163,9 @@ var AdminGroupMembers = React.createClass({
 });
 
 module.exports = {
-    show: function (roomId) {
+    show: function (roomId, settings) {
         ReactDOM.render(
-            <AdminGroupMembers onClose={this.close} roomId={roomId}/>,
+            <AdminGroupMembers onClose={this.close} roomId={roomId} settings={settings}/>,
             dom
         );
     },

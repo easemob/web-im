@@ -6,6 +6,7 @@ var Operations = require('./operations');
 module.exports = React.createClass({
     getInitialState: function () {
         return {
+            settings: '',
             admin: 0,
             owner: [],
             members: [],
@@ -18,14 +19,18 @@ module.exports = React.createClass({
         if (this.props.chatType == 'groupChat') {
             var me = this;
             if (WebIM.config.isWindowSDK) {
-                WebIM.doQuery('{"type":"groupOwner","id":"' + me.props.roomId + '"}',
+                WebIM.doQuery('{"type":"groupOwnerAndStyle","id":"' + me.props.roomId + '"}',
                     function success(str) {
-                        var owner = [{jid: str, affiliation: "owner"}];
+                        if (str == '') {
+                            return;
+                        }
+                        var json = eval('(' + str + ')');
+                        var owner = [{jid: json.owner, affiliation: "owner"}];
                         var admin = 0;
                         if (str == Demo.user) {
                             admin = 1;
                         }
-                        me.setState({admin: admin, owner: owner});
+                        me.setState({settings: json.style, admin: admin, owner: owner});
                         if (cb_type == 'listMember') {
                             me.listMember();
                         } else {
@@ -35,10 +40,11 @@ module.exports = React.createClass({
                     function failure(errCode, errMessage) {
                         Demo.api.NotifyError("queryRoomInfo:" + errCode);
                     });
+
             } else {
                 Demo.conn.queryRoomInfo({
                     roomId: me.props.roomId,
-                    success: function (members) {
+                    success: function (settings, members) {
                         if (members && members.length > 0) {
                             var jid = members[0].jid;
                             var username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
@@ -46,7 +52,7 @@ module.exports = React.createClass({
                             if (members[0].affiliation == 'owner' && username == Demo.user) {
                                 admin = 1;
                             }
-                            me.setState({admin: admin, owner: members});
+                            me.setState({settings: settings, admin: admin, owner: members});
                             if (cb_type == 'listMember') {
                                 me.listMember();
                             } else if (cb_type == 'opertion') {
@@ -61,6 +67,7 @@ module.exports = React.createClass({
             }
         }
     },
+
 
     componentWillReceiveProps: function (nextProps) {
 
@@ -79,6 +86,9 @@ module.exports = React.createClass({
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"groupMembers","id":"' + me.props.roomId + '"}',
                     function success(str) {
+                        if (str == '') {
+                            return;
+                        }
                         var members = eval('(' + str + ')');
                         if (members && members.length > 0) {
                             me.refreshMemberList(members);
@@ -154,6 +164,7 @@ module.exports = React.createClass({
                 <div className={this.props.showOptions ? '' : 'hide'}>
                     <Operations ref='operation_div' roomId={this.props.roomId} admin={this.state.admin}
                                 owner={this.state.owner}
+                                settings={this.state.settings}
                                 getGroupOwner={this.getGroupOwner}/>
                 </div>
                 <ul ref='member' className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>

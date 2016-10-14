@@ -1505,7 +1505,28 @@
 
         var suc = options.success || _utils.emptyfn;
         var members = [];
+
         var completeFn = function (result) {
+            var settings = '';
+            var features = result.getElementsByTagName('feature');
+            if (features) {
+                settings = features[1].getAttribute('var') + '|' + features[3].getAttribute('var') + '|' + features[4].getAttribute('var');
+            }
+            switch (settings) {
+                case 'muc_public|muc_membersonly|muc_notallowinvites':
+                    settings = 'PUBLIC_JOIN_APPROVAL';
+                    break;
+                case 'muc_public|muc_open|muc_notallowinvites':
+                    settings = 'PUBLIC_JOIN_OPEN';
+                    break;
+                case 'muc_hidden|muc_membersonly|muc_allowinvites':
+                    settings = 'PRIVATE_MEMBER_INVITE';
+                    break;
+                case 'muc_hidden|muc_membersonly|muc_notallowinvites':
+                    settings = 'PRIVATE_OWNER_INVITE';
+                    break;
+            }
+            var owner = '';
             var fields = result.getElementsByTagName('field');
             if (fields) {
                 for (var i = 0; i < fields.length; i++) {
@@ -1516,10 +1537,12 @@
                             , affiliation: 'owner'
                         };
                         members.push(mem);
+                        break;
                     }
                 }
             }
-            suc(members);
+            console.log(settings, members);
+            suc(settings, members);
         };
         var err = options.error || _utils.emptyfn;
         var errorFn = function (ele) {
