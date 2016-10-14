@@ -114,7 +114,7 @@ module.exports = {
             this.requests[data.from] = {msg: data.from + ': ' + data.status, handled: false};
         } else {
             if (this.requests[data.from].handled) {
-                return;
+                this.requests[data.from].handled = false;
             }
         }
 
