@@ -19,7 +19,7 @@ module.exports = React.createClass({
         if (this.props.chatType == 'groupChat') {
             var me = this;
             if (WebIM.config.isWindowSDK) {
-                WebIM.doQuery('{"type":"groupOwnerAndStyle","id":"' + me.props.roomId + '"}',
+                WebIM.doQuery('{"type":"groupSpecification","id":"' + me.props.roomId + '"}',
                     function success(str) {
                         if (str == '') {
                             return;
@@ -27,7 +27,7 @@ module.exports = React.createClass({
                         var json = eval('(' + str + ')');
                         var owner = [{jid: json.owner, affiliation: "owner"}];
                         var admin = 0;
-                        if (str == Demo.user) {
+                        if (json.owner == Demo.user) {
                             admin = 1;
                         }
                         me.setState({settings: json.style, admin: admin, owner: owner});
