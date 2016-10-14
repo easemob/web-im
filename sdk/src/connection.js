@@ -104,7 +104,7 @@
                 this._connect();
             } else {
                 // if (!this._conn.disconnecting) {
-                this._conn._doDisconnect();
+                this._conn._doDisconnect("receive <close> from server");
                 // }
             }
             return;
@@ -367,7 +367,7 @@
     };
 
     var _loginCallback = function (status, msg, conn) {
-        console.log('_loginCallback', Demo.api.getObjectKey(Strophe.Status, status), msg);
+        console.log('_loginCallback', 'status=' + Demo.api.getObjectKey(Strophe.Status, status), 'msg=' + msg);
         var conflict, error;
 
         if (msg === 'conflict') {
@@ -456,6 +456,12 @@
             }
         } else if (status == Strophe.Status.DISCONNECTED) {
             conn.context.status = _code.STATUS_CLOSED;
+            if (msg == undefined && !conn.context.conflict) {
+                error = {
+                    type: _code.WEBIM_CONNCTION_DISCONNECTED
+                };
+                conn.onError(error);
+            }
             conn.clear();
             conn.onClosed();
         } else if (status == Strophe.Status.AUTHFAIL) {
@@ -471,7 +477,11 @@
                 type: _code.WEBIM_CONNCTION_SERVER_ERROR
             };
 
-            conflict && (error.conflict = true);
+            if (conflict) {
+                error.conflict = true;
+                //mark confict onError, therefore won't notify onClose
+                conn.context.conflict = true;
+            }
             conn.onError(error);
         }
     };
