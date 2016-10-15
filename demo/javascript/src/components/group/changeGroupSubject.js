@@ -23,11 +23,18 @@ var ChangeGroupSubject = React.createClass({
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"changeGroupSubject", "id":"' + this.props.roomId + '", "subject":"' + value + '"}',
                 function (response) {
+                    var json = eval('(' + str + ')');
+                    Demo.api.changeGroupSubjectCallBack(json.id, json.subject);
                 },
                 function (code, msg) {
                     Demo.api.NotifyError("changeGroupSubject:" + code);
                 });
         } else {
+            // Demo.conn.ChangeGroupSubject({
+            //     to: value,
+            //     message: Demo.user + Demo.lan.request
+            // });
+            Demo.api.changeGroupSubjectCallBack(this.props.roomId, value);
         }
         this.close();
     },

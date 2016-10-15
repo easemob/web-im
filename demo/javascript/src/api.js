@@ -385,6 +385,11 @@ module.exports = {
         });
     },
 
+    changeGroupSubjectCallBack: function (id, subject) {
+        var cur = document.getElementById(id);
+        cur.querySelector('span').innerHTML = subject;
+    },
+
     encode: function (str) {
         if (!str || str.length === 0) {
             return '';
