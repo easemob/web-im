@@ -157,7 +157,7 @@ module.exports = React.createClass({
         return (
             <div className={'webim-chatwindow ' + this.props.className}>
                 <div className='webim-chatwindow-title'>
-                    {Demo.lan.groupMemberLabel}
+                    {(Demo.selectedCate == 'chatrooms' || Demo.selectedCate == 'groups') ? Demo.lan.groupMemberLabel : this.props.name }
                     <i ref='i' className={'webim-down-icon font smallest' + className}
                        onClick={this.preListMember}>D</i>
                 </div>
