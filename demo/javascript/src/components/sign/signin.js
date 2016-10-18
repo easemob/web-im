@@ -27,8 +27,8 @@ module.exports = React.createClass({
         var options = {
             apiUrl: this.props.config.apiURL,
             user: username.toLowerCase(),
-            accessToken: auth,
             pwd: auth,
+            accessToken: auth,
             appKey: this.props.config.appkey
         };
 

@@ -376,9 +376,9 @@
 
         if (status == Strophe.Status.CONNFAIL) {
             error = {
-                type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR
-                , msg: msg
-                , reconnect: true
+                type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
+                msg: msg,
+                reconnect: true
             };
 
             conflict && (error.conflict = true);
@@ -479,7 +479,7 @@
 
             if (conflict) {
                 error.conflict = true;
-                //mark confict onError, therefore won't notify onClose
+                //mark confict onError, therefore won't trigger notify onClose
                 conn.context.conflict = true;
             }
             conn.onError(error);
@@ -543,7 +543,6 @@
         if (conn.isMultiLoginSessions) {
             resource += user + new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000);
         }
-
         conn.context.jid = jid + '/' + resource;
         /*jid: {appkey}_{username}@domain/resource*/
         conn.context.userId = user;
