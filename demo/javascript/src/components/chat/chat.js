@@ -367,7 +367,7 @@ module.exports = React.createClass({
             WebIM.doQuery('{"type":"getGroup"}',
                 function success(str) {
                     var rooms = [];
-                    if(str){
+                    if (str) {
                         rooms = eval('(' + str + ')');
                     }
                     me.setState({groups: rooms});
@@ -592,13 +592,13 @@ module.exports = React.createClass({
                 url = url.replace(/\\/ig, "/");
                 var fileurl = 'file:///' + url;
                 Demo.api.appendMsg({
-                    id:res.id,
+                    id: res.id,
                     data: fileurl,
                     filename: pathSplitted[pathSplitted.length - 1],
                     from: Demo.user,
                     to: Demo.selected
                 }, type);
-           },
+            },
             function (code, msg) {
                 alert(code + " - " + msg);
             });

@@ -12,7 +12,8 @@ module.exports = React.createClass({
             signIn: true,
             signUp: false,
             chat: false,
-            loadingStatus: false
+            loadingStatus: false,
+            loadingMsg: ''
         };
     },
 
@@ -22,13 +23,14 @@ module.exports = React.createClass({
             signUp: state.signUp,
             chat: state.chat,
             loadingStatus: state.loadingStatus,
+            loadingMsg: state.loadingMsg,
             content: state.content,
             status: state.status
         });
     },
 
-    loading: function (status) {
-        this.setState({loadingStatus: status});
+    loading: function (status, msg) {
+        this.setState({loadingStatus: status, loadingMsg: msg});
     },
 
     render: function () {
@@ -48,7 +50,7 @@ module.exports = React.createClass({
                     <SignUp show={this.state.signUp} {...this.props} update={this.update} loading={this.loading}/>
                     <Chat show={this.state.chat} {...this.props} update={this.update}
                           loading={this.loading} {...props} />
-                    <Loading show={this.state.loadingStatus}/>
+                    <Loading show={this.state.loadingStatus} msg={this.state.loadingMsg}/>
                 </div>
                 <footer className={'copyright' + (WebIM.config.isWindowSDK ? ' hide' : '')}>© 2016 环信科技</footer>
             </div>
