@@ -23,8 +23,8 @@
         if (xhr.overrideMimeType) {
             xhr.overrideMimeType('text/xml');
         }
-        //TODO: need to be verified in IE8
-        xhr.onreadystatechange = Strophe.Request.func.bind(null, Strophe.Request);
+        // use Function.bind() to prepend ourselves as an argument
+        xhr.onreadystatechange = this.func.bind(null, this);
         return xhr;
     };
 
