@@ -31,6 +31,8 @@ module.exports = React.createClass({
 
                 me.getRoster();
                 me.getChatroom();
+                // blacklist
+                me.getBlacklist();
             },
             onClosed: function (msg) {
                 log('onClosed');
@@ -115,6 +117,14 @@ module.exports = React.createClass({
                     Demo.api.logout();
                 }
             },
+            // used for blacklist
+            onBlacklistUpdate: function (list) {
+                log('onBlacklistUpdate', list);
+                Demo.blacklist = list || {};
+                me.setState({blacklist: list});
+                // todo 增量更新
+                Demo.api.updateRoster();
+            },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
                 log('onError', message);
@@ -135,7 +145,7 @@ module.exports = React.createClass({
                     Demo.api.logout();
                 }
                 Demo.api.NotifyError('onError:' + text);
-            }
+            },
         });
 
 
@@ -145,7 +155,8 @@ module.exports = React.createClass({
             friends: [],
             groups: [],
             chatrooms: [],
-            strangers: []
+            strangers: [],
+            blacklist: {}
         };
     },
     confirmPop: function (options) {
@@ -167,6 +178,7 @@ module.exports = React.createClass({
                 Demo.roster[ros.name] = 1;
             }
         }
+        Demo.friends = friends;
         this.setState({friends: friends});
         console.log('updateMyRoster', options);
     },
@@ -359,6 +371,7 @@ module.exports = React.createClass({
                 }
             });
         }
+        Demo.friends = friends;
     },
 
     getGroup: function () {
@@ -411,6 +424,18 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('getChatroom:' + e);
                 }
             });
+        }
+    },
+
+    // when signed then get blacklist
+    getBlacklist: function () {
+        var me = this;
+        if (WebIM.config.isWindowSDK) {
+
+        } else {
+            // success msg united in onBlacklistUpdate
+            // no need for error ，maybe item not found also error
+            Demo.conn.getBlacklist();
         }
     },
 
@@ -705,9 +730,14 @@ module.exports = React.createClass({
         return (
             <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
                 <LeftBar cur={this.state.cur} update={this.update}/>
-                <Contact cur={this.state.cur} curNode={this.state.curNode} updateNode={this.updateNode}
+                <Contact cur={this.state.cur}
+                         curNode={this.state.curNode}
+                         updateNode={this.updateNode}
                          update={this.update}
-                         friends={this.state.friends} groups={this.state.groups} chatrooms={this.state.chatrooms}
+                         friends={this.state.friends}
+                         blacklist={this.state.blacklist}
+                         groups={this.state.groups}
+                         chatrooms={this.state.chatrooms}
                          strangers={this.state.strangers}/>
                 {windows}
                 <input ref='picture' onChange={this.pictureChange} type='file' className='hide'/>

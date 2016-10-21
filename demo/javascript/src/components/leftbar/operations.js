@@ -3,12 +3,13 @@ var AddFriend = require("./addFriend");
 var DelFriend = require("./delFriend");
 var CreateGroup = require("../group/createGroup");
 var JoinPublicGroup = require("../group/joinPublicGroup");
+var ShowBlacklist = require("../blacklist/showBlacklist");
 
 module.exports = React.createClass({
 
     getInitialState: function () {
         var me = this;
-
+        // TODO 关闭各种弹出框
         return {hide: 'hide'};
     },
 
@@ -38,6 +39,11 @@ module.exports = React.createClass({
         this.update();
     },
 
+    showBlacklist: function () {
+        ShowBlacklist.show();
+        this.update();
+    },
+
     logout: function () {
         Demo.api.logout();
     },
@@ -48,6 +54,10 @@ module.exports = React.createClass({
             <div>
                 <i className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
                 <ul className={'webim-operations' + className}>
+                    <li onClick={this.showBlacklist}>
+                        <i className='font smallest'>L</i>
+                        <span>{Demo.lan.blacklist}</span>
+                    </li>
                     <li onClick={this.addFriends}>
                         <i className='font smallest'>L</i>
                         <span>{Demo.lan.addAFriend}</span>

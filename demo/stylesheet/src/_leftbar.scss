@@ -212,3 +212,40 @@
   top: 0px;
   right: 8px;
 }
+
+// 黑名单
+.webim-blacklist-wrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-right: 1px solid rgb(242, 242, 242);
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  background-color: rgb(255, 255, 255);
+  margin-bottom: 30px;
+}
+
+.webim-blacklist-item {
+  position: relative;
+  cursor: pointer;
+  display: bloack;
+  width: 100%;
+  overflow: hidden;
+  height: 30px;
+  font-size: 20px;
+  line-height: 30px;
+
+  > font {
+    line-height: 30px;
+    float: right;
+    position: static;
+  }
+}
+
+.webim-operation-icon {
+  width: 100px;
+  float: right;
+  margin-right: 10px;
+  text-align: right;
+}

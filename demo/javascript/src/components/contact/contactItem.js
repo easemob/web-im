@@ -27,8 +27,40 @@ module.exports = React.createClass({
         //curCate.setAttribute('count', curCateCount);
     },
 
+    // blacklist
+    addToBlackList: function (e) {
+        var value = this.props.id;
+        var me = this;
+
+        // todo
+        var flen = Demo.friends.length;
+        for (var i = 0; i < flen; i++) {
+            var f = Demo.friends[i];
+            if (f.name == value) {
+                Demo.blacklist[f.name] = f;
+                break;
+            }
+        }
+
+        Demo.conn.addToBlackList({
+            list: Demo.blacklist,
+            type: 'jid',
+            success: function () {
+                // no good
+                Demo.selected = null;
+                me.update();
+            },
+            error: function () {
+            }
+        });
+
+        event.preventDefault();
+        event.stopPropagation();
+    },
+
     update: function () {
-        var count = this.refs['i'].getAttribute('count') / 1;
+        log('update');
+        var count = this.refs['i'] && this.refs['i'].getAttribute('count') / 1;
         this.handleIconCount(count);
 
         this.refs['i'].style.display = 'none';
@@ -88,7 +120,8 @@ module.exports = React.createClass({
         }
 
         this.props.update(Demo.selected);
-    },
+    }
+    ,
 
     render: function () {
         var className = this.props.cur === this.props.id ? ' selected' : '';
@@ -98,8 +131,12 @@ module.exports = React.createClass({
                 <Avatar src={this.props.src}/>
                 <span>{this.props.username}</span>
                 <em></em>
+                <i className="webim-leftbar-icon font smaller"
+                   style={{display: Demo.selectedCate != 'friends' ? 'none' : ''}}
+                   onClick={this.addToBlackList}>A</i>
                 <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>
             </div>
         );
     }
-});
+})
+;

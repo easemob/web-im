@@ -66,6 +66,7 @@ module.exports = {
         Demo.call = null;
         Demo.roster = {};
         Demo.strangers = {};
+        Demo.blacklist = {};
 
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);

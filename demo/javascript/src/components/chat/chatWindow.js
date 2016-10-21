@@ -121,6 +121,10 @@ module.exports = React.createClass({
         }
     },
 
+    addToBlackList: function (value) {
+        log('group addToBlackList', value);
+    },
+
     refreshMemberList: function (members) {
         this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
         this.setState({members: this.state.owner.concat(members), memberShowStatus: true});
@@ -145,11 +149,17 @@ module.exports = React.createClass({
 
         for (var i = 0, l = this.state.members.length; i < l; i++) {
             var jid = this.state.members[i].jid,
-                username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+                username = jid.substring(jid.indexOf('_') + 1).split('@')[0],
+                affiliation = this.state.members[i].affiliation;
+
 
             roomMember.push(<li key={i}>
                 <Avatar src='demo/images/default.png'/>
                 <span>{username}</span>
+                <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
+                    <i className="webim-leftbar-icon font smaller"
+                       onClick={this.addToBlackList.bind(this, username)}>A</i>
+                </div>
             </li>);
         }
 

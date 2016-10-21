@@ -23,7 +23,9 @@ Demo.lan = Language.Chinese;
 Demo.api = Api;
 
 Demo.roster = {};
+Demo.friends = [];
 Demo.strangers = {};
+Demo.blacklist = {};
 
 Demo.IMGTYPE = {
     gif: 1,

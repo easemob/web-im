@@ -12,7 +12,7 @@ module.exports = React.createClass({
         };
     },
 
-    update: function ( id ) {
+    update: function (id) {
         this.props.updateNode(id);
     },
 
@@ -22,20 +22,28 @@ module.exports = React.createClass({
             s = [],
             c = [];
 
-        for ( var i = 0; i < this.props.friends.length; i++ ) {
-            f.push(<Item id={this.props.friends[i].name} cate='friends' key={i} username={this.props.friends[i].name} update={this.update} cur={this.props.curNode} />);
+        for (var i = 0; i < this.props.friends.length; i++) {
+            if (this.props.friends[i].name in this.props.blacklist) {
+                continue;
+            }
+            f.push(<Item id={this.props.friends[i].name} cate='friends' key={i} username={this.props.friends[i].name}
+                         update={this.update} cur={this.props.curNode}/>);
         }
 
-        for ( var i = 0; i < this.props.groups.length; i++ ) {
-            g.push(<Item id={this.props.groups[i].roomId} cate='groups' key={i} username={this.props.groups[i].name} update={this.update} cur={this.props.curNode} src={this.state.src} />);
+        for (var i = 0; i < this.props.groups.length; i++) {
+            g.push(<Item id={this.props.groups[i].roomId} cate='groups' key={i} username={this.props.groups[i].name}
+                         update={this.update} cur={this.props.curNode} src={this.state.src}/>);
         }
 
-        for ( var i = 0; i < this.props.chatrooms.length; i++ ) {
-            c.push(<Item id={this.props.chatrooms[i].id} cate='chatrooms' key={i} username={this.props.chatrooms[i].name} update={this.update} cur={this.props.curNode} src={this.state.src} />);
+        for (var i = 0; i < this.props.chatrooms.length; i++) {
+            c.push(<Item id={this.props.chatrooms[i].id} cate='chatrooms' key={i}
+                         username={this.props.chatrooms[i].name} update={this.update} cur={this.props.curNode}
+                         src={this.state.src}/>);
         }
 
-        for ( var i = 0; i < this.props.strangers.length; i++ ) {
-            s.push(<Item id={this.props.strangers[i].name} cate='strangers' key={i} username={this.props.strangers[i].name} update={this.update} cur={this.props.curNode} />);
+        for (var i = 0; i < this.props.strangers.length; i++) {
+            s.push(<Item id={this.props.strangers[i].name} cate='strangers' key={i}
+                         username={this.props.strangers[i].name} update={this.update} cur={this.props.curNode}/>);
         }
 
         return (

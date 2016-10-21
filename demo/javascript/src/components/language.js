@@ -63,6 +63,8 @@ exports.English = {
     addFriendSelfInvalid: 'Can\'t add youself as friend',
     delFriendSelfInvalid: 'Can\'t del youself as friend',
     addFriendRepeat: 'is friend already',
+    blacklist: 'Blacklist',
+    ShowBlacklist: 'Blacklist',
     last: ''
 };
 
@@ -131,5 +133,7 @@ exports.Chinese = {
     addFriendSelfInvalid: '不能添加自己为好友',
     delFriendSelfInvalid: '该好友不存在',
     addFriendRepeat: '已经是好友',
+    blacklist: '屏蔽列表',
+    ShowBlacklist: '屏蔽列表',
     last: ''
 };
