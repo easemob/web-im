@@ -49,6 +49,8 @@ Demo.AUDIOTYPE = {
     wmv: 1
 };
 
+Demo.selectedCate = '';   //friends|groups|chatrooms|strangers
+
 // initialize webIM connection
 Demo.conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,

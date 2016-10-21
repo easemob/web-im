@@ -10,13 +10,13 @@ Demo NotifyError:
 
 <a> should reconnect</a>
 
-##3.server send `<close>` because of multi login
+##3.server send *<close>* because of multi login
 * first, strophe.Websocket trigger ERROR event, Demo NotifyError: type=8, mark conflict=true at the same time. 
 * then, strophe.Websocket trigger DISCONNECTED event, Demo do not NotifyError while conflict==true
 
 `onError: WEBIM_CONNCTION_SERVER_ERROR type=8 `
 
-##4.server send `<close>` because of ping/pong timeout 
+##4.server send *<close>* because of ping/pong timeout
 strophe.Websocket trigger DISCONNECTED, Demo NotifyError:
 
 `onError: WEBIM_CONNCTION_DISCONNECTED type=16`
