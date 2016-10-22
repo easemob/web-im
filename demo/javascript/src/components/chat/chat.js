@@ -119,10 +119,10 @@ module.exports = React.createClass({
             },
             // used for blacklist
             onBlacklistUpdate: function (list) {
-                log('onBlacklistUpdate', list);
+                // log('onBlacklistUpdate', list);
                 Demo.blacklist = list || {};
                 me.setState({blacklist: list});
-                // todo 增量更新
+                // TODO 增量更新
                 Demo.api.updateRoster();
             },
             onError: function (message) {

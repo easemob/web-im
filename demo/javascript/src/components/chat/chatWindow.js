@@ -2,6 +2,7 @@ var React = require("react");
 var SendWrapper = require('./sendWrapper');
 var Avatar = require('../common/avatar');
 var Operations = require('./operations');
+var _ = require('underscore');
 
 module.exports = React.createClass({
     getInitialState: function () {
@@ -121,8 +122,17 @@ module.exports = React.createClass({
         }
     },
 
-    addToBlackList: function (value) {
-        log('group addToBlackList', value);
+    addToGroupBlackList: function (jid) {
+        log('group addToBlackList', jid, Demo.user);
+
+        var item = _.find(this.state.members, function (item) {
+            return new RegExp(Demo.user).test(item.jid);
+        });
+
+        Demo.conn.addToGroupBlackList({
+            toJid: jid,
+            affiliation: item.affiliation
+        });
     },
 
     refreshMemberList: function (members) {
@@ -158,7 +168,7 @@ module.exports = React.createClass({
                 <span>{username}</span>
                 <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
                     <i className="webim-leftbar-icon font smaller"
-                       onClick={this.addToBlackList.bind(this, username)}>A</i>
+                       onClick={this.addToGroupBlackList.bind(this, jid)}>A</i>
                 </div>
             </li>);
         }

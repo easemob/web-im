@@ -9,14 +9,17 @@ module.exports = React.createClass({
 
         return {
             msg: '',
-            avatar: ''
+            avatar: '',
+            countShow: false,
         };
     },
 
     handleIconCount: function (count) {
-        var curCate = document.getElementById(this.props.cate).getElementsByTagName('i')[1];
-        var curCateCount = curCate.getAttribute('data-count') / 1;
+        // TODO
+        var curCate = this.refs['i'];
+        var curCateCount = curCate.getAttribute('count') / 1;
         curCateCount -= count;
+        // curCateCount = Math.max(0, curCateCount);
 
         if (curCateCount > 0) {
             curCate.style.display = 'block';
@@ -24,7 +27,9 @@ module.exports = React.createClass({
             curCateCount = 0;
             curCate.style.display = 'none';
         }
-        //curCate.setAttribute('count', curCateCount);
+        // this.setState({
+        //     countShow: curCateCount > 0
+        // })
     },
 
     // blacklist
@@ -59,8 +64,7 @@ module.exports = React.createClass({
     },
 
     update: function () {
-        log('update');
-        var count = this.refs['i'] && this.refs['i'].getAttribute('count') / 1;
+        var count = this.refs['i'].getAttribute('count') / 1;
         this.handleIconCount(count);
 
         this.refs['i'].style.display = 'none';
@@ -129,12 +133,16 @@ module.exports = React.createClass({
         return (
             <div id={this.props.id} className={'webim-contact-item' + className} onClick={this.update}>
                 <Avatar src={this.props.src}/>
-                <span>{this.props.username}</span>
+                <div className="webim-contact-info">
+                    <span className="webim-contact-username">{this.props.username}</span>
+                    <div className="webim-contact-handlers">
+                        <i ref="i2" title="Add to blacklist" className="webim-leftbar-icon font smaller"
+                           style={{display: Demo.selectedCate != 'friends' ? 'none' : ''}}
+                           onClick={this.addToBlackList}>A</i>
+                    </div>
+                </div>
                 <em></em>
-                <i className="webim-leftbar-icon font smaller"
-                   style={{display: Demo.selectedCate != 'friends' ? 'none' : ''}}
-                   onClick={this.addToBlackList}>A</i>
-                <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>
+                <i ref='i' className='webim-msg-prompt' count='0' style={{display: 'none'}}></i>
             </div>
         );
     }

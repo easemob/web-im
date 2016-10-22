@@ -2016,6 +2016,21 @@
         this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
     };
 
+    // used for blacklist
+    connection.prototype.addToGroupBlackList = function (options) {
+        var jid = _getJid(options, this);
+        var affiliation = options.affiliation || 'admin';
+        var iq = $iq({type: 'set'});
+
+        iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+            .c('item', {
+                affiliation: 'outcast',
+                jid: jid
+            });
+
+        this.context.stropheConn.sendIQ(iq.tree());
+    };
+
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
     WebIM.connection = connection;
     WebIM.utils = _utils;

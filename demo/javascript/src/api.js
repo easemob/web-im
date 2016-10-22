@@ -335,11 +335,12 @@ module.exports = {
 
 
     addCount: function (id, cate) {
+        // TODO
         if (Demo.selectedCate !== cate) {
             var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
             curCate.style.display = 'block';
 
-            var cur = document.getElementById(id).querySelector('i');
+            var cur = document.getElementById(id).getElementsByTagName('i')[1];
             var curCount = cur.getAttribute('count') / 1;
             curCount++;
             cur.setAttribute('count', curCount);
@@ -347,7 +348,7 @@ module.exports = {
             cur.style.display = 'block';
         } else {
             if (!this.sentByMe && id !== Demo.selected) {
-                var cur = document.getElementById(id).querySelector('i');
+                var cur = document.getElementById(id).getElementsByTagName('i')[1];
                 var curCount = cur.getAttribute('count') / 1;
                 curCount++;
                 cur.setAttribute('count', curCount);

@@ -39,7 +39,23 @@
     margin: 10px;
   }
 
-  > span {
+  .webim-contact-info {
+    position: relative;
+  }
+
+  .webim-contact-handlers {
+    text-align: right;
+    position: absolute;
+    right: 10px;
+    top: 0;
+
+    i {
+      font-size: 16px;
+      line-height: 40px;
+    }
+  }
+
+  > span, .webim-contact-username {
     color: rgb(26, 26, 26);
     font-size: 14px;
     margin: 10px 0;
