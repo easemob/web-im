@@ -129,9 +129,11 @@ module.exports = React.createClass({
                     //do nothing
                 } else {
                     if (message.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
-                        Demo.conn.errorType = message.type;
-                        console.log('conn.context.errorType=', Demo.conn.errorType);
-                        return;
+                        if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
+                            Demo.conn.errorType = message.type;
+                            console.log('conn.context.errorType=', Demo.conn.errorType);
+                            return;
+                        }
                     }
                     if (message.data && message.data.data) {
                         text = message.data.data;

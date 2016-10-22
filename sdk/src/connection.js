@@ -596,11 +596,14 @@
         this.route = options.route || null;
         this.domain = options.domain || 'easemob.com';
         this.inactivity = options.inactivity || 30;
-        this.heartBeatWait = options.heartBeatWait;
+        this.heartBeatWait = options.heartBeatWait || 4500;
         this.maxRetries = options.maxRetries || 5;
         this.isAutoLogin = options.isAutoLogin === false ? false : true;
         this.pollingTime = options.pollingTime || 800;
         this.stropheConn = false;
+        this.autoReconnectNumMax = options.autoReconnectNumMax || 0;
+        this.autoReconnectNumTotal = 0;
+        this.autoReconnectInterval = options.autoReconnectInterval || 0;
         this.context = {status: _code.STATUS_INIT};
     };
 
@@ -1669,6 +1672,7 @@
                 appKey: key
             };
         }
+
     };
 
     connection.prototype.getChatRooms = function (options) {
@@ -1885,10 +1889,19 @@
         this.onUpdateMyRoster(options);
     };
     connection.prototype.reconnect = function () {
-        console.log('conn.reconnect()');
+        console.log(ts(), 'conn.reconnect()');
         console.log(this.context);
+        console.log('total:', this.autoReconnectNumTotal, 'max:', this.autoReconnectNumMax);
+        if (this.autoReconnectNumTotal >= this.autoReconnectNumMax) {
+            return;
+        }
 
-        _login(this.context.restTokenData, this);
+        var that = this;
+        setTimeout(function () {
+            console.log(ts(), '_login');
+            _login(that.context.restTokenData, that)
+        }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
+        this.autoReconnectNumTotal++;
     };
     connection.prototype.closed = function () {
         console.log('conn.closed');

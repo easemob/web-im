@@ -57,7 +57,9 @@ Demo.conn = new WebIM.connection({
     https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
     url: WebIM.config.xmppURL,
     isAutoLogin: false,
-    heartBeatWait: WebIM.config.heartBeatWait || 4500
+    heartBeatWait: WebIM.config.heartBeatWait,
+    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+    autoReconnectInterval: WebIM.config.autoReconnectInterval
 });
 
 Demo.api.render(document.getElementById('demo'));
