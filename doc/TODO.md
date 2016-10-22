@@ -9,6 +9,7 @@
 ###7.v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了  handlePageLimit clearPageSign getPageCount
 ###8.增加WebRTC视频聊天功能(support chrome+https only)
 ###9.xmppURL需要容错检查: 如果用户自己加了ws://或者wss://前缀 要去除掉，避免报错！
+###10.chatrooms的接口，应该用户点击之后才获取，不应该登录就自动获取！
 
 #V1.1.4 (2016.11~2016.12) 优化和新需求:
 ###1.webrtc的接受视频请求按钮，改成弹窗同意或拒绝
@@ -21,6 +22,7 @@
 ###8.修改multi-select-box组件的UI
 ###9.调整框架目录结构:src/dist/publish
 ###10.© 2016 环信科技  2016不要写死
+###11.所有eval('(' + message + ')');  改成 JSON.parse(message)  所有 eval('(' + str + ')');  改成 JSON.parse(str)  
 
 #V1.1.5 (2017.01~2017.06) 新需求：
 ###1.webim所有接口的xmpp协议(邹金海)和react协议(仝瑶)的文档整理

@@ -50,17 +50,28 @@ module.exports = {
         }
     },
 
-    logout: function () {
+
+    logout: function (type) {
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"logout"}',
                 function (response) {
+                    Demo.api.init();
                 },
                 function (code, msg) {
                     Demo.api.NotifyError("logout:" + msg);
                 });
         } else {
+            console.log('logout=', type);
             Demo.conn.close();
+            if (type == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
+                Demo.conn.errorType = type;
+            }
         }
+
+    },
+
+    init: function () {
+        console.log('api.init()');
         Demo.selected = null;
         Demo.user = null;
         Demo.call = null;
@@ -70,7 +81,6 @@ module.exports = {
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
     },
-
     appendMsg: function (msg, type) {
         if (!msg) {
             return;

@@ -3,10 +3,10 @@
 this is a user active behavior,should not NotifyError.
 
   
-##2.client network down
+##2.client offline (network down, etc.)
 Demo NotifyError:
 
-`onError: WEBIM_CONNCTION_SERVER_CLOSE_ERROR type=7`
+`onError: WWEBIM_CONNCTION_SERVER_CLOSE_ERROR type=7`
 
 <a> should reconnect</a>
 

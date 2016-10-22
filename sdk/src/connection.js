@@ -47,6 +47,7 @@
         if (this.socket) {
             var me = this;
             setTimeout(function () {
+                console.log('Strophe.Websocket.prototype._closeSocket');
                 try {
                     me.socket.close();
                 } catch (e) {
@@ -313,8 +314,7 @@
             var loginfo = _utils.stringify(options);
             conn.onError({
                 type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
-                data: options,
-                xhr: xhr
+                data: options
             });
             return;
         }
@@ -712,6 +712,7 @@
 
             var suc = function (data, xhr) {
                 conn.context.status = _code.STATUS_DOLOGIN_IM;
+                conn.context.restTokenData = data;
                 _login(data, conn);
             };
             var error = function (res, xhr, msg) {
@@ -1660,11 +1661,14 @@
     };
 
     connection.prototype.clear = function () {
+        console.log(' connection.prototype.clear=', this.errorType);
         var key = this.context.appKey;
-        this.context = {
-            status: _code.STATUS_INIT
-            , appKey: key
-        };
+        if (this.errorType != WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
+            this.context = {
+                status: _code.STATUS_INIT,
+                appKey: key
+            };
+        }
     };
 
     connection.prototype.getChatRooms = function (options) {
@@ -1879,6 +1883,19 @@
     };
     connection.prototype._onUpdateMyRoster = function (options) {
         this.onUpdateMyRoster(options);
+    };
+    connection.prototype.reconnect = function () {
+        console.log('conn.reconnect()');
+        console.log(this.context);
+
+        _login(this.context.restTokenData, this);
+    };
+    connection.prototype.closed = function () {
+        console.log('conn.closed');
+        console.log('conn.errorType=', this.errorType);
+
+
+        Demo.api.init();
     };
 
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};

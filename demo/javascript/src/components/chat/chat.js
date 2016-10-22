@@ -31,11 +31,15 @@ module.exports = React.createClass({
 
                 me.getRoster();
                 me.getChatroom();
+                Demo.conn.errorType = -1;
             },
             onClosed: function (msg) {
-                log('onClosed');
+                log(ts(), 'onClosed', Demo.conn.errorType);
                 //demo:跳转到登陆页 或者 自动重连
-                Demo.api.logout();
+                // Demo.api.logout();
+                if (Demo.conn.errorType == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
+                    Demo.conn.reconnect();
+                }
                 //webRTC:断线处理
                 if (WebIM.config.isWebRTC) {
                     me.channel.close();
@@ -109,15 +113,12 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     Demo.api.NotifyError("Network connection is broken. reconnecting...");
                 } else {
-                    var type = 7;
-                    var text = Demo.api.getObjectKey(WebIM.statusCode, type) + ' ' + ' type=' + type;
-                    Demo.api.NotifyError('onError:' + text);
-                    Demo.api.logout();
+                    Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_OFFLINE);
                 }
             },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
-                log('onError', message);
+                log(ts(), 'onError', message);
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -127,14 +128,26 @@ module.exports = React.createClass({
                     }
                     //do nothing
                 } else {
+                    if (message.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
+                        Demo.conn.errorType = message.type;
+                        console.log('conn.context.errorType=', Demo.conn.errorType);
+                        return;
+                    }
                     if (message.data && message.data.data) {
                         text = message.data.data;
                     } else {
+                        console.log('Demo.conn.errorType', Demo.conn.errorType);
+                        console.log('message.type', message.type);
+
                         text = Demo.api.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
                     }
-                    Demo.api.logout();
+                    // Demo.api.logout(message.type);
                 }
-                Demo.api.NotifyError('onError:' + text);
+                if (Demo.conn.errorType != WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
+                    Demo.api.NotifyError('onError:' + text);
+                }
+
+                Demo.api.init(Demo.conn.errorType);
             }
         });
 
@@ -155,7 +168,6 @@ module.exports = React.createClass({
         ConfirmPop.show(options);
     },
     //for WindosSDK
-    //TODO:@lhr 
     updateMyRoster: function (options) {
         var friends = [];
         var roster = eval('(' + options + ')');
