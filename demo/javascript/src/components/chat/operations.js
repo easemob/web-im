@@ -3,6 +3,7 @@ var React = require("react");
 var ChangeGroupSubject = require("../group/changeGroupSubject");
 var ChangeGroupDescription = require("../group/changeGroupDescription");
 var AdminGroupMembers = require("../group/adminGroupMembers");
+var ShowGroupBlacklist = require("../blacklist/showGroupBlacklist");
 
 module.exports = React.createClass({
 
@@ -34,6 +35,11 @@ module.exports = React.createClass({
     },
     changeGroupDescription: function () {
         ChangeGroupDescription.show(this.props.roomId);
+        this.update();
+    },
+
+    showGroupBlacklist: function () {
+        ShowGroupBlacklist.show(this.props.roomId);
         this.update();
     },
 
@@ -86,6 +92,10 @@ module.exports = React.createClass({
             <div>
                 <i ref='switch' className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
                 <ul className={'webim-operations' + className}>
+                    <li onClick={this.showGroupBlacklist} className={adminMember ? '' : 'hide'}>
+                        <i className='font smallest'>F</i>
+                        <span>{Demo.lan.groupBlacklist}</span>
+                    </li>
                     <li onClick={this.adminGroupMembers} className={adminMember ? '' : 'hide'}>
                         <i className='font smallest'>F</i>
                         <span>{adminMemberLaebl}</span>

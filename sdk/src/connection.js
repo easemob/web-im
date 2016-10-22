@@ -406,6 +406,14 @@
                 conn.handlePing(msginfo);
                 return true;
             };
+            var handleIqRoster = function (msginfo) {
+                conn.handleIqRoster(msginfo);
+                return true;
+            };
+            var handleIqPrivacy = function (msginfo) {
+                conn.handleIqPrivacy(msginfo);
+                return true;
+            };
             var handleIq = function (msginfo) {
                 conn.handleIq(msginfo);
                 return true;
@@ -414,7 +422,9 @@
             conn.addHandler(handleMessage, null, 'message', null, null, null);
             conn.addHandler(handlePresence, null, 'presence', null, null, null);
             conn.addHandler(handlePing, 'urn:xmpp:ping', 'iq', 'get', null, null);
-            conn.addHandler(handleIq, 'jabber:iq:roster', 'iq', 'set', null, null);
+            conn.addHandler(handleIqRoster, 'jabber:iq:roster', 'iq', 'set', null, null);
+            conn.addHandler(handleIqPrivacy, 'jabber:iq:privacy', 'iq', 'set', null, null);
+            conn.addHandler(handleIq, null, 'iq', null, null, null);
 
             conn.context.status = _code.STATUS_OPENED;
 
@@ -627,7 +637,8 @@
         //for WindowSDK
         this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
         this.onUpdateMyRoster = options.onUpdateMyRoster || _utils.emptyfn;
-
+        //
+        this.onBlacklistUpdate = options.onBlacklistUpdate || _utils.emptyfn;
 
         _listenNetwork(this.onOnline, this.onOffline);
     };
@@ -964,7 +975,19 @@
         this.sendCommand(dom.tree());
     };
 
-    connection.prototype.handleIq = function (e) {
+    connection.prototype.handleIq = function (iq) {
+        return true;
+    };
+
+    connection.prototype.handleIqPrivacy = function (msginfo) {
+        var list = msginfo.getElementsByTagName('list');
+        if (list.length == 0) {
+            return;
+        }
+        this.getBlacklist();
+    };
+
+    connection.prototype.handleIqRoster = function (e) {
         var id = e.getAttribute('id');
         var from = e.getAttribute('from') || '';
         var name = _parseNameFromJidFn(from);
@@ -1880,6 +1903,212 @@
     connection.prototype._onUpdateMyRoster = function (options) {
         this.onUpdateMyRoster(options);
     };
+
+    // used for blacklist
+    function _parsePrivacy(iq) {
+        var list = [];
+        var items = iq.getElementsByTagName('item');
+
+        if (items) {
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                var jid = item.getAttribute('value');
+                var order = item.getAttribute('order');
+                var type = item.getAttribute('type');
+                if (!jid) {
+                    continue;
+                }
+                var n = _parseNameFromJidFn(jid);
+                list[n] = {
+                    type: type,
+                    order: order,
+                    jid: jid,
+                    name: n
+                };
+            }
+        }
+        return list;
+    };
+
+    // used for blacklist
+    connection.prototype.getBlacklist = function (options) {
+        options = (options || {});
+        var iq = $iq({type: 'get'});
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+        var me = this;
+
+        iq.c('query', {xmlns: 'jabber:iq:privacy'})
+            .c('list', {name: 'special'});
+
+        this.context.stropheConn.sendIQ(iq.tree(), function (iq) {
+            me.onBlacklistUpdate(_parsePrivacy(iq));
+            sucFn();
+        }, function () {
+            me.onBlacklistUpdate([]);
+            errFn();
+        });
+    };
+
+    // used for blacklist
+    connection.prototype.addToBlackList = function (options) {
+        var iq = $iq({type: 'set'});
+        var blacklist = options.list || {};
+        var type = options.type || 'jid';
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+        var piece = iq.c('query', {xmlns: 'jabber:iq:privacy'})
+            .c('list', {name: 'special'});
+
+        // todo ie8 ??
+        var keys = Object.keys(blacklist);
+        var len = keys.length;
+        var order = 2;
+
+        for (var i = 0; i < len; i++) {
+            var item = blacklist[keys[i]];
+            var type = item.type || 'jid';
+            var jid = item.jid;
+
+            piece = piece.c('item', {action: 'deny', order: order++, type: type, value: jid})
+                .c('message');
+            if (i !== len - 1) {
+                piece = piece.up().up();
+            }
+        }
+
+        // log('addToBlackList', blacklist, piece.tree());
+        this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
+    };
+
+    // used for blacklist
+    connection.prototype.removeFromBlackList = function (options) {
+
+        var iq = $iq({type: 'set'});
+        var blacklist = options.list || {};
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+        var piece = iq.c('query', {xmlns: 'jabber:iq:privacy'})
+            .c('list', {name: 'special'});
+
+        // todo ie8 ??
+        var keys = Object.keys(blacklist);
+        var len = keys.length;
+
+        for (var i = 0; i < len; i++) {
+            var item = blacklist[keys[i]];
+            var type = item.type || 'jid';
+            var jid = item.jid;
+            var order = item.order;
+
+            piece = piece.c('item', {action: 'deny', order: order, type: type, value: jid})
+                .c('message');
+            if (i !== len - 1) {
+                piece = piece.up().up();
+            }
+        }
+
+        // log('removeFromBlackList', blacklist, piece.tree());
+        this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
+    };
+
+    connection.prototype._getGroupJid = function (to) {
+        var appKey = this.context.appKey || '';
+        return appKey + '_' + to + '@conference.' + this.domain;
+    }
+    ;
+
+    // used for blacklist
+    connection.prototype.addToGroupBlackList = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+        var jid = _getJid(options, this);
+        var affiliation = 'admin';//options.affiliation || 'admin';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'set', to: to});
+
+        iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+            .c('item', {
+                affiliation: 'outcast',
+                jid: jid
+            });
+
+        this.context.stropheConn.sendIQ(iq.tree(), sucFn, errFn);
+    };
+
+    function _parseGroupBlacklist(iq) {
+        var list = {};
+        var items = iq.getElementsByTagName('item');
+
+        if (items) {
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                var jid = item.getAttribute('jid');
+                var affiliation = item.getAttribute('affiliation');
+                var nick = item.getAttribute('nick');
+                if (!jid) {
+                    continue;
+                }
+                var n = _parseNameFromJidFn(jid);
+                list[n] = {
+                    jid: jid,
+                    affiliation: affiliation,
+                    nick: nick,
+                    name: n
+                };
+            }
+        }
+        return list;
+    }
+
+    // used for blacklist
+    connection.prototype.getGroupBlacklist = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+
+        // var jid = _getJid(options, this);
+        log('options', options);
+        var affiliation = 'admin';//options.affiliation || 'admin';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'get', to: to});
+
+        iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+            .c('item', {
+                affiliation: 'outcast',
+            });
+
+        this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+            log('getGroupBlackList');
+            sucFn(_parseGroupBlacklist(msginfo));
+        }, function () {
+            errFn();
+        });
+    };
+
+    // used for blacklist
+    connection.prototype.removeGroupMemberFromBlacklist = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+
+        var jid = _getJid(options, this);
+        log('options', options);
+        var affiliation = 'admin';//options.affiliation || 'admin';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'set', to: to});
+
+        iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+            .c('item', {
+                affiliation: 'member',
+                jid: jid
+            });
+
+        this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+            sucFn();
+        }, function () {
+            errFn();
+        });
+    };
+
 
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
     WebIM.connection = connection;

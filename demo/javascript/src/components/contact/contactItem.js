@@ -1,6 +1,6 @@
 var React = require("react");
 var Avatar = require('../common/avatar');
-
+var _ = require('underscore');
 
 module.exports = React.createClass({
 
@@ -9,14 +9,18 @@ module.exports = React.createClass({
 
         return {
             msg: '',
-            avatar: ''
+            avatar: '',
+            countShow: false,
         };
     },
 
     handleIconCount: function (count) {
-        var curCate = document.getElementById(this.props.cate).getElementsByTagName('i')[1];
-        var curCateCount = curCate.getAttribute('data-count') / 1;
+        // TODO
+        var curCate = this.refs['i'];
+        if (!curCate) return;
+        var curCateCount = curCate.getAttribute('count') / 1;
         curCateCount -= count;
+        // curCateCount = Math.max(0, curCateCount);
 
         if (curCateCount > 0) {
             curCate.style.display = 'block';
@@ -24,16 +28,53 @@ module.exports = React.createClass({
             curCateCount = 0;
             curCate.style.display = 'none';
         }
-        //curCate.setAttribute('count', curCateCount);
+        // this.setState({
+        //     countShow: curCateCount > 0
+        // })
     },
 
-    update: function () {
-        var count = this.refs['i'].getAttribute('count') / 1;
-        this.handleIconCount(count);
+    // blacklist
+    addToBlackList: function (e) {
+        event.preventDefault();
+        event.stopPropagation();
 
-        this.refs['i'].style.display = 'none';
-        this.refs['i'].setAttribute('count', 0);
-        this.refs['i'].innerText = '';
+        var value = this.props.id;
+        var me = this;
+
+        //TODO by lwz 重构
+        if (WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"addToBlackList", "username": "' + value + '"}',
+                function success(str) {
+                    var list = Demo.api.blacklist.add(value);
+                    me.setState({blacklist: list});
+                    Demo.api.updateRoster();
+                },
+                function failure(errCode, errMessage) {
+                    Demo.api.NotifyError('getRoster:' + errCode);
+                });
+        } else {
+            var list = Demo.api.blacklist.add(value);
+            Demo.conn.addToBlackList({
+                list: list,
+                type: 'jid',
+                success: function () {
+                    me.update(me, true);
+                },
+                error: function () {
+                }
+            });
+        }
+    },
+
+    update: function (e, selected) {
+        if (this.refs['i']) {
+            var count = this.refs['i'].getAttribute('count') / 1;
+            this.handleIconCount(count);
+
+            this.refs['i'].style.display = 'none';
+            this.refs['i'].setAttribute('count', 0);
+            this.refs['i'].innerText = '';
+        }
 
         if (this.props.id === Demo.selected) {
             return;
@@ -87,8 +128,12 @@ module.exports = React.createClass({
             }
         }
 
+        if (selected) {
+            Demo.selected = null;
+        }
         this.props.update(Demo.selected);
-    },
+    }
+    ,
 
     render: function () {
         var className = this.props.cur === this.props.id ? ' selected' : '';
@@ -96,10 +141,18 @@ module.exports = React.createClass({
         return (
             <div id={this.props.id} className={'webim-contact-item' + className} onClick={this.update}>
                 <Avatar src={this.props.src}/>
-                <span>{this.props.username}</span>
+                <div className="webim-contact-info">
+                    <span className="webim-contact-username">{this.props.username}</span>
+                    <div className="webim-contact-handlers">
+                        <i ref="i2" title="Add to blacklist" className="webim-leftbar-icon font smaller"
+                           style={{display: Demo.selectedCate != 'friends' ? 'none' : ''}}
+                           onClick={this.addToBlackList}>A</i>
+                    </div>
+                </div>
                 <em></em>
                 <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>
             </div>
         );
     }
-});
+})
+;

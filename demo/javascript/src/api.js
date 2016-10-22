@@ -10,6 +10,218 @@ var locMsg = require('./components/message/loc');
 var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
 var Notify = require('./components/common/notify');
+var _ = require('underscore');
+
+
+var Blacklist = (function () {
+    var data = {};
+    var dataGroup = {};
+    var isWin = WebIM.config.isWindowSDK;
+    var order = 2;
+    var emptyfn = function () {
+    };
+
+    function _set() {
+        Demo.blacklist = data;
+        return data;
+    }
+
+    function _add(name) {
+        data[name] = _.find(Demo.friends, function (item) {
+            log('name', name, item.name);
+            return (item.name == name);
+        });
+
+        log(data);
+
+        return _set();
+    }
+
+    function _addWin(name) {
+        data[name] = {
+            type: 'jid',
+            order: order++,
+            jid: name,
+            name: name
+        };
+
+        return _set();
+    }
+
+    function _remove(name) {
+        log(JSON.stringify(data));
+
+        try {
+            delete data[name];
+        } catch (e) {
+            log('blacklist remove error');
+        }
+        log(data, name);
+        return _set();
+    }
+
+    function _removeWin(name) {
+        try {
+            delete data[name];
+        } catch (e) {
+            log('blacklist remove error');
+        }
+
+        return _set();
+    }
+
+    function _parse(list) {
+        data = list;
+        return _set();
+    }
+
+    function _parseWin(str) {
+        data = {};
+        var blacklist = str ? JSON.parse(str) : [];
+
+        _.each(blacklist, function (item, k) {
+            data[item.name] = {
+                type: 'jid',
+                order: order++,
+                jid: item.name,
+                name: item.name
+            };
+        });
+
+        return _set();
+    }
+
+    function _getBlacklist(options) {
+        var sucFn = options.success || emptyfn;
+        var errFn = options.success || emptyfn;
+
+        Demo.conn.getBlacklist();
+    }
+
+    function _getBlacklistWin(options) {
+        var sucFn = options.success || emptyfn;
+        var errFn = options.success || emptyfn;
+
+        WebIM.doQuery('{"type":"getBlacklist"}',
+            function success(str) {
+                var list = Demo.api.blacklist.parse(str);
+                Demo.api.updateRoster();
+                sucFn(list);
+            },
+            function failure(errCode, errMessage) {
+                Demo.api.NotifyError('getRoster:' + errCode);
+                errFn();
+            });
+    }
+
+    function _getGroupBlacklist(options) {
+        var sucFn = options.success || emptyfn;
+        var errFn = options.success || emptyfn;
+
+        options.success = function (list) {
+            log('_getGroupBlacklist', list);
+            dataGroup = list;
+            sucFn(list);
+        };
+        Demo.conn.getGroupBlacklist(options);
+    }
+
+    function _getGroupBlacklistWin(options) {
+        var sucFn = options.success || emptyfn;
+        var errFn = options.success || emptyfn;
+
+        WebIM.doQuery('{"type":"groupSpecification","id":"' + options.roomId + '"}',
+            function success(str) {
+                if (!str) return;
+                var json = JSON.parse(str) || {};
+                var p = {
+                    owner: [
+                        {
+                            jid: json.owner,
+                            affiliation: "owner",
+                        }
+                    ],
+                    members: json.members,
+                    blacklist: json.bans,
+                };
+                sucFn(p.blacklist, p.members);
+            },
+            function failure(errCode, errMessage) {
+                Demo.api.NotifyError("queryRoomInfo:" + errCode);
+            });
+    }
+
+    function _removeGroupMember(options) {
+        var sucFn = options.success || emptyfn;
+        var errFn = options.success || emptyfn;
+
+        options.success = function (list) {
+            dataGroup = list;
+            sucFn(list);
+        };
+
+        Demo.conn.removeGroupMemberFromBlacklist(options);
+    }
+
+    function _removeGroupMemberWin(options) {
+        var sucFn = options.success || emptyfn;
+        var errFn = options.success || emptyfn;
+
+        var query = {
+            type: 'unblockGroupMembers',
+            id: options.roomId,
+            members: [options.to]
+        };
+
+        WebIM.doQuery(JSON.stringify(query),
+            function () {
+                sucFn();
+            },
+            function failure(errCode, errMessage) {
+                Demo.api.NotifyError('_removeGoupMemberWin:' + errCode);
+                errFn();
+            });
+    }
+
+    function _addGroupMemberToBlacklist(options) {
+        var sucFn = options.success || emptyfn;
+        var errFn = options.success || emptyfn;
+
+        Demo.conn.addToGroupBlackList(options);
+    }
+
+    function _addGroupMemberToBlacklistWin(options) {
+        var sucFn = options.success || emptyfn;
+        var errFn = options.success || emptyfn;
+
+        var query = {
+            type: 'blockGroupMembers',
+            reason: '',
+            id: options.roomId,
+            members: [options.to]
+        };
+
+        WebIM.doQuery(JSON.stringify(query),
+            sucFn,
+            function failure(errCode, errMessage) {
+                Demo.api.NotifyError('_addGroupMemberToBlacklistWin:' + errCode);
+                errFn();
+            });
+    }
+
+    return {
+        add: isWin ? _addWin : _add,
+        parse: isWin ? _parseWin : _parse,
+        remove: isWin ? _removeWin : _remove,
+        getBlacklist: isWin ? _getBlacklistWin : _getBlacklist,
+        getGroupBlacklist: isWin ? _getGroupBlacklistWin : _getGroupBlacklist,
+        removeGroupMemberFromBlacklist: isWin ? _removeGroupMemberWin : _removeGroupMember,
+        addGroupMemberToBlacklist: isWin ? _addGroupMemberToBlacklistWin : _addGroupMemberToBlacklist,
+        data: function () {
+            return data;
+        }
+    }
+})();
 
 module.exports = {
     log: function () {
@@ -66,6 +278,7 @@ module.exports = {
         Demo.call = null;
         Demo.roster = {};
         Demo.strangers = {};
+        Demo.blacklist = {};
 
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
@@ -334,11 +547,12 @@ module.exports = {
 
 
     addCount: function (id, cate) {
+        // TODO
         if (Demo.selectedCate !== cate) {
             var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
             curCate.style.display = 'block';
 
-            var cur = document.getElementById(id).querySelector('i');
+            var cur = document.getElementById(id).getElementsByTagName('i')[1];
             var curCount = cur.getAttribute('count') / 1;
             curCount++;
             cur.setAttribute('count', curCount);
@@ -346,7 +560,7 @@ module.exports = {
             cur.style.display = 'block';
         } else {
             if (!this.sentByMe && id !== Demo.selected) {
-                var cur = document.getElementById(id).querySelector('i');
+                var cur = document.getElementById(id).getElementsByTagName('i')[1];
                 var curCount = cur.getAttribute('count') / 1;
                 curCount++;
                 cur.setAttribute('count', curCount);
@@ -425,6 +639,8 @@ module.exports = {
         for (var key in options) {
             this[key] = options[key];
         }
-    }
+    },
 
+    blacklist: Blacklist,
 };
+
