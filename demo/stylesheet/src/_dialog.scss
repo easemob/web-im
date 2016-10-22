@@ -65,6 +65,15 @@
     border: 1px solid rgba(0, 0, 0, .1);
     width: 220px;
   }
+
+  &-body {
+    min-height: 100px;
+  }
+
+  &-footer {
+    position: relative;
+    min-height: 20px;
+  }
 }
 
 .webim-dialog-2 {

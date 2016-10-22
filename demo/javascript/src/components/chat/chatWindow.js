@@ -2,6 +2,7 @@ var React = require("react");
 var SendWrapper = require('./sendWrapper');
 var Avatar = require('../common/avatar');
 var Operations = require('./operations');
+var _ = require('underscore');
 
 module.exports = React.createClass({
     getInitialState: function () {
@@ -121,10 +122,33 @@ module.exports = React.createClass({
         }
     },
 
+    addToGroupBlackList: function (username, index) {
+        log('group addToBlackList', Demo.user);
+        var me = this;
+        var members = this.state.members;
+        var item = _.find(this.state.members, function (item) {
+            return new RegExp(Demo.user).test(item.jid);
+        });
+
+        Demo.api.blacklist.addGroupMemberToBlacklist({
+            to: username,
+            roomId: this.props.roomId,
+            affiliation: item.affiliation,
+            success: function () {
+                log('memebers', members);
+                members.splice(index, 1);
+                me.setState({
+                    members: members
+                })
+            }
+        });
+    },
+
     refreshMemberList: function (members) {
         this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
         this.setState({members: this.state.owner.concat(members), memberShowStatus: true});
     },
+
     send: function (msg) {
         msg.chatType = this.props.chatType;
         Demo.conn.send(msg);
@@ -145,11 +169,17 @@ module.exports = React.createClass({
 
         for (var i = 0, l = this.state.members.length; i < l; i++) {
             var jid = this.state.members[i].jid,
-                username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+                username = jid.substring(jid.indexOf('_') + 1).split('@')[0],
+                affiliation = this.state.members[i].affiliation;
+
 
             roomMember.push(<li key={i}>
                 <Avatar src='demo/images/default.png'/>
                 <span>{username}</span>
+                <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
+                    <i className="webim-leftbar-icon font smaller"
+                       onClick={this.addToGroupBlackList.bind(this, username, i)}>A</i>
+                </div>
             </li>);
         }
 

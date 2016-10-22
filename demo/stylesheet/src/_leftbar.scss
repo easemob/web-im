@@ -39,7 +39,23 @@
     margin: 10px;
   }
 
-  > span {
+  .webim-contact-info {
+    position: relative;
+  }
+
+  .webim-contact-handlers {
+    text-align: right;
+    position: absolute;
+    right: 2px;
+    top: 0;
+
+    i {
+      font-size: 16px;
+      line-height: 36px;
+    }
+  }
+
+  > span, .webim-contact-username {
     color: rgb(26, 26, 26);
     font-size: 14px;
     margin: 10px 0;
@@ -193,10 +209,10 @@
   position: absolute;
   top: -4px;
   right: 0;
-  line-height: 20px;
+  line-height: 16px;
   font-style: normal;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   font-size: 12px;
   text-align: center;
   color: #fff;
@@ -211,4 +227,41 @@
   height: 10px;
   top: 0px;
   right: 8px;
+}
+
+// 黑名单
+.webim-blacklist-wrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  //border-right: 1px solid rgb(242, 242, 242);
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  background-color: rgb(255, 255, 255);
+  margin-bottom: 30px;
+}
+
+.webim-blacklist-item {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  height: 30px;
+  font-size: 20px;
+  line-height: 30px;
+
+  i.font {
+    line-height: 30px;
+    float: right;
+    position: static;
+  }
+}
+
+.webim-operation-icon {
+  width: 100px;
+  float: right;
+  margin-right: 10px;
+  text-align: right;
 }
