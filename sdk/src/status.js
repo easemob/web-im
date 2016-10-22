@@ -81,6 +81,7 @@
         STATUS_DOLOGIN_IM: statusIndex++,
         STATUS_OPENED: statusIndex++,
         STATUS_CLOSING: statusIndex++,
-        STATUS_CLOSED: statusIndex++
+        STATUS_CLOSED: statusIndex++,
+        STATUS_ERROR: statusIndex++
     };
 }());

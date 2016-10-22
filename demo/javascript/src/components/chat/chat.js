@@ -37,9 +37,7 @@ module.exports = React.createClass({
                 log(ts(), 'onClosed', Demo.conn.errorType);
                 //demo:跳转到登陆页 或者 自动重连
                 // Demo.api.logout();
-                if (Demo.conn.errorType == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
-                    Demo.conn.reconnect();
-                }
+                
                 //webRTC:断线处理
                 if (WebIM.config.isWebRTC) {
                     me.channel.close();

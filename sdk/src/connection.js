@@ -29,20 +29,6 @@
     };
 
 
-    /**
-     *
-     * Strophe.Websocket has a bug while logout:
-     * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
-     * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
-     * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
-     * 3 "Websocket error [object Event]"
-     * _changeConnectStatus
-     * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
-     *
-     * this will trigger socket.onError, therefore _doDisconnect again.
-     * Fix it by overide  _disconnect and _onMessage
-     * as follows:
-     */
     Strophe.Websocket.prototype._closeSocket = function () {
         if (this.socket) {
             var me = this;
@@ -58,26 +44,19 @@
         }
     };
 
-    Strophe.Websocket.prototype._disconnect = function (pres) {
-        if (this.socket && this.socket.readyState !== WebSocket.CLOSED) {
-            if (pres) {
-                this._conn.send(pres);
-            }
-            var close = $build("close", {"xmlns": Strophe.NS.FRAMING});
-            this._conn.xmlOutput(close);
-            var closeString = Strophe.serialize(close);
-            this._conn.rawOutput(closeString);
-            try {
-                this.socket.send(closeString);
-            } catch (e) {
-                Strophe.info("Couldn't send <close /> tag.");
-            }
-        }
-        // should not call _doDisconnect() at this point.
-        // _onMessage will call it when receive the <close />
-        // this._conn._doDisconnect();
-    };
-
+    /**
+     *
+     * Strophe.Websocket has a bug while logout:
+     * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
+     * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
+     * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+     * 3 "Websocket error [object Event]"
+     * _changeConnectStatus
+     * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
+     *
+     * this will trigger socket.onError, therefore _doDisconnect again.
+     * Fix it by overide  _onMessage
+     */
     Strophe.Websocket.prototype._onMessage = function (message) {
         if (WebIM.config.isDebug) {
             console.log(ts() + 'recv:', message.data);
@@ -324,7 +303,12 @@
         if (conn.isOpening() && conn.context.stropheConn) {
             stropheConn = conn.context.stropheConn;
         } else if (conn.isOpened() && conn.context.stropheConn) {
-            return;
+            // return;
+            stropheConn = new Strophe.Connection(conn.url, {
+                inactivity: conn.inactivity,
+                maxRetries: conn.maxRetries,
+                pollingTime: conn.pollingTime
+            });
         } else {
             stropheConn = new Strophe.Connection(conn.url, {
                 inactivity: conn.inactivity,
@@ -368,6 +352,7 @@
 
     var _loginCallback = function (status, msg, conn) {
         console.log('_loginCallback', 'status=' + Demo.api.getObjectKey(Strophe.Status, status), 'msg=' + msg);
+        console.log('conn.context.status_now=', Demo.api.getObjectKey(Strophe.Status, conn.context.status_now), conn.context.status_now);
         var conflict, error;
 
         if (msg === 'conflict') {
@@ -375,6 +360,7 @@
         }
 
         if (status == Strophe.Status.CONNFAIL) {
+            //client offline, ping/pong timeout, server quit, server offline
             error = {
                 type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
                 msg: msg,
@@ -418,6 +404,7 @@
 
             conn.context.status = _code.STATUS_OPENED;
 
+            console.log('isOpend', conn.isOpened());
             var supportRecMessage = [
                 _code.WEBIM_MESSAGE_REC_TEXT,
                 _code.WEBIM_MESSAGE_REC_EMOJI];
@@ -455,13 +442,20 @@
                 conn.onError(error);
             }
         } else if (status == Strophe.Status.DISCONNECTED) {
-            conn.context.status = _code.STATUS_CLOSED;
-            if (msg == undefined && !conn.context.conflict) {
-                error = {
-                    type: _code.WEBIM_CONNCTION_DISCONNECTED
-                };
-                conn.onError(error);
+            console.log('Strophe.Status.DISCONNECTED', Demo.api.getObjectKey(_code, conn.context.status), conn.context.status);
+            if (conn.isOpened()) {
+                console.log('need reconnect');
+                if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
+                    Demo.conn.reconnect();
+                    return;
+                } else {
+                    error = {
+                        type: _code.WEBIM_CONNCTION_DISCONNECTED
+                    };
+                    conn.onError(error);
+                }
             }
+            conn.context.status = _code.STATUS_CLOSED;
             conn.clear();
             conn.onClosed();
         } else if (status == Strophe.Status.AUTHFAIL) {
@@ -473,17 +467,15 @@
             conn.onError(error);
             conn.clear();
         } else if (status == Strophe.Status.ERROR) {
+            conn.context.status = _code.STATUS_ERROR;
             error = {
                 type: _code.WEBIM_CONNCTION_SERVER_ERROR
             };
 
-            if (conflict) {
-                error.conflict = true;
-                //mark confict onError, therefore won't trigger notify onClose
-                conn.context.conflict = true;
-            }
+            conflict && (error.conflict = true);
             conn.onError(error);
         }
+        conn.context.status_now = status;
     };
 
     var _getJid = function (options, conn) {
@@ -815,7 +807,7 @@
         stropheConn.attach(jid, sid, rid, callback, wait, hold, wind);
     };
 
-    connection.prototype.close = function () {
+    connection.prototype.close = function (reason) {
         this.stopHeartBeat();
 
         var status = this.context.status;
@@ -828,7 +820,7 @@
         }
 
         this.context.status = _code.STATUS_CLOSING;
-        this.context.stropheConn.disconnect();
+        this.context.stropheConn.disconnect(reason);
     };
 
     connection.prototype.addHandler = function (handler, ns, name, type, id, from, options) {
@@ -1892,14 +1884,10 @@
         console.log(ts(), 'conn.reconnect()');
         console.log(this.context);
         console.log('total:', this.autoReconnectNumTotal, 'max:', this.autoReconnectNumMax);
-        if (this.autoReconnectNumTotal >= this.autoReconnectNumMax) {
-            return;
-        }
-
         var that = this;
         setTimeout(function () {
             console.log(ts(), '_login');
-            _login(that.context.restTokenData, that)
+            _login(that.context.restTokenData, that);
         }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
         this.autoReconnectNumTotal++;
     };

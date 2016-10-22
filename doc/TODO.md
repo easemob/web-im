@@ -23,6 +23,9 @@
 ###9.调整框架目录结构:src/dist/publish
 ###10.© 2016 环信科技  2016不要写死
 ###11.所有eval('(' + message + ')');  改成 JSON.parse(message)  所有 eval('(' + str + ')');  改成 JSON.parse(str)  
+###12.引入UNDERSCORE库
+###13.引入promise库
+###14.引入REDUX
 
 #V1.1.5 (2017.01~2017.06) 新需求：
 ###1.webim所有接口的xmpp协议(邹金海)和react协议(仝瑶)的文档整理

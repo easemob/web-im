@@ -62,7 +62,7 @@ module.exports = {
                 });
         } else {
             console.log('logout=', type);
-            Demo.conn.close();
+            Demo.conn.close('logout');
             if (type == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
                 Demo.conn.errorType = type;
             }
