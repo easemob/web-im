@@ -10,14 +10,21 @@ var Button = UI.Button;
 
 var ShowBlacklist = React.createClass({
 
+    getInitialState: function () {
+        return {
+            change: false,
+        }
+    },
+
     // used for blacklist
     onRemoveFromBlackList: function (value) {
+        //TODO by lwz 重构
         var me = this;
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"removeFromBlackList", "username": "' + value + '"}',
                 function success(str) {
-                    var list = Demo.api.blacklist.remove(value);
-                    me.setState({blacklist: list});
+                    Demo.api.blacklist.remove(value);
+                    me.setState({change: true});
                     Demo.api.updateRoster();
                 },
                 function failure(errCode, errMessage) {
@@ -29,8 +36,7 @@ var ShowBlacklist = React.createClass({
                 // must the whole new blacklist
                 list: list,
                 success: function () {
-                    // TODO  动态更新
-                    me.close();
+                    me.setState({change: true});
                 },
                 error: function (e) {
                     Demo.api.NotifyError("ShowBlacklist error:" + e);
@@ -63,12 +69,14 @@ var ShowBlacklist = React.createClass({
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog' style={{height: 'auto'}}>
                     <h3>{Demo.lan.ShowBlacklist}</h3>
-                    <div ref='content'>
+                    <div ref='content' className="webim-dialog-body">
                         <ul className="webim-blacklist-wrapper">
                             {items}
                         </ul>
                     </div>
-                    <Button text={Demo.lan.confirm} onClick={this.close} className='webim-dialog-button'/>
+                    <div className="webim-dialog-footer">
+                        <Button text={Demo.lan.confirm} onClick={this.close} className='webim-dialog-button'/>
+                    </div>
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>

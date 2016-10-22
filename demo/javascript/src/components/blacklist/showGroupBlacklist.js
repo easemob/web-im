@@ -68,12 +68,14 @@ var ShowGroupBlacklist = React.createClass({
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog' style={{height: 'auto'}}>
                     <h3>{Demo.lan.showGroupBlacklist}</h3>
-                    <div ref='content'>
+                    <div ref='content' className="webim-dialog-body">
                         <ul className="webim-blacklist-wrapper">
                             {items}
                         </ul>
                     </div>
-                    <Button text={Demo.lan.confirm} onClick={this.close} className='webim-dialog-button'/>
+                    <div className="webim-dialog-footer">
+                        <Button text={Demo.lan.confirm} onClick={this.close} className='webim-dialog-button'/>
+                    </div>
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>
