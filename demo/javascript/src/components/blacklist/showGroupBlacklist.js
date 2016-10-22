@@ -1,5 +1,6 @@
 var React = require("react");
 var ReactDOM = require('react-dom');
+var _ = require('underscore');
 
 var componentsNode = document.getElementById('components');
 var dom = document.createElement('div');
@@ -8,35 +9,40 @@ componentsNode.appendChild(dom);
 var UI = require('../common/webim-demo');
 var Button = UI.Button;
 
-var ShowBlacklist = React.createClass({
+var ShowGroupBlacklist = React.createClass({
 
-    // used for blacklist
-    onRemoveFromBlackList: function (value) {
+    getInitialState: function () {
+        return {
+            list: [],
+        };
+    },
+
+    componentDidMount: function () {
         var me = this;
-        if (WebIM.config.isWindowSDK) {
-            WebIM.doQuery('{"type":"removeFromBlackList", "username": "' + value + '"}',
-                function success(str) {
-                    var list = Demo.api.blacklist.remove(value);
-                    me.setState({blacklist: list});
-                    Demo.api.updateRoster();
-                },
-                function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('getRoster:' + errCode);
-                });
-        } else {
-            var list = Demo.api.blacklist.remove(value);
-            Demo.conn.removeFromBlackList({
-                // must the whole new blacklist
-                list: list,
-                success: function () {
-                    // TODO  动态更新
-                    me.close();
-                },
-                error: function (e) {
-                    Demo.api.NotifyError("ShowBlacklist error:" + e);
-                }
-            });
-        }
+        Demo.api.blacklist.getGroupBlacklist({
+            roomId: this.props.roomId,
+            success: function (list) {
+                me.setState({
+                    list: list
+                })
+            }
+        });
+    },
+
+    onRemoveFromGroupBlackList: function (value) {
+        var me = this;
+        var list = this.state.list;
+
+        Demo.api.blacklist.removeGroupMemberFromBlacklist({
+            roomId: this.props.roomId,
+            to: value,
+            success: function () {
+                delete list[value];
+                me.setState({
+                    list: list
+                })
+            }
+        });
     },
 
     close: function () {
@@ -44,25 +50,24 @@ var ShowBlacklist = React.createClass({
     },
 
     render: function () {
-
         var items = [];
-        for (var i  in Demo.blacklist) {
-            var item = Demo.blacklist[i];
+        _.each(this.state.list, (item, k) => {
             items.push(
                 (
-                    <li className="webim-blacklist-item" key={i}>
+                    <li className="webim-blacklist-item" key={item.name}>
                         {item.name}
                         <i className="webim-leftbar-icon font smaller"
-                           onClick={this.onRemoveFromBlackList.bind(this, item.name)}>A</i>
+                           onClick={this.onRemoveFromGroupBlackList.bind(this, item.name)}>A</i>
                     </li>
                 )
             )
-        }
+        });
+
         return (
             <div className='webim-friend-options'>
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog' style={{height: 'auto'}}>
-                    <h3>{Demo.lan.ShowBlacklist}</h3>
+                    <h3>{Demo.lan.showGroupBlacklist}</h3>
                     <div ref='content'>
                         <ul className="webim-blacklist-wrapper">
                             {items}
@@ -77,9 +82,9 @@ var ShowBlacklist = React.createClass({
 });
 
 module.exports = {
-    show: function () {
+    show: function (roomId) {
         ReactDOM.render(
-            <ShowBlacklist onClose={this.close}/>,
+            <ShowGroupBlacklist onClose={this.close} roomId={roomId}/>,
             dom
         );
     },

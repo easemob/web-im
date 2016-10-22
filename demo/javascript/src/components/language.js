@@ -65,6 +65,8 @@ exports.English = {
     addFriendRepeat: 'is friend already',
     blacklist: 'Blacklist',
     ShowBlacklist: 'Blacklist',
+    groupBlacklist: 'Blacklist',
+    showGroupBlacklist: 'Blacklist',
     last: ''
 };
 
@@ -135,5 +137,9 @@ exports.Chinese = {
     addFriendRepeat: '已经是好友',
     blacklist: '屏蔽列表',
     ShowBlacklist: '屏蔽列表',
+    // button
+    groupBlacklist: '屏蔽列表',
+    // title
+    showGroupBlacklist: '屏蔽列表',
     last: ''
 };

@@ -1,6 +1,6 @@
 var React = require("react");
 var Avatar = require('../common/avatar');
-
+var _ = require('underscore');
 
 module.exports = React.createClass({
 
@@ -17,6 +17,7 @@ module.exports = React.createClass({
     handleIconCount: function (count) {
         // TODO
         var curCate = this.refs['i'];
+        if (!curCate) return;
         var curCateCount = curCate.getAttribute('count') / 1;
         curCateCount -= count;
         // curCateCount = Math.max(0, curCateCount);
@@ -34,42 +35,45 @@ module.exports = React.createClass({
 
     // blacklist
     addToBlackList: function (e) {
+        event.preventDefault();
+        event.stopPropagation();
+
         var value = this.props.id;
         var me = this;
 
-        // todo
-        var flen = Demo.friends.length;
-        for (var i = 0; i < flen; i++) {
-            var f = Demo.friends[i];
-            if (f.name == value) {
-                Demo.blacklist[f.name] = f;
-                break;
-            }
+        if (WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"addToBlackList", "username": "' + value + '"}',
+                function success(str) {
+                    var list = Demo.api.blacklist.add(value);
+                    me.setState({blacklist: list});
+                    Demo.api.updateRoster();
+                },
+                function failure(errCode, errMessage) {
+                    Demo.api.NotifyError('getRoster:' + errCode);
+                });
+        } else {
+            var list = Demo.api.blacklist.add(value);
+            Demo.conn.addToBlackList({
+                list: list,
+                type: 'jid',
+                success: function () {
+                    me.update(me, true);
+                },
+                error: function () {
+                }
+            });
         }
-
-        Demo.conn.addToBlackList({
-            list: Demo.blacklist,
-            type: 'jid',
-            success: function () {
-                // no good
-                Demo.selected = null;
-                me.update();
-            },
-            error: function () {
-            }
-        });
-
-        event.preventDefault();
-        event.stopPropagation();
     },
 
-    update: function () {
-        var count = this.refs['i'].getAttribute('count') / 1;
-        this.handleIconCount(count);
+    update: function (e, selected) {
+        if (this.refs['i']) {
+            var count = this.refs['i'].getAttribute('count') / 1;
+            this.handleIconCount(count);
 
-        this.refs['i'].style.display = 'none';
-        this.refs['i'].setAttribute('count', 0);
-        this.refs['i'].innerText = '';
+            this.refs['i'].style.display = 'none';
+            this.refs['i'].setAttribute('count', 0);
+            this.refs['i'].innerText = '';
+        }
 
         if (this.props.id === Demo.selected) {
             return;
@@ -123,6 +127,9 @@ module.exports = React.createClass({
             }
         }
 
+        if (selected) {
+            Demo.selected = null;
+        }
         this.props.update(Demo.selected);
     }
     ,
@@ -142,7 +149,7 @@ module.exports = React.createClass({
                     </div>
                 </div>
                 <em></em>
-                <i ref='i' className='webim-msg-prompt' count='0' style={{display: 'none'}}></i>
+                <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>
             </div>
         );
     }

@@ -122,16 +122,25 @@ module.exports = React.createClass({
         }
     },
 
-    addToGroupBlackList: function (jid) {
-        log('group addToBlackList', jid, Demo.user);
-
+    addToGroupBlackList: function (username, index) {
+        log('group addToBlackList', Demo.user);
+        var me = this;
+        var members = this.state.members;
         var item = _.find(this.state.members, function (item) {
             return new RegExp(Demo.user).test(item.jid);
         });
 
-        Demo.conn.addToGroupBlackList({
-            toJid: jid,
-            affiliation: item.affiliation
+        Demo.api.blacklist.addGroupMemberToBlacklist({
+            to: username,
+            roomId: this.props.roomId,
+            affiliation: item.affiliation,
+            success: function () {
+                log('memebers', members);
+                members.splice(index, 1);
+                me.setState({
+                    members: members
+                })
+            }
         });
     },
 
@@ -139,6 +148,7 @@ module.exports = React.createClass({
         this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
         this.setState({members: this.state.owner.concat(members), memberShowStatus: true});
     },
+
     send: function (msg) {
         msg.chatType = this.props.chatType;
         Demo.conn.send(msg);
@@ -168,7 +178,7 @@ module.exports = React.createClass({
                 <span>{username}</span>
                 <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
                     <i className="webim-leftbar-icon font smaller"
-                       onClick={this.addToGroupBlackList.bind(this, jid)}>A</i>
+                       onClick={this.addToGroupBlackList.bind(this, username, i)}>A</i>
                 </div>
             </li>);
         }

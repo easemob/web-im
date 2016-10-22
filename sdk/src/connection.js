@@ -976,8 +976,6 @@
     };
 
     connection.prototype.handleIq = function (iq) {
-        log('iq', iq);
-
         return true;
     };
 
@@ -1353,7 +1351,6 @@
     };
 
     connection.prototype.getRoster = function (options) {
-        log('getroster')
         var conn = this;
         var dom = $iq({
             type: 'get'
@@ -1948,7 +1945,6 @@
             me.onBlacklistUpdate(_parsePrivacy(iq));
             sucFn();
         }, function () {
-            // todo: list not found
             me.onBlacklistUpdate([]);
             errFn();
         });
@@ -2016,11 +2012,20 @@
         this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
     };
 
+    connection.prototype._getGroupJid = function (to) {
+        var appKey = this.context.appKey || '';
+        return appKey + '_' + to + '@conference.' + this.domain;
+    }
+    ;
+
     // used for blacklist
     connection.prototype.addToGroupBlackList = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
         var jid = _getJid(options, this);
-        var affiliation = options.affiliation || 'admin';
-        var iq = $iq({type: 'set'});
+        var affiliation = 'admin';//options.affiliation || 'admin';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'set', to: to});
 
         iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
             .c('item', {
@@ -2028,8 +2033,82 @@
                 jid: jid
             });
 
-        this.context.stropheConn.sendIQ(iq.tree());
+        this.context.stropheConn.sendIQ(iq.tree(), sucFn, errFn);
     };
+
+    function _parseGroupBlacklist(iq) {
+        var list = {};
+        var items = iq.getElementsByTagName('item');
+
+        if (items) {
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                var jid = item.getAttribute('jid');
+                var affiliation = item.getAttribute('affiliation');
+                var nick = item.getAttribute('nick');
+                if (!jid) {
+                    continue;
+                }
+                var n = _parseNameFromJidFn(jid);
+                list[n] = {
+                    jid: jid,
+                    affiliation: affiliation,
+                    nick: nick,
+                    name: n
+                };
+            }
+        }
+        return list;
+    }
+
+    // used for blacklist
+    connection.prototype.getGroupBlacklist = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+
+        // var jid = _getJid(options, this);
+        log('options', options);
+        var affiliation = 'admin';//options.affiliation || 'admin';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'get', to: to});
+
+        iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+            .c('item', {
+                affiliation: 'outcast',
+            });
+
+        this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+            log('getGroupBlackList');
+            sucFn(_parseGroupBlacklist(msginfo));
+        }, function () {
+            errFn();
+        });
+    };
+
+    // used for blacklist
+    connection.prototype.removeGroupMemberFromBlacklist = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+
+        var jid = _getJid(options, this);
+        log('options', options);
+        var affiliation = 'admin';//options.affiliation || 'admin';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'set', to: to});
+
+        iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+            .c('item', {
+                affiliation: 'member',
+                jid: jid
+            });
+
+        this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+            sucFn();
+        }, function () {
+            errFn();
+        });
+    };
+
 
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
     WebIM.connection = connection;

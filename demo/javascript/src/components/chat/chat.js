@@ -5,6 +5,7 @@ var ChatWindow = require('../chat/chatWindow');
 var RTCChannel = require('../common/rtcChannel');
 var Subscribe = require('./subscribe');
 var ConfirmPop = require('./confirmPop');
+var _ = require('underscore');
 
 module.exports = React.createClass({
 
@@ -29,10 +30,11 @@ module.exports = React.createClass({
                     loadingStatus: 'hide'
                 });
 
-                me.getRoster();
-                me.getChatroom();
                 // blacklist
                 me.getBlacklist();
+
+                me.getRoster();
+                me.getChatroom();
             },
             onClosed: function (msg) {
                 log('onClosed');
@@ -120,7 +122,7 @@ module.exports = React.createClass({
             // used for blacklist
             onBlacklistUpdate: function (list) {
                 // log('onBlacklistUpdate', list);
-                Demo.blacklist = list || {};
+                Demo.api.blacklist.parse(list);
                 me.setState({blacklist: list});
                 // TODO 增量更新
                 Demo.api.updateRoster();
@@ -430,13 +432,11 @@ module.exports = React.createClass({
     // when signed then get blacklist
     getBlacklist: function () {
         var me = this;
-        if (WebIM.config.isWindowSDK) {
-
-        } else {
-            // success msg united in onBlacklistUpdate
-            // no need for error ，maybe item not found also error
-            Demo.conn.getBlacklist();
-        }
+        Demo.api.blacklist.getBlacklist({
+            success: function (list) {
+                me.setState({blacklist: list});
+            }
+        });
     },
 
     update: function (cur) {
