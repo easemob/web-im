@@ -1,10 +1,10 @@
 [TOC]
 #V1.1.3 (Now~2016.10) 紧急需求和bug:
-###1.upgrade strophe from 1.2.2 to 1.2.8, and use strophe-1.2.8.min.js in the product mode, use strophe.js in the debug mode
-###2.断线重连 
-###3.群组的xmpp协议版本
-###4.IE9的兼容性bug
-###5.群组的windowSDK:黑名单
+###1.upgrade strophe from 1.2.2 to 1.2.8, and use strophe-1.2.8.min.js in the product mode, use strophe.js in the debug mode (文科 done)
+###2.断线重连 (文科 done)
+###3.群组的xmpp协议版本  (倪丹)
+###4.IE9的兼容性bug （文科）
+###5.群组的windowSDK:黑名单 (刘伟展 done)
 ###6.登录分批拉离线消息（解决摩尔提出的第一次聊天记录发送延迟的bug）
 ###7.v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了  handlePageLimit clearPageSign getPageCount
 ###8.增加WebRTC视频聊天功能(support chrome+https only)
