@@ -8,5 +8,5 @@ WebIM v1.1.3 @ 2016-10-28
 * [sdk] auto reconnect while configured `autoReconnectNumMax` and `autoReconnectInterval` in webim.config.js.
 	
 * Bug fixes:
-    1. Fixed a bug of strophe.js v1.2.8 using BOSH in IE9.  <https://github.com/metajack/strophejs/issues/125>
+    1. Fixed a bug of strophe.js v1.2.8 using BOSH in IE9.  <https://github.com/strophe/strophejs/issues/213>
     2. [groups] complete all function.
