@@ -51,13 +51,17 @@ Demo.AUDIOTYPE = {
     wmv: 1
 };
 
+Demo.selectedCate = '';   //friends|groups|chatrooms|strangers
+
 // initialize webIM connection
 Demo.conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
     https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
     url: WebIM.config.xmppURL,
     isAutoLogin: false,
-    heartBeatWait: WebIM.config.heartBeatWait || 4500
+    heartBeatWait: WebIM.config.heartBeatWait,
+    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+    autoReconnectInterval: WebIM.config.autoReconnectInterval
 });
 
 Demo.api.render(document.getElementById('demo'));

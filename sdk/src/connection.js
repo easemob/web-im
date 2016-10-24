@@ -29,6 +29,21 @@
     };
 
 
+    Strophe.Websocket.prototype._closeSocket = function () {
+        if (this.socket) {
+            var me = this;
+            setTimeout(function () {
+                console.log('Strophe.Websocket.prototype._closeSocket');
+                try {
+                    me.socket.close();
+                } catch (e) {
+                }
+            }, 0);
+        } else {
+            this.socket = null;
+        }
+    };
+
     /**
      *
      * Strophe.Websocket has a bug while logout:
@@ -40,43 +55,8 @@
      * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
      *
      * this will trigger socket.onError, therefore _doDisconnect again.
-     * Fix it by overide  _disconnect and _onMessage
-     * as follows:
+     * Fix it by overide  _onMessage
      */
-    Strophe.Websocket.prototype._closeSocket = function () {
-        if (this.socket) {
-            var me = this;
-            setTimeout(function () {
-                try {
-                    me.socket.close();
-                } catch (e) {
-                }
-            }, 0);
-        } else {
-            this.socket = null;
-        }
-    };
-
-    Strophe.Websocket.prototype._disconnect = function (pres) {
-        if (this.socket && this.socket.readyState !== WebSocket.CLOSED) {
-            if (pres) {
-                this._conn.send(pres);
-            }
-            var close = $build("close", {"xmlns": Strophe.NS.FRAMING});
-            this._conn.xmlOutput(close);
-            var closeString = Strophe.serialize(close);
-            this._conn.rawOutput(closeString);
-            try {
-                this.socket.send(closeString);
-            } catch (e) {
-                Strophe.info("Couldn't send <close /> tag.");
-            }
-        }
-        // should not call _doDisconnect() at this point.
-        // _onMessage will call it when receive the <close />
-        // this._conn._doDisconnect();
-    };
-
     Strophe.Websocket.prototype._onMessage = function (message) {
         if (WebIM.config.isDebug) {
             console.log(ts() + 'recv:', message.data);
@@ -313,8 +293,7 @@
             var loginfo = _utils.stringify(options);
             conn.onError({
                 type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
-                data: options,
-                xhr: xhr
+                data: options
             });
             return;
         }
@@ -324,7 +303,12 @@
         if (conn.isOpening() && conn.context.stropheConn) {
             stropheConn = conn.context.stropheConn;
         } else if (conn.isOpened() && conn.context.stropheConn) {
-            return;
+            // return;
+            stropheConn = new Strophe.Connection(conn.url, {
+                inactivity: conn.inactivity,
+                maxRetries: conn.maxRetries,
+                pollingTime: conn.pollingTime
+            });
         } else {
             stropheConn = new Strophe.Connection(conn.url, {
                 inactivity: conn.inactivity,
@@ -368,6 +352,7 @@
 
     var _loginCallback = function (status, msg, conn) {
         console.log('_loginCallback', 'status=' + Demo.api.getObjectKey(Strophe.Status, status), 'msg=' + msg);
+        console.log('conn.context.status_now=', Demo.api.getObjectKey(Strophe.Status, conn.context.status_now), conn.context.status_now);
         var conflict, error;
 
         if (msg === 'conflict') {
@@ -375,6 +360,7 @@
         }
 
         if (status == Strophe.Status.CONNFAIL) {
+            //client offline, ping/pong timeout, server quit, server offline
             error = {
                 type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
                 msg: msg,
@@ -428,6 +414,7 @@
 
             conn.context.status = _code.STATUS_OPENED;
 
+            console.log('isOpend', conn.isOpened());
             var supportRecMessage = [
                 _code.WEBIM_MESSAGE_REC_TEXT,
                 _code.WEBIM_MESSAGE_REC_EMOJI];
@@ -465,13 +452,20 @@
                 conn.onError(error);
             }
         } else if (status == Strophe.Status.DISCONNECTED) {
-            conn.context.status = _code.STATUS_CLOSED;
-            if (msg == undefined && !conn.context.conflict) {
-                error = {
-                    type: _code.WEBIM_CONNCTION_DISCONNECTED
-                };
-                conn.onError(error);
+            console.log('Strophe.Status.DISCONNECTED', Demo.api.getObjectKey(_code, conn.context.status), conn.context.status);
+            if (conn.isOpened()) {
+                console.log('need reconnect');
+                if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
+                    Demo.conn.reconnect();
+                    return;
+                } else {
+                    error = {
+                        type: _code.WEBIM_CONNCTION_DISCONNECTED
+                    };
+                    conn.onError(error);
+                }
             }
+            conn.context.status = _code.STATUS_CLOSED;
             conn.clear();
             conn.onClosed();
         } else if (status == Strophe.Status.AUTHFAIL) {
@@ -483,17 +477,15 @@
             conn.onError(error);
             conn.clear();
         } else if (status == Strophe.Status.ERROR) {
+            conn.context.status = _code.STATUS_ERROR;
             error = {
                 type: _code.WEBIM_CONNCTION_SERVER_ERROR
             };
 
-            if (conflict) {
-                error.conflict = true;
-                //mark confict onError, therefore won't trigger notify onClose
-                conn.context.conflict = true;
-            }
+            conflict && (error.conflict = true);
             conn.onError(error);
         }
+        conn.context.status_now = status;
     };
 
     var _getJid = function (options, conn) {
@@ -606,11 +598,14 @@
         this.route = options.route || null;
         this.domain = options.domain || 'easemob.com';
         this.inactivity = options.inactivity || 30;
-        this.heartBeatWait = options.heartBeatWait;
+        this.heartBeatWait = options.heartBeatWait || 4500;
         this.maxRetries = options.maxRetries || 5;
         this.isAutoLogin = options.isAutoLogin === false ? false : true;
         this.pollingTime = options.pollingTime || 800;
         this.stropheConn = false;
+        this.autoReconnectNumMax = options.autoReconnectNumMax || 0;
+        this.autoReconnectNumTotal = 0;
+        this.autoReconnectInterval = options.autoReconnectInterval || 0;
         this.context = {status: _code.STATUS_INIT};
     };
 
@@ -723,6 +718,7 @@
 
             var suc = function (data, xhr) {
                 conn.context.status = _code.STATUS_DOLOGIN_IM;
+                conn.context.restTokenData = data;
                 _login(data, conn);
             };
             var error = function (res, xhr, msg) {
@@ -822,7 +818,7 @@
         stropheConn.attach(jid, sid, rid, callback, wait, hold, wind);
     };
 
-    connection.prototype.close = function () {
+    connection.prototype.close = function (reason) {
         this.stopHeartBeat();
 
         var status = this.context.status;
@@ -835,7 +831,7 @@
         }
 
         this.context.status = _code.STATUS_CLOSING;
-        this.context.stropheConn.disconnect();
+        this.context.stropheConn.disconnect(reason);
     };
 
     connection.prototype.addHandler = function (handler, ns, name, type, id, from, options) {
@@ -1683,11 +1679,15 @@
     };
 
     connection.prototype.clear = function () {
+        console.log(' connection.prototype.clear=', this.errorType);
         var key = this.context.appKey;
-        this.context = {
-            status: _code.STATUS_INIT
-            , appKey: key
-        };
+        if (this.errorType != WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
+            this.context = {
+                status: _code.STATUS_INIT,
+                appKey: key
+            };
+        }
+
     };
 
     connection.prototype.getChatRooms = function (options) {
@@ -1902,6 +1902,24 @@
     };
     connection.prototype._onUpdateMyRoster = function (options) {
         this.onUpdateMyRoster(options);
+    };
+    connection.prototype.reconnect = function () {
+        console.log(ts(), 'conn.reconnect()');
+        console.log(this.context);
+        console.log('total:', this.autoReconnectNumTotal, 'max:', this.autoReconnectNumMax);
+        var that = this;
+        setTimeout(function () {
+            console.log(ts(), '_login');
+            _login(that.context.restTokenData, that);
+        }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
+        this.autoReconnectNumTotal++;
+    };
+    connection.prototype.closed = function () {
+        console.log('conn.closed');
+        console.log('conn.errorType=', this.errorType);
+
+
+        Demo.api.init();
     };
 
     // used for blacklist

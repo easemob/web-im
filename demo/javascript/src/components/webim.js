@@ -29,7 +29,8 @@ module.exports = React.createClass({
         });
     },
 
-    loading: function (status, msg = Demo.lan.loading) {
+    loading: function (status, msg) {
+        msg = msg || Demo.lan.loading;
         this.setState({loadingStatus: status, loadingMsg: msg});
     },
 

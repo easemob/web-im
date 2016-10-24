@@ -39,6 +39,9 @@ module.exports = React.createClass({
 
         this.props.loading('show');
 
+
+        Demo.conn.autoReconnectNumTotal = 0;
+        
         if (WebIM.config.isWindowSDK) {
             var me = this;
             WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}',

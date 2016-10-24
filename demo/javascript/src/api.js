@@ -262,17 +262,28 @@ module.exports = {
         }
     },
 
-    logout: function () {
+
+    logout: function (type) {
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"logout"}',
                 function (response) {
+                    Demo.api.init();
                 },
                 function (code, msg) {
                     Demo.api.NotifyError("logout:" + msg);
                 });
         } else {
-            Demo.conn.close();
+            console.log('logout=', type);
+            Demo.conn.close('logout');
+            if (type == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
+                Demo.conn.errorType = type;
+            }
         }
+
+    },
+
+    init: function () {
+        console.log('api.init()');
         Demo.selected = null;
         Demo.user = null;
         Demo.call = null;
@@ -283,7 +294,6 @@ module.exports = {
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
     },
-
     appendMsg: function (msg, type) {
         if (!msg) {
             return;
@@ -640,7 +650,14 @@ module.exports = {
             this[key] = options[key];
         }
     },
-
+    ts: function () {
+        var d = new Date();
+        var Hours = d.getHours(); //获取当前小时数(0-23)
+        var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
+        var Seconds = d.getSeconds(); //获取当前秒数(0-59)
+        var Milliseconds = d.getMilliseconds(); //获取当前毫秒
+        return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
+    },
     blacklist: Blacklist,
 };
 

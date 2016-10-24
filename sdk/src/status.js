@@ -42,6 +42,8 @@
 
         WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: connIndex++,
         WEBIM_CONNCTION_CALLBACK_INNER_ERROR: connIndex++,
+        WEBIM_CONNCTION_CLIENT_OFFLINE: connIndex++,        //32: client offline
+        WEBIM_CONNCTION_CLIENT_LOGOUT: connIndex++,        //33: client logout
 
 
         WEBIM_UPLOADFILE_BROWSER_ERROR: uploadIndex++,
@@ -79,6 +81,7 @@
         STATUS_DOLOGIN_IM: statusIndex++,
         STATUS_OPENED: statusIndex++,
         STATUS_CLOSING: statusIndex++,
-        STATUS_CLOSED: statusIndex++
+        STATUS_CLOSED: statusIndex++,
+        STATUS_ERROR: statusIndex++
     };
 }());
