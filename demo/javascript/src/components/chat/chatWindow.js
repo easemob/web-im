@@ -39,7 +39,7 @@ module.exports = React.createClass({
                         }
                     },
                     function failure(errCode, errMessage) {
-                        Demo.api.NotifyError("queryRoomInfo:" + errCode);
+                        Demo.api.NotifyError("queryRoomInfo:" + errCode + ' ' + errMessage);
                     });
 
             } else {
@@ -99,7 +99,7 @@ module.exports = React.createClass({
                         }
                     },
                     function failure(errCode, errMessage) {
-                        Demo.api.NotifyError("listMember:" + errCode);
+                        Demo.api.NotifyError("listMember:" + errCode + ' ' + errMessage);
                     });
             } else {
                 Demo.conn.queryRoomMember({

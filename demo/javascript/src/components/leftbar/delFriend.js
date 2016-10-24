@@ -30,7 +30,7 @@ var DelFriend = React.createClass({
                     alert(Demo.lan.contact_deleted);
                 },
                 function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('delFriend:' + errCode);
+                    Demo.api.NotifyError('delFriend:' + errCode + ' ' + errMessage);
                 });
         } else {
             Demo.conn.removeRoster({

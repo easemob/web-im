@@ -367,7 +367,7 @@ module.exports = React.createClass({
                     doNotUpdateGroup || me.getGroup();
                 },
                 function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('getRoster:' + errCode);
+                    Demo.api.NotifyError('getRoster:' + errCode + ' ' + errMessage);
                 });
         } else {
             conn.getRoster({
@@ -401,7 +401,7 @@ module.exports = React.createClass({
                     me.setState({groups: rooms});
                 },
                 function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('getGroup:' + errCode);
+                    Demo.api.NotifyError('getGroup:' + errCode + ' ' + errMessage);
                 });
         } else {
             Demo.conn.listRooms({
@@ -425,7 +425,7 @@ module.exports = React.createClass({
                     me.setState({chatrooms: rooms});
                 },
                 function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('getChatroom:' + errCode);
+                    Demo.api.NotifyError('getChatroom:' + errCode + ' ' + errMessage);
                 });
         } else {
             Demo.conn.getChatRooms({
