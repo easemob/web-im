@@ -8,5 +8,6 @@ WebIM v1.1.3 @ 2016-10-28
 * [sdk] auto reconnect while configured `autoReconnectNumMax` and `autoReconnectInterval` in webim.config.js.
 	
 * Bug fixes:
-    1. Fixed a bug of strophe.js v1.2.8 using BOSH in IE9.  <https://github.com/strophe/strophejs/issues/213>
-    2. [groups] complete all function.
+    1. [sdk] Fixed a bug of strophe.js v1.2.8 using BOSH in IE9.  <https://github.com/strophe/strophejs/issues/213>
+    2. [sdk] Fixed a bug of send/receive message delay while there was a lot of offline messages.Client should limit the speed of sending ack messages  up to 5/s.
+    3. [groups] complete all function.

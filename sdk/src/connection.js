@@ -7,6 +7,7 @@
     var _msg = require('./message');
     var _message = _msg._msg;
     var _msgHash = {};
+    var Queue = require('./queue').Queue;
 
     window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -59,7 +60,7 @@
      */
     Strophe.Websocket.prototype._onMessage = function (message) {
         if (WebIM.config.isDebug) {
-            console.log(ts() + 'recv:', message.data);
+            console.log(Demo.api.ts() + 'recv:', message.data);
         }
         var elem, data;
         // check for closing stream
@@ -370,6 +371,10 @@
             conflict && (error.conflict = true);
             conn.onError(error);
         } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
+            // client should limit the speed of sending ack messages  up to 5/s
+            conn.intervalId = setInterval(function () {
+                conn.handelSendQueue();
+            }, 200);
             var handleMessage = function (msginfo) {
                 var type = _parseMessageType(msginfo);
 
@@ -607,8 +612,17 @@
         this.autoReconnectNumTotal = 0;
         this.autoReconnectInterval = options.autoReconnectInterval || 0;
         this.context = {status: _code.STATUS_INIT};
+        //todo 接收的事件，放到数组里的时候，加上g.isInBackground字段。每帧执行一个事件的时候，如果g.isInBackground=true,就pass
+        this.sendQueue = new Queue();  //接收到的事件队列
+        this.intervalId = null;
     };
 
+    connection.prototype.handelSendQueue = function () {
+        var options = this.sendQueue.pop();
+        if (options !== null) {
+            this.sendReceiptsMessage(options);
+        }
+    };
     connection.prototype.listen = function (options) {
         options.url && (this.url = _getXmppUrl(options.url, this.https));
         this.onOpened = options.onOpened || _utils.emptyfn;
@@ -690,6 +704,10 @@
             id: options.id || ''
         });
         this.sendCommand(dom.tree());
+    };
+
+    connection.prototype.cacheReceiptsMessage = function (options) {
+        this.sendQueue.push(options);
     };
 
     connection.prototype.open = function (options) {
@@ -1009,8 +1027,8 @@
 
         var id = msginfo.getAttribute('id') || '';
 
-        // send ack
-        this.sendReceiptsMessage({
+        // cache ack into sendQueue first , handelSendQueue will do the send thing with the speed of  5/s
+        this.cacheReceiptsMessage({
             id: id
         });
         var parseMsgData = _parseResponseMessage(msginfo);
@@ -1687,6 +1705,9 @@
                 appKey: key
             };
         }
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+        }
 
     };
 
@@ -1904,12 +1925,8 @@
         this.onUpdateMyRoster(options);
     };
     connection.prototype.reconnect = function () {
-        console.log(ts(), 'conn.reconnect()');
-        console.log(this.context);
-        console.log('total:', this.autoReconnectNumTotal, 'max:', this.autoReconnectNumMax);
         var that = this;
         setTimeout(function () {
-            console.log(ts(), '_login');
             _login(that.context.restTokenData, that);
         }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
         this.autoReconnectNumTotal++;

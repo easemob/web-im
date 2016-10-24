@@ -5,7 +5,7 @@
 ###3.群组的xmpp协议版本  (倪丹)
 ###4.IE9的兼容性bug （文科）
 ###5.群组的windowSDK:黑名单 (刘伟展 done)
-###6.登录分批拉离线消息（解决摩尔提出的第一次聊天记录发送延迟的bug）
+###6.登录分批拉离线消息（解决摩尔提出的第一次聊天记录发送延迟的bug）所有包含<received xmlns='urn:xmpp:receipts' 的上行message消息 都是ack应答，进单独的队列，每秒控制上行5条
 ###7.v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了  handlePageLimit clearPageSign getPageCount
 ###8.增加WebRTC视频聊天功能(support chrome+https only)
 ###9.xmppURL需要容错检查: 如果用户自己加了ws://或者wss://前缀 要去除掉，避免报错！

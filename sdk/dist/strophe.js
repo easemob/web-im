@@ -5352,7 +5352,7 @@
             _connect_cb_wrapper: function (message) {
                 if (message.data.indexOf("<open ") === 0 || message.data.indexOf("<?xml") === 0) {
                     if (WebIM.config.isDebug) {
-                        console.log(ts() + 'recv1:', message.data);
+                        console.log(Demo.api.ts() + 'recv1:', message.data);
                     }
                     // Strip the XML Declaration, if there is one
                     var data = message.data.replace(/^(<\?.*?\?>\s*)*/, "");
@@ -5382,7 +5382,7 @@
                     }
                 } else {
                     if (WebIM.config.isDebug) {
-                        console.log(ts() + 'recv2:', message.data);
+                        console.log(Demo.api.ts() + 'recv2:', message.data);
                     }
                     var string = this._streamWrap(message.data);
                     var elem = new DOMParser().parseFromString(string, "text/xml").documentElement;
