@@ -662,29 +662,12 @@
         }
 
         var options = {
-            to: this.domain,
+            toJid: this.domain,
             type: 'normal'
         };
         this.heartBeatID = setInterval(function () {
-            me.sendHeartBeatMessage(options);
+            me.ping(options);
         }, this.heartBeatWait);
-    };
-
-    connection.prototype.sendHeartBeatMessage = function (options) {
-        if (!this.isOpened()) {
-            return;
-        }
-
-        var json = {},
-            jsonstr = _utils.stringify(json),
-            dom = $msg({
-                to: options.to,
-                type: options.type,
-                id: this.getUniqueId(),
-                xmlns: 'jabber:client'
-            }).c('body').t(jsonstr);
-
-        this.sendCommand(dom.tree());
     };
 
     connection.prototype.stopHeartBeat = function () {
