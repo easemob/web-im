@@ -28,7 +28,6 @@
         return xhr;
     };
 
-
     Strophe.Websocket.prototype._closeSocket = function () {
         if (this.socket) {
             var me = this;
@@ -2127,7 +2126,6 @@
         });
     };
 
-
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
     WebIM.connection = connection;
     WebIM.utils = _utils;
@@ -2146,3 +2144,8 @@
         );
     };
 }(window, undefined));
+
+
+if (module.hot) {
+    module.hot.accept();
+}

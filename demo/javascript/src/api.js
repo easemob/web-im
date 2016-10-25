@@ -2,7 +2,6 @@ var React = require("react");
 var ReactDOM = require('react-dom');
 
 var Webim = require('./components/webim');
-
 var textMsg = require('./components/message/txt');
 var imgMsg = require('./components/message/img');
 var fileMsg = require('./components/message/file');
@@ -11,7 +10,6 @@ var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
 var Notify = require('./components/common/notify');
 var _ = require('underscore');
-
 
 var Blacklist = (function () {
     var data = {};
@@ -254,14 +252,12 @@ module.exports = {
                 break;
         }
 
-
         if (props) {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout} {...props} />, this.node);
         } else {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout}/>, this.node);
         }
     },
-
 
     logout: function (type) {
         if (WebIM.config.isWindowSDK) {
@@ -294,6 +290,7 @@ module.exports = {
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
     },
+
     appendMsg: function (msg, type) {
         if (!msg) {
             return;
@@ -555,7 +552,6 @@ module.exports = {
         cur.querySelector('em').innerHTML = value;
     },
 
-
     addCount: function (id, cate) {
         // TODO
         if (Demo.selectedCate !== cate) {
@@ -658,6 +654,7 @@ module.exports = {
         var Milliseconds = d.getMilliseconds(); //获取当前毫秒
         return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
     },
-    blacklist: Blacklist,
+    blacklist: Blacklist
 };
+
 
