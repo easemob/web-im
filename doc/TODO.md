@@ -25,9 +25,13 @@
 ###11.所有eval('(' + message + ')');  改成 JSON.parse(message)  所有 eval('(' + str + ')');  改成 JSON.parse(str)  
 ###12.引入UNDERSCORE库
 ###13.引入promise库
-###14.引入REDUX
+###14.引入REDUX，减少原生dom操作
+###15.热加载
 
 #V1.1.5 (2017.01~2017.06) 新需求：
 ###1.webim所有接口的xmpp协议(邹金海)和react协议(仝瑶)的文档整理
 ###2.webim所有接口的测试用例整理
 ###3.RectMix:将ReactJS转成ReactNative生成app(IOS/ANDROID)
+
+
+ 

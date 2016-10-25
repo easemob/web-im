@@ -163,7 +163,6 @@ module.exports = React.createClass({
 
         });
 
-
         return {
             cur: 'friend',
             curNode: '',
