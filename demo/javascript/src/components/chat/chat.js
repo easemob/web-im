@@ -170,7 +170,9 @@ module.exports = React.createClass({
             groups: [],
             chatrooms: [],
             strangers: [],
-            blacklist: {}
+            blacklist: {},
+            chatrooms_totalnum: Demo.api.pagesize,
+            contact_loading: false
         };
     },
     confirmPop: function (options) {
@@ -416,6 +418,14 @@ module.exports = React.createClass({
 
     getChatroom: function () {
         var me = this;
+        var pagenum = Math.ceil(this.state.chatrooms.length / Demo.api.pagesize);
+        var pageTotal = Math.ceil(this.state.chatrooms_totalnum / Demo.api.pagesize);
+        if (pagenum == pageTotal) {
+            return;
+        }
+        pagenum++;
+        this.setState({contact_loading: true});
+        console.log('getChatroom', this.state.contact_loading);
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getChatroom"}',
                 function success(str) {
@@ -428,9 +438,17 @@ module.exports = React.createClass({
         } else {
             Demo.conn.getChatRooms({
                 apiUrl: WebIM.config.apiURL,
+                pagenum: pagenum,
+                pagesize: Demo.api.pagesize,
                 success: function (list) {
                     if (list.data && list.data.length > 0) {
-                        me.setState({chatrooms: list.data});
+                        //TODO:等服务器的版本更新之后，再改成list.totoalnum
+                        var totalnum = 83;
+                        me.setState({
+                            contact_loading: false,
+                            chatrooms_totalnum: totalnum,
+                            chatrooms: me.state.chatrooms.concat(list.data)
+                        });
                     }
                 },
                 error: function (e) {
@@ -456,6 +474,7 @@ module.exports = React.createClass({
 
     updateNode: function (id) {
         this.setState({curNode: id});
+        console.log('updateNode', id);
     },
 
     sendPicture: function (chatType) {
@@ -698,6 +717,9 @@ module.exports = React.createClass({
     },
 
     render: function () {
+        console.log('chat.render', this.state.cur);
+        // Demo.api.curLength = this.state[this.state.cur].length;
+
         var windows = [], id,
             props = {
                 sendPicture: this.sendPicture,
@@ -749,7 +771,9 @@ module.exports = React.createClass({
                          blacklist={this.state.blacklist}
                          groups={this.state.groups}
                          chatrooms={this.state.chatrooms}
-                         strangers={this.state.strangers}/>
+                         strangers={this.state.strangers}
+                         getChatroom={this.getChatroom}
+                         loading={this.state.contact_loading}/>
                 {windows}
                 <input ref='picture' onChange={this.pictureChange} type='file' className='hide'/>
                 <input ref='audio' onChange={this.audioChange} type='file' className='hide'/>

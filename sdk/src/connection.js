@@ -1732,11 +1732,17 @@
                 }
             };
 
+            var pageInfo = {
+                pagenum: parseInt(options.pagenum),
+                pagesize: parseInt(options.pagesize)
+            };
+
             var opts = {
                 url: apiUrl + '/' + orgName + '/' + appName + '/chatrooms',
                 dataType: 'json',
                 type: 'GET',
                 headers: {'Authorization': 'Bearer ' + token},
+                data: pageInfo,
                 success: suc || _utils.emptyfn,
                 error: error || _utils.emptyfn
             };

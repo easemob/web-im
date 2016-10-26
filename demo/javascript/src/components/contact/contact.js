@@ -16,6 +16,14 @@ module.exports = React.createClass({
         this.props.updateNode(id);
     },
 
+    onscroll: function () {
+        var scrollTop = this.refs.contactContainer.scrollTop;
+        var scollTopNum = scrollTop / 60;
+        if ((scrollTop / 60 + 10) == this.props[Demo.selectedCate].length) {
+            this.props.getChatroom();
+        }
+    },
+
     render: function () {
         var f = [],
             g = [],
@@ -47,11 +55,14 @@ module.exports = React.createClass({
         }
 
         return (
-            <div className='webim-contact-wrapper'>
+            <div ref='contactContainer' className='webim-contact-wrapper' onScroll={this.onscroll}>
                 <div className={this.props.cur === 'friend' ? '' : ' hide'}>{f}</div>
                 <div className={this.props.cur === 'group' ? '' : ' hide'}>{g}</div>
                 <div className={this.props.cur === 'chatroom' ? '' : ' hide'}>{c}</div>
                 <div className={this.props.cur === 'stranger' ? '' : ' hide'}>{s}</div>
+                <div ref='loading' className={'webim-contact-loading ' + (this.props.loading ? '' : 'hide')}>
+                    <img src='demo/images/loading.gif'/>
+                </div>
             </div>
         );
     }

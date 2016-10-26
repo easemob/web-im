@@ -2,10 +2,10 @@
 #V1.1.3 (Now~2016.10) 紧急需求和bug:
 ###1.upgrade strophe from 1.2.2 to 1.2.8, and use strophe-1.2.8.min.js in the product mode, use strophe.js in the debug mode (文科 done)
 ###2.断线重连 (文科 done)
-###3.群组的xmpp协议版本  (倪丹)
-###4.IE9的兼容性bug （文科）
+###3.群组的xmpp协议版本  (刘伟展)
+###4.IE9的兼容性bug （文科 done）
 ###5.群组的windowSDK:黑名单 (刘伟展 done)
-###6.登录分批拉离线消息（解决摩尔提出的第一次聊天记录发送延迟的bug）所有包含<received xmlns='urn:xmpp:receipts' 的上行message消息 都是ack应答，进单独的队列，每秒控制上行5条
+###6.登录分批拉离线消息（解决摩尔提出的第一次聊天记录发送延迟的bug）(文科 done）
 ###7.v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了  handlePageLimit clearPageSign getPageCount
 ###8.增加WebRTC视频聊天功能(support chrome+https only)
 ###9.xmppURL需要容错检查: 如果用户自己加了ws://或者wss://前缀 要去除掉，避免报错！
@@ -27,7 +27,7 @@
 ###13.引入promise库
 ###14.引入REDUX，减少原生dom操作
 ###15.热加载
-
+###16.http://docs.easemob.com/im/400webimintegration/60toolrelated 截图发送 还维护吗?
 #V1.1.5 (2017.01~2017.06) 新需求：
 ###1.webim所有接口的xmpp协议(邹金海)和react协议(仝瑶)的文档整理
 ###2.webim所有接口的测试用例整理
