@@ -172,7 +172,7 @@ module.exports = React.createClass({
             strangers: [],
             blacklist: {},
             chatrooms_totalnum: Demo.api.pagesize,
-            contact_loading: false
+            contact_loading_show: false
         };
     },
     confirmPop: function (options) {
@@ -424,8 +424,7 @@ module.exports = React.createClass({
             return;
         }
         pagenum++;
-        this.setState({contact_loading: true});
-        console.log('getChatroom', this.state.contact_loading);
+        this.setState({contact_loading_show: true});
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getChatroom"}',
                 function success(str) {
@@ -441,15 +440,18 @@ module.exports = React.createClass({
                 pagenum: pagenum,
                 pagesize: Demo.api.pagesize,
                 success: function (list) {
-                    if (list.data && list.data.length > 0) {
-                        //TODO:等服务器的版本更新之后，再改成list.totoalnum
-                        var totalnum = 83;
-                        me.setState({
-                            contact_loading: false,
-                            chatrooms_totalnum: totalnum,
-                            chatrooms: me.state.chatrooms.concat(list.data)
-                        });
+                    var states = {};
+                    if (list.data) {
+                        //TODO: 等接口返回totalnum这个参数之后，就不要再计算totalnum了。 直接states.chatrooms_totalnum=list.totalnum
+                        if (list.data.length > 0) {
+                            states.chatrooms_totalnum = (parseInt(list.params.pagenum[0]) + 1) * Demo.api.pagesize;
+                            states.chatrooms = me.state.chatrooms.concat(list.data);
+                        } else {
+                            states.chatrooms_totalnum = parseInt(list.params.pagenum[0] - 1) * Demo.api.pagesize;
+                        }
                     }
+                    states.contact_loading_show = false;
+                    me.setState(states);
                 },
                 error: function (e) {
                     Demo.api.NotifyError('getChatroom:' + e);
@@ -469,7 +471,7 @@ module.exports = React.createClass({
     },
 
     update: function (cur) {
-        this.setState({cur: cur});
+        this.setState({cur: cur, contact_loading_show: false});
     },
 
     updateNode: function (id) {
@@ -773,7 +775,7 @@ module.exports = React.createClass({
                          chatrooms={this.state.chatrooms}
                          strangers={this.state.strangers}
                          getChatroom={this.getChatroom}
-                         loading={this.state.contact_loading}/>
+                         loading={this.state.contact_loading_show}/>
                 {windows}
                 <input ref='picture' onChange={this.pictureChange} type='file' className='hide'/>
                 <input ref='audio' onChange={this.audioChange} type='file' className='hide'/>
