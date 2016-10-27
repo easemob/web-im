@@ -104,6 +104,7 @@ module.exports = React.createClass({
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
+                message.reason && Demo.api.NotifyError(message.reason);
                 me.getGroup();
             },
             onOnline: function () {
@@ -286,7 +287,8 @@ module.exports = React.createClass({
         var me = this;
 
         switch (msg.type) {
-            case 'leaveGroup':// dismissied by admin
+            case 'leaveGroup':// dismissed by admin
+                Demo.api.NotifyError(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
@@ -307,7 +309,7 @@ module.exports = React.createClass({
                 }
                 break;
             case 'joinPublicGroupSuccess':
-                console.log('joinPublicGroupSuccess');
+                Demo.api.NotifyError(`You have been invited to group ${msg.from}`);
                 Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
@@ -315,16 +317,34 @@ module.exports = React.createClass({
                 break;
             case 'reachChatRoomCapacity':// Failed to join the chat room
                 Demo.currentChatroom = null;
-                Demo.api.NotifyError('加入聊天室失败');
+                Demo.api.NotifyError('Fail to Join the group');
                 break;
             case 'leaveChatRoom':// Leave the chat room
                 break;
             case 'deleteGroupChat':// The chat room or group is deleted.
+                // ignore the sync `recv` request
+                // only handle on async request
+                if (msg.original_type == 'unavailable') return;
+
                 var target = document.getElementById(msg.from);
+                log('deleteGroupChat', msg);
+                var options = {
+                    title: "Group notification",
+                    msg: "You have been out of the group",
+                };
+
+                _.find(this.state.groups, function (group, k) {
+                    if (group.roomId == msg.from) {
+                        options.msg = "You have been out of the group: " + group.name;
+                        return true;
+                    }
+                });
 
                 if (target) {
                     Demo.api.updateGroup();
                 }
+
+                Demo.api.NotifyError(options.msg);
                 break;
         }
 
