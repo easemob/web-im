@@ -4,10 +4,10 @@ module.exports = {
     entry: {
         './sdk/dist/websdk-1.1.2': './sdk/src/connection',
         './demo/javascript/dist/demo': './demo/javascript/src/entry',
-        // './webrtc/dist/webrtc-1.0.0': './webrtc/src/webrtc',
+        './webrtc/dist/webrtc-1.0.0': './webrtc/src/webrtc',
     },
     output: {
-        path: '../',
+        path: './',
         publicPath: './',
         filename: '[name].js'
     },
