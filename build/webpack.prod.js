@@ -8,7 +8,7 @@ module.exports = {
         // './webrtc/dist/webrtc-1.0.0': './webrtc/src/webrtc',
     },
     output: {
-        path: '../',
+        path: './',
         publicPath: './',
         filename: '[name].js'
     },
