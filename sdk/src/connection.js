@@ -682,7 +682,6 @@
         }
     };
 
-
     connection.prototype.sendReceiptsMessage = function (options) {
         var dom = $msg({
             from: this.context.jid || '',
@@ -894,7 +893,6 @@
             chatroom: msginfo.getElementsByTagName('roomtype').length ? true : false
         };
 
-
         var showTags = msginfo.getElementsByTagName('show');
         if (showTags && showTags.length > 0) {
             var showTag = showTags[0];
@@ -943,12 +941,16 @@
             var role = member.getAttribute('role');
             var jid = member.getAttribute('jid');
             // dismissed by group
-            if (role == 'none') {
+            if (role == 'none' && jid) {
                 var kickedMember = _parseNameFromJidFn(jid);
                 var actor = member.getElementsByTagName('actor')[0];
                 var actorNick = actor.getAttribute('nick');
                 info.actor = actorNick;
                 info.kicked = kickedMember;
+            }
+            // Service Acknowledges Room Creation
+            if (role == 'moderator' && info.code == '201') {
+                info.type = 'createGroupACK';
             }
         }
 
@@ -2307,6 +2309,99 @@
         }, function (errInfo) {
             errFn(errInfo);
         });
+    };
+
+    /**
+     * createGroup 创建群组
+     *
+     * 1. 创建申请 -> 得到房主身份
+     * 2. 获取房主信息 -> 得到房间form
+     * 3. 完善房间form -> 创建成功
+     * 4. 添加房间成员
+     * 5. 消息通知成员
+     * @param options
+     */
+    connection.prototype.createGroup = function (options) {
+        var roomId = +new Date();
+        var toRoom = this._getGroupJid(roomId);
+        var to = toRoom + '/' + this.context.userId;
+
+        var pres = $pres({to: to})
+            .c('x', {xmlns: 'http://jabber.org/protocol/muc'}).up();
+        // .c('create', {xmlns: 'http://jabber.org/protocol/muc'}).up()
+        // .c('c', {
+        //     hash: 'sha-1',
+        //     node: 'https://github.com/robbiehanson/XMPPFramework',
+        //     ver: 'k6gP4Ua5m4uu9YorAG0LRXM+kZY=',
+        //     xmlns: 'http://jabber.org/protocol/caps'
+        // }).up();
+
+        // createGroupACK
+        this.sendCommand(pres.tree());
+
+        // Creating a Reserved Room
+        var iq = $iq({type: 'get', to: toRoom})
+            .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'});
+
+        log(options);
+        var me = this;
+        this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+            // log(msgInfo);
+
+            var x = msgInfo.getElementsByTagName('x')[0];
+            x.setAttribute('type', 'submit');
+            Strophe.forEachChild(x, 'field', function (field) {
+                var fieldVar = field.getAttribute('var');
+                var valueDom = field.getElementsByTagName('value')[0];
+                // log(fieldVar);
+                switch (fieldVar) {
+                    case 'muc#roomconfig_roomname':
+                        valueDom.textContent = options.subject || '';
+                        break;
+                    case 'muc#roomconfig_roomdesc':
+                        valueDom.textContent = options.description || '';
+                        break;
+                    case 'muc#roomconfig_publicroom': // public 1
+                        valueDom.textContent = +options.optionsPublic;
+                        break;
+                    case 'muc#roomconfig_membersonly':
+                        valueDom.textContent = +options.optionsMembersOnly;
+                        break;
+                    case 'muc#roomconfig_moderatedroom':
+                        valueDom.textContent = +options.optionsModerate;
+                        break;
+                    case 'muc#roomconfig_persistentroom':
+                        valueDom.textContent = 1;
+                        break;
+                    case 'muc#roomconfig_allowinvites':
+                        valueDom.textContent = +options.optionsAllowInvites;
+                        break;
+                }
+                // log(valueDom);
+            });
+            // log(x);
+
+            var iq = $iq({to: toRoom, type: 'set'})
+                .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'})
+                .cnode(x);
+
+            log(iq.tree());
+
+            me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+                // sucFn(msgInfo);
+
+                me.addGroupMembers({
+                    list: options.members,
+                    roomId: roomId
+                });
+            }, function (errInfo) {
+                // errFn(errInfo);
+            });
+            // sucFn(msgInfo);
+        }, function (errInfo) {
+            // errFn(errInfo);
+        });
+
     };
 
 

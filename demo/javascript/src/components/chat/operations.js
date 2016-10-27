@@ -25,7 +25,7 @@ module.exports = React.createClass({
 
     // hide when blur | bind focus event
     componentDidUpdate: function () {
-        !this.state.hide && ReactDOM.findDOMNode(this.refs['webim-operations']).focus();
+        // !this.state.hide && ReactDOM.findDOMNode(this.refs['webim-operations']).focus();
     },
 
     // hide when blur close
@@ -116,7 +116,12 @@ module.exports = React.createClass({
                 <i ref='switch' className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
                 <ul tabIndex="-1" ref="webim-operations"
                     className={'webim-operations ' + (this.state.hide ? 'hide' : '')}
-                    onFocus={this.handleOnFocus} onBlur={this.handleOnBlur}>
+                    onBlur={this.handleOnBlur}>
+                    {/*<li onClick={this.adminGroupMembers}*/}
+                    {/*className={(this.props.settings == "PRIVATE_MEMBER_INVITE") && !this.props.admin ? '' : 'hide'}>*/}
+                    {/*<i className='font smallest'>F</i>*/}
+                    {/*<span>{Demo.lan.memberInvite}</span>*/}
+                    {/*</li>*/}
                     <li onClick={this.showGroupBlacklist} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>F</i>
                         <span>{Demo.lan.groupBlacklist}</span>

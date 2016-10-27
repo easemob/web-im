@@ -289,6 +289,9 @@ module.exports = React.createClass({
         var me = this;
 
         switch (msg.type) {
+            case 'createGroupACK':
+
+                break;
             case 'leaveGroup':// dismissed by admin
                 Demo.api.NotifyError(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
