@@ -6,7 +6,6 @@
  *
  */
 var WebIM = {};
-
 WebIM.config = {
     /*
      * XMPP server
@@ -15,7 +14,7 @@ WebIM.config = {
     /*
      * Backend REST API URL
      */
-    apiURL: '//a1.easemob.com',
+    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
     /*
      * Application AppKey
      */
@@ -48,9 +47,19 @@ WebIM.config = {
      */
     isDebug: false,
     /**
-     * webrtc supports Chrome and https only
+     * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
+     * won't auto connect if autoReconnectNumMax=0.
      */
-    isWebRTC: /Chrome/.test(navigator.userAgent) && /^https\:$/.test(window.location.protocol),
+    autoReconnectNumMax: 2,
+    /**
+     * the interval secons between each atuo reconnectting.
+     * works only if autoReconnectMaxNum >= 2.
+     */
+    autoReconnectInterval: 2,
+    /**
+     * webrtc supports WebKit and https only
+     */
+    isWebRTC: /WebKit/.test(navigator.userAgent) && /^https\:$/.test(window.location.protocol),
     /*
      * Set to auto sign-in
      */
