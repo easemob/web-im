@@ -34,7 +34,14 @@ module.exports = {
     },
     plugins: [
         // new webpack.NoErrorsPlugin(),
-        // minifies your code
+        // production must be with `UglifyJsPlugin` or ie9 crash
+        // faster your app better use
+        // https://github.com/webpack/webpack/issues/868
+        new webpack.DefinePlugin({
+            'process.env': {
+                'NODE_ENV': '"production"'
+            }
+        }),
         new webpack.optimize.UglifyJsPlugin({
             compressor: {
                 warnings: false
