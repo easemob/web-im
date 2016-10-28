@@ -285,7 +285,8 @@
             var loginJson = {
                 grant_type: 'password',
                 username: user,
-                password: pwd
+                password: pwd,
+                timestamp: +new Date()
             };
             var loginfo = utils.stringify(loginJson);
 

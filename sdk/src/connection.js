@@ -750,7 +750,8 @@
             var loginJson = {
                 grant_type: 'password',
                 username: userId,
-                password: pwd
+                password: pwd,
+                timestamp: +new Date()
             };
             var loginfo = _utils.stringify(loginJson);
 
