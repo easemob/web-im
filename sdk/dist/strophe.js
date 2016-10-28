@@ -3080,6 +3080,7 @@
              */
             _dataRecv: function (req, raw) {
                 Strophe.info("_dataRecv called");
+                Strophe.info(JSON.stringify(req));
                 var elem = this._proto._reqToData(req);
                 if (elem === null) {
                     return;

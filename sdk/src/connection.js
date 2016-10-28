@@ -2327,8 +2327,8 @@
         var to = toRoom + '/' + this.context.userId;
 
         var pres = $pres({to: to})
-            .c('x', {xmlns: 'http://jabber.org/protocol/muc'}).up();
-        // .c('create', {xmlns: 'http://jabber.org/protocol/muc'}).up()
+            .c('x', {xmlns: 'http://jabber.org/protocol/muc'}).up()
+            .c('create', {xmlns: 'http://jabber.org/protocol/muc'}).up();
         // .c('c', {
         //     hash: 'sha-1',
         //     node: 'https://github.com/robbiehanson/XMPPFramework',
@@ -2339,70 +2339,106 @@
         // createGroupACK
         this.sendCommand(pres.tree());
 
-        // Creating a Reserved Room
-        var iq = $iq({type: 'get', to: toRoom})
-            .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'});
-
-        log(options);
         var me = this;
-        this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-            // log(msgInfo);
+        // timeout hack for create group async
+        setTimeout(function () {
+            // Creating a Reserved Room
+            var iq = $iq({type: 'get', to: toRoom})
+                .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'});
 
-            var x = msgInfo.getElementsByTagName('x')[0];
-            x.setAttribute('type', 'submit');
-            Strophe.forEachChild(x, 'field', function (field) {
-                var fieldVar = field.getAttribute('var');
-                var valueDom = field.getElementsByTagName('value')[0];
-                // log(fieldVar);
-                switch (fieldVar) {
-                    case 'muc#roomconfig_roomname':
-                        valueDom.textContent = options.subject || '';
-                        break;
-                    case 'muc#roomconfig_roomdesc':
-                        valueDom.textContent = options.description || '';
-                        break;
-                    case 'muc#roomconfig_publicroom': // public 1
-                        valueDom.textContent = +options.optionsPublic;
-                        break;
-                    case 'muc#roomconfig_membersonly':
-                        valueDom.textContent = +options.optionsMembersOnly;
-                        break;
-                    case 'muc#roomconfig_moderatedroom':
-                        valueDom.textContent = +options.optionsModerate;
-                        break;
-                    case 'muc#roomconfig_persistentroom':
-                        valueDom.textContent = 1;
-                        break;
-                    case 'muc#roomconfig_allowinvites':
-                        valueDom.textContent = +options.optionsAllowInvites;
-                        break;
-                }
-                // log(valueDom);
-            });
-            // log(x);
-
-            var iq = $iq({to: toRoom, type: 'set'})
-                .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'})
-                .cnode(x);
-
-            log(iq.tree());
-
+            // Strophe.info('step 1 ----------');
+            // Strophe.info(options);
             me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-                // sucFn(msgInfo);
+                // log(msgInfo);
 
-                me.addGroupMembers({
-                    list: options.members,
-                    roomId: roomId
+                // for ie hack
+                if ('setAttribute' in msgInfo) {
+                    // Strophe.info('step 3 ----------');
+                    var x = msgInfo.getElementsByTagName('x')[0];
+                    x.setAttribute('type', 'submit');
+                } else {
+                    // Strophe.info('step 4 ----------');
+                    Strophe.forEachChild(msgInfo, 'x', function (field) {
+                        field.setAttribute('type', 'submit');
+                    });
+                }
+
+                // var rcv = msgInfo.getElementsByTagName('x');
+                // var v;
+                // if (rcv.length > 0) {
+                //     if (rcv[0].childNodes && rcv[0].childNodes.length > 0) {
+                //         v = rcv[0].childNodes[0].nodeValue;
+                //     } else {
+                //         v = rcv[0].innerHTML || rcv[0].innerText
+                //     }
+                //     mid = rcv[0].getAttribute('mid');
+                // }
+                Strophe.info('step 5 ----------');
+                Strophe.forEachChild(x, 'field', function (field) {
+                    var fieldVar = field.getAttribute('var');
+                    var valueDom = field.getElementsByTagName('value')[0];
+                    Strophe.info(fieldVar);
+                    switch (fieldVar) {
+                        case 'muc#roomconfig_roomname':
+                            _setText(valueDom, options.subject || '');
+                            break;
+                        case 'muc#roomconfig_roomdesc':
+                            _setText(valueDom, options.description || '');
+                            break;
+                        case 'muc#roomconfig_publicroom': // public 1
+                            _setText(valueDom, +options.optionsPublic);
+                            break;
+                        case 'muc#roomconfig_membersonly':
+                            _setText(valueDom, +options.optionsMembersOnly);
+                            break;
+                        case 'muc#roomconfig_moderatedroom':
+                            _setText(valueDom, +options.optionsModerate);
+                            break;
+                        case 'muc#roomconfig_persistentroom':
+                            _setText(valueDom, 1);
+                            break;
+                        case 'muc#roomconfig_allowinvites':
+                            _setText(valueDom, +options.optionsAllowInvites);
+                            break;
+                        default:
+                            break;
+                    }
+                    // log(valueDom);
                 });
+
+                var iq = $iq({to: toRoom, type: 'set'})
+                    .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'})
+                    .cnode(x);
+
+                // log(iq.tree());
+
+                me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+                    // sucFn(msgInfo);
+
+                    me.addGroupMembers({
+                        list: options.members,
+                        roomId: roomId
+                    });
+                }, function (errInfo) {
+                    // errFn(errInfo);
+                });
+                // sucFn(msgInfo);
             }, function (errInfo) {
                 // errFn(errInfo);
             });
-            // sucFn(msgInfo);
-        }, function (errInfo) {
-            // errFn(errInfo);
-        });
-
+        }, 1000);
     };
+
+    function _setText(valueDom, v) {
+        if ('textContent' in valueDom) {
+            valueDom.textContent = v;
+        } else if ('text' in valueDom) {
+            valueDom.text = v;
+        } else {
+            // Strophe.info('_setText 4 ----------');
+            // valueDom.innerHTML = v;
+        }
+    }
 
 
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};

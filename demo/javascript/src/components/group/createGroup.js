@@ -54,6 +54,7 @@ var CreateGroup = React.createClass({
     onSubmit: function () {
         var value = this.refs.input.refs.input.value;
         var info = this.refs.textarea.value;
+        // log('onSubmit', value, info);
         var permission_group = this.state.selectedOption;
         var permission_member = this.state.selectedOption2;
         var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
