@@ -507,6 +507,13 @@
         return jid;
     };
 
+    var _getJidByName = function (name, conn) {
+        var options = {
+            to: name
+        };
+        return _getJid(options, conn);
+    };
+
     var _validCheck = function (options, conn) {
         options = options || {};
 
@@ -674,7 +681,6 @@
             this.heartBeatID = clearInterval(this.heartBeatID);
         }
     };
-
 
     connection.prototype.sendReceiptsMessage = function (options) {
         var dom = $msg({
@@ -887,7 +893,6 @@
             chatroom: msginfo.getElementsByTagName('roomtype').length ? true : false
         };
 
-
         var showTags = msginfo.getElementsByTagName('show');
         if (showTags && showTags.length > 0) {
             var showTag = showTags[0];
@@ -925,7 +930,34 @@
             }
         }
 
+        // <item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none">
+        //     <actor nick="liuwz"/>
+        // </item>
+        // one record once a time
+        // kick info: actor / member
+        var members = msginfo.getElementsByTagName('item');
+        if (members && members.length > 0) {
+            var member = members[0];
+            var role = member.getAttribute('role');
+            var jid = member.getAttribute('jid');
+            // dismissed by group
+            if (role == 'none' && jid) {
+                var kickedMember = _parseNameFromJidFn(jid);
+                var actor = member.getElementsByTagName('actor')[0];
+                var actorNick = actor.getAttribute('nick');
+                info.actor = actorNick;
+                info.kicked = kickedMember;
+            }
+            // Service Acknowledges Room Creation
+            if (role == 'moderator' && info.code == '201') {
+                info.type = 'createGroupACK';
+            }
+        }
+
         if (info.chatroom) {
+            // diff the
+            info.presence_type = presence_type;
+            info.original_type = info.type;
             var reflectUser = from.slice(from.lastIndexOf('/') + 1);
 
             if (reflectUser === this.context.userId) {
@@ -942,6 +974,8 @@
                 }
             }
         } else {
+            info.presence_type = presence_type;
+            info.original_type = type;
             if (type == "" && !info.status && !info.error) {
                 info.type = 'joinPublicGroupSuccess';
             } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
@@ -1235,6 +1269,8 @@
     connection.prototype.handleInviteMessage = function (message) {
         var form = null;
         var invitemsg = message.getElementsByTagName('invite');
+        var reasonDom = message.getElementsByTagName('reason')[0];
+        var reasonMsg = reasonDom.textContent;
         var id = message.getAttribute('id') || '';
         this.sendReceiptsMessage({
             id: id
@@ -1257,7 +1293,8 @@
         this.onInviteMessage({
             type: 'invite',
             from: form,
-            roomid: roomid
+            roomid: roomid,
+            reason: reasonMsg
         });
     };
 
@@ -1983,7 +2020,6 @@
         var piece = iq.c('query', {xmlns: 'jabber:iq:privacy'})
             .c('list', {name: 'special'});
 
-        // todo ie8 ??
         var keys = Object.keys(blacklist);
         var len = keys.length;
         var order = 2;
@@ -2014,7 +2050,6 @@
         var piece = iq.c('query', {xmlns: 'jabber:iq:privacy'})
             .c('list', {name: 'special'});
 
-        // todo ie8 ??
         var keys = Object.keys(blacklist);
         var len = keys.length;
 
@@ -2132,6 +2167,244 @@
         });
     };
 
+    /**
+     * destroyGroup 删除群组
+     *
+     * @param options
+     */
+    // <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
+    //     <query xmlns="http://jabber.org/protocol/muc#owner">
+    //         <destroy/>
+    //     </query>
+    // </iq>
+    connection.prototype.destroyGroup = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+
+        // must be `owner`
+        var affiliation = 'owner';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'set', to: to});
+
+        iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+            .c('destroy');
+
+        this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+            sucFn();
+        }, function () {
+            errFn();
+        });
+    };
+
+    /**
+     * leaveGroupBySelf 主动离开群组
+     *
+     * @param options
+     */
+    // <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
+    //     <query xmlns="http://jabber.org/protocol/muc#admin">
+    //         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+    //     </query>
+    // </iq>
+    connection.prototype.leaveGroupBySelf = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+
+        // must be `owner`
+        var jid = _getJid(options, this);
+        var affiliation = 'admin';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'set', to: to});
+
+        iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+            .c('item', {
+                affiliation: 'none',
+                jid: jid
+            });
+
+        this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+            sucFn(msgInfo);
+        }, function (errInfo) {
+            errFn(errInfo);
+        });
+    };
+
+    /**
+     * leaveGroup 被踢出群组
+     *
+     * @param options
+     */
+    // <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
+    //     <query xmlns="http://jabber.org/protocol/muc#admin">
+    //         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
+    //         <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
+    //         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+    //         <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
+    //     </query>
+    // </iq>
+    connection.prototype.leaveGroup = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+        var list = options.list || [];
+        var affiliation = 'admin';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'set', to: to});
+        var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+        var keys = Object.keys(list);
+        var len = keys.length;
+
+        for (var i = 0; i < len; i++) {
+            var name = list[keys[i]];
+            var jid = _getJidByName(name, this);
+
+            piece = piece.c('item', {
+                affiliation: 'none',
+                jid: jid
+            }).up().c('item', {
+                role: 'none',
+                jid: jid,
+            }).up();
+        }
+
+        this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+            sucFn(msgInfo);
+        }, function (errInfo) {
+            errFn(errInfo);
+        });
+    };
+
+    /**
+     * addGroupMembers 添加群组成员
+     *
+     * @param options
+     */
+    // <iq id="09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477482739698@conference.easemob.com" type="set">
+    //     <query xmlns="http://jabber.org/protocol/muc#admin">
+    //         <item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+    //     </query>
+    // </iq>
+    connection.prototype.addGroupMembers = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+        var list = options.list || [];
+        var affiliation = 'admin';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'set', to: to});
+        var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+        var keys = Object.keys(list);
+        var len = keys.length;
+
+        for (var i = 0; i < len; i++) {
+            var name = list[keys[i]];
+            var jid = _getJidByName(name, this);
+
+            piece = piece.c('item', {
+                affiliation: 'member',
+                jid: jid
+            }).up();
+        }
+
+        this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+            sucFn(msgInfo);
+        }, function (errInfo) {
+            errFn(errInfo);
+        });
+    };
+
+    /**
+     * createGroup 创建群组
+     *
+     * 1. 创建申请 -> 得到房主身份
+     * 2. 获取房主信息 -> 得到房间form
+     * 3. 完善房间form -> 创建成功
+     * 4. 添加房间成员
+     * 5. 消息通知成员
+     * @param options
+     */
+    connection.prototype.createGroup = function (options) {
+        var roomId = +new Date();
+        var toRoom = this._getGroupJid(roomId);
+        var to = toRoom + '/' + this.context.userId;
+
+        var pres = $pres({to: to})
+            .c('x', {xmlns: 'http://jabber.org/protocol/muc'}).up();
+        // .c('create', {xmlns: 'http://jabber.org/protocol/muc'}).up()
+        // .c('c', {
+        //     hash: 'sha-1',
+        //     node: 'https://github.com/robbiehanson/XMPPFramework',
+        //     ver: 'k6gP4Ua5m4uu9YorAG0LRXM+kZY=',
+        //     xmlns: 'http://jabber.org/protocol/caps'
+        // }).up();
+
+        // createGroupACK
+        this.sendCommand(pres.tree());
+
+        // Creating a Reserved Room
+        var iq = $iq({type: 'get', to: toRoom})
+            .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'});
+
+        log(options);
+        var me = this;
+        this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+            // log(msgInfo);
+
+            var x = msgInfo.getElementsByTagName('x')[0];
+            x.setAttribute('type', 'submit');
+            Strophe.forEachChild(x, 'field', function (field) {
+                var fieldVar = field.getAttribute('var');
+                var valueDom = field.getElementsByTagName('value')[0];
+                // log(fieldVar);
+                switch (fieldVar) {
+                    case 'muc#roomconfig_roomname':
+                        valueDom.textContent = options.subject || '';
+                        break;
+                    case 'muc#roomconfig_roomdesc':
+                        valueDom.textContent = options.description || '';
+                        break;
+                    case 'muc#roomconfig_publicroom': // public 1
+                        valueDom.textContent = +options.optionsPublic;
+                        break;
+                    case 'muc#roomconfig_membersonly':
+                        valueDom.textContent = +options.optionsMembersOnly;
+                        break;
+                    case 'muc#roomconfig_moderatedroom':
+                        valueDom.textContent = +options.optionsModerate;
+                        break;
+                    case 'muc#roomconfig_persistentroom':
+                        valueDom.textContent = 1;
+                        break;
+                    case 'muc#roomconfig_allowinvites':
+                        valueDom.textContent = +options.optionsAllowInvites;
+                        break;
+                }
+                // log(valueDom);
+            });
+            // log(x);
+
+            var iq = $iq({to: toRoom, type: 'set'})
+                .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'})
+                .cnode(x);
+
+            log(iq.tree());
+
+            me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+                // sucFn(msgInfo);
+
+                me.addGroupMembers({
+                    list: options.members,
+                    roomId: roomId
+                });
+            }, function (errInfo) {
+                // errFn(errInfo);
+            });
+            // sucFn(msgInfo);
+        }, function (errInfo) {
+            // errFn(errInfo);
+        });
+
+    };
+
+
     window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
     WebIM.connection = connection;
     WebIM.utils = _utils;
@@ -2149,8 +2422,7 @@
             }
         );
     };
-}(window, undefined));
-
+})(window, undefined);
 
 if (module.hot) {
     module.hot.accept();

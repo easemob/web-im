@@ -1,4 +1,5 @@
 var React = require("react");
+var ReactDOM = require('react-dom');
 var SendWrapper = require('./sendWrapper');
 var Avatar = require('../common/avatar');
 var Operations = require('./operations');
@@ -81,8 +82,9 @@ module.exports = React.createClass({
             this.listMember();
         }
     },
+
     listMember: function () {
-        if (this.refs.i.className.indexOf('up') < 0) {
+        if (!this.state.memberShowStatus) {
             var me = this;
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"groupMembers","id":"' + me.props.roomId + '"}',
@@ -117,7 +119,6 @@ module.exports = React.createClass({
                 });
             }
         } else {
-            this.refs.i.className = 'webim-down-icon font smallest dib';
             this.setState({members: [], memberShowStatus: false});
         }
     },
@@ -145,7 +146,7 @@ module.exports = React.createClass({
     },
 
     refreshMemberList: function (members) {
-        this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
+        // this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
         this.setState({members: this.state.owner.concat(members), memberShowStatus: true});
     },
 
@@ -153,6 +154,16 @@ module.exports = React.createClass({
         msg.chatType = this.props.chatType;
         Demo.conn.send(msg);
         Demo.api.appendMsg(msg, 'txt');
+    },
+
+    // hide when blur | bind focus event
+    componentDidUpdate: function () {
+        // this.state.memberShowStatus && ReactDOM.findDOMNode(this.refs['member']).focus();
+    },
+
+    // hide when blur close
+    handleOnBlur: function () {
+        // this.setState({memberShowStatus: false});
     },
 
     render: function () {
@@ -177,27 +188,31 @@ module.exports = React.createClass({
                 <Avatar src='demo/images/default.png'/>
                 <span>{username}</span>
                 <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
-                    <i className="webim-leftbar-icon font smaller"
+                    <i className={"webim-leftbar-icon font smaller " + className}
+                       style={{display: this.state.admin != 1 ? 'none' : ''}}
                        onClick={this.addToGroupBlackList.bind(this, username, i)}>A</i>
                 </div>
             </li>);
         }
 
-
         return (
             <div className={'webim-chatwindow ' + this.props.className}>
                 <div className='webim-chatwindow-title'>
                     {(Demo.selectedCate == 'chatrooms' || Demo.selectedCate == 'groups') ? Demo.lan.groupMemberLabel : this.props.name }
-                    <i ref='i' className={'webim-down-icon font smallest' + className}
+                    <i ref='i'
+                       className={'webim-down-icon font smallest ' + className + " " + (this.state.memberShowStatus ? 'webim-up-icon' : 'webim-down-icon')}
                        onClick={this.preListMember}>D</i>
                 </div>
                 <div className={this.props.showOptions ? '' : 'hide'}>
                     <Operations ref='operation_div' roomId={this.props.roomId} admin={this.state.admin}
                                 owner={this.state.owner}
                                 settings={this.state.settings}
-                                getGroupOwner={this.getGroupOwner}/>
+                                getGroupOwner={this.getGroupOwner}
+                                onBlur={this.handleOnBlur}
+                    />
                 </div>
-                <ul ref='member' className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>
+                <ul onBlur={this.handleOnBlur} tabIndex="-1" ref='member'
+                    className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>
                 <div id={this.props.id} ref='wrapper' className='webim-chatwindow-msg'></div>
                 <SendWrapper send={this.send} {...props} />
             </div>

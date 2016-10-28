@@ -1,5 +1,6 @@
 var React = require("react");
 var ReactDOM = require('react-dom');
+var _ = require('underscore');
 
 var componentsNode = document.getElementById('components');
 var dom = document.createElement('div');
@@ -55,21 +56,27 @@ var CreateGroup = React.createClass({
         var info = this.refs.textarea.value;
         var permission_group = this.state.selectedOption;
         var permission_member = this.state.selectedOption2;
-        var friendsSelected = this.refs.friendList.refs.multiSelected.label();
+        var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
+        var friendsValues = this.refs.friendList.refs.multiSelected.value();
         log(value, info, permission_group, permission_member, friendsSelected);
         if (!value) {
             Demo.api.NotifyError("群组名不能为空");
             return;
         }
+
+        _.each(friendsValues, function (v, k) {
+            friendsSelected.push(v.text)
+        });
+
+        var styles = ["PUBLIC_JOIN_APPROVAL", "PUBLIC_JOIN_OPEN", "PRIVATE_OWNER_INVITE", "PRIVATE_MEMBER_INVITE"];
+        var option1 = permission_group == "option1" ? 0 : 1;
+        var option2 = permission_member == "option3" ? 0 : 1;
+        var style = styles[option1 * 2 + option2];
+
+        // friendsSelected = '["' + friendsSelected.replace(/, /g, '","') + '"]';
+        // log(style)
         if (WebIM.config.isWindowSDK) {
-            var styles = ["PUBLIC_JOIN_APPROVAL", "PUBLIC_JOIN_OPEN", "PRIVATE_OWNER_INVITE", "PRIVATE_MEMBER_INVITE"];
-            var option1 = permission_group == "option1" ? 0 : 1;
-            var option2 = permission_member == "option3" ? 0 : 1;
-            var style = styles[option1 * 2 + option2];
-
-            friendsSelected = '["' + friendsSelected.replace(/, /g, '","') + '"]';
-
-            WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + friendsSelected + '}',
+            WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + JSON.stringify(friendsSelected) + '}',
                 function (response) {
                     Demo.api.NotifyError('createGroup successfully');
                 },
@@ -78,10 +85,17 @@ var CreateGroup = React.createClass({
                 });
         } else {
 
-            // Demo.conn.createGroup({
-            //     to: value,
-            //     message: Demo.user + Demo.lan.request
-            // });
+            Demo.conn.createGroup({
+                subject: value,
+                description: info,
+                members: friendsSelected,
+                optionsPublic: style == 'PUBLIC_JOIN_OPEN' || style == 'PUBLIC_JOIN_APPROVAL',
+                optionsModerate: style == 'PUBLIC_JOIN_APPROVAL',
+                // 是否只允许 会员进入 ??
+                optionsMembersOnly: 1,
+                optionsAllowInvites: style == 'PRIVATE_MEMBER_INVITE',
+                privilegeMember: option2,
+            });
         }
 
 

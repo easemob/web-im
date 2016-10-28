@@ -136,6 +136,18 @@ var AdminGroupMembers = React.createClass({
             }
 
         } else {
+            if (value_add.length > 0) {
+                Demo.conn.addGroupMembers({
+                    list: value_add,
+                    roomId: this.props.roomId
+                })
+            }
+            if (value_del.length > 0) {
+                Demo.conn.leaveGroup({
+                    list: value_del,
+                    roomId: this.props.roomId
+                })
+            }
         }
         this.close();
     },

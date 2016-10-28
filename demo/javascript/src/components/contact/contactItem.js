@@ -4,6 +4,7 @@ var _ = require('underscore');
 
 module.exports = React.createClass({
 
+
     getInitialState: function () {
         var me = this;
 
@@ -132,8 +133,7 @@ module.exports = React.createClass({
             Demo.selected = null;
         }
         this.props.update(Demo.selected);
-    }
-    ,
+    },
 
     render: function () {
         var className = this.props.cur === this.props.id ? ' selected' : '';
