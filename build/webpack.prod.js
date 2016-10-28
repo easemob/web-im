@@ -36,7 +36,7 @@ module.exports = {
         // new webpack.NoErrorsPlugin(),
         // production must be with `UglifyJsPlugin` or ie9 crash
         // faster your app better use
-        // https://github.com/webpack/webpack/issues/868
+        // https://github.com/facebook/react/issues/7803
         new webpack.DefinePlugin({
             'process.env': {
                 'NODE_ENV': '"production"'
