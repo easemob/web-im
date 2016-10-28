@@ -70,10 +70,10 @@ module.exports = React.createClass({
                         <i className='font smallest'>L</i>
                         <span>{Demo.lan.createGroup}</span>
                     </li>
-                    <li onClick={this.joinPublicGroup} className={WebIM.config.isWindowSDK ? 'hide' : ''}>
-                        <i className='font smallest'>L</i>
-                        <span>{Demo.lan.joinPublicGroup}</span>
-                    </li>
+                    {/*<li onClick={this.joinPublicGroup} className={WebIM.config.isWindowSDK ? 'hide' : ''}>*/}
+                    {/*<i className='font smallest'>L</i>*/}
+                    {/*<span>{Demo.lan.joinPublicGroup}</span>*/}
+                    {/*</li>*/}
                     <li onClick={this.logout}>
                         <i className='font smallest'>Q</i>
                         <span>{Demo.lan.quit}({this.props.username})</span>
