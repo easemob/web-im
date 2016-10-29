@@ -11,9 +11,19 @@ var Input = UI.Input;
 
 var ChangeGroupSubject = React.createClass({
 
+    getInitialState: function () {
+        return {
+            subject: ''
+        }
+    },
+
+    onChange: function (e) {
+        this.setState({subject: e.target.value});
+    },
+
     onSubmit: function () {
 
-        var value = this.refs.input.refs.input.value;
+        var value = this.state.subject;
 
         if (!value) {
             Demo.api.NotifyError("群组名不能为空");
@@ -51,7 +61,8 @@ var ChangeGroupSubject = React.createClass({
                 <div className='webim-dialog'>
                     <h3>{Demo.lan.changeGroupSubject}</h3>
                     <div ref='content'>
-                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupSubject}/>
+                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupSubject}
+                               value={this.state.subject} onChange={this.onChange}/>
                     </div>
                     <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button'/>
                     <span className='font' onClick={this.close}>A</span>

@@ -25,7 +25,7 @@ module.exports = React.createClass({
 
     // hide when blur | bind focus event
     componentDidUpdate: function () {
-        // !this.state.hide && ReactDOM.findDOMNode(this.refs['webim-operations']).focus();
+        !this.state.hide && ReactDOM.findDOMNode(this.refs['webim-operations']).focus();
     },
 
     // hide when blur close
