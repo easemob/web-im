@@ -567,7 +567,7 @@ module.exports = {
             cur.style.display = 'block';
         } else {
             if (!this.sentByMe && id !== Demo.selected) {
-                var cur = document.getElementById(id).getElementsByTagName('i')[1];
+                var cur = document.getElementById(id).getElementsByTagName('i')[0];
                 var curCount = cur.getAttribute('count') / 1;
                 curCount++;
                 cur.setAttribute('count', curCount);
