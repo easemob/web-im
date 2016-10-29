@@ -1,5 +1,6 @@
 var React = require("react");
 var ReactDOM = require('react-dom');
+var _ = require('underscore');
 
 var componentsNode = document.getElementById('components');
 var dom = document.createElement('div');
@@ -92,14 +93,16 @@ var AdminGroupMembers = React.createClass({
 
     onSubmit: function () {
 
-        var value = this.refs.friendList.refs.multiSelected.label();
+        var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
+        var friendsValues = this.refs.friendList.refs.multiSelected.value();
 
-        if (!value) {
-            return;
-        }
+        _.each(friendsValues, function (v, k) {
+            friendsSelected.push(v.text)
+        });
+
         log("AdminGroupMembers:", value, this.props.roomId);
         var value_old = this.refs.friendList.getValueOld();
-        var value_new = value.split(", ");
+        var value_new = friendsSelected;
         var value_add = [];
         var value_del = [];
         for (var i = 0, l = value_new.length; i < l; i++) {
@@ -112,6 +115,8 @@ var AdminGroupMembers = React.createClass({
                 value_del.push(value_old[i]);
             }
         }
+
+
         console.log('add', value_add);
         console.log('del', value_del);
         if (this.props.value == "PRIVATE_MEMBER_INVITE" && value_del.length > 0) {
