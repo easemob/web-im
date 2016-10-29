@@ -1,9 +1,5 @@
 var React = require("react");
 var ReactDOM = require('react-dom');
-var ChangeGroupSubject = require("../group/changeGroupSubject");
-var ChangeGroupDescription = require("../group/changeGroupDescription");
-var AdminGroupMembers = require("../group/adminGroupMembers");
-var ShowGroupBlacklist = require("../blacklist/showGroupBlacklist");
 
 module.exports = React.createClass({
 
