@@ -117,7 +117,7 @@ module.exports = React.createClass({
                         <span>{Demo.lan.delAFriend}</span>
                     </li>
                     <li onClick={this.addToBlackList}>
-                        <i className='font smallest'>C</i>
+                        <i className='font smallest'>n</i>
                         <span>{Demo.lan.addToBlackList}</span>
                     </li>
 

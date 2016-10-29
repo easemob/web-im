@@ -53,7 +53,7 @@ module.exports = React.createClass({
                         <span>{Demo.lan.addAFriend}</span>
                     </li>
                     <li onClick={this.showBlacklist}>
-                        <i className='font smallest'>L</i>
+                        <i className='font smallest'>n</i>
                         <span>{Demo.lan.blacklist}</span>
                     </li>
                     <li onClick={this.createGroup}>
