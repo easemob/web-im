@@ -15,13 +15,11 @@ module.exports = React.createClass({
         };
     },
 
-    handleIconCount: function (count) {
-        // TODO
-        var curCate = this.refs['i'];
-        if (!curCate) return;
+    handleCurCateIconCount: function (count) {
+        var curCate = document.getElementById(this.props.cate).getElementsByTagName('i')[1];
         var curCateCount = curCate.getAttribute('count') / 1;
         curCateCount -= count;
-        // curCateCount = Math.max(0, curCateCount);
+        curCateCount = Math.max(0, curCateCount);
 
         if (curCateCount > 0) {
             curCate.style.display = 'block';
@@ -29,16 +27,14 @@ module.exports = React.createClass({
             curCateCount = 0;
             curCate.style.display = 'none';
         }
-        // this.setState({
-        //     countShow: curCateCount > 0
-        // })
+        curCate.setAttribute('count', curCateCount);
     },
 
 
     update: function () {
         if (this.refs['i']) {
             var count = this.refs['i'].getAttribute('count') / 1;
-            this.handleIconCount(count);
+            this.handleCurCateIconCount(count);
 
             this.refs['i'].style.display = 'none';
             this.refs['i'].setAttribute('count', 0);

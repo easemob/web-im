@@ -556,10 +556,13 @@ module.exports = {
     },
 
     addCount: function (id, cate) {
-        // TODO
+        // TODO: don't handle dom directly,use react way.
         if (Demo.selectedCate !== cate) {
             var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
             curCate.style.display = 'block';
+            var curCateCount = curCate.getAttribute('count') / 1;
+            curCateCount++;
+            curCate.setAttribute('count', curCateCount);
 
             var cur = document.getElementById(id).getElementsByTagName('i')[0];
             var curCount = cur.getAttribute('count') / 1;
