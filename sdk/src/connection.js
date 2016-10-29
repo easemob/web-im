@@ -2169,6 +2169,50 @@
     };
 
     /**
+     * changeGroupSubject 修改群名称
+     *
+     * @param options
+     */
+    // <iq to='easemob-demo#chatdemoui_roomid@conference.easemob.com' type='set' id='3940489311' xmlns='jabber:client'>
+    //     <query xmlns='http://jabber.org/protocol/muc#owner'>
+    //         <x type='submit' xmlns='jabber:x:data'>
+    //             <field var='FORM_TYPE'><value>http://jabber.org/protocol/muc#roomconfig</value></field>
+    //             <field var='muc#roomconfig_roomname'><value>Room Name</value></field>
+    //         </x>
+    //     </query>
+    // </iq>
+    connection.prototype.changeGroupSubject = function (options) {
+        var sucFn = options.success || _utils.emptyfn;
+        var errFn = options.error || _utils.emptyfn;
+
+        // must be `owner`
+        var affiliation = 'owner';
+        var to = this._getGroupJid(options.roomId);
+        var iq = $iq({type: 'set', to: to});
+
+        iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+            .c('x', {type: 'submit', xmlns: 'jabber:x:data'})
+            .c('field', {var: 'FORM_TYPE'})
+            .c('value')
+            .t('http://jabber.org/protocol/muc#roomconfig')
+            .up().up()
+            .c('field', {var: 'muc#roomconfig_roomname'})
+            .c('value')
+            .t(options.subject)
+            .up().up()
+            .c('field', {var: 'muc#roomconfig_roomdesc'})
+            .c('value')
+            .t(options.description);
+
+
+        this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+            sucFn();
+        }, function () {
+            errFn();
+        });
+    };
+
+    /**
      * destroyGroup 删除群组
      *
      * @param options

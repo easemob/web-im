@@ -69,6 +69,7 @@ exports.English = {
     groupBlacklist: 'Blacklist',
     showGroupBlacklist: 'Blacklist',
     memberInvite: 'Invite',
+    changeGroupInfo: 'Edit group info',
     last: ''
 };
 
@@ -145,5 +146,6 @@ exports.Chinese = {
     // title
     showGroupBlacklist: '群组黑名单',
     memberInvite: '邀请好友',
+    changeGroupInfo: '修改群信息',
     last: ''
 };

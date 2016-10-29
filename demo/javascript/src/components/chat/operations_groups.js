@@ -1,7 +1,6 @@
 var React = require("react");
 var ReactDOM = require('react-dom');
-var ChangeGroupSubject = require("../group/changeGroupSubject");
-var ChangeGroupDescription = require("../group/changeGroupDescription");
+var ChangeGroupInfo = require("../group/changeGroupInfo");
 var AdminGroupMembers = require("../group/adminGroupMembers");
 var ShowGroupBlacklist = require("../blacklist/showGroupBlacklist");
 
@@ -25,7 +24,7 @@ module.exports = React.createClass({
 
     // hide when blur | bind focus event
     componentDidUpdate: function () {
-        // !this.state.hide && ReactDOM.findDOMNode(this.refs['webim-operations']).focus();
+        !this.state.hide && ReactDOM.findDOMNode(this.refs['webim-operations']).focus();
     },
 
     // hide when blur close
@@ -39,13 +38,8 @@ module.exports = React.createClass({
         this.update();
     },
 
-    changeGroupSubject: function () {
-        ChangeGroupSubject.show(this.props.roomId);
-        this.update();
-    },
-
-    changeGroupDescription: function () {
-        ChangeGroupDescription.show(this.props.roomId);
+    changeGroupInfo: function () {
+        ChangeGroupInfo.show(this.props.roomId);
         this.update();
     },
 
@@ -130,13 +124,9 @@ module.exports = React.createClass({
                         <i className='font smallest'>F</i>
                         <span>{adminMemberLabel}</span>
                     </li>
-                    <li onClick={this.changeGroupSubject} className={this.props.admin ? '' : 'hide'}>
+                    <li onClick={this.changeGroupInfo} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>B</i>
-                        <span>{Demo.lan.changeGroupSubject}</span>
-                    </li>
-                    <li onClick={this.changeGroupDescription} className={this.props.admin ? '' : 'hide'}>
-                        <i className='font smallest'>B</i>
-                        <span>{Demo.lan.changeGroupDescription}</span>
+                        <span>{Demo.lan.changeGroupInfo}</span>
                     </li>
                     {/* destroy or leave group */}
                     <li onClick={actionMethod}>
