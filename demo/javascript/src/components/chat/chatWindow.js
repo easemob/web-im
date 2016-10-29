@@ -2,8 +2,8 @@ var React = require("react");
 var ReactDOM = require('react-dom');
 var SendWrapper = require('./sendWrapper');
 var Avatar = require('../common/avatar');
-var Operations_groups = require('./operations_groups');
-var Operations_friends = require('./operations_friends');
+var OperationsGroups = require('./operationsGroups');
+var OperationsFriends = require('./operationsFriends');
 var _ = require('underscore');
 
 module.exports = React.createClass({
@@ -13,11 +13,12 @@ module.exports = React.createClass({
             admin: 0,
             owner: [],
             members: [],
+            fields: {},
             memberShowStatus: false
         };
     },
 
-    getGroupOwner: function (cb_type) {
+    getGroupInfo: function (cb_type) {
         //only group window
         if (this.props.chatType == 'groupChat') {
             var me = this;
@@ -47,7 +48,7 @@ module.exports = React.createClass({
             } else {
                 Demo.conn.queryRoomInfo({
                     roomId: me.props.roomId,
-                    success: function (settings, members) {
+                    success: function (settings, members, fields) {
                         if (members && members.length > 0) {
                             var jid = members[0].jid;
                             var username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
@@ -55,7 +56,7 @@ module.exports = React.createClass({
                             if (members[0].affiliation == 'owner' && username == Demo.user) {
                                 admin = 1;
                             }
-                            me.setState({settings: settings, admin: admin, owner: members});
+                            me.setState({settings: settings, admin: admin, owner: members, fields: fields});
                             if (cb_type == 'listMember') {
                                 me.listMember();
                             } else if (cb_type == 'opertion') {
@@ -78,7 +79,7 @@ module.exports = React.createClass({
 
     preListMember: function () {
         if (this.state.owner.length == 0) {
-            this.getGroupOwner('listMember');
+            this.getGroupInfo('listMember');
         } else {
             this.listMember();
         }
@@ -198,22 +199,21 @@ module.exports = React.createClass({
 
         var operations = [];
         if (Demo.selectedCate == 'friends') {
-            operations.push(<Operations_friends key='operation_div' ref='operation_div' roomId={this.props.roomId}
-                                                admin={this.state.admin}
-                                                owner={this.state.owner}
-                                                settings={this.state.settings}
-                                                getGroupOwner={this.getGroupOwner}
-                                                onBlur={this.handleOnBlur}
-                                                name={this.props.name}
-                                                updateNode={this.props.updateNode}
-            />);
-        } else if (Demo.selectedCate == 'groups') {
-            operations.push(<Operations_groups key='operation_div' ref='operation_div' roomId={this.props.roomId}
-                                               admin={this.state.admin}
+            operations.push(<OperationsFriends ref='operation_div' roomId={this.props.roomId} admin={this.state.admin}
                                                owner={this.state.owner}
                                                settings={this.state.settings}
-                                               getGroupOwner={this.getGroupOwner}
+                                               getGroupInfo={this.getGroupInfo}
                                                onBlur={this.handleOnBlur}
+                                               name={this.props.name}
+                                               updateNode={this.props.updateNode}
+            />);
+        } else if (Demo.selectedCate == 'groups') {
+            operations.push(<OperationsGroups ref='operation_div' roomId={this.props.roomId} admin={this.state.admin}
+                                              owner={this.state.owner}
+                                              settings={this.state.settings}
+                                              fields={this.state.fields}
+                                              getGroupInfo={this.getGroupInfo}
+                                              onBlur={this.handleOnBlur}
             />);
         }
 
