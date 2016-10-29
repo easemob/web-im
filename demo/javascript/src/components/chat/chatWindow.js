@@ -2,7 +2,8 @@ var React = require("react");
 var ReactDOM = require('react-dom');
 var SendWrapper = require('./sendWrapper');
 var Avatar = require('../common/avatar');
-var Operations = require('./operations');
+var Operations_groups = require('./operations_groups');
+var Operations_friends = require('./operations_friends');
 var _ = require('underscore');
 
 module.exports = React.createClass({
@@ -195,6 +196,25 @@ module.exports = React.createClass({
             </li>);
         }
 
+        var operations = [];
+        if (Demo.selectedCate == 'friends') {
+            operations.push(<Operations_friends ref='operation_div' roomId={this.props.roomId} admin={this.state.admin}
+                                                owner={this.state.owner}
+                                                settings={this.state.settings}
+                                                getGroupOwner={this.getGroupOwner}
+                                                onBlur={this.handleOnBlur}
+                                                name={this.props.name}
+                                                updateNode={this.props.updateNode}
+            />);
+        } else if (Demo.selectedCate == 'groups') {
+            operations.push(<Operations_groups ref='operation_div' roomId={this.props.roomId} admin={this.state.admin}
+                                               owner={this.state.owner}
+                                               settings={this.state.settings}
+                                               getGroupOwner={this.getGroupOwner}
+                                               onBlur={this.handleOnBlur}
+            />);
+        }
+
         return (
             <div className={'webim-chatwindow ' + this.props.className}>
                 <div className='webim-chatwindow-title'>
@@ -203,13 +223,8 @@ module.exports = React.createClass({
                        className={'webim-down-icon font smallest ' + className + " " + (this.state.memberShowStatus ? 'webim-up-icon' : 'webim-down-icon')}
                        onClick={this.preListMember}>D</i>
                 </div>
-                <div className={this.props.showOptions ? '' : 'hide'}>
-                    <Operations ref='operation_div' roomId={this.props.roomId} admin={this.state.admin}
-                                owner={this.state.owner}
-                                settings={this.state.settings}
-                                getGroupOwner={this.getGroupOwner}
-                                onBlur={this.handleOnBlur}
-                    />
+                <div className={(operations.length > 0) ? '' : 'hide'}>
+                    {operations}
                 </div>
                 <ul onBlur={this.handleOnBlur} tabIndex="-1" ref='member'
                     className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>

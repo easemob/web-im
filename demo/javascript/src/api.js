@@ -25,6 +25,7 @@ var Blacklist = (function () {
     }
 
     function _add(name) {
+        log('_add', name);
         data[name] = _.find(Demo.friends, function (item) {
             log('name', name, item.name);
             return (item.name == name);

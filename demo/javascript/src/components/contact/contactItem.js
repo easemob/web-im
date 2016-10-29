@@ -34,40 +34,8 @@ module.exports = React.createClass({
         // })
     },
 
-    // blacklist
-    addToBlackList: function (e) {
-        event.preventDefault();
-        event.stopPropagation();
 
-        var value = this.props.id;
-        var me = this;
-
-        //TODO by lwz 重构
-        if (WebIM.config.isWindowSDK) {
-            WebIM.doQuery('{"type":"addToBlackList", "username": "' + value + '"}',
-                function success(str) {
-                    var list = Demo.api.blacklist.add(value);
-                    me.setState({blacklist: list});
-                    Demo.api.updateRoster();
-                },
-                function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('getRoster:' + errCode);
-                });
-        } else {
-            var list = Demo.api.blacklist.add(value);
-            Demo.conn.addToBlackList({
-                list: list,
-                type: 'jid',
-                success: function () {
-                    me.update(me, true);
-                },
-                error: function () {
-                }
-            });
-        }
-    },
-
-    update: function (e, selected) {
+    update: function () {
         if (this.refs['i']) {
             var count = this.refs['i'].getAttribute('count') / 1;
             this.handleIconCount(count);
@@ -129,9 +97,6 @@ module.exports = React.createClass({
             }
         }
 
-        if (selected) {
-            Demo.selected = null;
-        }
         this.props.update(Demo.selected);
     },
 
@@ -143,11 +108,6 @@ module.exports = React.createClass({
                 <Avatar src={this.props.src}/>
                 <div className="webim-contact-info">
                     <span className="webim-contact-username">{this.props.username}</span>
-                    <div className="webim-contact-handlers">
-                        <i ref="i2" title="Add to blacklist" className="webim-leftbar-icon font smaller"
-                           style={{display: Demo.selectedCate != 'friends' ? 'none' : ''}}
-                           onClick={this.addToBlackList}>A</i>
-                    </div>
                 </div>
                 <em></em>
                 <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>
