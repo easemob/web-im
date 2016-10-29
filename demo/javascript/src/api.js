@@ -559,7 +559,7 @@ module.exports = {
             var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
             curCate.style.display = 'block';
 
-            var cur = document.getElementById(id).getElementsByTagName('i')[1];
+            var cur = document.getElementById(id).getElementsByTagName('i')[0];
             var curCount = cur.getAttribute('count') / 1;
             curCount++;
             cur.setAttribute('count', curCount);
