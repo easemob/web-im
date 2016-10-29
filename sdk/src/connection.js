@@ -2466,6 +2466,18 @@
                         case 'muc#roomconfig_allowinvites':
                             _setText(valueDom, +options.optionsAllowInvites);
                             break;
+                        case 'muc#roomconfig_allowvisitornickchange':
+                            _setText(valueDom, 0);
+                            break;
+                        case 'muc#roomconfig_allowvisitorstatus':
+                            _setText(valueDom, 0);
+                            break;
+                        case 'allow_private_messages':
+                            _setText(valueDom, 0);
+                            break;
+                        case 'allow_private_messages_from_visitors':
+                            _setText(valueDom, 'nobody');
+                            break;
                         default:
                             break;
                     }
