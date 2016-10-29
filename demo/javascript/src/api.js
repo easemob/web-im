@@ -306,14 +306,16 @@ module.exports = {
             name = this.sendByMe ? Demo.user : msg.from,
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
             targetNode = document.getElementById('wrapper' + targetId);
-        data = decodeURIComponent(data);
+
+        if (typeof data == "string") {
+            data = decodeURIComponent(data);
+        }
 
         if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
         } else if (!targetNode) {
             return;
         }
-
         switch (type) {
             case 'txt':
                 if (!targetNode) {
@@ -556,10 +558,10 @@ module.exports = {
     addCount: function (id, cate) {
         // TODO
         if (Demo.selectedCate !== cate) {
-            var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
+            var curCate = document.getElementById(cate).getElementsByTagName('i')[0];
             curCate.style.display = 'block';
 
-            var cur = document.getElementById(id).getElementsByTagName('i')[1];
+            var cur = document.getElementById(id).getElementsByTagName('i')[0];
             var curCount = cur.getAttribute('count') / 1;
             curCount++;
             cur.setAttribute('count', curCount);
