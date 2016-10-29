@@ -5,7 +5,7 @@ exports.Input = React.createClass({
 
     getInitialState: function () {
         return {
-            value: ''
+            value: this.props.value || ''
         }
     },
 

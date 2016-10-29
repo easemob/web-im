@@ -1594,21 +1594,42 @@
             }
             var owner = '';
             var fields = result.getElementsByTagName('field');
+            var fieldValues = {};
             if (fields) {
                 for (var i = 0; i < fields.length; i++) {
                     var field = fields[i];
-                    if (field.getAttribute('label') === 'owner') {
-                        var mem = {
-                            jid: (field.textContent || field.text) + '@' + domain
-                            , affiliation: 'owner'
-                        };
-                        members.push(mem);
-                        break;
+                    var fieldVar = field.getAttribute('var');
+                    var fieldSimplify = fieldVar.split('_')[1];
+                    switch (fieldVar) {
+                        case 'muc#roominfo_occupants':
+                        case 'muc#roominfo_maxusers':
+                        case 'muc#roominfo_affiliations':
+                        case 'muc#roominfo_description':
+                            fieldValues[fieldSimplify] = (field.textContent || field.text || '');
+                            break;
+                        case 'muc#roominfo_owner':
+                            var mem = {
+                                jid: (field.textContent || field.text) + '@' + domain
+                                , affiliation: 'owner'
+                            };
+                            members.push(mem);
+                            fieldValues[fieldSimplify] = (field.textContent || field.text);
+                            break;
                     }
+
+                    // if (field.getAttribute('label') === 'owner') {
+                    //     var mem = {
+                    //         jid: (field.textContent || field.text) + '@' + domain
+                    //         , affiliation: 'owner'
+                    //     };
+                    //     members.push(mem);
+                    //     break;
+                    // }
                 }
+                fieldValues['name'] = (result.getElementsByTagName('identity')[0]).getAttribute('name');
             }
-            console.log(settings, members);
-            suc(settings, members);
+            log(settings, members, fieldValues);
+            suc(settings, members, fieldValues);
         };
         var err = options.error || _utils.emptyfn;
         var errorFn = function (ele) {

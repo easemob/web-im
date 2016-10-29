@@ -15,7 +15,7 @@ module.exports = React.createClass({
 
     update: function () {
         if (this.props.owner.length == 0) {
-            this.props.getGroupOwner('opertion');
+            this.props.getGroupInfo('opertion');
             return;
         }
 
@@ -39,7 +39,7 @@ module.exports = React.createClass({
     },
 
     changeGroupInfo: function () {
-        ChangeGroupInfo.show(this.props.roomId);
+        ChangeGroupInfo.show(this.props.roomId, this.props.fields, this.props.getGroupInfo);
         this.update();
     },
 

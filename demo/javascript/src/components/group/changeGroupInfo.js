@@ -13,8 +13,8 @@ var ChangeGroupSubject = React.createClass({
 
     getInitialState: function () {
         return {
-            subject: '',
-            description: ''
+            subject: this.props.fields.name || '',
+            description: this.props.fields.description || ''
         }
     },
 
@@ -57,6 +57,7 @@ var ChangeGroupSubject = React.createClass({
                 description: this.state.description,
                 success: () => {
                     Demo.api.changeGroupSubjectCallBack(this.props.roomId, value);
+                    typeof this.props.getGroupInfo == 'function' && this.props.getGroupInfo('groupChat');
                 }
             });
         }
@@ -91,9 +92,9 @@ var ChangeGroupSubject = React.createClass({
 });
 
 module.exports = {
-    show: function (roomId) {
+    show: function (roomId, fields, getGroupInfo) {
         ReactDOM.render(
-            <ChangeGroupSubject onClose={this.close} roomId={roomId}/>,
+            <ChangeGroupSubject onClose={this.close} roomId={roomId} fields={fields} getGroupInfo={getGroupInfo}/>,
             dom
         );
     },
