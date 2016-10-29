@@ -35,13 +35,20 @@ var ChangeGroupSubject = React.createClass({
         }
 
         if (WebIM.config.isWindowSDK) {
-            WebIM.doQuery('{"type":"changeGroupSubject", "id":"' + this.props.roomId + '", "subject":"' + value + '"}',
+            WebIM.doQuery('{"type":"changeGroupSubject", "id":"' + this.props.roomId + '", "subject":"' + this.state.subject + '"}',
                 function (response) {
                     var json = eval('(' + str + ')');
                     Demo.api.changeGroupSubjectCallBack(json.id, json.subject);
                 },
                 function (code, msg) {
                     Demo.api.NotifyError("changeGroupSubject:" + code);
+                });
+
+            WebIM.doQuery('{"type":"changeGroupDescription", "id":"' + this.props.roomId + '", "description":"' + this.state.description + '"}',
+                function (response) {
+                },
+                function (code, msg) {
+                    Demo.api.NotifyError("changeGroupDescription:" + code);
                 });
         } else {
             Demo.conn.changeGroupSubject({
@@ -66,7 +73,7 @@ var ChangeGroupSubject = React.createClass({
             <div className='webim-friend-options'>
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog'>
-                    <h3>{Demo.lan.changeGroupSubject}</h3>
+                    <h3>{Demo.lan.changeGroupInfo}</h3>
                     <div className="webim-dialog-body">
                         <Input defaultFocus='true' placeholder={Demo.lan.groupSubject}
                                value={this.state.subject} onChange={this.onSubjectChange}/>
