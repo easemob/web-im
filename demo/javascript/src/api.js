@@ -558,7 +558,7 @@ module.exports = {
     addCount: function (id, cate) {
         // TODO
         if (Demo.selectedCate !== cate) {
-            var curCate = document.getElementById(cate).getElementsByTagName('i')[0];
+            var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
             curCate.style.display = 'block';
 
             var cur = document.getElementById(id).getElementsByTagName('i')[0];
