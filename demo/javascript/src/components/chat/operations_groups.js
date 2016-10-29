@@ -116,10 +116,6 @@ module.exports = React.createClass({
                     {/*<i className='font smallest'>F</i>*/}
                     {/*<span>{Demo.lan.memberInvite}</span>*/}
                     {/*</li>*/}
-                    <li onClick={this.showGroupBlacklist} className={this.props.admin ? '' : 'hide'}>
-                        <i className='font smallest'>F</i>
-                        <span>{Demo.lan.groupBlacklist}</span>
-                    </li>
                     <li onClick={this.adminGroupMembers} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>F</i>
                         <span>{adminMemberLabel}</span>
@@ -127,6 +123,10 @@ module.exports = React.createClass({
                     <li onClick={this.changeGroupInfo} className={this.props.admin ? '' : 'hide'}>
                         <i className='font smallest'>B</i>
                         <span>{Demo.lan.changeGroupInfo}</span>
+                    </li>
+                    <li onClick={this.showGroupBlacklist} className={this.props.admin ? '' : 'hide'}>
+                        <i className='font smallest'>n</i>
+                        <span>{Demo.lan.groupBlacklist}</span>
                     </li>
                     {/* destroy or leave group */}
                     <li onClick={actionMethod}>

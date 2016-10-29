@@ -57,7 +57,7 @@ var ShowGroupBlacklist = React.createClass({
                     <li className="webim-blacklist-item" key={item.name}>
                         {item.name}
                         <i className="webim-leftbar-icon font smaller"
-                           onClick={this.onRemoveFromGroupBlackList.bind(this, item.name)}>A</i>
+                           onClick={this.onRemoveFromGroupBlackList.bind(this, item.name)}>d</i>
                     </li>
                 )
             )

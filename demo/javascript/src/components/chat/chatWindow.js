@@ -191,14 +191,15 @@ module.exports = React.createClass({
                 <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
                     <i className={"webim-leftbar-icon font smaller " + className}
                        style={{display: this.state.admin != 1 ? 'none' : ''}}
-                       onClick={this.addToGroupBlackList.bind(this, username, i)}>A</i>
+                       onClick={this.addToGroupBlackList.bind(this, username, i)}>n</i>
                 </div>
             </li>);
         }
 
         var operations = [];
         if (Demo.selectedCate == 'friends') {
-            operations.push(<Operations_friends ref='operation_div' roomId={this.props.roomId} admin={this.state.admin}
+            operations.push(<Operations_friends key='operation_div' ref='operation_div' roomId={this.props.roomId}
+                                                admin={this.state.admin}
                                                 owner={this.state.owner}
                                                 settings={this.state.settings}
                                                 getGroupOwner={this.getGroupOwner}
@@ -207,7 +208,8 @@ module.exports = React.createClass({
                                                 updateNode={this.props.updateNode}
             />);
         } else if (Demo.selectedCate == 'groups') {
-            operations.push(<Operations_groups ref='operation_div' roomId={this.props.roomId} admin={this.state.admin}
+            operations.push(<Operations_groups key='operation_div' ref='operation_div' roomId={this.props.roomId}
+                                               admin={this.state.admin}
                                                owner={this.state.owner}
                                                settings={this.state.settings}
                                                getGroupOwner={this.getGroupOwner}
