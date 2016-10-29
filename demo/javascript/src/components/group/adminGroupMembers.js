@@ -100,7 +100,7 @@ var AdminGroupMembers = React.createClass({
             friendsSelected.push(v.text)
         });
 
-        log("AdminGroupMembers:", value, this.props.roomId);
+        // log("AdminGroupMembers:", value, this.props.roomId);
         var value_old = this.refs.friendList.getValueOld();
         var value_new = friendsSelected;
         var value_add = [];

@@ -13,23 +13,27 @@ var ChangeGroupSubject = React.createClass({
 
     getInitialState: function () {
         return {
-            subject: ''
+            subject: '',
+            description: ''
         }
     },
 
-    onChange: function (e) {
+    onSubjectChange: function (e) {
         this.setState({subject: e.target.value});
+    },
+
+    onDescriptionChange: function (e) {
+        this.setState({description: e.target.value});
     },
 
     onSubmit: function () {
 
         var value = this.state.subject;
-
         if (!value) {
-            Demo.api.NotifyError("群组名不能为空");
+            Demo.api.NotifyError("Group subject couldn't be null.");
             return;
         }
-        log("ChangeGroupSubject:", value, this.props.roomId);
+
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"changeGroupSubject", "id":"' + this.props.roomId + '", "subject":"' + value + '"}',
                 function (response) {
@@ -40,11 +44,14 @@ var ChangeGroupSubject = React.createClass({
                     Demo.api.NotifyError("changeGroupSubject:" + code);
                 });
         } else {
-            // Demo.conn.ChangeGroupSubject({
-            //     to: value,
-            //     message: Demo.user + Demo.lan.request
-            // });
-            Demo.api.changeGroupSubjectCallBack(this.props.roomId, value);
+            Demo.conn.changeGroupSubject({
+                roomId: this.props.roomId,
+                subject: this.state.subject,
+                description: this.state.description,
+                success: () => {
+                    Demo.api.changeGroupSubjectCallBack(this.props.roomId, value);
+                }
+            });
         }
         this.close();
     },
@@ -60,11 +67,15 @@ var ChangeGroupSubject = React.createClass({
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog'>
                     <h3>{Demo.lan.changeGroupSubject}</h3>
-                    <div ref='content'>
-                        <Input defaultFocus='true' ref='input' placeholder={Demo.lan.groupSubject}
-                               value={this.state.subject} onChange={this.onChange}/>
+                    <div className="webim-dialog-body">
+                        <Input defaultFocus='true' placeholder={Demo.lan.groupSubject}
+                               value={this.state.subject} onChange={this.onSubjectChange}/>
+                        <Input defaultFocus='false' placeholder={Demo.lan.groupDescription}
+                               value={this.state.description} onChange={this.onDescriptionChange}/>
                     </div>
-                    <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button'/>
+                    <div className="webim-dialog-footer">
+                        <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button'/>
+                    </div>
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>
