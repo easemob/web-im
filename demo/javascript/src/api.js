@@ -327,6 +327,8 @@ module.exports = {
                         wrapper: targetNode,
                         name: name,
                         value: brief,
+                        error: msg.error,
+                        errorText: msg.errorText
                     }, this.sentByMe);
                 }
                 break;
@@ -343,6 +345,8 @@ module.exports = {
                         wrapper: targetNode,
                         name: name,
                         value: brief,
+                        error: msg.error,
+                        errorText: msg.errorText
                     }, this.sentByMe);
                 }
                 break;
@@ -368,6 +372,8 @@ module.exports = {
                                 wrapper: targetNode,
                                 name: name,
                                 value: data || msg.url,
+                                error: msg.error,
+                                errorText: msg.errorText
                             }, this.sentByMe);
                         }
                     } else {
@@ -377,6 +383,8 @@ module.exports = {
                             wrapper: targetNode,
                             name: name,
                             value: data || msg.url,
+                            error: msg.error,
+                            errorText: msg.errorText
                         }, this.sentByMe);
                     }
                 }
@@ -403,7 +411,9 @@ module.exports = {
                                 wrapper: targetNode,
                                 name: name,
                                 value: data || msg.url,
-                                filename: msg.filename
+                                filename: msg.filename,
+                                error: msg.error,
+                                errorText: msg.errorText
                             }, this.sentByMe);
                         }
                     } else {
@@ -413,7 +423,9 @@ module.exports = {
                             name: name,
                             value: data || msg.url,
                             length: msg.length,
-                            id: msg.id
+                            id: msg.id,
+                            error: msg.error,
+                            errorText: msg.errorText
                         }, this.sentByMe);
                     }
                 }
@@ -447,7 +459,9 @@ module.exports = {
                                 wrapper: targetNode,
                                 name: name,
                                 value: data || msg.url,
-                                filename: msg.filename
+                                filename: msg.filename,
+                                error: msg.error,
+                                errorText: msg.errorText
                             }, this.sentByMe);
                         }
                     } else {
@@ -457,7 +471,9 @@ module.exports = {
                             wrapper: targetNode,
                             name: name,
                             value: data || msg.url,
-                            filename: msg.filename
+                            filename: msg.filename,
+                            error: msg.error,
+                            errorText: msg.errorText
                         }, this.sentByMe);
                     }
 
@@ -472,7 +488,9 @@ module.exports = {
                     locMsg({
                         wrapper: targetNode,
                         name: name,
-                        value: data || msg.addr
+                        value: data || msg.addr,
+                        error: msg.error,
+                        errorText: msg.errorText
                     }, this.sentByMe);
                 }
                 break;
@@ -498,7 +516,9 @@ module.exports = {
                                 wrapper: targetNode,
                                 name: name,
                                 value: data || msg.url,
-                                filename: msg.filename
+                                filename: msg.filename,
+                                error: msg.error,
+                                errorText: msg.errorText
                             }, this.sentByMe);
                         }
                     } else {
@@ -508,7 +528,9 @@ module.exports = {
                             name: name,
                             value: data || msg.url,
                             length: msg.length,
-                            id: msg.id
+                            id: msg.id,
+                            error: msg.error,
+                            errorText: msg.errorText
                         }, this.sentByMe);
                     }
                 }

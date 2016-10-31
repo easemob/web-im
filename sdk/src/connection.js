@@ -1067,6 +1067,19 @@
             this.handlePresence(msginfo);
             return;
         }
+        // send error
+        var error = msginfo.getElementsByTagName('error');
+        var errorCode = '';
+        var errorText = '';
+        var errorBool = false;
+        if (error.length > 0) {
+            errorBool = true;
+            errorCode = error[0].getAttribute('code');
+            var textDOM = error[0].getElementsByTagName('text');
+            errorText = textDOM[0].textContent || textDOM[0].text;
+            log('handle error', errorCode, errorText);
+        }
+
         var msgDatas = parseMsgData.data;
         for (var i in msgDatas) {
             if (!msgDatas.hasOwnProperty(i)) {
@@ -1111,6 +1124,9 @@
                                 , ext: extmsg
                             };
                             !msg.delay && delete msg.delay;
+                            msg.error = errorBool;
+                            msg.errorText = errorText;
+                            msg.errorCode = errorCode;
                             this.onEmojiMessage(msg);
                         } else {
                             var msg = {
@@ -1123,6 +1139,9 @@
                                 , ext: extmsg
                             };
                             !msg.delay && delete msg.delay;
+                            msg.error = errorBool;
+                            msg.errorText = errorText;
+                            msg.errorCode = errorCode;
                             this.onTextMessage(msg);
                         }
                         break;
@@ -1152,6 +1171,9 @@
                             , delay: parseMsgData.delayTimeStamp
                         };
                         !msg.delay && delete msg.delay;
+                        msg.error = errorBool;
+                        msg.errorText = errorText;
+                        msg.errorCode = errorCode;
                         this.onPictureMessage(msg);
                         break;
                     case 'audio':
@@ -1171,6 +1193,9 @@
                             , delay: parseMsgData.delayTimeStamp
                         };
                         !msg.delay && delete msg.delay;
+                        msg.error = errorBool;
+                        msg.errorText = errorText;
+                        msg.errorCode = errorCode;
                         this.onAudioMessage(msg);
                         break;
                     case 'file':
@@ -1188,6 +1213,9 @@
                             , delay: parseMsgData.delayTimeStamp
                         };
                         !msg.delay && delete msg.delay;
+                        msg.error = errorBool;
+                        msg.errorText = errorText;
+                        msg.errorCode = errorCode;
                         this.onFileMessage(msg);
                         break;
                     case 'loc':
@@ -1202,7 +1230,10 @@
                             , ext: extmsg
                             , delay: parseMsgData.delayTimeStamp
                         };
-                        !msg.delay && delete msg.dealy;
+                        !msg.delay && delete msg.delay;
+                        msg.error = errorBool;
+                        msg.errorText = errorText;
+                        msg.errorCode = errorCode;
                         this.onLocationMessage(msg);
                         break;
                     case 'video':
@@ -1219,7 +1250,10 @@
                             , ext: extmsg
                             , delay: parseMsgData.delayTimeStamp
                         };
-                        !msg.delay && delete msg.dealy;
+                        !msg.delay && delete msg.delay;
+                        msg.error = errorBool;
+                        msg.errorText = errorText;
+                        msg.errorCode = errorCode;
                         this.onVideoMessage(msg);
                         break;
                     case 'cmd':
@@ -1231,7 +1265,10 @@
                             , ext: extmsg
                             , delay: parseMsgData.delayTimeStamp
                         };
-                        !msg.delay && delete msg.dealy;
+                        !msg.delay && delete msg.delay;
+                        msg.error = errorBool;
+                        msg.errorText = errorText;
+                        msg.errorCode = errorCode;
                         this.onCmdMessage(msg);
                         break;
                 }
