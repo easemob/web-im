@@ -39,8 +39,8 @@
   "scripts": {
     "test": "gulp test",
     "start": "node server.js",
-    "dev": "cross-env NODE_ENV=development node build/dev-server.js",
-    "prod": "cross-env NODE_ENV=production webpack --config build/webpack.prod.js"
+    "dev": "cross-env NODE_ENV=develop node build/dev-server.js",
+    "prod": "cross-env NODE_ENV=product webpack --config build/webpack.prod.js"
   },
   "repository": {
     "type": "git",

@@ -8,7 +8,7 @@
     "stage-3"
   ],
   "env": {
-    "development": {
+    "dev": {
       "plugins": [
         [
           "react-transform",
