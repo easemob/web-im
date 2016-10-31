@@ -6,7 +6,7 @@ var RTCChannel = require('../common/rtcChannel');
 var Subscribe = require('./subscribe');
 var ConfirmPop = require('./confirmPop');
 var _ = require('underscore');
-var ConfirmGroupInfo = require('../group/ConfirmGroupInfo');
+var ConfirmGroupInfo = require('../group/confirmGroupInfo');
 
 module.exports = React.createClass({
 
