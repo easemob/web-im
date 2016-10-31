@@ -250,7 +250,7 @@
         return tempstr;
     };
 
-    var _parseFriend = function (queryTag) {
+    var _parseFriend = function (queryTag, conn, from) {
         var rouster = [];
         var items = queryTag.getElementsByTagName('item');
         if (items) {
@@ -282,6 +282,20 @@
                 });
                 friend.groups = groups;
                 rouster.push(friend);
+                // B同意之后 -> B订阅A
+                if (conn && (subscription == 'from')) {
+                    log('from subscribe');
+                    conn.subscribe({
+                        toJid: jid
+                    });
+                }
+
+                if (conn && (subscription == 'to')) {
+                    log('to subscribed');
+                    conn.subscribed({
+                        toJid: jid
+                    });
+                }
             }
         }
         return rouster;
@@ -1031,7 +1045,7 @@
         var msgBodies = e.getElementsByTagName('query');
         if (msgBodies && msgBodies.length > 0) {
             var queryTag = msgBodies[0];
-            var rouster = _parseFriend(queryTag);
+            var rouster = _parseFriend(queryTag, this, from);
             this.onRoster(rouster);
         }
         return true;
