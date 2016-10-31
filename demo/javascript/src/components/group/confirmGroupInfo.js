@@ -48,8 +48,8 @@ var ConfirmGroupInfo = React.createClass({
                         <p>{this.props.reason}</p>
                     </div>
                     <div className="webim-dialog-footer">
-                        <Button text={Demo.lan.cancel} onClick={this.onCancel} className='webim-dialog-button'/>
-                        <Button text={Demo.lan.confirm} onClick={this.onSubmit} className='webim-dialog-button'/>
+                        <Button text={Demo.lan.reject} onClick={this.onCancel} className='webim-dialog-button'/>
+                        <Button text={Demo.lan.agree} onClick={this.onSubmit} className='webim-dialog-button'/>
                     </div>
                     <span className='font' onClick={this.close}>A</span>
                 </div>
