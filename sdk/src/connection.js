@@ -963,9 +963,10 @@
                 info.actor = actorNick;
                 info.kicked = kickedMember;
             }
-            // Service Acknowledges Room Creation
+            // Service Acknowledges Room Creation `createGroupACK`
             if (role == 'moderator' && info.code == '201') {
-                info.type = 'createGroupACK';
+                // info.type = 'createGroupACK';
+                info.type = 'joinPublicGroupSuccess';
             }
         }
 
