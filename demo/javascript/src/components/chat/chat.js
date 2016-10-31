@@ -315,7 +315,11 @@ module.exports = React.createClass({
                 break;
             case 'joinPublicGroupSuccess':
                 Demo.api.NotifyError(`You have been invited to group ${msg.from}`);
-                Demo.api.updateGroup();
+                //TODO: 服务器端有bug，先延迟1秒刷新列表,找易乐天
+                setTimeout(function () {
+                    Demo.api.updateGroup()
+                }, 1000);
+
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
                 Demo.currentChatroom = msg.from;
