@@ -1830,7 +1830,7 @@
         if (this.intervalId) {
             clearInterval(this.intervalId);
         }
-        if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
+        if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
             Demo.api.init();
         }
     };
