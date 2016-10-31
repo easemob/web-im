@@ -969,6 +969,32 @@
             }
         }
 
+        // from message : apply to join group
+        // <message from="easemob-demo#chatdemoui_lwz4@easemob.com/mobile" id="259151681747419640" to="easemob-demo#chatdemoui_liuwz@easemob.com" xmlns="jabber:client">
+        //     <x xmlns="http://jabber.org/protocol/muc#user">
+        //         <apply from="easemob-demo#chatdemoui_lwz4@easemob.com" to="easemob-demo#chatdemoui_1477733677560@conference.easemob.com" toNick="lwzlwzlwz">
+        //             <reason>qwe</reason>
+        //         </apply>
+        //     </x>
+        // </message>
+        var apply = msginfo.getElementsByTagName('apply');
+        if (apply && apply.length > 0) {
+            apply = apply[0];
+            var toNick = apply.getAttribute('toNick');
+            var groupJid = apply.getAttribute('to');
+            var userJid = apply.getAttribute('from');
+            var groupName = _parseNameFromJidFn(groupJid);
+            var userName = _parseNameFromJidFn(userJid);
+            info.toNick = toNick;
+            info.groupName = groupName;
+            info.type = 'joinGroupNotifications';
+            var reason = apply.getElementsByTagName('reason');
+            if (reason && reason.length > 0) {
+                info.reason = Strophe.getText(reason[0]);
+            }
+        }
+
+
         if (info.chatroom) {
             // diff the
             info.presence_type = presence_type;
@@ -991,7 +1017,10 @@
         } else {
             info.presence_type = presence_type;
             info.original_type = type;
-            if (type == "" && !info.status && !info.error) {
+
+            if (info.type) {
+
+            } else if (type == "" && !info.status && !info.error) {
                 info.type = 'joinPublicGroupSuccess';
             } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
                 if (info.destroy) {// Group or Chat room Deleted.
@@ -2426,6 +2455,29 @@
         }, function (errInfo) {
             errFn(errInfo);
         });
+    };
+
+    /**
+     * acceptInviteFromGroup 接受加入申请
+     *
+     * @param options
+     */
+    connection.prototype.acceptInviteFromGroup = function (options) {
+        options.success = function () {
+            // then send sendAcceptInviteMessage
+            // connection.prototype.sendAcceptInviteMessage(optoins);
+        };
+        this.addGroupMembers(options);
+    };
+
+    /**
+     * rejectInviteFromGroup 拒绝加入申请
+     *
+     * throw request for now 暂时不处理，直接丢弃
+     *
+     * @param options
+     */
+    connection.prototype.rejectInviteFromGroup = function (options) {
     };
 
     /**

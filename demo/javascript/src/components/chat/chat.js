@@ -6,6 +6,7 @@ var RTCChannel = require('../common/rtcChannel');
 var Subscribe = require('./subscribe');
 var ConfirmPop = require('./confirmPop');
 var _ = require('underscore');
+var ConfirmGroupInfo = require('../group/ConfirmGroupInfo');
 
 module.exports = React.createClass({
 
@@ -289,6 +290,9 @@ module.exports = React.createClass({
         var me = this;
 
         switch (msg.type) {
+            case 'joinGroupNotifications':
+                ConfirmGroupInfo.show(msg);
+                break;
             case 'createGroupACK':
 
                 break;

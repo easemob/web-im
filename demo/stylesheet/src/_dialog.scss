@@ -70,9 +70,16 @@
     min-height: 100px;
   }
 
-  &-footer {
+  .webim-dialog-footer {
+    padding: 10px;
     position: relative;
     min-height: 20px;
+    text-align: right;
+
+    .webim-button {
+      position: static;
+      margin-right: 10px;
+    }
   }
 }
 
