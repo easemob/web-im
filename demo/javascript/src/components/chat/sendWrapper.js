@@ -58,6 +58,9 @@ module.exports = React.createClass({
             return;
         }
 
+        // TODO: ios/android client doesn't encodeURIComponent yet
+        // value = encodeURIComponent(value);
+
         setTimeout(function () {
             if (me.refs['textarea']) {
                 me.refs['textarea'].value = '';
