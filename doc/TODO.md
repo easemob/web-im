@@ -30,7 +30,13 @@
 ###18.chatrooms的接口，应该用户点击之后才获取，不应该登录就自动获取！
 ###19.v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了  handlePageLimit clearPageSign getPageCount
 ###20.修改群信息之后，群组名的刷新是用dom直接操作的，需要修改
+###21.JavaScript Web SDK installation via CDN and NPM 的可行性和implementation 参考https://docs.layer.com/sdk/web/install 11.20前完成 可以交给钟泽芳负责
 
+```
+<script src='//cdn.layer.com/sdk/3.0.n/layer-websdk.min.js'></script>
+npm install layer-websdk@beta --save
+```
+###22.用React Hot Loader 3替换已经deprecated的react-transform-hmr https://github.com/gaearon/react-transform-hmr
 
 #V1.1.5 (2017.01~2017.06) 新需求：
 ###1.webim所有接口的xmpp协议(邹金海)和react协议(仝瑶)的文档整理
