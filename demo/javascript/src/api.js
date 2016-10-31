@@ -308,9 +308,10 @@ module.exports = {
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
             targetNode = document.getElementById('wrapper' + targetId);
 
-        if (typeof data == "string") {
-            data = decodeURIComponent(data);
-        }
+        // TODO: ios/android client doesn't encodeURIComponent yet
+        // if (typeof data === "string") {
+        // data = decodeURIComponent(data);
+        // }
 
         if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
