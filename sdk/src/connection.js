@@ -1829,7 +1829,9 @@
         if (this.intervalId) {
             clearInterval(this.intervalId);
         }
-
+        if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
+            Demo.api.init();
+        }
     };
 
     connection.prototype.getChatRooms = function (options) {
