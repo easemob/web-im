@@ -50,7 +50,6 @@ var FridendList = React.createClass({
                         }
 
                         me.setState({value: values, value_old: values_old});
-                        console.log(me.state.value_old);
                     }
                 },
                 error: function (e) {
@@ -117,8 +116,6 @@ var AdminGroupMembers = React.createClass({
         }
 
 
-        console.log('add', value_add);
-        console.log('del', value_del);
         if (this.props.value == "PRIVATE_MEMBER_INVITE" && value_del.length > 0) {
             Demo.api.NotifyError("权限不够，不能删除私有群成员");
             return;

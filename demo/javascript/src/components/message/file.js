@@ -22,12 +22,10 @@ var FileMsg = React.createClass({
 
     download: function () {
         var suc = function (data, xhr) {
-            console.log('suc');
-            console.log(data);
+            // console.log(data);
         };
         var error = function (res, xhr, msg) {
-            console.log('error');
-            console.log(res)
+            // console.log(res)
         };
         var options = {
             url: this.props.value,

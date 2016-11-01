@@ -81,7 +81,6 @@ module.exports = React.createClass({
             to: Demo.selected,
             roomType: chatroom,
             success: function (id) {
-                log('send success', id);
                 me.state.showEmoji && me.setState({showEmoji: false});
             }
         });

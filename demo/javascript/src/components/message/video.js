@@ -14,7 +14,6 @@ var VideoMsg = React.createClass({
             var objectURL = WebIM.utils.parseDownloadResponse.call(Demo.conn, response);
 
             me.refs.video.src = objectURL;
-            log(objectURL);
         };
 
         options.onFileDownloadError = function () {

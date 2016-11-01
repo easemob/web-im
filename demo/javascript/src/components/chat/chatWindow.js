@@ -126,7 +126,6 @@ module.exports = React.createClass({
     },
 
     addToGroupBlackList: function (username, index) {
-        log('group addToBlackList', Demo.user);
         var me = this;
         var members = this.state.members;
         var item = _.find(this.state.members, function (item) {

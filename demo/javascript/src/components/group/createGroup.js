@@ -59,7 +59,6 @@ var CreateGroup = React.createClass({
         var permission_member = this.state.selectedOption2;
         var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
         var friendsValues = this.refs.friendList.refs.multiSelected.value();
-        log(value, info, permission_group, permission_member, friendsSelected);
         if (!value) {
             Demo.api.NotifyError("群组名不能为空");
             return;

@@ -33,7 +33,6 @@ module.exports = React.createClass({
     },
 
     adminGroupMembers: function () {
-        log('addGroupMembers');
         AdminGroupMembers.show(this.props.roomId, this.props.settings);
         this.update();
     },
@@ -71,7 +70,6 @@ module.exports = React.createClass({
     },
 
     leaveGroupBySelf: function () {
-        log('leaveGroup:' + this.props.roomId);
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"leaveGroup","id":"' + this.props.roomId + '"}',
                 function (response) {

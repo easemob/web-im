@@ -25,13 +25,11 @@ var Blacklist = (function () {
     }
 
     function _add(name) {
-        log('_add', name);
         data[name] = _.find(Demo.friends, function (item) {
             log('name', name, item.name);
             return (item.name == name);
         });
 
-        log(data);
 
         return _set();
     }
@@ -53,9 +51,7 @@ var Blacklist = (function () {
         try {
             delete data[name];
         } catch (e) {
-            log('blacklist remove error');
         }
-        log(data, name);
         return _set();
     }
 
@@ -118,7 +114,6 @@ var Blacklist = (function () {
         var errFn = options.success || emptyfn;
 
         options.success = function (list) {
-            log('_getGroupBlacklist', list);
             dataGroup = list;
             sucFn(list);
         };
@@ -270,7 +265,6 @@ module.exports = {
                     Demo.api.NotifyError("logout:" + msg);
                 });
         } else {
-            console.log('logout=', type);
             Demo.conn.close('logout');
             if (type == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
                 Demo.conn.errorType = type;
@@ -280,7 +274,6 @@ module.exports = {
     },
 
     init: function () {
-        console.log('api.init()');
         Demo.selected = null;
         Demo.user = null;
         Demo.call = null;

@@ -38,8 +38,6 @@ module.exports = React.createClass({
                 Demo.conn.errorType = -1;
             },
             onClosed: function (msg) {
-                log(WebIM.utils.ts(), 'onClosed', Demo.conn.errorType);
-                //demo:跳转到登陆页 或者 自动重连
                 // Demo.api.logout();
 
                 //webRTC:断线处理
@@ -109,10 +107,10 @@ module.exports = React.createClass({
                 me.getGroup();
             },
             onOnline: function () {
-                log(WebIM.utils.ts(), 'online');
+                // log(WebIM.utils.ts(), 'online');
             },
             onOffline: function () {
-                log(WebIM.utils.ts(), 'offline');
+                // log(WebIM.utils.ts(), 'offline');
                 if (WebIM.config.isWindowSDK) {
                     Demo.api.NotifyError("Network connection is broken. reconnecting...");
                 } else {
@@ -129,7 +127,7 @@ module.exports = React.createClass({
             },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
-                log(WebIM.utils.ts(), 'onError', message);
+                // log(WebIM.utils.ts(), 'onError', message);
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -142,16 +140,12 @@ module.exports = React.createClass({
                     if (message.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
                         if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
                             Demo.conn.errorType = message.type;
-                            console.log('conn.context.errorType=', Demo.conn.errorType);
                             return;
                         }
                     }
                     if (message.data && message.data.data) {
                         text = message.data.data;
                     } else {
-                        console.log('Demo.conn.errorType', Demo.conn.errorType);
-                        console.log('message.type', message.type);
-
                         text = WebIM.utils.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
                     }
                     // Demo.api.logout(message.type);
@@ -178,9 +172,6 @@ module.exports = React.createClass({
         };
     },
     confirmPop: function (options) {
-        console.log('comfirmPop', options);
-
-
         ConfirmPop.show(options);
     },
     //for WindosSDK
@@ -197,7 +188,6 @@ module.exports = React.createClass({
         }
         Demo.friends = friends;
         this.setState({friends: friends});
-        console.log('updateMyRoster', options);
     },
     //for WindosSDK
     updateMyGroupList: function (options) {
@@ -205,7 +195,6 @@ module.exports = React.createClass({
         this.setState({groups: rooms});
     },
     friendRequest: function (msg) {
-        console.log('friendRequest', msg);
         if (msg && msg.status === '[resp:true]') {
             return;
         }
@@ -340,7 +329,6 @@ module.exports = React.createClass({
                 if (msg.original_type == 'unavailable') return;
 
                 var target = document.getElementById(msg.from);
-                log('deleteGroupChat', msg);
                 var options = {
                     title: "Group notification",
                     msg: "You have been out of the group",
@@ -507,7 +495,6 @@ module.exports = React.createClass({
 
     updateNode: function (id) {
         this.setState({curNode: id});
-        console.log('updateNode', id);
     },
 
     sendPicture: function (chatType) {
@@ -650,7 +637,6 @@ module.exports = React.createClass({
             var audio = document.createElement('audio');
 
             audio.oncanplay = function () {
-                log('audio_length:' + this.duration);
                 me.sendAudioMsg(file, Math.ceil(this.duration));
                 audio = null;
             }
@@ -750,7 +736,6 @@ module.exports = React.createClass({
     },
 
     render: function () {
-        console.log('chat.render', this.state.cur);
         // Demo.api.curLength = this.state[this.state.cur].length;
 
         var windows = [], id,

@@ -33,7 +33,6 @@
         if (this.socket) {
             var me = this;
             setTimeout(function () {
-                console.log('Strophe.Websocket.prototype._closeSocket');
                 try {
                     me.socket.close();
                 } catch (e) {
@@ -58,9 +57,6 @@
      * Fix it by overide  _onMessage
      */
     Strophe.Websocket.prototype._onMessage = function (message) {
-        if (WebIM.config.isDebug) {
-            console.log(WebIM.utils.ts() + 'recv:', message.data);
-        }
         var elem, data;
         // check for closing stream
         // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
@@ -284,14 +280,12 @@
                 rouster.push(friend);
                 // B同意之后 -> B订阅A
                 if (conn && (subscription == 'from')) {
-                    log('from subscribe');
                     conn.subscribe({
                         toJid: jid
                     });
                 }
 
                 if (conn && (subscription == 'to')) {
-                    log('to subscribed');
                     conn.subscribed({
                         toJid: jid
                     });
@@ -365,8 +359,6 @@
     };
 
     var _loginCallback = function (status, msg, conn) {
-        console.log('_loginCallback', 'status=' + WebIM.utils.getObjectKey(Strophe.Status, status), 'msg=' + msg);
-        console.log('conn.context.status_now=', WebIM.utils.getObjectKey(Strophe.Status, conn.context.status_now), conn.context.status_now);
         var conflict, error;
 
         if (msg === 'conflict') {
@@ -432,7 +424,6 @@
 
             conn.context.status = _code.STATUS_OPENED;
 
-            console.log('isOpend', conn.isOpened());
             var supportRecMessage = [
                 _code.WEBIM_MESSAGE_REC_TEXT,
                 _code.WEBIM_MESSAGE_REC_EMOJI];
@@ -470,9 +461,7 @@
                 conn.onError(error);
             }
         } else if (status == Strophe.Status.DISCONNECTED) {
-            console.log('Strophe.Status.DISCONNECTED', WebIM.utils.getObjectKey(_code, conn.context.status), conn.context.status);
             if (conn.isOpened()) {
-                console.log('need reconnect');
                 if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
                     Demo.conn.reconnect();
                     return;
@@ -1819,7 +1808,6 @@
     };
 
     connection.prototype.clear = function () {
-        console.log(' connection.prototype.clear=', this.errorType);
         var key = this.context.appKey;
         if (this.errorType != WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
             this.context = {
@@ -1888,7 +1876,6 @@
                 success: suc || _utils.emptyfn,
                 error: error || _utils.emptyfn
             };
-            // console.log(opts);
             _utils.ajax(opts);
         } else {
             conn.onError({
@@ -2062,10 +2049,6 @@
         this.autoReconnectNumTotal++;
     };
     connection.prototype.closed = function () {
-        console.log('conn.closed');
-        console.log('conn.errorType=', this.errorType);
-
-
         Demo.api.init();
     };
 
@@ -2230,7 +2213,6 @@
         var errFn = options.error || _utils.emptyfn;
 
         // var jid = _getJid(options, this);
-        log('options', options);
         var affiliation = 'admin';//options.affiliation || 'admin';
         var to = this._getGroupJid(options.roomId);
         var iq = $iq({type: 'get', to: to});
@@ -2254,7 +2236,6 @@
         var errFn = options.error || _utils.emptyfn;
 
         var jid = _getJid(options, this);
-        log('options', options);
         var affiliation = 'admin';//options.affiliation || 'admin';
         var to = this._getGroupJid(options.roomId);
         var iq = $iq({type: 'set', to: to});
