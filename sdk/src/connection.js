@@ -1875,8 +1875,8 @@
             };
 
             var pageInfo = {
-                pagenum: parseInt(options.pagenum),
-                pagesize: parseInt(options.pagesize)
+                pagenum: parseInt(options.pagenum) || 1,
+                pagesize: parseInt(options.pagesize) || 20
             };
 
             var opts = {
