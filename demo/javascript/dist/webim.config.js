@@ -65,8 +65,3 @@ WebIM.config = {
      */
     isAutoLogin: true
 };
-
-if (WebIM.config.isSandBox) {
-    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '.sandbox.easemob.');
-    WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '.sdb.easemob.');
-}
