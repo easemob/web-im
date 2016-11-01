@@ -57,6 +57,7 @@
      * Fix it by overide  _onMessage
      */
     Strophe.Websocket.prototype._onMessage = function (message) {
+        WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + 'recv:', message.data);
         var elem, data;
         // check for closing stream
         // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
