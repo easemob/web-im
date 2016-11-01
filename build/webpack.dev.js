@@ -7,7 +7,7 @@ console.log(path.resolve('./'));
 module.exports = {
     entry: {
         // "only" prevents reload on syntax errors
-        './sdk/dist/websdk-1.1.2': ['./sdk/src/connection', 'webpack/hot/only-dev-server', 'webpack-dev-server/client?http://localhost:3000'],
+        './sdk/dist/websdk-1.1.3': ['./sdk/src/connection', 'webpack/hot/only-dev-server', 'webpack-dev-server/client?http://localhost:3000'],
         // './sdk/dist/websdk-1.1.2': './sdk/src/connection',
         './demo/javascript/dist/demo': ['./demo/javascript/src/entry', 'webpack/hot/only-dev-server', 'webpack-dev-server/client?http://localhost:3000'],
         // './demo/javascript/dist/demo': './demo/javascript/src/entry',
