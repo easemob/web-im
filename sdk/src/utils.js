@@ -863,8 +863,26 @@
             xhr.send(data);
             return xhr;
         },
+        ts: function () {
+            var d = new Date();
+            var Hours = d.getHours(); //获取当前小时数(0-23)
+            var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
+            var Seconds = d.getSeconds(); //获取当前秒数(0-59)
+            var Milliseconds = d.getMilliseconds(); //获取当前毫秒
+            return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
+        },
+
+        getObjectKey: function (obj, val) {
+            for (var key in obj) {
+                if (obj[key] == val) {
+                    return key;
+                }
+            }
+            return '';
+        }
 
     };
+
 
     exports.utils = utils;
 }());

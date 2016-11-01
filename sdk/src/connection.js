@@ -59,7 +59,7 @@
      */
     Strophe.Websocket.prototype._onMessage = function (message) {
         if (WebIM.config.isDebug) {
-            console.log(Demo.api.ts() + 'recv:', message.data);
+            console.log(WebIM.utils.ts() + 'recv:', message.data);
         }
         var elem, data;
         // check for closing stream
@@ -365,8 +365,8 @@
     };
 
     var _loginCallback = function (status, msg, conn) {
-        console.log('_loginCallback', 'status=' + Demo.api.getObjectKey(Strophe.Status, status), 'msg=' + msg);
-        console.log('conn.context.status_now=', Demo.api.getObjectKey(Strophe.Status, conn.context.status_now), conn.context.status_now);
+        console.log('_loginCallback', 'status=' + WebIM.utils.getObjectKey(Strophe.Status, status), 'msg=' + msg);
+        console.log('conn.context.status_now=', WebIM.utils.getObjectKey(Strophe.Status, conn.context.status_now), conn.context.status_now);
         var conflict, error;
 
         if (msg === 'conflict') {
@@ -470,7 +470,7 @@
                 conn.onError(error);
             }
         } else if (status == Strophe.Status.DISCONNECTED) {
-            console.log('Strophe.Status.DISCONNECTED', Demo.api.getObjectKey(_code, conn.context.status), conn.context.status);
+            console.log('Strophe.Status.DISCONNECTED', WebIM.utils.getObjectKey(_code, conn.context.status), conn.context.status);
             if (conn.isOpened()) {
                 console.log('need reconnect');
                 if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {

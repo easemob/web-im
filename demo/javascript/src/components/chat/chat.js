@@ -38,7 +38,7 @@ module.exports = React.createClass({
                 Demo.conn.errorType = -1;
             },
             onClosed: function (msg) {
-                log(Demo.api.ts(), 'onClosed', Demo.conn.errorType);
+                log(WebIM.utils.ts(), 'onClosed', Demo.conn.errorType);
                 //demo:跳转到登陆页 或者 自动重连
                 // Demo.api.logout();
 
@@ -109,10 +109,10 @@ module.exports = React.createClass({
                 me.getGroup();
             },
             onOnline: function () {
-                log(Demo.api.ts(), 'online');
+                log(WebIM.utils.ts(), 'online');
             },
             onOffline: function () {
-                log(Demo.api.ts(), 'offline');
+                log(WebIM.utils.ts(), 'offline');
                 if (WebIM.config.isWindowSDK) {
                     Demo.api.NotifyError("Network connection is broken. reconnecting...");
                 } else {
@@ -129,7 +129,7 @@ module.exports = React.createClass({
             },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
-                log(Demo.api.ts(), 'onError', message);
+                log(WebIM.utils.ts(), 'onError', message);
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -152,7 +152,7 @@ module.exports = React.createClass({
                         console.log('Demo.conn.errorType', Demo.conn.errorType);
                         console.log('message.type', message.type);
 
-                        text = Demo.api.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
+                        text = WebIM.utils.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
                     }
                     // Demo.api.logout(message.type);
                 }
