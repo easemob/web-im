@@ -1,5 +1,7 @@
 #! /bin/bash
 
+webpack
+echo 'webpack done!'
 
 rm -rf publish
 mkdir -p publish/demo/javascript
@@ -12,6 +14,7 @@ mkdir publish/webrtc
 cp -r webrtc/dist publish/webrtc
 cp favicon.ico publish/
 cp index.html publish/
+cp CHANGELOG.md publish/
 
 rm publish/demo/javascript/dist/webim.config.js.demo
 

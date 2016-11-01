@@ -1,6 +1,6 @@
 #ChangeLog:
 
-###WebIM v1.1.3 @ 2016-10-31
+###WebIM v1.1.3 @ 2016-11-01
 
 * [demo] support Windows SDK. <http://www.easemob.com/download/im>
 * [demo] add blacklist feature.
