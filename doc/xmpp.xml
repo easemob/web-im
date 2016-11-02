@@ -1,0 +1,783 @@
+<!-- 获取隐私列表 SEND -->
+<iq id="0ABB31A6-DBAF-40DB-A64D-980DB2243AF9" type="get">
+	<query xmlns="jabber:iq:privacy"/>
+</iq>
+
+<!-- 隐私列表为空 RECV -->
+<iq from="easemob-demo#chatdemoui_liuwz@easemob.com" id="0ABB31A6-DBAF-40DB-A64D-980DB2243AF9" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="result">
+	<query xmlns="jabber:iq:privacy"/>
+</iq>
+
+<!-- 1. 查询 list:special 列表具体信息  SEND-->
+<iq id="71F621F4-EDFF-456D-AC57-65B072258220" type="get">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special"/>
+	</query>
+</iq>
+<!-- 2.list:special 列表不存在 RECV-->
+<iq from="easemob-demo#chatdemoui_liuwz@easemob.com" id="71F621F4-EDFF-456D-AC57-65B072258220" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="error">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special"/>
+	</query>
+	<error code="404" type="cancel">
+		<item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+	</error>
+</iq>
+
+<!-- 1. 获取的隐私列表 list:special 数据  SEND -->
+<iq id="4EFEF07E-B1E4-4826-AD0E-9BAB4F5D261B" type="get">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special"/>
+	</query>
+</iq>
+<!-- 2. 获取隐私列表中屏蔽JID用户 RECV  -->
+<iq from="easemob-demo#chatdemoui_liuwz@easemob.com" id="4EFEF07E-B1E4-4826-AD0E-9BAB4F5D261B" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="result">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special">
+			<item action="deny" order="2" type="jid" value="easemob-demo#chatdemoui_lwz2@easemob.com">
+				<message/>
+			</item>
+		</list>
+	</query>
+</iq>
+<!-- 2. 获取隐私列表中屏蔽JID用户(空) RECV  -->
+<iq from='easemob-demo#chatdemoui_liuwz@easemob.com' to='easemob-demo#chatdemoui_liuwz@easemob.com/mobile' id='7C94BAAE-C03B-4C9C-9FA4-7D173B5A1138' type='result'/>
+
+
+<!-- 1. 清空default隐私列表 SEND-->
+<iq id="C8D0F335-76D6-4026-BFAD-9C6C0A7E1A85" type="set">
+	<query xmlns="jabber:iq:privacy">
+		<default/>
+	</query>
+</iq>
+<!-- 2. 清空 list:special 隐私列表 SEND-->
+<iq id="7C94BAAE-C03B-4C9C-9FA4-7D173B5A1138" type="set">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special"/>
+	</query>
+</iq>
+<!-- 3. 获取隐私列表中屏蔽JID用户(空) RECV  -->
+<iq from='easemob-demo#chatdemoui_liuwz@easemob.com' to='easemob-demo#chatdemoui_liuwz@easemob.com/mobile' id='7C94BAAE-C03B-4C9C-9FA4-7D173B5A1138' type='result'/>
+<!-- 4. 清空隐私列表成功 RECV-->
+<iq from="easemob-demo#chatdemoui_liuwz@easemob.com" id="C8D0F335-76D6-4026-BFAD-9C6C0A7E1A85" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="result"/>
+<!-- 5. 获取服务器推送：清空本地隐私列表 RECV-->
+<!-- rule 10 : 当一个规则的定义修改了, 服务器必须发送一个类型为"set"的IQ节给所有已连接的资源, 在该节中包含一个只带有一个<list/>子元素的<query/>元素, 这里'name'属性设置成被修改的隐私列表的名称 -->
+<iq from="easemob-demo#chatdemoui_liuwz@easemob.com" id="push4232697788" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="set">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special"/>
+	</query>
+</iq>
+<!-- 4. 清空本地隐私列表成功 SEND-->
+<iq type="result" to="easemob-demo#chatdemoui_liuwz@easemob.com" id="push4232697788"/>
+<!-- 5. 重新查询隐私列表 list:special -->
+<iq type="get" id="90F70D68-7896-4FB5-9F7C-96360817686B"><query xmlns="jabber:iq:privacy"><list name="special"/></query></iq>
+<!-- 6. 重新查询意思呢列表结果 list:special 不存在 -->
+<iq from="easemob-demo#chatdemoui_liuwz@easemob.com" id="90F70D68-7896-4FB5-9F7C-96360817686B" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="error">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special"/>
+	</query>
+	<error code="404" type="cancel">
+		<item-not-found xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+	</error>
+</iq>
+
+<!-- 1. 添加用户用户lwz3到隐私列表 SEND -->
+<iq id="AD4CB633-D51D-4BB4-B6F0-2CB6BF097F1A" type="set">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special">
+			<item action="deny" order="2" type="jid" value="easemob-demo#chatdemoui_lwz3@easemob.com">
+				<message/>
+			</item>
+		</list>
+	</query>
+</iq>
+<!-- 2. 服务器推送：本地添加隐私列表  list:special  RECV -->
+<iq from="easemob-demo#chatdemoui_liuwz@easemob.com" id="push1756611381" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="set">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special"/>
+	</query>
+</iq>
+
+<!-- 3. 添加用户用户lwz3到隐私列表成功 RECV -->
+<iq from='easemob-demo#chatdemoui_liuwz@easemob.com' to='easemob-demo#chatdemoui_liuwz@easemob.com/mobile' id='AD4CB633-D51D-4BB4-B6F0-2CB6BF097F1A' type='result'/>
+
+<!-- 4. 服务器推送：本地添加隐私列表  list:special 成功  SEND -->
+<iq type="result" to="easemob-demo#chatdemoui_liuwz@easemob.com" id="push1756611381"/>
+
+<!-- 添加新的隐私列表 将默认和激活的会话设置为 special  -->
+<iq id="C1A25DEC-AFBE-47C6-AAFC-F05DA86AF9C6" type="set">
+	<query xmlns="jabber:iq:privacy">
+		<default name="special"/>
+	</query>
+</iq>
+<iq id="B887FED0-20C1-40D0-8CE7-A5A9640D0E0D" type="set">
+	<query xmlns="jabber:iq:privacy">
+		<active name="special"/>
+	</query>
+</iq>
+<iq from="easemob-demo#chatdemoui_liuwz@easemob.com" id="C1A25DEC-AFBE-47C6-AAFC-F05DA86AF9C6" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="result"/>
+<iq from='easemob-demo#chatdemoui_liuwz@easemob.com' to='easemob-demo#chatdemoui_liuwz@easemob.com/mobile' id='B887FED0-20C1-40D0-8CE7-A5A9640D0E0D' type='result'/>
+
+
+<!-- 获取屏蔽列表 -->
+<iq id="DF2581F1-A388-4A73-8467-F57CD5778E2C" type="get">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special"/>
+	</query>
+</iq>
+<!-- 被屏蔽的列表，屏蔽内容message -->
+<iq from="easemob-demo#chatdemoui_liuwz@easemob.com" id="DF2581F1-A388-4A73-8467-F57CD5778E2C" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="result">
+	<query xmlns="jabber:iq:privacy">
+		<list name="special">
+			<item action="deny" order="2" type="jid" value="easemob-demo#chatdemoui_lwz2@easemob.com">
+				<message/>
+			</item>
+		</list>
+	</query>
+</iq>
+<!-- 取消屏蔽 -->
+<iq id="48C9426E-4264-4408-AF32-5C76990C0E17" type="set">
+	<query xmlns="jabber:iq:privacy">
+		<default/>
+	</query>
+</iq>
+<!-- =============群组屏蔽========== -->
+<!-- 屏蔽用户：send -> type:result -->
+<!-- reason可有可无 -->
+<iq id="BC9AA2EE-8C99-4640-9C2C-8D1D3DD2A4D3_easemob_occupants_block" to="easemob-demo#chatdemoui_1476934977839@conference.easemob.com" type="set">
+	<query xmlns="http://jabber.org/protocol/muc#admin">
+		<item affiliation="outcast" jid="easemob-demo#chatdemoui_lwz3@easemob.com" nick="">
+			<reason/>
+		</item>
+	</query>
+</iq>
+
+<!-- 屏蔽成功：async recv -->
+<message from="easemob-demo#chatdemoui_1476934977839@conference.easemob.com/lwz3" id="255426999504340212" nick="lwz3" presence_type="unavailable" to="easemob-demo#chatdemoui_liuwz@easemob.com" type="notify">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<item affiliation="outcast" jid="easemob-demo#chatdemoui_lwz3@easemob.com" role="none">
+			<actor nick="liuwz"/>
+		</item>
+		<status code="301"/>
+	</x>
+</message>
+
+<!-- 屏蔽成功回执：async send -->
+<message id="255426999504340212" to="easemob-demo#chatdemoui_1476934977839@conference.easemob.com/lwz3">
+	<received id="255426999504340212" xmlns="urn:xmpp:receipts"/>
+</message>
+
+<!-- 取消屏蔽：send -> type:result -->
+<iq id="C93C0729-0F51-43CC-908E-5B86E51834A3_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1476934977839@conference.easemob.com" type="set">
+	<query xmlns="http://jabber.org/protocol/muc#admin">
+		<item affiliation="member" jid="easemob-demo#chatdemoui_lwz3@easemob.com"/>
+	</query>
+</iq>
+
+<!-- =============删除群组========== -->
+<!-- 删除群组:send -->
+<iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
+	<query xmlns="http://jabber.org/protocol/muc#owner">
+		<destroy/>
+	</query>
+</iq>
+
+<!-- 删除群组:recv - 不处理 -->
+<presence from="easemob-demo#chatdemoui_1477462231499@conference.easemob.com/liuwz" to="easemob-demo#chatdemoui_liuwz@easemob.com/webim" type="unavailable" xmlns="jabber:client">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<item affiliation="none" role="none"/>
+		<destroy/>
+	</x>
+</presence>
+
+<!-- 群组解散通知:async recv -->
+<message from="easemob-demo#chatdemoui_1477462231499@conference.easemob.com/liuwz" id="257257691058013424" presence_type="unavailable" to="easemob-demo#chatdemoui_liuwz@easemob.com" type="notify" xmlns="jabber:client">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<item affiliation="none" role="none"/>
+		<destroy/>
+	</x>
+</message>
+
+<!-- 群组结算回执:send -->
+<message from="easemob-demo#chatdemoui_liuwz@easemob.com/webim" id="257257691058013424" to="easemob.com" xmlns="jabber:client">
+	<received id="257257691058013424" xmlns="urn:xmpp:receipts"/>
+</message>
+
+<!-- =============离开群组========== -->
+<!-- 离开群组：send -->
+<iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
+	<query xmlns="http://jabber.org/protocol/muc#admin">
+		<item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	</query>
+</iq>
+
+<!-- 离开群组成功：recv -->
+<iq from="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_lwz2@easemob.com/mobile" type="result">
+	<query xmlns="http://jabber.org/protocol/muc#admin"/>
+</iq>
+
+<!-- send -->
+<presence to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com/lwz2" type="unavailable"/>
+
+<!-- =============邀请加入群组========== -->
+<!-- 群组邀请通知：recv -->
+<message from="easemob-demo#chatdemoui_1477482766263@conference.easemob.com" id="257353391238284512" to="easemob-demo#chatdemoui_lwz2@easemob.com" type="normal" xmlns="jabber:client">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<invite from="easemob-demo#chatdemoui_liuwz@easemob.com/mobile">
+			<reason>liuwz invite you to join group '那你'</reason>
+		</invite>
+	</x>
+	<x jid="easemob-demo#chatdemoui_1477482766263@conference.easemob.com" xmlns="jabber:x:conference">liuwz invite you to join group '那你'</x>
+	<body>easemob-demo#chatdemoui_liuwz@easemob.com/mobile invites you to the room easemob-demo#chatdemoui_1477482766263@conference.easemob.com (liuwz invite you to join group '那你') </body>
+</message>
+
+<!-- =============群组添加成员========== -->
+<!-- 添加成员：send -->
+<iq id="09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477482739698@conference.easemob.com" type="set">
+	<query xmlns="http://jabber.org/protocol/muc#admin">
+		<item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	</query>
+</iq>
+<!-- 添加成员通知：send -->
+<message to="easemob-demo#chatdemoui_1477482739698@conference.easemob.com">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<invite to="easemob-demo#chatdemoui_lwz2@easemob.com">
+			<reason>liuwz invite you to join group '谢谢'</reason>
+		</invite>
+	</x>
+</message>
+<!-- 添加成员成功：recv -->
+<iq from="easemob-demo#chatdemoui_1477482739698@conference.easemob.com" id="09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="result">
+	<query xmlns="http://jabber.org/protocol/muc#admin"/>
+</iq>
+
+<!-- 删除成员：send -->
+<iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
+	<query xmlns="http://jabber.org/protocol/muc#admin">
+		<item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
+		<item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
+		<item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+		<item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
+	</query>
+</iq>
+
+<!-- 删除成员成功：recv -->
+<iq from="easemob-demo#chatdemoui_1477482739698@conference.easemob.com" id="E9400E2E-F851-4F60-9145-7C699346EA2B_easemob_occupants_kick" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="result">
+	<query xmlns="http://jabber.org/protocol/muc#admin"/>
+</iq>
+
+<!-- 通知当前用户删除成员确认：recv -->
+<message from="easemob-demo#chatdemoui_1477482739698@conference.easemob.com/lwz2" id="257565373614785860" nick="lwz2" presence_type="unavailable" to="easemob-demo#chatdemoui_liuwz@easemob.com" type="notify">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none">
+			<actor nick="liuwz"/>
+		</item>
+		<status code="307"/>
+	</x>
+</message>
+
+<!-- 发送当前用户删除成员确认回执：send -->
+<message id="257565373614785860" to="easemob-demo#chatdemoui_1477482739698@conference.easemob.com/lwz2">
+	<received id="257565373614785860" xmlns="urn:xmpp:receipts"/>
+</message>
+
+<!-- 删除群成员后出席通知：recv -->
+<presence from="easemob-demo#chatdemoui_1477482739698@conference.easemob.com/lwz2" to="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" type="unavailable">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none">
+			<actor nick="liuwz"/>
+		</item>
+		<status code="307"/>
+	</x>
+</presence>
+<message from="easemob-demo#chatdemoui_1477481597120@conference.easemob.com/lwz4" id="257575327922914588" nick="lwz4" presence_type="unavailable" to="easemob-demo#chatdemoui_liuwz@easemob.com" type="notify" xmlns="jabber:client">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<item affiliation="member" jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none">
+			<actor nick="liuwz"/>
+		</item>
+		<status code="307"/>
+	</x>
+</message>
+
+<!-- =============  ========== -->
+
+<!-- 用户创建一个房间并且通过muc标示为多人聊天 -->
+2016/10/27 12:39:58:181  SEND:
+<presence to="easemob-demo#chatdemoui_1477543198174@conference.easemob.com/lwz3">
+	<x xmlns="http://jabber.org/protocol/muc"/>
+	<create xmlns="http://jabber.org/protocol/muc"/>
+	<c hash="sha-1" node="https://github.com/robbiehanson/XMPPFramework" ver="k6gP4Ua5m4uu9YorAG0LRXM+kZY=" xmlns="http://jabber.org/protocol/caps"/>
+</presence>
+
+2016/10/27 12:39:58:224  RECV:
+<presence from="easemob-demo#chatdemoui_1477543198174@conference.easemob.com/lwz3" to="easemob-demo#chatdemoui_lwz3@easemob.com/mobile">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<item affiliation="owner" jid="easemob-demo#chatdemoui_lwz3@easemob.com" role="moderator"/>
+		<status code="201"/>
+	</x>
+</presence>
+
+<!-- 创建一个可配置的房间 -->
+2016/10/27 12:39:58:387  SEND:
+<iq id="84A809B1-E3B1-443D-873C-AF960FB1E500" to="easemob-demo#chatdemoui_1477543198174@conference.easemob.com" type="get">
+	<query xmlns="http://jabber.org/protocol/muc#owner"/>
+</iq>
+
+2016/10/27 12:39:58:453  RECV:
+<iq from="easemob-demo#chatdemoui_1477543198174@conference.easemob.com" id="84A809B1-E3B1-443D-873C-AF960FB1E500" to="easemob-demo#chatdemoui_lwz3@easemob.com/mobile" type="result">
+	<query xmlns="http://jabber.org/protocol/muc#owner">
+		<instructions>You need an x:data capable client to configure room</instructions>
+		<x type="form" xmlns="jabber:x:data">
+			<title>Configuration of room easemob-demo#chatdemoui_1477543198174@conference.easemob.com</title>
+			<field type="hidden" var="FORM_TYPE">
+				<value>http://jabber.org/protocol/muc#roomconfig</value>
+			</field>
+			<field label="Room title" type="text-single" var="muc#roomconfig_roomname">
+				<value/>
+			</field>
+			<field label="Room description" type="text-single" var="muc#roomconfig_roomdesc">
+				<value/>
+			</field>
+			<field label="Make room persistent" type="boolean" var="muc#roomconfig_persistentroom">
+				<value>0</value>
+			</field>
+			<field label="Make room public searchable" type="boolean" var="muc#roomconfig_publicroom">
+				<value>1</value>
+			</field>
+			<field label="Make participants list public" type="boolean" var="public_list">
+				<value>1</value>
+			</field>
+			<field label="Make room password protected" type="boolean" var="muc#roomconfig_passwordprotectedroom">
+				<value>0</value>
+			</field>
+			<field label="Password" type="text-private" var="muc#roomconfig_roomsecret">
+				<value/>
+			</field>
+			<field label="Maximum Number of Occupants" type="list-single" var="muc#roomconfig_maxusers">
+				<value>200</value>
+				<option label="5">
+					<value>5</value>
+				</option>
+				<option label="10">
+					<value>10</value>
+				</option>
+				<option label="20">
+					<value>20</value>
+				</option>
+				<option label="30">
+					<value>30</value>
+				</option>
+				<option label="50">
+					<value>50</value>
+				</option>
+				<option label="100">
+					<value>100</value>
+				</option>
+				<option label="200">
+					<value>200</value>
+				</option>
+				<option label="500">
+					<value>500</value>
+				</option>
+				<option label="1000">
+					<value>1000</value>
+				</option>
+				<option label="2000">
+					<value>2000</value>
+				</option>
+			</field>
+			<field label="Present real Jabber IDs to" type="list-single" var="muc#roomconfig_whois">
+				<value>moderators</value>
+				<option label="moderators only">
+					<value>moderators</value>
+				</option>
+				<option label="anyone">
+					<value>anyone</value>
+				</option>
+			</field>
+			<field label="Make room members-only" type="boolean" var="muc#roomconfig_membersonly">
+				<value>0</value>
+			</field>
+			<field label="Make room moderated" type="boolean" var="muc#roomconfig_moderatedroom">
+				<value>1</value>
+			</field>
+			<field label="Default users as participants" type="boolean" var="members_by_default">
+				<value>1</value>
+			</field>
+			<field label="Allow users to change the subject" type="boolean" var="muc#roomconfig_changesubject">
+				<value>1</value>
+			</field>
+			<field label="Allow users to send private messages" type="boolean" var="allow_private_messages">
+				<value>1</value>
+			</field>
+			<field label="Allow visitors to send private messages to" type="list-single" var="allow_private_messages_from_visitors">
+				<value>anyone</value>
+				<option label="nobody">
+					<value>nobody</value>
+				</option>
+				<option label="moderators only">
+					<value>moderators</value>
+				</option>
+				<option label="anyone">
+					<value>anyone</value>
+				</option>
+			</field>
+			<field label="Allow users to query other users" type="boolean" var="allow_query_users">
+				<value>1</value>
+			</field>
+			<field label="Allow users to send invites" type="boolean" var="muc#roomconfig_allowinvites">
+				<value>0</value>
+			</field>
+			<field label="Allow visitors to send status text in presence updates" type="boolean" var="muc#roomconfig_allowvisitorstatus">
+				<value>1</value>
+			</field>
+			<field label="Allow visitors to change nickname" type="boolean" var="muc#roomconfig_allowvisitornickchange">
+				<value>1</value>
+			</field>
+			<field label="Allow visitors to send voice requests" type="boolean" var="muc#roomconfig_allowvoicerequests">
+				<value>1</value>
+			</field>
+			<field label="Minimum interval between voice requests (in seconds)" type="text-single" var="muc#roomconfig_voicerequestmininterval">
+				<value>1800</value>
+			</field>
+			<field label="Exclude Jabber IDs from CAPTCHA challenge" type="jid-multi" var="muc#roomconfig_captcha_whitelist"/>
+		</x>
+	</query>
+</iq>
+
+2016/10/27 12:39:58:459  SEND:
+<iq id="6BF3CFF3-6E61-4883-BE28-89F9A369EA61" to="easemob-demo#chatdemoui_1477543198174@conference.easemob.com" type="set">
+	<query xmlns="http://jabber.org/protocol/muc#owner">
+		<x type="submit" xmlns="jabber:x:data">
+			<title>Configuration of room easemob-demo#chatdemoui_1477543198174@conference.easemob.com</title>
+			<field type="hidden" var="FORM_TYPE">
+				<value>http://jabber.org/protocol/muc#roomconfig</value>
+			</field>
+			<field label="Room title" type="text-single" var="muc#roomconfig_roomname">
+				<value>恶男</value>
+			</field>
+			<field label="Room description" type="text-single" var="muc#roomconfig_roomdesc">
+				<value>爱咋咋</value>
+			</field>
+			<field label="Make room persistent" type="boolean" var="muc#roomconfig_persistentroom">
+				<value>1</value>
+			</field>
+			<field label="Make room public searchable" type="boolean" var="muc#roomconfig_publicroom">
+				<value>0</value>
+			</field>
+			<field label="Make participants list public" type="boolean" var="public_list">
+				<value>1</value>
+			</field>
+			<field label="Make room password protected" type="boolean" var="muc#roomconfig_passwordprotectedroom">
+				<value>0</value>
+			</field>
+			<field label="Password" type="text-private" var="muc#roomconfig_roomsecret">
+				<value/>
+			</field>
+			<field label="Maximum Number of Occupants" type="list-single" var="muc#roomconfig_maxusers">
+				<value>200</value>
+				<option label="5">
+					<value>5</value>
+				</option>
+				<option label="10">
+					<value>10</value>
+				</option>
+				<option label="20">
+					<value>20</value>
+				</option>
+				<option label="30">
+					<value>30</value>
+				</option>
+				<option label="50">
+					<value>50</value>
+				</option>
+				<option label="100">
+					<value>100</value>
+				</option>
+				<option label="200">
+					<value>200</value>
+				</option>
+				<option label="500">
+					<value>500</value>
+				</option>
+				<option label="1000">
+					<value>1000</value>
+				</option>
+				<option label="2000">
+					<value>2000</value>
+				</option>
+			</field>
+			<field label="Present real Jabber IDs to" type="list-single" var="muc#roomconfig_whois">
+				<value>moderators</value>
+				<option label="moderators only">
+					<value>moderators</value>
+				</option>
+				<option label="anyone">
+					<value>anyone</value>
+				</option>
+			</field>
+			<field label="Make room members-only" type="boolean" var="muc#roomconfig_membersonly">
+				<value>1</value>
+			</field>
+			<field label="Make room moderated" type="boolean" var="muc#roomconfig_moderatedroom">
+				<value>1</value>
+			</field>
+			<field label="Default users as participants" type="boolean" var="members_by_default">
+				<value>1</value>
+			</field>
+			<field label="Allow users to change the subject" type="boolean" var="muc#roomconfig_changesubject">
+				<value>1</value>
+			</field>
+			<field label="Allow users to send private messages" type="boolean" var="allow_private_messages">
+				<value>0</value>
+			</field>
+			<field label="Allow visitors to send private messages to" type="list-single" var="allow_private_messages_from_visitors">
+				<value>nobody</value>
+				<option label="nobody">
+					<value>nobody</value>
+				</option>
+				<option label="moderators only">
+					<value>moderators</value>
+				</option>
+				<option label="anyone">
+					<value>anyone</value>
+				</option>
+			</field>
+			<field label="Allow users to query other users" type="boolean" var="allow_query_users">
+				<value>1</value>
+			</field>
+			<field label="Allow users to send invites" type="boolean" var="muc#roomconfig_allowinvites">
+				<value>0</value>
+			</field>
+			<field label="Allow visitors to send status text in presence updates" type="boolean" var="muc#roomconfig_allowvisitorstatus">
+				<value>0</value>
+			</field>
+			<field label="Allow visitors to change nickname" type="boolean" var="muc#roomconfig_allowvisitornickchange">
+				<value>0</value>
+			</field>
+			<field label="Allow visitors to send voice requests" type="boolean" var="muc#roomconfig_allowvoicerequests">
+				<value>1</value>
+			</field>
+			<field label="Minimum interval between voice requests (in seconds)" type="text-single" var="muc#roomconfig_voicerequestmininterval">
+				<value>1800</value>
+			</field>
+			<field label="Exclude Jabber IDs from CAPTCHA challenge" type="jid-multi" var="muc#roomconfig_captcha_whitelist"/>
+		</x>
+	</query>
+</iq>
+
+2016/10/27 12:39:58:488  RECV: <iq from='easemob-demo#chatdemoui_1477543198174@conference.easemob.com' to='easemob-demo#chatdemoui_lwz3@easemob.com/mobile' id='6BF3CFF3-6E61-4883-BE28-89F9A369EA61' type='result'><query xmlns='http://jabber.org/protocol/muc#owner'/></iq>
+
+2016/10/27 12:39:58:493  SEND: <message to="easemob-demo#chatdemoui_1477543198174@conference.easemob.com"><x xmlns="http://jabber.org/protocol/muc#user"><invite to="easemob-demo#chatdemoui_liuwz@easemob.com"><reason>lwz3 invite you to join group '恶男'</reason></invite></x></message>
+
+2016/10/27 12:39:58:496  SEND: <message to="easemob-demo#chatdemoui_1477543198174@conference.easemob.com"><x xmlns="http://jabber.org/protocol/muc#user"><invite to="easemob-demo#chatdemoui_lwz2@easemob.com"><reason>lwz3 invite you to join group '恶男'</reason></invite></x></message>
+
+2016/10/27 12:39:58:499  SEND:
+<iq id="6FF039D0-2314-4D51-B14A-CD560310D4DE_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477543198174@conference.easemob.com" type="set">
+	<query xmlns="http://jabber.org/protocol/muc#admin">
+		<item affiliation="member" jid="easemob-demo#chatdemoui_liuwz@easemob.com"/>
+		<item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	</query>
+</iq>
+
+2016/10/27 12:40:01:414  RECV:
+<iq from="easemob-demo#chatdemoui_1477543198174@conference.easemob.com" id="6FF039D0-2314-4D51-B14A-CD560310D4DE_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_lwz3@easemob.com/mobile" type="result">
+	<query xmlns="http://jabber.org/protocol/muc#admin"/>
+</iq>
+
+
+
+<iq id="01afb856-b660-4dfd-9805-13ee1db5851e:sendIQ" to="easemob-demo#chatdemoui_1477561108716@conference.easemob.com" xmlns="jabber:client">
+	<query xmlns="http://jabber.org/protocol/muc#owner">
+		<x type="submit" xmlns="jabber:x:data">
+			<title>Configuration of room easemob-demo#chatdemoui_1477561108716@conference.easemob.com</title>
+			<field type="hidden" var="FORM_TYPE">
+				<value>http://jabber.org/protocol/muc#roomconfig</value>
+			</field>
+			<field label="Room title" type="text-single" var="muc#roomconfig_roomname">
+				<value>dadzz</value>
+			</field>
+			<field label="Room description" type="text-single" var="muc#roomconfig_roomdesc">
+				<value/>
+			</field>
+			<field label="Make room persistent" type="boolean" var="muc#roomconfig_persistentroom">
+				<value>0</value>
+			</field>
+			<field label="Make room public searchable" type="boolean" var="muc#roomconfig_publicroom">
+				<value>1</value>
+			</field>
+			<field label="Make participants list public" type="boolean" var="public_list">
+				<value>1</value>
+			</field>
+			<field label="Make room password protected" type="boolean" var="muc#roomconfig_passwordprotectedroom">
+				<value>0</value>
+			</field>
+			<field label="Password" type="text-private" var="muc#roomconfig_roomsecret">
+				<value/>
+			</field>
+			<field label="Maximum Number of Occupants" type="list-single" var="muc#roomconfig_maxusers">
+				<value>200</value>
+				<option label="5">
+					<value>5</value>
+				</option>
+				<option label="10">
+					<value>10</value>
+				</option>
+				<option label="20">
+					<value>20</value>
+				</option>
+				<option label="30">
+					<value>30</value>
+				</option>
+				<option label="50">
+					<value>50</value>
+				</option>
+				<option label="100">
+					<value>100</value>
+				</option>
+				<option label="200">
+					<value>200</value>
+				</option>
+				<option label="500">
+					<value>500</value>
+				</option>
+				<option label="1000">
+					<value>1000</value>
+				</option>
+				<option label="2000">
+					<value>2000</value>
+				</option>
+			</field>
+			<field label="Present real Jabber IDs to" type="list-single" var="muc#roomconfig_whois">
+				<value>moderators</value>
+				<option label="moderators only">
+					<value>moderators</value>
+				</option>
+				<option label="anyone">
+					<value>anyone</value>
+				</option>
+			</field>
+			<field label="Make room members-only" type="boolean" var="muc#roomconfig_membersonly">
+				<value>1</value>
+			</field>
+			<field label="Make room moderated" type="boolean" var="muc#roomconfig_moderatedroom">
+				<value>1</value>
+			</field>
+			<field label="Default users as participants" type="boolean" var="members_by_default">
+				<value>1</value>
+			</field>
+			<field label="Allow users to change the subject" type="boolean" var="muc#roomconfig_changesubject">
+				<value>1</value>
+			</field>
+			<field label="Allow users to send private messages" type="boolean" var="allow_private_messages">
+				<value>1</value>
+			</field>
+			<field label="Allow visitors to send private messages to" type="list-single" var="allow_private_messages_from_visitors">
+				<value>anyone</value>
+				<option label="nobody">
+					<value>nobody</value>
+				</option>
+				<option label="moderators only">
+					<value>moderators</value>
+				</option>
+				<option label="anyone">
+					<value>anyone</value>
+				</option>
+			</field>
+			<field label="Allow users to query other users" type="boolean" var="allow_query_users">
+				<value>1</value>
+			</field>
+			<field label="Allow users to send invites" type="boolean" var="muc#roomconfig_allowinvites">
+				<value>0</value>
+			</field>
+			<field label="Allow visitors to send status text in presence updates" type="boolean" var="muc#roomconfig_allowvisitorstatus">
+				<value>1</value>
+			</field>
+			<field label="Allow visitors to change nickname" type="boolean" var="muc#roomconfig_allowvisitornickchange">
+				<value>1</value>
+			</field>
+			<field label="Allow visitors to send voice requests" type="boolean" var="muc#roomconfig_allowvoicerequests">
+				<value>1</value>
+			</field>
+			<field label="Minimum interval between voice requests (in seconds)" type="text-single" var="muc#roomconfig_voicerequestmininterval">
+				<value>1800</value>
+			</field>
+			<field label="Exclude Jabber IDs from CAPTCHA challenge" type="jid-multi" var="muc#roomconfig_captcha_whitelist"/>
+		</x>
+	</query>
+</iq>
+
+<!-- 获取房间信息 -->
+<iq from="easemob-demo#chatdemoui_1477566780068@conference.easemob.com" id="412f3081-0c46-43e6-9346-115558548631:sendIQ" to="easemob-demo#chatdemoui_lwz3@easemob.com/webim" type="result" xmlns="jabber:client">
+	<query xmlns="http://jabber.org/protocol/disco#info">
+		<identity category="conference" name="公开群" type="text"/>
+		<feature var="http://jabber.org/protocol/muc"/>
+		<feature var="muc_hidden"/>
+		<feature var="muc_persistent"/>
+		<feature var="muc_membersonly"/>
+		<feature var="muc_allowinvites"/>
+		<feature var="muc_semianonymous"/>
+		<feature var="muc_unmoderated"/>
+		<feature var="muc_unsecured"/>
+		<x type="result" xmlns="jabber:x:data">
+			<field type="hidden" var="FORM_TYPE">
+				<value>http://jabber.org/protocol/muc#roominfo</value>
+			</field>
+			<field label="Room description" var="muc#roominfo_description">
+				<value/>
+			</field>
+			<field label="Max Users" var="muc#roominfo_maxusers">
+				<value>200</value>
+			</field>
+			<field label="Number of affiliations" var="muc#roominfo_affiliations">
+				<value>3</value>
+			</field>
+			<field label="owner" var="muc#roominfo_owner">
+				<value>easemob-demo#chatdemoui_liuwz</value>
+			</field>
+			<field label="Number of occupants" var="muc#roominfo_occupants">
+				<value>3</value>
+			</field>
+		</x>
+	</query>
+</iq>
+
+<!-- ================审批入群=============== -->
+<!-- 收到加群申请：recv -->
+<message from="easemob-demo#chatdemoui_lwz4@easemob.com" id="259151681747419640" to="easemob-demo#chatdemoui_liuwz@easemob.com">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<apply from="easemob-demo#chatdemoui_lwz4@easemob.com" to="easemob-demo#chatdemoui_1477733677560@conference.easemob.com" toNick="lwzlwzlwz">
+			<reason>qwe</reason>
+		</apply>
+	</x>
+	<delay stamp="2016-10-31T08:40:52.877Z" xmlns="urn:xmpp:delay"/>
+</message>
+
+<!-- 接受申请 = 添加群成员：send -->
+<iq id="A735DC25-12DE-480B-8057-2EBD0081E2FF_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477733677560@conference.easemob.com" type="set">
+	<query xmlns="http://jabber.org/protocol/muc#admin">
+		<item affiliation="member" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
+	</query>
+</iq>
+
+<!-- 接受申请 = 添加群成员 成功：send -->
+<iq from='easemob-demo#chatdemoui_1477733677560@conference.easemob.com' to='easemob-demo#chatdemoui_liuwz@easemob.com/mobile' id='A735DC25-12DE-480B-8057-2EBD0081E2FF_easemob_occupants_change_affiliation' type='result'><query xmlns='http://jabber.org/protocol/muc#admin'/></iq>
+
+<!-- 接受入群申请通知：send -->
+<message from="easemob-demo#chatdemoui_liuwz@easemob.com/mobile" id="836CDC2C-17A2-4115-90A8-30C9F3008DD6" to="easemob-demo#chatdemoui_lwz4@easemob.com">
+	<x xmlns="http://jabber.org/protocol/muc#user">
+		<accept from="easemob-demo#chatdemoui_liuwz@easemob.com" fromNick="lwzlwzlwz" to="easemob-demo#chatdemoui_1477733677560@conference.easemob.com">
+			<reason/>
+		</accept>
+	</x>
+</message>
+
+
+<!-- 被屏蔽时发送消息： -->
+<message from="easemob-demo#chatdemoui_1477542151740@conference.easemob.com" id="259122554994688444" to="easemob-demo#chatdemoui_liuwz@easemob.com/webim" type="error" xmlns="jabber:client">
+	<body>{&quot;from&quot;:&quot;liuwz&quot;,&quot;to&quot;:&quot;1477542151740&quot;,&quot;bodies&quot;:[{&quot;type&quot;:&quot;txt&quot;,&quot;msg&quot;:&quot;1&quot;}],&quot;ext&quot;:{&quot;weichat&quot;:{&quot;originType&quot;:&quot;webim&quot;}}}</body>
+	<error code="406" type="modify">
+		<not-acceptable xmlns="urn:ietf:params:xml:ns:xmpp-stanzas"/>
+		<text xmlns="urn:ietf:params:xml:ns:xmpp-stanzas">Only occupants are allowed to send messages to the conference</text>
+	</error>
+</message>
