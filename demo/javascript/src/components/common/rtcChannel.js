@@ -6,7 +6,7 @@ var Channel = React.createClass({
     getInitialState: function () {
         return {
             localFullRemoteCorner: false,
-            toggle_left: 0,
+            toggle_right: 0,
             toggle_top: 0,
             toggle_display: 'none',
             close_right: 0,
@@ -62,7 +62,7 @@ var Channel = React.createClass({
     },
 
     componentDidUpdate: function () {
-        console.log('did update');
+        console.log('did update', this.props);
 
         var me = this;
         this.refs.localVideo.oncanplay = function () {
@@ -76,7 +76,6 @@ var Channel = React.createClass({
             console.log('remoteVideo', me.refs.remoteVideo.getBoundingClientRect());
             var rect = me.refs.remoteVideo.getBoundingClientRect();
             me.setState({
-                close_right: rect.width / 2 - 6,
                 toggle_display: 'block',
                 accept_display: 'none'
             });
@@ -85,7 +84,7 @@ var Channel = React.createClass({
     },
 
     componentDidMount: function () {
-        console.log('did mount');
+        console.log('did mount', this.props);
         new Drag(this.refs.rtc);
         this.resetButtonPosition();
     },
@@ -93,7 +92,7 @@ var Channel = React.createClass({
     resetButtonPosition: function () {
         var rect = this.refs.remoteVideo.getBoundingClientRect();
         this.setState({
-            toggle_left: rect.width / 2 - 6,
+            toggle_right: 6,
             toggle_top: 6,
             close_right: 6,
             close_bottom: 6,
@@ -103,13 +102,14 @@ var Channel = React.createClass({
     },
 
     render: function () {
-
         var localClassName = this.state.localFullRemoteCorner ? 'full' : 'corner';
         var remoteClassName = this.state.localFullRemoteCorner ? 'corner' : 'full';
+
         return (
             <div ref='rtc' className='webim-rtc-video'>
                 <video ref='localVideo' className={localClassName}/>
                 <video ref='remoteVideo' className={remoteClassName}/>
+                <span>{this.props.title}</span>
                 <i ref='close' className='font small' style={{
                     left: 'auto',
                     right: this.state.close_right + 'px',
@@ -126,8 +126,8 @@ var Channel = React.createClass({
                 <i ref='toggle' className='font small toggle'
                    style={{
                        display: this.state.toggle_display,
-                       left: this.state.toggle_left + 'px',
-                       right: 'auto',
+                       left: 'auto',
+                       right: this.state.toggle_right + 'px',
                        top: this.state.toggle_top + 'px',
                        bottom: 'auto'
                    }} onClick={this.toggle}>d</i>
@@ -137,23 +137,34 @@ var Channel = React.createClass({
 });
 
 module.exports = function (dom) {
+    this.dom = dom;
     var me = this;
-    me.dom = dom;
-
     return {
         setLocal: function (stream) {
             this.localStream = stream;
-
+            var title = this.caller;
             ReactDOM.render(
-                <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}/>,
+                <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
+                         title={title}/>,
                 me.dom
             );
         },
         setRemote: function (stream) {
             this.remoteStream = stream;
-
+            var title = this.caller;
             ReactDOM.render(
-                <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}/>,
+                <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
+                         title={title}/>,
+                me.dom
+            );
+        },
+        setCaller: function (caller) {
+            console.log('setCaller', caller);
+            this.caller = caller;
+            var title = caller ? ( caller + ' 请求视频通话') : '';
+            ReactDOM.render(
+                <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
+                         title={title}/>,
                 me.dom
             );
         },

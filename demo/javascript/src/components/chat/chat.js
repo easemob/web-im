@@ -242,7 +242,7 @@ module.exports = React.createClass({
 
             listener: {
                 onAcceptCall: function (from, options) {
-                    debugger
+                    console.log('onAcceptCall', from, options);
                 },
                 onGotRemoteStream: function (stream) {
                     me.channel.setRemote(stream);
@@ -251,7 +251,9 @@ module.exports = React.createClass({
                     me.channel.setLocal(stream);
                 },
                 onRinging: function (caller) {
-                    debugger
+                    console.log('onRinging', caller);
+                    caller = caller.split('@')[0].split('_')[1];
+                    me.channel.setCaller(caller);
                 },
                 onTermCall: function () {
                     me.channel.close();

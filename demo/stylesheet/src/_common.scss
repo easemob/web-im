@@ -188,7 +188,7 @@ object {
 
     &.corner {
       z-index: 2;
-      top: 15px;
+      top: 40px;
       left: auto;
       right: 10px;
       bottom: auto;
@@ -196,7 +196,19 @@ object {
       height: 100px;
     }
   }
-
+  span {
+    z-index: 2;
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 6px;
+    bottom: 0;
+    width: 200px;
+    height: 80px;
+    text-align: center;
+    color: #fff;
+  }
   i {
     z-index: 2;
     position: absolute;
