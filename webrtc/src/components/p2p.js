@@ -85,7 +85,7 @@ var CommonPattern = {
 
         self.consult = false;
 
-        self.webRtc.createMedia(mediaStreamConstaints, function (webrtc, stream) {
+        this.webRtc.createMedia(mediaStreamConstaints, function (webrtc, stream) {
             webrtc.setLocalVideoSrcObject(stream);
 
             self.webRtc.createRtcPeerConnection(self._rtcCfg);

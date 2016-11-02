@@ -87,3 +87,24 @@ span.red {
 .webim-contact-loading img {
   width: 24px;
 }
+
+.webim-rtc-video i {
+  z-index: 2;
+  position: absolute;
+  background-color: hsla(0, 0%, 100%, .2);
+  font-style: normal;
+  border-radius: 50%;
+  text-align: center;
+  color: rgba(0, 0, 0, .2);
+  cursor: pointer;
+}
+
+.webim-rtc-video i.close {
+  right: 6px;
+  bottom: 6px;
+}
+
+.webim-rtc-video i.accept {
+  left: 6px;
+  bottom: 6px;
+}

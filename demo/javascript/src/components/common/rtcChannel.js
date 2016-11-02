@@ -14,25 +14,30 @@ var Channel = React.createClass({
         var local = this.props.localStream;
         var remote = this.props.remoteStream;
 
-        if ( remote ) {
+        if (remote) {
             remote.getAudioTracks()[0].stop();
             remote.getVideoTracks()[0].stop();
         }
 
-        if ( local ) {
+        if (local) {
             local.getAudioTracks()[0].stop();
             local.getVideoTracks()[0].stop();
         }
 
         try {
             Demo.call.endCall();
-        } catch ( e ) {}
+        } catch (e) {
+        }
 
         this.props.close();
     },
 
+    acceptCall: function () {
+        Demo.call.acceptCall();
+    },
+
     toggle: function () {
-        if ( this.state.local ) {
+        if (this.state.local) {
             this.setState({local: false, remote: true});
         } else {
             this.setState({local: true, remote: false});
@@ -44,7 +49,7 @@ var Channel = React.createClass({
 
         me.refs.remoteVideo.srcObject = me.props.remoteStream;
         me.refs.localVideo.srcObject = me.props.localStream;
-        
+
         me.refs.localVideo.oncanplay = function () {
             me.refs.localVideo.play();
         };
@@ -66,50 +71,51 @@ var Channel = React.createClass({
 
     render: function () {
 
-        var localClassName = this.state.local ? 'webim-rtc-video-full': 'webim-rtc-video-corner';
-        var remoteClassName = this.state.remote ? 'webim-rtc-video-full': 'webim-rtc-video-corner';
+        var localClassName = this.state.local ? 'webim-rtc-video-full' : 'webim-rtc-video-corner';
+        var remoteClassName = this.state.remote ? 'webim-rtc-video-full' : 'webim-rtc-video-corner';
 
         return (
             <div ref='rtc' className='webim-rtc-video'>
                 <video ref='localVideo' className={localClassName} onClick={this.toggle}/>
                 <video ref='remoteVideo' className={remoteClassName} onClick={this.toggle}/>
-                <i className='font small' onClick={this.close}>Q</i>
+                <i className='font small close' onClick={this.close}>Q</i>
+                <i className='font small accept' onClick={this.acceptCall}>z</i>
             </div>
         );
     }
 });
 
-module.exports = function ( dom ) {
+module.exports = function (dom) {
     var me = this;
     me.dom = dom;
 
     return {
-        setLocal: function ( stream) {
+        setLocal: function (stream) {
             this.localStream = stream;
 
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}/>,
-                me.dom 
-            ); 
+                me.dom
+            );
         },
-        setRemote: function ( stream ) {
+        setRemote: function (stream) {
             this.remoteStream = stream;
 
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}/>,
-                me.dom 
-            ); 
+                me.dom
+            );
         },
         close: function () {
             var local = this.localStream;
             var remote = this.remoteStream;
 
-            if ( remote ) {
+            if (remote) {
                 remote.getAudioTracks()[0].stop();
                 remote.getVideoTracks()[0].stop();
             }
 
-            if ( local ) {
+            if (local) {
                 local.getAudioTracks()[0].stop();
                 local.getVideoTracks()[0].stop();
             }
