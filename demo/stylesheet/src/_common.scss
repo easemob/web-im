@@ -176,7 +176,7 @@ object {
   video {
     position: absolute;
 
-    &.webim-rtc-video-full {
+    &.full {
       z-index: 1;
       height: 100%;
       width: 100%;
@@ -186,13 +186,13 @@ object {
       bottom: auto;
     }
 
-    &.webim-rtc-video-corner {
+    &.corner {
       z-index: 2;
-      top: auto;
+      top: 15px;
       left: auto;
-      right: 0;
-      bottom: 0;
-      width: 100px;
+      right: 10px;
+      bottom: auto;
+      width: 80px;
       height: 100px;
     }
   }
@@ -200,8 +200,6 @@ object {
   i {
     z-index: 2;
     position: absolute;
-    right: 6px;
-    top: 6px;
     background-color: rgba(255, 255, 255, .2);
     font-style: normal;
     border-radius: 50%;
@@ -212,5 +210,6 @@ object {
     &:hover {
       color: #e90101;
     }
+
   }
 }
