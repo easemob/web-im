@@ -10,12 +10,27 @@
 ###8.chatrooms的接口，原来是一次取所有，改成分页，下拉到底部获取下一页. (文科 done）
 ###9.热加载 (刘伟展 done)
 ###10.消息发送不成功，添加红色惊叹号提示(刘伟展 done)
+###引入UNDERSCORE库(刘伟展 done)
 
 #1.1.4 (2016.11.11)
 ###加入ip策略功能 参考ios客户端 解决猎聘的客户需求
 ###webrtc的接受视频请求按钮，改成弹窗同意或拒绝
 ###v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了  handlePageLimit clearPageSign getPageCount
+
+```
+ 1.0.7里面有 需要手动修改easemob.im-1.0.7.js:
+ 1033行开始的两行
+ //var resource_value = Math.floor(Math.random()*1000);
+ var resource_value = "webim";
+ 
+ 改成
+ var resource_value = Math.floor(Math.random()*1000);
+ //var resource_value = "webim";
+```
+
 ###JavaScript Web SDK installation via CDN and NPM 的可行性和implementation 参考https://docs.layer.com/sdk/web/install 11.20前完成 可以交给钟泽芳负责
+###调整框架目录结构:src/dist/publish
+###文档整理
 
 #V1.1.5 (2016.11~2016.12) 优化和新需求:
 ###webrtc相关功能的实现
@@ -24,10 +39,8 @@
 ###文件下载前，先发ajax请求带token参数去fileserver做验证
 ###增加搜索功能
 ###修改multi-select-box组件的UI
-###调整框架目录结构:src/dist/publish
 ###© 2016 环信科技  2016不要写死
 ###所有eval('(' + message + ')');  改成 JSON.parse(message)  所有 eval('(' + str + ')');  改成 JSON.parse(str)  
-###引入UNDERSCORE库
 ###引入promise库
 ###引入REDUX，减少原生dom操作
 ###http://docs.easemob.com/im/400webimintegration/60toolrelated 截图发送 还维护吗?

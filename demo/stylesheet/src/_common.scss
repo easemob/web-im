@@ -175,15 +175,17 @@ object {
 
   video {
     position: absolute;
+    object-fit: contain;
 
     &.full {
       z-index: 1;
-      height: 100%;
-      width: 100%;
+      max-height: 100%;
+      max-width: 100%;
+      margin: auto;
       top: 0;
       left: 0;
-      right: auto;
-      bottom: auto;
+      right: 0;
+      bottom: 0;
     }
 
     &.corner {
@@ -192,8 +194,8 @@ object {
       left: auto;
       right: 10px;
       bottom: auto;
-      width: 80px;
-      height: 100px;
+      max-height: 17%;
+      max-width: 17%;
     }
   }
   span {
