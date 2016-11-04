@@ -71,9 +71,6 @@ module.exports = React.createClass({
             return;
         }
 
-        event.preventDefault();
-        event.stopPropagation();
-
         var value = this.props.name;
         var me = this;
 
