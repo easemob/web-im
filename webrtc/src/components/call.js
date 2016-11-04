@@ -83,7 +83,6 @@ var _Call = {
 
     call: function (callee, mediaStreamConstaints) {
         var self = this;
-
         this.callee = this.api.jid(callee);
 
         var rt = new RouteTo({

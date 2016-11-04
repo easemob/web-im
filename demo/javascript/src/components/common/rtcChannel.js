@@ -13,7 +13,7 @@ var Channel = React.createClass({
             close_bottom: 0,
             accept_left: 0,
             accept_bottom: 0,
-            accept_display: 'block'
+            accept_display: this.props.hideAccept ? 'none' : 'block'
         };
     },
 
@@ -142,16 +142,28 @@ module.exports = function (dom) {
     return {
         setLocal: function (stream) {
             this.localStream = stream;
-            var title = Demo.call.callee.split('@')[0].split('_')[1];
+            var title = '';
+            var hideAccept = false;
+            if (Demo.user == Demo.call.caller) {
+                title = '等候 ' + Demo.call.callee.split('@')[0].split('_')[1] + ' 视频中...';
+                hideAccept = true;
+            } else {
+                title = Demo.call.callee.split('@')[0].split('_')[1];
+            }
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
-                         title={title}/>,
+                         title={title} hideAccept={hideAccept}/>,
                 me.dom
             );
         },
         setRemote: function (stream) {
             this.remoteStream = stream;
-            var title = Demo.call.callee.split('@')[0].split('_')[1] + ' 请求视频通话';
+            var title = '';
+            if (Demo.user == Demo.call.caller) {
+                title = Demo.call.callee.split('@')[0].split('_')[1];
+            } else {
+                title = Demo.call.callee.split('@')[0].split('_')[1] + ' 请求视频通话...';
+            }
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
                          title={title}/>,

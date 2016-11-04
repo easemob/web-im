@@ -1,6 +1,6 @@
 /**
  * WebRTC
- * 
+ *
  * A | B | 1.createMedia:got streamA | 1.createMedia:got streamB 2.new
  * RTCPeerConnection: APeerConnection | 2.new RTCPeerConnection: BPeerConnection
  * 3.APeerConnection.createOffer:got offerA |
@@ -231,8 +231,8 @@ var _WebRTC = {
 
     createMedia: function (constaints, onGotStream) {
         var self = this;
-        
-        if(constaints && (typeof constaints === "function")){
+
+        if (constaints && (typeof constaints === "function")) {
             onGotStream = constaints;
             constaints = null;
         }
@@ -243,7 +243,7 @@ var _WebRTC = {
             _logger.debug(' got local stream');
 
             self.localStream = stream;
-            
+
             var videoTracks = self.localStream.getVideoTracks();
             var audioTracks = self.localStream.getAudioTracks();
 
@@ -265,8 +265,8 @@ var _WebRTC = {
                 self.onError(e);
             });
     },
-    
-    setLocalVideoSrcObject : function(stream){
+
+    setLocalVideoSrcObject: function (stream) {
         this.onGotLocalStream(stream);
         _logger.debug(' you can see yourself !');
     },
@@ -321,7 +321,8 @@ var _WebRTC = {
             function (desc) {
                 self.offerDescription = desc;
 
-                _logger.debug(' Offer from \n' + desc.sdp);
+                _logger.debug(' Offer from \n');
+                // _logger.debug(desc.sdp);
                 _logger.debug(' setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
@@ -366,7 +367,8 @@ var _WebRTC = {
 
                     desc.sdp = sdpSection.getUpdatedSDP();
 
-                    _logger.debug(' Send PRAnswer from :\n' + desc.sdp);
+                    _logger.debug(' Send PRAnswer from :\n');
+                    // _logger.debug(desc.sdp);
 
                     (onCreatePRAnswerSuccess || self.onCreatePRAnswerSuccess)(desc);
                 });
@@ -432,10 +434,11 @@ var _WebRTC = {
         var self = this;
         try {
             self.rtcPeerConnection && self.rtcPeerConnection.close();
-        } catch ( e ) {}
+        } catch (e) {
+        }
 
-        if ( self.localStream ) {
-            self.localStream.getTracks().forEach(function(track) {
+        if (self.localStream) {
+            self.localStream.getTracks().forEach(function (track) {
                 track.stop();
             });
         }
