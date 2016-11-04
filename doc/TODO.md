@@ -1,5 +1,5 @@
 [TOC]
-#V1.1.3 (Now~2016.10) 紧急需求和bug:
+#V1.1.3 (Now~2016.10)
 ###1.upgrade strophe from 1.2.2 to 1.2.8, and use strophe-1.2.8.min.js in the product mode, use strophe.js in the debug mode (文科 done)
 ###2.断线重连 (文科 done)
 ###3.群组的xmpp协议版本  (刘伟展 done)
@@ -12,9 +12,14 @@
 ###10.消息发送不成功，添加红色惊叹号提示(刘伟展 done)
 ###引入UNDERSCORE库(刘伟展 done)
 
-#1.1.4 (2016.11.11)
+#V1.1.4 (2016.11.11)
 ###加入ip策略功能 参考ios客户端 解决猎聘的客户需求
-###webrtc的接受视频请求按钮，改成弹窗同意或拒绝
+
+```
+http://www.easemob.com/easemob/server.xml?sdk_version=2.3.0&app_key=easemobdemo%23chatdemoui
+```
+###webrtc的接受视频请求按钮，改成弹窗同意或拒绝（文科 done）
+###好友和群组，第一次打开，读取十条历史记录，跟聊天室一样。(windowsdk需求)
 ###v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了  handlePageLimit clearPageSign getPageCount
 
 ```
@@ -32,7 +37,7 @@
 ###调整框架目录结构:src/dist/publish
 ###文档整理
 
-#V1.1.5 (2016.11~2016.12) 优化和新需求:
+#V1.1.5 (2016.11~2016.12)
 ###webrtc相关功能的实现
 ###leftbar分类切换时，右侧的聊天窗口需要替换成遮罩，避免歧义和bug
 ###现有的机制是登录就创建所有的好友/群组/群的chatwindow,性能有问题。需要改成动态创建。
@@ -54,7 +59,7 @@ npm install layer-websdk@beta --save
 ```
 ###22.用React Hot Loader 3替换已经deprecated的react-transform-hmr https://github.com/gaearon/react-transform-hmr
 
-#V1.1.5 (2017.01~2017.06) 新需求：
+#V1.1.6 (2017.01~2017.06) 新需求：
 ###1.webim所有接口的xmpp协议(邹金海)和react协议(仝瑶)的文档整理
 ###2.webim所有接口的测试用例整理
 ###3.RectMix:将ReactJS转成ReactNative生成app(IOS/ANDROID)
