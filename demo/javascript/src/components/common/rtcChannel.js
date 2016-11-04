@@ -142,7 +142,7 @@ module.exports = function (dom) {
     return {
         setLocal: function (stream) {
             this.localStream = stream;
-            var title = this.caller;
+            var title = Demo.call.callee.split('@')[0].split('_')[1];
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
                          title={title}/>,
@@ -151,17 +151,7 @@ module.exports = function (dom) {
         },
         setRemote: function (stream) {
             this.remoteStream = stream;
-            var title = this.caller;
-            ReactDOM.render(
-                <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
-                         title={title}/>,
-                me.dom
-            );
-        },
-        setCaller: function (caller) {
-            console.log('setCaller', caller);
-            this.caller = caller;
-            var title = caller ? ( caller + ' 请求视频通话') : '';
+            var title = Demo.call.callee.split('@')[0].split('_')[1] + ' 请求视频通话';
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
                          title={title}/>,

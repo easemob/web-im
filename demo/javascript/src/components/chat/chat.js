@@ -252,8 +252,6 @@ module.exports = React.createClass({
                 },
                 onRinging: function (caller) {
                     console.log('onRinging', caller);
-                    caller = caller.split('@')[0].split('_')[1];
-                    me.channel.setCaller(caller);
                 },
                 onTermCall: function () {
                     me.channel.close();
