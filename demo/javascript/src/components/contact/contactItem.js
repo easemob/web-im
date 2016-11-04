@@ -41,9 +41,9 @@ module.exports = React.createClass({
             this.refs['i'].innerText = '';
         }
 
-        if (this.props.id === Demo.selected) {
-            return;
-        }
+        // if (this.props.id === Demo.selected) {
+        //     return;
+        // }
 
         if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
             Demo.selected = this.props.id;
