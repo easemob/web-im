@@ -6,6 +6,8 @@ var Channel = React.createClass({
     getInitialState: function () {
         return {
             localFullRemoteCorner: false,
+            full_width: 400,
+            full_height: 400,
             toggle_right: 0,
             toggle_top: 0,
             toggle_display: 'none',
@@ -87,6 +89,28 @@ var Channel = React.createClass({
         console.log('did mount', this.props);
         new Drag(this.refs.rtc);
         this.resetButtonPosition();
+
+        var me = this;
+        var localVideo = this.refs.localVideo;
+        var remoteVideo = this.refs.remoteVideo;
+        localVideo.addEventListener('loadedmetadata', function () {
+            console.log('Local video videoWidth: ' + this.videoWidth +
+                'px,  videoHeight: ' + this.videoHeight + 'px');
+            me.setState({
+                full_width: this.videoWidth,
+                full_height: this.videoHeight,
+            });
+        });
+
+        remoteVideo.addEventListener('loadedmetadata', function () {
+            console.log('Remote video videoWidth: ' + this.videoWidth +
+                'px,  videoHeight: ' + this.videoHeight + 'px');
+            me.setState({
+                full_width: this.videoWidth,
+                full_height: this.videoHeight,
+            });
+        });
+
     },
 
     resetButtonPosition: function () {
@@ -106,7 +130,8 @@ var Channel = React.createClass({
         var remoteClassName = this.state.localFullRemoteCorner ? 'corner' : 'full';
 
         return (
-            <div ref='rtc' className='webim-rtc-video'>
+            <div ref='rtc' className='webim-rtc-video'
+                 style={{width: this.state.full_width + 'px', height: this.state.full_height + 'px'}}>
                 <video ref='localVideo' className={localClassName}/>
                 <video ref='remoteVideo' className={remoteClassName}/>
                 <span>{this.props.title}</span>
@@ -171,17 +196,20 @@ module.exports = function (dom) {
             );
         },
         close: function () {
+            console.log('channel close');
             var local = this.localStream;
             var remote = this.remoteStream;
 
             if (remote) {
-                remote.getAudioTracks()[0].stop();
-                remote.getVideoTracks()[0].stop();
+                remote.getTracks().forEach(function (track) {
+                    track.stop();
+                });
             }
 
             if (local) {
-                local.getAudioTracks()[0].stop();
-                local.getVideoTracks()[0].stop();
+                local.getTracks().forEach(function (track) {
+                    track.stop();
+                });
             }
 
             ReactDOM.unmountComponentAtNode(me.dom);
