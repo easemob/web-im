@@ -46,7 +46,19 @@ var Channel = React.createClass({
     },
 
     toggle: function () {
-        this.setState({localFullRemoteCorner: !this.state.localFullRemoteCorner});
+        // console.log('toggle', this.local_width, '*', this.local_height, ',', this.remote_width, '*', this.remote_height);
+        if (this.state.full_width == this.local_width && this.state.full_height == this.local_height) {
+            this.state.full_width = this.remote_width;
+            this.state.full_height = this.remote_height;
+        } else {
+            this.state.full_width = this.local_width;
+            this.state.full_height = this.local_height;
+        }
+        this.setState({
+            localFullRemoteCorner: !this.state.localFullRemoteCorner,
+            full_width: this.state.full_width,
+            full_height: this.state.full_height
+        });
     },
 
     setStream: function (props) {
@@ -96,6 +108,8 @@ var Channel = React.createClass({
         localVideo.addEventListener('loadedmetadata', function () {
             console.log('Local video videoWidth: ' + this.videoWidth +
                 'px,  videoHeight: ' + this.videoHeight + 'px');
+            me.local_width = this.videoWidth;
+            me.local_height = this.videoHeight;
             me.setState({
                 full_width: this.videoWidth,
                 full_height: this.videoHeight,
@@ -105,6 +119,8 @@ var Channel = React.createClass({
         remoteVideo.addEventListener('loadedmetadata', function () {
             console.log('Remote video videoWidth: ' + this.videoWidth +
                 'px,  videoHeight: ' + this.videoHeight + 'px');
+            me.remote_width = this.videoWidth;
+            me.remote_height = this.videoHeight;
             me.setState({
                 full_width: this.videoWidth,
                 full_height: this.videoHeight,
