@@ -13,16 +13,17 @@
 ###引入UNDERSCORE库(刘伟展 done)
 
 #V1.1.4 (2016.11.11)
-###加入ip策略功能 参考ios客户端 解决猎聘的客户需求
+###加入ip策略功能 参考ios客户端 解决猎聘的客户需求(文科)
 
 ```
 http://www.easemob.com/easemob/server.xml?sdk_version=2.3.0&app_key=easemobdemo%23chatdemoui
 ```
 ###webrtc的接受视频请求按钮，改成弹窗同意或拒绝（文科 done）
 ###好友和群组，第一次打开，读取十条历史记录，跟聊天室一样。(windowsdk需求)
-###v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了  handlePageLimit clearPageSign getPageCount
+###v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了 (钟泽方)
 
 ```
+ handlePageLimit clearPageSign getPageCount
  1.0.7里面有 需要手动修改easemob.im-1.0.7.js:
  1033行开始的两行
  //var resource_value = Math.floor(Math.random()*1000);
@@ -33,12 +34,11 @@ http://www.easemob.com/easemob/server.xml?sdk_version=2.3.0&app_key=easemobdemo%
  //var resource_value = "webim";
 ```
 
-###JavaScript Web SDK installation via CDN and NPM 的可行性和implementation 参考https://docs.layer.com/sdk/web/install 11.20前完成 可以交给钟泽芳负责
+###JavaScript Web SDK installation via CDN and NPM 的可行性和implementation 参考https://docs.layer.com/sdk/web/install 11.20前完成  (钟泽方)
 ###调整框架目录结构:src/dist/publish
-###文档整理
+###文档整理 (钟泽方)
 
 #V1.1.5 (2016.11~2016.12)
-###webrtc相关功能的实现
 ###leftbar分类切换时，右侧的聊天窗口需要替换成遮罩，避免歧义和bug
 ###现有的机制是登录就创建所有的好友/群组/群的chatwindow,性能有问题。需要改成动态创建。
 ###文件下载前，先发ajax请求带token参数去fileserver做验证
@@ -57,12 +57,11 @@ http://www.easemob.com/easemob/server.xml?sdk_version=2.3.0&app_key=easemobdemo%
 <script src='//cdn.layer.com/sdk/3.0.n/layer-websdk.min.js'></script>
 npm install layer-websdk@beta --save
 ```
-###22.用React Hot Loader 3替换已经deprecated的react-transform-hmr https://github.com/gaearon/react-transform-hmr
+###用React Hot Loader 3替换已经deprecated的react-transform-hmr https://github.com/gaearon/react-transform-hmr
 
-#V1.1.6 (2017.01~2017.06) 新需求：
-###1.webim所有接口的xmpp协议(邹金海)和react协议(仝瑶)的文档整理
-###2.webim所有接口的测试用例整理
-###3.RectMix:将ReactJS转成ReactNative生成app(IOS/ANDROID)
+###webim所有接口的xmpp协议(邹金海)和react协议(仝瑶)的文档整理
+###webim所有接口的测试用例整理
+###RectMix:将ReactJS转成ReactNative生成app(IOS/ANDROID) (刘伟展)
 
 
  
