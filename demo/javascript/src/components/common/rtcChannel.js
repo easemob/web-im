@@ -106,8 +106,8 @@ var Channel = React.createClass({
         var localVideo = this.refs.localVideo;
         var remoteVideo = this.refs.remoteVideo;
         localVideo.addEventListener('loadedmetadata', function () {
-            console.log('Local video videoWidth: ' + this.videoWidth +
-                'px,  videoHeight: ' + this.videoHeight + 'px');
+            // console.log('Local video videoWidth: ' + this.videoWidth +
+            //     'px,  videoHeight: ' + this.videoHeight + 'px');
             me.local_width = this.videoWidth;
             me.local_height = this.videoHeight;
             me.setState({
@@ -117,14 +117,42 @@ var Channel = React.createClass({
         });
 
         remoteVideo.addEventListener('loadedmetadata', function () {
-            console.log('Remote video videoWidth: ' + this.videoWidth +
-                'px,  videoHeight: ' + this.videoHeight + 'px');
+            // console.log('Remote video videoWidth: ' + this.videoWidth +
+            //     'px,  videoHeight: ' + this.videoHeight + 'px');
             me.remote_width = this.videoWidth;
             me.remote_height = this.videoHeight;
             me.setState({
                 full_width: this.videoWidth,
                 full_height: this.videoHeight,
             });
+        });
+
+        localVideo.addEventListener('resize', function () {
+            // console.log('Local resize videoWidth: ' + this.videoWidth +
+            //     'px,  videoHeight: ' + this.videoHeight + 'px');
+            if (me.state.localFullRemoteCorner) {
+                me.local_width = this.videoWidth;
+                me.local_height = this.videoHeight;
+                me.setState({
+                    full_width: this.videoWidth,
+                    full_height: this.videoHeight,
+                });
+            }
+
+        });
+
+        remoteVideo.addEventListener('resize', function () {
+            // console.log('Remote resize videoWidth: ' + this.videoWidth +
+            //     'px,  videoHeight: ' + this.videoHeight + 'px');
+            if (!me.state.localFullRemoteCorner) {
+                me.remote_width = this.videoWidth;
+                me.remote_height = this.videoHeight;
+                me.setState({
+                    full_width: this.videoWidth,
+                    full_height: this.videoHeight,
+                });
+            }
+
         });
 
     },
