@@ -5,7 +5,7 @@ var Drag = require('./drag');
 var Channel = React.createClass({
     getInitialState: function () {
         return {
-            localFullRemoteCorner: false,
+            localFullRemoteCorner: this.props.localFullRemoteCorner,
             full_width: 400,
             full_height: 400,
             toggle_right: 0,
@@ -213,29 +213,33 @@ module.exports = function (dom) {
             this.localStream = stream;
             var title = '';
             var hideAccept = false;
+            var localFullRemoteCorner = false;
             if (Demo.user == Demo.call.caller) {
                 title = '等候 ' + Demo.call.callee.split('@')[0].split('_')[1] + ' 视频中...';
                 hideAccept = true;
             } else {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
+                localFullRemoteCorner = true;
             }
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
-                         title={title} hideAccept={hideAccept}/>,
+                         title={title} hideAccept={hideAccept} localFullRemoteCorner={localFullRemoteCorner}/>,
                 me.dom
             );
         },
         setRemote: function (stream) {
             this.remoteStream = stream;
             var title = '';
+            var localFullRemoteCorner = false;
             if (Demo.user == Demo.call.caller) {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
             } else {
                 title = Demo.call.callee.split('@')[0].split('_')[1] + ' 请求视频通话...';
+                localFullRemoteCorner = true;
             }
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
-                         title={title}/>,
+                         title={title} localFullRemoteCorner={localFullRemoteCorner}/>,
                 me.dom
             );
         },
