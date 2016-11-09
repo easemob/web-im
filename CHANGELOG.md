@@ -1,5 +1,14 @@
 #ChangeLog:
 
+###WebIM v1.1.4 @ 2016-11-09
+
+* [demo] 新增限制单一用户在同一浏览器最多可以打开标签页数量功能
+
+---
+
+* [demo] limite of a single user the number of opened tabs in the same browser
+
+
 ###WebIM v1.1.3 @ 2016-11-01
 
 * [demo] support Windows SDK. <http://www.easemob.com/download/im>
