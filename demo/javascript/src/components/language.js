@@ -71,7 +71,9 @@ exports.English = {
     memberInvite: 'Invite',
     changeGroupInfo: 'Edit group info',
     groupNotification: 'Group Notification',
-    last: ''
+    last: '',
+    nomorethan: 'No more than ',
+    reslogatonetime: ' resources login at one time'
 };
 
 exports.Chinese = {
@@ -149,5 +151,7 @@ exports.Chinese = {
     memberInvite: '邀请好友',
     changeGroupInfo: '修改群信息',
     groupNotification: '群消息',
-    last: ''
+    last: '',
+    nomorethan: '当前最多支持',
+    reslogatonetime: '个资源同时登录'
 };

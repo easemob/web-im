@@ -9,6 +9,9 @@
     var _msgHash = {};
     var Queue = require('./queue').Queue;
 
+    var PAGELIMIT = 2;
+    var pageLimitKey = new Date().getTime();
+
     window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
     if (window.XDomainRequest) {
@@ -596,6 +599,42 @@
         return url.prefix + url.base + url.suffix;
     };
 
+
+    var _handlePageLimit = function() {
+        if (WebIM.config.isMultiLoginSessions && window.localStorage){
+            var keyValue = 'empagecount' + pageLimitKey;
+
+            window.addEventListener('storage', function(){
+                window.localStorage.setItem(keyValue, Demo.user);
+            });
+
+            _clearPageSign();
+            window.localStorage.setItem(keyValue, Demo.user);
+        }
+    };
+
+    var _clearPageSign = function(){
+        if(window.localStorage){
+            try {
+                window.localStorage.clear();
+            }catch(e){}
+        }
+    };
+
+    var _getPageCount = function(){
+        var sum = 0;
+
+        if(WebIM.config.isMultiLoginSessions && window.localStorage){
+            for(var o in localStorage){
+                if (/^empagecount/.test(o) && Demo.user == localStorage[o]){
+                    sum++;
+                }
+            }
+        }
+        console.log(sum);
+        return sum;
+    };
+
     //class
     var connection = function (options) {
         if (!this instanceof connection) {
@@ -703,6 +742,18 @@
     };
 
     connection.prototype.open = function (options) {
+
+        _handlePageLimit();
+
+        setTimeout(function(){
+            var total = _getPageCount();
+            if(total > PAGELIMIT){
+                Demo.api.NotifyError(Demo.lan.nomorethan + PAGELIMIT + Demo.lan.reslogatonetime);
+                setTimeout(function(){
+                    location.reload();
+                }, 500);
+            }
+        }, 50);
 
         var pass = _validCheck(options, this);
 
