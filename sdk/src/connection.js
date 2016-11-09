@@ -9,9 +9,6 @@
     var _msgHash = {};
     var Queue = require('./queue').Queue;
 
-    var PAGELIMIT = 2;
-    var pageLimitKey = new Date().getTime();
-
     window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
     if (window.XDomainRequest) {
@@ -592,42 +589,6 @@
     };
 
 
-    var _handlePageLimit = function () {
-        if (WebIM.config.isMultiLoginSessions && window.localStorage) {
-            var keyValue = 'empagecount' + pageLimitKey;
-
-            window.addEventListener('storage', function () {
-                window.localStorage.setItem(keyValue, Demo.user);
-            });
-
-            _clearPageSign();
-            window.localStorage.setItem(keyValue, Demo.user);
-        }
-    };
-
-    var _clearPageSign = function () {
-        if (window.localStorage) {
-            try {
-                window.localStorage.clear();
-            } catch (e) {
-            }
-        }
-    };
-
-    var _getPageCount = function () {
-        var sum = 0;
-
-        if (WebIM.config.isMultiLoginSessions && window.localStorage) {
-            for (var o in localStorage) {
-                if (/^empagecount/.test(o) && Demo.user == localStorage[o]) {
-                    sum++;
-                }
-            }
-        }
-        console.log(sum);
-        return sum;
-    };
-
     //class
     var connection = function (options) {
         if (!this instanceof connection) {
@@ -656,6 +617,9 @@
         this.context = {status: _code.STATUS_INIT};
         this.sendQueue = new Queue();  //instead of sending message immediately,cache them in this queue
         this.intervalId = null;   //clearInterval return value
+        this.pageLimit = 2;     // Amount of a user could open tabs in the same browser
+        this.pageLimitKey = new Date().getTime();   // A random number used for create the localstorage's key
+
         this.dnsArr = ['182.92.174.78', '112.126.66.111']; //dns server ips
         this.dnsIndex = 0;   //the dns ip used in dnsArr currently
         this.dnsTotal = this.dnsArr.length;  //max number of getting dns retries
@@ -665,6 +629,36 @@
         this.xmppHosts = null; //xmpp server ips
         this.xmppIndex = 0;    //the xmpp ip used in xmppHosts currently
         this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
+    };
+
+    connection.prototype.handlePageLimit = function () {
+        var keyValue = 'empagecount' + this.pageLimitKey;
+        window.addEventListener('storage', function () {
+            window.localStorage.setItem(keyValue, Demo.user);
+        });
+
+        this.clearPageSign();
+        window.localStorage.setItem(keyValue, Demo.user);
+    };
+
+    connection.prototype.clearPageSign = function () {
+        if (window.localStorage) {
+            try {
+                window.localStorage.clear();
+            } catch (e) {
+                console.log(e.message);
+            }
+        }
+    };
+
+    connection.prototype.getPageCount = function () {
+        var sum = 0;
+        for (var o in localStorage) {
+            if (/^empagecount/.test(o) && Demo.user == localStorage[o]) {
+                sum++;
+            }
+        }
+        return sum;
     };
 
     connection.prototype.handelSendQueue = function () {
@@ -852,8 +846,8 @@
         };
         _utils.ajax(options2);
     };
-    connection.prototype.open = function (options) {
 
+    connection.prototype.getRestToken = function (options) {
 
         var pass = _validCheck(options, this);
 
@@ -884,18 +878,14 @@
                 _login(data, conn);
             };
             var error = function (res, xhr, msg) {
-                conn.clear();
-
                 if (WebIM.config.isDNS) {
-                    console.log('open fail');
-                    console.log(conn.restIndex, conn.restTotal);
                     conn.restIndex++;
                     if (conn.restIndex < conn.restTotal) {
-                        console.log(conn.restIndex, conn.restTotal);
                         conn.openFromDNS(options);
                         return;
                     }
                 }
+                conn.clear();
                 if (res.error && res.error_description) {
                     conn.onError({
                         type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
@@ -931,6 +921,28 @@
             _utils.ajax(options2);
         }
 
+    }
+
+    connection.prototype.open = function (options) {
+
+        if (this.isMultiLoginSessions && window.localStorage) {
+            this.handlePageLimit();
+
+            var conn = this;
+            setTimeout(function () {
+                var total = conn.getPageCount();
+                if (total > conn.pageLimit) {
+                    conn.onError({
+                        type: _code.WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR
+                    });
+
+                    return;
+                }
+                conn.getRestToken(options);
+            }, 50);
+        } else {
+            this.getRestToken(options);
+        }
 
     };
 
