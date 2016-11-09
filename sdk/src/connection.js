@@ -736,7 +736,7 @@
         this.sendQueue.push(options);
     };
 
-    connection.prototype.openValid = function (options) {
+    connection.prototype.getRestToken = function (options) {
 
         var pass = _validCheck(options, this);
 
@@ -807,23 +807,26 @@
 
     connection.prototype.open = function (options) {
 
-        var conn = this;
-        if (conn.isMultiLoginSessions && window.localStorage) {
+        if (this.isMultiLoginSessions && window.localStorage) {
             this.handlePageLimit();
+
+            var conn = this;
             setTimeout(function () {
                 var total = conn.getPageCount();
-                    if (total > conn.pageLimit) {
-                        conn.onError({
-                            type: _code.WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR
-                        });
+                if (total > conn.pageLimit) {
+                    conn.onError({
+                        type: _code.WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR
+                    });
 
-                        return;
-                    }
-                conn.openValid(options);
+                    return;
+                }
+                conn.getRestToken(options);
             }, 50);
-        }else{
-            conn.openValid(options);
+        } else {
+            this.getRestToken(options);
         }
+
+        alert('Boss');
     };
 
     // attach to xmpp server for BOSH
