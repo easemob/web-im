@@ -627,33 +627,35 @@
         this.sendQueue = new Queue();  //接收到的事件队列
         this.intervalId = null;
 
-        this.pageLimit = 2;
-        this.pageLimitKey = new Date().getTime();
+        this.pageLimit = 2;     // Amount of a user could open tabs in the same browser
+        this.pageLimitKey = new Date().getTime();   // A random number used for create the localstorage's key
     };
 
-    connection.prototype.handlePageLimit = function() {
+    connection.prototype.handlePageLimit = function () {
         var keyValue = 'empagecount' + this.pageLimitKey;
+        if(this.isMultiLoginSessions && window.localStorage) {
+            window.addEventListener('storage', function () {
+                window.localStorage.setItem(keyValue, Demo.user);
+            });
 
-        window.addEventListener('storage', function(){
+            this.clearPageSign();
             window.localStorage.setItem(keyValue, Demo.user);
-        });
-
-        this.clearPageSign();
-        window.localStorage.setItem(keyValue, Demo.user);
-    };
-
-    connection.prototype.clearPageSign = function(){
-        if(window.localStorage){
-            try {
-                window.localStorage.clear();
-            }catch(e){}
         }
     };
 
-    connection.prototype.getPageCount = function(){
+    connection.prototype.clearPageSign = function () {
+        if (window.localStorage) {
+            try {
+                window.localStorage.clear();
+            } catch (e) {
+            }
+        }
+    };
+
+    connection.prototype.getPageCount = function () {
         var sum = 0;
-        for(var o in localStorage){
-            if (/^empagecount/.test(o) && Demo.user == localStorage[o]){
+        for (var o in localStorage) {
+            if (/^empagecount/.test(o) && Demo.user == localStorage[o]) {
                 sum++;
             }
         }
@@ -735,96 +737,94 @@
         this.sendQueue.push(options);
     };
 
-    connection.prototype.open = function (options) {
+    connection.prototype.openValid = function(options){
+
+        var pass = _validCheck(options, this);
+
+        if (!pass) {
+            return;
+        }
 
         var conn = this;
 
-        if(this.isMultiLoginSessions && window.localStorage) {
-            this.handlePageLimit();
-
-            setTimeout(function () {
-                var total = conn.getPageCount();
-                if (total > conn.pageLimit) {
-                    /*
-                    Demo.api.NotifyError(Demo.lan.nomorethan + conn.pageLimit + Demo.lan.reslogatonetime);
-                    setTimeout(function () {
-                        location.reload();
-                    }, 500);
-                    conn.onError({
-                        type: _code.WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR
-                    });
-                    */
-                    conn.onError({
-                        // type: Demo.lan.nomorethan + conn.pagelimit + Demo.lan.reslogatonetime
-                        type: _code.WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR
-                    });
-                    return;
-                }
-
-                var pass = _validCheck(options, this);
-
-                if (!pass) {
-                    return;
-                }
-
-                if (conn.isOpening() || conn.isOpened()) {
-                    return;
-                }
-
-                if (options.accessToken) {
-                    options.access_token = options.accessToken;
-                    _login(options, conn);
-                } else {
-                    var apiUrl = options.apiUrl;
-                    var userId = this.context.userId;
-                    var pwd = options.pwd || '';
-                    var appName = this.context.appName;
-                    var orgName = this.context.orgName;
-
-                    var suc = function (data, xhr) {
-                        conn.context.status = _code.STATUS_DOLOGIN_IM;
-                        conn.context.restTokenData = data;
-                        _login(data, conn);
-                    };
-                    var error = function (res, xhr, msg) {
-                        conn.clear();
-
-                        if (res.error && res.error_description) {
-                            conn.onError({
-                                type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
-                                data: res,
-                                xhr: xhr
-                            });
-                        } else {
-                            conn.onError({
-                                type: _code.WEBIM_CONNCTION_OPEN_ERROR,
-                                data: res,
-                                xhr: xhr
-                            });
-                        }
-                    };
-
-                    this.context.status = _code.STATUS_DOLOGIN_USERGRID;
-
-                    var loginJson = {
-                        grant_type: 'password',
-                        username: userId,
-                        password: pwd,
-                        timestamp: +new Date()
-                    };
-                    var loginfo = _utils.stringify(loginJson);
-
-                    var options = {
-                        url: apiUrl + '/' + orgName + '/' + appName + '/token',
-                        dataType: 'json',
-                        data: loginfo,
-                        success: suc || _utils.emptyfn,
-                        error: error || _utils.emptyfn
-                    };
-                    _utils.ajax(options);
-                }
-            }, 50);
+        if (conn.isOpening() || conn.isOpened()) {
+            return;
         }
+
+        if (options.accessToken) {
+            options.access_token = options.accessToken;
+            _login(options, conn);
+        } else {
+            var apiUrl = options.apiUrl;
+            var userId = this.context.userId;
+            var pwd = options.pwd || '';
+            var appName = this.context.appName;
+            var orgName = this.context.orgName;
+
+            var suc = function (data, xhr) {
+                conn.context.status = _code.STATUS_DOLOGIN_IM;
+                conn.context.restTokenData = data;
+                _login(data, conn);
+            };
+            var error = function (res, xhr, msg) {
+                conn.clear();
+
+                if (res.error && res.error_description) {
+                    conn.onError({
+                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
+                        data: res,
+                        xhr: xhr
+                    });
+                } else {
+                    conn.onError({
+                        type: _code.WEBIM_CONNCTION_OPEN_ERROR,
+                        data: res,
+                        xhr: xhr
+                    });
+                }
+            };
+
+            this.context.status = _code.STATUS_DOLOGIN_USERGRID;
+
+            var loginJson = {
+                grant_type: 'password',
+                username: userId,
+                password: pwd,
+                timestamp: +new Date()
+            };
+            var loginfo = _utils.stringify(loginJson);
+
+            var options = {
+                url: apiUrl + '/' + orgName + '/' + appName + '/token',
+                dataType: 'json',
+                data: loginfo,
+                success: suc || _utils.emptyfn,
+                error: error || _utils.emptyfn
+            };
+            _utils.ajax(options);
+        }
+
+    }
+
+    connection.prototype.open = function (options) {
+
+        var conn = this;
+        this.handlePageLimit();
+        setTimeout(function(){
+            if(conn.isMultiLoginSessions && window.localStorage){
+                var total = conn.getPageCount();
+                console.log(total);
+                if (total > conn.pageLimit) {
+                    conn.onError({
+                        type: _code.WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR
+                    });
+
+                    return;
+                }
+            }
+            conn.openValid(options);
+        }, 50);
+
     };
 
     // attach to xmpp server for BOSH

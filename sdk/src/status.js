@@ -44,7 +44,7 @@
         WEBIM_CONNCTION_CALLBACK_INNER_ERROR: connIndex++,
         WEBIM_CONNCTION_CLIENT_OFFLINE: connIndex++,        //32: client offline
         WEBIM_CONNCTION_CLIENT_LOGOUT: connIndex++,        //33: client logout
-        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: connIndex++,
+        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: connIndex++, // Over amount of the tabs a user opened in the same browser
 
 
         WEBIM_UPLOADFILE_BROWSER_ERROR: uploadIndex++,
