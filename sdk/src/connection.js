@@ -633,14 +633,12 @@
 
     connection.prototype.handlePageLimit = function () {
         var keyValue = 'empagecount' + this.pageLimitKey;
-        if(this.isMultiLoginSessions && window.localStorage) {
-            window.addEventListener('storage', function () {
-                window.localStorage.setItem(keyValue, Demo.user);
-            });
-
-            this.clearPageSign();
+        window.addEventListener('storage', function () {
             window.localStorage.setItem(keyValue, Demo.user);
-        }
+        });
+
+        this.clearPageSign();
+        window.localStorage.setItem(keyValue, Demo.user);
     };
 
     connection.prototype.clearPageSign = function () {
@@ -648,6 +646,7 @@
             try {
                 window.localStorage.clear();
             } catch (e) {
+                console.log(e.message);
             }
         }
     };
@@ -737,7 +736,7 @@
         this.sendQueue.push(options);
     };
 
-    connection.prototype.openValid = function(options){
+    connection.prototype.openValid = function (options) {
 
         var pass = _validCheck(options, this);
 
@@ -809,22 +808,22 @@
     connection.prototype.open = function (options) {
 
         var conn = this;
-        this.handlePageLimit();
-        setTimeout(function(){
-            if(conn.isMultiLoginSessions && window.localStorage){
+        if (conn.isMultiLoginSessions && window.localStorage) {
+            this.handlePageLimit();
+            setTimeout(function () {
                 var total = conn.getPageCount();
-                console.log(total);
-                if (total > conn.pageLimit) {
-                    conn.onError({
-                        type: _code.WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR
-                    });
+                    if (total > conn.pageLimit) {
+                        conn.onError({
+                            type: _code.WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR
+                        });
 
-                    return;
-                }
-            }
+                        return;
+                    }
+                conn.openValid(options);
+            }, 50);
+        }else{
             conn.openValid(options);
-        }, 50);
-
+        }
     };
 
     // attach to xmpp server for BOSH
