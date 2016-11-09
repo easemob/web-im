@@ -769,6 +769,14 @@
         xmlrequest: _xmlrequest,
 
 
+        getXmlFirstChild: function (data, tagName) {
+            var children = data.getElementsByTagName(tagName);
+            if (children.length == 0) {
+                return null;
+            } else {
+                return children[0];
+            }
+        },
         ajax: function (options) {
             var dataType = options.dataType || 'text';
             var suc = options.success || EMPTYFN;
