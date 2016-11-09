@@ -826,7 +826,6 @@
             this.getRestToken(options);
         }
 
-        alert('Boss');
     };
 
     // attach to xmpp server for BOSH
