@@ -1,1 +1,2412 @@
-!function(e){function t(o){if(n[o])return n[o].exports;var a=n[o]={exports:{},id:o,loaded:!1};return e[o].call(a.exports,a,a.exports,t),a.loaded=!0,a.exports}var n={};return t.m=e,t.c=n,t.p="./",t(0)}({0:function(e,t,n){var o,a;(function(e){"use strict";var r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol?"symbol":typeof e},i=n(217),c=n(218);window.WebIM=WebIM||{},WebIM.WebRTC=WebIM.WebRTC||{},WebIM.WebRTC.Call=c,WebIM.WebRTC.Util=i,"object"===r(e)&&"object"===r(e.exports)?e.exports=WebIM.WebRTC:(o=[],a=function(){return WebIM.WebRTC}.apply(t,o),!(void 0!==a&&(e.exports=a)))}).call(t,n(216)(e))},216:function(e,t){e.exports=function(e){return e.webpackPolyfill||(e.deprecate=function(){},e.paths=[],e.children=[],e.webpackPolyfill=1),e}},217:function(e,t){"use strict";function n(){}var o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol?"symbol":typeof e};!function(){var e="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split("");Math.uuid=function(t,n){var o,a=e,r=[];if(n=n||a.length,t)for(o=0;o<t;o++)r[o]=a[0|Math.random()*n];else{var i;for(r[8]=r[13]=r[18]=r[23]="-",r[14]="4",o=0;o<36;o++)r[o]||(i=0|16*Math.random(),r[o]=a[19==o?3&i|8:i])}return r.join("")},Math.uuidFast=function(){for(var t,n=e,o=new Array(36),a=0,r=0;r<36;r++)8==r||13==r||18==r||23==r?o[r]="-":14==r?o[r]="4":(a<=2&&(a=33554432+16777216*Math.random()|0),t=15&a,a>>=4,o[r]=n[19==r?3&t|8:t]);return o.join("")},Math.uuidCompact=function(){return"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(e){var t=16*Math.random()|0,n="x"==e?t:3&t|8;return n.toString(16)})}}();var a=function(){function e(e,n){var o=[];o.push(e);for(var a in n)o.push(n[a]);t.log.apply(t,o)}var t=this,n={TRACE:0,DEBUG:1,INFO:2,WARN:3,ERROR:4,FATAL:5},o=["TRACE","DEBUG","INFO","WARN","ERROR","FATAL"];this.log=function(){var e=arguments[0];e=arguments[0]="["+o[e]+"] ";arguments[1];console.log.apply(console,arguments)},this.trace=function(){this.log&&e(n.TRACE,arguments)},this.debug=function(){this.log&&e(n.DEBUG,arguments)},this.info=function(){this.log&&e(n.INFO,arguments)},this.warn=function(){this.log&&e(n.WARN,arguments)},this.error=function(){this.log&&e(n.ERROR,arguments)},this.fatal=function(){this.log&&e(n.FATAL,arguments)}};n.prototype.logger=new a,n.prototype.parseJSON=function(e){return JSON.parse(e)};var r=(n.prototype.stringifyJSON=function(e){return JSON.stringify(e)},{}),i=r.toString,c=r.hasOwnProperty,s=c.toString,d=s.call(Object);n.prototype.isPlainObject=function(e){var t,n;return!(!e||"[object Object]"!==i.call(e))&&(!(t=Object.getPrototypeOf(e))||(n=c.call(t,"constructor")&&t.constructor,"function"==typeof n&&s.call(n)===d))};n.prototype.isArray=Array.isArray,n.prototype.isEmptyObject=function(e){var t;for(t in e)return!1;return!0},n.prototype.type=function(e){return null==e?e+"":"object"===("undefined"==typeof e?"undefined":o(e))||"function"==typeof e?r[i.call(e)]||"object":"undefined"==typeof e?"undefined":o(e)},n.prototype.extend=function(){var e,t,n,a,r,i,c=this,s=arguments[0]||{},d=1,u=arguments.length,l=!1;for("boolean"==typeof s&&(l=s,s=arguments[d]||{},d++),"object"===("undefined"==typeof s?"undefined":o(s))||c.isFunction(s)||(s={}),d===u&&(s=this,d--);d<u;d++)if(null!=(e=arguments[d]))for(t in e)n=s[t],a=e[t],s!==a&&(l&&a&&(c.isPlainObject(a)||(r=c.isArray(a)))?(r?(r=!1,i=n&&c.isArray(n)?n:[]):i=n&&c.isPlainObject(n)?n:{},s[t]=c.extend(l,i,a)):void 0!==a&&(s[t]=a));return s},n.prototype.hasLocalStorage=function(e){return null!=localStorage.getItem(e)&&"{}"!=localStorage.getItem(e)},n.prototype.toggleClass=function(e,t){return e.hasClass(t)?void e.removeClass(t):void e.addClass(t)},n.prototype.setCookie=function(e,t,n){var o=new Date;o.setTime(o.getTime()+60*n*60*1e3),document.cookie=e+"="+escape(t)+";expires="+o.toGMTString()},n.prototype.getCookie=function(e){var t=document.cookie.match(new RegExp("(^| )"+e+"=([^;]*)(;|$)"));return null!=t?unescape(t[2]):null},n.prototype.parseURL=function(e){var t=new RegExp("(^|&)"+e+"=([^&]*)(&|$)","i"),n=window.location.search.substr(1).match(t);return null!=n?unescape(n[2]):null},e.exports=new n},218:function(e,t,n){"use strict";var o=n(217),a=n(219),r=n(220),i=n(221),c=n(222),s=r.RouteTo,d=r.Api,u=o.logger,l={api:null,connection:null,pattern:null,listener:{onAcceptCall:function(e,t){},onRinging:function(e){},onTermCall:function(){}},mediaStreamConstaints:{audio:!0,video:!0},init:function(){var e=this;if("undefined"==typeof e.connection)throw"Caller need a instance of Easemob.im.Connection";e.api=e.api||new d({imConnection:e.connection,rtcHandler:new a({imConnection:e.connection})}),e.api.onInitC=function(){e._onInitC.apply(e,arguments)}},makeVideoCall:function(e){var t=this,n={};o.extend(n,t.mediaStreamConstaints),t.call(e,n)},makeVoiceCall:function(e){var t=this,n={};o.extend(n,t.mediaStreamConstaints),t.mediaStreamConstaints.video=!1,t.call(e,n)},acceptCall:function(){var e=this;e.pattern.accept()},endCall:function(e){var t=this;t.pattern.termCall()},call:function(e,t){var n=this;n.callee=n.api.jid(e);var o=new s({rtKey:"",success:function(e){u.debug("iq to server success",e)},fail:function(e){u.debug("iq to server error",e),n.onError(e)}});n.api.reqP2P(o,t.video?1:0,t.audio?1:0,e,function(e,t){n._onGotServerP2PConfig(e,t),n.pattern.initC(n.mediaStreamConstaints)})},_onInitC:function(e,t,n,o,a){var r=this;r.callee=e,r._rtcCfg=t.rtcCfg,r._WebRTCCfg=t.WebRTC,r.sessId=t.sessId,r.rtcId=t.rtcId,r.switchPattern(),r.pattern._onInitC(e,t,n,o,a)},_onGotServerP2PConfig:function(e,t){var n=this;0==t.result&&(n._p2pConfig=t,n._rtcCfg=t.rtcCfg,n._rtcCfg2=t.rtcCfg2,n.sessId=t.sessId,n.rtcId="Channel_webIM",n._rtKey=n._rtkey=t.rtKey||t.rtkey,n._rtFlag=n._rtflag=t.rtFlag||t.rtflag,n._WebRTCCfg=t.WebRTC,n.admtok=t.admtok,n.tkt=t.tkt,n.switchPattern())},switchPattern:function(){var e=this;!e._WebRTCCfg&&(e.pattern=new c({callee:e.callee,_p2pConfig:e._p2pConfig,_rtcCfg:e._rtcCfg,_rtcCfg2:e._rtcCfg2,_rtKey:e._rtKey||e._rtkey,_rtFlag:e._rtFlag||e._rtflag,_sessId:e.sessId,_rtcId:e.rtcId,webRtc:new i({onGotLocalStream:e.listener.onGotLocalStream,onGotRemoteStream:e.listener.onGotRemoteStream,onError:e.listener.onError}),api:e.api,onAcceptCall:e.listener&&e.listener.onAcceptCall||function(){},onRinging:e.listener&&e.listener.onRinging||function(){},onTermCall:e.listener&&e.listener.onTermCall||function(){}}))}};e.exports=function(e){o.extend(!0,this,l,e||{}),this.init()}},219:function(e,t,n){"use strict";var o=n(217),a=o.logger,r="urn:xmpp:media-conference",i={_apiCallbacks:{},imConnection:null,init:function(){var e,t=this,n=t.imConnection;n.addHandler=function(o,i,c,s,d,u,l){"function"!=typeof e&&(e=function(e){try{t.handleRtcMessage(e)}catch(n){throw a.error(n.stack||n),n}return!0},n.addHandler(e,r,"iq","set",null,null),n.addHandler(e,r,"iq","get",null,null)),n.context.stropheConn.addHandler(o,i,c,s,d,u,l)}},handleRtcMessage:function(e){var t=this,n=(e.getAttribute("id"),e.getAttribute("from")||"");n.lastIndexOf("/")>=0&&(n=n.substring(0,n.lastIndexOf("/")));var r=e.getElementsByTagName("rtkey")[0].innerHTML,i=e.getElementsByTagName("sid")[0].innerHTML;(t._fromSessionID||(t._fromSessionID={}))[n]=i;var c=e.getElementsByTagName("content"),s=(e.getElementsByTagName("stream_type")[0].innerHTML,c[0].innerHTML),d=o.parseJSON(s),u=d,l=d.tsxId;if(t.ctx=d.ctx,a.debug("Recv [op = "+u.op+"]\r\n json :",e),u.sdp&&("string"==typeof u.sdp&&(u.sdp=o.parseJSON(u.sdp)),u.sdp.type&&(u.sdp.type=u.sdp.type.toLowerCase())),u.cands){"string"==typeof u.cands&&(u.cands=o.parseJSON(u.cands));for(var f=0;f<u.cands.length;f++)"string"==typeof u.cands[f]&&(u.cands[f]=o.parseJSON(u.cands[f])),u.cands[f].sdpMLineIndex=u.cands[f].mlineindex,u.cands[f].sdpMid=u.cands[f].mid,delete u.cands[f].mlineindex,delete u.cands[f].mid}if(u.rtcCfg&&"string"==typeof u.rtcCfg&&(u.rtcCfg=o.parseJSON(u.rtcCfg)),u.rtcCfg2&&"string"==typeof u.rtcCfg2&&(u.rtcCfg2=o.parseJSON(u.rtcCfg2)),u.WebRTC&&"string"==typeof u.WebRTC&&(u.WebRTC=o.parseJSON(u.WebRTC)),l&&t._apiCallbacks[l])try{t._apiCallbacks[l].callback&&t._apiCallbacks[l].callback(n,u)}catch(p){throw p}finally{delete t._apiCallbacks[l]}else t.onRecvRtcMessage(n,u,r,l,i);return!0},onRecvRtcMessage:function(e,t,n,r,i){a.debug(" form : "+e+" \r\n json :"+o.stringifyJSON(rtcJSON))},convertRtcOptions:function(e){var t=e.data.sdp;if(t){var n={type:t.type,sdp:t.sdp};t=n,t.type=t.type.toUpperCase(),t=o.stringifyJSON(t),e.data.sdp=t}var a=e.data.cands;if(a){if(o.isArray(a));else{var r=[];r.push(a),a=r}for(var i in a)if(a[i]instanceof RTCIceCandidate){var c={type:"candidate",candidate:a[i].candidate,mlineindex:a[i].sdpMLineIndex,mid:a[i].sdpMid};a[i]=o.stringifyJSON(c)}e.data.cands=a}var s=e.data.rtcCfg;s&&"string"!=typeof s&&(e.data.rtcCfg=o.stringifyJSON(s));var d=e.data.WebRTC;d&&"string"!=typeof d&&(e.data.WebRTC=o.stringifyJSON(d))},sendRtcMessage:function(e,t,n){var i=this,c=i.imConnection,s=e.tsxId||c.getUniqueId(),d=e.to||c.domain,u=e.sid||i._fromSessionID&&i._fromSessionID[d];u=u||((i._fromSessionID||(i._fromSessionID={}))[d]=c.getUniqueId("CONFR_"));var l=e.rtKey||e.rtkey;l||(l="");var f=e.rtflag;f||(f=1),t.data||(t.data={}),t.data.tsxId=s,i.ctx&&(t.data.ctx=i.ctx),i.convertRtcOptions(t);var p="VIDEO",g=e.id||c.getUniqueId("CONFR_"),C=$iq({id:g,to:d,from:c.context.jid,type:e.type||"get"}).c("query",{xmlns:r}).c("MediaReqExt").c("rtkey").t(l).up().c("rtflag").t(f).up().c("stream_type").t(p).up().c("sid").t(u).up().c("content").t(o.stringifyJSON(t.data));a.debug("Send IQ [op = "+t.data.op+"] : \r\n",C.tree()),n&&(i._apiCallbacks[s]={callback:n});var S=function(t){e.success(t)}||function(e){a.debug("send result. op:"+t.data.op+".",e)},v=function(t){e.fail(t)}||function(e){a.debug(e)};c.context.stropheConn.sendIQ(C.tree(),S,v)}},c=function(e){o.extend(!0,this,i,e||{}),this.init()};e.exports=c},220:function(e,t,n){"use strict";var o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol?"symbol":typeof e},a=n(217),r=a.logger,i={rtFlag:1,success:function(e){},fail:function(e){}},c=function d(e){if(!(this instanceof d)){var t=function(e){var t=this;a.extend(!0,t,e||{})};return a.extend(!0,t.prototype,i,e||{}),t}var n=this;a.extend(!0,n,i,e||{})};t.RouteTo=c;var s={imConnection:null,rtcHandler:null,events:{0:"onReqP2P",1:"onNewCfr",2:"onDelCfr",3:"onReqTkt",100:"onPing",101:"onPong",102:"onInitC",103:"onReqC",104:"onAcptC",105:"onTcklC",106:"onAnsC",107:"onTermC",300:"onEvEnter",301:"onEvExit",302:"onEvPub",303:"onEvUnpub",304:"onEvMems",204:"onEvClose",onServerError:"onServerError"},register:function(e){if("object"===("undefined"==typeof e?"undefined":o(e)))for(var t in e)this.bind(t,e[t])},bind:function(e,t){var n,o=this;(n=o.events[e])?o[n]=t:(n=o.events[e]="on_"+e,o[n]=t)},jid:function(e){return e.indexOf(this.imConnection.context.appKey)>=0?e:this.imConnection.context.appKey+"_"+e+"@"+this.imConnection.domain},reqP2P:function(e,t,n,o,a){r.debug("req p2p ...");var i=this,c={data:{op:0,video:t,audio:n,peer:o}};i.rtcHandler.sendRtcMessage(e,c,a)},newCfr:function(e,t,n,o){r.debug("newCfr ...");var a=this,i={data:{op:1}};t&&(i.data.reqTkt=t),n&&(i.data.password=n),a.rtcHandler.sendRtcMessage(e,i,o)},enter:function(e,t,n,o,a,i,c){r.debug("enter ...");var s=this,d={data:{op:200}};t&&(d.data.WebRTCId=t),n&&(d.data.reqMembers=n),o&&(d.data.tkt=o),a&&(d.data.nonce=a),i&&(d.data.digest=i),s.rtcHandler.sendRtcMessage(e,d,c)},ping:function(e,t,n){r.debug("ping ...");var o=this,a={data:{op:100}};t&&(a.data.sessId=t),o.rtcHandler.sendRtcMessage(e,a,n)},reqTkt:function(e,t,n){r.debug("reqTkt ...");var o=this,a={data:{op:3}};t&&(a.data.WebRTCId=t),o.rtcHandler.sendRtcMessage(e,a,n)},initC:function(e,t,n,o,a,i,c,s,d,u,l,f){r.debug("initC ...");var p=this,g={data:{op:102}};t&&(g.data.WebRTCId=t),n&&(g.data.tkt=n),o&&(g.data.sessId=o),a&&(g.data.rtcId=a),i&&(g.data.pubS=i),c&&(g.data.subS=c),s&&(g.data.sdp=s),d&&(g.data.cands=d),u&&(g.data.rtcCfg=u),l&&(g.data.WebRTC=l),p.rtcHandler.sendRtcMessage(e,g,f)},tcklC:function(e,t,n,o,a,i){r.debug("tcklC ...");var c=this,s={data:{op:105}};t&&(s.data.sessId=t),n&&(s.data.rtcId=n),o&&(s.data.sdp=o),a&&(s.data.cands=a),c.rtcHandler.sendRtcMessage(e,s,i)},ansC:function(e,t,n,o,a,i){r.debug("ansC ...");var c=this,s={data:{op:106}};t&&(s.data.sessId=t),n&&(s.data.rtcId=n),o&&(s.data.sdp=o),a&&(s.data.cands=a),c.rtcHandler.sendRtcMessage(e,s,i)},acptC:function(e,t,n,o,a,i,c){r.debug("acptC ...");var s=this,d={data:{op:104}};t&&(d.data.sessId=t),n&&(d.data.rtcId=n),o&&(d.data.sdp=o),a&&(d.data.cands=a),i&&(d.data.ans=i),s.rtcHandler.sendRtcMessage(e,d,c)},getMems:function(e,t,n,o){r.debug("getMems ...");var a=this,i={data:{op:203}};t&&(i.data.WebRTCId=t),n&&(i.data.sessId=n),a.rtcHandler.sendRtcMessage(e,i,o)},subC:function(e,t,n,o,a){r.debug("subC ...");var i=this,c={data:{op:205}};t&&(c.data.sessId=t),n&&(c.data.rtcId=n),o&&(c.data.subS=o),i.rtcHandler.sendRtcMessage(e,c,a)},usubC:function(e,t,n,o){r.debug("usubC ...");var a=this,i={data:{op:206}};t&&(i.data.sessId=t),n&&(i.data.rtcId=n),a.rtcHandler.sendRtcMessage(e,i,o)},termC:function(e,t,n,o){r.debug("termC ...");var a=this,i={data:{op:107}};t&&(i.data.sessId=t),n&&(i.data.rtcId=n),a.rtcHandler.sendRtcMessage(e,i,o)},exit:function(e,t,n,o){r.debug("exit ...");var a=this,i={data:{op:201}};t&&(i.data.WebRTCId=t),n&&(i.data.sessId=n),a.rtcHandler.sendRtcMessage(e,i,o)},delCfr:function(e,t,n,o){r.debug("delCfr ...");var a=this,i={data:{op:2}};t&&(i.data.WebRTCId=t),n&&(i.data.admtok=n),a.rtcHandler.sendRtcMessage(e,i,o)}};t.Api=function(e){function t(e,t,o,a,i){if(0!=t.result&&n.onServerError)n.onServerError.call(n,e,t,o,a,i);else{var c;n.events[t.op]&&(c=n[n.events[t.op]])?c.call(n,e,t,o,a,i):r.info("can not handle(recvRtcMessage) the op: "+t.op,t)}}var n=this;a.extend(!0,this,s,e||{}),this.rtcHandler.onRecvRtcMessage=t}},221:function(e,t,n){"use strict";var o=n(217),a=o.logger,r={headerSection:null,audioSection:null,videoSection:null,_parseHeaderSection:function(e){var t=e.indexOf("m=audio");return t>=0?e.slice(0,t):(t=e.indexOf("m=video"),t>=0?e.slice(0,t):e)},_parseAudioSection:function(e){var t=e.indexOf("m=audio");if(t>=0){var n=e.indexOf("m=video");return e.slice(t,n<0?e.length:n)}},_parseVideoSection:function(e){var t=e.indexOf("m=video");if(t>=0)return e.slice(t)},spiltSection:function(e){var t=this;t.headerSection=t._parseHeaderSection(e),t.audioSection=t._parseAudioSection(e),t.videoSection=t._parseVideoSection(e)},removeSSRC:function(e){for(var t=[],n=e.split(/a=ssrc:[^\n]+/g),o=0;o<n.length;o++)"\n"!=n[o]&&t.push(n[o]);return t.join("\n")},updateHeaderMsidSemantic:function(e){var t=this,n="a=msid-semantic: WMS "+e,o=t.headerSection.split(/a=msid\-semantic: WMS.*/g),a=[];switch(o.length){case 1:a.push(o[0]);break;case 2:a.push(o[0]),a.push(n),a.push("\n");break;case 3:a.push(o[0]),a.push(n),a.push("\n"),a.push(o[2]),a.push("\n")}return t.headerSection=a.join("")},updateAudioSSRCSection:function(e,t,n,o){var a=this;a.audioSection&&(a.audioSection=a.removeSSRC(a.audioSection)+a.ssrcSection(e,t,n,o))},updateVideoSSRCSection:function(e,t,n,o){var a=this;a.videoSection&&(a.videoSection=a.removeSSRC(a.videoSection)+a.ssrcSection(e,t,n,o))},getUpdatedSDP:function(){var e=this,t="";return e.headerSection&&(t+=e.headerSection),e.audioSection&&(t+=e.audioSection),e.videoSection&&(t+=e.videoSection),t},parseMsidSemantic:function(e){var t=this,n=/a=msid\-semantic: WMS (\S+)/gi,o=t._parseLine(e,n);return o&&2==o.length&&(t.msidSemantic={line:o[0],WMS:o[1]}),t.msidSemantic},ssrcSection:function(e,t,n,o){var a=["a=ssrc:"+e+" cname:"+t,"a=ssrc:"+e+" msid:"+n+" "+o,"a=ssrc:"+e+" mslabel:"+n,"a=ssrc:"+e+" label:"+o,""];return a.join("\n")},parseSSRC:function(e){var t=this,n=new RegExp("a=(ssrc):(\\d+) (\\S+):(\\S+)","ig"),o=t._parseLine(e,n);if(o){for(var a={lines:[],updateSSRCSection:t.ssrcSection},r=0;r<o.length;r++){var i=o[r];if(i.indexOf("a=ssrc")>=0)a.lines.push(i);else switch(i){case"ssrc":case"cname":case"msid":case"mslabel":case"label":a[i]=o[++r]}}return a}},_parseLine:function(e,t){for(var n,o=[];null!=(n=t.exec(e));)for(var a=0;a<n.length;a++)o.push(n[a]);if(o.length>0)return o}},i=function(e){o.extend(this,r),this.spiltSection(e)},c={mediaStreamConstaints:{audio:!0,video:!0},localStream:null,rtcPeerConnection:null,offerOptions:{offerToReceiveAudio:1,offerToReceiveVideo:1},createMedia:function(e,t){function n(e){a.debug(" got local stream"),o.localStream=e;var n=o.localStream.getVideoTracks(),r=o.localStream.getAudioTracks();n.length>0&&a.debug(" Using video device: "+n[0].label),r.length>0&&a.debug(" Using audio device: "+r[0].label),t?t(o,e):o.onGotStream(e)}var o=this;return e&&"function"==typeof e&&(t=e,e=null),a.debug(" begin create media ......"),navigator.mediaDevices.getUserMedia(e||o.mediaStreamConstaints).then(n).then(o.onCreateMedia)["catch"](function(e){a.debug("getUserMedia() error: ",e),o.onError(e)})},setLocalVideoSrcObject:function(e){this.onGotLocalStream(e),a.debug(" you can see yourself !")},createRtcPeerConnection:function(e){var t=this;e&&e.iceServers||(e=null),a.debug(" begin create RtcPeerConnection ......"),t.startTime=window.performance.now();var n=t.rtcPeerConnection=new RTCPeerConnection(e);a.debug(" Created local peer connection object",n),n.onicecandidate=function(e){t.onIceCandidate(e)},n.onicestatechange=function(e){t.onIceStateChange(e)},n.oniceconnectionstatechange=function(e){t.onIceStateChange(e)},n.onaddstream=function(e){t._onGotRemoteStream(e)}},_uploadLocalStream:function(){this.rtcPeerConnection.addStream(this.localStream),a.debug("Added local stream to RtcPeerConnection")},createOffer:function(e,t){var n=this;return n._uploadLocalStream(),a.debug(" createOffer start..."),n.rtcPeerConnection.createOffer(n.offerOptions).then(function(t){n.offerDescription=t,a.debug(" Offer from \n"+t.sdp),a.debug(" setLocalDescription start"),n.rtcPeerConnection.setLocalDescription(t).then(n.onSetLocalSessionDescriptionSuccess,n.onSetSessionDescriptionError).then(function(){(e||n.onCreateOfferSuccess)(t)})},t||n.onCreateSessionDescriptionError)},createPRAnswer:function(e,t){var n=this;return a.info(" createPRAnswer start"),n.rtcPeerConnection.createAnswer().then(function(t){a.debug(" _____________PRAnswer from :\n"+t.sdp),t.type="pranswer",t.sdp=t.sdp.replace(/a=recvonly/g,"a=inactive"),n.prAnswerDescription=t,a.debug(" inactive PRAnswer from :\n"+t.sdp),a.debug(" setLocalDescription start"),n.rtcPeerConnection.setLocalDescription(t).then(n.onSetLocalSuccess,n.onSetSessionDescriptionError).then(function(){var o=new i(t.sdp);o.updateHeaderMsidSemantic("MS_0000"),o.updateAudioSSRCSection(1e3,"CHROME0000","MS_0000","LABEL_AUDIO_1000"),o.updateVideoSSRCSection(2e3,"CHROME0000","MS_0000","LABEL_VIDEO_2000"),t.sdp=o.getUpdatedSDP(),a.debug(" Send PRAnswer from :\n"+t.sdp),(e||n.onCreatePRAnswerSuccess)(t)})},t||n.onCreateSessionDescriptionError)},createAnswer:function(e,t){var n=this;return n._uploadLocalStream(),a.info(" createAnswer start"),n.rtcPeerConnection.createAnswer().then(function(t){a.debug(" _____________________Answer from :\n"+t.sdp),t.type="answer";var o=new i(t.sdp),r=o.parseMsidSemantic(o.headerSection),c=o.parseSSRC(o.audioSection),s=o.parseSSRC(o.videoSection);o.updateAudioSSRCSection(1e3,"CHROME0000",r.WMS,c.label),o.updateVideoSSRCSection(2e3,"CHROME0000",r.WMS,s.label),t.sdp=o.getUpdatedSDP(),n.answerDescription=t,a.debug(" Answer from :\n"+t.sdp),a.debug(" setLocalDescription start"),n.rtcPeerConnection.setLocalDescription(t).then(n.onSetLocalSuccess,n.onSetSessionDescriptionError).then(function(){var o=new i(t.sdp);o.updateHeaderMsidSemantic("MS_0000"),o.updateAudioSSRCSection(1e3,"CHROME0000","MS_0000","LABEL_AUDIO_1000"),o.updateVideoSSRCSection(2e3,"CHROME0000","MS_0000","LABEL_VIDEO_2000"),t.sdp=o.getUpdatedSDP(),a.debug(" Send Answer from :\n"+t.sdp),(e||n.onCreateAnswerSuccess)(t)})},t||n.onCreateSessionDescriptionError)},close:function(){var e=this;try{e.rtcPeerConnection&&e.rtcPeerConnection.close()}catch(t){}e.localStream&&e.localStream.getTracks().forEach(function(e){e.stop()}),e.localStream=null},addIceCandidate:function(e){var t=this;if(t.rtcPeerConnection){a.debug(" Add ICE candidate: \n",e);var n=o.isArray(e)?e:[];!o.isArray(e)&&n.push(e);for(var r=0;r<n.length;r++)e=n[r],t.rtcPeerConnection.addIceCandidate(new RTCIceCandidate(e)).then(t.onAddIceCandidateSuccess,t.onAddIceCandidateError)}},setRemoteDescription:function(e){var t=this;return a.debug(" setRemoteDescription start. "),e=new RTCSessionDescription(e),t.rtcPeerConnection.setRemoteDescription(e).then(t.onSetRemoteSuccess,t.onSetSessionDescriptionError)},iceConnectionState:function(){var e=this;return e.rtcPeerConnection.iceConnectionState},onCreateMedia:function(){a.debug("media created.")},_onGotRemoteStream:function(e){a.debug("onGotRemoteStream.",e),this.onGotRemoteStream(e.stream),a.debug("received remote stream, you will see the other.")},onGotStream:function(e){a.debug("on got a local stream")},onSetRemoteSuccess:function(){a.info(" onSetRemoteSuccess complete")},onSetLocalSuccess:function(){a.info(" setLocalDescription complete")},onAddIceCandidateSuccess:function(){a.debug(" addIceCandidate success")},onAddIceCandidateError:function(e){a.debug(" failed to add ICE Candidate: "+e.toString())},onIceCandidate:function(e){a.debug(" onIceCandidate : ICE candidate: \n"+e.candidate)},onIceStateChange:function(e){a.debug(" onIceStateChange : ICE state change event: ",e)},onCreateSessionDescriptionError:function(e){a.error(" Failed to create session description: "+e.toString())},onCreateOfferSuccess:function(e){a.debug(" create offer success")},onCreatePRAnswerSuccess:function(e){a.debug(" create answer success")},onCreateAnswerSuccess:function(e){a.debug(" create answer success")},onSetSessionDescriptionError:function(e){a.error(" onSetSessionDescriptionError : Failed to set session description: "+e.toString())},onSetLocalSessionDescriptionSuccess:function(){a.debug(" onSetLocalSessionDescriptionSuccess : setLocalDescription complete")}};e.exports=function(e){o.extend(!0,this,c,e||{})}},222:function(e,t,n){"use strict";var o=n(217),a=n(220).RouteTo,r=o.logger,i=a({success:function(e){r.debug("iq to server success",e)},fail:function(e){r.debug("iq to server error",e)}}),c={_pingIntervalId:null,_p2pConfig:null,_rtcCfg:null,_rtcCfg2:null,_rtKey:null,_rtFlag:null,webRtc:null,api:null,callee:null,consult:!1,init:function(){var e=this;e.api.onTcklC=function(){e._onTcklC.apply(e,arguments)},e.api.onAcptC=function(){e._onAcptC.apply(e,arguments)},e.api.onAnsC=function(){e._onAnsC.apply(e,arguments)},e.api.onTermC=function(){e._onTermC.apply(e,arguments)},e.webRtc.onIceCandidate=function(){e._onIceCandidate.apply(e,arguments)},e.webRtc.onIceStateChange=function(){e._onIceStateChange.apply(e,arguments)}},_ping:function(){function e(){var e=new i({to:t.callee,rtKey:t._rtKey});t.api.ping(e,t._sessId,function(e,t){r.debug("ping result",t)})}var t=this;t._pingIntervalId=window.setInterval(e,59e3)},initC:function(e){var t=this;t.createLocalMedia(e)},createLocalMedia:function(e){var t=this;t.consult=!1,t.webRtc.createMedia(e,function(e,n){e.setLocalVideoSrcObject(n),t.webRtc.createRtcPeerConnection(t._rtcCfg),t.webRtc.createOffer(function(e){t._onGotWebRtcOffer(e)})})},_onGotWebRtcOffer:function(e){var t=this,n=new i({to:t.callee,rtKey:t._rtKey});t.api.initC(n,null,null,t._sessId,t._rtcId,null,null,e,null,t._rtcCfg2,null,function(e,t){r.debug("initc result",t)}),t._ping()},_onAcptC:function(e,t){var n=this;r.info("_onAcptC : recv pranswer. "),(t.sdp||t.cands)&&(t.sdp&&n.webRtc.setRemoteDescription(t.sdp),t.cands&&n._onTcklC(e,t),n._onHandShake(e,t),n.onAcceptCall(e,t))},onAcceptCall:function(e,t){},_onAnsC:function(e,t){var n=this;r.info("_onAnsC : recv answer. "),t.sdp&&n.webRtc.setRemoteDescription(t.sdp)},_onInitC:function(e,t,n,o,a){var r=this;r.consult=!1,r.callee=e,r._rtcCfg2=t.rtcCfg,r._rtKey=n,r._tsxId=o,r._fromSid=a,r._rtcId=t.rtcId,r._sessId=t.sessId,r.webRtc.createRtcPeerConnection(r._rtcCfg2),t.sdp&&r.webRtc.setRemoteDescription(t.sdp),t.cands&&r._onTcklC(e,t),r.webRtc.createPRAnswer(function(e){r._onGotWebRtcPRAnswer(e)})},_onGotWebRtcPRAnswer:function(e){var t=this,n=new i({tsxId:t._tsxId,to:t.callee,rtKey:t._rtKey});t._onHandShake(),t.api.acptC(n,t._sessId,t._rtcId,e,null,1),t._ping(),setTimeout(function(){t.onRinging(t.callee)},2e3)},onRinging:function(e){},accept:function(){function e(){r.info("createAndSendAnswer : ...... "),t.webRtc.createAnswer(function(e){var n=new i({tsxId:t._tsxId,to:t.callee,rtKey:t._rtKey});t.api.ansC(n,t._sessId,t._rtcId,e,null)})}var t=this;t.webRtc.createMedia(function(t,n){t.setLocalVideoSrcObject(n),e()})},_onHandShake:function(e,t){var n=this;n.consult=!0,r.info("hand shake over. may switch cands."),setTimeout(function(){n._onTcklC(e,t)},100),setTimeout(function(){n._onIceCandidate()},100)},_onTcklC:function(e,t){var n=this;if(n.consult)r.info("recv and add cands."),n._recvCands&&n._recvCands.length>0&&n.webRtc.addIceCandidate(n._recvCands),t&&t.cands&&n.webRtc.addIceCandidate(t.cands);else if(t&&t.cands&&t.cands.length>0){for(var o=0;o<t.cands.length;o++)(n._recvCands||(n._recvCands=[])).push(t.cands[o]);r.debug("[_onTcklC] temporary memory[recv] ice candidate. util consult = true")}},_onIceStateChange:function(e){var t=this;e&&r.debug(t.webRtc.iceConnectionState()+" |||| ice state is "+e.target.iceConnectionState)},_onIceCandidate:function(e){var t=this;if(t.consult){var n=function(e){r.debug("send ice candidate...");var n=new i({to:t.callee,rtKey:t._rtKey});e&&t.api.tcklC(n,t._sessId,t._rtcId,null,e)};t._cands&&t._cands.length>0&&(n(t._cands),t._cands=[]),e&&e.candidate&&n(e.candidate)}else e&&e.candidate&&(t._cands||(t._cands=[])).push(e.candidate),r.debug("[_onIceCandidate] temporary memory[send] ice candidate. util consult = true")},termCall:function(){var e=this;e._pingIntervalId&&window.clearInterval(e._pingIntervalId);var t=new i({to:e.callee,rtKey:e._rtKey});e.hangup||e.api.termC(t,e._sessId,e._rtcId),e.webRtc.close(),e.hangup=!0,e.onTermCall()},_onTermC:function(){var e=this;e.hangup=!0,e.termCall()},onTermCall:function(){}};e.exports=function(e){var t=this;o.extend(!0,this,c,e||{}),t.init()}}});
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "./";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ 0:
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	var Util = __webpack_require__(226);
+	var Call = __webpack_require__(227);
+
+	window.WebIM = WebIM || {};
+	WebIM.WebRTC = WebIM.WebRTC || {};
+	WebIM.WebRTC.Call = Call;
+	WebIM.WebRTC.Util = Util;
+
+	if (( false ? 'undefined' : _typeof(module)) === 'object' && _typeof(module.exports) === 'object') {
+	    module.exports = WebIM.WebRTC;
+	} else if (true) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	        return WebIM.WebRTC;
+	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	}
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(225)(module)))
+
+/***/ },
+
+/***/ 225:
+/***/ function(module, exports) {
+
+	module.exports = function(module) {
+		if(!module.webpackPolyfill) {
+			module.deprecate = function() {};
+			module.paths = [];
+			// module.parent = undefined by default
+			module.children = [];
+			module.webpackPolyfill = 1;
+		}
+		return module;
+	}
+
+
+/***/ },
+
+/***/ 226:
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/*
+	 * ! Math.uuid.js (v1.4) http://www.broofa.com mailto:robert@broofa.com
+	 * 
+	 * Copyright (c) 2010 Robert Kieffer Dual licensed under the MIT and GPL
+	 * licenses.
+	 */
+
+	/*
+	 * Generate a random uuid.
+	 * 
+	 * USAGE: Math.uuid(length, radix) length - the desired number of characters
+	 * radix - the number of allowable values for each character.
+	 * 
+	 * EXAMPLES: // No arguments - returns RFC4122, version 4 ID >>> Math.uuid()
+	 * "92329D39-6F5C-4520-ABFC-AAB64544E172" // One argument - returns ID of the
+	 * specified length >>> Math.uuid(15) // 15 character ID (default base=62)
+	 * "VcydxgltxrVZSTV" // Two arguments - returns ID of the specified length, and
+	 * radix. (Radix must be <= 62) >>> Math.uuid(8, 2) // 8 character ID (base=2)
+	 * "01001010" >>> Math.uuid(8, 10) // 8 character ID (base=10) "47473046" >>>
+	 * Math.uuid(8, 16) // 8 character ID (base=16) "098F4D35"
+	 */
+	(function () {
+	    // Private array of chars to use
+	    var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+
+	    Math.uuid = function (len, radix) {
+	        var chars = CHARS,
+	            uuid = [],
+	            i;
+	        radix = radix || chars.length;
+
+	        if (len) {
+	            // Compact form
+	            for (i = 0; i < len; i++) {
+	                uuid[i] = chars[0 | Math.random() * radix];
+	            }
+	        } else {
+	            // rfc4122, version 4 form
+	            var r;
+
+	            // rfc4122 requires these characters
+	            uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+	            uuid[14] = '4';
+
+	            // Fill in random data. At i==19 set the high bits of clock sequence
+	            // as
+	            // per rfc4122, sec. 4.1.5
+	            for (i = 0; i < 36; i++) {
+	                if (!uuid[i]) {
+	                    r = 0 | Math.random() * 16;
+	                    uuid[i] = chars[i == 19 ? r & 0x3 | 0x8 : r];
+	                }
+	            }
+	        }
+
+	        return uuid.join('');
+	    };
+
+	    // A more performant, but slightly bulkier, RFC4122v4 solution. We boost
+	    // performance
+	    // by minimizing calls to random()
+	    Math.uuidFast = function () {
+	        var chars = CHARS,
+	            uuid = new Array(36),
+	            rnd = 0,
+	            r;
+	        for (var i = 0; i < 36; i++) {
+	            if (i == 8 || i == 13 || i == 18 || i == 23) {
+	                uuid[i] = '-';
+	            } else if (i == 14) {
+	                uuid[i] = '4';
+	            } else {
+	                if (rnd <= 0x02) rnd = 0x2000000 + Math.random() * 0x1000000 | 0;
+	                r = rnd & 0xf;
+	                rnd = rnd >> 4;
+	                uuid[i] = chars[i == 19 ? r & 0x3 | 0x8 : r];
+	            }
+	        }
+	        return uuid.join('');
+	    };
+
+	    // A more compact, but less performant, RFC4122v4 solution:
+	    Math.uuidCompact = function () {
+	        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+	            var r = Math.random() * 16 | 0,
+	                v = c == 'x' ? r : r & 0x3 | 0x8;
+	            return v.toString(16);
+	        });
+	    };
+	})();
+
+	/**
+	 * Util
+	 * 
+	 * @constructor
+	 */
+	function Util() {}
+
+	/**
+	 * Function Logger
+	 * 
+	 * @constructor
+	 */
+	var Logger = function Logger() {
+	    var self = this;
+
+	    var LogLevel = {
+	        TRACE: 0,
+	        DEBUG: 1,
+	        INFO: 2,
+	        WARN: 3,
+	        ERROR: 4,
+	        FATAL: 5
+	    };
+
+	    var LogLevelName = ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL'];
+
+	    this.log = function () {
+	        var level = arguments[0];
+
+	        level = arguments[0] = '[' + LogLevelName[level] + '] ';
+
+	        var text = arguments[1];
+
+	        console.log.apply(console, arguments);
+	    };
+
+	    function callLog(level, args) {
+	        var _args = [];
+
+	        _args.push(level);
+
+	        for (var i in args) {
+	            _args.push(args[i]);
+	        }
+
+	        self.log.apply(self, _args);
+	    };
+
+	    this.trace = function () {
+	        this.log && callLog(LogLevel.TRACE, arguments);
+	    };
+
+	    this.debug = function () {
+	        this.log && callLog(LogLevel.DEBUG, arguments);
+	    };
+
+	    this.info = function () {
+	        this.log && callLog(LogLevel.INFO, arguments);
+	    };
+
+	    this.warn = function () {
+	        this.log && callLog(LogLevel.WARN, arguments);
+	    };
+
+	    this.error = function () {
+	        this.log && callLog(LogLevel.ERROR, arguments);
+	    };
+
+	    this.fatal = function () {
+	        this.log && callLog(LogLevel.FATAL, arguments);
+	    };
+	};
+
+	Util.prototype.logger = new Logger();
+
+	/**
+	 * parse json
+	 * 
+	 * @param jsonString
+	 */
+	Util.prototype.parseJSON = function (jsonString) {
+	    return JSON.parse(jsonString);
+	};
+
+	/**
+	 * json to string
+	 * 
+	 * @type {Util.stringifyJSON}
+	 */
+	var stringifyJSON = Util.prototype.stringifyJSON = function (jsonObj) {
+	    return JSON.stringify(jsonObj);
+	};
+
+	var class2type = {};
+
+	var toString = class2type.toString;
+
+	var hasOwn = class2type.hasOwnProperty;
+
+	var fnToString = hasOwn.toString;
+
+	var ObjectFunctionString = fnToString.call(Object);
+
+	/**
+	 * check object type
+	 * 
+	 * @type {Util.isPlainObject}
+	 */
+	var isPlainObject = Util.prototype.isPlainObject = function (obj) {
+	    var proto, Ctor;
+
+	    // Detect obvious negatives
+	    // Use toString instead of jQuery.type to catch host objects
+	    if (!obj || toString.call(obj) !== "[object Object]") {
+	        return false;
+	    }
+
+	    proto = Object.getPrototypeOf(obj);
+
+	    // Objects with no prototype (e.g., `Object.create( null )`) are plain
+	    if (!proto) {
+	        return true;
+	    }
+
+	    // Objects with prototype are plain iff they were constructed by a
+	    // global Object function
+	    Ctor = hasOwn.call(proto, "constructor") && proto.constructor;
+	    return typeof Ctor === "function" && fnToString.call(Ctor) === ObjectFunctionString;
+	};
+
+	Util.prototype.isArray = Array.isArray;
+
+	/**
+	 * check empty object
+	 * 
+	 * @param obj
+	 * @returns {boolean}
+	 */
+	Util.prototype.isEmptyObject = function (obj) {
+	    var name;
+	    for (name in obj) {
+	        return false;
+	    }
+	    return true;
+	};
+
+	Util.prototype.type = function (obj) {
+	    if (obj == null) {
+	        return obj + "";
+	    }
+	    return (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj === 'undefined' ? 'undefined' : _typeof(obj);
+	};
+
+	/**
+	 * Function extend
+	 * 
+	 * @returns {*|{}}
+	 */
+	Util.prototype.extend = function () {
+	    var self = this;
+	    var options,
+	        name,
+	        src,
+	        copy,
+	        copyIsArray,
+	        clone,
+	        target = arguments[0] || {},
+	        i = 1,
+	        length = arguments.length,
+	        deep = false;
+
+	    // Handle a deep copy situation
+	    if (typeof target === "boolean") {
+	        deep = target;
+
+	        // Skip the boolean and the target
+	        target = arguments[i] || {};
+	        i++;
+	    }
+
+	    // Handle case when target is a string or something (possible in deep
+	    // copy)
+	    if ((typeof target === 'undefined' ? 'undefined' : _typeof(target)) !== "object" && !self.isFunction(target)) {
+	        target = {};
+	    }
+
+	    // Extend self itself if only one argument is passed
+	    if (i === length) {
+	        target = this;
+	        i--;
+	    }
+
+	    for (; i < length; i++) {
+
+	        // Only deal with non-null/undefined values
+	        if ((options = arguments[i]) != null) {
+
+	            // Extend the base object
+	            for (name in options) {
+	                src = target[name];
+	                copy = options[name];
+
+	                // Prevent never-ending loop
+	                if (target === copy) {
+	                    continue;
+	                }
+
+	                // Recurse if we're merging plain objects or arrays
+	                if (deep && copy && (self.isPlainObject(copy) || (copyIsArray = self.isArray(copy)))) {
+
+	                    if (copyIsArray) {
+	                        copyIsArray = false;
+	                        clone = src && self.isArray(src) ? src : [];
+	                    } else {
+	                        clone = src && self.isPlainObject(src) ? src : {};
+	                    }
+
+	                    // Never move original objects, clone them
+	                    target[name] = self.extend(deep, clone, copy);
+
+	                    // Don't bring in undefined values
+	                } else if (copy !== undefined) {
+	                    target[name] = copy;
+	                }
+	            }
+	        }
+	    }
+
+	    // Return the modified object
+	    return target;
+	};
+
+	/**
+	 * get local cache
+	 * 
+	 * @memberOf tool
+	 * @name hasLocalData
+	 * @param key{string}
+	 *            localStorage的key值
+	 * @return boolean
+	 */
+	Util.prototype.hasLocalStorage = function (key) {
+	    // null -> localStorage.removeItem时
+	    // '{}' -> collection.models.destroy时
+	    if (localStorage.getItem(key) == null || localStorage.getItem(key) == '{}') {
+	        return false;
+	    }
+	    return true;
+	};
+
+	Util.prototype.toggleClass = function (node, className) {
+	    if (node.hasClass(className)) {
+	        node.removeClass(className);
+	        return;
+	    }
+	    node.addClass(className);
+	};
+
+	/**
+	 * set cookie
+	 * 
+	 * @param name{String}
+	 * 
+	 * @param value{String}
+	 * 
+	 * @param hour{Number}
+	 * 
+	 * @return void
+	 */
+	Util.prototype.setCookie = function (name, value, hour) {
+	    var exp = new Date();
+	    exp.setTime(exp.getTime() + hour * 60 * 60 * 1000);
+	    document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+	};
+
+	/**
+	 * read cookie
+	 * 
+	 * @param name(String)
+	 *            cookie key
+	 * @return cookie value
+	 * @memberOf Tool
+	 */
+	Util.prototype.getCookie = function (name) {
+	    var arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+	    if (arr != null) {
+	        return unescape(arr[2]);
+	    }
+	    return null;
+	};
+
+	/**
+	 * query parameter from url
+	 * 
+	 * @name parseURL
+	 * @memberof C.Tools
+	 * @param {string}
+	 * 
+	 * @return {string}
+	 * @type function
+	 * @public
+	 */
+	Util.prototype.parseURL = function (name) {
+	    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+	    var r = window.location.search.substr(1).match(reg);
+	    if (r != null) {
+	        return unescape(r[2]);
+	    }
+	    return null;
+	};
+
+	module.exports = new Util();
+
+/***/ },
+
+/***/ 227:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var Util = __webpack_require__(226);
+	var RTCIQHandler = __webpack_require__(228);
+	var API = __webpack_require__(229);
+	var WebRTC = __webpack_require__(230);
+	var CommonPattern = __webpack_require__(231);
+
+	var RouteTo = API.RouteTo;
+	var Api = API.Api;
+	var _logger = Util.logger;
+
+	var _Call = {
+	    api: null,
+
+	    connection: null,
+
+	    pattern: null,
+
+	    listener: {
+	        onAcceptCall: function onAcceptCall(from, options) {},
+	        onRinging: function onRinging(caller) {},
+
+	        onTermCall: function onTermCall() {}
+	    },
+
+	    mediaStreamConstaints: {
+	        audio: true,
+	        video: true
+	    },
+
+	    init: function init() {
+	        var self = this;
+
+	        if (typeof self.connection === "undefined") {
+	            throw "Caller need a instance of Easemob.im.Connection";
+	        }
+
+	        self.api = self.api || new Api({
+	            imConnection: self.connection,
+
+	            rtcHandler: new RTCIQHandler({
+	                imConnection: self.connection
+	            })
+	        });
+
+	        self.api.onInitC = function () {
+	            self._onInitC.apply(self, arguments);
+	        };
+	    },
+
+	    makeVideoCall: function makeVideoCall(callee) {
+	        var self = this;
+
+	        var mediaStreamConstaints = {};
+	        Util.extend(mediaStreamConstaints, self.mediaStreamConstaints);
+
+	        self.call(callee, mediaStreamConstaints);
+	    },
+
+	    makeVoiceCall: function makeVoiceCall(callee) {
+	        var self = this;
+
+	        var mediaStreamConstaints = {};
+	        Util.extend(mediaStreamConstaints, self.mediaStreamConstaints);
+	        self.mediaStreamConstaints.video = false;
+
+	        self.call(callee, mediaStreamConstaints);
+	    },
+
+	    acceptCall: function acceptCall() {
+	        var self = this;
+	        self.pattern.accept();
+	    },
+
+	    endCall: function endCall(callee) {
+	        var self = this;
+	        self.pattern.termCall();
+	    },
+
+	    call: function call(callee, mediaStreamConstaints) {
+	        var self = this;
+
+	        self.callee = self.api.jid(callee);
+
+	        var rt = new RouteTo({
+	            rtKey: "",
+
+	            success: function success(result) {
+	                _logger.debug("iq to server success", result);
+	            },
+	            fail: function fail(error) {
+	                _logger.debug("iq to server error", error);
+	                self.onError(error);
+	            }
+	        });
+
+	        self.api.reqP2P(rt, mediaStreamConstaints.video ? 1 : 0, mediaStreamConstaints.audio ? 1 : 0, callee, function (from, rtcOptions) {
+	            self._onGotServerP2PConfig(from, rtcOptions);
+
+	            self.pattern.initC(self.mediaStreamConstaints);
+	        });
+	    },
+
+	    _onInitC: function _onInitC(from, options, rtkey, tsxId, fromSid) {
+	        var self = this;
+
+	        self.callee = from;
+	        self._rtcCfg = options.rtcCfg;
+	        self._WebRTCCfg = options.WebRTC;
+
+	        self.sessId = options.sessId;
+	        self.rtcId = options.rtcId;
+
+	        self.switchPattern();
+	        self.pattern._onInitC(from, options, rtkey, tsxId, fromSid);
+	    },
+
+	    _onGotServerP2PConfig: function _onGotServerP2PConfig(from, rtcOptions) {
+	        var self = this;
+
+	        if (rtcOptions.result == 0) {
+	            self._p2pConfig = rtcOptions;
+	            self._rtcCfg = rtcOptions.rtcCfg;
+	            self._rtcCfg2 = rtcOptions.rtcCfg2;
+
+	            self.sessId = rtcOptions.sessId;
+	            self.rtcId = "Channel_webIM";
+
+	            self._rtKey = self._rtkey = rtcOptions.rtKey || rtcOptions.rtkey;
+	            self._rtFlag = self._rtflag = rtcOptions.rtFlag || rtcOptions.rtflag;
+
+	            self._WebRTCCfg = rtcOptions.WebRTC;
+	            self.admtok = rtcOptions.admtok;
+	            self.tkt = rtcOptions.tkt;
+
+	            self.switchPattern();
+	        } else {
+	            //
+	        }
+	    },
+
+	    switchPattern: function switchPattern() {
+	        var self = this;
+
+	        !self._WebRTCCfg && (self.pattern = new CommonPattern({
+	            callee: self.callee,
+
+	            _p2pConfig: self._p2pConfig,
+	            _rtcCfg: self._rtcCfg,
+	            _rtcCfg2: self._rtcCfg2,
+
+	            _rtKey: self._rtKey || self._rtkey,
+	            _rtFlag: self._rtFlag || self._rtflag,
+
+	            _sessId: self.sessId,
+	            _rtcId: self.rtcId,
+
+	            webRtc: new WebRTC({
+	                onGotLocalStream: self.listener.onGotLocalStream,
+	                onGotRemoteStream: self.listener.onGotRemoteStream,
+	                onError: self.listener.onError
+	            }),
+
+	            api: self.api,
+
+	            onAcceptCall: self.listener && self.listener.onAcceptCall || function () {},
+	            onRinging: self.listener && self.listener.onRinging || function () {},
+	            onTermCall: self.listener && self.listener.onTermCall || function () {}
+	        }));
+	    }
+	};
+
+	module.exports = function (initConfigs) {
+	    Util.extend(true, this, _Call, initConfigs || {});
+
+	    this.init();
+	};
+
+/***/ },
+
+/***/ 228:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/**
+	 * IQ Message，IM -> CMServer --> IM
+	 */
+
+	var _util = __webpack_require__(226);
+	var _logger = _util.logger;
+
+	var CONFERENCE_XMLNS = "urn:xmpp:media-conference";
+
+	var _RtcHandler = {
+	    _apiCallbacks: {},
+
+	    imConnection: null,
+
+	    init: function init() {
+	        var self = this;
+
+	        var _conn = self.imConnection;
+
+	        var handleConferenceIQ;
+
+	        _conn.addHandler = function (handler, ns, name, type, id, from, options) {
+	            if (typeof handleConferenceIQ !== 'function') {
+
+	                handleConferenceIQ = function handleConferenceIQ(msginfo) {
+	                    try {
+	                        self.handleRtcMessage(msginfo);
+	                    } catch (error) {
+	                        _logger.error(error.stack || error);
+	                        throw error;
+	                    }
+
+	                    return true;
+	                };
+	                _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "set", null, null);
+	                _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "get", null, null);
+	            }
+
+	            _conn.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
+	        };
+	    },
+
+	    handleRtcMessage: function handleRtcMessage(msginfo) {
+	        var self = this;
+
+	        var id = msginfo.getAttribute('id');
+	        var from = msginfo.getAttribute('from') || '';
+
+	        // remove resource
+	        from.lastIndexOf("/") >= 0 && (from = from.substring(0, from.lastIndexOf("/")));
+
+	        var rtkey = msginfo.getElementsByTagName('rtkey')[0].innerHTML;
+
+	        var fromSessionId = msginfo.getElementsByTagName('sid')[0].innerHTML;
+
+	        (self._fromSessionID || (self._fromSessionID = {}))[from] = fromSessionId;
+
+	        var contentTags = msginfo.getElementsByTagName('content');
+
+	        var streamType = msginfo.getElementsByTagName('stream_type')[0].innerHTML; //VOICE, VIDEO
+
+	        var contentString = contentTags[0].innerHTML;
+
+	        var content = _util.parseJSON(contentString);
+
+	        var rtcOptions = content;
+	        var tsxId = content.tsxId;
+
+	        self.ctx = content.ctx;
+
+	        _logger.debug("Recv [op = " + rtcOptions.op + "]\r\n json :", msginfo);
+
+	        if (rtcOptions.sdp) {
+	            if (typeof rtcOptions.sdp === 'string') {
+	                rtcOptions.sdp = _util.parseJSON(rtcOptions.sdp);
+	            }
+	            rtcOptions.sdp.type && (rtcOptions.sdp.type = rtcOptions.sdp.type.toLowerCase());
+	        }
+	        if (rtcOptions.cands) {
+	            if (typeof rtcOptions.cands === 'string') {
+	                rtcOptions.cands = _util.parseJSON(rtcOptions.cands);
+	            }
+
+	            for (var i = 0; i < rtcOptions.cands.length; i++) {
+	                typeof rtcOptions.cands[i] === 'string' && (rtcOptions.cands[i] = _util.parseJSON(rtcOptions.cands[i]));
+
+	                rtcOptions.cands[i].sdpMLineIndex = rtcOptions.cands[i].mlineindex;
+	                rtcOptions.cands[i].sdpMid = rtcOptions.cands[i].mid;
+
+	                delete rtcOptions.cands[i].mlineindex;
+	                delete rtcOptions.cands[i].mid;
+	            }
+	        }
+
+	        rtcOptions.rtcCfg && typeof rtcOptions.rtcCfg === 'string' && (rtcOptions.rtcCfg = _util.parseJSON(rtcOptions.rtcCfg));
+	        rtcOptions.rtcCfg2 && typeof rtcOptions.rtcCfg2 === 'string' && (rtcOptions.rtcCfg2 = _util.parseJSON(rtcOptions.rtcCfg2));
+	        rtcOptions.WebRTC && typeof rtcOptions.WebRTC === 'string' && (rtcOptions.WebRTC = _util.parseJSON(rtcOptions.WebRTC));
+
+	        if (tsxId && self._apiCallbacks[tsxId]) {
+	            try {
+	                self._apiCallbacks[tsxId].callback && self._apiCallbacks[tsxId].callback(from, rtcOptions);
+	            } catch (err) {
+	                throw err;
+	            } finally {
+	                delete self._apiCallbacks[tsxId];
+	            }
+	        } else {
+	            self.onRecvRtcMessage(from, rtcOptions, rtkey, tsxId, fromSessionId);
+	        }
+
+	        return true;
+	    },
+
+	    onRecvRtcMessage: function onRecvRtcMessage(from, rtcOptions, rtkey, tsxId, fromSessionId) {
+	        _logger.debug(' form : ' + from + " \r\n json :" + _util.stringifyJSON(rtcJSON));
+	    },
+
+	    convertRtcOptions: function convertRtcOptions(options) {
+	        var sdp = options.data.sdp;
+	        if (sdp) {
+	            var _sdp = {
+	                type: sdp.type,
+	                sdp: sdp.sdp
+	            };
+
+	            sdp = _sdp;
+
+	            sdp.type = sdp.type.toUpperCase();
+	            sdp = _util.stringifyJSON(sdp);
+
+	            options.data.sdp = sdp;
+	        }
+
+	        var cands = options.data.cands;
+
+	        if (cands) {
+	            if (_util.isArray(cands)) {} else {
+	                var _cands = [];
+	                _cands.push(cands);
+	                cands = _cands;
+	            }
+
+	            for (var i in cands) {
+	                if (cands[i] instanceof RTCIceCandidate) {
+	                    var _cand = {
+	                        type: "candidate",
+	                        candidate: cands[i].candidate,
+	                        mlineindex: cands[i].sdpMLineIndex,
+	                        mid: cands[i].sdpMid
+	                    };
+
+	                    cands[i] = _util.stringifyJSON(_cand);
+	                }
+	            }
+
+	            options.data.cands = cands;
+	        } else {
+	            // options.data.cands = [];
+	        }
+
+	        var rtcCfg = options.data.rtcCfg;
+	        if (rtcCfg) {
+	            typeof rtcCfg !== 'string' && (options.data.rtcCfg = _util.stringifyJSON(rtcCfg));
+	        }
+
+	        var _webrtc = options.data.WebRTC;
+	        if (_webrtc) {
+	            typeof _webrtc !== 'string' && (options.data.WebRTC = _util.stringifyJSON(_webrtc));
+	        }
+	    },
+
+	    /**
+	     * rt: { id: , to: , rtKey: , rtflag: , sid: , tsxId: , type: , }
+	     *
+	     * rtcOptions: { data : { op : 'reqP2P', video : 1, audio : 1, peer :
+	     * curChatUserId, //appKey + "_" + curChatUserId + "@" + this.domain, } }
+	     *
+	     */
+	    sendRtcMessage: function sendRtcMessage(rt, options, callback) {
+	        var self = this;
+
+	        var _conn = self.imConnection;
+
+	        var tsxId = rt.tsxId || _conn.getUniqueId();
+
+	        var to = rt.to || _conn.domain;
+
+	        var sid = rt.sid || self._fromSessionID && self._fromSessionID[to];
+	        sid = sid || ((self._fromSessionID || (self._fromSessionID = {}))[to] = _conn.getUniqueId("CONFR_"));
+
+	        var rtKey = rt.rtKey || rt.rtkey;
+	        // rtKey && delete rt.rtKey;
+	        rtKey || (rtKey = "");
+
+	        var rtflag = rt.rtflag;
+	        // rtflag && delete rt.rtflag;
+	        rtflag || (rtflag = 1);
+
+	        options.data || (options.data = {});
+	        options.data.tsxId = tsxId;
+
+	        self.ctx && (options.data.ctx = self.ctx);
+	        self.convertRtcOptions(options);
+
+	        var streamType = "VIDEO"; //VOICE, VIDEO
+
+	        var id = rt.id || _conn.getUniqueId("CONFR_");
+	        var iq = $iq({
+	            // xmlns: CONFERENCE_XMLNS,
+	            id: id,
+	            to: to,
+	            from: _conn.context.jid,
+	            type: rt.type || "get"
+	        }).c("query", {
+	            xmlns: CONFERENCE_XMLNS
+	        }).c("MediaReqExt").c('rtkey').t(rtKey).up().c('rtflag').t(rtflag).up().c('stream_type').t(streamType).up().c('sid').t(sid).up().c('content').t(_util.stringifyJSON(options.data));
+
+	        _logger.debug("Send IQ [op = " + options.data.op + "] : \r\n", iq.tree());
+
+	        callback && (self._apiCallbacks[tsxId] = {
+	            callback: callback
+	        });
+
+	        var completeFn = function (result) {
+	            rt.success(result);
+	        } || function (result) {
+	            _logger.debug("send result. op:" + options.data.op + ".", result);
+	        };
+
+	        var errFn = function (ele) {
+	            rt.fail(ele);
+	        } || function (ele) {
+	            _logger.debug(ele);
+	        };
+
+	        _conn.context.stropheConn.sendIQ(iq.tree(), completeFn, errFn);
+	    }
+	};
+
+	var RTCIQHandler = function RTCIQHandler(initConfigs) {
+	    _util.extend(true, this, _RtcHandler, initConfigs || {});
+
+	    this.init();
+	};
+	module.exports = RTCIQHandler;
+
+/***/ },
+
+/***/ 229:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	/**
+	 * API 
+	 */
+	var _util = __webpack_require__(226);
+	var _logger = _util.logger;
+
+	var _RouteTo = {
+	    // to : null,
+	    // rtKey: null,
+	    rtFlag: 1,
+
+	    success: function success(result) {},
+	    fail: function fail(error) {}
+	};
+
+	var RouteTo = function RouteTo(extendCfg) {
+	    if (this instanceof RouteTo) {
+	        var self = this;
+	        _util.extend(true, self, _RouteTo, extendCfg || {});
+	    } else {
+	        var sub = function sub(extendCfg) {
+	            var self = this;
+	            _util.extend(true, self, extendCfg || {});
+	        };
+
+	        _util.extend(true, sub.prototype, _RouteTo, extendCfg || {});
+
+	        return sub;
+	    }
+	};
+	exports.RouteTo = RouteTo;
+
+	var _clazz = {
+	    imConnection: null,
+	    // webRtc: null,
+
+	    rtcHandler: null,
+
+	    events: {
+	        '0': 'onReqP2P',
+	        '1': 'onNewCfr',
+	        '2': 'onDelCfr',
+	        '3': 'onReqTkt',
+
+	        '100': 'onPing',
+	        '101': 'onPong',
+	        '102': 'onInitC',
+	        '103': 'onReqC',
+	        '104': 'onAcptC',
+	        '105': 'onTcklC',
+	        '106': 'onAnsC',
+	        '107': 'onTermC',
+
+	        // '200' : 'onEnter',
+	        // '201' : 'onExit',
+	        // '202' : 'onInvite',
+	        // '203' : 'onGetMems',
+
+	        // '205' : 'onSubC',
+	        // '206' : 'onUsubC',
+
+	        '300': 'onEvEnter',
+	        '301': 'onEvExit',
+	        '302': 'onEvPub',
+	        '303': 'onEvUnpub',
+	        '304': 'onEvMems',
+	        '204': 'onEvClose',
+
+	        'onServerError': 'onServerError'
+	    },
+
+	    register: function register(listener) {
+	        if ((typeof listener === 'undefined' ? 'undefined' : _typeof(listener)) === "object") {
+	            for (var event in listener) {
+	                this.bind(event, listener[event]);
+	            }
+	        }
+	    },
+
+	    bind: function bind(event, func) {
+	        var self = this;
+
+	        var onFunc;
+	        if (onFunc = self.events[event]) {
+	            self[onFunc] = func;
+	        } else {
+	            onFunc = self.events[event] = 'on_' + event;
+	            self[onFunc] = func;
+	        }
+	    },
+
+	    jid: function jid(shortUserName) {
+	        if (shortUserName.indexOf(this.imConnection.context.appKey) >= 0) {
+	            return shortUserName;
+	        }
+	        return this.imConnection.context.appKey + "_" + shortUserName + "@" + this.imConnection.domain;
+	    },
+
+	    /**
+	     * ReqP2P 0
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param video
+	     *            1 0
+	     * @param audio
+	     *            1 0
+	     * @param peer
+	     * 
+	     */
+	    reqP2P: function reqP2P(rt, video, audio, peer, callback) {
+	        _logger.debug("req p2p ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 0,
+	                video: video,
+	                audio: audio,
+	                peer: peer // appKey + "_" + curChatUserId + "@" +
+	                // this.domain,
+	            }
+	        };
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * NewCfr 1
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param reqTkt
+	     *            1 null
+	     * @param password
+	     *            string null
+	     * 
+	     */
+	    newCfr: function newCfr(rt, reqTkt, password, callback) {
+	        _logger.debug("newCfr ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 1
+	            }
+	        };
+
+	        reqTkt && (rtcOptions.data.reqTkt = reqTkt);
+	        password && (rtcOptions.data.password = password);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * Enter 200
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param WebRTCId
+	     * @param reqMembers !=
+	     *            0 members
+	     * @param tkt
+	     * @param nonce
+	     * @param digest
+	     * 
+	     */
+	    enter: function enter(rt, WebRTCId, reqMembers, tkt, nonce, digest, callback) {
+	        _logger.debug("enter ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 200
+	            }
+	        };
+
+	        WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
+	        reqMembers && (rtcOptions.data.reqMembers = reqMembers);
+	        tkt && (rtcOptions.data.tkt = tkt);
+	        nonce && (rtcOptions.data.nonce = nonce);
+	        digest && (rtcOptions.data.digest = digest);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * Ping 100
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param sessId
+	     * 
+	     */
+	    ping: function ping(rt, sessId, callback) {
+	        _logger.debug("ping ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 100
+	            }
+	        };
+
+	        sessId && (rtcOptions.data.sessId = sessId);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * ReqTkt 3
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param WebRTCId
+	     * @param success(from,
+	     *            rtcOptions)
+	     * 
+	     */
+	    reqTkt: function reqTkt(rt, WebRTCId, callback) {
+	        _logger.debug("reqTkt ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 3
+	            }
+	        };
+
+	        WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * InitC 102
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param WebRTCId
+	     * @param tkt
+	     * @param sessId
+	     * @param rtcId
+	     * @param pubS
+	     *            {name: streamName, video:1, audio:1, type: 0}
+	     * @param subS
+	     *            {memId: , rtcId: }
+	     * @param sdp
+	     *            sdp:sdpstring
+	     * @param cands [ ]
+	     * 
+	     */
+	    initC: function initC(rt, WebRTCId, tkt, sessId, rtcId, pubS, subS, sdp, cands, rtcCfg, WebRTC, callback) {
+	        _logger.debug("initC ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 102
+	            }
+	        };
+
+	        WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
+	        tkt && (rtcOptions.data.tkt = tkt);
+	        sessId && (rtcOptions.data.sessId = sessId);
+	        rtcId && (rtcOptions.data.rtcId = rtcId);
+	        pubS && (rtcOptions.data.pubS = pubS);
+	        subS && (rtcOptions.data.subS = subS);
+	        sdp && (rtcOptions.data.sdp = sdp);
+	        cands && (rtcOptions.data.cands = cands);
+	        rtcCfg && (rtcOptions.data.rtcCfg = rtcCfg);
+	        WebRTC && (rtcOptions.data.WebRTC = WebRTC);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * TcklC 105
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param sessId
+	     * @param rtcId
+	     * @param cands
+	     * @param success(from,
+	     *            rtcOptions)
+	     * 
+	     */
+	    tcklC: function tcklC(rt, sessId, rtcId, sdp, cands, callback) {
+	        _logger.debug("tcklC ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 105
+	            }
+	        };
+
+	        sessId && (rtcOptions.data.sessId = sessId);
+	        rtcId && (rtcOptions.data.rtcId = rtcId);
+	        sdp && (rtcOptions.data.sdp = sdp);
+	        cands && (rtcOptions.data.cands = cands);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * AnsC 106
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param sessId
+	     * @param rtcId
+	     * @param sdp
+	     * @param cands
+	     * 
+	     */
+	    ansC: function ansC(rt, sessId, rtcId, sdp, cands, callback) {
+	        _logger.debug("ansC ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 106
+	            }
+	        };
+
+	        sessId && (rtcOptions.data.sessId = sessId);
+	        rtcId && (rtcOptions.data.rtcId = rtcId);
+	        sdp && (rtcOptions.data.sdp = sdp);
+	        cands && (rtcOptions.data.cands = cands);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * AcptC 104
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param sessId
+	     * @param rtcId
+	     * @param sdp
+	     * @param ans
+	     *            1
+	     * 
+	     */
+	    acptC: function acptC(rt, sessId, rtcId, sdp, cands, ans, callback) {
+	        _logger.debug("acptC ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 104
+	            }
+	        };
+
+	        sessId && (rtcOptions.data.sessId = sessId);
+	        rtcId && (rtcOptions.data.rtcId = rtcId);
+	        sdp && (rtcOptions.data.sdp = sdp);
+	        cands && (rtcOptions.data.cands = cands);
+	        ans && (rtcOptions.data.ans = ans);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * GetMems 203
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param WebRTCId
+	     * @param sessId
+	     * @param success(from,
+	     *            rtcOptions)
+	     * 
+	     */
+	    getMems: function getMems(rt, WebRTCId, sessId, callback) {
+	        _logger.debug("getMems ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 203
+	            }
+	        };
+
+	        WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
+	        sessId && (rtcOptions.data.sessId = sessId);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * SubC 205
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param sessId
+	     * @param rtcId
+	     * @param subS
+	     *            {memId:m001, rtcId:r001}
+	     * 
+	     */
+	    subC: function subC(rt, sessId, rtcId, subS, callback) {
+	        _logger.debug("subC ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 205
+	            }
+	        };
+
+	        sessId && (rtcOptions.data.sessId = sessId);
+	        rtcId && (rtcOptions.data.rtcId = rtcId);
+	        subS && (rtcOptions.data.subS = subS);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * UsubC 206
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param sessId
+	     * @param rtcId
+	     * 
+	     */
+	    usubC: function usubC(rt, sessId, rtcId, callback) {
+	        _logger.debug("usubC ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 206
+	            }
+	        };
+
+	        sessId && (rtcOptions.data.sessId = sessId);
+	        rtcId && (rtcOptions.data.rtcId = rtcId);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * TermC 107
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param sessId
+	     * @param rtcId
+	     * 
+	     */
+	    termC: function termC(rt, sessId, rtcId, callback) {
+	        _logger.debug("termC ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 107
+	            }
+	        };
+
+	        sessId && (rtcOptions.data.sessId = sessId);
+	        rtcId && (rtcOptions.data.rtcId = rtcId);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * Exit 201
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param WebRTCId
+	     * @param sessId
+	     * @param success(from,
+	     *            rtcOptions)
+	     * 
+	     */
+	    exit: function exit(rt, WebRTCId, sessId, callback) {
+	        _logger.debug("exit ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 201
+	            }
+	        };
+
+	        WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
+	        sessId && (rtcOptions.data.sessId = sessId);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
+	     * DelCfr 2
+	     * 
+	     * @param rt
+	     *            {to: , rtKey: , rtflag: , success(result), fail(error)}
+	     * 
+	     * @param callback(from, rtcOptions)
+	     * 
+	     * 
+	     * @param WebRTCId
+	     * @param admtok
+	     * @param success(from,
+	     *            rtcOptions)
+	     * 
+	     */
+	    delCfr: function delCfr(rt, WebRTCId, admtok, callback) {
+	        _logger.debug("delCfr ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 2
+	            }
+	        };
+
+	        WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
+	        admtok && (rtcOptions.data.admtok = admtok);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    }
+	};
+
+	exports.Api = function (initConfigs) {
+	    var self = this;
+
+	    _util.extend(true, this, _clazz, initConfigs || {});
+
+	    function _onRecvRtcMessage(from, rtcOptions, rtkey, tsxId, fromSessionId) {
+	        if (rtcOptions.result != 0 && self['onServerError']) {
+	            self['onServerError'].call(self, from, rtcOptions, rtkey, tsxId, fromSessionId);
+	        } else {
+	            var onFunction;
+
+	            if (self.events[rtcOptions.op] && (onFunction = self[self.events[rtcOptions.op]])) {
+	                onFunction.call(self, from, rtcOptions, rtkey, tsxId, fromSessionId);
+	            } else {
+	                _logger.info("can not handle(recvRtcMessage) the op: " + rtcOptions.op, rtcOptions);
+	            }
+	        }
+	    }
+
+	    this.rtcHandler.onRecvRtcMessage = _onRecvRtcMessage;
+	};
+
+/***/ },
+
+/***/ 230:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/**
+	 * WebRTC
+	 * 
+	 * A | B | 1.createMedia:got streamA | 1.createMedia:got streamB 2.new
+	 * RTCPeerConnection: APeerConnection | 2.new RTCPeerConnection: BPeerConnection
+	 * 3.APeerConnection.createOffer:got offerA |
+	 * APeerConnection.setLocalDescription(offerA) | send offerA ---> ---> ---> --->
+	 * ---> | |---> 3.got offerA | offerA = new RTCSessionDescription(offerA); |
+	 * BPeerConnection.setRemoteDescription(offerA) | | |
+	 * 4.BPeerConnection.createAnswer: got answerB |
+	 * BPeerConnection.setLocalDescription(answerB) | <---- send answerB | 5.got
+	 * answerB <--- <--- <--- <--- | answerB = new RTCSessionDescription(answerB) |
+	 * APeerConnection.setRemoteDescription(answerB) | | 6.got candidateA ---> --->
+	 * ---> ---> | ---> got candidateA | BPeerConnection.addIceCandidate(new
+	 * RTCIceCandidate(candidateA)) | | | got candidateB <--- <--- <--- <--- | <---
+	 * 6.got candidateB APeerConnection.addIceCandidate(candidateB) | | | 7.
+	 * APeerConnection.addStream(streamA) | 7.BPeerConnection.addStream(streamB) |
+	 * streamA >>>>>>>>>>> | <<<<< see A seeB <<<<<<<<<<< | <<<<<
+	 * streamB |
+	 */
+	var _util = __webpack_require__(226);
+	var _logger = _util.logger;
+
+	var _SDPSection = {
+	    headerSection: null,
+
+	    audioSection: null,
+	    videoSection: null,
+
+	    _parseHeaderSection: function _parseHeaderSection(sdp) {
+	        var index = sdp.indexOf('m=audio');
+	        if (index >= 0) {
+	            return sdp.slice(0, index);
+	        }
+
+	        index = sdp.indexOf('m=video');
+	        if (index >= 0) {
+	            return sdp.slice(0, index);
+	        }
+
+	        return sdp;
+	    },
+
+	    _parseAudioSection: function _parseAudioSection(sdp) {
+	        var index = sdp.indexOf('m=audio');
+	        if (index >= 0) {
+	            var endIndex = sdp.indexOf('m=video');
+	            return sdp.slice(index, endIndex < 0 ? sdp.length : endIndex);
+	        }
+	    },
+
+	    _parseVideoSection: function _parseVideoSection(sdp) {
+	        var index = sdp.indexOf('m=video');
+	        if (index >= 0) {
+	            return sdp.slice(index);
+	        }
+	    },
+
+	    spiltSection: function spiltSection(sdp) {
+	        var self = this;
+
+	        self.headerSection = self._parseHeaderSection(sdp);
+	        self.audioSection = self._parseAudioSection(sdp);
+	        self.videoSection = self._parseVideoSection(sdp);
+	    },
+
+	    removeSSRC: function removeSSRC(section) {
+	        var arr = [];
+
+	        var _arr = section.split(/a=ssrc:[^\n]+/g);
+	        for (var i = 0; i < _arr.length; i++) {
+	            _arr[i] != '\n' && arr.push(_arr[i]);
+	        }
+	        // arr.push('');
+
+	        return arr.join('\n');
+	    },
+
+	    updateHeaderMsidSemantic: function updateHeaderMsidSemantic(wms) {
+
+	        var self = this;
+
+	        var line = "a=msid-semantic: WMS " + wms;
+
+	        var _arr = self.headerSection.split(/a=msid\-semantic: WMS.*/g);
+	        var arr = [];
+	        switch (_arr.length) {
+	            case 1:
+	                arr.push(_arr[0]);
+	                break;
+	            case 2:
+	                arr.push(_arr[0]);
+	                arr.push(line);
+	                arr.push('\n');
+	                break;
+	            case 3:
+	                arr.push(_arr[0]);
+	                arr.push(line);
+	                arr.push('\n');
+	                arr.push(_arr[2]);
+	                arr.push('\n');
+	                break;
+	        }
+
+	        return self.headerSection = arr.join('');
+	    },
+
+	    updateAudioSSRCSection: function updateAudioSSRCSection(ssrc, cname, msid, label) {
+	        var self = this;
+
+	        self.audioSection && (self.audioSection = self.removeSSRC(self.audioSection) + self.ssrcSection(ssrc, cname, msid, label));
+	    },
+
+	    updateVideoSSRCSection: function updateVideoSSRCSection(ssrc, cname, msid, label) {
+	        var self = this;
+
+	        self.videoSection && (self.videoSection = self.removeSSRC(self.videoSection) + self.ssrcSection(ssrc, cname, msid, label));
+	    },
+
+	    getUpdatedSDP: function getUpdatedSDP() {
+	        var self = this;
+
+	        var sdp = "";
+
+	        self.headerSection && (sdp += self.headerSection);
+	        self.audioSection && (sdp += self.audioSection);
+	        self.videoSection && (sdp += self.videoSection);
+
+	        return sdp;
+	    },
+
+	    parseMsidSemantic: function parseMsidSemantic(header) {
+	        var self = this;
+
+	        var regexp = /a=msid\-semantic: WMS (\S+)/ig;
+	        var arr = self._parseLine(header, regexp);
+
+	        arr && arr.length == 2 && (self.msidSemantic = {
+	            line: arr[0],
+	            WMS: arr[1]
+	        });
+
+	        return self.msidSemantic;
+	    },
+
+	    ssrcSection: function ssrcSection(ssrc, cname, msid, label) {
+	        var lines = ['a=ssrc:' + ssrc + ' cname:' + cname, 'a=ssrc:' + ssrc + ' msid:' + msid + ' ' + label, 'a=ssrc:' + ssrc + ' mslabel:' + msid, 'a=ssrc:' + ssrc + ' label:' + label, ''];
+
+	        return lines.join('\n');
+	    },
+
+	    parseSSRC: function parseSSRC(section) {
+	        var self = this;
+
+	        var regexp = new RegExp("a=(ssrc):(\\d+) (\\S+):(\\S+)", "ig");
+
+	        var arr = self._parseLine(section, regexp);
+	        if (arr) {
+	            var ssrc = {
+	                lines: [],
+	                updateSSRCSection: self.ssrcSection
+	            };
+
+	            for (var i = 0; i < arr.length; i++) {
+	                var e = arr[i];
+	                if (e.indexOf("a=ssrc") >= 0) {
+	                    ssrc.lines.push(e);
+	                } else {
+	                    switch (e) {
+	                        case 'ssrc':
+	                        case 'cname':
+	                        case 'msid':
+	                        case 'mslabel':
+	                        case 'label':
+	                            ssrc[e] = arr[++i];
+	                    }
+	                }
+	            }
+
+	            return ssrc;
+	        }
+	    },
+
+	    _parseLine: function _parseLine(str, regexp) {
+	        var arr = [];
+
+	        var _arr;
+	        while ((_arr = regexp.exec(str)) != null) {
+	            for (var i = 0; i < _arr.length; i++) {
+	                arr.push(_arr[i]);
+	            }
+	        }
+
+	        if (arr.length > 0) {
+	            return arr;
+	        }
+	    }
+	};
+
+	var SDPSection = function SDPSection(sdp) {
+	    _util.extend(this, _SDPSection);
+	    this.spiltSection(sdp);
+	};
+
+	/**
+	 * Abstract
+	 */
+	var _WebRTC = {
+	    mediaStreamConstaints: {
+	        audio: true,
+	        video: true
+	    },
+
+	    localStream: null,
+	    rtcPeerConnection: null,
+
+	    offerOptions: {
+	        offerToReceiveAudio: 1,
+	        offerToReceiveVideo: 1
+	    },
+
+	    createMedia: function createMedia(constaints, onGotStream) {
+	        var self = this;
+
+	        if (constaints && typeof constaints === "function") {
+	            onGotStream = constaints;
+	            constaints = null;
+	        }
+
+	        _logger.debug(' begin create media ......');
+
+	        function gotStream(stream) {
+	            _logger.debug(' got local stream');
+
+	            self.localStream = stream;
+
+	            var videoTracks = self.localStream.getVideoTracks();
+	            var audioTracks = self.localStream.getAudioTracks();
+
+	            if (videoTracks.length > 0) {
+	                _logger.debug(' Using video device: ' + videoTracks[0].label);
+	            }
+	            if (audioTracks.length > 0) {
+	                _logger.debug(' Using audio device: ' + audioTracks[0].label);
+	            }
+
+	            onGotStream ? onGotStream(self, stream) : self.onGotStream(stream);
+	        }
+
+	        return navigator.mediaDevices.getUserMedia(constaints || self.mediaStreamConstaints).then(gotStream).then(self.onCreateMedia).catch(function (e) {
+	            _logger.debug('getUserMedia() error: ', e);
+	            self.onError(e);
+	        });
+	    },
+
+	    setLocalVideoSrcObject: function setLocalVideoSrcObject(stream) {
+	        this.onGotLocalStream(stream);
+	        _logger.debug(' you can see yourself !');
+	    },
+
+	    createRtcPeerConnection: function createRtcPeerConnection(iceServerConfig) {
+	        var self = this;
+
+	        if (iceServerConfig && iceServerConfig.iceServers) {} else {
+	            iceServerConfig = null;
+	        }
+
+	        _logger.debug(' begin create RtcPeerConnection ......');
+
+	        self.startTime = window.performance.now();
+
+	        var rtcPeerConnection = self.rtcPeerConnection = new RTCPeerConnection(iceServerConfig);
+	        _logger.debug(' Created local peer connection object', rtcPeerConnection);
+
+	        rtcPeerConnection.onicecandidate = function (event) {
+	            self.onIceCandidate(event);
+	        };
+
+	        rtcPeerConnection.onicestatechange = function (event) {
+	            self.onIceStateChange(event);
+	        };
+
+	        rtcPeerConnection.oniceconnectionstatechange = function (event) {
+	            self.onIceStateChange(event);
+	        };
+
+	        rtcPeerConnection.onaddstream = function (event) {
+	            self._onGotRemoteStream(event);
+	        };
+	    },
+
+	    _uploadLocalStream: function _uploadLocalStream() {
+	        this.rtcPeerConnection.addStream(this.localStream);
+	        _logger.debug('Added local stream to RtcPeerConnection');
+	    },
+
+	    createOffer: function createOffer(onCreateOfferSuccess, onCreateOfferError) {
+	        var self = this;
+
+	        self._uploadLocalStream();
+
+	        _logger.debug(' createOffer start...');
+
+	        return self.rtcPeerConnection.createOffer(self.offerOptions).then(function (desc) {
+	            self.offerDescription = desc;
+
+	            _logger.debug(' Offer from \n' + desc.sdp);
+	            _logger.debug(' setLocalDescription start');
+
+	            self.rtcPeerConnection.setLocalDescription(desc).then(self.onSetLocalSessionDescriptionSuccess, self.onSetSessionDescriptionError).then(function () {
+	                (onCreateOfferSuccess || self.onCreateOfferSuccess)(desc);
+	            });
+	        }, onCreateOfferError || self.onCreateSessionDescriptionError);
+	    },
+
+	    createPRAnswer: function createPRAnswer(onCreatePRAnswerSuccess, onCreatePRAnswerError) {
+	        var self = this;
+
+	        _logger.info(' createPRAnswer start');
+	        // Since the 'remote' side has no media stream we need
+	        // to pass in the right constraints in order for it to
+	        // accept the incoming offer of audio and video.
+	        return self.rtcPeerConnection.createAnswer().then(function (desc) {
+	            _logger.debug(' _____________PRAnswer from :\n' + desc.sdp);
+
+	            desc.type = "pranswer";
+	            desc.sdp = desc.sdp.replace(/a=recvonly/g, 'a=inactive');
+
+	            self.prAnswerDescription = desc;
+
+	            _logger.debug(' inactive PRAnswer from :\n' + desc.sdp);
+	            _logger.debug(' setLocalDescription start');
+
+	            self.rtcPeerConnection.setLocalDescription(desc).then(self.onSetLocalSuccess, self.onSetSessionDescriptionError).then(function () {
+	                var sdpSection = new SDPSection(desc.sdp);
+	                sdpSection.updateHeaderMsidSemantic("MS_0000");
+	                sdpSection.updateAudioSSRCSection(1000, "CHROME0000", "MS_0000", "LABEL_AUDIO_1000");
+	                sdpSection.updateVideoSSRCSection(2000, "CHROME0000", "MS_0000", "LABEL_VIDEO_2000");
+
+	                desc.sdp = sdpSection.getUpdatedSDP();
+
+	                _logger.debug(' Send PRAnswer from :\n' + desc.sdp);
+
+	                (onCreatePRAnswerSuccess || self.onCreatePRAnswerSuccess)(desc);
+	            });
+	        }, onCreatePRAnswerError || self.onCreateSessionDescriptionError);
+	    },
+
+	    createAnswer: function createAnswer(onCreateAnswerSuccess, onCreateAnswerError) {
+	        var self = this;
+
+	        self._uploadLocalStream();
+
+	        _logger.info(' createAnswer start');
+	        // Since the 'remote' side has no media stream we need
+	        // to pass in the right constraints in order for it to
+	        // accept the incoming offer of audio and video.
+	        return self.rtcPeerConnection.createAnswer().then(function (desc) {
+	            _logger.debug(' _____________________Answer from :\n' + desc.sdp);
+
+	            desc.type = 'answer';
+
+	            var sdpSection = new SDPSection(desc.sdp);
+	            var ms = sdpSection.parseMsidSemantic(sdpSection.headerSection);
+
+	            var audioSSRC = sdpSection.parseSSRC(sdpSection.audioSection);
+	            var videoSSRC = sdpSection.parseSSRC(sdpSection.videoSection);
+
+	            sdpSection.updateAudioSSRCSection(1000, "CHROME0000", ms.WMS, audioSSRC.label);
+	            sdpSection.updateVideoSSRCSection(2000, "CHROME0000", ms.WMS, videoSSRC.label);
+	            // mslabel cname
+
+
+	            desc.sdp = sdpSection.getUpdatedSDP();
+
+	            self.answerDescription = desc;
+
+	            _logger.debug(' Answer from :\n' + desc.sdp);
+	            _logger.debug(' setLocalDescription start');
+
+	            self.rtcPeerConnection.setLocalDescription(desc).then(self.onSetLocalSuccess, self.onSetSessionDescriptionError).then(function () {
+	                var sdpSection = new SDPSection(desc.sdp);
+	                sdpSection.updateHeaderMsidSemantic("MS_0000");
+	                sdpSection.updateAudioSSRCSection(1000, "CHROME0000", "MS_0000", "LABEL_AUDIO_1000");
+	                sdpSection.updateVideoSSRCSection(2000, "CHROME0000", "MS_0000", "LABEL_VIDEO_2000");
+
+	                desc.sdp = sdpSection.getUpdatedSDP();
+
+	                _logger.debug(' Send Answer from :\n' + desc.sdp);
+
+	                (onCreateAnswerSuccess || self.onCreateAnswerSuccess)(desc);
+	            });
+	        }, onCreateAnswerError || self.onCreateSessionDescriptionError);
+	    },
+
+	    close: function close() {
+	        var self = this;
+	        try {
+	            self.rtcPeerConnection && self.rtcPeerConnection.close();
+	        } catch (e) {}
+
+	        if (self.localStream) {
+	            self.localStream.getTracks().forEach(function (track) {
+	                track.stop();
+	            });
+	        }
+	        self.localStream = null;
+	    },
+
+	    addIceCandidate: function addIceCandidate(candidate) {
+	        var self = this;
+
+	        if (!self.rtcPeerConnection) {
+	            return;
+	        }
+
+	        _logger.debug(' Add ICE candidate: \n', candidate);
+
+	        var _cands = _util.isArray(candidate) ? candidate : [];
+	        !_util.isArray(candidate) && _cands.push(candidate);
+
+	        for (var i = 0; i < _cands.length; i++) {
+	            candidate = _cands[i];
+
+	            self.rtcPeerConnection.addIceCandidate(new RTCIceCandidate(candidate)).then(self.onAddIceCandidateSuccess, self.onAddIceCandidateError);
+	        }
+	    },
+
+	    setRemoteDescription: function setRemoteDescription(desc) {
+	        var self = this;
+
+	        _logger.debug(' setRemoteDescription start. ');
+
+	        desc = new RTCSessionDescription(desc);
+
+	        return self.rtcPeerConnection.setRemoteDescription(desc).then(self.onSetRemoteSuccess, self.onSetSessionDescriptionError);
+	    },
+
+	    iceConnectionState: function iceConnectionState() {
+	        var self = this;
+
+	        return self.rtcPeerConnection.iceConnectionState;
+	    },
+
+	    onCreateMedia: function onCreateMedia() {
+	        _logger.debug('media created.');
+	    },
+
+	    _onGotRemoteStream: function _onGotRemoteStream(event) {
+	        _logger.debug('onGotRemoteStream.', event);
+
+	        this.onGotRemoteStream(event.stream);
+	        _logger.debug('received remote stream, you will see the other.');
+	    },
+
+	    onGotStream: function onGotStream(stream) {
+	        _logger.debug('on got a local stream');
+	    },
+
+	    onSetRemoteSuccess: function onSetRemoteSuccess() {
+	        _logger.info(' onSetRemoteSuccess complete');
+	    },
+
+	    onSetLocalSuccess: function onSetLocalSuccess() {
+	        _logger.info(' setLocalDescription complete');
+	    },
+
+	    onAddIceCandidateSuccess: function onAddIceCandidateSuccess() {
+	        _logger.debug(' addIceCandidate success');
+	    },
+
+	    onAddIceCandidateError: function onAddIceCandidateError(error) {
+	        _logger.debug(' failed to add ICE Candidate: ' + error.toString());
+	    },
+
+	    onIceCandidate: function onIceCandidate(event) {
+	        _logger.debug(' onIceCandidate : ICE candidate: \n' + event.candidate);
+	    },
+
+	    onIceStateChange: function onIceStateChange(event) {
+	        _logger.debug(' onIceStateChange : ICE state change event: ', event);
+	    },
+
+	    onCreateSessionDescriptionError: function onCreateSessionDescriptionError(error) {
+	        _logger.error(' Failed to create session description: ' + error.toString());
+	    },
+
+	    onCreateOfferSuccess: function onCreateOfferSuccess(desc) {
+	        _logger.debug(' create offer success');
+	    },
+
+	    onCreatePRAnswerSuccess: function onCreatePRAnswerSuccess(desc) {
+	        _logger.debug(' create answer success');
+	    },
+
+	    onCreateAnswerSuccess: function onCreateAnswerSuccess(desc) {
+	        _logger.debug(' create answer success');
+	    },
+
+	    onSetSessionDescriptionError: function onSetSessionDescriptionError(error) {
+	        _logger.error(' onSetSessionDescriptionError : Failed to set session description: ' + error.toString());
+	    },
+
+	    onSetLocalSessionDescriptionSuccess: function onSetLocalSessionDescriptionSuccess() {
+	        _logger.debug(' onSetLocalSessionDescriptionSuccess : setLocalDescription complete');
+	    }
+	};
+
+	module.exports = function (initConfigs) {
+	    _util.extend(true, this, _WebRTC, initConfigs || {});
+	};
+
+/***/ },
+
+/***/ 231:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	/**
+	 * P2P
+	 */
+	var _util = __webpack_require__(226);
+	var RouteTo = __webpack_require__(229).RouteTo;
+	var _logger = _util.logger;
+
+	var P2PRouteTo = RouteTo({
+	    success: function success(result) {
+	        _logger.debug("iq to server success", result);
+	    },
+	    fail: function fail(error) {
+	        _logger.debug("iq to server error", error);
+	    }
+	});
+
+	var CommonPattern = {
+	    _pingIntervalId: null,
+	    _p2pConfig: null,
+	    _rtcCfg: null,
+	    _rtcCfg2: null,
+	    _rtKey: null,
+	    _rtFlag: null,
+
+	    webRtc: null,
+	    api: null,
+
+	    callee: null,
+
+	    consult: false,
+
+	    init: function init() {
+	        var self = this;
+
+	        self.api.onTcklC = function () {
+	            self._onTcklC.apply(self, arguments);
+	        };
+	        self.api.onAcptC = function () {
+	            self._onAcptC.apply(self, arguments);
+	        };
+	        self.api.onAnsC = function () {
+	            self._onAnsC.apply(self, arguments);
+	        };
+	        self.api.onTermC = function () {
+	            self._onTermC.apply(self, arguments);
+	        };
+
+	        self.webRtc.onIceCandidate = function () {
+	            self._onIceCandidate.apply(self, arguments);
+	        };
+	        self.webRtc.onIceStateChange = function () {
+	            self._onIceStateChange.apply(self, arguments);
+	        };
+	    },
+
+	    _ping: function _ping() {
+	        var self = this;
+
+	        function ping() {
+	            var rt = new P2PRouteTo({
+	                to: self.callee,
+	                rtKey: self._rtKey
+	            });
+
+	            self.api.ping(rt, self._sessId, function (from, rtcOptions) {
+	                _logger.debug("ping result", rtcOptions);
+	            });
+	        }
+
+	        self._pingIntervalId = window.setInterval(ping, 59000);
+	    },
+
+	    initC: function initC(mediaStreamConstaints) {
+	        var self = this;
+
+	        self.createLocalMedia(mediaStreamConstaints);
+	    },
+
+	    createLocalMedia: function createLocalMedia(mediaStreamConstaints) {
+	        var self = this;
+
+	        self.consult = false;
+
+	        self.webRtc.createMedia(mediaStreamConstaints, function (webrtc, stream) {
+	            webrtc.setLocalVideoSrcObject(stream);
+
+	            self.webRtc.createRtcPeerConnection(self._rtcCfg);
+
+	            self.webRtc.createOffer(function (offer) {
+	                self._onGotWebRtcOffer(offer);
+	            });
+	        });
+	    },
+
+	    _onGotWebRtcOffer: function _onGotWebRtcOffer(offer) {
+	        var self = this;
+
+	        var rt = new P2PRouteTo({
+	            to: self.callee,
+	            rtKey: self._rtKey
+	        });
+
+	        self.api.initC(rt, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
+	            _logger.debug("initc result", rtcOptions);
+	        });
+
+	        self._ping();
+	    },
+
+	    _onAcptC: function _onAcptC(from, options) {
+	        var self = this;
+
+	        _logger.info("_onAcptC : recv pranswer. ");
+
+	        if (options.sdp || options.cands) {
+	            // options.sdp && (options.sdp.type = "pranswer");
+	            options.sdp && self.webRtc.setRemoteDescription(options.sdp);
+	            options.cands && self._onTcklC(from, options);
+
+	            self._onHandShake(from, options);
+
+	            self.onAcceptCall(from, options);
+	        }
+	    },
+
+	    onAcceptCall: function onAcceptCall(from, options) {},
+
+	    _onAnsC: function _onAnsC(from, options) {
+	        // answer
+	        var self = this;
+
+	        _logger.info("_onAnsC : recv answer. ");
+
+	        options.sdp && self.webRtc.setRemoteDescription(options.sdp);
+	    },
+
+	    _onInitC: function _onInitC(from, options, rtkey, tsxId, fromSid) {
+	        var self = this;
+
+	        self.consult = false;
+
+	        self.callee = from;
+	        self._rtcCfg2 = options.rtcCfg;
+	        self._rtKey = rtkey;
+	        self._tsxId = tsxId;
+	        self._fromSid = fromSid;
+
+	        self._rtcId = options.rtcId;
+	        self._sessId = options.sessId;
+
+	        self.webRtc.createRtcPeerConnection(self._rtcCfg2);
+	        options.sdp && self.webRtc.setRemoteDescription(options.sdp);
+	        options.cands && self._onTcklC(from, options);
+
+	        self.webRtc.createPRAnswer(function (prAnswer) {
+	            self._onGotWebRtcPRAnswer(prAnswer);
+	        });
+	    },
+
+	    _onGotWebRtcPRAnswer: function _onGotWebRtcPRAnswer(prAnswer) {
+	        var self = this;
+
+	        var rt = new P2PRouteTo({
+	            tsxId: self._tsxId,
+	            to: self.callee,
+	            rtKey: self._rtKey
+	        });
+
+	        self._onHandShake();
+
+	        self.api.acptC(rt, self._sessId, self._rtcId, prAnswer, null, 1);
+
+	        self._ping();
+
+	        setTimeout(function () {
+	            self.onRinging(self.callee);
+	        }, 2000);
+	    },
+
+	    onRinging: function onRinging(caller) {},
+
+	    accept: function accept() {
+	        var self = this;
+
+	        function createAndSendAnswer() {
+	            _logger.info("createAndSendAnswer : ...... ");
+
+	            self.webRtc.createAnswer(function (desc) {
+	                var rt = new P2PRouteTo({
+	                    tsxId: self._tsxId,
+	                    to: self.callee,
+	                    rtKey: self._rtKey
+	                });
+
+	                self.api.ansC(rt, self._sessId, self._rtcId, desc, null);
+	            });
+	        }
+
+	        self.webRtc.createMedia(function (webrtc, stream) {
+	            webrtc.setLocalVideoSrcObject(stream);
+
+	            createAndSendAnswer();
+	        });
+	    },
+
+	    _onHandShake: function _onHandShake(from, options) {
+	        var self = this;
+
+	        self.consult = true;
+	        _logger.info("hand shake over. may switch cands.");
+
+	        setTimeout(function () {
+	            self._onTcklC(from, options);
+	        }, 100);
+
+	        setTimeout(function () {
+	            self._onIceCandidate();
+	        }, 100);
+	    },
+
+	    _onTcklC: function _onTcklC(from, options) {
+	        // offer
+	        var self = this;
+
+	        // options.sdp && self.webRtc.setRemoteDescription(options.sdp);
+
+	        if (self.consult) {
+	            _logger.info("recv and add cands.");
+
+	            self._recvCands && self._recvCands.length > 0 && self.webRtc.addIceCandidate(self._recvCands);
+	            options && options.cands && self.webRtc.addIceCandidate(options.cands);
+	        } else if (options && options.cands && options.cands.length > 0) {
+	            for (var i = 0; i < options.cands.length; i++) {
+	                (self._recvCands || (self._recvCands = [])).push(options.cands[i]);
+	            }
+	            _logger.debug("[_onTcklC] temporary memory[recv] ice candidate. util consult = true");
+	        }
+	    },
+
+	    _onIceStateChange: function _onIceStateChange(event) {
+	        var self = this;
+
+	        event && _logger.debug(self.webRtc.iceConnectionState() + " |||| ice state is " + event.target.iceConnectionState);
+	    },
+
+	    _onIceCandidate: function _onIceCandidate(event) {
+	        var self = this;
+
+	        if (self.consult) {
+	            var sendIceCandidate = function sendIceCandidate(candidate) {
+	                _logger.debug("send ice candidate...");
+
+	                var rt = new P2PRouteTo({
+	                    to: self.callee,
+	                    rtKey: self._rtKey
+	                });
+
+	                if (candidate) {
+	                    self.api.tcklC(rt, self._sessId, self._rtcId, null, candidate);
+	                }
+	            };
+
+	            if (self._cands && self._cands.length > 0) {
+
+	                sendIceCandidate(self._cands);
+
+	                self._cands = [];
+	            }
+	            event && event.candidate && sendIceCandidate(event.candidate);
+	        } else {
+	            event && event.candidate && (self._cands || (self._cands = [])).push(event.candidate);
+	            _logger.debug("[_onIceCandidate] temporary memory[send] ice candidate. util consult = true");
+	        }
+	    },
+
+	    termCall: function termCall() {
+	        var self = this;
+
+	        self._pingIntervalId && window.clearInterval(self._pingIntervalId);
+
+	        var rt = new P2PRouteTo({
+	            to: self.callee,
+	            rtKey: self._rtKey
+	        });
+
+	        self.hangup || self.api.termC(rt, self._sessId, self._rtcId);
+
+	        self.webRtc.close();
+
+	        self.hangup = true;
+
+	        self.onTermCall();
+	    },
+
+	    _onTermC: function _onTermC() {
+	        var self = this;
+
+	        self.hangup = true;
+	        self.termCall();
+	    },
+
+	    onTermCall: function onTermCall() {}
+	};
+
+	module.exports = function (initConfigs) {
+	    var self = this;
+
+	    _util.extend(true, this, CommonPattern, initConfigs || {});
+
+	    self.init();
+	};
+
+	/**
+	 * TODO: Conference
+	 */
+
+/***/ }
+
+/******/ });

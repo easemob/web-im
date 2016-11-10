@@ -1,2 +1,4029 @@
-!function(e){function t(n){if(o[n])return o[n].exports;var i=o[n]={exports:{},id:n,loaded:!1};return e[n].call(i.exports,i,i.exports,t),i.loaded=!0,i.exports}var o={};return t.m=e,t.c=o,t.p="./",t(0)}({0:function(module,exports,__webpack_require__){"use strict";!function(window,undefined){function _parsePrivacy(e){var t=[],o=e.getElementsByTagName("item");if(o)for(var n=0;n<o.length;n++){var i=o[n],r=i.getAttribute("value"),s=i.getAttribute("order"),a=i.getAttribute("type");if(r){var c=_parseNameFromJidFn(r);t[c]={type:a,order:s,jid:r,name:c}}}return t}function _parseGroupBlacklist(e){var t={},o=e.getElementsByTagName("item");if(o)for(var n=0;n<o.length;n++){var i=o[n],r=i.getAttribute("jid"),s=i.getAttribute("affiliation"),a=i.getAttribute("nick");if(r){var c=_parseNameFromJidFn(r);t[c]={jid:r,affiliation:s,nick:a,name:c}}}return t}function _setText(e,t){"textContent"in e?e.textContent=t:"text"in e&&(e.text=t)}var _version="1.1.3",_code=__webpack_require__(208).code,_utils=__webpack_require__(207).utils,_msg=__webpack_require__(214),_message=_msg._msg,_msgHash={},Queue=__webpack_require__(215).Queue;window.URL=window.URL||window.webkitURL||window.mozURL||window.msURL,window.XDomainRequest&&(XDomainRequest.prototype.oldsend=XDomainRequest.prototype.send,XDomainRequest.prototype.send=function(){XDomainRequest.prototype.oldsend.apply(this,arguments),this.readyState=2}),Strophe.Request.prototype._newXHR=function(){var e=_utils.xmlrequest(!0);return e.overrideMimeType&&e.overrideMimeType("text/xml"),e.onreadystatechange=this.func.bind(null,this),e},Strophe.Websocket.prototype._closeSocket=function(){if(this.socket){var e=this;setTimeout(function(){try{e.socket.close()}catch(t){}},0)}else this.socket=null},Strophe.Websocket.prototype._onMessage=function(e){var t,o;if(0===e.data.indexOf("<close ")){t=(new DOMParser).parseFromString(e.data,"text/xml").documentElement;var n=t.getAttribute("see-other-uri");return void(n?(this._conn._changeConnectStatus(Strophe.Status.REDIRECT,"Received see-other-uri, resetting connection"),this._conn.reset(),this._conn.service=n,this._connect()):this._conn._doDisconnect("receive <close> from server"))}if(0===e.data.search("<open ")){if(t=(new DOMParser).parseFromString(e.data,"text/xml").documentElement,!this._handleStreamStart(t))return}else o=this._streamWrap(e.data),t=(new DOMParser).parseFromString(o,"text/xml").documentElement;if(!this._check_streamerror(t,Strophe.Status.ERROR))return this._conn.disconnecting&&"presence"===t.firstChild.nodeName&&"unavailable"===t.firstChild.getAttribute("type")?(this._conn.xmlInput(t),void this._conn.rawInput(Strophe.serialize(t))):void this._conn._dataRecv(t,e.data)};var _listenNetwork=function(e,t){window.addEventListener?(window.addEventListener("online",e),window.addEventListener("offline",t)):window.attachEvent&&(document.body?(document.body.attachEvent("ononline",e),document.body.attachEvent("onoffline",t)):window.attachEvent("load",function(){document.body.attachEvent("ononline",e),document.body.attachEvent("onoffline",t)}))},_parseRoom=function(e){var t=[],o=e.getElementsByTagName("item");if(o)for(var n=0;n<o.length;n++){var i=o[n],r=i.getAttribute("jid"),s=r.split("@")[0],a={jid:r,name:i.getAttribute("name"),roomId:s.split("_")[1]};t.push(a)}return t},_parseRoomOccupants=function(e){var t=[],o=e.getElementsByTagName("item");if(o)for(var n=0;n<o.length;n++){var i=o[n],r={jid:i.getAttribute("jid"),name:i.getAttribute("name")};t.push(r)}return t},_parseResponseMessage=function _parseResponseMessage(msginfo){var parseMsgData={errorMsg:!0,data:[]},msgBodies=msginfo.getElementsByTagName("body");if(msgBodies){for(var i=0;i<msgBodies.length;i++){var msgBody=msgBodies[i],childNodes=msgBody.childNodes;if(childNodes&&childNodes.length>0){var childNode=msgBody.childNodes[0];if(childNode.nodeType==Strophe.ElementType.TEXT){var jsondata=childNode.wholeText||childNode.nodeValue;jsondata=jsondata.replace("\n","<br>");try{var data=eval("("+jsondata+")");parseMsgData.errorMsg=!1,parseMsgData.data=[data]}catch(e){}}}}var delayTags=msginfo.getElementsByTagName("delay");if(delayTags&&delayTags.length>0){var delayTag=delayTags[0],delayMsgTime=delayTag.getAttribute("stamp");delayMsgTime&&(parseMsgData.delayTimeStamp=delayMsgTime)}}else{var childrens=msginfo.childNodes;if(childrens&&childrens.length>0){var child=msginfo.childNodes[0];if(child.nodeType==Strophe.ElementType.TEXT)try{var data=eval("("+child.nodeValue+")");parseMsgData.errorMsg=!1,parseMsgData.data=[data]}catch(e){}}}return parseMsgData},_parseNameFromJidFn=function(e,t){t=t||"";var o=e,n=o.indexOf("_");n!==-1&&(o=o.substring(n+1));var i=o.indexOf("@"+t);return i!==-1&&(o=o.substring(0,i)),o},_parseFriend=function(e,t,o){var n=[],i=e.getElementsByTagName("item");if(i)for(var r=0;r<i.length;r++){var s=i[r],a=s.getAttribute("jid");if(a){var c=s.getAttribute("subscription"),p={subscription:c,jid:a},u=s.getAttribute("ask");u&&(p.ask=u);var l=s.getAttribute("name");if(l)p.name=l;else{var d=_parseNameFromJidFn(a);p.name=d}var m=[];Strophe.forEachChild(s,"group",function(e){m.push(Strophe.getText(e))}),p.groups=m,n.push(p),t&&"from"==c&&t.subscribe({toJid:a}),t&&"to"==c&&t.subscribed({toJid:a})}}return n},_login=function(e,t){var o=e.access_token||"";if(""==o){_utils.stringify(e);return void t.onError({type:_code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,data:e})}t.context.accessToken=e.access_token,t.context.accessTokenExpires=e.expires_in;var n=null;n=t.isOpening()&&t.context.stropheConn?t.context.stropheConn:t.isOpened()&&t.context.stropheConn?new Strophe.Connection(t.url,{inactivity:t.inactivity,maxRetries:t.maxRetries,pollingTime:t.pollingTime}):new Strophe.Connection(t.url,{inactivity:t.inactivity,maxRetries:t.maxRetries,pollingTime:t.pollingTime});var i=function(e,o){_loginCallback(e,o,t)};t.context.stropheConn=n,t.route?n.connect(t.context.jid,"$t$"+o,i,t.wait,t.hold,t.route):n.connect(t.context.jid,"$t$"+o,i,t.wait,t.hold)},_parseMessageType=function(e){var t="normal",o=e.getElementsByTagName("received");if(o&&o.length>0&&"urn:xmpp:receipts"===o[0].namespaceURI)t="received";else{var n=e.getElementsByTagName("invite");n&&n.length>0&&(t="invite")}return t},_handleMessageQueue=function(e){for(var t in _msgHash)_msgHash.hasOwnProperty(t)&&_msgHash[t].send(e)},_loginCallback=function(e,t,o){var n,i;if("conflict"===t&&(n=!0),e==Strophe.Status.CONNFAIL)i={type:_code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,msg:t,reconnect:!0},n&&(i.conflict=!0),o.onError(i);else if(e==Strophe.Status.ATTACHED||e==Strophe.Status.CONNECTED){o.intervalId=setInterval(function(){o.handelSendQueue()},200);var r=function(e){var t=_parseMessageType(e);return"received"===t?(o.handleReceivedMessage(e),!0):"invite"===t?(o.handleInviteMessage(e),!0):(o.handleMessage(e),!0)},s=function(e){return o.handlePresence(e),!0},a=function(e){return o.handlePing(e),!0},c=function(e){return o.handleIqRoster(e),!0},p=function(e){return o.handleIqPrivacy(e),!0},u=function(e){return o.handleIq(e),!0};o.addHandler(r,null,"message",null,null,null),o.addHandler(s,null,"presence",null,null,null),o.addHandler(a,"urn:xmpp:ping","iq","get",null,null),o.addHandler(c,"jabber:iq:roster","iq","set",null,null),o.addHandler(p,"jabber:iq:privacy","iq","set",null,null),o.addHandler(u,null,"iq",null,null,null),o.context.status=_code.STATUS_OPENED;var l=[_code.WEBIM_MESSAGE_REC_TEXT,_code.WEBIM_MESSAGE_REC_EMOJI];_utils.isCanDownLoadFile&&(l.push(_code.WEBIM_MESSAGE_REC_PHOTO),l.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE));var d=[_code.WEBIM_MESSAGE_SED_TEXT];_utils.isCanUploadFile&&(d.push(_code.WEBIM_MESSAGE_REC_PHOTO),d.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE)),o.notifyVersion(),o.retry&&_handleMessageQueue(o),o.heartBeat(),o.isAutoLogin&&o.setPresence(),o.onOpened({canReceive:l,canSend:d,accessToken:o.context.accessToken})}else if(e==Strophe.Status.DISCONNECTING)o.isOpened()&&(o.stopHeartBeat(),o.context.status=_code.STATUS_CLOSING,i={type:_code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,msg:t,reconnect:!0},n&&(i.conflict=!0),o.onError(i));else if(e==Strophe.Status.DISCONNECTED){if(o.isOpened()){if(Demo.conn.autoReconnectNumTotal<Demo.conn.autoReconnectNumMax)return void Demo.conn.reconnect();i={type:_code.WEBIM_CONNCTION_DISCONNECTED},o.onError(i)}o.context.status=_code.STATUS_CLOSED,o.clear(),o.onClosed()}else e==Strophe.Status.AUTHFAIL?(i={type:_code.WEBIM_CONNCTION_AUTH_ERROR},n&&(i.conflict=!0),o.onError(i),o.clear()):e==Strophe.Status.ERROR&&(o.context.status=_code.STATUS_ERROR,i={type:_code.WEBIM_CONNCTION_SERVER_ERROR},n&&(i.conflict=!0),o.onError(i));o.context.status_now=e},_getJid=function(e,t){var o=e.toJid||"";if(""===o){var n=t.context.appKey||"",i=n+"_"+e.to+"@"+t.domain;e.resource&&(i=i+"/"+e.resource),o=i}return o},_getJidByName=function(e,t){var o={to:e};return _getJid(o,t)},_validCheck=function(e,t){if(e=e||{},""==e.user)return t.onError({type:_code.WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR}),!1;var o=e.user+""||"",n=e.appKey||"",i=n.split("#");if(2!==i.length)return t.onError({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR}),!1;var r=i[0],s=i[1];if(!r)return t.onError({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR}),!1;if(!s)return t.onError({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR}),!1;var a=n+"_"+o.toLowerCase()+"@"+t.domain,c=e.resource||"webim";return t.isMultiLoginSessions&&(c+=o+(new Date).getTime()+Math.floor(1e6*Math.random().toFixed(6))),t.context.jid=a+"/"+c,t.context.userId=o,t.context.appKey=n,t.context.appName=s,t.context.orgName=r,!0},_getXmppUrl=function(e,t){if(/^(ws|http)s?:\/\/?/.test(e))return e;var o={prefix:"http",base:"://"+e,suffix:"/http-bind/"};return t&&_utils.isSupportWss?(o.prefix="wss",o.suffix="/ws/"):t?o.prefix="https":window.WebSocket&&(o.prefix="ws",o.suffix="/ws/"),o.prefix+o.base+o.suffix},connection=function e(t){if(!this instanceof e)return new e(t);var t=t||{};this.isMultiLoginSessions=t.isMultiLoginSessions||!1,this.wait=t.wait||30,this.retry=t.retry||!1,this.https=t.https||"https:"===location.protocol,this.url=_getXmppUrl(t.url,this.https),this.hold=t.hold||1,this.route=t.route||null,this.domain=t.domain||"easemob.com",this.inactivity=t.inactivity||30,this.heartBeatWait=t.heartBeatWait||4500,this.maxRetries=t.maxRetries||5,this.isAutoLogin=t.isAutoLogin!==!1,this.pollingTime=t.pollingTime||800,this.stropheConn=!1,this.autoReconnectNumMax=t.autoReconnectNumMax||0,this.autoReconnectNumTotal=0,this.autoReconnectInterval=t.autoReconnectInterval||0,this.context={status:_code.STATUS_INIT},this.sendQueue=new Queue,this.intervalId=null};connection.prototype.handelSendQueue=function(){var e=this.sendQueue.pop();null!==e&&this.sendReceiptsMessage(e)},connection.prototype.listen=function(e){e.url&&(this.url=_getXmppUrl(e.url,this.https)),this.onOpened=e.onOpened||_utils.emptyfn,this.onClosed=e.onClosed||_utils.emptyfn,this.onTextMessage=e.onTextMessage||_utils.emptyfn,this.onEmojiMessage=e.onEmojiMessage||_utils.emptyfn,this.onPictureMessage=e.onPictureMessage||_utils.emptyfn,this.onAudioMessage=e.onAudioMessage||_utils.emptyfn,this.onVideoMessage=e.onVideoMessage||_utils.emptyfn,this.onFileMessage=e.onFileMessage||_utils.emptyfn,this.onLocationMessage=e.onLocationMessage||_utils.emptyfn,this.onCmdMessage=e.onCmdMessage||_utils.emptyfn,this.onPresence=e.onPresence||_utils.emptyfn,this.onRoster=e.onRoster||_utils.emptyfn,this.onError=e.onError||_utils.emptyfn,this.onReceivedMessage=e.onReceivedMessage||_utils.emptyfn,this.onInviteMessage=e.onInviteMessage||_utils.emptyfn,this.onOffline=e.onOffline||_utils.emptyfn,this.onOnline=e.onOnline||_utils.emptyfn,this.onConfirmPop=e.onConfirmPop||_utils.emptyfn,this.onUpdateMyGroupList=e.onUpdateMyGroupList||_utils.emptyfn,this.onUpdateMyRoster=e.onUpdateMyRoster||_utils.emptyfn,this.onBlacklistUpdate=e.onBlacklistUpdate||_utils.emptyfn,_listenNetwork(this.onOnline,this.onOffline)},connection.prototype.heartBeat=function(){var e=this,t=!/^ws|wss/.test(e.url)||/mobile/.test(navigator.userAgent);if(!this.heartBeatID&&t){var o={toJid:this.domain,type:"normal"};this.heartBeatID=setInterval(function(){e.ping(o)},this.heartBeatWait)}},connection.prototype.stopHeartBeat=function(){"number"==typeof this.heartBeatID&&(this.heartBeatID=clearInterval(this.heartBeatID))},connection.prototype.sendReceiptsMessage=function(e){var t=$msg({from:this.context.jid||"",to:this.domain,id:e.id||""}).c("received",{xmlns:"urn:xmpp:receipts",id:e.id||""});this.sendCommand(t.tree())},connection.prototype.cacheReceiptsMessage=function(e){this.sendQueue.push(e)},connection.prototype.open=function(e){var t=_validCheck(e,this);if(t){var o=this;if(!o.isOpening()&&!o.isOpened())if(e.accessToken)e.access_token=e.accessToken,_login(e,o);else{var n=e.apiUrl,i=this.context.userId,r=e.pwd||"",s=this.context.appName,a=this.context.orgName,c=function(e,t){o.context.status=_code.STATUS_DOLOGIN_IM,o.context.restTokenData=e,_login(e,o)},p=function(e,t,n){o.clear(),e.error&&e.error_description?o.onError({type:_code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,data:e,xhr:t}):o.onError({type:_code.WEBIM_CONNCTION_OPEN_ERROR,data:e,xhr:t})};this.context.status=_code.STATUS_DOLOGIN_USERGRID;var u={grant_type:"password",username:i,password:r,timestamp:+new Date},l=_utils.stringify(u),e={url:n+"/"+a+"/"+s+"/token",dataType:"json",data:l,success:c||_utils.emptyfn,error:p||_utils.emptyfn};_utils.ajax(e)}}},connection.prototype.attach=function(e){var t=_validCheck(e,this);if(t){e=e||{};var o=e.accessToken||"";if(""==o)return void this.onError({type:_code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR});var n=e.sid||"";if(""===n)return void this.onError({type:_code.WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR});var i=e.rid||"";if(""===i)return void this.onError({type:_code.WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR});var r=new Strophe.Connection(this.url,{inactivity:this.inactivity,maxRetries:this.maxRetries,pollingTime:this.pollingTime,heartBeatWait:this.heartBeatWait});this.context.accessToken=o,this.context.stropheConn=r,this.context.status=_code.STATUS_DOLOGIN_IM;var s=this,a=function(e,t){_loginCallback(e,t,s)},c=this.context.jid,p=this.wait,u=this.hold,l=this.wind||5;r.attach(c,n,i,a,p,u,l)}},connection.prototype.close=function(e){this.stopHeartBeat();var t=this.context.status;t!=_code.STATUS_INIT&&(this.isClosed()||this.isClosing()||(this.context.status=_code.STATUS_CLOSING,this.context.stropheConn.disconnect(e)))},connection.prototype.addHandler=function(e,t,o,n,i,r,s){this.context.stropheConn.addHandler(e,t,o,n,i,r,s)},connection.prototype.notifyVersion=function(e,t){var o=(_getJid({},this),$iq({from:this.context.jid||"",to:this.domain,type:"result"}).c("query",{xmlns:"jabber:iq:version"}).c("name").t("easemob").up().c("version").t(_version).up().c("os").t("webim")),e=e||_utils.emptyfn,n=t||this.onError,i=function(e){n({type:_code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR,data:e})};this.context.stropheConn.sendIQ(o.tree(),e,i)},connection.prototype.handlePresence=function(e){if(!this.isClosed()){var t=e.getAttribute("from")||"",o=e.getAttribute("to")||"",n=e.getAttribute("type")||"",i=e.getAttribute("presence_type")||"",r=_parseNameFromJidFn(t),s=_parseNameFromJidFn(o),a={from:r,to:s,fromJid:t,toJid:o,type:n,chatroom:!!e.getElementsByTagName("roomtype").length},c=e.getElementsByTagName("show");if(c&&c.length>0){var p=c[0];a.show=Strophe.getText(p)}var u=e.getElementsByTagName("status");if(u&&u.length>0){var l=u[0];a.status=Strophe.getText(l),a.code=l.getAttribute("code")}var d=e.getElementsByTagName("priority");if(d&&d.length>0){var m=d[0];a.priority=Strophe.getText(m)}var _=e.getElementsByTagName("error");if(_&&_.length>0){var _=_[0];a.error={code:_.getAttribute("code")}}var f=e.getElementsByTagName("destroy");if(f&&f.length>0){var f=f[0];a.destroy=!0;var h=f.getElementsByTagName("reason");h&&h.length>0&&(a.reason=Strophe.getText(h[0]))}var y=e.getElementsByTagName("item");if(y&&y.length>0){var g=y[0],E=g.getAttribute("role"),O=g.getAttribute("jid");if("none"==E&&O){var I=_parseNameFromJidFn(O),v=g.getElementsByTagName("actor")[0],N=v.getAttribute("nick");a.actor=N,a.kicked=I}"moderator"==E&&"201"==a.code&&(a.type="joinPublicGroupSuccess")}var R=e.getElementsByTagName("apply");if(R&&R.length>0){R=R[0];var T=R.getAttribute("toNick"),C=R.getAttribute("to"),b=R.getAttribute("from"),x=_parseNameFromJidFn(C);_parseNameFromJidFn(b);a.toNick=T,a.groupName=x,a.type="joinGroupNotifications";var h=R.getElementsByTagName("reason");h&&h.length>0&&(a.reason=Strophe.getText(h[0]))}if(a.chatroom){a.presence_type=i,a.original_type=a.type;var M=t.slice(t.lastIndexOf("/")+1);M===this.context.userId&&(""!==a.type||a.code?"unavailable"!==i&&"unavailable"!==a.type||(a.status?110==a.code?a.type="leaveChatRoom":a.error&&406==a.error.code&&(a.type="reachChatRoomCapacity"):a.type="leaveChatRoom"):a.type="joinChatRoomSuccess")}else a.presence_type=i,a.original_type=n,a.type||(""!=n||a.status||a.error?"unavailable"!==i&&"unavailable"!==n||(a.destroy?a.type="deleteGroupChat":307!=a.code&&321!=a.code||(a.type="leaveGroup")):a.type="joinPublicGroupSuccess");this.onPresence(a,e)}},connection.prototype.handlePing=function(e){if(!this.isClosed()){var t=e.getAttribute("id"),o=e.getAttribute("from"),n=e.getAttribute("to"),i=$iq({from:n,to:o,id:t,type:"result"});this.sendCommand(i.tree())}},connection.prototype.handleIq=function(e){return!0},connection.prototype.handleIqPrivacy=function(e){var t=e.getElementsByTagName("list");0!=t.length&&this.getBlacklist()},connection.prototype.handleIqRoster=function(e){var t=e.getAttribute("id"),o=e.getAttribute("from")||"",n=(_parseNameFromJidFn(o),this.context.jid),i=(this.context.userId,$iq({type:"result",id:t,from:n}));this.sendCommand(i.tree());var r=e.getElementsByTagName("query");if(r&&r.length>0){var s=r[0],a=_parseFriend(s,this,o);this.onRoster(a)}return!0},connection.prototype.handleMessage=function(e){if(!this.isClosed()){var t=e.getAttribute("id")||"";this.cacheReceiptsMessage({id:t});var o=_parseResponseMessage(e);if(o.errorMsg)return void this.handlePresence(e);var n=e.getElementsByTagName("error"),i="",r="",s=!1;if(n.length>0){s=!0,i=n[0].getAttribute("code");var a=n[0].getElementsByTagName("text");r=a[0].textContent||a[0].text,log("handle error",i,r)}var c=o.data;for(var p in c)if(c.hasOwnProperty(p)){var u=c[p];if(u.from&&u.to){var l=(u.from+"").toLowerCase(),d=(u.to+"").toLowerCase(),m=u.ext||{},_="",f=e.getElementsByTagName("roomtype");_=f.length?f[0].getAttribute("type")||"chat":e.getAttribute("type")||"chat";var h=u.bodies;if(h&&0!=h.length){var y=u.bodies[0],g=y.type;try{switch(g){case"txt":var E=y.msg,O=_utils.parseTextMessage(E,WebIM.Emoji);if(O.isemoji){var u={id:t,type:_,from:l,to:d,delay:o.delayTimeStamp,data:O.body,ext:m};!u.delay&&delete u.delay,u.error=s,u.errorText=r,u.errorCode=i,this.onEmojiMessage(u)}else{var u={id:t,type:_,from:l,to:d,delay:o.delayTimeStamp,data:E,ext:m};!u.delay&&delete u.delay,u.error=s,u.errorText=r,u.errorCode=i,this.onTextMessage(u)}break;case"img":var I=0,v=0;y.size&&(I=y.size.width,v=y.size.height);var u={id:t,type:_,from:l,to:d,url:y.url,secret:y.secret,filename:y.filename,thumb:y.thumb,thumb_secret:y.thumb_secret,file_length:y.file_length||"",width:I,height:v,filetype:y.filetype||"",accessToken:this.context.accessToken||"",ext:m,delay:o.delayTimeStamp};!u.delay&&delete u.delay,u.error=s,u.errorText=r,u.errorCode=i,this.onPictureMessage(u);break;case"audio":var u={id:t,type:_,from:l,to:d,url:y.url,secret:y.secret,filename:y.filename,length:y.length||"",file_length:y.file_length||"",filetype:y.filetype||"",accessToken:this.context.accessToken||"",ext:m,delay:o.delayTimeStamp};!u.delay&&delete u.delay,u.error=s,u.errorText=r,u.errorCode=i,this.onAudioMessage(u);break;case"file":var u={id:t,type:_,from:l,to:d,url:y.url,secret:y.secret,filename:y.filename,file_length:y.file_length,accessToken:this.context.accessToken||"",ext:m,delay:o.delayTimeStamp};!u.delay&&delete u.delay,u.error=s,u.errorText=r,u.errorCode=i,this.onFileMessage(u);break;case"loc":var u={id:t,type:_,from:l,to:d,addr:y.addr,lat:y.lat,lng:y.lng,ext:m,delay:o.delayTimeStamp};!u.delay&&delete u.delay,u.error=s,u.errorText=r,u.errorCode=i,this.onLocationMessage(u);break;case"video":var u={id:t,type:_,from:l,to:d,url:y.url,secret:y.secret,filename:y.filename,file_length:y.file_length,accessToken:this.context.accessToken||"",ext:m,delay:o.delayTimeStamp};!u.delay&&delete u.delay,u.error=s,u.errorText=r,u.errorCode=i,this.onVideoMessage(u);break;case"cmd":var u={id:t,from:l,to:d,action:y.action,ext:m,delay:o.delayTimeStamp};!u.delay&&delete u.delay,u.error=s,u.errorText=r,u.errorCode=i,this.onCmdMessage(u)}}catch(N){this.onError({type:_code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:N})}}}}}},connection.prototype.handleReceivedMessage=function(e){try{this.onReceivedMessage(e)}catch(t){this.onError({type:_code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:t})}var o,n,i=e.getElementsByTagName("received");if(i.length>0&&(o=i[0].childNodes&&i[0].childNodes.length>0?i[0].childNodes[0].nodeValue:i[0].innerHTML||i[0].innerText,n=i[0].getAttribute("mid")),_msgHash[o]){try{_msgHash[o].msg.success instanceof Function&&_msgHash[o].msg.success(o,n)}catch(t){this.onError({type:_code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:t})}delete _msgHash[o]}},connection.prototype.handleInviteMessage=function(e){var t=null,o=e.getElementsByTagName("invite"),n=e.getElementsByTagName("reason")[0],i=n.textContent,r=e.getAttribute("id")||"";if(this.sendReceiptsMessage({id:r}),o&&o.length>0){var s=o[0].getAttribute("from");t=_parseNameFromJidFn(s)}var a=e.getElementsByTagName("x"),c=null;if(a&&a.length>0)for(var p=0;p<a.length;p++)if("jabber:x:conference"===a[p].namespaceURI){var u=a[p].getAttribute("jid");c=_parseNameFromJidFn(u)}this.onInviteMessage({type:"invite",from:t,roomid:c,reason:i})},connection.prototype.sendCommand=function(e,t){this.isOpened()?this.context.stropheConn.send(e):this.onError({type:_code.WEBIM_CONNCTION_DISCONNECTED,reconnect:!0})},connection.prototype.getUniqueId=function(e){var t=new Date,o=new Date(2010,1,1),n=t.getTime()-o.getTime(),i=parseInt(n).toString(16);return"string"==typeof e||"number"==typeof e?e+"_"+i:"WEBIM_"+i},connection.prototype.send=function(e){if(WebIM.config.isWindowSDK)WebIM.doQuery('{"type":"sendMessage","to":"'+e.to+'","message_type":"'+e.type+'","msg":"'+encodeURI(e.msg)+'","chatType":"'+e.chatType+'"}',function(e){},function(e,t){Demo.api.NotifyError("send:"+e+" - "+t)});else if("[object Object]"===Object.prototype.toString.call(e)){var t=this.context.appKey||"",o=t+"_"+e.to+"@"+this.domain;e.group&&(o=t+"_"+e.to+"@conference."+this.domain),e.resource&&(o=o+"/"+e.resource),e.toJid=o,e.id=e.id||this.getUniqueId(),_msgHash[e.id]=new _message(e),_msgHash[e.id].send(this)}else"string"==typeof e&&_msgHash[e]&&_msgHash[e].send(this)},connection.prototype.addRoster=function(e){var t=_getJid(e,this),o=e.name||"",n=e.groups||"",i=$iq({type:"set"});if(i.c("query",{xmlns:"jabber:iq:roster"}),i.c("item",{jid:t,name:o}),n)for(var r=0;r<n.length;r++)i.c("group").t(n[r]).up();var s=e.success||_utils.emptyfn,a=e.error||_utils.emptyfn;this.context.stropheConn.sendIQ(i.tree(),s,a)},connection.prototype.removeRoster=function(e){var t=_getJid(e,this),o=$iq({type:"set"}).c("query",{xmlns:"jabber:iq:roster"}).c("item",{jid:t,subscription:"remove"}),n=e.success||_utils.emptyfn,i=e.error||_utils.emptyfn;this.context.stropheConn.sendIQ(o,n,i)},connection.prototype.getRoster=function(e){var t=$iq({type:"get"}).c("query",{xmlns:"jabber:iq:roster"}),e=e||{},o=e.success||this.onRoster,n=function(e){var t=[],n=e.getElementsByTagName("query");if(n&&n.length>0){var i=n[0];t=_parseFriend(i)}o(t,e)},i=e.error||this.onError,r=function(e){i({type:_code.WEBIM_CONNCTION_GETROSTER_ERROR,data:e})};this.isOpened()?this.context.stropheConn.sendIQ(t.tree(),n,r):i({type:_code.WEBIM_CONNCTION_DISCONNECTED})},connection.prototype.subscribe=function(e){var t=_getJid(e,this),o=$pres({to:t,type:"subscribe"});e.message&&o.c("status").t(e.message).up(),e.nick&&o.c("nick",{xmlns:"http://jabber.org/protocol/nick"}).t(e.nick),this.sendCommand(o.tree())},connection.prototype.subscribed=function(e){var t=_getJid(e,this),o=$pres({to:t,type:"subscribed"});e.message&&o.c("status").t(e.message).up(),this.sendCommand(o.tree())},connection.prototype.unsubscribe=function(e){var t=_getJid(e,this),o=$pres({to:t,type:"unsubscribe"});e.message&&o.c("status").t(e.message),this.sendCommand(o.tree())},connection.prototype.unsubscribed=function(e){var t=_getJid(e,this),o=$pres({to:t,type:"unsubscribed"});e.message&&o.c("status").t(e.message).up(),this.sendCommand(o.tree())},connection.prototype.createRoom=function(e){var t,o=e.success||_utils.emptyfn,n=e.error||_utils.emptyfn;return t=$iq({to:e.roomName,type:"set"}).c("query",{xmlns:Strophe.NS.MUC_OWNER}).c("x",{xmlns:"jabber:x:data",type:"submit"}),this.context.stropheConn.sendIQ(t.tree(),o,n)},connection.prototype.joinPublicGroup=function(e){var t=this.context.appKey+"_"+e.roomId+"@conference."+this.domain,o=t+"/"+this.context.userId,n=e.success||_utils.emptyfn,i=e.error||_utils.emptyfn,r=function(e){i({type:_code.WEBIM_CONNCTION_JOINROOM_ERROR,data:e})},s=$pres({from:this.context.jid,to:o}).c("x",{xmlns:Strophe.NS.MUC});this.context.stropheConn.sendIQ(s.tree(),n,r)},connection.prototype.listRooms=function(e){var t=$iq({to:e.server||"conference."+this.domain,from:this.context.jid,type:"get"}).c("query",{xmlns:Strophe.NS.DISCO_ITEMS}),o=e.success||_utils.emptyfn,n=e.error||this.onError,i=function(e){var t=[];t=_parseRoom(e);try{o(t)}catch(i){n({type:_code.WEBIM_CONNCTION_GETROOM_ERROR,data:i})}},r=e.error||_utils.emptyfn,s=function(e){r({type:_code.WEBIM_CONNCTION_GETROOM_ERROR,data:e})};this.context.stropheConn.sendIQ(t.tree(),i,s)},connection.prototype.queryRoomMember=function(e){var t=(this.domain,[]),o=$iq({to:this.context.appKey+"_"+e.roomId+"@conference."+this.domain,type:"get"}).c("query",{xmlns:Strophe.NS.MUC+"#admin"}).c("item",{affiliation:"member"}),n=e.success||_utils.emptyfn,i=function(e){var o=e.getElementsByTagName("item");if(o)for(var i=0;i<o.length;i++){var r=o[i],s={jid:r.getAttribute("jid"),affiliation:"member"};t.push(s)}n(t)},r=e.error||_utils.emptyfn,s=function(e){r({type:_code.WEBIM_CONNCTION_GETROOMMEMBER_ERROR,data:e})};this.context.stropheConn.sendIQ(o.tree(),i,s)},connection.prototype.queryRoomInfo=function(e){var t=this.domain,o=$iq({to:this.context.appKey+"_"+e.roomId+"@conference."+t,type:"get"}).c("query",{xmlns:Strophe.NS.DISCO_INFO}),n=e.success||_utils.emptyfn,i=[],r=function(e){var o="",r=e.getElementsByTagName("feature");switch(r&&(o=r[1].getAttribute("var")+"|"+r[3].getAttribute("var")+"|"+r[4].getAttribute("var")),o){case"muc_public|muc_membersonly|muc_notallowinvites":o="PUBLIC_JOIN_APPROVAL";break;case"muc_public|muc_open|muc_notallowinvites":o="PUBLIC_JOIN_OPEN";break;case"muc_hidden|muc_membersonly|muc_allowinvites":o="PRIVATE_MEMBER_INVITE";break;case"muc_hidden|muc_membersonly|muc_notallowinvites":o="PRIVATE_OWNER_INVITE"}var s=e.getElementsByTagName("field"),a={};if(s){for(var c=0;c<s.length;c++){var p=s[c],u=p.getAttribute("var"),l=u.split("_")[1];switch(u){case"muc#roominfo_occupants":case"muc#roominfo_maxusers":case"muc#roominfo_affiliations":case"muc#roominfo_description":a[l]=p.textContent||p.text||"";break;case"muc#roominfo_owner":var d={jid:(p.textContent||p.text)+"@"+t,affiliation:"owner"};i.push(d),a[l]=p.textContent||p.text}}a.name=e.getElementsByTagName("identity")[0].getAttribute("name")}log(o,i,a),n(o,i,a)},s=e.error||_utils.emptyfn,a=function(e){s({type:_code.WEBIM_CONNCTION_GETROOMINFO_ERROR,data:e})};this.context.stropheConn.sendIQ(o.tree(),r,a)},connection.prototype.queryRoomOccupants=function(e){var t=e.success||_utils.emptyfn,o=function(e){var o=[];o=_parseRoomOccupants(e),t(o)},n=e.error||_utils.emptyfn,i=function(e){n({type:_code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR,data:e})},r={xmlns:Strophe.NS.DISCO_ITEMS},s=$iq({from:this.context.jid,to:this.context.appKey+"_"+e.roomId+"@conference."+this.domain,type:"get"}).c("query",r);this.context.stropheConn.sendIQ(s.tree(),o,i)},connection.prototype.setUserSig=function(e){var t=$pres({xmlns:"jabber:client"});e=e||"",t.c("status").t(e),this.sendCommand(t.tree())},connection.prototype.setPresence=function(e,t){var o=$pres({xmlns:"jabber:client"});e&&(t?(o.c("show").t(e),o.up().c("status").t(t)):o.c("show").t(e)),this.sendCommand(o.tree())},connection.prototype.getPresence=function(){var e=$pres({xmlns:"jabber:client"});this.sendCommand(e.tree())},connection.prototype.ping=function(e){var e=e||{},t=_getJid(e,this),o=$iq({from:this.context.jid||"",to:t,type:"get"}).c("ping",{xmlns:"urn:xmpp:ping"}),n=e.success||_utils.emptyfn,i=e.error||this.onError,r=function(e){i({type:_code.WEBIM_CONNCTION_PING_ERROR,data:e})};this.isOpened()?this.context.stropheConn.sendIQ(o.tree(),n,r):i({type:_code.WEBIM_CONNCTION_DISCONNECTED})},connection.prototype.isOpened=function(){return this.context.status==_code.STATUS_OPENED},connection.prototype.isOpening=function(){var e=this.context.status;return e==_code.STATUS_DOLOGIN_USERGRID||e==_code.STATUS_DOLOGIN_IM},connection.prototype.isClosing=function(){return this.context.status==_code.STATUS_CLOSING},connection.prototype.isClosed=function(){return this.context.status==_code.STATUS_CLOSED},connection.prototype.clear=function(){var e=this.context.appKey;this.errorType!=WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED&&(this.context={status:_code.STATUS_INIT,appKey:e}),this.intervalId&&clearInterval(this.intervalId),this.errorType!=WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT&&this.errorType!=-1||Demo.api.init()},connection.prototype.getChatRooms=function(e){if(!_utils.isCanSetRequestHeader)return void t.onError({type:_code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR});var t=this,o=e.accessToken||this.context.accessToken;if(o){var n=e.apiUrl,i=this.context.appName,r=this.context.orgName;if(!i||!r)return void t.onError({type:_code.WEBIM_CONNCTION_AUTH_ERROR});var s=function(t,o){"function"==typeof e.success&&e.success(t)},a=function(e,o,n){e.error&&e.error_description&&t.onError({type:_code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,msg:e.error_description,data:e,xhr:o})},c={pagenum:parseInt(e.pagenum)||1,pagesize:parseInt(e.pagesize)||20},p={url:n+"/"+r+"/"+i+"/chatrooms",dataType:"json",type:"GET",headers:{Authorization:"Bearer "+o},data:c,success:s||_utils.emptyfn,error:a||_utils.emptyfn};_utils.ajax(p)}else t.onError({type:_code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR})},connection.prototype.joinChatRoom=function(e){var t=this.context.appKey+"_"+e.roomId+"@conference."+this.domain,o=t+"/"+this.context.userId,n=e.success||_utils.emptyfn,i=e.error||_utils.emptyfn,r=function(e){i({type:_code.WEBIM_CONNCTION_JOINCHATROOM_ERROR,data:e})},s=$pres({from:this.context.jid,to:o}).c("x",{xmlns:Strophe.NS.MUC+"#user"}).c("item",{affiliation:"member",role:"participant"}).up().up().c("roomtype",{xmlns:"easemob:x:roomtype",type:"chatroom"});this.context.stropheConn.sendIQ(s.tree(),n,r)},connection.prototype.quitChatRoom=function(e){var t=this.context.appKey+"_"+e.roomId+"@conference."+this.domain,o=t+"/"+this.context.userId,n=e.success||_utils.emptyfn,i=e.error||_utils.emptyfn,r=function(e){i({type:_code.WEBIM_CONNCTION_QUITCHATROOM_ERROR,data:e})},s=$pres({from:this.context.jid,to:o,type:"unavailable"}).c("x",{xmlns:Strophe.NS.MUC+"#user"}).c("item",{affiliation:"none",role:"none"}).up().up().c("roomtype",{xmlns:"easemob:x:roomtype",type:"chatroom"});this.context.stropheConn.sendIQ(s.tree(),n,r)},connection.prototype._onReceiveInviteFromGroup=function(info){info=eval("("+info+")");var options={title:"Group invitation",msg:info.user+" invites you to join into group:"+info.group_id,agree:function(){WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"'+info.group_id+'","user":"'+info.user+'"}',function(e){},function(e,t){Demo.api.NotifyError("acceptInvitationFromGroup error:"+t)})},reject:function(){WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"'+info.group_id+'","user":"'+info.user+'"}',function(e){},function(e,t){
-Demo.api.NotifyError("declineInvitationFromGroup error:"+t)})}};this.onConfirmPop(options)},connection.prototype._onReceiveInviteAcceptionFromGroup=function(info){info=eval("("+info+")");var options={title:"Group invitation response",msg:info.user+" agreed to join into group:"+info.group_id,agree:function(){}};this.onConfirmPop(options)},connection.prototype._onReceiveInviteDeclineFromGroup=function(info){info=eval("("+info+")");var options={title:"Group invitation response",msg:info.user+" rejected to join into group:"+info.group_id,agree:function(){}};this.onConfirmPop(options)},connection.prototype._onAutoAcceptInvitationFromGroup=function(info){info=eval("("+info+")");var options={title:"Group invitation",msg:"You had joined into the group:"+info.group_name+" automatically.Inviter:"+info.user,agree:function(){}};this.onConfirmPop(options)},connection.prototype._onLeaveGroup=function(info){info=eval("("+info+")");var options={title:"Group notification",msg:"You have been out of the group:"+info.group_id+".Reason:"+info.msg,agree:function(){}};this.onConfirmPop(options)},connection.prototype._onReceiveJoinGroupApplication=function(info){info=eval("("+info+")");var options={title:"Group join application",msg:info.user+" applys to join into group:"+info.group_id,agree:function(){WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"'+info.group_id+'","user":"'+info.user+'"}',function(e){},function(e,t){Demo.api.NotifyError("acceptJoinGroupApplication error:"+t)})},reject:function(){WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"'+info.group_id+'","user":"'+info.user+'"}',function(e){},function(e,t){Demo.api.NotifyError("declineJoinGroupApplication error:"+t)})}};this.onConfirmPop(options)},connection.prototype._onReceiveAcceptionFromGroup=function(info){info=eval("("+info+")");var options={title:"Group notification",msg:"You had joined into the group:"+info.group_name+".",agree:function(){}};this.onConfirmPop(options)},connection.prototype._onReceiveRejectionFromGroup=function(){info=eval("("+info+")");var options={title:"Group notification",msg:"You have been rejected to join into the group:"+info.group_name+".",agree:function(){}};this.onConfirmPop(options)},connection.prototype._onUpdateMyGroupList=function(e){this.onUpdateMyGroupList(e)},connection.prototype._onUpdateMyRoster=function(e){this.onUpdateMyRoster(e)},connection.prototype.reconnect=function(){var e=this;setTimeout(function(){_login(e.context.restTokenData,e)},1e3*(0==this.autoReconnectNumTotal?0:this.autoReconnectInterval)),this.autoReconnectNumTotal++},connection.prototype.closed=function(){Demo.api.init()},connection.prototype.getBlacklist=function(e){e=e||{};var t=$iq({type:"get"}),o=e.success||_utils.emptyfn,n=e.error||_utils.emptyfn,i=this;t.c("query",{xmlns:"jabber:iq:privacy"}).c("list",{name:"special"}),this.context.stropheConn.sendIQ(t.tree(),function(e){i.onBlacklistUpdate(_parsePrivacy(e)),o()},function(){i.onBlacklistUpdate([]),n()})},connection.prototype.addToBlackList=function(e){for(var t=$iq({type:"set"}),o=e.list||{},n=e.type||"jid",i=e.success||_utils.emptyfn,r=e.error||_utils.emptyfn,s=t.c("query",{xmlns:"jabber:iq:privacy"}).c("list",{name:"special"}),a=Object.keys(o),c=a.length,p=2,u=0;u<c;u++){var l=o[a[u]],n=l.type||"jid",d=l.jid;s=s.c("item",{action:"deny",order:p++,type:n,value:d}).c("message"),u!==c-1&&(s=s.up().up())}this.context.stropheConn.sendIQ(s.tree(),i,r)},connection.prototype.removeFromBlackList=function(e){for(var t=$iq({type:"set"}),o=e.list||{},n=e.success||_utils.emptyfn,i=e.error||_utils.emptyfn,r=t.c("query",{xmlns:"jabber:iq:privacy"}).c("list",{name:"special"}),s=Object.keys(o),a=s.length,c=0;c<a;c++){var p=o[s[c]],u=p.type||"jid",l=p.jid,d=p.order;r=r.c("item",{action:"deny",order:d,type:u,value:l}).c("message"),c!==a-1&&(r=r.up().up())}this.context.stropheConn.sendIQ(r.tree(),n,i)},connection.prototype._getGroupJid=function(e){var t=this.context.appKey||"";return t+"_"+e+"@conference."+this.domain},connection.prototype.addToGroupBlackList=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n=_getJid(e,this),i="admin",r=this._getGroupJid(e.roomId),s=$iq({type:"set",to:r});s.c("query",{xmlns:"http://jabber.org/protocol/muc#"+i}).c("item",{affiliation:"outcast",jid:n}),this.context.stropheConn.sendIQ(s.tree(),t,o)},connection.prototype.getGroupBlacklist=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n="admin",i=this._getGroupJid(e.roomId),r=$iq({type:"get",to:i});r.c("query",{xmlns:"http://jabber.org/protocol/muc#"+n}).c("item",{affiliation:"outcast"}),this.context.stropheConn.sendIQ(r.tree(),function(e){log("getGroupBlackList"),t(_parseGroupBlacklist(e))},function(){o()})},connection.prototype.removeGroupMemberFromBlacklist=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n=_getJid(e,this),i="admin",r=this._getGroupJid(e.roomId),s=$iq({type:"set",to:r});s.c("query",{xmlns:"http://jabber.org/protocol/muc#"+i}).c("item",{affiliation:"member",jid:n}),this.context.stropheConn.sendIQ(s.tree(),function(e){t()},function(){o()})},connection.prototype.changeGroupSubject=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n="owner",i=this._getGroupJid(e.roomId),r=$iq({type:"set",to:i});r.c("query",{xmlns:"http://jabber.org/protocol/muc#"+n}).c("x",{type:"submit",xmlns:"jabber:x:data"}).c("field",{"var":"FORM_TYPE"}).c("value").t("http://jabber.org/protocol/muc#roomconfig").up().up().c("field",{"var":"muc#roomconfig_roomname"}).c("value").t(e.subject).up().up().c("field",{"var":"muc#roomconfig_roomdesc"}).c("value").t(e.description),this.context.stropheConn.sendIQ(r.tree(),function(e){t()},function(){o()})},connection.prototype.destroyGroup=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n="owner",i=this._getGroupJid(e.roomId),r=$iq({type:"set",to:i});r.c("query",{xmlns:"http://jabber.org/protocol/muc#"+n}).c("destroy"),this.context.stropheConn.sendIQ(r.tree(),function(e){t()},function(){o()})},connection.prototype.leaveGroupBySelf=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n=_getJid(e,this),i="admin",r=this._getGroupJid(e.roomId),s=$iq({type:"set",to:r});s.c("query",{xmlns:"http://jabber.org/protocol/muc#"+i}).c("item",{affiliation:"none",jid:n}),this.context.stropheConn.sendIQ(s.tree(),function(e){t(e)},function(e){o(e)})},connection.prototype.leaveGroup=function(e){for(var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n=e.list||[],i="admin",r=this._getGroupJid(e.roomId),s=$iq({type:"set",to:r}),a=s.c("query",{xmlns:"http://jabber.org/protocol/muc#"+i}),c=Object.keys(n),p=c.length,u=0;u<p;u++){var l=n[c[u]],d=_getJidByName(l,this);a=a.c("item",{affiliation:"none",jid:d}).up().c("item",{role:"none",jid:d}).up()}this.context.stropheConn.sendIQ(s.tree(),function(e){t(e)},function(e){o(e)})},connection.prototype.addGroupMembers=function(e){for(var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n=e.list||[],i="admin",r=this._getGroupJid(e.roomId),s=$iq({type:"set",to:r}),a=s.c("query",{xmlns:"http://jabber.org/protocol/muc#"+i}),c=Object.keys(n),p=c.length,u=0;u<p;u++){var l=n[c[u]],d=_getJidByName(l,this);a=a.c("item",{affiliation:"member",jid:d}).up()}this.context.stropheConn.sendIQ(s.tree(),function(e){t(e)},function(e){o(e)})},connection.prototype.acceptInviteFromGroup=function(e){e.success=function(){},this.addGroupMembers(e)},connection.prototype.rejectInviteFromGroup=function(e){},connection.prototype.createGroup=function(e){var t=+new Date,o=this._getGroupJid(t),n=o+"/"+this.context.userId,i=$pres({to:n}).c("x",{xmlns:"http://jabber.org/protocol/muc"}).up().c("create",{xmlns:"http://jabber.org/protocol/muc"}).up();this.sendCommand(i.tree());var r=this;setTimeout(function(){var n=$iq({type:"get",to:o}).c("query",{xmlns:"http://jabber.org/protocol/muc#owner"});r.context.stropheConn.sendIQ(n.tree(),function(n){if("setAttribute"in n){var i=n.getElementsByTagName("x")[0];i.setAttribute("type","submit")}else Strophe.forEachChild(n,"x",function(e){e.setAttribute("type","submit")});Strophe.info("step 5 ----------"),Strophe.forEachChild(i,"field",function(t){var o=t.getAttribute("var"),n=t.getElementsByTagName("value")[0];switch(Strophe.info(o),o){case"muc#roomconfig_roomname":_setText(n,e.subject||"");break;case"muc#roomconfig_roomdesc":_setText(n,e.description||"");break;case"muc#roomconfig_publicroom":_setText(n,+e.optionsPublic);break;case"muc#roomconfig_membersonly":_setText(n,+e.optionsMembersOnly);break;case"muc#roomconfig_moderatedroom":_setText(n,+e.optionsModerate);break;case"muc#roomconfig_persistentroom":_setText(n,1);break;case"muc#roomconfig_allowinvites":_setText(n,+e.optionsAllowInvites);break;case"muc#roomconfig_allowvisitornickchange":_setText(n,0);break;case"muc#roomconfig_allowvisitorstatus":_setText(n,0);break;case"allow_private_messages":_setText(n,0);break;case"allow_private_messages_from_visitors":_setText(n,"nobody")}});var s=$iq({to:o,type:"set"}).c("query",{xmlns:"http://jabber.org/protocol/muc#owner"}).cnode(i);r.context.stropheConn.sendIQ(s.tree(),function(o){r.addGroupMembers({list:e.members,roomId:t})},function(e){})},function(e){})},1e3)},window.WebIM="undefined"!=typeof WebIM?WebIM:{},WebIM.connection=connection,WebIM.utils=_utils,WebIM.statusCode=_code,WebIM.message=_msg.message,WebIM.doQuery=function(e,t,o){"undefined"!=typeof window.cefQuery&&window.cefQuery({request:e,persistent:!1,onSuccess:t,onFailure:o})}}(window,void 0)},207:function(e,t,o){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol?"symbol":typeof e};!function(){var e=function(){},i=o(208).code,r=10485760,s=function(){try{return new window.XMLHttpRequest}catch(e){return!1}},a=function(){try{return new window.ActiveXObject("Microsoft.XMLHTTP")}catch(e){return!1}},c=function(t){t=t||!0;var o=s()||a();if("withCredentials"in o)return o;if(!t)return o;if("undefined"==typeof window.XDomainRequest)return o;var n=new XDomainRequest;return n.readyState=0,n.status=100,n.onreadystatechange=e,n.onload=function(){n.readyState=4,n.status=200;var e=new ActiveXObject("Microsoft.XMLDOM");e.async="false",e.loadXML(n.responseText),n.responseXML=e,n.response=n.responseText,n.onreadystatechange()},n.ontimeout=n.onerror=function(){n.readyState=4,n.status=500,n.onreadystatechange()},n},p=function(){if("ActiveXObject"in window)try{return new ActiveXObject("ShockwaveFlash.ShockwaveFlash")}catch(e){return 0}else if(navigator.plugins&&navigator.plugins.length>0)return navigator.plugins["Shockwave Flash"];return 0}(),u=c(),l="undefined"!=typeof FormData,d="undefined"!=typeof Blob,m=u.setRequestHeader||!1,_=u.overrideMimeType||!1,f=m&&l,h=f||p,y=m&&(d||_);Object.keys||(Object.keys=function(){var e=Object.prototype.hasOwnProperty,t=!{toString:null}.propertyIsEnumerable("toString"),o=["toString","toLocaleString","valueOf","hasOwnProperty","isPrototypeOf","propertyIsEnumerable","constructor"],i=o.length;return function(r){if("object"!==("undefined"==typeof r?"undefined":n(r))&&("function"!=typeof r||null===r))throw new TypeError("Object.keys called on non-object");var s,a,c=[];for(s in r)e.call(r,s)&&c.push(s);if(t)for(a=0;a<i;a++)e.call(r,o[a])&&c.push(o[a]);return c}}());var g={hasFormData:l,hasBlob:d,emptyfn:e,isCanSetRequestHeader:m,hasOverrideMimeType:_,isCanUploadFileAsync:f,isCanUploadFile:h,isCanDownLoadFile:y,isSupportWss:function(){var e=[/MQQBrowser[\/]5([.]\d+)?\sTBS/];if(!window.WebSocket)return!1;for(var t=window.navigator.userAgent,o=0,n=e.length;o<n;o++)if(e[o].test(t))return!1;return!0}(),getIEVersion:function(){var e,t=navigator.userAgent,o={4:8,5:9,6:10,7:11};return e=t.match(/MSIE (\d+)/i),e&&e[1]?+e[1]:(e=t.match(/Trident\/(\d+)/i),e&&e[1]?o[e[1]]||null:null)}(),stringify:function(e){if("undefined"!=typeof JSON&&JSON.stringify)return JSON.stringify(e);var t="",o=[],i=function r(e){var i=!1;"[object Array]"===Object.prototype.toString.call(e)?(o.push("]","["),i=!0):"[object Object]"===Object.prototype.toString.call(e)&&o.push("}","{");for(var s in e)"[object Null]"===Object.prototype.toString.call(e[s])?e[s]="null":"[object Undefined]"===Object.prototype.toString.call(e[s])&&(e[s]="undefined"),t+=e[s]&&"object"===n(e[s])?","+(i?"":'"'+s+'":'+(i?'"':""))+r(e[s]):',"'+(i?"":s+'":"')+e[s]+'"';return""!=t&&(t=t.slice(1)),o.pop()+t+o.pop()};return i(e)},registerUser:function(t){var o=t.orgName||"",n=t.appName||"",r=t.appKey||"",s=t.success||e,a=t.error||e;if(!o&&!n&&r){var c=r.split("#");2===c.length&&(o=c[0],n=c[1])}if(!o&&!n)return void a({type:i.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR});var p=t.https||p,u=t.apiUrl,l=u+"/"+o+"/"+n+"/users",d={username:t.username,password:t.password,nickname:t.nickname||""},m=g.stringify(d),t={url:l,dataType:"json",data:m,success:s,error:a};return g.ajax(t)},login:function(t){var t=t||{},o=t.success||e,n=t.error||e,r=t.appKey||"",s=r.split("#");if(2!==s.length)return n({type:i.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR}),!1;var a=s[0],c=s[1],p=p||t.https,u=t.user||"",l=t.pwd||"",d=t.apiUrl,m={grant_type:"password",username:u,password:l,timestamp:+new Date},_=g.stringify(m),t={url:d+"/"+a+"/"+c+"/token",dataType:"json",data:_,success:o,error:n};return g.ajax(t)},getFileUrl:function(e){var t={url:"",filename:"",filetype:"",data:""},o="string"==typeof e?document.getElementById(e):e;if(!g.isCanUploadFileAsync||!o)return t;try{if(window.URL.createObjectURL){var n=o.files;if(n.length>0){var i=n.item(0);t.data=i,t.url=window.URL.createObjectURL(i),t.filename=i.name||""}}else{var i=document.getElementById(e).value;t.url=i;var r=i.lastIndexOf("/"),s=i.lastIndexOf("\\"),a=Math.max(r,s);a<0?t.filename=i:t.filename=i.substring(a+1)}var c=t.filename.lastIndexOf(".");return c!=-1&&(t.filetype=t.filename.substring(c+1).toLowerCase()),t}catch(p){throw p}},getFileSize:function(e){var t=document.getElementById(e),o=0;if(t)if(t.files)t.files.length>0&&(o=t.files[0].size);else if(t.select&&"ActiveXObject"in window){t.select();var n=new ActiveXObject("Scripting.FileSystemObject"),t=n.GetFile(t.value);o=t.Size}return o},hasFlash:p,trim:function(e){return e="string"==typeof e?e:"",e.trim?e.trim():e.replace(/^\s|\s$/g,"")},parseEmoji:function(e){if("undefined"==typeof WebIM.Emoji||"undefined"==typeof WebIM.Emoji.map)return e;var t=WebIM.Emoji;for(var o in t.map)if(t.map.hasOwnProperty(o))for(;e.indexOf(o)>-1;)e=e.replace(o,'<img class="emoji" src="'+t.path+t.map[o]+'" />');return e},parseLink:function(e){var t=/(https?\:\/\/|www\.)([a-zA-Z0-9-]+(\.[a-zA-Z0-9]+)+)(\:[0-9]{2,4})?\/?((\.[:_0-9a-zA-Z-]+)|[:_0-9a-zA-Z-]*\/?)*\??[:_#@*&%0-9a-zA-Z-\/=]*/gm;return e=e.replace(t,function(e){var t=/^https?/gm.test(e);return"<a href='"+(t?e:"//"+e)+"' target='_blank'>"+e+"</a>"})},parseJSON:function(e){if(window.JSON&&window.JSON.parse)return window.JSON.parse(e+"");var t,o=null,n=g.trim(e+"");return n&&!g.trim(n.replace(/(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g,function(e,n,i,r){return t&&n&&(o=0),0===o?e:(t=i||n,o+=!r-!i,"")}))?Function("return "+n)():Function("Invalid JSON: "+e)()},parseUploadResponse:function(e){return e.indexOf("callback")>-1?e.slice(9,-1):e},parseDownloadResponse:function(e){return e&&e.type&&"application/json"===e.type||0>Object.prototype.toString.call(e).indexOf("Blob")?this.url+"?token=":window.URL.createObjectURL(e)},uploadFile:function(t){var t=t||{};t.onFileUploadProgress=t.onFileUploadProgress||e,t.onFileUploadComplete=t.onFileUploadComplete||e,t.onFileUploadError=t.onFileUploadError||e,t.onFileUploadCanceled=t.onFileUploadCanceled||e;var o=t.accessToken||this.context.accessToken;if(!o)return void t.onFileUploadError({type:i.WEBIM_UPLOADFILE_NO_LOGIN,id:t.id});var n,s,a,c=t.appKey||this.context.appKey||"";if(c&&(a=c.split("#"),n=a[0],s=a[1]),!n&&!s)return void t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,id:t.id});var p=t.apiUrl,u=p+"/"+n+"/"+s+"/chatfiles";if(!g.isCanUploadFileAsync)return void(g.hasFlash&&"function"==typeof t.flashUpload?t.flashUpload&&t.flashUpload(u,t):t.onFileUploadError({type:i.WEBIM_UPLOADFILE_BROWSER_ERROR,id:t.id}));var l=t.file.data?t.file.data.size:void 0;if(l>r)return void t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,id:t.id});if(l<=0)return void t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,id:t.id});var d=g.xmlrequest(),m=function(e){t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,id:t.id,xhr:d})};d.upload&&d.upload.addEventListener("progress",t.onFileUploadProgress,!1),d.addEventListener?(d.addEventListener("abort",t.onFileUploadCanceled,!1),d.addEventListener("load",function(e){try{var o=g.parseJSON(d.responseText);try{t.onFileUploadComplete(o)}catch(e){t.onFileUploadError({type:i.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:e})}}catch(e){t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,data:d.responseText,id:t.id,xhr:d})}},!1),d.addEventListener("error",m,!1)):d.onreadystatechange&&(d.onreadystatechange=function(){if(4===d.readyState)if(200===ajax.status)try{var e=g.parseJSON(d.responseText);t.onFileUploadComplete(e)}catch(o){t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,data:d.responseText,id:t.id,xhr:d})}else t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,data:d.responseText,id:t.id,xhr:d});else d.abort(),t.onFileUploadCanceled()}),d.open("POST",u),d.setRequestHeader("restrict-access","true"),d.setRequestHeader("Accept","*/*"),d.setRequestHeader("Authorization","Bearer "+o);var _=new FormData;_.append("file",t.file.data),d.send(_)},download:function(t){t.onFileDownloadComplete=t.onFileDownloadComplete||e,t.onFileDownloadError=t.onFileDownloadError||e;var o=t.accessToken||this.context.accessToken;if(!o)return void t.onFileDownloadError({type:i.WEBIM_DOWNLOADFILE_NO_LOGIN,id:t.id});var n=function(e){t.onFileDownloadError({type:i.WEBIM_DOWNLOADFILE_ERROR,id:t.id,xhr:r})};if(!g.isCanDownLoadFile)return void t.onFileDownloadComplete();var r=g.xmlrequest();"addEventListener"in r?(r.addEventListener("load",function(e){t.onFileDownloadComplete(r.response,r)},!1),r.addEventListener("error",n,!1)):"onreadystatechange"in r&&(r.onreadystatechange=function(){4===r.readyState?200===ajax.status?t.onFileDownloadComplete(r.response,r):t.onFileDownloadError({type:i.WEBIM_DOWNLOADFILE_ERROR,id:t.id,xhr:r}):(r.abort(),t.onFileDownloadError({type:i.WEBIM_DOWNLOADFILE_ERROR,id:t.id,xhr:r}))});var s=t.method||"GET",a=t.responseType||"blob",c=t.mimeType||"text/plain; charset=x-user-defined";r.open(s,t.url),"undefined"!=typeof Blob?r.responseType=a:r.overrideMimeType(c);var p={"X-Requested-With":"XMLHttpRequest",Accept:"application/octet-stream","share-secret":t.secret,Authorization:"Bearer "+o},u=t.headers||{};for(var l in u)p[l]=u[l];for(var l in p)p[l]&&r.setRequestHeader(l,p[l]);r.send(null)},parseTextMessage:function(e,t){if("string"==typeof e){if("[object Object]"!==Object.prototype.toString.call(t))return{isemoji:!1,body:[{type:"txt",data:e}]};var o=e,n=[],i=/\[[^[\]]{2,3}\]/gm,r=o.match(i);if(!r||r.length<1)return{isemoji:!1,body:[{type:"txt",data:e}]};for(var s=!1,a=0;a<r.length;a++){var c=o.substring(0,o.indexOf(r[a])),p=WebIM.Emoji.map[r[a]];if(c&&n.push({type:"txt",data:c}),p){var u=WebIM.Emoji.map?WebIM.Emoji.path+p:null;u?(s=!0,n.push({type:"emoji",data:u})):n.push({type:"txt",data:r[a]});var l=o.indexOf(r[a])+r[a].length;o=o.substring(l)}else n.push({type:"txt",data:r[a]})}return o&&n.push({type:"txt",data:o}),s?{isemoji:s,body:n}:{isemoji:!1,body:[{type:"txt",data:e}]}}},xmlrequest:c,ajax:function(t){var o=t.dataType||"text",n=t.success||e,r=t.error||e,s=g.xmlrequest();s.onreadystatechange=function(){if(4===s.readyState){var e=s.status||0;if(200===e){try{switch(o){case"text":return void n(s.responseText);case"json":var t=g.parseJSON(s.responseText);return void n(t,s);case"xml":return void(s.responseXML&&s.responseXML.documentElement?n(s.responseXML.documentElement,s):r({type:i.WEBIM_CONNCTION_AJAX_ERROR,data:s.responseText}))}n(s.response||s.responseText,s)}catch(a){r({type:i.WEBIM_CONNCTION_AJAX_ERROR,data:a})}return}return void r({type:i.WEBIM_CONNCTION_AJAX_ERROR,data:s.responseText})}0===s.readyState&&r({type:i.WEBIM_CONNCTION_AJAX_ERROR,data:s.responseText})},t.responseType&&s.responseType&&(s.responseType=t.responseType),t.mimeType&&g.hasOverrideMimeType&&s.overrideMimeType(t.mimeType);var a=t.type||"POST",c=t.data||null,p="";if("get"===a.toLowerCase()&&c){for(var u in c)c.hasOwnProperty(u)&&(p+=u+"="+c[u]+"&");p=p?p.slice(0,-1):p,t.url+=(t.url.indexOf("?")>0?"&":"?")+(p?p+"&":p)+"_v="+(new Date).getTime(),c=null,p=null}if(s.open(a,t.url),g.isCanSetRequestHeader){var l=t.headers||{};for(var d in l)l.hasOwnProperty(d)&&s.setRequestHeader(d,l[d])}return s.send(c),s},ts:function(){var e=new Date,t=e.getHours(),o=e.getMinutes(),n=e.getSeconds(),i=e.getMilliseconds();return(t<10?"0"+t:t)+":"+(o<10?"0"+o:o)+":"+(n<10?"0"+n:n)+":"+i+" "},getObjectKey:function(e,t){for(var o in e)if(e[o]==t)return o;return""}};t.utils=g}()},208:function(e,t){"use strict";!function(){var e=0,o=100,n=200,i=300,r=400;t.code={WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR:e++,WEBIM_CONNCTION_OPEN_ERROR:e++,WEBIM_CONNCTION_AUTH_ERROR:e++,WEBIM_CONNCTION_OPEN_USERGRID_ERROR:e++,WEBIM_CONNCTION_ATTACH_ERROR:e++,WEBIM_CONNCTION_ATTACH_USERGRID_ERROR:e++,WEBIM_CONNCTION_REOPEN_ERROR:e++,WEBIM_CONNCTION_SERVER_CLOSE_ERROR:e++,WEBIM_CONNCTION_SERVER_ERROR:e++,WEBIM_CONNCTION_IQ_ERROR:e++,WEBIM_CONNCTION_PING_ERROR:e++,WEBIM_CONNCTION_NOTIFYVERSION_ERROR:e++,WEBIM_CONNCTION_GETROSTER_ERROR:e++,WEBIM_CONNCTION_CROSSDOMAIN_ERROR:e++,WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES:e++,WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR:e++,WEBIM_CONNCTION_DISCONNECTED:e++,WEBIM_CONNCTION_AJAX_ERROR:e++,WEBIM_CONNCTION_JOINROOM_ERROR:e++,WEBIM_CONNCTION_GETROOM_ERROR:e++,WEBIM_CONNCTION_GETROOMINFO_ERROR:e++,WEBIM_CONNCTION_GETROOMMEMBER_ERROR:e++,WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR:e++,WEBIM_CONNCTION_LOAD_CHATROOM_ERROR:e++,WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR:e++,WEBIM_CONNCTION_JOINCHATROOM_ERROR:e++,WEBIM_CONNCTION_QUITCHATROOM_ERROR:e++,WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR:e++,WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR:e++,WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR:e++,WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR:e++,WEBIM_CONNCTION_CALLBACK_INNER_ERROR:e++,WEBIM_CONNCTION_CLIENT_OFFLINE:e++,WEBIM_CONNCTION_CLIENT_LOGOUT:e++,WEBIM_UPLOADFILE_BROWSER_ERROR:o++,WEBIM_UPLOADFILE_ERROR:o++,WEBIM_UPLOADFILE_NO_LOGIN:o++,WEBIM_UPLOADFILE_NO_FILE:o++,WEBIM_DOWNLOADFILE_ERROR:n++,WEBIM_DOWNLOADFILE_NO_LOGIN:n++,WEBIM_DOWNLOADFILE_BROWSER_ERROR:n++,WEBIM_MESSAGE_REC_TEXT:i++,WEBIM_MESSAGE_REC_TEXT_ERROR:i++,WEBIM_MESSAGE_REC_EMOTION:i++,WEBIM_MESSAGE_REC_PHOTO:i++,WEBIM_MESSAGE_REC_AUDIO:i++,WEBIM_MESSAGE_REC_AUDIO_FILE:i++,WEBIM_MESSAGE_REC_VEDIO:i++,WEBIM_MESSAGE_REC_VEDIO_FILE:i++,WEBIM_MESSAGE_REC_FILE:i++,WEBIM_MESSAGE_SED_TEXT:i++,WEBIM_MESSAGE_SED_EMOTION:i++,WEBIM_MESSAGE_SED_PHOTO:i++,WEBIM_MESSAGE_SED_AUDIO:i++,WEBIM_MESSAGE_SED_AUDIO_FILE:i++,WEBIM_MESSAGE_SED_VEDIO:i++,WEBIM_MESSAGE_SED_VEDIO_FILE:i++,WEBIM_MESSAGE_SED_FILE:i++,STATUS_INIT:r++,STATUS_DOLOGIN_USERGRID:r++,STATUS_DOLOGIN_IM:r++,STATUS_OPENED:r++,STATUS_CLOSING:r++,STATUS_CLOSED:r++,STATUS_ERROR:r++}}()},214:function(e,t,o){"use strict";!function(){var e=o(207).utils,n=function r(e,t){return!this instanceof r?new r(e):(this._msg={},"function"==typeof r[e]&&(r[e].prototype.setGroup=this.setGroup,this._msg=new r[e](t)),this._msg)};n.prototype.setGroup=function(e){this.body.group=e},n.txt=function(e){this.id=e,this.type="txt",this.body={}},n.txt.prototype.set=function(e){this.value=e.msg,this.body={id:this.id,to:e.to,msg:this.value,type:this.type,roomType:e.roomType,ext:e.ext||{},success:e.success,fail:e.fail},!e.roomType&&delete this.body.roomType},n.cmd=function(e){this.id=e,this.type="cmd",this.body={}},n.cmd.prototype.set=function(e){this.value="",this.body={to:e.to,action:e.action,msg:this.value,type:this.type,roomType:e.roomType,ext:e.ext||{}},!e.roomType&&delete this.body.roomType},n.location=function(e){this.id=e,this.type="loc",this.body={}},n.location.prototype.set=function(e){this.body={to:e.to,type:this.type,roomType:e.roomType,addr:e.addr,lat:e.lat,lng:e.lng,ext:e.ext||{}}},n.img=function(e){this.id=e,this.type="img",this.body={}},n.img.prototype.set=function(t){t.file=t.file||e.getFileUrl(t.fileInputId),this.value=t.file,this.body={id:this.id,file:this.value,apiUrl:t.apiUrl,to:t.to,type:this.type,ext:t.ext||{},roomType:t.roomType,onFileUploadError:t.onFileUploadError,onFileUploadComplete:t.onFileUploadComplete,success:t.success,fail:t.fail,flashUpload:t.flashUpload,width:t.width,height:t.height,body:t.body},!t.roomType&&delete this.body.roomType},n.audio=function(e){this.id=e,this.type="audio",this.body={}},n.audio.prototype.set=function(t){t.file=t.file||e.getFileUrl(t.fileInputId),this.value=t.file,this.filename=t.filename||this.value.filename,this.body={id:this.id,file:this.value,filename:this.filename,apiUrl:t.apiUrl,to:t.to,type:this.type,ext:t.ext||{},length:t.length||0,roomType:t.roomType,file_length:t.file_length,onFileUploadError:t.onFileUploadError,onFileUploadComplete:t.onFileUploadComplete,success:t.success,fail:t.fail,flashUpload:t.flashUpload,body:t.body},!t.roomType&&delete this.body.roomType},n.file=function(e){this.id=e,this.type="file",this.body={}},n.file.prototype.set=function(t){t.file=t.file||e.getFileUrl(t.fileInputId),this.value=t.file,this.filename=t.filename||this.value.filename,this.body={id:this.id,file:this.value,filename:this.filename,apiUrl:t.apiUrl,to:t.to,type:this.type,ext:t.ext||{},roomType:t.roomType,onFileUploadError:t.onFileUploadError,onFileUploadComplete:t.onFileUploadComplete,success:t.success,fail:t.fail,flashUpload:t.flashUpload,body:t.body},!t.roomType&&delete this.body.roomType},n.video=function(e){},n.video.prototype.set=function(e){};var i=function s(e){return!this instanceof s?new s(e,conn):void(this.msg=e)};i.prototype.send=function(t){var o=this,n=function(o){o.ext=o.ext||{},o.ext.weichat=o.ext.weichat||{},o.ext.weichat.originType=o.ext.weichat.originType||"webim";var n={from:t.context.userId||"",to:o.to,bodies:[o.body],ext:o.ext||{}},i=e.stringify(n),r=$msg({type:o.group||"chat",to:o.toJid,id:o.id,xmlns:"jabber:client"}).c("body").t(i);o.roomType&&r.up().c("roomtype",{xmlns:"easemob:x:roomtype",type:"chatroom"}),setTimeout(function(){"undefined"!=typeof _msgHash&&_msgHash[o.id]&&_msgHash[o.id].msg.fail instanceof Function&&_msgHash[o.id].msg.fail(o.id)},6e4),t.sendCommand(r.tree(),o.id)};if(o.msg.file){if(o.msg.body&&o.msg.body.url)return void n(o.msg);var i=o.msg.onFileUploadComplete,r=function(e){if(e.entities[0]["file-metadata"]){var t=e.entities[0]["file-metadata"]["content-length"];o.msg.file_length=t,o.msg.filetype=e.entities[0]["file-metadata"]["content-type"],t>204800&&(o.msg.thumbnail=!0)}o.msg.body={type:o.msg.type||"file",url:e.uri+"/"+e.entities[0].uuid,secret:e.entities[0]["share-secret"],filename:o.msg.file.filename||o.msg.filename,size:{width:o.msg.width||0,height:o.msg.height||0},length:o.msg.length||0,file_length:o.msg.file_length||0,filetype:o.msg.filetype},n(o.msg),i instanceof Function&&i(e,o.msg.id)};o.msg.onFileUploadComplete=r,e.uploadFile.call(t,o.msg)}else o.msg.body={type:"chat"===o.msg.type?"txt":o.msg.type,msg:o.msg.msg},"cmd"===o.msg.type?o.msg.body.action=o.msg.action:"loc"===o.msg.type&&(o.msg.body.addr=o.msg.addr,o.msg.body.lat=o.msg.lat,o.msg.body.lng=o.msg.lng),n(o.msg)},t._msg=i,t.message=n}()},215:function(e,t){"use strict";!function(){function e(e){this.array=void 0===e?[]:new Array(e)}e.prototype={length:function(){return this.array.length},at:function(e){return this.array[e]},set:function(e,t){this.array[e]=t},push:function(e){return this.array.push(e)},slice:function(e,t){return this.array=this.array.slice(e,t)},concat:function(e){this.array=this.array.concat(e)},remove:function(e,t){t=void 0===t?1:t,this.array.splice(e,t)},join:function(e){return this.array.join(e)},clear:function(){this.array.length=0}};var o=function(){this._array_h=new e};o.prototype={_index:0,push:function(e){this._array_h.push(e)},pop:function(){var e=null;return this._array_h.length()&&(e=this._array_h.at(this._index),2*++this._index>=this._array_h.length()&&(this._array_h.slice(this._index),this._index=0)),e},head:function(){var e=null,t=this._array_h.length();return t&&(e=this._array_h.at(t-1)),e},tail:function(){var e=null,t=this._array_h.length();return t&&(e=this._array_h.at(this._index)),e},length:function(){return this._array_h.length()-this._index},empty:function(){return 0===this._array_h.length()},clear:function(){this._array_h.clear()}},t.Queue=o}()}});
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "./";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ 0:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	;
+	(function (window, undefined) {
+
+	    var _version = '1.1.3';
+	    var _code = __webpack_require__(217).code;
+	    var _utils = __webpack_require__(216).utils;
+	    var _msg = __webpack_require__(223);
+	    var _message = _msg._msg;
+	    var _msgHash = {};
+	    var Queue = __webpack_require__(224).Queue;
+
+	    window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+	    if (window.XDomainRequest) {
+	        XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
+	        XDomainRequest.prototype.send = function () {
+	            XDomainRequest.prototype.oldsend.apply(this, arguments);
+	            this.readyState = 2;
+	        };
+	    }
+
+	    Strophe.Request.prototype._newXHR = function () {
+	        var xhr = _utils.xmlrequest(true);
+	        if (xhr.overrideMimeType) {
+	            xhr.overrideMimeType('text/xml');
+	        }
+	        // use Function.bind() to prepend ourselves as an argument
+	        xhr.onreadystatechange = this.func.bind(null, this);
+	        return xhr;
+	    };
+
+	    Strophe.Websocket.prototype._closeSocket = function () {
+	        if (this.socket) {
+	            var me = this;
+	            setTimeout(function () {
+	                try {
+	                    me.socket.close();
+	                } catch (e) {}
+	            }, 0);
+	        } else {
+	            this.socket = null;
+	        }
+	    };
+
+	    /**
+	     *
+	     * Strophe.Websocket has a bug while logout:
+	     * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
+	     * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
+	     * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+	     * 3 "Websocket error [object Event]"
+	     * _changeConnectStatus
+	     * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
+	     *
+	     * this will trigger socket.onError, therefore _doDisconnect again.
+	     * Fix it by overide  _onMessage
+	     */
+	    Strophe.Websocket.prototype._onMessage = function (message) {
+	        var elem, data;
+	        // check for closing stream
+	        // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
+	        // if (message.data === close) {
+	        //     this._conn.rawInput(close);
+	        //     this._conn.xmlInput(message);
+	        //     if (!this._conn.disconnecting) {
+	        //         this._conn._doDisconnect();
+	        //     }
+	        //     return;
+	        //
+	        // send and receive close xml: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/>
+	        // so we can't judge whether message.data equals close by === simply.
+	        if (message.data.indexOf("<close ") === 0) {
+	            elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
+	            var see_uri = elem.getAttribute("see-other-uri");
+	            if (see_uri) {
+	                this._conn._changeConnectStatus(Strophe.Status.REDIRECT, "Received see-other-uri, resetting connection");
+	                this._conn.reset();
+	                this._conn.service = see_uri;
+	                this._connect();
+	            } else {
+	                // if (!this._conn.disconnecting) {
+	                this._conn._doDisconnect("receive <close> from server");
+	                // }
+	            }
+	            return;
+	        } else if (message.data.search("<open ") === 0) {
+	            // This handles stream restarts
+	            elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
+	            if (!this._handleStreamStart(elem)) {
+	                return;
+	            }
+	        } else {
+	            data = this._streamWrap(message.data);
+	            elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
+	        }
+
+	        if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
+	            return;
+	        }
+
+	        //handle unavailable presence stanza before disconnecting
+	        if (this._conn.disconnecting && elem.firstChild.nodeName === "presence" && elem.firstChild.getAttribute("type") === "unavailable") {
+	            this._conn.xmlInput(elem);
+	            this._conn.rawInput(Strophe.serialize(elem));
+	            // if we are already disconnecting we will ignore the unavailable stanza and
+	            // wait for the </stream:stream> tag before we close the connection
+	            return;
+	        }
+	        this._conn._dataRecv(elem, message.data);
+	    };
+
+	    var _listenNetwork = function _listenNetwork(onlineCallback, offlineCallback) {
+
+	        if (window.addEventListener) {
+	            window.addEventListener('online', onlineCallback);
+	            window.addEventListener('offline', offlineCallback);
+	        } else if (window.attachEvent) {
+	            if (document.body) {
+	                document.body.attachEvent('ononline', onlineCallback);
+	                document.body.attachEvent('onoffline', offlineCallback);
+	            } else {
+	                window.attachEvent('load', function () {
+	                    document.body.attachEvent('ononline', onlineCallback);
+	                    document.body.attachEvent('onoffline', offlineCallback);
+	                });
+	            }
+	        } else {
+	            /*var onlineTmp = window.ononline;
+	             var offlineTmp = window.onoffline;
+	              window.attachEvent('ononline', function () {
+	             try {
+	             typeof onlineTmp === 'function' && onlineTmp();
+	             } catch ( e ) {}
+	             onlineCallback();
+	             });
+	             window.attachEvent('onoffline', function () {
+	             try {
+	             typeof offlineTmp === 'function' && offlineTmp();
+	             } catch ( e ) {}
+	             offlineCallback();
+	             });*/
+	        }
+	    };
+
+	    var _parseRoom = function _parseRoom(result) {
+	        var rooms = [];
+	        var items = result.getElementsByTagName('item');
+	        if (items) {
+	            for (var i = 0; i < items.length; i++) {
+	                var item = items[i];
+	                var roomJid = item.getAttribute('jid');
+	                var tmp = roomJid.split('@')[0];
+	                var room = {
+	                    jid: roomJid,
+	                    name: item.getAttribute('name'),
+	                    roomId: tmp.split('_')[1]
+	                };
+	                rooms.push(room);
+	            }
+	        }
+	        return rooms;
+	    };
+
+	    var _parseRoomOccupants = function _parseRoomOccupants(result) {
+	        var occupants = [];
+	        var items = result.getElementsByTagName('item');
+	        if (items) {
+	            for (var i = 0; i < items.length; i++) {
+	                var item = items[i];
+	                var room = {
+	                    jid: item.getAttribute('jid'),
+	                    name: item.getAttribute('name')
+	                };
+	                occupants.push(room);
+	            }
+	        }
+	        return occupants;
+	    };
+
+	    var _parseResponseMessage = function _parseResponseMessage(msginfo) {
+	        var parseMsgData = { errorMsg: true, data: [] };
+
+	        var msgBodies = msginfo.getElementsByTagName('body');
+	        if (msgBodies) {
+	            for (var i = 0; i < msgBodies.length; i++) {
+	                var msgBody = msgBodies[i];
+	                var childNodes = msgBody.childNodes;
+	                if (childNodes && childNodes.length > 0) {
+	                    var childNode = msgBody.childNodes[0];
+	                    if (childNode.nodeType == Strophe.ElementType.TEXT) {
+	                        var jsondata = childNode.wholeText || childNode.nodeValue;
+	                        jsondata = jsondata.replace('\n', '<br>');
+	                        try {
+	                            var data = eval('(' + jsondata + ')');
+	                            parseMsgData.errorMsg = false;
+	                            parseMsgData.data = [data];
+	                        } catch (e) {}
+	                    }
+	                }
+	            }
+
+	            var delayTags = msginfo.getElementsByTagName('delay');
+	            if (delayTags && delayTags.length > 0) {
+	                var delayTag = delayTags[0];
+	                var delayMsgTime = delayTag.getAttribute('stamp');
+	                if (delayMsgTime) {
+	                    parseMsgData.delayTimeStamp = delayMsgTime;
+	                }
+	            }
+	        } else {
+	            var childrens = msginfo.childNodes;
+	            if (childrens && childrens.length > 0) {
+	                var child = msginfo.childNodes[0];
+	                if (child.nodeType == Strophe.ElementType.TEXT) {
+	                    try {
+	                        var data = eval('(' + child.nodeValue + ')');
+	                        parseMsgData.errorMsg = false;
+	                        parseMsgData.data = [data];
+	                    } catch (e) {}
+	                }
+	            }
+	        }
+	        return parseMsgData;
+	    };
+
+	    var _parseNameFromJidFn = function _parseNameFromJidFn(jid, domain) {
+	        domain = domain || '';
+	        var tempstr = jid;
+	        var findex = tempstr.indexOf('_');
+
+	        if (findex !== -1) {
+	            tempstr = tempstr.substring(findex + 1);
+	        }
+	        var atindex = tempstr.indexOf('@' + domain);
+	        if (atindex !== -1) {
+	            tempstr = tempstr.substring(0, atindex);
+	        }
+	        return tempstr;
+	    };
+
+	    var _parseFriend = function _parseFriend(queryTag, conn, from) {
+	        var rouster = [];
+	        var items = queryTag.getElementsByTagName('item');
+	        if (items) {
+	            for (var i = 0; i < items.length; i++) {
+	                var item = items[i];
+	                var jid = item.getAttribute('jid');
+	                if (!jid) {
+	                    continue;
+	                }
+	                var subscription = item.getAttribute('subscription');
+	                var friend = {
+	                    subscription: subscription,
+	                    jid: jid
+	                };
+	                var ask = item.getAttribute('ask');
+	                if (ask) {
+	                    friend.ask = ask;
+	                }
+	                var name = item.getAttribute('name');
+	                if (name) {
+	                    friend.name = name;
+	                } else {
+	                    var n = _parseNameFromJidFn(jid);
+	                    friend.name = n;
+	                }
+	                var groups = [];
+	                Strophe.forEachChild(item, 'group', function (group) {
+	                    groups.push(Strophe.getText(group));
+	                });
+	                friend.groups = groups;
+	                rouster.push(friend);
+	                // B同意之后 -> B订阅A
+	                if (conn && subscription == 'from') {
+	                    conn.subscribe({
+	                        toJid: jid
+	                    });
+	                }
+
+	                if (conn && subscription == 'to') {
+	                    conn.subscribed({
+	                        toJid: jid
+	                    });
+	                }
+	            }
+	        }
+	        return rouster;
+	    };
+
+	    var _login = function _login(options, conn) {
+	        var accessToken = options.access_token || '';
+	        if (accessToken == '') {
+	            var loginfo = _utils.stringify(options);
+	            conn.onError({
+	                type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
+	                data: options
+	            });
+	            return;
+	        }
+	        conn.context.accessToken = options.access_token;
+	        conn.context.accessTokenExpires = options.expires_in;
+	        var stropheConn = null;
+	        if (conn.isOpening() && conn.context.stropheConn) {
+	            stropheConn = conn.context.stropheConn;
+	        } else if (conn.isOpened() && conn.context.stropheConn) {
+	            // return;
+	            stropheConn = new Strophe.Connection(conn.url, {
+	                inactivity: conn.inactivity,
+	                maxRetries: conn.maxRetries,
+	                pollingTime: conn.pollingTime
+	            });
+	        } else {
+	            stropheConn = new Strophe.Connection(conn.url, {
+	                inactivity: conn.inactivity,
+	                maxRetries: conn.maxRetries,
+	                pollingTime: conn.pollingTime
+	            });
+	        }
+	        var callback = function callback(status, msg) {
+	            _loginCallback(status, msg, conn);
+	        };
+
+	        conn.context.stropheConn = stropheConn;
+	        if (conn.route) {
+	            stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold, conn.route);
+	        } else {
+	            stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold);
+	        }
+	    };
+
+	    var _parseMessageType = function _parseMessageType(msginfo) {
+	        var msgtype = 'normal';
+	        var receiveinfo = msginfo.getElementsByTagName('received');
+	        if (receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
+	            msgtype = 'received';
+	        } else {
+	            var inviteinfo = msginfo.getElementsByTagName('invite');
+	            if (inviteinfo && inviteinfo.length > 0) {
+	                msgtype = 'invite';
+	            }
+	        }
+	        return msgtype;
+	    };
+
+	    var _handleMessageQueue = function _handleMessageQueue(conn) {
+	        for (var i in _msgHash) {
+	            if (_msgHash.hasOwnProperty(i)) {
+	                _msgHash[i].send(conn);
+	            }
+	        }
+	    };
+
+	    var _loginCallback = function _loginCallback(status, msg, conn) {
+	        var conflict, error;
+
+	        if (msg === 'conflict') {
+	            conflict = true;
+	        }
+
+	        if (status == Strophe.Status.CONNFAIL) {
+	            //client offline, ping/pong timeout, server quit, server offline
+	            error = {
+	                type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
+	                msg: msg,
+	                reconnect: true
+	            };
+
+	            conflict && (error.conflict = true);
+	            conn.onError(error);
+	        } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
+	            // client should limit the speed of sending ack messages  up to 5/s
+	            conn.intervalId = setInterval(function () {
+	                conn.handelSendQueue();
+	            }, 200);
+	            var handleMessage = function handleMessage(msginfo) {
+	                var type = _parseMessageType(msginfo);
+
+	                if ('received' === type) {
+	                    conn.handleReceivedMessage(msginfo);
+	                    return true;
+	                } else if ('invite' === type) {
+	                    conn.handleInviteMessage(msginfo);
+	                    return true;
+	                } else {
+	                    conn.handleMessage(msginfo);
+	                    return true;
+	                }
+	            };
+	            var handlePresence = function handlePresence(msginfo) {
+	                conn.handlePresence(msginfo);
+	                return true;
+	            };
+	            var handlePing = function handlePing(msginfo) {
+	                conn.handlePing(msginfo);
+	                return true;
+	            };
+	            var handleIqRoster = function handleIqRoster(msginfo) {
+	                conn.handleIqRoster(msginfo);
+	                return true;
+	            };
+	            var handleIqPrivacy = function handleIqPrivacy(msginfo) {
+	                conn.handleIqPrivacy(msginfo);
+	                return true;
+	            };
+	            var handleIq = function handleIq(msginfo) {
+	                conn.handleIq(msginfo);
+	                return true;
+	            };
+
+	            conn.addHandler(handleMessage, null, 'message', null, null, null);
+	            conn.addHandler(handlePresence, null, 'presence', null, null, null);
+	            conn.addHandler(handlePing, 'urn:xmpp:ping', 'iq', 'get', null, null);
+	            conn.addHandler(handleIqRoster, 'jabber:iq:roster', 'iq', 'set', null, null);
+	            conn.addHandler(handleIqPrivacy, 'jabber:iq:privacy', 'iq', 'set', null, null);
+	            conn.addHandler(handleIq, null, 'iq', null, null, null);
+
+	            conn.context.status = _code.STATUS_OPENED;
+
+	            var supportRecMessage = [_code.WEBIM_MESSAGE_REC_TEXT, _code.WEBIM_MESSAGE_REC_EMOJI];
+
+	            if (_utils.isCanDownLoadFile) {
+	                supportRecMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
+	                supportRecMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
+	            }
+	            var supportSedMessage = [_code.WEBIM_MESSAGE_SED_TEXT];
+	            if (_utils.isCanUploadFile) {
+	                supportSedMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
+	                supportSedMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
+	            }
+	            conn.notifyVersion();
+	            conn.retry && _handleMessageQueue(conn);
+	            conn.heartBeat();
+	            conn.isAutoLogin && conn.setPresence();
+	            conn.onOpened({
+	                canReceive: supportRecMessage,
+	                canSend: supportSedMessage,
+	                accessToken: conn.context.accessToken
+	            });
+	        } else if (status == Strophe.Status.DISCONNECTING) {
+	            if (conn.isOpened()) {
+	                conn.stopHeartBeat();
+	                conn.context.status = _code.STATUS_CLOSING;
+
+	                error = {
+	                    type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
+	                    msg: msg,
+	                    reconnect: true
+	                };
+
+	                conflict && (error.conflict = true);
+	                conn.onError(error);
+	            }
+	        } else if (status == Strophe.Status.DISCONNECTED) {
+	            if (conn.isOpened()) {
+	                if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
+	                    Demo.conn.reconnect();
+	                    return;
+	                } else {
+	                    error = {
+	                        type: _code.WEBIM_CONNCTION_DISCONNECTED
+	                    };
+	                    conn.onError(error);
+	                }
+	            }
+	            conn.context.status = _code.STATUS_CLOSED;
+	            conn.clear();
+	            conn.onClosed();
+	        } else if (status == Strophe.Status.AUTHFAIL) {
+	            error = {
+	                type: _code.WEBIM_CONNCTION_AUTH_ERROR
+	            };
+
+	            conflict && (error.conflict = true);
+	            conn.onError(error);
+	            conn.clear();
+	        } else if (status == Strophe.Status.ERROR) {
+	            conn.context.status = _code.STATUS_ERROR;
+	            error = {
+	                type: _code.WEBIM_CONNCTION_SERVER_ERROR
+	            };
+
+	            conflict && (error.conflict = true);
+	            conn.onError(error);
+	        }
+	        conn.context.status_now = status;
+	    };
+
+	    var _getJid = function _getJid(options, conn) {
+	        var jid = options.toJid || '';
+
+	        if (jid === '') {
+	            var appKey = conn.context.appKey || '';
+	            var toJid = appKey + '_' + options.to + '@' + conn.domain;
+
+	            if (options.resource) {
+	                toJid = toJid + '/' + options.resource;
+	            }
+	            jid = toJid;
+	        }
+	        return jid;
+	    };
+
+	    var _getJidByName = function _getJidByName(name, conn) {
+	        var options = {
+	            to: name
+	        };
+	        return _getJid(options, conn);
+	    };
+
+	    var _validCheck = function _validCheck(options, conn) {
+	        options = options || {};
+
+	        if (options.user == '') {
+	            conn.onError({
+	                type: _code.WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR
+	            });
+	            return false;
+	        }
+
+	        var user = options.user + '' || '';
+	        var appKey = options.appKey || '';
+	        var devInfos = appKey.split('#');
+
+	        if (devInfos.length !== 2) {
+	            conn.onError({
+	                type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	            });
+	            return false;
+	        }
+	        var orgName = devInfos[0];
+	        var appName = devInfos[1];
+
+	        if (!orgName) {
+	            conn.onError({
+	                type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	            });
+	            return false;
+	        }
+	        if (!appName) {
+	            conn.onError({
+	                type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	            });
+	            return false;
+	        }
+
+	        var jid = appKey + '_' + user.toLowerCase() + '@' + conn.domain,
+	            resource = options.resource || 'webim';
+
+	        if (conn.isMultiLoginSessions) {
+	            resource += user + new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000);
+	        }
+	        conn.context.jid = jid + '/' + resource;
+	        /*jid: {appkey}_{username}@domain/resource*/
+	        conn.context.userId = user;
+	        conn.context.appKey = appKey;
+	        conn.context.appName = appName;
+	        conn.context.orgName = orgName;
+
+	        return true;
+	    };
+
+	    var _getXmppUrl = function _getXmppUrl(baseUrl, https) {
+	        if (/^(ws|http)s?:\/\/?/.test(baseUrl)) {
+	            return baseUrl;
+	        }
+
+	        var url = {
+	            prefix: 'http',
+	            base: '://' + baseUrl,
+	            suffix: '/http-bind/'
+	        };
+
+	        if (https && _utils.isSupportWss) {
+	            url.prefix = 'wss';
+	            url.suffix = '/ws/';
+	        } else {
+	            if (https) {
+	                url.prefix = 'https';
+	            } else if (window.WebSocket) {
+	                url.prefix = 'ws';
+	                url.suffix = '/ws/';
+	            }
+	        }
+
+	        return url.prefix + url.base + url.suffix;
+	    };
+
+	    //class
+	    var connection = function connection(options) {
+	        if (!this instanceof connection) {
+	            return new connection(options);
+	        }
+
+	        var options = options || {};
+
+	        this.isMultiLoginSessions = options.isMultiLoginSessions || false;
+	        this.wait = options.wait || 30;
+	        this.retry = options.retry || false;
+	        this.https = options.https || location.protocol === 'https:';
+	        this.url = _getXmppUrl(options.url, this.https);
+	        this.hold = options.hold || 1;
+	        this.route = options.route || null;
+	        this.domain = options.domain || 'easemob.com';
+	        this.inactivity = options.inactivity || 30;
+	        this.heartBeatWait = options.heartBeatWait || 4500;
+	        this.maxRetries = options.maxRetries || 5;
+	        this.isAutoLogin = options.isAutoLogin === false ? false : true;
+	        this.pollingTime = options.pollingTime || 800;
+	        this.stropheConn = false;
+	        this.autoReconnectNumMax = options.autoReconnectNumMax || 0;
+	        this.autoReconnectNumTotal = 0;
+	        this.autoReconnectInterval = options.autoReconnectInterval || 0;
+	        this.context = { status: _code.STATUS_INIT };
+	        //todo 接收的事件，放到数组里的时候，加上g.isInBackground字段。每帧执行一个事件的时候，如果g.isInBackground=true,就pass
+	        this.sendQueue = new Queue(); //接收到的事件队列
+	        this.intervalId = null;
+	    };
+
+	    connection.prototype.handelSendQueue = function () {
+	        var options = this.sendQueue.pop();
+	        if (options !== null) {
+	            this.sendReceiptsMessage(options);
+	        }
+	    };
+	    connection.prototype.listen = function (options) {
+	        options.url && (this.url = _getXmppUrl(options.url, this.https));
+	        this.onOpened = options.onOpened || _utils.emptyfn;
+	        this.onClosed = options.onClosed || _utils.emptyfn;
+	        this.onTextMessage = options.onTextMessage || _utils.emptyfn;
+	        this.onEmojiMessage = options.onEmojiMessage || _utils.emptyfn;
+	        this.onPictureMessage = options.onPictureMessage || _utils.emptyfn;
+	        this.onAudioMessage = options.onAudioMessage || _utils.emptyfn;
+	        this.onVideoMessage = options.onVideoMessage || _utils.emptyfn;
+	        this.onFileMessage = options.onFileMessage || _utils.emptyfn;
+	        this.onLocationMessage = options.onLocationMessage || _utils.emptyfn;
+	        this.onCmdMessage = options.onCmdMessage || _utils.emptyfn;
+	        this.onPresence = options.onPresence || _utils.emptyfn;
+	        this.onRoster = options.onRoster || _utils.emptyfn;
+	        this.onError = options.onError || _utils.emptyfn;
+	        this.onReceivedMessage = options.onReceivedMessage || _utils.emptyfn;
+	        this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
+	        this.onOffline = options.onOffline || _utils.emptyfn;
+	        this.onOnline = options.onOnline || _utils.emptyfn;
+	        this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
+	        //for WindowSDK
+	        this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
+	        this.onUpdateMyRoster = options.onUpdateMyRoster || _utils.emptyfn;
+	        //
+	        this.onBlacklistUpdate = options.onBlacklistUpdate || _utils.emptyfn;
+
+	        _listenNetwork(this.onOnline, this.onOffline);
+	    };
+
+	    connection.prototype.heartBeat = function () {
+	        var me = this;
+	        //IE8: strophe auto switch from ws to BOSH, need heartbeat
+	        var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
+
+	        if (this.heartBeatID || !isNeed) {
+	            return;
+	        }
+
+	        var options = {
+	            toJid: this.domain,
+	            type: 'normal'
+	        };
+	        this.heartBeatID = setInterval(function () {
+	            me.ping(options);
+	        }, this.heartBeatWait);
+	    };
+
+	    connection.prototype.stopHeartBeat = function () {
+	        if (typeof this.heartBeatID == "number") {
+	            this.heartBeatID = clearInterval(this.heartBeatID);
+	        }
+	    };
+
+	    connection.prototype.sendReceiptsMessage = function (options) {
+	        var dom = $msg({
+	            from: this.context.jid || '',
+	            to: this.domain,
+	            id: options.id || ''
+	        }).c('received', {
+	            xmlns: 'urn:xmpp:receipts',
+	            id: options.id || ''
+	        });
+	        this.sendCommand(dom.tree());
+	    };
+
+	    connection.prototype.cacheReceiptsMessage = function (options) {
+	        this.sendQueue.push(options);
+	    };
+
+	    connection.prototype.open = function (options) {
+
+	        var pass = _validCheck(options, this);
+
+	        if (!pass) {
+	            return;
+	        }
+
+	        var conn = this;
+
+	        if (conn.isOpening() || conn.isOpened()) {
+	            return;
+	        }
+
+	        if (options.accessToken) {
+	            options.access_token = options.accessToken;
+	            _login(options, conn);
+	        } else {
+	            var apiUrl = options.apiUrl;
+	            var userId = this.context.userId;
+	            var pwd = options.pwd || '';
+	            var appName = this.context.appName;
+	            var orgName = this.context.orgName;
+
+	            var suc = function suc(data, xhr) {
+	                conn.context.status = _code.STATUS_DOLOGIN_IM;
+	                conn.context.restTokenData = data;
+	                _login(data, conn);
+	            };
+	            var error = function error(res, xhr, msg) {
+	                conn.clear();
+
+	                if (res.error && res.error_description) {
+	                    conn.onError({
+	                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
+	                        data: res,
+	                        xhr: xhr
+	                    });
+	                } else {
+	                    conn.onError({
+	                        type: _code.WEBIM_CONNCTION_OPEN_ERROR,
+	                        data: res,
+	                        xhr: xhr
+	                    });
+	                }
+	            };
+
+	            this.context.status = _code.STATUS_DOLOGIN_USERGRID;
+
+	            var loginJson = {
+	                grant_type: 'password',
+	                username: userId,
+	                password: pwd,
+	                timestamp: +new Date()
+	            };
+	            var loginfo = _utils.stringify(loginJson);
+
+	            var options = {
+	                url: apiUrl + '/' + orgName + '/' + appName + '/token',
+	                dataType: 'json',
+	                data: loginfo,
+	                success: suc || _utils.emptyfn,
+	                error: error || _utils.emptyfn
+	            };
+	            _utils.ajax(options);
+	        }
+	    };
+
+	    // attach to xmpp server for BOSH
+	    connection.prototype.attach = function (options) {
+	        var pass = _validCheck(options, this);
+
+	        if (!pass) {
+	            return;
+	        }
+
+	        options = options || {};
+
+	        var accessToken = options.accessToken || '';
+	        if (accessToken == '') {
+	            this.onError({
+	                type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
+	            });
+	            return;
+	        }
+
+	        var sid = options.sid || '';
+	        if (sid === '') {
+	            this.onError({
+	                type: _code.WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR
+	            });
+	            return;
+	        }
+
+	        var rid = options.rid || '';
+	        if (rid === '') {
+	            this.onError({
+	                type: _code.WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR
+	            });
+	            return;
+	        }
+
+	        var stropheConn = new Strophe.Connection(this.url, {
+	            inactivity: this.inactivity,
+	            maxRetries: this.maxRetries,
+	            pollingTime: this.pollingTime,
+	            heartBeatWait: this.heartBeatWait
+	        });
+
+	        this.context.accessToken = accessToken;
+	        this.context.stropheConn = stropheConn;
+	        this.context.status = _code.STATUS_DOLOGIN_IM;
+
+	        var conn = this;
+	        var callback = function callback(status, msg) {
+	            _loginCallback(status, msg, conn);
+	        };
+
+	        var jid = this.context.jid;
+	        var wait = this.wait;
+	        var hold = this.hold;
+	        var wind = this.wind || 5;
+	        stropheConn.attach(jid, sid, rid, callback, wait, hold, wind);
+	    };
+
+	    connection.prototype.close = function (reason) {
+	        this.stopHeartBeat();
+
+	        var status = this.context.status;
+	        if (status == _code.STATUS_INIT) {
+	            return;
+	        }
+
+	        if (this.isClosed() || this.isClosing()) {
+	            return;
+	        }
+
+	        this.context.status = _code.STATUS_CLOSING;
+	        this.context.stropheConn.disconnect(reason);
+	    };
+
+	    connection.prototype.addHandler = function (handler, ns, name, type, id, from, options) {
+	        this.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
+	    };
+
+	    connection.prototype.notifyVersion = function (suc, fail) {
+	        var jid = _getJid({}, this);
+	        var dom = $iq({
+	            from: this.context.jid || '',
+	            to: this.domain,
+	            type: 'result'
+	        }).c('query', { xmlns: 'jabber:iq:version' }).c('name').t('easemob').up().c('version').t(_version).up().c('os').t('webim');
+
+	        var suc = suc || _utils.emptyfn;
+	        var error = fail || this.onError;
+	        var failFn = function failFn(ele) {
+	            error({
+	                type: _code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR,
+	                data: ele
+	            });
+	        };
+	        this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
+	        return;
+	    };
+
+	    // handle all types of presence message
+	    connection.prototype.handlePresence = function (msginfo) {
+	        if (this.isClosed()) {
+	            return;
+	        }
+	        var from = msginfo.getAttribute('from') || '';
+	        var to = msginfo.getAttribute('to') || '';
+	        var type = msginfo.getAttribute('type') || '';
+	        var presence_type = msginfo.getAttribute('presence_type') || '';
+	        var fromUser = _parseNameFromJidFn(from);
+	        var toUser = _parseNameFromJidFn(to);
+	        var info = {
+	            from: fromUser,
+	            to: toUser,
+	            fromJid: from,
+	            toJid: to,
+	            type: type,
+	            chatroom: msginfo.getElementsByTagName('roomtype').length ? true : false
+	        };
+
+	        var showTags = msginfo.getElementsByTagName('show');
+	        if (showTags && showTags.length > 0) {
+	            var showTag = showTags[0];
+	            info.show = Strophe.getText(showTag);
+	        }
+	        var statusTags = msginfo.getElementsByTagName('status');
+	        if (statusTags && statusTags.length > 0) {
+	            var statusTag = statusTags[0];
+	            info.status = Strophe.getText(statusTag);
+	            info.code = statusTag.getAttribute('code');
+	        }
+
+	        var priorityTags = msginfo.getElementsByTagName('priority');
+	        if (priorityTags && priorityTags.length > 0) {
+	            var priorityTag = priorityTags[0];
+	            info.priority = Strophe.getText(priorityTag);
+	        }
+
+	        var error = msginfo.getElementsByTagName('error');
+	        if (error && error.length > 0) {
+	            var error = error[0];
+	            info.error = {
+	                code: error.getAttribute('code')
+	            };
+	        }
+
+	        var destroy = msginfo.getElementsByTagName('destroy');
+	        if (destroy && destroy.length > 0) {
+	            var destroy = destroy[0];
+	            info.destroy = true;
+
+	            var reason = destroy.getElementsByTagName('reason');
+	            if (reason && reason.length > 0) {
+	                info.reason = Strophe.getText(reason[0]);
+	            }
+	        }
+
+	        // <item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none">
+	        //     <actor nick="liuwz"/>
+	        // </item>
+	        // one record once a time
+	        // kick info: actor / member
+	        var members = msginfo.getElementsByTagName('item');
+	        if (members && members.length > 0) {
+	            var member = members[0];
+	            var role = member.getAttribute('role');
+	            var jid = member.getAttribute('jid');
+	            // dismissed by group
+	            if (role == 'none' && jid) {
+	                var kickedMember = _parseNameFromJidFn(jid);
+	                var actor = member.getElementsByTagName('actor')[0];
+	                var actorNick = actor.getAttribute('nick');
+	                info.actor = actorNick;
+	                info.kicked = kickedMember;
+	            }
+	            // Service Acknowledges Room Creation `createGroupACK`
+	            if (role == 'moderator' && info.code == '201') {
+	                // info.type = 'createGroupACK';
+	                info.type = 'joinPublicGroupSuccess';
+	            }
+	        }
+
+	        // from message : apply to join group
+	        // <message from="easemob-demo#chatdemoui_lwz4@easemob.com/mobile" id="259151681747419640" to="easemob-demo#chatdemoui_liuwz@easemob.com" xmlns="jabber:client">
+	        //     <x xmlns="http://jabber.org/protocol/muc#user">
+	        //         <apply from="easemob-demo#chatdemoui_lwz4@easemob.com" to="easemob-demo#chatdemoui_1477733677560@conference.easemob.com" toNick="lwzlwzlwz">
+	        //             <reason>qwe</reason>
+	        //         </apply>
+	        //     </x>
+	        // </message>
+	        var apply = msginfo.getElementsByTagName('apply');
+	        if (apply && apply.length > 0) {
+	            apply = apply[0];
+	            var toNick = apply.getAttribute('toNick');
+	            var groupJid = apply.getAttribute('to');
+	            var userJid = apply.getAttribute('from');
+	            var groupName = _parseNameFromJidFn(groupJid);
+	            var userName = _parseNameFromJidFn(userJid);
+	            info.toNick = toNick;
+	            info.groupName = groupName;
+	            info.type = 'joinGroupNotifications';
+	            var reason = apply.getElementsByTagName('reason');
+	            if (reason && reason.length > 0) {
+	                info.reason = Strophe.getText(reason[0]);
+	            }
+	        }
+
+	        if (info.chatroom) {
+	            // diff the
+	            info.presence_type = presence_type;
+	            info.original_type = info.type;
+	            var reflectUser = from.slice(from.lastIndexOf('/') + 1);
+
+	            if (reflectUser === this.context.userId) {
+	                if (info.type === '' && !info.code) {
+	                    info.type = 'joinChatRoomSuccess';
+	                } else if (presence_type === 'unavailable' || info.type === 'unavailable') {
+	                    if (!info.status) {
+	                        // logout successfully.
+	                        info.type = 'leaveChatRoom';
+	                    } else if (info.code == 110) {
+	                        // logout or dismissied by admin.
+	                        info.type = 'leaveChatRoom';
+	                    } else if (info.error && info.error.code == 406) {
+	                        // The chat room is full.
+	                        info.type = 'reachChatRoomCapacity';
+	                    }
+	                }
+	            }
+	        } else {
+	            info.presence_type = presence_type;
+	            info.original_type = type;
+
+	            if (info.type) {} else if (type == "" && !info.status && !info.error) {
+	                info.type = 'joinPublicGroupSuccess';
+	            } else if (presence_type === 'unavailable' || type === 'unavailable') {
+	                // There is no roomtype when a chat room is deleted.
+	                if (info.destroy) {
+	                    // Group or Chat room Deleted.
+	                    info.type = 'deleteGroupChat';
+	                } else if (info.code == 307 || info.code == 321) {
+	                    // Dismissed by group.
+	                    info.type = 'leaveGroup';
+	                }
+	            }
+	        }
+	        this.onPresence(info, msginfo);
+	    };
+
+	    connection.prototype.handlePing = function (e) {
+	        if (this.isClosed()) {
+	            return;
+	        }
+	        var id = e.getAttribute('id');
+	        var from = e.getAttribute('from');
+	        var to = e.getAttribute('to');
+	        var dom = $iq({
+	            from: to,
+	            to: from,
+	            id: id,
+	            type: 'result'
+	        });
+	        this.sendCommand(dom.tree());
+	    };
+
+	    connection.prototype.handleIq = function (iq) {
+	        return true;
+	    };
+
+	    connection.prototype.handleIqPrivacy = function (msginfo) {
+	        var list = msginfo.getElementsByTagName('list');
+	        if (list.length == 0) {
+	            return;
+	        }
+	        this.getBlacklist();
+	    };
+
+	    connection.prototype.handleIqRoster = function (e) {
+	        var id = e.getAttribute('id');
+	        var from = e.getAttribute('from') || '';
+	        var name = _parseNameFromJidFn(from);
+	        var curJid = this.context.jid;
+	        var curUser = this.context.userId;
+
+	        var iqresult = $iq({ type: 'result', id: id, from: curJid });
+	        this.sendCommand(iqresult.tree());
+
+	        var msgBodies = e.getElementsByTagName('query');
+	        if (msgBodies && msgBodies.length > 0) {
+	            var queryTag = msgBodies[0];
+	            var rouster = _parseFriend(queryTag, this, from);
+	            this.onRoster(rouster);
+	        }
+	        return true;
+	    };
+
+	    connection.prototype.handleMessage = function (msginfo) {
+	        if (this.isClosed()) {
+	            return;
+	        }
+
+	        var id = msginfo.getAttribute('id') || '';
+
+	        // cache ack into sendQueue first , handelSendQueue will do the send thing with the speed of  5/s
+	        this.cacheReceiptsMessage({
+	            id: id
+	        });
+	        var parseMsgData = _parseResponseMessage(msginfo);
+	        if (parseMsgData.errorMsg) {
+	            this.handlePresence(msginfo);
+	            return;
+	        }
+	        // send error
+	        var error = msginfo.getElementsByTagName('error');
+	        var errorCode = '';
+	        var errorText = '';
+	        var errorBool = false;
+	        if (error.length > 0) {
+	            errorBool = true;
+	            errorCode = error[0].getAttribute('code');
+	            var textDOM = error[0].getElementsByTagName('text');
+	            errorText = textDOM[0].textContent || textDOM[0].text;
+	            log('handle error', errorCode, errorText);
+	        }
+
+	        var msgDatas = parseMsgData.data;
+	        for (var i in msgDatas) {
+	            if (!msgDatas.hasOwnProperty(i)) {
+	                continue;
+	            }
+	            var msg = msgDatas[i];
+	            if (!msg.from || !msg.to) {
+	                continue;
+	            }
+
+	            var from = (msg.from + '').toLowerCase();
+	            var too = (msg.to + '').toLowerCase();
+	            var extmsg = msg.ext || {};
+	            var chattype = '';
+	            var typeEl = msginfo.getElementsByTagName('roomtype');
+	            if (typeEl.length) {
+	                chattype = typeEl[0].getAttribute('type') || 'chat';
+	            } else {
+	                chattype = msginfo.getAttribute('type') || 'chat';
+	            }
+
+	            var msgBodies = msg.bodies;
+	            if (!msgBodies || msgBodies.length == 0) {
+	                continue;
+	            }
+	            var msgBody = msg.bodies[0];
+	            var type = msgBody.type;
+
+	            try {
+	                switch (type) {
+	                    case 'txt':
+	                        var receiveMsg = msgBody.msg;
+	                        var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
+	                        if (emojibody.isemoji) {
+	                            var msg = {
+	                                id: id,
+	                                type: chattype,
+	                                from: from,
+	                                to: too,
+	                                delay: parseMsgData.delayTimeStamp,
+	                                data: emojibody.body,
+	                                ext: extmsg
+	                            };
+	                            !msg.delay && delete msg.delay;
+	                            msg.error = errorBool;
+	                            msg.errorText = errorText;
+	                            msg.errorCode = errorCode;
+	                            this.onEmojiMessage(msg);
+	                        } else {
+	                            var msg = {
+	                                id: id,
+	                                type: chattype,
+	                                from: from,
+	                                to: too,
+	                                delay: parseMsgData.delayTimeStamp,
+	                                data: receiveMsg,
+	                                ext: extmsg
+	                            };
+	                            !msg.delay && delete msg.delay;
+	                            msg.error = errorBool;
+	                            msg.errorText = errorText;
+	                            msg.errorCode = errorCode;
+	                            this.onTextMessage(msg);
+	                        }
+	                        break;
+	                    case 'img':
+	                        var rwidth = 0;
+	                        var rheight = 0;
+	                        if (msgBody.size) {
+	                            rwidth = msgBody.size.width;
+	                            rheight = msgBody.size.height;
+	                        }
+	                        var msg = {
+	                            id: id,
+	                            type: chattype,
+	                            from: from,
+	                            to: too,
+	                            url: msgBody.url,
+	                            secret: msgBody.secret,
+	                            filename: msgBody.filename,
+	                            thumb: msgBody.thumb,
+	                            thumb_secret: msgBody.thumb_secret,
+	                            file_length: msgBody.file_length || '',
+	                            width: rwidth,
+	                            height: rheight,
+	                            filetype: msgBody.filetype || '',
+	                            accessToken: this.context.accessToken || '',
+	                            ext: extmsg,
+	                            delay: parseMsgData.delayTimeStamp
+	                        };
+	                        !msg.delay && delete msg.delay;
+	                        msg.error = errorBool;
+	                        msg.errorText = errorText;
+	                        msg.errorCode = errorCode;
+	                        this.onPictureMessage(msg);
+	                        break;
+	                    case 'audio':
+	                        var msg = {
+	                            id: id,
+	                            type: chattype,
+	                            from: from,
+	                            to: too,
+	                            url: msgBody.url,
+	                            secret: msgBody.secret,
+	                            filename: msgBody.filename,
+	                            length: msgBody.length || '',
+	                            file_length: msgBody.file_length || '',
+	                            filetype: msgBody.filetype || '',
+	                            accessToken: this.context.accessToken || '',
+	                            ext: extmsg,
+	                            delay: parseMsgData.delayTimeStamp
+	                        };
+	                        !msg.delay && delete msg.delay;
+	                        msg.error = errorBool;
+	                        msg.errorText = errorText;
+	                        msg.errorCode = errorCode;
+	                        this.onAudioMessage(msg);
+	                        break;
+	                    case 'file':
+	                        var msg = {
+	                            id: id,
+	                            type: chattype,
+	                            from: from,
+	                            to: too,
+	                            url: msgBody.url,
+	                            secret: msgBody.secret,
+	                            filename: msgBody.filename,
+	                            file_length: msgBody.file_length,
+	                            accessToken: this.context.accessToken || '',
+	                            ext: extmsg,
+	                            delay: parseMsgData.delayTimeStamp
+	                        };
+	                        !msg.delay && delete msg.delay;
+	                        msg.error = errorBool;
+	                        msg.errorText = errorText;
+	                        msg.errorCode = errorCode;
+	                        this.onFileMessage(msg);
+	                        break;
+	                    case 'loc':
+	                        var msg = {
+	                            id: id,
+	                            type: chattype,
+	                            from: from,
+	                            to: too,
+	                            addr: msgBody.addr,
+	                            lat: msgBody.lat,
+	                            lng: msgBody.lng,
+	                            ext: extmsg,
+	                            delay: parseMsgData.delayTimeStamp
+	                        };
+	                        !msg.delay && delete msg.delay;
+	                        msg.error = errorBool;
+	                        msg.errorText = errorText;
+	                        msg.errorCode = errorCode;
+	                        this.onLocationMessage(msg);
+	                        break;
+	                    case 'video':
+	                        var msg = {
+	                            id: id,
+	                            type: chattype,
+	                            from: from,
+	                            to: too,
+	                            url: msgBody.url,
+	                            secret: msgBody.secret,
+	                            filename: msgBody.filename,
+	                            file_length: msgBody.file_length,
+	                            accessToken: this.context.accessToken || '',
+	                            ext: extmsg,
+	                            delay: parseMsgData.delayTimeStamp
+	                        };
+	                        !msg.delay && delete msg.delay;
+	                        msg.error = errorBool;
+	                        msg.errorText = errorText;
+	                        msg.errorCode = errorCode;
+	                        this.onVideoMessage(msg);
+	                        break;
+	                    case 'cmd':
+	                        var msg = {
+	                            id: id,
+	                            from: from,
+	                            to: too,
+	                            action: msgBody.action,
+	                            ext: extmsg,
+	                            delay: parseMsgData.delayTimeStamp
+	                        };
+	                        !msg.delay && delete msg.delay;
+	                        msg.error = errorBool;
+	                        msg.errorText = errorText;
+	                        msg.errorCode = errorCode;
+	                        this.onCmdMessage(msg);
+	                        break;
+	                }
+	                ;
+	            } catch (e) {
+	                this.onError({
+	                    type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                    data: e
+	                });
+	            }
+	        }
+	    };
+
+	    connection.prototype.handleReceivedMessage = function (message) {
+	        try {
+	            this.onReceivedMessage(message);
+	        } catch (e) {
+	            this.onError({
+	                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                data: e
+	            });
+	        }
+
+	        var rcv = message.getElementsByTagName('received'),
+	            id,
+	            mid;
+
+	        if (rcv.length > 0) {
+	            if (rcv[0].childNodes && rcv[0].childNodes.length > 0) {
+	                id = rcv[0].childNodes[0].nodeValue;
+	            } else {
+	                id = rcv[0].innerHTML || rcv[0].innerText;
+	            }
+	            mid = rcv[0].getAttribute('mid');
+	        }
+
+	        if (_msgHash[id]) {
+	            try {
+	                _msgHash[id].msg.success instanceof Function && _msgHash[id].msg.success(id, mid);
+	            } catch (e) {
+	                this.onError({
+	                    type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                    data: e
+	                });
+	            }
+	            delete _msgHash[id];
+	        }
+	    };
+
+	    connection.prototype.handleInviteMessage = function (message) {
+	        var form = null;
+	        var invitemsg = message.getElementsByTagName('invite');
+	        var reasonDom = message.getElementsByTagName('reason')[0];
+	        var reasonMsg = reasonDom.textContent;
+	        var id = message.getAttribute('id') || '';
+	        this.sendReceiptsMessage({
+	            id: id
+	        });
+
+	        if (invitemsg && invitemsg.length > 0) {
+	            var fromJid = invitemsg[0].getAttribute('from');
+	            form = _parseNameFromJidFn(fromJid);
+	        }
+	        var xmsg = message.getElementsByTagName('x');
+	        var roomid = null;
+	        if (xmsg && xmsg.length > 0) {
+	            for (var i = 0; i < xmsg.length; i++) {
+	                if ('jabber:x:conference' === xmsg[i].namespaceURI) {
+	                    var roomjid = xmsg[i].getAttribute('jid');
+	                    roomid = _parseNameFromJidFn(roomjid);
+	                }
+	            }
+	        }
+	        this.onInviteMessage({
+	            type: 'invite',
+	            from: form,
+	            roomid: roomid,
+	            reason: reasonMsg
+	        });
+	    };
+
+	    connection.prototype.sendCommand = function (dom, id) {
+	        if (this.isOpened()) {
+	            this.context.stropheConn.send(dom);
+	        } else {
+	            this.onError({
+	                type: _code.WEBIM_CONNCTION_DISCONNECTED,
+	                reconnect: true
+	            });
+	        }
+	    };
+
+	    connection.prototype.getUniqueId = function (prefix) {
+	        var cdate = new Date();
+	        var offdate = new Date(2010, 1, 1);
+	        var offset = cdate.getTime() - offdate.getTime();
+	        var hexd = parseInt(offset).toString(16);
+
+	        if (typeof prefix === 'string' || typeof prefix === 'number') {
+	            return prefix + '_' + hexd;
+	        } else {
+	            return 'WEBIM_' + hexd;
+	        }
+	    };
+
+	    connection.prototype.send = function (message) {
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}', function (response) {}, function (code, msg) {
+	                Demo.api.NotifyError('send:' + code + " - " + msg);
+	            });
+	        } else {
+	            if (Object.prototype.toString.call(message) === '[object Object]') {
+	                var appKey = this.context.appKey || '';
+	                var toJid = appKey + '_' + message.to + '@' + this.domain;
+
+	                if (message.group) {
+	                    toJid = appKey + '_' + message.to + '@conference.' + this.domain;
+	                }
+	                if (message.resource) {
+	                    toJid = toJid + '/' + message.resource;
+	                }
+
+	                message.toJid = toJid;
+	                message.id = message.id || this.getUniqueId();
+	                _msgHash[message.id] = new _message(message);
+	                _msgHash[message.id].send(this);
+	            } else if (typeof message === 'string') {
+	                _msgHash[message] && _msgHash[message].send(this);
+	            }
+	        }
+	    };
+
+	    connection.prototype.addRoster = function (options) {
+	        var jid = _getJid(options, this);
+	        var name = options.name || '';
+	        var groups = options.groups || '';
+
+	        var iq = $iq({ type: 'set' });
+	        iq.c('query', { xmlns: 'jabber:iq:roster' });
+	        iq.c('item', { jid: jid, name: name });
+
+	        if (groups) {
+	            for (var i = 0; i < groups.length; i++) {
+	                iq.c('group').t(groups[i]).up();
+	            }
+	        }
+	        var suc = options.success || _utils.emptyfn;
+	        var error = options.error || _utils.emptyfn;
+	        this.context.stropheConn.sendIQ(iq.tree(), suc, error);
+	    };
+
+	    connection.prototype.removeRoster = function (options) {
+	        var jid = _getJid(options, this);
+	        var iq = $iq({ type: 'set' }).c('query', { xmlns: 'jabber:iq:roster' }).c('item', {
+	            jid: jid,
+	            subscription: 'remove'
+	        });
+
+	        var suc = options.success || _utils.emptyfn;
+	        var error = options.error || _utils.emptyfn;
+	        this.context.stropheConn.sendIQ(iq, suc, error);
+	    };
+
+	    connection.prototype.getRoster = function (options) {
+	        var conn = this;
+	        var dom = $iq({
+	            type: 'get'
+	        }).c('query', { xmlns: 'jabber:iq:roster' });
+
+	        var options = options || {};
+	        var suc = options.success || this.onRoster;
+	        var completeFn = function completeFn(ele) {
+	            var rouster = [];
+	            var msgBodies = ele.getElementsByTagName('query');
+	            if (msgBodies && msgBodies.length > 0) {
+	                var queryTag = msgBodies[0];
+	                rouster = _parseFriend(queryTag);
+	            }
+	            suc(rouster, ele);
+	        };
+	        var error = options.error || this.onError;
+	        var failFn = function failFn(ele) {
+	            error({
+	                type: _code.WEBIM_CONNCTION_GETROSTER_ERROR,
+	                data: ele
+	            });
+	        };
+	        if (this.isOpened()) {
+	            this.context.stropheConn.sendIQ(dom.tree(), completeFn, failFn);
+	        } else {
+	            error({
+	                type: _code.WEBIM_CONNCTION_DISCONNECTED
+	            });
+	        }
+	    };
+
+	    connection.prototype.subscribe = function (options) {
+	        var jid = _getJid(options, this);
+	        var pres = $pres({ to: jid, type: 'subscribe' });
+	        if (options.message) {
+	            pres.c('status').t(options.message).up();
+	        }
+	        if (options.nick) {
+	            pres.c('nick', { 'xmlns': 'http://jabber.org/protocol/nick' }).t(options.nick);
+	        }
+	        this.sendCommand(pres.tree());
+	    };
+
+	    connection.prototype.subscribed = function (options) {
+	        var jid = _getJid(options, this);
+	        var pres = $pres({ to: jid, type: 'subscribed' });
+
+	        if (options.message) {
+	            pres.c('status').t(options.message).up();
+	        }
+	        this.sendCommand(pres.tree());
+	    };
+
+	    connection.prototype.unsubscribe = function (options) {
+	        var jid = _getJid(options, this);
+	        var pres = $pres({ to: jid, type: 'unsubscribe' });
+
+	        if (options.message) {
+	            pres.c('status').t(options.message);
+	        }
+	        this.sendCommand(pres.tree());
+	    };
+
+	    connection.prototype.unsubscribed = function (options) {
+	        var jid = _getJid(options, this);
+	        var pres = $pres({ to: jid, type: 'unsubscribed' });
+
+	        if (options.message) {
+	            pres.c('status').t(options.message).up();
+	        }
+	        this.sendCommand(pres.tree());
+	    };
+
+	    connection.prototype.createRoom = function (options) {
+	        var suc = options.success || _utils.emptyfn;
+	        var err = options.error || _utils.emptyfn;
+	        var roomiq;
+
+	        roomiq = $iq({
+	            to: options.roomName,
+	            type: 'set'
+	        }).c('query', { xmlns: Strophe.NS.MUC_OWNER }).c('x', { xmlns: 'jabber:x:data', type: 'submit' });
+
+	        return this.context.stropheConn.sendIQ(roomiq.tree(), suc, err);
+	    };
+
+	    connection.prototype.joinPublicGroup = function (options) {
+	        var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
+	        var room_nick = roomJid + '/' + this.context.userId;
+	        var suc = options.success || _utils.emptyfn;
+	        var err = options.error || _utils.emptyfn;
+	        var errorFn = function errorFn(ele) {
+	            err({
+	                type: _code.WEBIM_CONNCTION_JOINROOM_ERROR,
+	                data: ele
+	            });
+	        };
+	        var iq = $pres({
+	            from: this.context.jid,
+	            to: room_nick
+	        }).c('x', { xmlns: Strophe.NS.MUC });
+
+	        this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
+	    };
+
+	    connection.prototype.listRooms = function (options) {
+	        var iq = $iq({
+	            to: options.server || 'conference.' + this.domain,
+	            from: this.context.jid,
+	            type: 'get'
+	        }).c('query', { xmlns: Strophe.NS.DISCO_ITEMS });
+
+	        var suc = options.success || _utils.emptyfn;
+	        var error = options.error || this.onError;
+	        var completeFn = function completeFn(result) {
+	            var rooms = [];
+	            rooms = _parseRoom(result);
+	            try {
+	                suc(rooms);
+	            } catch (e) {
+	                error({
+	                    type: _code.WEBIM_CONNCTION_GETROOM_ERROR,
+	                    data: e
+	                });
+	            }
+	        };
+	        var err = options.error || _utils.emptyfn;
+	        var errorFn = function errorFn(ele) {
+	            err({
+	                type: _code.WEBIM_CONNCTION_GETROOM_ERROR,
+	                data: ele
+	            });
+	        };
+	        this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
+	    };
+
+	    connection.prototype.queryRoomMember = function (options) {
+	        var domain = this.domain;
+	        var members = [];
+	        var iq = $iq({
+	            to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain,
+	            type: 'get'
+	        }).c('query', { xmlns: Strophe.NS.MUC + '#admin' }).c('item', { affiliation: 'member' });
+
+	        var suc = options.success || _utils.emptyfn;
+	        var completeFn = function completeFn(result) {
+	            var items = result.getElementsByTagName('item');
+
+	            if (items) {
+	                for (var i = 0; i < items.length; i++) {
+	                    var item = items[i];
+	                    var mem = {
+	                        jid: item.getAttribute('jid'),
+	                        affiliation: 'member'
+	                    };
+	                    members.push(mem);
+	                }
+	            }
+	            suc(members);
+	        };
+	        var err = options.error || _utils.emptyfn;
+	        var errorFn = function errorFn(ele) {
+	            err({
+	                type: _code.WEBIM_CONNCTION_GETROOMMEMBER_ERROR,
+	                data: ele
+	            });
+	        };
+	        this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
+	    };
+
+	    connection.prototype.queryRoomInfo = function (options) {
+	        var domain = this.domain;
+	        var iq = $iq({
+	            to: this.context.appKey + '_' + options.roomId + '@conference.' + domain,
+	            type: 'get'
+	        }).c('query', { xmlns: Strophe.NS.DISCO_INFO });
+
+	        var suc = options.success || _utils.emptyfn;
+	        var members = [];
+
+	        var completeFn = function completeFn(result) {
+	            var settings = '';
+	            var features = result.getElementsByTagName('feature');
+	            if (features) {
+	                settings = features[1].getAttribute('var') + '|' + features[3].getAttribute('var') + '|' + features[4].getAttribute('var');
+	            }
+	            switch (settings) {
+	                case 'muc_public|muc_membersonly|muc_notallowinvites':
+	                    settings = 'PUBLIC_JOIN_APPROVAL';
+	                    break;
+	                case 'muc_public|muc_open|muc_notallowinvites':
+	                    settings = 'PUBLIC_JOIN_OPEN';
+	                    break;
+	                case 'muc_hidden|muc_membersonly|muc_allowinvites':
+	                    settings = 'PRIVATE_MEMBER_INVITE';
+	                    break;
+	                case 'muc_hidden|muc_membersonly|muc_notallowinvites':
+	                    settings = 'PRIVATE_OWNER_INVITE';
+	                    break;
+	            }
+	            var owner = '';
+	            var fields = result.getElementsByTagName('field');
+	            var fieldValues = {};
+	            if (fields) {
+	                for (var i = 0; i < fields.length; i++) {
+	                    var field = fields[i];
+	                    var fieldVar = field.getAttribute('var');
+	                    var fieldSimplify = fieldVar.split('_')[1];
+	                    switch (fieldVar) {
+	                        case 'muc#roominfo_occupants':
+	                        case 'muc#roominfo_maxusers':
+	                        case 'muc#roominfo_affiliations':
+	                        case 'muc#roominfo_description':
+	                            fieldValues[fieldSimplify] = field.textContent || field.text || '';
+	                            break;
+	                        case 'muc#roominfo_owner':
+	                            var mem = {
+	                                jid: (field.textContent || field.text) + '@' + domain,
+	                                affiliation: 'owner'
+	                            };
+	                            members.push(mem);
+	                            fieldValues[fieldSimplify] = field.textContent || field.text;
+	                            break;
+	                    }
+
+	                    // if (field.getAttribute('label') === 'owner') {
+	                    //     var mem = {
+	                    //         jid: (field.textContent || field.text) + '@' + domain
+	                    //         , affiliation: 'owner'
+	                    //     };
+	                    //     members.push(mem);
+	                    //     break;
+	                    // }
+	                }
+	                fieldValues['name'] = result.getElementsByTagName('identity')[0].getAttribute('name');
+	            }
+	            log(settings, members, fieldValues);
+	            suc(settings, members, fieldValues);
+	        };
+	        var err = options.error || _utils.emptyfn;
+	        var errorFn = function errorFn(ele) {
+	            err({
+	                type: _code.WEBIM_CONNCTION_GETROOMINFO_ERROR,
+	                data: ele
+	            });
+	        };
+	        this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
+	    };
+
+	    connection.prototype.queryRoomOccupants = function (options) {
+	        var suc = options.success || _utils.emptyfn;
+	        var completeFn = function completeFn(result) {
+	            var occupants = [];
+	            occupants = _parseRoomOccupants(result);
+	            suc(occupants);
+	        };
+	        var err = options.error || _utils.emptyfn;
+	        var errorFn = function errorFn(ele) {
+	            err({
+	                type: _code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR,
+	                data: ele
+	            });
+	        };
+	        var attrs = {
+	            xmlns: Strophe.NS.DISCO_ITEMS
+	        };
+	        var info = $iq({
+	            from: this.context.jid,
+	            to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain,
+	            type: 'get'
+	        }).c('query', attrs);
+	        this.context.stropheConn.sendIQ(info.tree(), completeFn, errorFn);
+	    };
+
+	    connection.prototype.setUserSig = function (desc) {
+	        var dom = $pres({ xmlns: 'jabber:client' });
+	        desc = desc || '';
+	        dom.c('status').t(desc);
+	        this.sendCommand(dom.tree());
+	    };
+
+	    connection.prototype.setPresence = function (type, status) {
+	        var dom = $pres({ xmlns: 'jabber:client' });
+	        if (type) {
+	            if (status) {
+	                dom.c('show').t(type);
+	                dom.up().c('status').t(status);
+	            } else {
+	                dom.c('show').t(type);
+	            }
+	        }
+	        this.sendCommand(dom.tree());
+	    };
+
+	    connection.prototype.getPresence = function () {
+	        var dom = $pres({ xmlns: 'jabber:client' });
+	        var conn = this;
+	        this.sendCommand(dom.tree());
+	    };
+
+	    connection.prototype.ping = function (options) {
+	        var options = options || {};
+	        var jid = _getJid(options, this);
+
+	        var dom = $iq({
+	            from: this.context.jid || '',
+	            to: jid,
+	            type: 'get'
+	        }).c('ping', { xmlns: 'urn:xmpp:ping' });
+
+	        var suc = options.success || _utils.emptyfn;
+	        var error = options.error || this.onError;
+	        var failFn = function failFn(ele) {
+	            error({
+	                type: _code.WEBIM_CONNCTION_PING_ERROR,
+	                data: ele
+	            });
+	        };
+	        if (this.isOpened()) {
+	            this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
+	        } else {
+	            error({
+	                type: _code.WEBIM_CONNCTION_DISCONNECTED
+	            });
+	        }
+	        return;
+	    };
+
+	    connection.prototype.isOpened = function () {
+	        return this.context.status == _code.STATUS_OPENED;
+	    };
+
+	    connection.prototype.isOpening = function () {
+	        var status = this.context.status;
+	        return status == _code.STATUS_DOLOGIN_USERGRID || status == _code.STATUS_DOLOGIN_IM;
+	    };
+
+	    connection.prototype.isClosing = function () {
+	        return this.context.status == _code.STATUS_CLOSING;
+	    };
+
+	    connection.prototype.isClosed = function () {
+	        return this.context.status == _code.STATUS_CLOSED;
+	    };
+
+	    connection.prototype.clear = function () {
+	        var key = this.context.appKey;
+	        if (this.errorType != WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
+	            this.context = {
+	                status: _code.STATUS_INIT,
+	                appKey: key
+	            };
+	        }
+	        if (this.intervalId) {
+	            clearInterval(this.intervalId);
+	        }
+	        if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
+	            Demo.api.init();
+	        }
+	    };
+
+	    connection.prototype.getChatRooms = function (options) {
+
+	        if (!_utils.isCanSetRequestHeader) {
+	            conn.onError({
+	                type: _code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR
+	            });
+	            return;
+	        }
+
+	        var conn = this,
+	            token = options.accessToken || this.context.accessToken;
+
+	        if (token) {
+	            var apiUrl = options.apiUrl;
+	            var appName = this.context.appName;
+	            var orgName = this.context.orgName;
+
+	            if (!appName || !orgName) {
+	                conn.onError({
+	                    type: _code.WEBIM_CONNCTION_AUTH_ERROR
+	                });
+	                return;
+	            }
+
+	            var suc = function suc(data, xhr) {
+	                typeof options.success === 'function' && options.success(data);
+	            };
+
+	            var error = function error(res, xhr, msg) {
+	                if (res.error && res.error_description) {
+	                    conn.onError({
+	                        type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,
+	                        msg: res.error_description,
+	                        data: res,
+	                        xhr: xhr
+	                    });
+	                }
+	            };
+
+	            var pageInfo = {
+	                pagenum: parseInt(options.pagenum) || 1,
+	                pagesize: parseInt(options.pagesize) || 20
+	            };
+
+	            var opts = {
+	                url: apiUrl + '/' + orgName + '/' + appName + '/chatrooms',
+	                dataType: 'json',
+	                type: 'GET',
+	                headers: { 'Authorization': 'Bearer ' + token },
+	                data: pageInfo,
+	                success: suc || _utils.emptyfn,
+	                error: error || _utils.emptyfn
+	            };
+	            _utils.ajax(opts);
+	        } else {
+	            conn.onError({
+	                type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
+	            });
+	        }
+	    };
+
+	    connection.prototype.joinChatRoom = function (options) {
+	        var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
+	        var room_nick = roomJid + '/' + this.context.userId;
+	        var suc = options.success || _utils.emptyfn;
+	        var err = options.error || _utils.emptyfn;
+	        var errorFn = function errorFn(ele) {
+	            err({
+	                type: _code.WEBIM_CONNCTION_JOINCHATROOM_ERROR,
+	                data: ele
+	            });
+	        };
+
+	        var iq = $pres({
+	            from: this.context.jid,
+	            to: room_nick
+	        }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'member', role: 'participant' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+
+	        this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
+	    };
+
+	    connection.prototype.quitChatRoom = function (options) {
+	        var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
+	        var room_nick = roomJid + '/' + this.context.userId;
+	        var suc = options.success || _utils.emptyfn;
+	        var err = options.error || _utils.emptyfn;
+	        var errorFn = function errorFn(ele) {
+	            err({
+	                type: _code.WEBIM_CONNCTION_QUITCHATROOM_ERROR,
+	                data: ele
+	            });
+	        };
+	        var iq = $pres({
+	            from: this.context.jid,
+	            to: room_nick,
+	            type: 'unavailable'
+	        }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'none', role: 'none' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+
+	        this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
+	    };
+
+	    connection.prototype._onReceiveInviteFromGroup = function (info) {
+	        info = eval('(' + info + ')');
+	        var options = {
+	            title: "Group invitation",
+	            msg: info.user + " invites you to join into group:" + info.group_id,
+	            agree: function agree() {
+	                WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
+	                    Demo.api.NotifyError("acceptInvitationFromGroup error:" + msg);
+	                });
+	            },
+	            reject: function reject() {
+	                WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
+	                    Demo.api.NotifyError("declineInvitationFromGroup error:" + msg);
+	                });
+	            }
+	        };
+
+	        this.onConfirmPop(options);
+	    };
+	    connection.prototype._onReceiveInviteAcceptionFromGroup = function (info) {
+	        info = eval('(' + info + ')');
+	        var options = {
+	            title: "Group invitation response",
+	            msg: info.user + " agreed to join into group:" + info.group_id,
+	            agree: function agree() {}
+	        };
+	        this.onConfirmPop(options);
+	    };
+	    connection.prototype._onReceiveInviteDeclineFromGroup = function (info) {
+	        info = eval('(' + info + ')');
+	        var options = {
+	            title: "Group invitation response",
+	            msg: info.user + " rejected to join into group:" + info.group_id,
+	            agree: function agree() {}
+	        };
+	        this.onConfirmPop(options);
+	    };
+	    connection.prototype._onAutoAcceptInvitationFromGroup = function (info) {
+	        info = eval('(' + info + ')');
+	        var options = {
+	            title: "Group invitation",
+	            msg: "You had joined into the group:" + info.group_name + " automatically.Inviter:" + info.user,
+	            agree: function agree() {}
+	        };
+	        this.onConfirmPop(options);
+	    };
+	    connection.prototype._onLeaveGroup = function (info) {
+	        info = eval('(' + info + ')');
+	        var options = {
+	            title: "Group notification",
+	            msg: "You have been out of the group:" + info.group_id + ".Reason:" + info.msg,
+	            agree: function agree() {}
+	        };
+	        this.onConfirmPop(options);
+	    };
+	    connection.prototype._onReceiveJoinGroupApplication = function (info) {
+	        info = eval('(' + info + ')');
+	        var options = {
+	            title: "Group join application",
+	            msg: info.user + " applys to join into group:" + info.group_id,
+	            agree: function agree() {
+	                WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
+	                    Demo.api.NotifyError("acceptJoinGroupApplication error:" + msg);
+	                });
+	            },
+	            reject: function reject() {
+	                WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
+	                    Demo.api.NotifyError("declineJoinGroupApplication error:" + msg);
+	                });
+	            }
+	        };
+	        this.onConfirmPop(options);
+	    };
+	    connection.prototype._onReceiveAcceptionFromGroup = function (info) {
+	        info = eval('(' + info + ')');
+	        var options = {
+	            title: "Group notification",
+	            msg: "You had joined into the group:" + info.group_name + ".",
+	            agree: function agree() {}
+	        };
+	        this.onConfirmPop(options);
+	    };
+	    connection.prototype._onReceiveRejectionFromGroup = function () {
+	        info = eval('(' + info + ')');
+	        var options = {
+	            title: "Group notification",
+	            msg: "You have been rejected to join into the group:" + info.group_name + ".",
+	            agree: function agree() {}
+	        };
+	        this.onConfirmPop(options);
+	    };
+	    connection.prototype._onUpdateMyGroupList = function (options) {
+	        this.onUpdateMyGroupList(options);
+	    };
+	    connection.prototype._onUpdateMyRoster = function (options) {
+	        this.onUpdateMyRoster(options);
+	    };
+	    connection.prototype.reconnect = function () {
+	        var that = this;
+	        setTimeout(function () {
+	            _login(that.context.restTokenData, that);
+	        }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
+	        this.autoReconnectNumTotal++;
+	    };
+	    connection.prototype.closed = function () {
+	        Demo.api.init();
+	    };
+
+	    // used for blacklist
+	    function _parsePrivacy(iq) {
+	        var list = [];
+	        var items = iq.getElementsByTagName('item');
+
+	        if (items) {
+	            for (var i = 0; i < items.length; i++) {
+	                var item = items[i];
+	                var jid = item.getAttribute('value');
+	                var order = item.getAttribute('order');
+	                var type = item.getAttribute('type');
+	                if (!jid) {
+	                    continue;
+	                }
+	                var n = _parseNameFromJidFn(jid);
+	                list[n] = {
+	                    type: type,
+	                    order: order,
+	                    jid: jid,
+	                    name: n
+	                };
+	            }
+	        }
+	        return list;
+	    };
+
+	    // used for blacklist
+	    connection.prototype.getBlacklist = function (options) {
+	        options = options || {};
+	        var iq = $iq({ type: 'get' });
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+	        var me = this;
+
+	        iq.c('query', { xmlns: 'jabber:iq:privacy' }).c('list', { name: 'special' });
+
+	        this.context.stropheConn.sendIQ(iq.tree(), function (iq) {
+	            me.onBlacklistUpdate(_parsePrivacy(iq));
+	            sucFn();
+	        }, function () {
+	            me.onBlacklistUpdate([]);
+	            errFn();
+	        });
+	    };
+
+	    // used for blacklist
+	    connection.prototype.addToBlackList = function (options) {
+	        var iq = $iq({ type: 'set' });
+	        var blacklist = options.list || {};
+	        var type = options.type || 'jid';
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+	        var piece = iq.c('query', { xmlns: 'jabber:iq:privacy' }).c('list', { name: 'special' });
+
+	        var keys = Object.keys(blacklist);
+	        var len = keys.length;
+	        var order = 2;
+
+	        for (var i = 0; i < len; i++) {
+	            var item = blacklist[keys[i]];
+	            var type = item.type || 'jid';
+	            var jid = item.jid;
+
+	            piece = piece.c('item', { action: 'deny', order: order++, type: type, value: jid }).c('message');
+	            if (i !== len - 1) {
+	                piece = piece.up().up();
+	            }
+	        }
+
+	        // log('addToBlackList', blacklist, piece.tree());
+	        this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
+	    };
+
+	    // used for blacklist
+	    connection.prototype.removeFromBlackList = function (options) {
+
+	        var iq = $iq({ type: 'set' });
+	        var blacklist = options.list || {};
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+	        var piece = iq.c('query', { xmlns: 'jabber:iq:privacy' }).c('list', { name: 'special' });
+
+	        var keys = Object.keys(blacklist);
+	        var len = keys.length;
+
+	        for (var i = 0; i < len; i++) {
+	            var item = blacklist[keys[i]];
+	            var type = item.type || 'jid';
+	            var jid = item.jid;
+	            var order = item.order;
+
+	            piece = piece.c('item', { action: 'deny', order: order, type: type, value: jid }).c('message');
+	            if (i !== len - 1) {
+	                piece = piece.up().up();
+	            }
+	        }
+
+	        // log('removeFromBlackList', blacklist, piece.tree());
+	        this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
+	    };
+
+	    connection.prototype._getGroupJid = function (to) {
+	        var appKey = this.context.appKey || '';
+	        return appKey + '_' + to + '@conference.' + this.domain;
+	    };
+
+	    // used for blacklist
+	    connection.prototype.addToGroupBlackList = function (options) {
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+	        var jid = _getJid(options, this);
+	        var affiliation = 'admin'; //options.affiliation || 'admin';
+	        var to = this._getGroupJid(options.roomId);
+	        var iq = $iq({ type: 'set', to: to });
+
+	        iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	            affiliation: 'outcast',
+	            jid: jid
+	        });
+
+	        this.context.stropheConn.sendIQ(iq.tree(), sucFn, errFn);
+	    };
+
+	    function _parseGroupBlacklist(iq) {
+	        var list = {};
+	        var items = iq.getElementsByTagName('item');
+
+	        if (items) {
+	            for (var i = 0; i < items.length; i++) {
+	                var item = items[i];
+	                var jid = item.getAttribute('jid');
+	                var affiliation = item.getAttribute('affiliation');
+	                var nick = item.getAttribute('nick');
+	                if (!jid) {
+	                    continue;
+	                }
+	                var n = _parseNameFromJidFn(jid);
+	                list[n] = {
+	                    jid: jid,
+	                    affiliation: affiliation,
+	                    nick: nick,
+	                    name: n
+	                };
+	            }
+	        }
+	        return list;
+	    }
+
+	    // used for blacklist
+	    connection.prototype.getGroupBlacklist = function (options) {
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+
+	        // var jid = _getJid(options, this);
+	        var affiliation = 'admin'; //options.affiliation || 'admin';
+	        var to = this._getGroupJid(options.roomId);
+	        var iq = $iq({ type: 'get', to: to });
+
+	        iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	            affiliation: 'outcast'
+	        });
+
+	        this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+	            log('getGroupBlackList');
+	            sucFn(_parseGroupBlacklist(msginfo));
+	        }, function () {
+	            errFn();
+	        });
+	    };
+
+	    // used for blacklist
+	    connection.prototype.removeGroupMemberFromBlacklist = function (options) {
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+
+	        var jid = _getJid(options, this);
+	        var affiliation = 'admin'; //options.affiliation || 'admin';
+	        var to = this._getGroupJid(options.roomId);
+	        var iq = $iq({ type: 'set', to: to });
+
+	        iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	            affiliation: 'member',
+	            jid: jid
+	        });
+
+	        this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+	            sucFn();
+	        }, function () {
+	            errFn();
+	        });
+	    };
+
+	    /**
+	     * changeGroupSubject 修改群名称
+	     *
+	     * @param options
+	     */
+	    // <iq to='easemob-demo#chatdemoui_roomid@conference.easemob.com' type='set' id='3940489311' xmlns='jabber:client'>
+	    //     <query xmlns='http://jabber.org/protocol/muc#owner'>
+	    //         <x type='submit' xmlns='jabber:x:data'>
+	    //             <field var='FORM_TYPE'><value>http://jabber.org/protocol/muc#roomconfig</value></field>
+	    //             <field var='muc#roomconfig_roomname'><value>Room Name</value></field>
+	    //         </x>
+	    //     </query>
+	    // </iq>
+	    connection.prototype.changeGroupSubject = function (options) {
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+
+	        // must be `owner`
+	        var affiliation = 'owner';
+	        var to = this._getGroupJid(options.roomId);
+	        var iq = $iq({ type: 'set', to: to });
+
+	        iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('x', { type: 'submit', xmlns: 'jabber:x:data' }).c('field', { var: 'FORM_TYPE' }).c('value').t('http://jabber.org/protocol/muc#roomconfig').up().up().c('field', { var: 'muc#roomconfig_roomname' }).c('value').t(options.subject).up().up().c('field', { var: 'muc#roomconfig_roomdesc' }).c('value').t(options.description);
+
+	        this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+	            sucFn();
+	        }, function () {
+	            errFn();
+	        });
+	    };
+
+	    /**
+	     * destroyGroup 删除群组
+	     *
+	     * @param options
+	     */
+	    // <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
+	    //     <query xmlns="http://jabber.org/protocol/muc#owner">
+	    //         <destroy/>
+	    //     </query>
+	    // </iq>
+	    connection.prototype.destroyGroup = function (options) {
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+
+	        // must be `owner`
+	        var affiliation = 'owner';
+	        var to = this._getGroupJid(options.roomId);
+	        var iq = $iq({ type: 'set', to: to });
+
+	        iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('destroy');
+
+	        this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+	            sucFn();
+	        }, function () {
+	            errFn();
+	        });
+	    };
+
+	    /**
+	     * leaveGroupBySelf 主动离开群组
+	     *
+	     * @param options
+	     */
+	    // <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
+	    //     <query xmlns="http://jabber.org/protocol/muc#admin">
+	    //         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	    //     </query>
+	    // </iq>
+	    connection.prototype.leaveGroupBySelf = function (options) {
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+
+	        // must be `owner`
+	        var jid = _getJid(options, this);
+	        var affiliation = 'admin';
+	        var to = this._getGroupJid(options.roomId);
+	        var iq = $iq({ type: 'set', to: to });
+
+	        iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	            affiliation: 'none',
+	            jid: jid
+	        });
+
+	        this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	            sucFn(msgInfo);
+	        }, function (errInfo) {
+	            errFn(errInfo);
+	        });
+	    };
+
+	    /**
+	     * leaveGroup 被踢出群组
+	     *
+	     * @param options
+	     */
+	    // <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
+	    //     <query xmlns="http://jabber.org/protocol/muc#admin">
+	    //         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
+	    //         <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
+	    //         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	    //         <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
+	    //     </query>
+	    // </iq>
+	    connection.prototype.leaveGroup = function (options) {
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+	        var list = options.list || [];
+	        var affiliation = 'admin';
+	        var to = this._getGroupJid(options.roomId);
+	        var iq = $iq({ type: 'set', to: to });
+	        var piece = iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation });
+	        var keys = Object.keys(list);
+	        var len = keys.length;
+
+	        for (var i = 0; i < len; i++) {
+	            var name = list[keys[i]];
+	            var jid = _getJidByName(name, this);
+
+	            piece = piece.c('item', {
+	                affiliation: 'none',
+	                jid: jid
+	            }).up().c('item', {
+	                role: 'none',
+	                jid: jid
+	            }).up();
+	        }
+
+	        this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	            sucFn(msgInfo);
+	        }, function (errInfo) {
+	            errFn(errInfo);
+	        });
+	    };
+
+	    /**
+	     * addGroupMembers 添加群组成员
+	     *
+	     * @param options
+	     */
+	    // <iq id="09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477482739698@conference.easemob.com" type="set">
+	    //     <query xmlns="http://jabber.org/protocol/muc#admin">
+	    //         <item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	    //     </query>
+	    // </iq>
+	    connection.prototype.addGroupMembers = function (options) {
+	        var sucFn = options.success || _utils.emptyfn;
+	        var errFn = options.error || _utils.emptyfn;
+	        var list = options.list || [];
+	        var affiliation = 'admin';
+	        var to = this._getGroupJid(options.roomId);
+	        var iq = $iq({ type: 'set', to: to });
+	        var piece = iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation });
+	        var keys = Object.keys(list);
+	        var len = keys.length;
+
+	        for (var i = 0; i < len; i++) {
+	            var name = list[keys[i]];
+	            var jid = _getJidByName(name, this);
+
+	            piece = piece.c('item', {
+	                affiliation: 'member',
+	                jid: jid
+	            }).up();
+	        }
+
+	        this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	            sucFn(msgInfo);
+	        }, function (errInfo) {
+	            errFn(errInfo);
+	        });
+	    };
+
+	    /**
+	     * acceptInviteFromGroup 接受加入申请
+	     *
+	     * @param options
+	     */
+	    connection.prototype.acceptInviteFromGroup = function (options) {
+	        options.success = function () {
+	            // then send sendAcceptInviteMessage
+	            // connection.prototype.sendAcceptInviteMessage(optoins);
+	        };
+	        this.addGroupMembers(options);
+	    };
+
+	    /**
+	     * rejectInviteFromGroup 拒绝加入申请
+	     *
+	     * throw request for now 暂时不处理，直接丢弃
+	     *
+	     * @param options
+	     */
+	    connection.prototype.rejectInviteFromGroup = function (options) {};
+
+	    /**
+	     * createGroup 创建群组
+	     *
+	     * 1. 创建申请 -> 得到房主身份
+	     * 2. 获取房主信息 -> 得到房间form
+	     * 3. 完善房间form -> 创建成功
+	     * 4. 添加房间成员
+	     * 5. 消息通知成员
+	     * @param options
+	     */
+	    connection.prototype.createGroup = function (options) {
+	        var roomId = +new Date();
+	        var toRoom = this._getGroupJid(roomId);
+	        var to = toRoom + '/' + this.context.userId;
+
+	        var pres = $pres({ to: to }).c('x', { xmlns: 'http://jabber.org/protocol/muc' }).up().c('create', { xmlns: 'http://jabber.org/protocol/muc' }).up();
+	        // .c('c', {
+	        //     hash: 'sha-1',
+	        //     node: 'https://github.com/robbiehanson/XMPPFramework',
+	        //     ver: 'k6gP4Ua5m4uu9YorAG0LRXM+kZY=',
+	        //     xmlns: 'http://jabber.org/protocol/caps'
+	        // }).up();
+
+	        // createGroupACK
+	        this.sendCommand(pres.tree());
+
+	        var me = this;
+	        // timeout hack for create group async
+	        setTimeout(function () {
+	            // Creating a Reserved Room
+	            var iq = $iq({ type: 'get', to: toRoom }).c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' });
+
+	            // Strophe.info('step 1 ----------');
+	            // Strophe.info(options);
+	            me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	                // log(msgInfo);
+
+	                // for ie hack
+	                if ('setAttribute' in msgInfo) {
+	                    // Strophe.info('step 3 ----------');
+	                    var x = msgInfo.getElementsByTagName('x')[0];
+	                    x.setAttribute('type', 'submit');
+	                } else {
+	                    // Strophe.info('step 4 ----------');
+	                    Strophe.forEachChild(msgInfo, 'x', function (field) {
+	                        field.setAttribute('type', 'submit');
+	                    });
+	                }
+
+	                // var rcv = msgInfo.getElementsByTagName('x');
+	                // var v;
+	                // if (rcv.length > 0) {
+	                //     if (rcv[0].childNodes && rcv[0].childNodes.length > 0) {
+	                //         v = rcv[0].childNodes[0].nodeValue;
+	                //     } else {
+	                //         v = rcv[0].innerHTML || rcv[0].innerText
+	                //     }
+	                //     mid = rcv[0].getAttribute('mid');
+	                // }
+	                Strophe.info('step 5 ----------');
+	                Strophe.forEachChild(x, 'field', function (field) {
+	                    var fieldVar = field.getAttribute('var');
+	                    var valueDom = field.getElementsByTagName('value')[0];
+	                    Strophe.info(fieldVar);
+	                    switch (fieldVar) {
+	                        case 'muc#roomconfig_roomname':
+	                            _setText(valueDom, options.subject || '');
+	                            break;
+	                        case 'muc#roomconfig_roomdesc':
+	                            _setText(valueDom, options.description || '');
+	                            break;
+	                        case 'muc#roomconfig_publicroom':
+	                            // public 1
+	                            _setText(valueDom, +options.optionsPublic);
+	                            break;
+	                        case 'muc#roomconfig_membersonly':
+	                            _setText(valueDom, +options.optionsMembersOnly);
+	                            break;
+	                        case 'muc#roomconfig_moderatedroom':
+	                            _setText(valueDom, +options.optionsModerate);
+	                            break;
+	                        case 'muc#roomconfig_persistentroom':
+	                            _setText(valueDom, 1);
+	                            break;
+	                        case 'muc#roomconfig_allowinvites':
+	                            _setText(valueDom, +options.optionsAllowInvites);
+	                            break;
+	                        case 'muc#roomconfig_allowvisitornickchange':
+	                            _setText(valueDom, 0);
+	                            break;
+	                        case 'muc#roomconfig_allowvisitorstatus':
+	                            _setText(valueDom, 0);
+	                            break;
+	                        case 'allow_private_messages':
+	                            _setText(valueDom, 0);
+	                            break;
+	                        case 'allow_private_messages_from_visitors':
+	                            _setText(valueDom, 'nobody');
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                    // log(valueDom);
+	                });
+
+	                var iq = $iq({ to: toRoom, type: 'set' }).c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' }).cnode(x);
+
+	                // log(iq.tree());
+
+	                me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	                    // sucFn(msgInfo);
+
+	                    me.addGroupMembers({
+	                        list: options.members,
+	                        roomId: roomId
+	                    });
+	                }, function (errInfo) {
+	                    // errFn(errInfo);
+	                });
+	                // sucFn(msgInfo);
+	            }, function (errInfo) {
+	                // errFn(errInfo);
+	            });
+	        }, 1000);
+	    };
+
+	    function _setText(valueDom, v) {
+	        if ('textContent' in valueDom) {
+	            valueDom.textContent = v;
+	        } else if ('text' in valueDom) {
+	            valueDom.text = v;
+	        } else {
+	            // Strophe.info('_setText 4 ----------');
+	            // valueDom.innerHTML = v;
+	        }
+	    }
+
+	    window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
+	    WebIM.connection = connection;
+	    WebIM.utils = _utils;
+	    WebIM.statusCode = _code;
+	    WebIM.message = _msg.message;
+	    WebIM.doQuery = function (str, suc, fail) {
+	        if (typeof window.cefQuery === 'undefined') {
+	            return;
+	        }
+	        window.cefQuery({
+	            request: str,
+	            persistent: false,
+	            onSuccess: suc,
+	            onFailure: fail
+	        });
+	    };
+	})(window, undefined);
+
+	if (false) {
+	    module.hot.accept();
+	}
+
+/***/ },
+
+/***/ 216:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	;
+	(function () {
+
+	    var EMPTYFN = function EMPTYFN() {};
+	    var _code = __webpack_require__(217).code;
+	    var WEBIM_FILESIZE_LIMIT = 10485760;
+
+	    var _createStandardXHR = function _createStandardXHR() {
+	        try {
+	            return new window.XMLHttpRequest();
+	        } catch (e) {
+	            return false;
+	        }
+	    };
+
+	    var _createActiveXHR = function _createActiveXHR() {
+	        try {
+	            return new window.ActiveXObject('Microsoft.XMLHTTP');
+	        } catch (e) {
+	            return false;
+	        }
+	    };
+
+	    var _xmlrequest = function _xmlrequest(crossDomain) {
+	        crossDomain = crossDomain || true;
+	        var temp = _createStandardXHR() || _createActiveXHR();
+
+	        if ('withCredentials' in temp) {
+	            return temp;
+	        }
+	        if (!crossDomain) {
+	            return temp;
+	        }
+	        if (typeof window.XDomainRequest === 'undefined') {
+	            return temp;
+	        }
+	        var xhr = new XDomainRequest();
+	        xhr.readyState = 0;
+	        xhr.status = 100;
+	        xhr.onreadystatechange = EMPTYFN;
+	        xhr.onload = function () {
+	            xhr.readyState = 4;
+	            xhr.status = 200;
+
+	            var xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
+	            xmlDoc.async = 'false';
+	            xmlDoc.loadXML(xhr.responseText);
+	            xhr.responseXML = xmlDoc;
+	            xhr.response = xhr.responseText;
+	            xhr.onreadystatechange();
+	        };
+	        xhr.ontimeout = xhr.onerror = function () {
+	            xhr.readyState = 4;
+	            xhr.status = 500;
+	            xhr.onreadystatechange();
+	        };
+	        return xhr;
+	    };
+
+	    var _hasFlash = function () {
+	        if ('ActiveXObject' in window) {
+	            try {
+	                return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+	            } catch (ex) {
+	                return 0;
+	            }
+	        } else {
+	            if (navigator.plugins && navigator.plugins.length > 0) {
+	                return navigator.plugins['Shockwave Flash'];
+	            }
+	        }
+	        return 0;
+	    }();
+
+	    var _tmpUtilXHR = _xmlrequest(),
+	        _hasFormData = typeof FormData !== 'undefined',
+	        _hasBlob = typeof Blob !== 'undefined',
+	        _isCanSetRequestHeader = _tmpUtilXHR.setRequestHeader || false,
+	        _hasOverrideMimeType = _tmpUtilXHR.overrideMimeType || false,
+	        _isCanUploadFileAsync = _isCanSetRequestHeader && _hasFormData,
+	        _isCanUploadFile = _isCanUploadFileAsync || _hasFlash,
+	        _isCanDownLoadFile = _isCanSetRequestHeader && (_hasBlob || _hasOverrideMimeType);
+
+	    if (!Object.keys) {
+	        Object.keys = function () {
+	            'use strict';
+
+	            var hasOwnProperty = Object.prototype.hasOwnProperty,
+	                hasDontEnumBug = !{ toString: null }.propertyIsEnumerable('toString'),
+	                dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'],
+	                dontEnumsLength = dontEnums.length;
+
+	            return function (obj) {
+	                if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object' && (typeof obj !== 'function' || obj === null)) {
+	                    throw new TypeError('Object.keys called on non-object');
+	                }
+
+	                var result = [],
+	                    prop,
+	                    i;
+
+	                for (prop in obj) {
+	                    if (hasOwnProperty.call(obj, prop)) {
+	                        result.push(prop);
+	                    }
+	                }
+
+	                if (hasDontEnumBug) {
+	                    for (i = 0; i < dontEnumsLength; i++) {
+	                        if (hasOwnProperty.call(obj, dontEnums[i])) {
+	                            result.push(dontEnums[i]);
+	                        }
+	                    }
+	                }
+	                return result;
+	            };
+	        }();
+	    }
+
+	    var utils = {
+	        hasFormData: _hasFormData,
+
+	        hasBlob: _hasBlob,
+
+	        emptyfn: EMPTYFN,
+
+	        isCanSetRequestHeader: _isCanSetRequestHeader,
+
+	        hasOverrideMimeType: _hasOverrideMimeType,
+
+	        isCanUploadFileAsync: _isCanUploadFileAsync,
+
+	        isCanUploadFile: _isCanUploadFile,
+
+	        isCanDownLoadFile: _isCanDownLoadFile,
+
+	        isSupportWss: function () {
+	            var notSupportList = [
+	            //1: QQ browser X5 core
+	            /MQQBrowser[\/]5([.]\d+)?\sTBS/
+
+	            //2: etc.
+	            //...
+	            ];
+
+	            if (!window.WebSocket) {
+	                return false;
+	            }
+
+	            var ua = window.navigator.userAgent;
+	            for (var i = 0, l = notSupportList.length; i < l; i++) {
+	                if (notSupportList[i].test(ua)) {
+	                    return false;
+	                }
+	            }
+	            return true;
+	        }(),
+
+	        getIEVersion: function () {
+	            var ua = navigator.userAgent,
+	                matches,
+	                tridentMap = { '4': 8, '5': 9, '6': 10, '7': 11 };
+
+	            matches = ua.match(/MSIE (\d+)/i);
+
+	            if (matches && matches[1]) {
+	                return +matches[1];
+	            }
+	            matches = ua.match(/Trident\/(\d+)/i);
+	            if (matches && matches[1]) {
+	                return tridentMap[matches[1]] || null;
+	            }
+	            return null;
+	        }(),
+
+	        stringify: function stringify(json) {
+	            if (typeof JSON !== 'undefined' && JSON.stringify) {
+	                return JSON.stringify(json);
+	            } else {
+	                var s = '',
+	                    arr = [];
+
+	                var iterate = function iterate(json) {
+	                    var isArr = false;
+
+	                    if (Object.prototype.toString.call(json) === '[object Array]') {
+	                        arr.push(']', '[');
+	                        isArr = true;
+	                    } else if (Object.prototype.toString.call(json) === '[object Object]') {
+	                        arr.push('}', '{');
+	                    }
+
+	                    for (var o in json) {
+	                        if (Object.prototype.toString.call(json[o]) === '[object Null]') {
+	                            json[o] = 'null';
+	                        } else if (Object.prototype.toString.call(json[o]) === '[object Undefined]') {
+	                            json[o] = 'undefined';
+	                        }
+
+	                        if (json[o] && _typeof(json[o]) === 'object') {
+	                            s += ',' + (isArr ? '' : '"' + o + '":' + (isArr ? '"' : '')) + iterate(json[o]) + '';
+	                        } else {
+	                            s += ',"' + (isArr ? '' : o + '":"') + json[o] + '"';
+	                        }
+	                    }
+
+	                    if (s != '') {
+	                        s = s.slice(1);
+	                    }
+
+	                    return arr.pop() + s + arr.pop();
+	                };
+	                return iterate(json);
+	            }
+	        },
+	        registerUser: function registerUser(options) {
+	            var orgName = options.orgName || '';
+	            var appName = options.appName || '';
+	            var appKey = options.appKey || '';
+	            var suc = options.success || EMPTYFN;
+	            var err = options.error || EMPTYFN;
+
+	            if (!orgName && !appName && appKey) {
+	                var devInfos = appKey.split('#');
+	                if (devInfos.length === 2) {
+	                    orgName = devInfos[0];
+	                    appName = devInfos[1];
+	                }
+	            }
+	            if (!orgName && !appName) {
+	                err({
+	                    type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	                });
+	                return;
+	            }
+
+	            var https = options.https || https;
+	            var apiUrl = options.apiUrl;
+	            var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
+
+	            var userjson = {
+	                username: options.username,
+	                password: options.password,
+	                nickname: options.nickname || ''
+	            };
+
+	            var userinfo = utils.stringify(userjson);
+	            var options = {
+	                url: restUrl,
+	                dataType: 'json',
+	                data: userinfo,
+	                success: suc,
+	                error: err
+	            };
+	            return utils.ajax(options);
+	        },
+	        login: function login(options) {
+	            var options = options || {};
+	            var suc = options.success || EMPTYFN;
+	            var err = options.error || EMPTYFN;
+
+	            var appKey = options.appKey || '';
+	            var devInfos = appKey.split('#');
+	            if (devInfos.length !== 2) {
+	                err({
+	                    type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	                });
+	                return false;
+	            }
+
+	            var orgName = devInfos[0];
+	            var appName = devInfos[1];
+	            var https = https || options.https;
+	            var user = options.user || '';
+	            var pwd = options.pwd || '';
+
+	            var apiUrl = options.apiUrl;
+
+	            var loginJson = {
+	                grant_type: 'password',
+	                username: user,
+	                password: pwd,
+	                timestamp: +new Date()
+	            };
+	            var loginfo = utils.stringify(loginJson);
+
+	            var options = {
+	                url: apiUrl + '/' + orgName + '/' + appName + '/token',
+	                dataType: 'json',
+	                data: loginfo,
+	                success: suc,
+	                error: err
+	            };
+	            return utils.ajax(options);
+	        },
+
+	        getFileUrl: function getFileUrl(fileInputId) {
+
+	            var uri = {
+	                url: '',
+	                filename: '',
+	                filetype: '',
+	                data: ''
+	            };
+
+	            var fileObj = typeof fileInputId === 'string' ? document.getElementById(fileInputId) : fileInputId;
+
+	            if (!utils.isCanUploadFileAsync || !fileObj) {
+	                return uri;
+	            }
+	            try {
+	                if (window.URL.createObjectURL) {
+	                    var fileItems = fileObj.files;
+	                    if (fileItems.length > 0) {
+	                        var u = fileItems.item(0);
+	                        uri.data = u;
+	                        uri.url = window.URL.createObjectURL(u);
+	                        uri.filename = u.name || '';
+	                    }
+	                } else {
+	                    // IE
+	                    var u = document.getElementById(fileInputId).value;
+	                    uri.url = u;
+	                    var pos1 = u.lastIndexOf('/');
+	                    var pos2 = u.lastIndexOf('\\');
+	                    var pos = Math.max(pos1, pos2);
+	                    if (pos < 0) uri.filename = u;else uri.filename = u.substring(pos + 1);
+	                }
+	                var index = uri.filename.lastIndexOf('.');
+	                if (index != -1) {
+	                    uri.filetype = uri.filename.substring(index + 1).toLowerCase();
+	                }
+	                return uri;
+	            } catch (e) {
+	                throw e;
+	            }
+	        },
+
+	        getFileSize: function getFileSize(fileInputId) {
+	            var file = document.getElementById(fileInputId);
+	            var fileSize = 0;
+	            if (file) {
+	                if (file.files) {
+	                    if (file.files.length > 0) {
+	                        fileSize = file.files[0].size;
+	                    }
+	                } else if (file.select && 'ActiveXObject' in window) {
+	                    file.select();
+	                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
+	                    var file = fileobject.GetFile(file.value);
+	                    fileSize = file.Size;
+	                }
+	            }
+	            return fileSize;
+	        },
+
+	        hasFlash: _hasFlash,
+
+	        trim: function trim(str) {
+
+	            str = typeof str === 'string' ? str : '';
+
+	            return str.trim ? str.trim() : str.replace(/^\s|\s$/g, '');
+	        },
+
+	        parseEmoji: function parseEmoji(msg) {
+	            if (typeof WebIM.Emoji === 'undefined' || typeof WebIM.Emoji.map === 'undefined') {
+	                return msg;
+	            } else {
+	                var emoji = WebIM.Emoji,
+	                    reg = null;
+
+	                for (var face in emoji.map) {
+	                    if (emoji.map.hasOwnProperty(face)) {
+	                        while (msg.indexOf(face) > -1) {
+	                            msg = msg.replace(face, '<img class="emoji" src="' + emoji.path + emoji.map[face] + '" />');
+	                        }
+	                    }
+	                }
+	                return msg;
+	            }
+	        },
+
+	        parseLink: function parseLink(msg) {
+
+	            var reg = /(https?\:\/\/|www\.)([a-zA-Z0-9-]+(\.[a-zA-Z0-9]+)+)(\:[0-9]{2,4})?\/?((\.[:_0-9a-zA-Z-]+)|[:_0-9a-zA-Z-]*\/?)*\??[:_#@*&%0-9a-zA-Z-/=]*/gm;
+
+	            msg = msg.replace(reg, function (v) {
+
+	                var prefix = /^https?/gm.test(v);
+
+	                return "<a href='" + (prefix ? v : '//' + v) + "' target='_blank'>" + v + "</a>";
+	            });
+
+	            return msg;
+	        },
+
+	        parseJSON: function parseJSON(data) {
+
+	            if (window.JSON && window.JSON.parse) {
+	                return window.JSON.parse(data + '');
+	            }
+
+	            var requireNonComma,
+	                depth = null,
+	                str = utils.trim(data + '');
+
+	            return str && !utils.trim(str.replace(/(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g, function (token, comma, open, close) {
+
+	                if (requireNonComma && comma) {
+	                    depth = 0;
+	                }
+
+	                if (depth === 0) {
+	                    return token;
+	                }
+
+	                requireNonComma = open || comma;
+	                depth += !close - !open;
+	                return '';
+	            })) ? Function('return ' + str)() : Function('Invalid JSON: ' + data)();
+	        },
+
+	        parseUploadResponse: function parseUploadResponse(response) {
+	            return response.indexOf('callback') > -1 ? //lte ie9
+	            response.slice(9, -1) : response;
+	        },
+
+	        parseDownloadResponse: function parseDownloadResponse(response) {
+	            return response && response.type && response.type === 'application/json' || 0 > Object.prototype.toString.call(response).indexOf('Blob') ? this.url + '?token=' : window.URL.createObjectURL(response);
+	        },
+
+	        uploadFile: function uploadFile(options) {
+	            var options = options || {};
+	            options.onFileUploadProgress = options.onFileUploadProgress || EMPTYFN;
+	            options.onFileUploadComplete = options.onFileUploadComplete || EMPTYFN;
+	            options.onFileUploadError = options.onFileUploadError || EMPTYFN;
+	            options.onFileUploadCanceled = options.onFileUploadCanceled || EMPTYFN;
+
+	            var acc = options.accessToken || this.context.accessToken;
+	            if (!acc) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_NO_LOGIN,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var orgName, appName, devInfos;
+	            var appKey = options.appKey || this.context.appKey || '';
+
+	            if (appKey) {
+	                devInfos = appKey.split('#');
+	                orgName = devInfos[0];
+	                appName = devInfos[1];
+	            }
+
+	            if (!orgName && !appName) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var apiUrl = options.apiUrl;
+	            var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
+
+	            if (!utils.isCanUploadFileAsync) {
+	                if (utils.hasFlash && typeof options.flashUpload === 'function') {
+	                    options.flashUpload && options.flashUpload(uploadUrl, options);
+	                } else {
+	                    options.onFileUploadError({
+	                        type: _code.WEBIM_UPLOADFILE_BROWSER_ERROR,
+	                        id: options.id
+	                    });
+	                }
+	                return;
+	            }
+
+	            var fileSize = options.file.data ? options.file.data.size : undefined;
+	            if (fileSize > WEBIM_FILESIZE_LIMIT) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            } else if (fileSize <= 0) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var xhr = utils.xmlrequest();
+	            var onError = function onError(e) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id,
+	                    xhr: xhr
+	                });
+	            };
+	            if (xhr.upload) {
+	                xhr.upload.addEventListener('progress', options.onFileUploadProgress, false);
+	            }
+	            if (xhr.addEventListener) {
+	                xhr.addEventListener('abort', options.onFileUploadCanceled, false);
+	                xhr.addEventListener('load', function (e) {
+	                    try {
+	                        var json = utils.parseJSON(xhr.responseText);
+	                        try {
+	                            options.onFileUploadComplete(json);
+	                        } catch (e) {
+	                            options.onFileUploadError({
+	                                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                                data: e
+	                            });
+	                        }
+	                    } catch (e) {
+	                        options.onFileUploadError({
+	                            type: _code.WEBIM_UPLOADFILE_ERROR,
+	                            data: xhr.responseText,
+	                            id: options.id,
+	                            xhr: xhr
+	                        });
+	                    }
+	                }, false);
+	                xhr.addEventListener('error', onError, false);
+	            } else if (xhr.onreadystatechange) {
+	                xhr.onreadystatechange = function () {
+	                    if (xhr.readyState === 4) {
+	                        if (ajax.status === 200) {
+	                            try {
+	                                var json = utils.parseJSON(xhr.responseText);
+	                                options.onFileUploadComplete(json);
+	                            } catch (e) {
+	                                options.onFileUploadError({
+	                                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                                    data: xhr.responseText,
+	                                    id: options.id,
+	                                    xhr: xhr
+	                                });
+	                            }
+	                        } else {
+	                            options.onFileUploadError({
+	                                type: _code.WEBIM_UPLOADFILE_ERROR,
+	                                data: xhr.responseText,
+	                                id: options.id,
+	                                xhr: xhr
+	                            });
+	                        }
+	                    } else {
+	                        xhr.abort();
+	                        options.onFileUploadCanceled();
+	                    }
+	                };
+	            }
+
+	            xhr.open('POST', uploadUrl);
+
+	            xhr.setRequestHeader('restrict-access', 'true');
+	            xhr.setRequestHeader('Accept', '*/*'); // Android QQ browser has some problem with this attribute.
+	            xhr.setRequestHeader('Authorization', 'Bearer ' + acc);
+
+	            var formData = new FormData();
+	            formData.append('file', options.file.data);
+	            xhr.send(formData);
+	        },
+
+	        download: function download(options) {
+	            options.onFileDownloadComplete = options.onFileDownloadComplete || EMPTYFN;
+	            options.onFileDownloadError = options.onFileDownloadError || EMPTYFN;
+
+	            var accessToken = options.accessToken || this.context.accessToken;
+	            if (!accessToken) {
+	                options.onFileDownloadError({
+	                    type: _code.WEBIM_DOWNLOADFILE_NO_LOGIN,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var onError = function onError(e) {
+	                options.onFileDownloadError({
+	                    type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                    id: options.id,
+	                    xhr: xhr
+	                });
+	            };
+
+	            if (!utils.isCanDownLoadFile) {
+	                options.onFileDownloadComplete();
+	                return;
+	            }
+	            var xhr = utils.xmlrequest();
+	            if ('addEventListener' in xhr) {
+	                xhr.addEventListener('load', function (e) {
+	                    options.onFileDownloadComplete(xhr.response, xhr);
+	                }, false);
+	                xhr.addEventListener('error', onError, false);
+	            } else if ('onreadystatechange' in xhr) {
+	                xhr.onreadystatechange = function () {
+	                    if (xhr.readyState === 4) {
+	                        if (ajax.status === 200) {
+	                            options.onFileDownloadComplete(xhr.response, xhr);
+	                        } else {
+	                            options.onFileDownloadError({
+	                                type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                                id: options.id,
+	                                xhr: xhr
+	                            });
+	                        }
+	                    } else {
+	                        xhr.abort();
+	                        options.onFileDownloadError({
+	                            type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                            id: options.id,
+	                            xhr: xhr
+	                        });
+	                    }
+	                };
+	            }
+
+	            var method = options.method || 'GET';
+	            var resType = options.responseType || 'blob';
+	            var mimeType = options.mimeType || 'text/plain; charset=x-user-defined';
+	            xhr.open(method, options.url);
+	            if (typeof Blob !== 'undefined') {
+	                xhr.responseType = resType;
+	            } else {
+	                xhr.overrideMimeType(mimeType);
+	            }
+
+	            var innerHeaer = {
+	                'X-Requested-With': 'XMLHttpRequest',
+	                'Accept': 'application/octet-stream',
+	                'share-secret': options.secret,
+	                'Authorization': 'Bearer ' + accessToken
+	            };
+	            var headers = options.headers || {};
+	            for (var key in headers) {
+	                innerHeaer[key] = headers[key];
+	            }
+	            for (var key in innerHeaer) {
+	                if (innerHeaer[key]) {
+	                    xhr.setRequestHeader(key, innerHeaer[key]);
+	                }
+	            }
+	            xhr.send(null);
+	        },
+
+	        parseTextMessage: function parseTextMessage(message, faces) {
+	            if (typeof message !== 'string') {
+	                return;
+	            }
+
+	            if (Object.prototype.toString.call(faces) !== '[object Object]') {
+	                return {
+	                    isemoji: false,
+	                    body: [{
+	                        type: 'txt',
+	                        data: message
+	                    }]
+	                };
+	            }
+
+	            var receiveMsg = message;
+	            var emessage = [];
+	            var expr = /\[[^[\]]{2,3}\]/mg;
+	            var emoji = receiveMsg.match(expr);
+
+	            if (!emoji || emoji.length < 1) {
+	                return {
+	                    isemoji: false,
+	                    body: [{
+	                        type: 'txt',
+	                        data: message
+	                    }]
+	                };
+	            }
+	            var isemoji = false;
+	            for (var i = 0; i < emoji.length; i++) {
+	                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emoji[i])),
+	                    existEmoji = WebIM.Emoji.map[emoji[i]];
+
+	                if (tmsg) {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: tmsg
+	                    });
+	                }
+	                if (!existEmoji) {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: emoji[i]
+	                    });
+	                    continue;
+	                }
+	                var emojiStr = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
+
+	                if (emojiStr) {
+	                    isemoji = true;
+	                    emessage.push({
+	                        type: 'emoji',
+	                        data: emojiStr
+	                    });
+	                } else {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: emoji[i]
+	                    });
+	                }
+	                var restMsgIndex = receiveMsg.indexOf(emoji[i]) + emoji[i].length;
+	                receiveMsg = receiveMsg.substring(restMsgIndex);
+	            }
+	            if (receiveMsg) {
+	                emessage.push({
+	                    type: 'txt',
+	                    data: receiveMsg
+	                });
+	            }
+	            if (isemoji) {
+	                return {
+	                    isemoji: isemoji,
+	                    body: emessage
+	                };
+	            }
+	            return {
+	                isemoji: false,
+	                body: [{
+	                    type: 'txt',
+	                    data: message
+	                }]
+	            };
+	        },
+
+	        xmlrequest: _xmlrequest,
+
+	        ajax: function ajax(options) {
+	            var dataType = options.dataType || 'text';
+	            var suc = options.success || EMPTYFN;
+	            var error = options.error || EMPTYFN;
+	            var xhr = utils.xmlrequest();
+
+	            xhr.onreadystatechange = function () {
+	                if (xhr.readyState === 4) {
+	                    var status = xhr.status || 0;
+	                    if (status === 200) {
+	                        try {
+	                            switch (dataType) {
+	                                case 'text':
+	                                    suc(xhr.responseText);
+	                                    return;
+	                                case 'json':
+	                                    var json = utils.parseJSON(xhr.responseText);
+	                                    suc(json, xhr);
+	                                    return;
+	                                case 'xml':
+	                                    if (xhr.responseXML && xhr.responseXML.documentElement) {
+	                                        suc(xhr.responseXML.documentElement, xhr);
+	                                    } else {
+	                                        error({
+	                                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                                            data: xhr.responseText
+	                                        });
+	                                    }
+	                                    return;
+	                            }
+	                            suc(xhr.response || xhr.responseText, xhr);
+	                        } catch (e) {
+	                            error({
+	                                type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                                data: e
+	                            });
+	                        }
+	                        return;
+	                    } else {
+	                        error({
+	                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                            data: xhr.responseText
+	                        });
+	                        return;
+	                    }
+	                }
+	                if (xhr.readyState === 0) {
+	                    error({
+	                        type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                        data: xhr.responseText
+	                    });
+	                }
+	            };
+
+	            if (options.responseType) {
+	                if (xhr.responseType) {
+	                    xhr.responseType = options.responseType;
+	                }
+	            }
+	            if (options.mimeType) {
+	                if (utils.hasOverrideMimeType) {
+	                    xhr.overrideMimeType(options.mimeType);
+	                }
+	            }
+
+	            var type = options.type || 'POST',
+	                data = options.data || null,
+	                tempData = '';
+
+	            if (type.toLowerCase() === 'get' && data) {
+	                for (var o in data) {
+	                    if (data.hasOwnProperty(o)) {
+	                        tempData += o + '=' + data[o] + '&';
+	                    }
+	                }
+	                tempData = tempData ? tempData.slice(0, -1) : tempData;
+	                options.url += (options.url.indexOf('?') > 0 ? '&' : '?') + (tempData ? tempData + '&' : tempData) + '_v=' + new Date().getTime();
+	                data = null;
+	                tempData = null;
+	            }
+	            xhr.open(type, options.url);
+
+	            if (utils.isCanSetRequestHeader) {
+	                var headers = options.headers || {};
+	                for (var key in headers) {
+	                    if (headers.hasOwnProperty(key)) {
+	                        xhr.setRequestHeader(key, headers[key]);
+	                    }
+	                }
+	            }
+
+	            xhr.send(data);
+	            return xhr;
+	        },
+	        ts: function ts() {
+	            var d = new Date();
+	            var Hours = d.getHours(); //获取当前小时数(0-23)
+	            var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
+	            var Seconds = d.getSeconds(); //获取当前秒数(0-59)
+	            var Milliseconds = d.getMilliseconds(); //获取当前毫秒
+	            return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
+	        },
+
+	        getObjectKey: function getObjectKey(obj, val) {
+	            for (var key in obj) {
+	                if (obj[key] == val) {
+	                    return key;
+	                }
+	            }
+	            return '';
+	        }
+
+	    };
+
+	    exports.utils = utils;
+	})();
+
+/***/ },
+
+/***/ 217:
+/***/ function(module, exports) {
+
+	"use strict";
+
+	;
+	(function () {
+	    var connIndex = 0,
+	        uploadIndex = 100,
+	        downloadIndex = 200,
+	        msgIndex = 300,
+	        statusIndex = 400;
+
+	    exports.code = {
+	        WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: connIndex++,
+	        WEBIM_CONNCTION_OPEN_ERROR: connIndex++,
+	        WEBIM_CONNCTION_AUTH_ERROR: connIndex++,
+	        WEBIM_CONNCTION_OPEN_USERGRID_ERROR: connIndex++,
+	        WEBIM_CONNCTION_ATTACH_ERROR: connIndex++,
+	        WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: connIndex++,
+	        WEBIM_CONNCTION_REOPEN_ERROR: connIndex++,
+	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: connIndex++, //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+	        WEBIM_CONNCTION_SERVER_ERROR: connIndex++, //8: offline by multi login
+	        WEBIM_CONNCTION_IQ_ERROR: connIndex++,
+
+	        WEBIM_CONNCTION_PING_ERROR: connIndex++,
+	        WEBIM_CONNCTION_NOTIFYVERSION_ERROR: connIndex++,
+	        WEBIM_CONNCTION_GETROSTER_ERROR: connIndex++,
+	        WEBIM_CONNCTION_CROSSDOMAIN_ERROR: connIndex++,
+	        WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: connIndex++,
+	        WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: connIndex++,
+	        WEBIM_CONNCTION_DISCONNECTED: connIndex++, //16: server-side close the websocket connection
+	        WEBIM_CONNCTION_AJAX_ERROR: connIndex++,
+	        WEBIM_CONNCTION_JOINROOM_ERROR: connIndex++,
+	        WEBIM_CONNCTION_GETROOM_ERROR: connIndex++,
+
+	        WEBIM_CONNCTION_GETROOMINFO_ERROR: connIndex++,
+	        WEBIM_CONNCTION_GETROOMMEMBER_ERROR: connIndex++,
+	        WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR: connIndex++,
+	        WEBIM_CONNCTION_LOAD_CHATROOM_ERROR: connIndex++,
+	        WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR: connIndex++,
+	        WEBIM_CONNCTION_JOINCHATROOM_ERROR: connIndex++,
+	        WEBIM_CONNCTION_QUITCHATROOM_ERROR: connIndex++,
+	        WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR: connIndex++,
+	        WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR: connIndex++,
+	        WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: connIndex++,
+
+	        WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: connIndex++,
+	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: connIndex++,
+	        WEBIM_CONNCTION_CLIENT_OFFLINE: connIndex++, //32: client offline
+	        WEBIM_CONNCTION_CLIENT_LOGOUT: connIndex++, //33: client logout
+
+
+	        WEBIM_UPLOADFILE_BROWSER_ERROR: uploadIndex++,
+	        WEBIM_UPLOADFILE_ERROR: uploadIndex++,
+	        WEBIM_UPLOADFILE_NO_LOGIN: uploadIndex++,
+	        WEBIM_UPLOADFILE_NO_FILE: uploadIndex++,
+
+	        WEBIM_DOWNLOADFILE_ERROR: downloadIndex++,
+	        WEBIM_DOWNLOADFILE_NO_LOGIN: downloadIndex++,
+	        WEBIM_DOWNLOADFILE_BROWSER_ERROR: downloadIndex++,
+
+	        WEBIM_MESSAGE_REC_TEXT: msgIndex++,
+	        WEBIM_MESSAGE_REC_TEXT_ERROR: msgIndex++,
+	        WEBIM_MESSAGE_REC_EMOTION: msgIndex++,
+	        WEBIM_MESSAGE_REC_PHOTO: msgIndex++,
+	        WEBIM_MESSAGE_REC_AUDIO: msgIndex++,
+	        WEBIM_MESSAGE_REC_AUDIO_FILE: msgIndex++,
+	        WEBIM_MESSAGE_REC_VEDIO: msgIndex++,
+	        WEBIM_MESSAGE_REC_VEDIO_FILE: msgIndex++,
+	        WEBIM_MESSAGE_REC_FILE: msgIndex++,
+	        WEBIM_MESSAGE_SED_TEXT: msgIndex++,
+	        WEBIM_MESSAGE_SED_EMOTION: msgIndex++,
+	        WEBIM_MESSAGE_SED_PHOTO: msgIndex++,
+	        WEBIM_MESSAGE_SED_AUDIO: msgIndex++,
+	        WEBIM_MESSAGE_SED_AUDIO_FILE: msgIndex++,
+	        WEBIM_MESSAGE_SED_VEDIO: msgIndex++,
+	        WEBIM_MESSAGE_SED_VEDIO_FILE: msgIndex++,
+	        WEBIM_MESSAGE_SED_FILE: msgIndex++,
+
+	        STATUS_INIT: statusIndex++,
+	        STATUS_DOLOGIN_USERGRID: statusIndex++,
+	        STATUS_DOLOGIN_IM: statusIndex++,
+	        STATUS_OPENED: statusIndex++,
+	        STATUS_CLOSING: statusIndex++,
+	        STATUS_CLOSED: statusIndex++,
+	        STATUS_ERROR: statusIndex++
+	    };
+	})();
+
+/***/ },
+
+/***/ 223:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	;(function () {
+	    'use strict';
+
+	    var _utils = __webpack_require__(216).utils;
+	    var Message = function Message(type, id) {
+	        if (!this instanceof Message) {
+	            return new Message(type);
+	        }
+
+	        this._msg = {};
+
+	        if (typeof Message[type] === 'function') {
+	            Message[type].prototype.setGroup = this.setGroup;
+	            this._msg = new Message[type](id);
+	        }
+	        return this._msg;
+	    };
+	    Message.prototype.setGroup = function (group) {
+	        this.body.group = group;
+	    };
+
+	    /*
+	     * text message
+	     */
+	    Message.txt = function (id) {
+	        this.id = id;
+	        this.type = 'txt';
+	        this.body = {};
+	    };
+	    Message.txt.prototype.set = function (opt) {
+	        this.value = opt.msg;
+	        this.body = {
+	            id: this.id,
+	            to: opt.to,
+	            msg: this.value,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            ext: opt.ext || {},
+	            success: opt.success,
+	            fail: opt.fail
+	        };
+
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * cmd message
+	     */
+	    Message.cmd = function (id) {
+	        this.id = id;
+	        this.type = 'cmd';
+	        this.body = {};
+	    };
+	    Message.cmd.prototype.set = function (opt) {
+	        this.value = '';
+
+	        this.body = {
+	            to: opt.to,
+	            action: opt.action,
+	            msg: this.value,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            ext: opt.ext || {}
+	        };
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * loc message
+	     */
+	    Message.location = function (id) {
+	        this.id = id;
+	        this.type = 'loc';
+	        this.body = {};
+	    };
+	    Message.location.prototype.set = function (opt) {
+	        this.body = {
+	            to: opt.to,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            addr: opt.addr,
+	            lat: opt.lat,
+	            lng: opt.lng,
+	            ext: opt.ext || {}
+	        };
+	    };
+
+	    /*
+	     * img message
+	     */
+	    Message.img = function (id) {
+	        this.id = id;
+	        this.type = 'img';
+	        this.body = {};
+	    };
+	    Message.img.prototype.set = function (opt) {
+	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+
+	        this.value = opt.file;
+
+	        this.body = {
+	            id: this.id,
+	            file: this.value,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            roomType: opt.roomType,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            width: opt.width,
+	            height: opt.height,
+	            body: opt.body
+	        };
+
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * audio message
+	     */
+	    Message.audio = function (id) {
+	        this.id = id;
+	        this.type = 'audio';
+	        this.body = {};
+	    };
+	    Message.audio.prototype.set = function (opt) {
+	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+
+	        this.value = opt.file;
+	        this.filename = opt.filename || this.value.filename;
+
+	        this.body = {
+	            id: this.id,
+	            file: this.value,
+	            filename: this.filename,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            length: opt.length || 0,
+	            roomType: opt.roomType,
+	            file_length: opt.file_length,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            body: opt.body
+	        };
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * file message
+	     */
+	    Message.file = function (id) {
+	        this.id = id;
+	        this.type = 'file';
+	        this.body = {};
+	    };
+	    Message.file.prototype.set = function (opt) {
+	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+
+	        this.value = opt.file;
+	        this.filename = opt.filename || this.value.filename;
+
+	        this.body = {
+	            id: this.id,
+	            file: this.value,
+	            filename: this.filename,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            roomType: opt.roomType,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            body: opt.body
+	        };
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * video message
+	     */
+	    Message.video = function (id) {};
+	    Message.video.prototype.set = function (opt) {};
+
+	    var _Message = function _Message(message) {
+
+	        if (!this instanceof _Message) {
+	            return new _Message(message, conn);
+	        }
+
+	        this.msg = message;
+	    };
+
+	    _Message.prototype.send = function (conn) {
+	        var me = this;
+
+	        var _send = function _send(message) {
+
+	            message.ext = message.ext || {};
+	            message.ext.weichat = message.ext.weichat || {};
+	            message.ext.weichat.originType = message.ext.weichat.originType || 'webim';
+
+	            var json = {
+	                from: conn.context.userId || '',
+	                to: message.to,
+	                bodies: [message.body],
+	                ext: message.ext || {}
+	            };
+
+	            var jsonstr = _utils.stringify(json);
+	            var dom = $msg({
+	                type: message.group || 'chat',
+	                to: message.toJid,
+	                id: message.id,
+	                xmlns: 'jabber:client'
+	            }).c('body').t(jsonstr);
+
+	            if (message.roomType) {
+	                dom.up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+	            }
+
+	            setTimeout(function () {
+	                if (typeof _msgHash !== 'undefined' && _msgHash[message.id]) {
+	                    _msgHash[message.id].msg.fail instanceof Function && _msgHash[message.id].msg.fail(message.id);
+	                }
+	            }, 60000);
+	            conn.sendCommand(dom.tree(), message.id);
+	        };
+
+	        if (me.msg.file) {
+	            if (me.msg.body && me.msg.body.url) {
+	                // Only send msg
+	                _send(me.msg);
+	                return;
+	            }
+	            var _tmpComplete = me.msg.onFileUploadComplete;
+	            var _complete = function _complete(data) {
+
+	                if (data.entities[0]['file-metadata']) {
+	                    var file_len = data.entities[0]['file-metadata']['content-length'];
+	                    me.msg.file_length = file_len;
+	                    me.msg.filetype = data.entities[0]['file-metadata']['content-type'];
+	                    if (file_len > 204800) {
+	                        me.msg.thumbnail = true;
+	                    }
+	                }
+
+	                me.msg.body = {
+	                    type: me.msg.type || 'file',
+	                    url: data.uri + '/' + data.entities[0]['uuid'],
+	                    secret: data.entities[0]['share-secret'],
+	                    filename: me.msg.file.filename || me.msg.filename,
+	                    size: {
+	                        width: me.msg.width || 0,
+	                        height: me.msg.height || 0
+	                    },
+	                    length: me.msg.length || 0,
+	                    file_length: me.msg.file_length || 0,
+	                    filetype: me.msg.filetype
+	                };
+
+	                _send(me.msg);
+	                _tmpComplete instanceof Function && _tmpComplete(data, me.msg.id);
+	            };
+
+	            me.msg.onFileUploadComplete = _complete;
+	            _utils.uploadFile.call(conn, me.msg);
+	        } else {
+	            me.msg.body = {
+	                type: me.msg.type === 'chat' ? 'txt' : me.msg.type,
+	                msg: me.msg.msg
+	            };
+	            if (me.msg.type === 'cmd') {
+	                me.msg.body.action = me.msg.action;
+	            } else if (me.msg.type === 'loc') {
+	                me.msg.body.addr = me.msg.addr;
+	                me.msg.body.lat = me.msg.lat;
+	                me.msg.body.lng = me.msg.lng;
+	            }
+
+	            _send(me.msg);
+	        }
+	    };
+
+	    exports._msg = _Message;
+	    exports.message = Message;
+	})();
+
+/***/ },
+
+/***/ 224:
+/***/ function(module, exports) {
+
+	"use strict";
+
+	;(function () {
+	    function Array_h(length) {
+	        this.array = length === undefined ? [] : new Array(length);
+	    }
+
+	    Array_h.prototype = {
+	        /**
+	         * 返回数组长度
+	         *
+	         * @return {Number} length [数组长度]
+	         */
+	        length: function length() {
+	            return this.array.length;
+	        },
+
+	        at: function at(index) {
+	            return this.array[index];
+	        },
+
+	        set: function set(index, obj) {
+	            this.array[index] = obj;
+	        },
+
+	        /**
+	         * 向数组的末尾添加一个或多个元素，并返回新的长度。
+	         *
+	         * @param  {*} obj [description]
+	         * @return {Number} length [新数组的长度]
+	         */
+	        push: function push(obj) {
+	            return this.array.push(obj);
+	        },
+
+	        /**
+	         * 返回数组中选定的元素
+	         *
+	         * @param  {Number} start [开始索引值]
+	         * @param  {Number} end [结束索引值]
+	         * @return {Array} newArray  [新的数组]
+	         */
+	        slice: function slice(start, end) {
+	            return this.array = this.array.slice(start, end);
+	        },
+
+	        concat: function concat(array) {
+	            this.array = this.array.concat(array);
+	        },
+
+	        remove: function remove(index, count) {
+	            count = count === undefined ? 1 : count;
+	            this.array.splice(index, count);
+	        },
+
+	        join: function join(separator) {
+	            return this.array.join(separator);
+	        },
+
+	        clear: function clear() {
+	            this.array.length = 0;
+	        }
+	    };
+
+	    /**
+	     * 先进先出队列 (First Input First Output)
+	     *
+	     * 一种先进先出的数据缓存器
+	     */
+	    var Queue = function Queue() {
+	        this._array_h = new Array_h();
+	    };
+
+	    Queue.prototype = {
+	        _index: 0,
+
+	        /**
+	         * 排队
+	         *
+	         * @param  {Object} obj [description]
+	         * @return {[type]}     [description]
+	         */
+	        push: function push(obj) {
+	            this._array_h.push(obj);
+	        },
+
+	        /**
+	         * 出队
+	         *
+	         * @return {Object} [description]
+	         */
+	        pop: function pop() {
+	            var ret = null;
+	            if (this._array_h.length()) {
+	                ret = this._array_h.at(this._index);
+	                if (++this._index * 2 >= this._array_h.length()) {
+	                    this._array_h.slice(this._index);
+	                    this._index = 0;
+	                }
+	            }
+	            return ret;
+	        },
+
+	        /**
+	         * 返回队列中头部(即最新添加的)的动态对象
+	         *
+	         * @return {Object} [description]
+	         */
+	        head: function head() {
+	            var ret = null,
+	                len = this._array_h.length();
+	            if (len) {
+	                ret = this._array_h.at(len - 1);
+	            }
+	            return ret;
+	        },
+
+	        /**
+	         * 返回队列中尾部(即最早添加的)的动态对象
+	         *
+	         * @return {Object} [description]
+	         */
+	        tail: function tail() {
+	            var ret = null,
+	                len = this._array_h.length();
+	            if (len) {
+	                ret = this._array_h.at(this._index);
+	            }
+	            return ret;
+	        },
+
+	        /**
+	         * 返回数据队列长度
+	         *
+	         * @return {Number} [description]
+	         */
+	        length: function length() {
+	            return this._array_h.length() - this._index;
+	        },
+
+	        /**
+	         * 队列是否为空
+	         *
+	         * @return {Boolean} [description]
+	         */
+	        empty: function empty() {
+	            return this._array_h.length() === 0;
+	        },
+
+	        clear: function clear() {
+	            this._array_h.clear();
+	        }
+	    };
+	    exports.Queue = Queue;
+	})();
+
+/***/ }
+
+/******/ });
