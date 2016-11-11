@@ -20,22 +20,28 @@ var Channel = React.createClass({
     },
 
     close: function () {
+        console.log('close click');
         var local = this.props.localStream;
         var remote = this.props.remoteStream;
 
+
         if (remote) {
-            remote.getAudioTracks()[0].stop();
-            remote.getVideoTracks()[0].stop();
+            remote.getTracks().forEach(function (track) {
+                track.stop();
+            });
         }
 
         if (local) {
-            local.getAudioTracks()[0].stop();
-            local.getVideoTracks()[0].stop();
+            local.getTracks().forEach(function (track) {
+                track.stop();
+            });
         }
+
 
         try {
             Demo.call.endCall();
         } catch (e) {
+            console.log('endCall error1:', e);
         }
 
         this.props.close();
@@ -244,7 +250,6 @@ module.exports = function (dom) {
             );
         },
         close: function () {
-            console.log('channel close');
             var local = this.localStream;
             var remote = this.remoteStream;
 
@@ -259,6 +264,7 @@ module.exports = function (dom) {
                     track.stop();
                 });
             }
+
 
             ReactDOM.unmountComponentAtNode(me.dom);
         }

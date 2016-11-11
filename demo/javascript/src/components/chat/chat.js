@@ -40,10 +40,6 @@ module.exports = React.createClass({
             onClosed: function (msg) {
                 // Demo.api.logout();
 
-                //webRTC:断线处理
-                if (WebIM.config.isWebRTC) {
-                    me.channel.close();
-                }
             },
             onTextMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -154,7 +150,15 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('onError:' + text);
                 }
 
+                //webRTC:断线处理
+                if (WebIM.config.isWebRTC) {
+                    me.channel.close();
+                }
+
+
                 Demo.api.init(Demo.conn.errorType);
+
+
             }
 
         });
@@ -245,9 +249,11 @@ module.exports = React.createClass({
                     console.log('onAcceptCall', from, options);
                 },
                 onGotRemoteStream: function (stream) {
+                    console.log('onGotRemoteStream');
                     me.channel.setRemote(stream);
                 },
                 onGotLocalStream: function (stream) {
+                    console.log('onGotLocalStream');
                     me.channel.setLocal(stream);
                 },
                 onRinging: function (caller) {
