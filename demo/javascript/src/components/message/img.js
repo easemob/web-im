@@ -34,13 +34,14 @@ var ImgMsg = React.createClass({
         var imgs = [];
         if (WebIM.config.isWindowSDK) {
             if (this.state.value == "") {
-                imgs.push(<span>{Demo.lan.image}{Demo.lan.FileLoading}</span>);
+                imgs.push(<span key='0'>{Demo.lan.image}{Demo.lan.FileLoading}</span>);
             } else {
-                imgs.push(<img ref='img' className='webim-msg-img' src={this.state.value} onClick={this.show}/>);
+                imgs.push(<img key='0' ref='img' className='webim-msg-img' src={this.state.value}
+                               onClick={this.show}/>);
             }
 
         } else {
-            imgs.push(<img ref='img' className='webim-msg-img' src={this.props.value} onClick={this.show}/>);
+            imgs.push(<img key='0' ref='img' className='webim-msg-img' src={this.props.value} onClick={this.show}/>);
         }
         return (
             <div className={'rel ' + this.props.className}>
