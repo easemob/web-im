@@ -1,7 +1,9 @@
 var React = require("react");
+var ReactDOM = require('react-dom');
 var SendWrapper = require('./sendWrapper');
 var Avatar = require('../common/avatar');
-var Operations = require('./operations');
+var OperationsGroups = require('./operationsGroups');
+var OperationsFriends = require('./operationsFriends');
 var _ = require('underscore');
 
 module.exports = React.createClass({
@@ -11,11 +13,12 @@ module.exports = React.createClass({
             admin: 0,
             owner: [],
             members: [],
+            fields: {},
             memberShowStatus: false
         };
     },
 
-    getGroupOwner: function (cb_type) {
+    getGroupInfo: function (cb_type) {
         //only group window
         if (this.props.chatType == 'groupChat') {
             var me = this;
@@ -45,7 +48,7 @@ module.exports = React.createClass({
             } else {
                 Demo.conn.queryRoomInfo({
                     roomId: me.props.roomId,
-                    success: function (settings, members) {
+                    success: function (settings, members, fields) {
                         if (members && members.length > 0) {
                             var jid = members[0].jid;
                             var username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
@@ -53,7 +56,7 @@ module.exports = React.createClass({
                             if (members[0].affiliation == 'owner' && username == Demo.user) {
                                 admin = 1;
                             }
-                            me.setState({settings: settings, admin: admin, owner: members});
+                            me.setState({settings: settings, admin: admin, owner: members, fields: fields});
                             if (cb_type == 'listMember') {
                                 me.listMember();
                             } else if (cb_type == 'opertion') {
@@ -76,13 +79,14 @@ module.exports = React.createClass({
 
     preListMember: function () {
         if (this.state.owner.length == 0) {
-            this.getGroupOwner('listMember');
+            this.getGroupInfo('listMember');
         } else {
             this.listMember();
         }
     },
+
     listMember: function () {
-        if (this.refs.i.className.indexOf('up') < 0) {
+        if (!this.state.memberShowStatus) {
             var me = this;
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"groupMembers","id":"' + me.props.roomId + '"}',
@@ -117,13 +121,11 @@ module.exports = React.createClass({
                 });
             }
         } else {
-            this.refs.i.className = 'webim-down-icon font smallest dib';
             this.setState({members: [], memberShowStatus: false});
         }
     },
 
     addToGroupBlackList: function (username, index) {
-        log('group addToBlackList', Demo.user);
         var me = this;
         var members = this.state.members;
         var item = _.find(this.state.members, function (item) {
@@ -145,7 +147,7 @@ module.exports = React.createClass({
     },
 
     refreshMemberList: function (members) {
-        this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
+        // this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
         this.setState({members: this.state.owner.concat(members), memberShowStatus: true});
     },
 
@@ -153,6 +155,16 @@ module.exports = React.createClass({
         msg.chatType = this.props.chatType;
         Demo.conn.send(msg);
         Demo.api.appendMsg(msg, 'txt');
+    },
+
+    // hide when blur | bind focus event
+    componentDidUpdate: function () {
+        // this.state.memberShowStatus && ReactDOM.findDOMNode(this.refs['member']).focus();
+    },
+
+    // hide when blur close
+    handleOnBlur: function () {
+        // this.setState({memberShowStatus: false});
     },
 
     render: function () {
@@ -177,27 +189,48 @@ module.exports = React.createClass({
                 <Avatar src='demo/images/default.png'/>
                 <span>{username}</span>
                 <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
-                    <i className="webim-leftbar-icon font smaller"
-                       onClick={this.addToGroupBlackList.bind(this, username, i)}>A</i>
+                    <i className={"webim-leftbar-icon font smaller " + className}
+                       style={{display: this.state.admin != 1 ? 'none' : ''}}
+                       onClick={this.addToGroupBlackList.bind(this, username, i)}>n</i>
                 </div>
             </li>);
         }
 
+        var operations = [];
+        if (Demo.selectedCate == 'friends') {
+            operations.push(<OperationsFriends key='operation_div' ref='operation_div' roomId={this.props.roomId}
+                                               admin={this.state.admin}
+                                               owner={this.state.owner}
+                                               settings={this.state.settings}
+                                               getGroupInfo={this.getGroupInfo}
+                                               onBlur={this.handleOnBlur}
+                                               name={this.props.name}
+                                               updateNode={this.props.updateNode}
+            />);
+        } else if (Demo.selectedCate == 'groups') {
+            operations.push(<OperationsGroups key='operation_div' ref='operation_div' roomId={this.props.roomId}
+                                              admin={this.state.admin}
+                                              owner={this.state.owner}
+                                              settings={this.state.settings}
+                                              fields={this.state.fields}
+                                              getGroupInfo={this.getGroupInfo}
+                                              onBlur={this.handleOnBlur}
+            />);
+        }
 
         return (
             <div className={'webim-chatwindow ' + this.props.className}>
                 <div className='webim-chatwindow-title'>
                     {(Demo.selectedCate == 'chatrooms' || Demo.selectedCate == 'groups') ? Demo.lan.groupMemberLabel : this.props.name }
-                    <i ref='i' className={'webim-down-icon font smallest' + className}
+                    <i ref='i'
+                       className={'webim-down-icon font smallest ' + className + " " + (this.state.memberShowStatus ? 'webim-up-icon' : 'webim-down-icon')}
                        onClick={this.preListMember}>D</i>
                 </div>
-                <div className={this.props.showOptions ? '' : 'hide'}>
-                    <Operations ref='operation_div' roomId={this.props.roomId} admin={this.state.admin}
-                                owner={this.state.owner}
-                                settings={this.state.settings}
-                                getGroupOwner={this.getGroupOwner}/>
+                <div className={(operations.length > 0) ? '' : 'hide'}>
+                    {operations}
                 </div>
-                <ul ref='member' className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>
+                <ul onBlur={this.handleOnBlur} tabIndex="-1" ref='member'
+                    className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>
                 <div id={this.props.id} ref='wrapper' className='webim-chatwindow-msg'></div>
                 <SendWrapper send={this.send} {...props} />
             </div>

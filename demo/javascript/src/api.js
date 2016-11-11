@@ -2,7 +2,6 @@ var React = require("react");
 var ReactDOM = require('react-dom');
 
 var Webim = require('./components/webim');
-
 var textMsg = require('./components/message/txt');
 var imgMsg = require('./components/message/img');
 var fileMsg = require('./components/message/file');
@@ -11,7 +10,6 @@ var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
 var Notify = require('./components/common/notify');
 var _ = require('underscore');
-
 
 var Blacklist = (function () {
     var data = {};
@@ -32,7 +30,6 @@ var Blacklist = (function () {
             return (item.name == name);
         });
 
-        log(data);
 
         return _set();
     }
@@ -54,9 +51,7 @@ var Blacklist = (function () {
         try {
             delete data[name];
         } catch (e) {
-            log('blacklist remove error');
         }
-        log(data, name);
         return _set();
     }
 
@@ -119,7 +114,6 @@ var Blacklist = (function () {
         var errFn = options.success || emptyfn;
 
         options.success = function (list) {
-            log('_getGroupBlacklist', list);
             dataGroup = list;
             sucFn(list);
         };
@@ -254,14 +248,12 @@ module.exports = {
                 break;
         }
 
-
         if (props) {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout} {...props} />, this.node);
         } else {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout}/>, this.node);
         }
     },
-
 
     logout: function (type) {
         if (WebIM.config.isWindowSDK) {
@@ -273,7 +265,6 @@ module.exports = {
                     Demo.api.NotifyError("logout:" + msg);
                 });
         } else {
-            console.log('logout=', type);
             Demo.conn.close('logout');
             if (type == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
                 Demo.conn.errorType = type;
@@ -283,7 +274,6 @@ module.exports = {
     },
 
     init: function () {
-        console.log('api.init()');
         Demo.selected = null;
         Demo.user = null;
         Demo.call = null;
@@ -294,6 +284,7 @@ module.exports = {
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
     },
+
     appendMsg: function (msg, type) {
         if (!msg) {
             return;
@@ -308,14 +299,17 @@ module.exports = {
             name = this.sendByMe ? Demo.user : msg.from,
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
             targetNode = document.getElementById('wrapper' + targetId);
-        data = decodeURIComponent(data);
+
+        // TODO: ios/android client doesn't encodeURIComponent yet
+        // if (typeof data === "string") {
+        // data = decodeURIComponent(data);
+        // }
 
         if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
         } else if (!targetNode) {
             return;
         }
-
         switch (type) {
             case 'txt':
                 if (!targetNode) {
@@ -326,6 +320,8 @@ module.exports = {
                         wrapper: targetNode,
                         name: name,
                         value: brief,
+                        error: msg.error,
+                        errorText: msg.errorText
                     }, this.sentByMe);
                 }
                 break;
@@ -342,6 +338,8 @@ module.exports = {
                         wrapper: targetNode,
                         name: name,
                         value: brief,
+                        error: msg.error,
+                        errorText: msg.errorText
                     }, this.sentByMe);
                 }
                 break;
@@ -367,6 +365,8 @@ module.exports = {
                                 wrapper: targetNode,
                                 name: name,
                                 value: data || msg.url,
+                                error: msg.error,
+                                errorText: msg.errorText
                             }, this.sentByMe);
                         }
                     } else {
@@ -376,6 +376,8 @@ module.exports = {
                             wrapper: targetNode,
                             name: name,
                             value: data || msg.url,
+                            error: msg.error,
+                            errorText: msg.errorText
                         }, this.sentByMe);
                     }
                 }
@@ -402,7 +404,9 @@ module.exports = {
                                 wrapper: targetNode,
                                 name: name,
                                 value: data || msg.url,
-                                filename: msg.filename
+                                filename: msg.filename,
+                                error: msg.error,
+                                errorText: msg.errorText
                             }, this.sentByMe);
                         }
                     } else {
@@ -412,7 +416,9 @@ module.exports = {
                             name: name,
                             value: data || msg.url,
                             length: msg.length,
-                            id: msg.id
+                            id: msg.id,
+                            error: msg.error,
+                            errorText: msg.errorText
                         }, this.sentByMe);
                     }
                 }
@@ -446,7 +452,9 @@ module.exports = {
                                 wrapper: targetNode,
                                 name: name,
                                 value: data || msg.url,
-                                filename: msg.filename
+                                filename: msg.filename,
+                                error: msg.error,
+                                errorText: msg.errorText
                             }, this.sentByMe);
                         }
                     } else {
@@ -456,7 +464,9 @@ module.exports = {
                             wrapper: targetNode,
                             name: name,
                             value: data || msg.url,
-                            filename: msg.filename
+                            filename: msg.filename,
+                            error: msg.error,
+                            errorText: msg.errorText
                         }, this.sentByMe);
                     }
 
@@ -471,7 +481,9 @@ module.exports = {
                     locMsg({
                         wrapper: targetNode,
                         name: name,
-                        value: data || msg.addr
+                        value: data || msg.addr,
+                        error: msg.error,
+                        errorText: msg.errorText
                     }, this.sentByMe);
                 }
                 break;
@@ -497,7 +509,9 @@ module.exports = {
                                 wrapper: targetNode,
                                 name: name,
                                 value: data || msg.url,
-                                filename: msg.filename
+                                filename: msg.filename,
+                                error: msg.error,
+                                errorText: msg.errorText
                             }, this.sentByMe);
                         }
                     } else {
@@ -507,7 +521,9 @@ module.exports = {
                             name: name,
                             value: data || msg.url,
                             length: msg.length,
-                            id: msg.id
+                            id: msg.id,
+                            error: msg.error,
+                            errorText: msg.errorText
                         }, this.sentByMe);
                     }
                 }
@@ -555,14 +571,16 @@ module.exports = {
         cur.querySelector('em').innerHTML = value;
     },
 
-
     addCount: function (id, cate) {
-        // TODO
+        // TODO: don't handle dom directly,use react way.
         if (Demo.selectedCate !== cate) {
             var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
             curCate.style.display = 'block';
+            var curCateCount = curCate.getAttribute('count') / 1;
+            curCateCount++;
+            curCate.setAttribute('count', curCateCount);
 
-            var cur = document.getElementById(id).getElementsByTagName('i')[1];
+            var cur = document.getElementById(id).getElementsByTagName('i')[0];
             var curCount = cur.getAttribute('count') / 1;
             curCount++;
             cur.setAttribute('count', curCount);
@@ -570,7 +588,7 @@ module.exports = {
             cur.style.display = 'block';
         } else {
             if (!this.sentByMe && id !== Demo.selected) {
-                var cur = document.getElementById(id).getElementsByTagName('i')[1];
+                var cur = document.getElementById(id).getElementsByTagName('i')[0];
                 var curCount = cur.getAttribute('count') / 1;
                 curCount++;
                 cur.setAttribute('count', curCount);
@@ -626,14 +644,6 @@ module.exports = {
         s = s.replace(/\n/g, "<br>");
         return s;
     },
-    getObjectKey: function (obj, val) {
-        for (var key in obj) {
-            if (obj[key] == val) {
-                return key;
-            }
-        }
-        return '';
-    },
     NotifyError: function (msg) {
         Notify.error(msg);
     },
@@ -650,7 +660,8 @@ module.exports = {
             this[key] = options[key];
         }
     },
-
     blacklist: Blacklist,
+    pagesize: 20
 };
+
 

@@ -15,14 +15,14 @@ var _Call = {
     connection: null,
 
     pattern: null,
-    
+
     listener: {
         onAcceptCall: function (from, options) {
 
         },
         onRinging: function (caller) {
         },
-        
+
         onTermCall: function () {
 
         }
@@ -41,27 +41,26 @@ var _Call = {
         }
 
         self.api = self.api || new Api({
-            imConnection: self.connection,
+                imConnection: self.connection,
 
-            rtcHandler: new RTCIQHandler({
-                imConnection: self.connection
-            })
-        });
-        
+                rtcHandler: new RTCIQHandler({
+                    imConnection: self.connection
+                })
+            });
+
         self.api.onInitC = function () {
             self._onInitC.apply(self, arguments);
         }
     },
 
     makeVideoCall: function (callee) {
-        var self = this;
 
         var mediaStreamConstaints = {};
-        Util.extend(mediaStreamConstaints, self.mediaStreamConstaints);
-        
-        self.call(callee, mediaStreamConstaints);
+        Util.extend(mediaStreamConstaints, this.mediaStreamConstaints);
+
+        this.call(callee, mediaStreamConstaints);
     },
-    
+
     makeVoiceCall: function (callee) {
         var self = this;
 
@@ -71,8 +70,8 @@ var _Call = {
 
         self.call(callee, mediaStreamConstaints);
     },
-    
-    acceptCall: function() {
+
+    acceptCall: function () {
         var self = this;
         self.pattern.accept();
     },
@@ -84,40 +83,41 @@ var _Call = {
 
     call: function (callee, mediaStreamConstaints) {
         var self = this;
-        
-        self.callee = self.api.jid(callee);
+        this.callee = this.api.jid(callee);
 
         var rt = new RouteTo({
             rtKey: "",
-            
+
             success: function (result) {
                 _logger.debug("iq to server success", result);
-            }, 
+            },
             fail: function (error) {
                 _logger.debug("iq to server error", error);
                 self.onError(error);
             }
         });
-        
-        self.api.reqP2P(rt, mediaStreamConstaints.video ? 1 : 0, mediaStreamConstaints.audio ? 1 : 0, callee, function (from, rtcOptions) {
+
+        this.api.reqP2P(rt, mediaStreamConstaints.video ? 1 : 0, mediaStreamConstaints.audio ? 1 : 0, callee, function (from, rtcOptions) {
             self._onGotServerP2PConfig(from, rtcOptions);
 
             self.pattern.initC(self.mediaStreamConstaints);
         });
     },
-    
+
     _onInitC: function (from, options, rtkey, tsxId, fromSid) {
         var self = this;
-        
+
         self.callee = from;
         self._rtcCfg = options.rtcCfg;
         self._WebRTCCfg = options.WebRTC;
-        
+
+        self.sessId = options.sessId;
+        self.rtcId = options.rtcId;
 
         self.switchPattern();
         self.pattern._onInitC(from, options, rtkey, tsxId, fromSid);
     },
-    
+
     _onGotServerP2PConfig: function (from, rtcOptions) {
         var self = this;
 
@@ -125,6 +125,9 @@ var _Call = {
             self._p2pConfig = rtcOptions;
             self._rtcCfg = rtcOptions.rtcCfg;
             self._rtcCfg2 = rtcOptions.rtcCfg2;
+
+            self.sessId = rtcOptions.sessId;
+            self.rtcId = "Channel_webIM";
 
             self._rtKey = self._rtkey = rtcOptions.rtKey || rtcOptions.rtkey;
             self._rtFlag = self._rtflag = rtcOptions.rtFlag || rtcOptions.rtflag;
@@ -153,6 +156,8 @@ var _Call = {
             _rtKey: self._rtKey || self._rtkey,
             _rtFlag: self._rtFlag || self._rtflag,
 
+            _sessId: self.sessId,
+            _rtcId: self.rtcId,
 
             webRtc: new WebRTC({
                 onGotLocalStream: self.listener.onGotLocalStream,
@@ -161,15 +166,15 @@ var _Call = {
             }),
 
             api: self.api,
-            
-            onAcceptCall : (self.listener && self.listener.onAcceptCall) || function (){
-                
+
+            onAcceptCall: (self.listener && self.listener.onAcceptCall) || function () {
+
             },
-            onRinging : (self.listener && self.listener.onRinging) || function (){
-                
+            onRinging: (self.listener && self.listener.onRinging) || function () {
+
             },
-            onTermCall : (self.listener && self.listener.onTermCall) || function (){
-                
+            onTermCall: (self.listener && self.listener.onTermCall) || function () {
+
             }
         }));
     }

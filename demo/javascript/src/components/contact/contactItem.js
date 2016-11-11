@@ -4,6 +4,7 @@ var _ = require('underscore');
 
 module.exports = React.createClass({
 
+
     getInitialState: function () {
         var me = this;
 
@@ -14,13 +15,11 @@ module.exports = React.createClass({
         };
     },
 
-    handleIconCount: function (count) {
-        // TODO
-        var curCate = this.refs['i'];
-        if (!curCate) return;
+    handleCurCateIconCount: function (count) {
+        var curCate = document.getElementById(this.props.cate).getElementsByTagName('i')[1];
         var curCateCount = curCate.getAttribute('count') / 1;
         curCateCount -= count;
-        // curCateCount = Math.max(0, curCateCount);
+        curCateCount = Math.max(0, curCateCount);
 
         if (curCateCount > 0) {
             curCate.style.display = 'block';
@@ -28,57 +27,23 @@ module.exports = React.createClass({
             curCateCount = 0;
             curCate.style.display = 'none';
         }
-        // this.setState({
-        //     countShow: curCateCount > 0
-        // })
+        curCate.setAttribute('count', curCateCount);
     },
 
-    // blacklist
-    addToBlackList: function (e) {
-        event.preventDefault();
-        event.stopPropagation();
 
-        var value = this.props.id;
-        var me = this;
-
-        //TODO by lwz 重构
-        if (WebIM.config.isWindowSDK) {
-            WebIM.doQuery('{"type":"addToBlackList", "username": "' + value + '"}',
-                function success(str) {
-                    var list = Demo.api.blacklist.add(value);
-                    me.setState({blacklist: list});
-                    Demo.api.updateRoster();
-                },
-                function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('getRoster:' + errCode);
-                });
-        } else {
-            var list = Demo.api.blacklist.add(value);
-            Demo.conn.addToBlackList({
-                list: list,
-                type: 'jid',
-                success: function () {
-                    me.update(me, true);
-                },
-                error: function () {
-                }
-            });
-        }
-    },
-
-    update: function (e, selected) {
+    update: function () {
         if (this.refs['i']) {
             var count = this.refs['i'].getAttribute('count') / 1;
-            this.handleIconCount(count);
+            this.handleCurCateIconCount(count);
 
             this.refs['i'].style.display = 'none';
             this.refs['i'].setAttribute('count', 0);
             this.refs['i'].innerText = '';
         }
 
-        if (this.props.id === Demo.selected) {
-            return;
-        }
+        // if (this.props.id === Demo.selected) {
+        //     return;
+        // }
 
         if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
             Demo.selected = this.props.id;
@@ -126,14 +91,26 @@ module.exports = React.createClass({
                     roomId: this.props.id
                 });
             }
+        } else {
+            //get the last 10 messages
+            if (WebIM.config.isWindowSDK) {
+                console.log(document.getElementById(this.props.id).querySelector('em').innerHTML);
+                if (document.getElementById(this.props.id).querySelector('em').innerHTML == '') {
+                    WebIM.doQuery('{"type":"loadMoreMessages","id":"' + this.props.id + '","chatType":"singlechat"}', function success(str) {
+                        //Add seperator
+                    }, function failure(errCode, errMessage) {
+                        Demo.api.NotifyError('getRoster:' + errCode);
+                        errFn();
+                    });
+                }
+
+            } else {
+
+            }
         }
 
-        if (selected) {
-            Demo.selected = null;
-        }
         this.props.update(Demo.selected);
-    }
-    ,
+    },
 
     render: function () {
         var className = this.props.cur === this.props.id ? ' selected' : '';
@@ -143,11 +120,6 @@ module.exports = React.createClass({
                 <Avatar src={this.props.src}/>
                 <div className="webim-contact-info">
                     <span className="webim-contact-username">{this.props.username}</span>
-                    <div className="webim-contact-handlers">
-                        <i ref="i2" title="Add to blacklist" className="webim-leftbar-icon font smaller"
-                           style={{display: Demo.selectedCate != 'friends' ? 'none' : ''}}
-                           onClick={this.addToBlackList}>A</i>
-                    </div>
                 </div>
                 <em></em>
                 <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>

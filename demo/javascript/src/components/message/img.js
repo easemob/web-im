@@ -46,9 +46,14 @@ var ImgMsg = React.createClass({
             <div className={'rel ' + this.props.className}>
                 <Avatar src={this.props.src} className={this.props.className + ' small'}/>
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
-                <div className='webim-msg-value webim-img-msg-wrapper'>
-                    <span className='webim-msg-icon font'>{icon}</span>
-                    <div id={'file_' + this.props.id}>{imgs}</div>
+                <div className="clearfix">
+                    <div className='webim-msg-value webim-img-msg-wrapper'>
+                        <span className='webim-msg-icon font'>{icon}</span>
+                        <div id={'file_' + this.props.id}>{imgs}</div>
+                    </div>
+                    <div className={"webim-msg-error " + (this.props.error ? ' ' : 'hide')}>
+                        <span className='webim-file-icon font smaller red' title={this.props.errorText}>k</span>
+                    </div>
                 </div>
             </div>
         );
@@ -61,7 +66,9 @@ module.exports = function (options, sentByMe) {
         src: options.avatar || 'demo/images/default.png',
         time: options.time || new Date().toLocaleString(),
         value: options.value || '',
-        name: options.name
+        name: options.name,
+        error: options.error,
+        errorText: options.errorText
     };
 
     var node = document.createElement('div');

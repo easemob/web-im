@@ -1,5 +1,5 @@
 /**
- * API 
+ * API
  */
 var _util = require('./utils');
 var _logger = _util.logger;
@@ -35,8 +35,6 @@ var RouteTo = function (extendCfg) {
     }
 };
 exports.RouteTo = RouteTo;
-
-
 
 
 var _clazz = {
@@ -80,7 +78,7 @@ var _clazz = {
 
     register: function (listener) {
         if (typeof listener === "object") {
-            for(var event in listener){
+            for (var event in listener) {
                 this.bind(event, listener[event]);
             }
         }
@@ -99,7 +97,7 @@ var _clazz = {
     },
 
     jid: function (shortUserName) {
-        if(shortUserName.indexOf(this.imConnection.context.appKey) >= 0){
+        if (shortUserName.indexOf(this.imConnection.context.appKey) >= 0) {
             return shortUserName;
         }
         return this.imConnection.context.appKey + "_" + shortUserName + "@" + this.imConnection.domain;
@@ -107,52 +105,50 @@ var _clazz = {
 
     /**
      * ReqP2P 0
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param video
      *            1 0
      * @param audio
      *            1 0
      * @param peer
-     * 
+     *
      */
     reqP2P: function (rt, video, audio, peer, callback) {
         _logger.debug("req p2p ...");
 
-        var self = this;
 
         var rtcOptions = {
             data: {
                 op: 0,
                 video: video,
                 audio: audio,
-                peer: peer // appKey + "_" + curChatUserId + "@" +
-                            // this.domain,
+                peer: peer // appKey + "_" + curChatUserId + "@" + this.domain,
             }
         }
 
-        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+        this.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
     },
 
     /**
      * NewCfr 1
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param reqTkt
      *            1 null
      * @param password
      *            string null
-     * 
+     *
      */
     newCfr: function (rt, reqTkt, password, callback) {
         _logger.debug("newCfr ...");
@@ -173,20 +169,20 @@ var _clazz = {
 
     /**
      * Enter 200
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param WebRTCId
      * @param reqMembers !=
      *            0 members
      * @param tkt
      * @param nonce
      * @param digest
-     * 
+     *
      */
     enter: function (rt, WebRTCId, reqMembers, tkt, nonce, digest, callback) {
         _logger.debug("enter ...");
@@ -210,15 +206,15 @@ var _clazz = {
 
     /**
      * Ping 100
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param sessId
-     * 
+     *
      */
     ping: function (rt, sessId, callback) {
         _logger.debug("ping ...");
@@ -238,17 +234,17 @@ var _clazz = {
 
     /**
      * ReqTkt 3
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param WebRTCId
      * @param success(from,
      *            rtcOptions)
-     * 
+     *
      */
     reqTkt: function (rt, WebRTCId, callback) {
         _logger.debug("reqTkt ...");
@@ -268,13 +264,13 @@ var _clazz = {
 
     /**
      * InitC 102
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param WebRTCId
      * @param tkt
      * @param sessId
@@ -286,12 +282,11 @@ var _clazz = {
      * @param sdp
      *            sdp:sdpstring
      * @param cands [ ]
-     * 
+     *
      */
     initC: function (rt, WebRTCId, tkt, sessId, rtcId, pubS, subS, sdp, cands, rtcCfg, WebRTC, callback) {
         _logger.debug("initC ...");
 
-        var self = this;
 
         var rtcOptions = {
             data: {
@@ -310,24 +305,24 @@ var _clazz = {
         rtcCfg && (rtcOptions.data.rtcCfg = rtcCfg);
         WebRTC && (rtcOptions.data.WebRTC = WebRTC);
 
-        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+        this.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
     },
 
     /**
      * TcklC 105
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param sessId
      * @param rtcId
      * @param cands
      * @param success(from,
      *            rtcOptions)
-     * 
+     *
      */
     tcklC: function (rt, sessId, rtcId, sdp, cands, callback) {
         _logger.debug("tcklC ...");
@@ -350,18 +345,18 @@ var _clazz = {
 
     /**
      * AnsC 106
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param sessId
      * @param rtcId
      * @param sdp
      * @param cands
-     * 
+     *
      */
     ansC: function (rt, sessId, rtcId, sdp, cands, callback) {
         _logger.debug("ansC ...");
@@ -384,19 +379,19 @@ var _clazz = {
 
     /**
      * AcptC 104
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param sessId
      * @param rtcId
      * @param sdp
      * @param ans
      *            1
-     * 
+     *
      */
     acptC: function (rt, sessId, rtcId, sdp, cands, ans, callback) {
         _logger.debug("acptC ...");
@@ -420,18 +415,18 @@ var _clazz = {
 
     /**
      * GetMems 203
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param WebRTCId
      * @param sessId
      * @param success(from,
      *            rtcOptions)
-     * 
+     *
      */
     getMems: function (rt, WebRTCId, sessId, callback) {
         _logger.debug("getMems ...");
@@ -452,18 +447,18 @@ var _clazz = {
 
     /**
      * SubC 205
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param sessId
      * @param rtcId
      * @param subS
      *            {memId:m001, rtcId:r001}
-     * 
+     *
      */
     subC: function (rt, sessId, rtcId, subS, callback) {
         _logger.debug("subC ...");
@@ -485,16 +480,16 @@ var _clazz = {
 
     /**
      * UsubC 206
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param sessId
      * @param rtcId
-     * 
+     *
      */
     usubC: function (rt, sessId, rtcId, callback) {
         _logger.debug("usubC ...");
@@ -515,16 +510,16 @@ var _clazz = {
 
     /**
      * TermC 107
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param sessId
      * @param rtcId
-     * 
+     *
      */
     termC: function (rt, sessId, rtcId, callback) {
         _logger.debug("termC ...");
@@ -545,18 +540,18 @@ var _clazz = {
 
     /**
      * Exit 201
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param WebRTCId
      * @param sessId
      * @param success(from,
      *            rtcOptions)
-     * 
+     *
      */
     exit: function (rt, WebRTCId, sessId, callback) {
         _logger.debug("exit ...");
@@ -577,18 +572,18 @@ var _clazz = {
 
     /**
      * DelCfr 2
-     * 
+     *
      * @param rt
      *            {to: , rtKey: , rtflag: , success(result), fail(error)}
-     * 
+     *
      * @param callback(from, rtcOptions)
-     * 
-     * 
+     *
+     *
      * @param WebRTCId
      * @param admtok
      * @param success(from,
      *            rtcOptions)
-     * 
+     *
      */
     delCfr: function (rt, WebRTCId, admtok, callback) {
         _logger.debug("delCfr ...");

@@ -65,3 +65,7 @@ Demo.conn = new WebIM.connection({
 });
 
 Demo.api.render(document.getElementById('demo'));
+
+if (module.hot) {
+    module.hot.accept();
+}

@@ -82,6 +82,47 @@
         _isCanUploadFile = _isCanUploadFileAsync || _hasFlash,
         _isCanDownLoadFile = _isCanSetRequestHeader && (_hasBlob || _hasOverrideMimeType);
 
+    if (!Object.keys) {
+        Object.keys = (function () {
+            'use strict';
+            var hasOwnProperty = Object.prototype.hasOwnProperty,
+                hasDontEnumBug = !({toString: null}).propertyIsEnumerable('toString'),
+                dontEnums = [
+                    'toString',
+                    'toLocaleString',
+                    'valueOf',
+                    'hasOwnProperty',
+                    'isPrototypeOf',
+                    'propertyIsEnumerable',
+                    'constructor'
+                ],
+                dontEnumsLength = dontEnums.length;
+
+            return function (obj) {
+                if (typeof obj !== 'object' && (typeof obj !== 'function' || obj === null)) {
+                    throw new TypeError('Object.keys called on non-object');
+                }
+
+                var result = [], prop, i;
+
+                for (prop in obj) {
+                    if (hasOwnProperty.call(obj, prop)) {
+                        result.push(prop);
+                    }
+                }
+
+                if (hasDontEnumBug) {
+                    for (i = 0; i < dontEnumsLength; i++) {
+                        if (hasOwnProperty.call(obj, dontEnums[i])) {
+                            result.push(dontEnums[i]);
+                        }
+                    }
+                }
+                return result;
+            };
+        }());
+    }
+
     var utils = {
         hasFormData: _hasFormData,
 
@@ -244,7 +285,8 @@
             var loginJson = {
                 grant_type: 'password',
                 username: user,
-                password: pwd
+                password: pwd,
+                timestamp: +new Date()
             };
             var loginfo = utils.stringify(loginJson);
 
@@ -727,6 +769,14 @@
         xmlrequest: _xmlrequest,
 
 
+        getXmlFirstChild: function (data, tagName) {
+            var children = data.getElementsByTagName(tagName);
+            if (children.length == 0) {
+                return null;
+            } else {
+                return children[0];
+            }
+        },
         ajax: function (options) {
             var dataType = options.dataType || 'text';
             var suc = options.success || EMPTYFN;
@@ -820,8 +870,27 @@
 
             xhr.send(data);
             return xhr;
+        },
+        ts: function () {
+            var d = new Date();
+            var Hours = d.getHours(); //获取当前小时数(0-23)
+            var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
+            var Seconds = d.getSeconds(); //获取当前秒数(0-59)
+            var Milliseconds = d.getMilliseconds(); //获取当前毫秒
+            return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
+        },
+
+        getObjectKey: function (obj, val) {
+            for (var key in obj) {
+                if (obj[key] == val) {
+                    return key;
+                }
+            }
+            return '';
         }
+
     };
+
 
     exports.utils = utils;
 }());

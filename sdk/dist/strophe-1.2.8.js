@@ -3080,6 +3080,7 @@
              */
             _dataRecv: function (req, raw) {
                 Strophe.info("_dataRecv called");
+                WebIM && WebIM.config.isDebug && Strophe.info(JSON.stringify(req));
                 var elem = this._proto._reqToData(req);
                 if (elem === null) {
                     return;
@@ -5351,9 +5352,7 @@
              */
             _connect_cb_wrapper: function (message) {
                 if (message.data.indexOf("<open ") === 0 || message.data.indexOf("<?xml") === 0) {
-                    if (WebIM.config.isDebug) {
-                        console.log(ts() + 'recv1:', message.data);
-                    }
+
                     // Strip the XML Declaration, if there is one
                     var data = message.data.replace(/^(<\?.*?\?>\s*)*/, "");
                     if (data === '') return;
@@ -5381,9 +5380,6 @@
                         this._conn._doDisconnect();
                     }
                 } else {
-                    if (WebIM.config.isDebug) {
-                        console.log(ts() + 'recv2:', message.data);
-                    }
                     var string = this._streamWrap(message.data);
                     var elem = new DOMParser().parseFromString(string, "text/xml").documentElement;
                     this.socket.onmessage = this._onMessage.bind(this);
@@ -5566,9 +5562,8 @@
              * (string) message - The websocket message.
              */
             _onMessage: function (message) {
-                if (WebIM.config.isDebug) {
-                    console.log(ts() + 'recv:', message.data);
-                }
+                WebIM && WebIM.config.isDebug && Strophe.info(WebIM.utils.ts() + 'recv:', message.data);
+
                 var elem, data;
                 // check for closing stream
                 var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';

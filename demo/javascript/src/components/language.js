@@ -63,10 +63,14 @@ exports.English = {
     addFriendSelfInvalid: 'Can\'t add youself as friend',
     delFriendSelfInvalid: 'Can\'t del youself as friend',
     addFriendRepeat: 'is friend already',
+    addToBlackList: 'add to blacklist',
     blacklist: 'Blacklist',
     ShowBlacklist: 'Blacklist',
     groupBlacklist: 'Blacklist',
     showGroupBlacklist: 'Blacklist',
+    memberInvite: 'Invite',
+    changeGroupInfo: 'Edit group info',
+    groupNotification: 'Group Notification',
     last: ''
 };
 
@@ -135,11 +139,15 @@ exports.Chinese = {
     addFriendSelfInvalid: '不能添加自己为好友',
     delFriendSelfInvalid: '该好友不存在',
     addFriendRepeat: '已经是好友',
-    blacklist: '屏蔽列表',
-    ShowBlacklist: '屏蔽列表',
+    addToBlackList: '加入黑名单',
+    blacklist: '好友黑名单',
+    ShowBlacklist: '好友黑名单',
     // button
-    groupBlacklist: '屏蔽列表',
+    groupBlacklist: '群组黑名单',
     // title
-    showGroupBlacklist: '屏蔽列表',
+    showGroupBlacklist: '群组黑名单',
+    memberInvite: '邀请好友',
+    changeGroupInfo: '修改群信息',
+    groupNotification: '群消息',
     last: ''
 };

@@ -1,18 +1,21 @@
 {
   "name": "webim",
-  "version": "1.2.0",
+  "version": "1.1.3",
   "description": "",
   "main": "index.js",
   "devDependencies": {
     "babel-core": "*",
     "babel-loader": "*",
+    "babel-plugin-react-transform": "^2.0.2",
     "babel-plugin-transform-react-jsx-source": "*",
     "babel-preset-es2015": "*",
     "babel-preset-react": "*",
+    "babel-preset-react-hmre": "^1.1.1",
     "babel-preset-stage-0": "^6.1.18",
     "babel-preset-stage-1": "^6.1.18",
     "babel-preset-stage-2": "^6.1.18",
     "babel-preset-stage-3": "^6.1.18",
+    "cross-env": "^3.1.3",
     "css-loader": "*",
     "file-loader": "*",
     "gulp": "latest",
@@ -23,16 +26,21 @@
     "immutable": "*",
     "line-numbers": "*",
     "node-sass": "*",
+    "open-browser-webpack-plugin": "0.0.2",
     "react": "^15.3.2",
     "react-addons-css-transition-group": "^15.3.2",
     "react-dom": "^15.3.1",
+    "react-transform-hmr": "^1.0.4",
     "sass-loader": "*",
     "style-loader": "*",
-    "webpack": "*"
+    "webpack": "*",
+    "webpack-dev-server": "^1.16.2"
   },
   "scripts": {
     "test": "gulp test",
-    "start": "webpack"
+    "start": "node server.js",
+    "dev": "cross-env NODE_ENV=develop node build/dev-server.js",
+    "prod": "cross-env NODE_ENV=production webpack --config build/webpack.prod.js"
   },
   "repository": {
     "type": "git",
@@ -41,6 +49,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "antd": "^2.1.0",
     "underscore": "^1.8.3"
   }
 }

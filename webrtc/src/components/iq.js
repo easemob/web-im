@@ -59,12 +59,16 @@ var _RtcHandler = {
 
         var contentTags = msginfo.getElementsByTagName('content');
 
+        var streamType = msginfo.getElementsByTagName('stream_type')[0].innerHTML; //VOICE, VIDEO
+
         var contentString = contentTags[0].innerHTML;
 
         var content = _util.parseJSON(contentString);
 
         var rtcOptions = content;
         var tsxId = content.tsxId;
+
+        self.ctx = content.ctx;
 
         _logger.debug("Recv [op = " + rtcOptions.op + "]\r\n json :", msginfo);
 
@@ -175,10 +179,10 @@ var _RtcHandler = {
 
     /**
      * rt: { id: , to: , rtKey: , rtflag: , sid: , tsxId: , type: , }
-     * 
+     *
      * rtcOptions: { data : { op : 'reqP2P', video : 1, audio : 1, peer :
      * curChatUserId, //appKey + "_" + curChatUserId + "@" + this.domain, } }
-     * 
+     *
      */
     sendRtcMessage: function (rt, options, callback) {
         var self = this;
@@ -189,7 +193,9 @@ var _RtcHandler = {
 
         var to = rt.to || _conn.domain;
 
-        var sid = rt.sid || (self._fromSessionID && self._fromSessionID[to]) || _conn.getUniqueId("CONFR_");
+        var sid = rt.sid || self._fromSessionID && self._fromSessionID[to];
+        sid = sid || ((self._fromSessionID || (self._fromSessionID = {}))[to] = _conn.getUniqueId("CONFR_"));
+
 
         var rtKey = rt.rtKey || rt.rtkey;
         // rtKey && delete rt.rtKey;
@@ -202,7 +208,10 @@ var _RtcHandler = {
         options.data || (options.data = {});
         options.data.tsxId = tsxId;
 
+        self.ctx && (options.data.ctx = self.ctx);
         self.convertRtcOptions(options);
+
+        var streamType = "VIDEO"; //VOICE, VIDEO
 
         var id = rt.id || _conn.getUniqueId("CONFR_");
         var iq = $iq({
@@ -215,6 +224,7 @@ var _RtcHandler = {
             xmlns: CONFERENCE_XMLNS
         }).c("MediaReqExt").c('rtkey').t(rtKey)
             .up().c('rtflag').t(rtflag)
+            .up().c('stream_type').t(streamType)
             .up().c('sid').t(sid)
             .up().c('content').t(_util.stringifyJSON(options.data));
 
@@ -242,8 +252,6 @@ var _RtcHandler = {
         _conn.context.stropheConn.sendIQ(iq.tree(), completeFn, errFn);
     }
 };
-
-
 
 
 var RTCIQHandler = function (initConfigs) {

@@ -6,6 +6,7 @@ var RTCChannel = require('../common/rtcChannel');
 var Subscribe = require('./subscribe');
 var ConfirmPop = require('./confirmPop');
 var _ = require('underscore');
+var ConfirmGroupInfo = require('../group/confirmGroupInfo');
 
 module.exports = React.createClass({
 
@@ -30,16 +31,13 @@ module.exports = React.createClass({
                     loadingStatus: 'hide'
                 });
 
-                // blacklist
+                // blacklist and it's callback call updateRoster
                 me.getBlacklist();
-
-                me.getRoster();
+                me.getGroup();
                 me.getChatroom();
                 Demo.conn.errorType = -1;
             },
             onClosed: function (msg) {
-                log(ts(), 'onClosed', Demo.conn.errorType);
-                //demo:跳转到登陆页 或者 自动重连
                 // Demo.api.logout();
 
                 //webRTC:断线处理
@@ -105,13 +103,14 @@ module.exports = React.createClass({
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
+                message.reason && Demo.api.NotifyError(message.reason);
                 me.getGroup();
             },
             onOnline: function () {
-                log(ts(), 'online');
+                // log(WebIM.utils.ts(), 'online');
             },
             onOffline: function () {
-                log(ts(), 'offline');
+                // log(WebIM.utils.ts(), 'offline');
                 if (WebIM.config.isWindowSDK) {
                     Demo.api.NotifyError("Network connection is broken. reconnecting...");
                 } else {
@@ -128,7 +127,7 @@ module.exports = React.createClass({
             },
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
-                log(ts(), 'onError', message);
+                // log(WebIM.utils.ts(), 'onError', message);
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -141,17 +140,13 @@ module.exports = React.createClass({
                     if (message.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
                         if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
                             Demo.conn.errorType = message.type;
-                            console.log('conn.context.errorType=', Demo.conn.errorType);
                             return;
                         }
                     }
                     if (message.data && message.data.data) {
                         text = message.data.data;
                     } else {
-                        console.log('Demo.conn.errorType', Demo.conn.errorType);
-                        console.log('message.type', message.type);
-
-                        text = Demo.api.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
+                        text = WebIM.utils.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
                     }
                     // Demo.api.logout(message.type);
                 }
@@ -164,7 +159,6 @@ module.exports = React.createClass({
 
         });
 
-
         return {
             cur: 'friend',
             curNode: '',
@@ -172,13 +166,12 @@ module.exports = React.createClass({
             groups: [],
             chatrooms: [],
             strangers: [],
-            blacklist: {}
+            blacklist: {},
+            chatrooms_totalnum: Demo.api.pagesize,
+            contact_loading_show: false
         };
     },
     confirmPop: function (options) {
-        console.log('comfirmPop', options);
-
-
         ConfirmPop.show(options);
     },
     //for WindosSDK
@@ -195,7 +188,6 @@ module.exports = React.createClass({
         }
         Demo.friends = friends;
         this.setState({friends: friends});
-        console.log('updateMyRoster', options);
     },
     //for WindosSDK
     updateMyGroupList: function (options) {
@@ -203,7 +195,6 @@ module.exports = React.createClass({
         this.setState({groups: rooms});
     },
     friendRequest: function (msg) {
-        console.log('friendRequest', msg);
         if (msg && msg.status === '[resp:true]') {
             return;
         }
@@ -251,7 +242,7 @@ module.exports = React.createClass({
 
             listener: {
                 onAcceptCall: function (from, options) {
-                    debugger
+                    console.log('onAcceptCall', from, options);
                 },
                 onGotRemoteStream: function (stream) {
                     me.channel.setRemote(stream);
@@ -260,7 +251,7 @@ module.exports = React.createClass({
                     me.channel.setLocal(stream);
                 },
                 onRinging: function (caller) {
-                    debugger
+                    console.log('onRinging', caller);
                 },
                 onTermCall: function () {
                     me.channel.close();
@@ -288,7 +279,14 @@ module.exports = React.createClass({
         var me = this;
 
         switch (msg.type) {
-            case 'leaveGroup':// dismissied by admin
+            case 'joinGroupNotifications':
+                ConfirmGroupInfo.show(msg);
+                break;
+            case 'createGroupACK':
+
+                break;
+            case 'leaveGroup':// dismissed by admin
+                Demo.api.NotifyError(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
@@ -309,24 +307,45 @@ module.exports = React.createClass({
                 }
                 break;
             case 'joinPublicGroupSuccess':
-                console.log('joinPublicGroupSuccess');
-                Demo.api.updateGroup();
+                Demo.api.NotifyError(`You have been invited to group ${msg.from}`);
+                //TODO: 服务器端有bug，先延迟1秒刷新列表,找易乐天
+                setTimeout(function () {
+                    Demo.api.updateGroup()
+                }, 1000);
+
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
                 Demo.currentChatroom = msg.from;
                 break;
             case 'reachChatRoomCapacity':// Failed to join the chat room
                 Demo.currentChatroom = null;
-                Demo.api.NotifyError('加入聊天室失败');
+                Demo.api.NotifyError('Fail to Join the group');
                 break;
             case 'leaveChatRoom':// Leave the chat room
                 break;
             case 'deleteGroupChat':// The chat room or group is deleted.
+                // ignore the sync `recv` request
+                // only handle on async request
+                if (msg.original_type == 'unavailable') return;
+
                 var target = document.getElementById(msg.from);
+                var options = {
+                    title: "Group notification",
+                    msg: "You have been out of the group",
+                };
+
+                _.find(this.state.groups, function (group, k) {
+                    if (group.roomId == msg.from) {
+                        options.msg = "You have been out of the group: " + group.name;
+                        return true;
+                    }
+                });
 
                 if (target) {
                     Demo.api.updateGroup();
                 }
+
+                Demo.api.NotifyError(options.msg);
                 break;
         }
 
@@ -418,6 +437,13 @@ module.exports = React.createClass({
 
     getChatroom: function () {
         var me = this;
+        var pagenum = Math.ceil(this.state.chatrooms.length / Demo.api.pagesize);
+        var pageTotal = Math.ceil(this.state.chatrooms_totalnum / Demo.api.pagesize);
+        if (pagenum == pageTotal) {
+            return;
+        }
+        pagenum++;
+        this.setState({contact_loading_show: true});
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getChatroom"}',
                 function success(str) {
@@ -430,10 +456,21 @@ module.exports = React.createClass({
         } else {
             Demo.conn.getChatRooms({
                 apiUrl: WebIM.config.apiURL,
+                pagenum: pagenum,
+                pagesize: Demo.api.pagesize,
                 success: function (list) {
-                    if (list.data && list.data.length > 0) {
-                        me.setState({chatrooms: list.data});
+                    var states = {};
+                    if (list.data) {
+                        //TODO: 等接口返回totalnum这个参数之后，就不要再计算totalnum了。 直接states.chatrooms_totalnum=list.totalnum
+                        if (list.data.length > 0) {
+                            states.chatrooms_totalnum = (parseInt(list.params.pagenum[0]) + 1) * Demo.api.pagesize;
+                            states.chatrooms = me.state.chatrooms.concat(list.data);
+                        } else {
+                            states.chatrooms_totalnum = parseInt(list.params.pagenum[0] - 1) * Demo.api.pagesize;
+                        }
                     }
+                    states.contact_loading_show = false;
+                    me.setState(states);
                 },
                 error: function (e) {
                     Demo.api.NotifyError('getChatroom:' + e);
@@ -453,7 +490,7 @@ module.exports = React.createClass({
     },
 
     update: function (cur) {
-        this.setState({cur: cur});
+        this.setState({cur: cur, contact_loading_show: false});
     },
 
     updateNode: function (id) {
@@ -600,7 +637,6 @@ module.exports = React.createClass({
             var audio = document.createElement('audio');
 
             audio.oncanplay = function () {
-                log('audio_length:' + this.duration);
                 me.sendAudioMsg(file, Math.ceil(this.duration));
                 audio = null;
             }
@@ -700,6 +736,8 @@ module.exports = React.createClass({
     },
 
     render: function () {
+        // Demo.api.curLength = this.state[this.state.cur].length;
+
         var windows = [], id,
             props = {
                 sendPicture: this.sendPicture,
@@ -712,6 +750,7 @@ module.exports = React.createClass({
             id = this.state.friends[i].name;
             props.name = id;
             windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
+                                     updateNode={this.updateNode}
                                      className={this.state.friends[i].name === this.state.curNode ? '' : 'hide'}/>);
         }
 
@@ -720,7 +759,6 @@ module.exports = React.createClass({
             props.name = this.state.groups[i].name;
 
             windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
-                                     showOptions={true}
                                      className={id === this.state.curNode ? '' : 'hide'}/>);
         }
 
@@ -751,7 +789,9 @@ module.exports = React.createClass({
                          blacklist={this.state.blacklist}
                          groups={this.state.groups}
                          chatrooms={this.state.chatrooms}
-                         strangers={this.state.strangers}/>
+                         strangers={this.state.strangers}
+                         getChatroom={this.getChatroom}
+                         loading={this.state.contact_loading_show}/>
                 {windows}
                 <input ref='picture' onChange={this.pictureChange} type='file' className='hide'/>
                 <input ref='audio' onChange={this.audioChange} type='file' className='hide'/>

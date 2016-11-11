@@ -1,7 +1,7 @@
 var Util = require('./components/utils');
 var Call = require('./components/call');
 
-window.WebIM = WebIM || {};
+window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
 WebIM.WebRTC = WebIM.WebRTC || {};
 WebIM.WebRTC.Call = Call;
 WebIM.WebRTC.Util = Util;

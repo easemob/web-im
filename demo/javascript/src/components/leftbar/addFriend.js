@@ -58,7 +58,7 @@ var AddMember = React.createClass({
             <div className='webim-friend-options'>
                 <div ref='layer' className='webim-layer'></div>
                 <div className='webim-dialog'>
-                    <h3>{Demo.lan.addAMember}</h3>
+                    <h3>{Demo.lan.addAFriend}</h3>
                     <div ref='content'>
                         <Input defaultFocus='true' ref='input' placeholder={Demo.lan.username}/>
                     </div>

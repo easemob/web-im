@@ -6,12 +6,10 @@ var RouteTo = require('./api').RouteTo;
 var _logger = _util.logger;
 
 
-
-
 var P2PRouteTo = RouteTo({
     success: function (result) {
         _logger.debug("iq to server success", result);
-    }, 
+    },
     fail: function (error) {
         _logger.debug("iq to server error", error);
     }
@@ -19,6 +17,7 @@ var P2PRouteTo = RouteTo({
 
 
 var CommonPattern = {
+    _pingIntervalId: null,
     _p2pConfig: null,
     _rtcCfg: null,
     _rtcCfg2: null,
@@ -58,9 +57,26 @@ var CommonPattern = {
         }
     },
 
-    initC : function(mediaStreamConstaints){
+    _ping: function () {
         var self = this;
-        
+
+        function ping() {
+            var rt = new P2PRouteTo({
+                to: self.callee,
+                rtKey: self._rtKey
+            });
+
+            self.api.ping(rt, self._sessId, function (from, rtcOptions) {
+                _logger.debug("ping result", rtcOptions);
+            });
+        }
+
+        self._pingIntervalId = window.setInterval(ping, 59000);
+    },
+
+    initC: function (mediaStreamConstaints) {
+        var self = this;
+
         self.createLocalMedia(mediaStreamConstaints);
     },
 
@@ -69,9 +85,9 @@ var CommonPattern = {
 
         self.consult = false;
 
-        self.webRtc.createMedia(mediaStreamConstaints, function(webrtc, stream){
+        this.webRtc.createMedia(mediaStreamConstaints, function (webrtc, stream) {
             webrtc.setLocalVideoSrcObject(stream);
-            
+
             self.webRtc.createRtcPeerConnection(self._rtcCfg);
 
             self.webRtc.createOffer(function (offer) {
@@ -88,11 +104,13 @@ var CommonPattern = {
             rtKey: self._rtKey
         });
 
-        self.api.initC(rt, null, null, null, null, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
+        self.api.initC(rt, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
             _logger.debug("initc result", rtcOptions);
         });
+
+        self._ping();
     },
-    
+
     _onAcptC: function (from, options) {
         var self = this;
 
@@ -134,6 +152,7 @@ var CommonPattern = {
         self._fromSid = fromSid;
 
         self._rtcId = options.rtcId;
+        self._sessId = options.sessId;
 
         self.webRtc.createRtcPeerConnection(self._rtcCfg2);
         options.sdp && self.webRtc.setRemoteDescription(options.sdp);
@@ -143,7 +162,7 @@ var CommonPattern = {
             self._onGotWebRtcPRAnswer(prAnswer);
         });
     },
-    
+
 
     _onGotWebRtcPRAnswer: function (prAnswer) {
         var self = this;
@@ -157,16 +176,18 @@ var CommonPattern = {
 
         self._onHandShake();
 
-        self.api.acptC(rt, null, self._rtcId, prAnswer, null, 1);
+        self.api.acptC(rt, self._sessId, self._rtcId, prAnswer, null, 1);
+
+        self._ping();
 
         setTimeout(function () {
             self.onRinging(self.callee);
         }, 2000);
     },
-    
+
     onRinging: function (caller) {
     },
-    
+
     accept: function () {
         var self = this;
 
@@ -180,13 +201,13 @@ var CommonPattern = {
                     rtKey: self._rtKey
                 });
 
-                self.api.ansC(rt, null, self._rtcId, desc, null);
+                self.api.ansC(rt, self._sessId, self._rtcId, desc, null);
             });
         }
 
-        self.webRtc.createMedia(function(webrtc, stream){
+        self.webRtc.createMedia(function (webrtc, stream) {
             webrtc.setLocalVideoSrcObject(stream);
-            
+
             createAndSendAnswer();
         });
     },
@@ -244,7 +265,7 @@ var CommonPattern = {
                 });
 
                 if (candidate) {
-                    self.api.tcklC(rt, null, self._rtcId, null, candidate);
+                    self.api.tcklC(rt, self._sessId, self._rtcId, null, candidate);
                 }
             }
 
@@ -260,20 +281,22 @@ var CommonPattern = {
             _logger.debug("[_onIceCandidate] temporary memory[send] ice candidate. util consult = true");
         }
     },
-    
+
 
     termCall: function () {
         var self = this;
+
+        self._pingIntervalId && window.clearInterval(self._pingIntervalId);
 
         var rt = new P2PRouteTo({
             to: self.callee,
             rtKey: self._rtKey
         });
 
-        self.hangup || self.api.termC(rt, self._fromSid, self._rtcId);
+        self.hangup || self.api.termC(rt, self._sessId, self._rtcId);
 
         self.webRtc.close();
-        
+
         self.hangup = true;
 
         self.onTermCall();
@@ -281,7 +304,7 @@ var CommonPattern = {
 
     _onTermC: function () {
         var self = this;
-        
+
         self.hangup = true;
         self.termCall();
     },

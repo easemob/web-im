@@ -41,7 +41,7 @@ module.exports = React.createClass({
 
 
         Demo.conn.autoReconnectNumTotal = 0;
-        
+
         if (WebIM.config.isWindowSDK) {
             var me = this;
             WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}',
@@ -53,7 +53,12 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('open:' + code + " - " + msg);
                 });
         } else {
-            Demo.conn.open(options);
+            if (WebIM.config.isDNS) {
+                Demo.conn.getDNS(options);
+            } else {
+                Demo.conn.open(options);
+            }
+
         }
 
     },
