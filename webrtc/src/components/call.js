@@ -97,11 +97,19 @@ var _Call = {
             }
         });
 
-        this.api.reqP2P(rt, mediaStreamConstaints.video ? 1 : 0, mediaStreamConstaints.audio ? 1 : 0, callee, function (from, rtcOptions) {
-            self._onGotServerP2PConfig(from, rtcOptions);
-
-            self.pattern.initC(self.mediaStreamConstaints);
-        });
+        this.api.reqP2P(
+            rt,
+            mediaStreamConstaints.video ? 1 : 0,
+            mediaStreamConstaints.audio ? 1 : 0,
+            this.api.jid(callee),
+            function (from, rtcOptions) {
+                if (rtcOptions.online == "0") {
+                    self.listener.onError({message: "callee is not online!"});
+                    return;
+                }
+                self._onGotServerP2PConfig(from, rtcOptions);
+                self.pattern.initC(self.mediaStreamConstaints);
+            });
     },
 
     _onInitC: function (from, options, rtkey, tsxId, fromSid) {
