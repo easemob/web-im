@@ -11,7 +11,7 @@ var _logger = Util.logger;
 
 var _Call = {
     api: null,
-
+    caller: '',
     connection: null,
 
     pattern: null,
@@ -78,6 +78,7 @@ var _Call = {
 
     endCall: function (callee) {
         var self = this;
+        self.caller = '';
         self.pattern.termCall();
     },
 

@@ -224,7 +224,7 @@ module.exports = function (dom) {
             this.remoteStream = stream;
             var title = '';
             var localFullRemoteCorner = false;
-            if (Demo.user == Demo.call.caller) {
+            if (Demo.call.caller != '' && Demo.call.caller == Demo.user) {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
             } else {
                 title = Demo.call.callee.split('@')[0].split('_')[1] + ' 请求视频通话...';
