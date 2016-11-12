@@ -152,7 +152,8 @@ module.exports = React.createClass({
 
                 //webRTC:断线处理
                 if (WebIM.config.isWebRTC) {
-                    me.channel.close();
+                    var closeButton = document.getElementById('webrtc_close');
+                    closeButton && closeButton.click();
                 }
 
 
@@ -260,6 +261,7 @@ module.exports = React.createClass({
                     console.log('onRinging', caller);
                 },
                 onTermCall: function () {
+                    console.log('Demo.call listener onTermCall');
                     me.channel.close();
                 },
                 onError: function (e) {

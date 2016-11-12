@@ -250,6 +250,10 @@ var CommonPattern = {
         var self = this;
 
         event && _logger.debug(self.webRtc.iceConnectionState() + " |||| ice state is " + event.target.iceConnectionState);
+        if (self.webRtc.iceConnectionState() == 'disconnected') {
+            self._onTermC();
+            self.webRtc.onError({message: 'target is offline'});
+        }
     },
 
     _onIceCandidate: function (event) {

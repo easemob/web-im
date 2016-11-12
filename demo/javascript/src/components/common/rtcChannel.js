@@ -20,23 +20,8 @@ var Channel = React.createClass({
     },
 
     close: function () {
-        console.log('close click');
-        var local = this.props.localStream;
-        var remote = this.props.remoteStream;
-
-
-        if (remote) {
-            remote.getTracks().forEach(function (track) {
-                track.stop();
-            });
-        }
-
-        if (local) {
-            local.getTracks().forEach(function (track) {
-                track.stop();
-            });
-        }
-
+        //close stream and camera first
+        this.props.close();
 
         try {
             Demo.call.endCall();
@@ -44,7 +29,7 @@ var Channel = React.createClass({
             console.log('endCall error1:', e);
         }
 
-        this.props.close();
+
     },
 
     accept: function () {
@@ -185,7 +170,7 @@ var Channel = React.createClass({
                 <video ref='localVideo' className={localClassName}/>
                 <video ref='remoteVideo' className={remoteClassName}/>
                 <span>{this.props.title}</span>
-                <i ref='close' className='font small' style={{
+                <i ref='close' id='webrtc_close' className='font small' style={{
                     left: 'auto',
                     right: this.state.close_right + 'px',
                     top: 'auto',
@@ -216,6 +201,7 @@ module.exports = function (dom) {
     var me = this;
     return {
         setLocal: function (stream) {
+            console.log('channel setLocal', Demo.user, Demo.call.caller, Demo.call.callee);
             this.localStream = stream;
             var title = '';
             var hideAccept = false;
@@ -234,6 +220,7 @@ module.exports = function (dom) {
             );
         },
         setRemote: function (stream) {
+            console.log('channel setRemote', Demo.user, Demo.call.caller, Demo.call.callee);
             this.remoteStream = stream;
             var title = '';
             var localFullRemoteCorner = false;
@@ -264,7 +251,6 @@ module.exports = function (dom) {
                     track.stop();
                 });
             }
-
 
             ReactDOM.unmountComponentAtNode(me.dom);
         }
