@@ -345,7 +345,7 @@ var _WebRTC = {
         // accept the incoming offer of audio and video.
         return self.rtcPeerConnection.createAnswer().then(
             function (desc) {
-                _logger.debug(' _____________PRAnswer from :\n' + desc.sdp);
+                _logger.debug(' _____________PRAnswer from :');//_logger.debug('\n' + desc.sdp);
 
                 desc.type = "pranswer";
                 desc.sdp = desc.sdp.replace(/a=recvonly/g, 'a=inactive');
@@ -353,7 +353,7 @@ var _WebRTC = {
 
                 self.prAnswerDescription = desc;
 
-                _logger.debug(' inactive PRAnswer from :\n' + desc.sdp);
+                _logger.debug(' inactive PRAnswer from :');//_logger.debug('\n' + desc.sdp);
                 _logger.debug(' setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
@@ -388,7 +388,7 @@ var _WebRTC = {
         // accept the incoming offer of audio and video.
         return self.rtcPeerConnection.createAnswer().then(
             function (desc) {
-                _logger.debug(' _____________________Answer from :\n' + desc.sdp);
+                _logger.debug(' _____________________Answer from :');//_logger.debug('\n' + desc.sdp);
 
                 desc.type = 'answer';
 
@@ -407,7 +407,7 @@ var _WebRTC = {
 
                 self.answerDescription = desc;
 
-                _logger.debug(' Answer from :\n' + desc.sdp);
+                _logger.debug(' Answer from :');//_logger.debug('\n' + desc.sdp);
                 _logger.debug(' setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
@@ -421,7 +421,7 @@ var _WebRTC = {
 
                     desc.sdp = sdpSection.getUpdatedSDP();
 
-                    _logger.debug(' Send Answer from :\n' + desc.sdp);
+                    _logger.debug(' Send Answer from :');//_logger.debug('\n' + desc.sdp);
 
                     (onCreateAnswerSuccess || self.onCreateAnswerSuccess)(desc);
                 });

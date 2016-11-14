@@ -16,7 +16,7 @@ var _RouteTo = {
     fail: function (error) {
 
     }
-}
+};
 
 var RouteTo = function (extendCfg) {
     if (this instanceof RouteTo) {
@@ -27,7 +27,7 @@ var RouteTo = function (extendCfg) {
         var sub = function (extendCfg) {
             var self = this;
             _util.extend(true, self, extendCfg || {});
-        }
+        };
 
         _util.extend(true, sub.prototype, _RouteTo, extendCfg || {});
 
@@ -402,7 +402,7 @@ var _clazz = {
             data: {
                 op: 104
             }
-        }
+        };
 
         sessId && (rtcOptions.data.sessId = sessId);
         rtcId && (rtcOptions.data.rtcId = rtcId);

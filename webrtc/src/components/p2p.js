@@ -36,25 +36,27 @@ var CommonPattern = {
     init: function () {
         var self = this;
 
+        self.api.onPing = function () {
+            self._onPing.apply(self, arguments);
+        };
         self.api.onTcklC = function () {
             self._onTcklC.apply(self, arguments);
-        }
+        };
         self.api.onAcptC = function () {
             self._onAcptC.apply(self, arguments);
-        }
+        };
         self.api.onAnsC = function () {
             self._onAnsC.apply(self, arguments);
-        }
+        };
         self.api.onTermC = function () {
             self._onTermC.apply(self, arguments);
-        }
-
+        };
         self.webRtc.onIceCandidate = function () {
             self._onIceCandidate.apply(self, arguments);
-        }
+        };
         self.webRtc.onIceStateChange = function () {
             self._onIceStateChange.apply(self, arguments);
-        }
+        };
     },
 
     _ping: function () {
@@ -72,6 +74,10 @@ var CommonPattern = {
         }
 
         self._pingIntervalId = window.setInterval(ping, 59000);
+    },
+    
+    _onPing: function (from, options, rtkey, tsxId, fromSid) {
+        console.log('_onPing from', fromSid);
     },
 
     initC: function (mediaStreamConstaints) {
