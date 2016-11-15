@@ -1853,7 +1853,7 @@ var edgeShim = {
       var self = this;
       var newState;
       var states = {
-        'new': 0,
+        new: 0,
         closed: 0,
         connecting: 0,
         checking: 0,
@@ -2188,7 +2188,7 @@ module.exports = function() {
   var origGetUserMedia = navigator.mediaDevices.getUserMedia.
       bind(navigator.mediaDevices);
   navigator.mediaDevices.getUserMedia = function(c) {
-    return origGetUserMedia(c).catch(function(e) {
+    return origGetUserMedia(c)['catch'](function(e) {
       return Promise.reject(shimError_(e));
     });
   };
