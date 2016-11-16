@@ -260,8 +260,10 @@ module.exports = React.createClass({
                 onRinging: function (caller) {
                     console.log('onRinging', caller);
                 },
-                onTermCall: function () {
-                    console.log('Demo.call listener onTermCall');
+                onTermCall: function (reason) {
+                    if (reason && reason == 'busy') {
+                        Demo.api.NotifyError('Target is busy. Try it later.');
+                    }
                     me.channel.close();
                 },
                 onError: function (e) {

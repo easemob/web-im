@@ -77,7 +77,7 @@ var CommonPattern = {
     },
 
     _onPing: function (from, options, rtkey, tsxId, fromSid) {
-        console.log('_onPing from', fromSid);
+        _logger.debug('_onPing from', fromSid);
     },
 
     initC: function (mediaStreamConstaints) {
@@ -300,8 +300,7 @@ var CommonPattern = {
     },
 
 
-    termCall: function () {
-        console.log('p2p termCall');
+    termCall: function (reason) {
         var self = this;
 
         self._pingIntervalId && window.clearInterval(self._pingIntervalId);
@@ -311,24 +310,24 @@ var CommonPattern = {
             rtKey: self._rtKey
         });
 
-        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, "ok");
+        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, reason);
 
         self.webRtc.close();
 
         self.hangup = true;
 
-        self.onTermCall();
+        self.onTermCall(reason);
     },
 
-    _onTermC: function () {
+    _onTermC: function (from, options) {
         var self = this;
 
         self.hangup = true;
-        self.termCall();
+        self.termCall(options.reason);
     },
 
     onTermCall: function () {
-
+        //to be overwrited by call.listener.onTermCall
     }
 };
 

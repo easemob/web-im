@@ -77,19 +77,14 @@ var _RtcHandler = {
 
         _logger.debug("Recv [op = " + rtcOptions.op + "] [tsxId=" + tsxId + "]\r\n json :", msginfo);
 
-        console.log(self._fromSessionID);
-
         //if a->b already, c->a/b should be termiated with 'busy' reason
         if (from.indexOf("@") >= 0) {
-            console.log(self._connectedId, from);
             if (self._connectedId == '') {
                 self._connectedId = from;
             } else {
                 if (self._connectedId != from) {
-                    console.log(self._connectedId, '!=', from);
                     //onInitC
                     if (rtcOptions.op == 102) {
-                        console.log('should send busy');
                         var rt = new RouteTo({
                             to: from,
                             rtKey: rtkey,
@@ -124,7 +119,6 @@ var _RtcHandler = {
         if (rtcOptions.op == 107) {
             self._connectedId = '';
             self._fromSessionID = {};
-            console.log('recv 107', self._connectedId, self._fromSessionID);
         }
 
 
@@ -311,13 +305,9 @@ var _RtcHandler = {
 
         //onTermC
         if (options.data.op == 107) {
-            // self._connectedId = '';
-            // self._fromSessionID = {};
-            console.log('send 107', self._connectedId, self._fromSessionID, rt.to);
             if (self._connectedId == rt.to) {
                 self._connectedId = '';
                 self._fromSessionID = {};
-                console.log('send 107', self._connectedId, self._fromSessionID, rt.to);
             }
         }
     }
