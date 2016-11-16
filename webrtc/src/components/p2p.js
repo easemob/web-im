@@ -36,25 +36,27 @@ var CommonPattern = {
     init: function () {
         var self = this;
 
+        self.api.onPing = function () {
+            self._onPing.apply(self, arguments);
+        };
         self.api.onTcklC = function () {
             self._onTcklC.apply(self, arguments);
-        }
+        };
         self.api.onAcptC = function () {
             self._onAcptC.apply(self, arguments);
-        }
+        };
         self.api.onAnsC = function () {
             self._onAnsC.apply(self, arguments);
-        }
+        };
         self.api.onTermC = function () {
             self._onTermC.apply(self, arguments);
-        }
-
+        };
         self.webRtc.onIceCandidate = function () {
             self._onIceCandidate.apply(self, arguments);
-        }
+        };
         self.webRtc.onIceStateChange = function () {
             self._onIceStateChange.apply(self, arguments);
-        }
+        };
     },
 
     _ping: function () {
@@ -72,6 +74,10 @@ var CommonPattern = {
         }
 
         self._pingIntervalId = window.setInterval(ping, 59000);
+    },
+
+    _onPing: function (from, options, rtkey, tsxId, fromSid) {
+        console.log('_onPing from', fromSid);
     },
 
     initC: function (mediaStreamConstaints) {
@@ -159,7 +165,7 @@ var CommonPattern = {
         self.webRtc.createRtcPeerConnection(self._rtcCfg2);
 
         options.cands && self._onTcklC(from, options);
-        options.sdp && (self.webRtc.setRemoteDescription(options.sdp).then(function(){
+        options.sdp && (self.webRtc.setRemoteDescription(options.sdp).then(function () {
             self._onHandShake(from, options);
 
             self.webRtc.createPRAnswer(function (prAnswer) {
@@ -256,7 +262,7 @@ var CommonPattern = {
             self.webRtc.onError({message: 'target is offline'});
         }
 
-        if(self.webRtc.iceConnectionState() == 'connected'){
+        if (self.webRtc.iceConnectionState() == 'connected') {
             setTimeout(function () {
                 self.onRinging(self.callee);
             }, 500);
@@ -295,6 +301,7 @@ var CommonPattern = {
 
 
     termCall: function () {
+        console.log('p2p termCall');
         var self = this;
 
         self._pingIntervalId && window.clearInterval(self._pingIntervalId);
@@ -304,7 +311,7 @@ var CommonPattern = {
             rtKey: self._rtKey
         });
 
-        self.hangup || self.api.termC(rt, self._sessId, self._rtcId);
+        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, "ok");
 
         self.webRtc.close();
 

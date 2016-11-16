@@ -4,7 +4,8 @@
 
 var _util = require('./utils');
 var _logger = _util.logger;
-
+var API = require('./api');
+var RouteTo = API.RouteTo;
 
 var CONFERENCE_XMLNS = "urn:xmpp:media-conference";
 
@@ -13,6 +14,9 @@ var _RtcHandler = {
     _apiCallbacks: {},
 
     imConnection: null,
+
+    _connectedId: '',
+
 
     init: function () {
         var self = this;
@@ -51,6 +55,7 @@ var _RtcHandler = {
         // remove resource
         from.lastIndexOf("/") >= 0 && (from = from.substring(0, from.lastIndexOf("/")));
 
+
         var rtkey = msginfo.getElementsByTagName('rtkey')[0].innerHTML;
 
         var fromSessionId = msginfo.getElementsByTagName('sid')[0].innerHTML;
@@ -70,7 +75,57 @@ var _RtcHandler = {
 
         self.ctx = content.ctx;
 
-        _logger.debug("Recv [op = " + rtcOptions.op + "]\r\n json :", msginfo);
+        _logger.debug("Recv [op = " + rtcOptions.op + "] [tsxId=" + tsxId + "]\r\n json :", msginfo);
+
+        console.log(self._fromSessionID);
+
+        //if a->b already, c->a/b should be termiated with 'busy' reason
+        if (from.indexOf("@") >= 0) {
+            console.log(self._connectedId, from);
+            if (self._connectedId == '') {
+                self._connectedId = from;
+            } else {
+                if (self._connectedId != from) {
+                    console.log(self._connectedId, '!=', from);
+                    //onInitC
+                    if (rtcOptions.op == 102) {
+                        console.log('should send busy');
+                        var rt = new RouteTo({
+                            to: from,
+                            rtKey: rtkey,
+
+                            success: function (result) {
+                                _logger.debug("iq to server success", result);
+                            },
+                            fail: function (error) {
+                                _logger.debug("iq to server error", error);
+                                self.onError(error);
+                            }
+                        });
+
+                        var options = {
+                            data: {
+                                op: 107,
+                                sessId: rtcOptions.sessId,
+                                rtcId: rtcOptions.rtcId,
+                                reason: 'busy'
+
+                            },
+                            reason: 'busy'
+                        };
+                        self.sendRtcMessage(rt, options)
+                    }
+                    return;
+                }
+            }
+        }
+
+        //onTermC
+        if (rtcOptions.op == 107) {
+            self._connectedId = '';
+            self._fromSessionID = {};
+            console.log('recv 107', self._connectedId, self._fromSessionID);
+        }
 
 
         if (rtcOptions.sdp) {
@@ -228,6 +283,9 @@ var _RtcHandler = {
             .up().c('sid').t(sid)
             .up().c('content').t(_util.stringifyJSON(options.data));
 
+        if (options.data.op == 107 && options.reason) {
+            iq.up().c('reaseon').t(options.reason);
+        }
         _logger.debug("Send IQ [op = " + options.data.op + "] : \r\n", iq.tree());
 
 
@@ -241,7 +299,7 @@ var _RtcHandler = {
                 rt.success(result);
             } || function (result) {
                 _logger.debug("send result. op:" + options.data.op + ".", result);
-            }
+            };
 
         var errFn = function (ele) {
                 rt.fail(ele);
@@ -250,6 +308,18 @@ var _RtcHandler = {
             };
 
         _conn.context.stropheConn.sendIQ(iq.tree(), completeFn, errFn);
+
+        //onTermC
+        if (options.data.op == 107) {
+            // self._connectedId = '';
+            // self._fromSessionID = {};
+            console.log('send 107', self._connectedId, self._fromSessionID, rt.to);
+            if (self._connectedId == rt.to) {
+                self._connectedId = '';
+                self._fromSessionID = {};
+                console.log('send 107', self._connectedId, self._fromSessionID, rt.to);
+            }
+        }
     }
 };
 

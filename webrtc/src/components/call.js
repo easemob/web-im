@@ -187,7 +187,7 @@ var _Call = {
             }
         }));
     }
-}
+};
 
 
 module.exports = function (initConfigs) {

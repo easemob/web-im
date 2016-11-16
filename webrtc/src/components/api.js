@@ -130,7 +130,7 @@ var _clazz = {
                 audio: audio,
                 peer: peer // appKey + "_" + curChatUserId + "@" + this.domain,
             }
-        }
+        };
 
         this.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
     },
@@ -159,7 +159,7 @@ var _clazz = {
             data: {
                 op: 1
             }
-        }
+        };
 
         reqTkt && (rtcOptions.data.reqTkt = reqTkt);
         password && (rtcOptions.data.password = password);
@@ -193,7 +193,7 @@ var _clazz = {
             data: {
                 op: 200
             }
-        }
+        };
 
         WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
         reqMembers && (rtcOptions.data.reqMembers = reqMembers);
@@ -225,7 +225,7 @@ var _clazz = {
             data: {
                 op: 100
             }
-        }
+        };
 
         sessId && (rtcOptions.data.sessId = sessId);
 
@@ -255,7 +255,7 @@ var _clazz = {
             data: {
                 op: 3
             }
-        }
+        };
 
         WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
 
@@ -292,7 +292,7 @@ var _clazz = {
             data: {
                 op: 102
             }
-        }
+        };
 
         WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
         tkt && (rtcOptions.data.tkt = tkt);
@@ -333,7 +333,7 @@ var _clazz = {
             data: {
                 op: 105
             }
-        }
+        };
 
         sessId && (rtcOptions.data.sessId = sessId);
         rtcId && (rtcOptions.data.rtcId = rtcId);
@@ -367,7 +367,7 @@ var _clazz = {
             data: {
                 op: 106
             }
-        }
+        };
 
         sessId && (rtcOptions.data.sessId = sessId);
         rtcId && (rtcOptions.data.rtcId = rtcId);
@@ -437,7 +437,7 @@ var _clazz = {
             data: {
                 op: 203
             }
-        }
+        };
 
         WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
         sessId && (rtcOptions.data.sessId = sessId);
@@ -469,7 +469,7 @@ var _clazz = {
             data: {
                 op: 205
             }
-        }
+        };
 
         sessId && (rtcOptions.data.sessId = sessId);
         rtcId && (rtcOptions.data.rtcId = rtcId);
@@ -500,7 +500,7 @@ var _clazz = {
             data: {
                 op: 206
             }
-        }
+        };
 
         sessId && (rtcOptions.data.sessId = sessId);
         rtcId && (rtcOptions.data.rtcId = rtcId);
@@ -519,9 +519,12 @@ var _clazz = {
      *
      * @param sessId
      * @param rtcId
+     * @param reason
+     *               "ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+     *               "decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
      *
      */
-    termC: function (rt, sessId, rtcId, callback) {
+    termC: function (rt, sessId, rtcId, reason, callback) {
         _logger.debug("termC ...");
 
         var self = this;
@@ -530,10 +533,11 @@ var _clazz = {
             data: {
                 op: 107
             }
-        }
+        };
 
         sessId && (rtcOptions.data.sessId = sessId);
         rtcId && (rtcOptions.data.rtcId = rtcId);
+        reason && (rtcOptions.reason = reason);
 
         self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
     },
@@ -562,7 +566,7 @@ var _clazz = {
             data: {
                 op: 201
             }
-        }
+        };
 
         WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
         sessId && (rtcOptions.data.sessId = sessId);
@@ -594,7 +598,7 @@ var _clazz = {
             data: {
                 op: 2
             }
-        }
+        };
 
         WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
         admtok && (rtcOptions.data.admtok = admtok);
