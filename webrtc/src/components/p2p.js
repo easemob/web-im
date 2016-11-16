@@ -36,27 +36,25 @@ var CommonPattern = {
     init: function () {
         var self = this;
 
-        self.api.onPing = function () {
-            self._onPing.apply(self, arguments);
-        };
         self.api.onTcklC = function () {
             self._onTcklC.apply(self, arguments);
-        };
+        }
         self.api.onAcptC = function () {
             self._onAcptC.apply(self, arguments);
-        };
+        }
         self.api.onAnsC = function () {
             self._onAnsC.apply(self, arguments);
-        };
+        }
         self.api.onTermC = function () {
             self._onTermC.apply(self, arguments);
-        };
+        }
+
         self.webRtc.onIceCandidate = function () {
             self._onIceCandidate.apply(self, arguments);
-        };
+        }
         self.webRtc.onIceStateChange = function () {
             self._onIceStateChange.apply(self, arguments);
-        };
+        }
     },
 
     _ping: function () {
@@ -74,10 +72,6 @@ var CommonPattern = {
         }
 
         self._pingIntervalId = window.setInterval(ping, 59000);
-    },
-    
-    _onPing: function (from, options, rtkey, tsxId, fromSid) {
-        console.log('_onPing from', fromSid);
     },
 
     initC: function (mediaStreamConstaints) {
@@ -98,6 +92,8 @@ var CommonPattern = {
 
             self.webRtc.createOffer(function (offer) {
                 self._onGotWebRtcOffer(offer);
+
+                self._onHandShake();
             });
         });
     },
@@ -120,14 +116,14 @@ var CommonPattern = {
     _onAcptC: function (from, options) {
         var self = this;
 
-        _logger.info("_onAcptC : recv pranswer. ");
+        _logger.info("[WebRTC-API] _onAcptC : recv pranswer. ");
 
         if (options.sdp || options.cands) {
             // options.sdp && (options.sdp.type = "pranswer");
             options.sdp && self.webRtc.setRemoteDescription(options.sdp);
             options.cands && self._onTcklC(from, options);
 
-            self._onHandShake(from, options);
+            //self._onHandShake(from, options);
 
             self.onAcceptCall(from, options);
         }
@@ -140,7 +136,7 @@ var CommonPattern = {
     _onAnsC: function (from, options) { // answer
         var self = this;
 
-        _logger.info("_onAnsC : recv answer. ");
+        _logger.info("[WebRTC-API] _onAnsC : recv answer. ");
 
         options.sdp && self.webRtc.setRemoteDescription(options.sdp);
     },
@@ -161,12 +157,15 @@ var CommonPattern = {
         self._sessId = options.sessId;
 
         self.webRtc.createRtcPeerConnection(self._rtcCfg2);
-        options.sdp && self.webRtc.setRemoteDescription(options.sdp);
-        options.cands && self._onTcklC(from, options);
 
-        self.webRtc.createPRAnswer(function (prAnswer) {
-            self._onGotWebRtcPRAnswer(prAnswer);
-        });
+        options.cands && self._onTcklC(from, options);
+        options.sdp && (self.webRtc.setRemoteDescription(options.sdp).then(function(){
+            self._onHandShake(from, options);
+
+            self.webRtc.createPRAnswer(function (prAnswer) {
+                self._onGotWebRtcPRAnswer(prAnswer);
+            });
+        }));
     },
 
 
@@ -174,21 +173,17 @@ var CommonPattern = {
         var self = this;
 
         var rt = new P2PRouteTo({
-            tsxId: self._tsxId,
+            //tsxId: self._tsxId,
             to: self.callee,
             rtKey: self._rtKey
         });
 
 
-        self._onHandShake();
+        //self._onHandShake();
 
         self.api.acptC(rt, self._sessId, self._rtcId, prAnswer, null, 1);
 
         self._ping();
-
-        setTimeout(function () {
-            self.onRinging(self.callee);
-        }, 2000);
     },
 
     onRinging: function (caller) {
@@ -202,7 +197,7 @@ var CommonPattern = {
 
             self.webRtc.createAnswer(function (desc) {
                 var rt = new P2PRouteTo({
-                    tsxId: self._tsxId,
+                    //tsxId: self._tsxId,
                     to: self.callee,
                     rtKey: self._rtKey
                 });
@@ -225,7 +220,7 @@ var CommonPattern = {
         _logger.info("hand shake over. may switch cands.");
 
 
-        setTimeout(function () {
+        options && setTimeout(function () {
             self._onTcklC(from, options);
         }, 100);
 
@@ -240,7 +235,7 @@ var CommonPattern = {
         // options.sdp && self.webRtc.setRemoteDescription(options.sdp);
 
         if (self.consult) {
-            _logger.info("recv and add cands.");
+            _logger.info("[WebRTC-API] recv and add cands.");
 
             self._recvCands && self._recvCands.length > 0 && self.webRtc.addIceCandidate(self._recvCands);
             options && options.cands && self.webRtc.addIceCandidate(options.cands);
@@ -259,6 +254,12 @@ var CommonPattern = {
         if (self.webRtc.iceConnectionState() == 'disconnected') {
             self._onTermC();
             self.webRtc.onError({message: 'target is offline'});
+        }
+
+        if(self.webRtc.iceConnectionState() == 'connected'){
+            setTimeout(function () {
+                self.onRinging(self.callee);
+            }, 500);
         }
     },
 
