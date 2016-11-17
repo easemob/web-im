@@ -163,12 +163,12 @@ var Channel = React.createClass({
     render: function () {
         var localClassName = this.state.localFullRemoteCorner ? 'full' : 'corner';
         var remoteClassName = this.state.localFullRemoteCorner ? 'corner' : 'full';
-
+        var localMuted = true;
         return (
             <div ref='rtc' className='webim-rtc-video'
                  style={{width: this.state.full_width + 'px', height: this.state.full_height + 'px'}}>
-                <video ref='localVideo' className={localClassName}/>
-                <video ref='remoteVideo' className={remoteClassName}/>
+                <video ref='localVideo' className={localClassName} muted autoPlay/>
+                <video ref='remoteVideo' className={remoteClassName} autoPlay/>
                 <span>{this.props.title}</span>
                 <i ref='close' id='webrtc_close' className='font small' style={{
                     left: 'auto',
