@@ -221,7 +221,7 @@ var _SDPSection = {
             return arr;
         }
     },
-}
+};
 
 var SDPSection = function (sdp) {
     _util.extend(this, _SDPSection);
@@ -339,7 +339,7 @@ var _WebRTC = {
             function (desc) {
                 self.offerDescription = desc;
 
-                _logger.debug('[WebRTC-API] Offer from \n' + desc.sdp);
+                _logger.debug('[WebRTC-API] Offer ');//_logger.debug('from \n' + desc.sdp);
                 _logger.debug('[WebRTC-API] setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
@@ -362,7 +362,7 @@ var _WebRTC = {
         // accept the incoming offer of audio and video.
         return self.rtcPeerConnection.createAnswer().then(
             function (desc) {
-                _logger.debug('[WebRTC-API] _____________PRAnswer from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] _____________PRAnswer ');//_logger.debug('from :\n' + desc.sdp);
 
                 desc.type = "pranswer";
                 desc.sdp = desc.sdp.replace(/a=recvonly/g, 'a=inactive');
@@ -370,7 +370,7 @@ var _WebRTC = {
 
                 self.prAnswerDescription = desc;
 
-                _logger.debug('[WebRTC-API] inactive PRAnswer from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] inactive PRAnswer ');//_logger.debug('from :\n' + desc.sdp);
                 _logger.debug('[WebRTC-API] setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
@@ -384,7 +384,7 @@ var _WebRTC = {
 
                     desc.sdp = sdpSection.getUpdatedSDP();
 
-                    _logger.debug('[WebRTC-API] Send PRAnswer from :\n' + desc.sdp);
+                    _logger.debug('[WebRTC-API] Send PRAnswer ');//_logger.debug('from :\n' + desc.sdp);
 
                     (onCreatePRAnswerSuccess || self.onCreatePRAnswerSuccess)(desc);
                 });
@@ -404,7 +404,7 @@ var _WebRTC = {
         // accept the incoming offer of audio and video.
         return self.rtcPeerConnection.createAnswer().then(
             function (desc) {
-                _logger.debug('[WebRTC-API] _____________________Answer from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] _____________________Answer ');//_logger.debug('from :\n' + desc.sdp);
 
                 desc.type = 'answer';
 
@@ -423,7 +423,7 @@ var _WebRTC = {
 
                 self.answerDescription = desc;
 
-                _logger.debug('[WebRTC-API] Answer from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] Answer ');//_logger.debug('from :\n' + desc.sdp);
                 _logger.debug('[WebRTC-API] setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
@@ -437,7 +437,7 @@ var _WebRTC = {
 
                     desc.sdp = sdpSection.getUpdatedSDP();
 
-                    _logger.debug('[WebRTC-API] Send Answer from :\n' + desc.sdp);
+                    _logger.debug('[WebRTC-API] Send Answer ');//_logger.debug('from :\n' + desc.sdp);
 
                     (onCreateAnswerSuccess || self.onCreateAnswerSuccess)(desc);
                 });
@@ -493,7 +493,11 @@ var _WebRTC = {
 
         return self.rtcPeerConnection.setRemoteDescription(desc).then(
             self.onSetRemoteSuccess,
-            self.onSetSessionDescriptionError
+            function () {
+                self.onError({message: "CALLLING_EACH_OTHER_AT_THE_SAME_TIME"});
+                self.onSetSessionDescriptionError.apply(self, arguments);
+
+            }
         );
     },
 
@@ -565,6 +569,8 @@ var _WebRTC = {
     onSetLocalSessionDescriptionSuccess: function () {
         _logger.debug('[WebRTC-API] onSetLocalSessionDescriptionSuccess : setLocalDescription complete');
     }
+
+
 };
 
 module.exports = function (initConfigs) {

@@ -280,7 +280,7 @@ var _RtcHandler = {
         if (options.data.op == 107 && options.reason) {
             iq.up().c('reaseon').t(options.reason);
         }
-        _logger.debug("Send IQ [op = " + options.data.op + "] : \r\n", iq.tree());
+        _logger.debug("Send [op = " + options.data.op + "] : \r\n", iq.tree());
 
 
         callback && (

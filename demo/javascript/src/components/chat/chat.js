@@ -267,6 +267,12 @@ module.exports = React.createClass({
                     me.channel.close();
                 },
                 onError: function (e) {
+                    if (e && e.message && e.message == "CALLLING_EACH_OTHER_AT_THE_SAME_TIME") {
+                        e.message = "Target is calling. Please try again later.";
+
+                        var closeButton = document.getElementById('webrtc_close');
+                        closeButton && closeButton.click();
+                    }
                     Demo.api.NotifyError(e && e.message ? e.message : 'An error occured when calling webrtc');
                 }
             }
