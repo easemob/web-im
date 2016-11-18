@@ -80,7 +80,7 @@ var _RtcHandler = {
 
         //if a->b already, c->a/b should be termiated with 'busy' reason
         if (from.indexOf("@") >= 0) {
-            if (self._connectedSid == '') {
+            if (self._connectedSid == '' && rtcOptions.op == 102) {
                 self._connectedSid = fromSessionId;
             } else {
                 if (self._connectedSid != fromSessionId) {
@@ -247,7 +247,7 @@ var _RtcHandler = {
         sid = sid || ((self._fromSessionID || (self._fromSessionID = {}))[to] = _conn.getUniqueId("CONFR_"));
 
         if (to.indexOf("@") >= 0) {
-            if (self._connectedSid == '') {
+            if (self._connectedSid == '' && options.data.op == 102) {
                 self._connectedSid = sid;
             }
         }
@@ -309,8 +309,8 @@ var _RtcHandler = {
         _conn.context.stropheConn.sendIQ(iq.tree(), completeFn, errFn);
 
         //onTermC
-        if (options.data.op == 107) {
-            if (self._connectedSid == rt.sid) {
+        if (options.data.op == 107 && self._connectedSid) {
+            if (!rt.sid || self._connectedSid == rt.sid) {
                 self._connectedSid = '';
                 self._fromSessionID = {};
             }
