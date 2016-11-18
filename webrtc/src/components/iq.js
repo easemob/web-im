@@ -82,11 +82,8 @@ var _RtcHandler = {
         if (from.indexOf("@") >= 0) {
             if (self._connectedSid == '') {
                 self._connectedSid = fromSessionId;
-                console.log('sid set by recv', self._connectedSid);
             } else {
-                console.log('_connectedSid=', self._connectedSid, 'fromSessionId', fromSessionId);
                 if (self._connectedSid != fromSessionId) {
-                    console.log('_connectedSid!=fromSessionId');
                     //onInitC
                     if (rtcOptions.op == 102) {
                         var rt = new RouteTo({
@@ -249,11 +246,11 @@ var _RtcHandler = {
         var sid = rt.sid || self._fromSessionID && self._fromSessionID[to];
         sid = sid || ((self._fromSessionID || (self._fromSessionID = {}))[to] = _conn.getUniqueId("CONFR_"));
 
-        if (self._connectedSid == '') {
-            self._connectedSid = sid;
-            console.log('sid set by send', self._connectedSid);
+        if (to.indexOf("@") >= 0) {
+            if (self._connectedSid == '') {
+                self._connectedSid = sid;
+            }
         }
-
         var rtKey = rt.rtKey || rt.rtkey;
         // rtKey && delete rt.rtKey;
         rtKey || (rtKey = "");

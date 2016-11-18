@@ -493,11 +493,7 @@ var _WebRTC = {
 
         return self.rtcPeerConnection.setRemoteDescription(desc).then(
             self.onSetRemoteSuccess,
-            function () {
-                // self.onError({message: "CALLLING_EACH_OTHER_AT_THE_SAME_TIME"});
-                self.onSetSessionDescriptionError.apply(self, arguments);
-
-            }
+            self.onSetSessionDescriptionError
         );
     },
 
