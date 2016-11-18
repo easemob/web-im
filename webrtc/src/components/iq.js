@@ -15,7 +15,7 @@ var _RtcHandler = {
 
     imConnection: null,
 
-    _connectedId: '',
+    _connectedSid: '',
 
 
     init: function () {
@@ -77,12 +77,13 @@ var _RtcHandler = {
 
         _logger.debug("Recv [op = " + rtcOptions.op + "] [tsxId=" + tsxId + "]\r\n json :", msginfo);
 
+
         //if a->b already, c->a/b should be termiated with 'busy' reason
         if (from.indexOf("@") >= 0) {
-            if (self._connectedId == '') {
-                self._connectedId = from;
+            if (self._connectedSid == '') {
+                self._connectedSid = fromSessionId;
             } else {
-                if (self._connectedId != from) {
+                if (self._connectedSid != fromSessionId) {
                     //onInitC
                     if (rtcOptions.op == 102) {
                         var rt = new RouteTo({
@@ -117,7 +118,7 @@ var _RtcHandler = {
 
         //onTermC
         if (rtcOptions.op == 107) {
-            self._connectedId = '';
+            self._connectedSid = '';
             self._fromSessionID = {};
         }
 
@@ -305,8 +306,8 @@ var _RtcHandler = {
 
         //onTermC
         if (options.data.op == 107) {
-            if (self._connectedId == rt.to) {
-                self._connectedId = '';
+            if (self._connectedSid == rt.sid) {
+                self._connectedSid = '';
                 self._fromSessionID = {};
             }
         }
