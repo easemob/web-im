@@ -235,8 +235,6 @@ module.exports = React.createClass({
 
         var me = this;
 
-        var logger = WebIM.WebRTC.Util.logger;
-
         Demo.call = new WebIM.WebRTC.Call({
             connection: Demo.conn,
 
@@ -267,9 +265,15 @@ module.exports = React.createClass({
                     me.channel.close();
                 },
                 onError: function (e) {
-                    if (e && e.message && e.message == "CALLLING_EACH_OTHER_AT_THE_SAME_TIME") {
-                        e.message = "Target is calling. Please try again later.";
-
+                    if (e && e.message) {
+                        switch (e.message) {
+                            case 'CALLLING_EACH_OTHER_AT_THE_SAME_TIME':
+                                e.message = "Target is calling. Please try again later.";
+                                break;
+                            case 'TARGET_OFFLINE':
+                                e.message = "Target is offline.";
+                                break;
+                        }
                         var closeButton = document.getElementById('webrtc_close');
                         closeButton && closeButton.click();
                     }
