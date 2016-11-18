@@ -56,7 +56,51 @@ module.exports = React.createClass({
             if (WebIM.config.isDNS) {
                 Demo.conn.getDNS(options);
             } else {
-                Demo.conn.open(options);
+
+                if(!WebIM.config.isMultiLoginSessions && !window.localStorage) {
+                    Demo.conn.open(options);
+                }else{
+                    Demo.userTimestamp = new Date().getTime();
+
+                    var key = 'easemob_' + Demo.user;
+                    var val = window.localStorage.getItem(key);
+                    var count = 0;
+                    var oneMinute = 60 * 1000;
+                    var pageLimit = 8;
+
+                    if(val === undefined || val === '' || val === null){
+                        val = 'last';
+                    }
+                    val = Demo.userTimestamp + ',' + val;
+                    var timestampArr = val.split(',');
+                    var uniqueTimestampArr = [];
+                    // Unique
+
+                    for(var o in timestampArr){
+                        if(timestampArr[o] === 'last')
+                            continue;
+                        uniqueTimestampArr[timestampArr[o]] = 1;
+                    }
+
+                    val = 'last';
+                    for(var o in uniqueTimestampArr){
+                        // if more than one minute, cut it
+                        if(parseInt(o) + oneMinute < Demo.userTimestamp){
+                            continue;
+                        }
+                        count++;
+                        if(count > pageLimit){
+                            Demo.conn.onError({
+                                type: "One account can't open more than " + pageLimit + ' pages in one minute on the same browser'
+                            });
+                            Demo.conn.init();
+                        }
+                        val = o + ',' + val;
+                    }
+                    console.log(val);
+                    window.localStorage.setItem(key, val);
+                    Demo.conn.open(options);
+                }
             }
 
         }

@@ -617,8 +617,6 @@
         this.context = {status: _code.STATUS_INIT};
         this.sendQueue = new Queue();  //instead of sending message immediately,cache them in this queue
         this.intervalId = null;   //clearInterval return value
-        this.pageLimit = 2;     // Amount of a user could open tabs in the same browser
-        this.pageLimitKey = new Date().getTime();   // A random number used for create the localstorage's key
 
         this.dnsArr = ['182.92.174.78', '112.126.66.111']; //dns server ips
         this.dnsIndex = 0;   //the dns ip used in dnsArr currently
