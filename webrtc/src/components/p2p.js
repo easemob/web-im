@@ -168,9 +168,28 @@ var CommonPattern = {
         options.sdp && (self.webRtc.setRemoteDescription(options.sdp).then(function () {
             self._onHandShake(from, options);
 
-            self.webRtc.createPRAnswer(function (prAnswer) {
-                self._onGotWebRtcPRAnswer(prAnswer);
-            });
+            var chromeVersion = "54";
+            /*
+             * chrome 版本 大于 50时，可以使用pranswer。
+             * 小于50 不支持pranswer，此时处理逻辑是，直接进入振铃状态
+             *
+             */
+            if(chromeVersion >= "50"){
+                self.webRtc.createPRAnswer(function (prAnswer) {
+                    self._onGotWebRtcPRAnswer(prAnswer);
+
+                    setTimeout(function () { //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
+                        _logger.info("[WebRTC-API] onRinging : after pranswer. ", self.callee);
+                        self.onRinging(self.callee);
+                    }, 500);
+                });
+            } else {
+                setTimeout(function () {
+                    _logger.info("[WebRTC-API] onRinging : after pranswer. ", self.callee);
+                    self.onRinging(self.callee);
+                }, 500)
+                self._ping();
+            }
         }));
     },
 
@@ -256,15 +275,17 @@ var CommonPattern = {
     _onIceStateChange: function (event) {
         var self = this;
 
-        event && _logger.debug(self.webRtc.iceConnectionState() + " |||| ice state is " + event.target.iceConnectionState);
+        event && _logger.debug("[WebRTC-API] " + self.webRtc.iceConnectionState() + " |||| ice state is " + event.target.iceConnectionState);
         if (self.webRtc.iceConnectionState() == 'disconnected') {
             self.webRtc.onError({message: 'TARGET_OFFLINE'});
         }
 
         if (self.webRtc.iceConnectionState() == 'connected') {
-            setTimeout(function () {
-                self.onRinging(self.callee);
-            }, 500);
+            //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
+            //所以去掉在此处的振铃
+            // setTimeout(function () {
+            //     self.onRinging(self.callee);
+            // }, 500);
         }
     },
 
