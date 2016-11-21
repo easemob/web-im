@@ -1176,7 +1176,7 @@
             info.presence_type = presence_type;
             info.original_type = type;
 
-            if (info.type) {
+            if (/subscribe/.test(info.type)) {
 
             } else if (type == "" && !info.status && !info.error) {
                 info.type = 'joinPublicGroupSuccess';
