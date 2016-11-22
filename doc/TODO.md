@@ -21,6 +21,10 @@
 ###bug fix: 群组用rest接口解散不了
 
 #V1.5.0 (2016.11~2016.12)
+###新版UI
+###检查所有Demo.api.notify. 普通提示用Demo.api.info,错误提示才用Demo.api.notify
+
+#TODO 
 ###调整框架目录结构:src/dist/publish
 ###文档整理 (钟泽方)
 ###leftbar分类切换时，右侧的聊天窗口需要替换成遮罩，避免歧义和bug
@@ -42,10 +46,7 @@
 npm install layer-websdk@beta --save
 ```
 ###用React Hot Loader 3替换已经deprecated的react-transform-hmr https://github.com/gaearon/react-transform-hmr
-
 ###webim所有接口的xmpp协议(邹金海)和react协议(仝瑶)的文档整理
 ###webim所有接口的测试用例整理
 ###RectMix:将ReactJS转成ReactNative生成app(IOS/ANDROID) (刘伟展)
 ###增加一层shim封装(类似webrtc对不同浏览器的封装):将windowSDK的逻辑和正常版本分成不同文件，方便维护
-###检查所有Demo.api.notify，确认是否需要改成Demo.api.info
-###新版UI
