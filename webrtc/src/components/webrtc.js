@@ -294,11 +294,23 @@ var _WebRTC = {
 
         if (iceServerConfig && iceServerConfig.iceServers) {
         } else {
-            iceServerConfig = null;
+            iceServerConfig = {};
         }
 
 
         _logger.debug('[WebRTC-API] begin create RtcPeerConnection ......');
+
+
+        //reduce icecandidate number:add default value
+        if (!iceServerConfig.iceServers) {
+            iceServerConfig.iceServers = [];
+        }
+        if (!iceServerConfig.rtcpMuxPolicy) {
+            iceServerConfig.rtcpMuxPolicy = "require";
+        }
+        if (!iceServerConfig.bundlePolicy) {
+            iceServerConfig.bundlePolicy = "max-bundle";
+        }
 
         self.startTime = window.performance.now();
 
@@ -307,6 +319,10 @@ var _WebRTC = {
 
 
         rtcPeerConnection.onicecandidate = function (event) {
+            //reduce icecandidate number: don't deal with tcp, udp only
+            if (event.type == "icecandidate" && / tcp /.test(event.candidate.candidate)) {
+                return;
+            }
             self.onIceCandidate(event);
         };
 
