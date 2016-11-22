@@ -1177,7 +1177,7 @@
             info.original_type = type;
 
             if (/subscribe/.test(info.type)) {
-
+                //subscribe | subscribed | unsubscribe | unsubscribed
             } else if (type == "" && !info.status && !info.error) {
                 info.type = 'joinPublicGroupSuccess';
             } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
