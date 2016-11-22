@@ -20,7 +20,7 @@
 ###JavaScript Web SDK installation via CDN and NPM 的可行性和implementation 参考https://docs.layer.com/sdk/web/install 11.20前完成  (刘伟展)
 ###bug fix: 群组用rest接口解散不了
 
-#V1.5.0 (2016.11~2016.12
+#V1.5.0 (2016.11~2016.12)
 ###调整框架目录结构:src/dist/publish
 ###文档整理 (钟泽方)
 ###leftbar分类切换时，右侧的聊天窗口需要替换成遮罩，避免歧义和bug
@@ -48,3 +48,4 @@ npm install layer-websdk@beta --save
 ###RectMix:将ReactJS转成ReactNative生成app(IOS/ANDROID) (刘伟展)
 ###增加一层shim封装(类似webrtc对不同浏览器的封装):将windowSDK的逻辑和正常版本分成不同文件，方便维护
 ###检查所有Demo.api.notify，确认是否需要改成Demo.api.info
+###新版UI

@@ -919,7 +919,7 @@
             _utils.ajax(options2);
         }
 
-    }
+    };
 
     connection.prototype.open = function (options) {
 
