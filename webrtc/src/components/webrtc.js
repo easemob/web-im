@@ -320,7 +320,7 @@ var _WebRTC = {
 
         rtcPeerConnection.onicecandidate = function (event) {
             //reduce icecandidate number: don't deal with tcp, udp only
-            if (event.type == "icecandidate" && / tcp /.test(event.candidate.candidate)) {
+            if (event.type == "icecandidate" && ((event.candidate == null) || / tcp /.test(event.candidate.candidate))) {
                 return;
             }
             self.onIceCandidate(event);
