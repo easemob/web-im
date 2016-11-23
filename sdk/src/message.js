@@ -63,6 +63,7 @@
             , type: this.type
             , roomType: opt.roomType
             , ext: opt.ext || {}
+            , success: opt.success
         };
         !opt.roomType && delete this.body.roomType;
     };
