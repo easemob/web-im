@@ -200,7 +200,7 @@ module.exports = React.createClass({
         if (Demo.selectedCate == 'friends') {
             operations.push(<OperationsFriends key='operation_div' ref='operation_div' roomId={this.props.roomId}
                                                admin={this.state.admin}
-                                               owner={this.state.owner}
+                                                owner={this.state.owner}
                                                settings={this.state.settings}
                                                getGroupInfo={this.getGroupInfo}
                                                onBlur={this.handleOnBlur}

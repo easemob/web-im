@@ -57,7 +57,7 @@ module.exports = React.createClass({
                 Demo.conn.getDNS(options);
             } else {
 
-                if(!WebIM.config.isMultiLoginSessions && !window.localStorage) {
+                if(!WebIM.config.isMultiLoginSessions || !window.localStorage) {
                     Demo.conn.open(options);
                 }else{
                     Demo.userTimestamp = new Date().getTime();
