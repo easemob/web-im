@@ -93,7 +93,7 @@ module.exports = React.createClass({
                             Demo.conn.onError({
                                 type: "One account can't open more than " + pageLimit + ' pages in one minute on the same browser'
                             });
-                            Demo.conn.init();
+                            return;
                         }
                         val = o + ',' + val;
                     }
@@ -101,9 +101,7 @@ module.exports = React.createClass({
                     Demo.conn.open(options);
                 }
             }
-
         }
-
     },
 
     signup: function () {

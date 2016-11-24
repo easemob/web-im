@@ -30,7 +30,6 @@ module.exports = React.createClass({
                     chat: true,
                     loadingStatus: 'hide'
                 });
-
                 // blacklist and it's callback call updateRoster
                 me.getBlacklist();
                 me.getGroup();
