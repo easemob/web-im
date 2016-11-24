@@ -629,36 +629,6 @@
         this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
     };
 
-    connection.prototype.handlePageLimit = function () {
-        var keyValue = 'empagecount' + this.pageLimitKey;
-        window.addEventListener('storage', function () {
-            window.localStorage.setItem(keyValue, Demo.user);
-        });
-
-        this.clearPageSign();
-        window.localStorage.setItem(keyValue, Demo.user);
-    };
-
-    connection.prototype.clearPageSign = function () {
-        if (window.localStorage) {
-            try {
-                window.localStorage.clear();
-            } catch (e) {
-                console.log(e.message);
-            }
-        }
-    };
-
-    connection.prototype.getPageCount = function () {
-        var sum = 0;
-        for (var o in localStorage) {
-            if (/^empagecount/.test(o) && Demo.user == localStorage[o]) {
-                sum++;
-            }
-        }
-        return sum;
-    };
-
     connection.prototype.handelSendQueue = function () {
         var options = this.sendQueue.pop();
         if (options !== null) {
@@ -845,8 +815,7 @@
         _utils.ajax(options2);
     };
 
-    connection.prototype.getRestToken = function (options) {
-
+    connection.prototype.open = function (options) {
         var pass = _validCheck(options, this);
 
         if (!pass) {
@@ -918,30 +887,6 @@
             };
             _utils.ajax(options2);
         }
-
-    };
-
-    connection.prototype.open = function (options) {
-
-        if (this.isMultiLoginSessions && window.localStorage) {
-            this.handlePageLimit();
-
-            var conn = this;
-            setTimeout(function () {
-                var total = conn.getPageCount();
-                if (total > conn.pageLimit) {
-                    conn.onError({
-                        type: _code.WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR
-                    });
-
-                    return;
-                }
-                conn.getRestToken(options);
-            }, 50);
-        } else {
-            this.getRestToken(options);
-        }
-
     };
 
     // attach to xmpp server for BOSH

@@ -97,7 +97,6 @@ module.exports = React.createClass({
                         }
                         val = o + ',' + val;
                     }
-                    console.log(val);
                     window.localStorage.setItem(key, val);
                     Demo.conn.open(options);
                 }
