@@ -168,13 +168,13 @@ var CommonPattern = {
         options.sdp && (self.webRtc.setRemoteDescription(options.sdp).then(function () {
             self._onHandShake(from, options);
 
-            var chromeVersion = "54";
+            var chromeVersion = navigator.userAgent.split("Chrome/")[1].split(".")[0];
             /*
              * chrome 版本 大于 50时，可以使用pranswer。
              * 小于50 不支持pranswer，此时处理逻辑是，直接进入振铃状态
              *
              */
-            if(chromeVersion >= "50"){
+            if (chromeVersion >= "50") {
                 self.webRtc.createPRAnswer(function (prAnswer) {
                     self._onGotWebRtcPRAnswer(prAnswer);
 
