@@ -41,9 +41,9 @@ module.exports = React.createClass({
             this.refs['i'].innerText = '';
         }
 
-        if (this.props.id === Demo.selected) {
-            return;
-        }
+        // if (this.props.id === Demo.selected) {
+        //     return;
+        // }
 
         if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
             Demo.selected = this.props.id;
@@ -90,6 +90,22 @@ module.exports = React.createClass({
                 Demo.conn.joinChatRoom({
                     roomId: this.props.id
                 });
+            }
+        } else {
+            //get the last 10 messages
+            if (WebIM.config.isWindowSDK) {
+                console.log(document.getElementById(this.props.id).querySelector('em').innerHTML);
+                if (document.getElementById(this.props.id).querySelector('em').innerHTML == '') {
+                    WebIM.doQuery('{"type":"loadMoreMessages","id":"' + this.props.id + '","chatType":"singlechat"}', function success(str) {
+                        //Add seperator
+                    }, function failure(errCode, errMessage) {
+                        Demo.api.NotifyError('getRoster:' + errCode);
+                        errFn();
+                    });
+                }
+
+            } else {
+
             }
         }
 

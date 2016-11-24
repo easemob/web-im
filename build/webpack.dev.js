@@ -13,7 +13,7 @@ module.exports = {
         // './demo/javascript/dist/demo': './demo/javascript/src/entry',
         // WebpackDevServer host and port
         // 'devServerClient': 'webpack-dev-server/client?http://localhost:3000',
-        // './webrtc/dist/webrtc-1.0.0': './webrtc/src/webrtc',
+        // './webrtc/dist/webrtc-1.0.0': './webrtc/src/entry',
     },
     externals: {
         WebIM: 'window.WebIM'

@@ -120,12 +120,11 @@ module.exports = React.createClass({
     },
 
     call: function () {
+        Demo.call.caller = Demo.user;
         Demo.call.makeVideoCall(Demo.selected);
     },
 
-    acceptCall: function () {
-        Demo.call.acceptCall();
-    },
+
     sendPicture: function () {
         this.props.sendPicture(this.props.chatType);
     },
@@ -142,19 +141,21 @@ module.exports = React.createClass({
 
         var roomMember = [];
         var keyValue = 0;
+        roomMember.push(<span key={keyValue++} className='webim-emoji-icon font smaller'
+                              onClick={this.showEmoji}>J</span>);
+        roomMember.push(<span key={keyValue++} className='webim-picture-icon font smaller'
+                              onClick={this.sendPicture}>K</span>);
+        roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
+                              onClick={this.sendAudio}>R</span>);
+        roomMember.push(<span key={keyValue++} className='webim-file-icon font smaller'
+                              onClick={this.sendFile}>S</span>);
         if (WebIM.config.isWebRTC) {
             roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
-                                  onClick={this.call}>R</span>);
-            roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
-                                  onClick={this.acceptCall}>R</span>);
+                                  onClick={this.call}>a</span>);
         }
         return (
             <div className='webim-send-wrapper'>
                 <div className='webim-chatwindow-options'>
-                    <span className='webim-emoji-icon font smaller' onClick={this.showEmoji}>J</span>
-                    <span className='webim-picture-icon font smaller' onClick={this.sendPicture}>K</span>
-                    <span className='webim-audio-icon font smaller' onClick={this.sendAudio}>R</span>
-                    <span className='webim-file-icon font smaller' onClick={this.sendFile}>S</span>
                     {roomMember}
                 </div>
                 <ul ref='emoji' onClick={this.selectEmoji} className={showEmoji}></ul>

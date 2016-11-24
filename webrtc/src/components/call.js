@@ -11,7 +11,7 @@ var _logger = Util.logger;
 
 var _Call = {
     api: null,
-
+    caller: '',
     connection: null,
 
     pattern: null,
@@ -54,12 +54,11 @@ var _Call = {
     },
 
     makeVideoCall: function (callee) {
-        var self = this;
 
         var mediaStreamConstaints = {};
-        Util.extend(mediaStreamConstaints, self.mediaStreamConstaints);
+        Util.extend(mediaStreamConstaints, this.mediaStreamConstaints);
 
-        self.call(callee, mediaStreamConstaints);
+        this.call(callee, mediaStreamConstaints);
     },
 
     makeVoiceCall: function (callee) {
@@ -79,13 +78,13 @@ var _Call = {
 
     endCall: function (callee) {
         var self = this;
+        self.caller = '';
         self.pattern.termCall();
     },
 
     call: function (callee, mediaStreamConstaints) {
         var self = this;
-
-        self.callee = self.api.jid(callee);
+        this.callee = this.api.jid(callee);
 
         var rt = new RouteTo({
             rtKey: "",
@@ -99,11 +98,19 @@ var _Call = {
             }
         });
 
-        self.api.reqP2P(rt, mediaStreamConstaints.video ? 1 : 0, mediaStreamConstaints.audio ? 1 : 0, callee, function (from, rtcOptions) {
-            self._onGotServerP2PConfig(from, rtcOptions);
-
-            self.pattern.initC(self.mediaStreamConstaints);
-        });
+        this.api.reqP2P(
+            rt,
+            mediaStreamConstaints.video ? 1 : 0,
+            mediaStreamConstaints.audio ? 1 : 0,
+            this.api.jid(callee),
+            function (from, rtcOptions) {
+                if (rtcOptions.online == "0") {
+                    self.listener.onError({message: "callee is not online!"});
+                    return;
+                }
+                self._onGotServerP2PConfig(from, rtcOptions);
+                self.pattern.initC(self.mediaStreamConstaints);
+            });
     },
 
     _onInitC: function (from, options, rtkey, tsxId, fromSid) {
@@ -180,7 +187,7 @@ var _Call = {
             }
         }));
     }
-}
+};
 
 
 module.exports = function (initConfigs) {

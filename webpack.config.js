@@ -3,9 +3,9 @@ path = require('path');
 
 module.exports = {
     entry: {
-        './sdk/dist/websdk-1.1.3': './sdk/src/connection',
+        './sdk/dist/websdk-1.4.0': './sdk/src/connection',
         './demo/javascript/dist/demo': './demo/javascript/src/entry',
-        './webrtc/dist/webrtc-1.0.0': './webrtc/src/webrtc',
+        './webrtc/dist/webrtc-1.0.0': './webrtc/src/entry',
     },
     output: {
         path: './',

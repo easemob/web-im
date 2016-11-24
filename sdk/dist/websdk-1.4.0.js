@@ -105,6 +105,7 @@
 	     * Fix it by overide  _onMessage
 	     */
 	    Strophe.Websocket.prototype._onMessage = function (message) {
+	        WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + 'recv:', message.data);
 	        var elem, data;
 	        // check for closing stream
 	        // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
@@ -353,17 +354,9 @@
 	            stropheConn = conn.context.stropheConn;
 	        } else if (conn.isOpened() && conn.context.stropheConn) {
 	            // return;
-	            stropheConn = new Strophe.Connection(conn.url, {
-	                inactivity: conn.inactivity,
-	                maxRetries: conn.maxRetries,
-	                pollingTime: conn.pollingTime
-	            });
+	            stropheConn = conn.getStrophe();
 	        } else {
-	            stropheConn = new Strophe.Connection(conn.url, {
-	                inactivity: conn.inactivity,
-	                maxRetries: conn.maxRetries,
-	                pollingTime: conn.pollingTime
-	            });
+	            stropheConn = conn.getStrophe();
 	        }
 	        var callback = function callback(status, msg) {
 	            _loginCallback(status, msg, conn);
@@ -660,9 +653,18 @@
 	        this.autoReconnectNumTotal = 0;
 	        this.autoReconnectInterval = options.autoReconnectInterval || 0;
 	        this.context = { status: _code.STATUS_INIT };
-	        //todo 接收的事件，放到数组里的时候，加上g.isInBackground字段。每帧执行一个事件的时候，如果g.isInBackground=true,就pass
-	        this.sendQueue = new Queue(); //接收到的事件队列
-	        this.intervalId = null;
+	        this.sendQueue = new Queue(); //instead of sending message immediately,cache them in this queue
+	        this.intervalId = null; //clearInterval return value
+
+	        this.dnsArr = ['182.92.174.78', '112.126.66.111']; //dns server ips
+	        this.dnsIndex = 0; //the dns ip used in dnsArr currently
+	        this.dnsTotal = this.dnsArr.length; //max number of getting dns retries
+	        this.restHosts = null; //rest server ips
+	        this.restIndex = 0; //the rest ip used in restHosts currently
+	        this.restTotal = 0; //max number of getting rest token retries
+	        this.xmppHosts = null; //xmpp server ips
+	        this.xmppIndex = 0; //the xmpp ip used in xmppHosts currently
+	        this.xmppTotal = 0; //max number of creating xmpp server connection(ws/bosh) retries
 	    };
 
 	    connection.prototype.handelSendQueue = function () {
@@ -672,7 +674,6 @@
 	        }
 	    };
 	    connection.prototype.listen = function (options) {
-	        options.url && (this.url = _getXmppUrl(options.url, this.https));
 	        this.onOpened = options.onOpened || _utils.emptyfn;
 	        this.onClosed = options.onClosed || _utils.emptyfn;
 	        this.onTextMessage = options.onTextMessage || _utils.emptyfn;
@@ -691,10 +692,10 @@
 	        this.onOffline = options.onOffline || _utils.emptyfn;
 	        this.onOnline = options.onOnline || _utils.emptyfn;
 	        this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
-	        //for WindowSDK
+	        //for WindowSDK start
 	        this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
 	        this.onUpdateMyRoster = options.onUpdateMyRoster || _utils.emptyfn;
-	        //
+	        //for WindowSDK end
 	        this.onBlacklistUpdate = options.onBlacklistUpdate || _utils.emptyfn;
 
 	        _listenNetwork(this.onOnline, this.onOffline);
@@ -740,8 +741,116 @@
 	        this.sendQueue.push(options);
 	    };
 
-	    connection.prototype.open = function (options) {
+	    connection.prototype.getStrophe = function () {
+	        if (WebIM && WebIM.config.isDNS) {
+	            //TODO: try this.xmppTotal times on fail
+	            var url = '';
+	            var host = this.xmppHosts[this.xmppIndex];
+	            var domain = _utils.getXmlFirstChild(host, 'domain');
+	            var ip = _utils.getXmlFirstChild(host, 'ip');
+	            if (ip) {
+	                var port = _utils.getXmlFirstChild(host, 'port');
+	                url = ip.textContent + ':' + port.textContent;
+	            } else {
+	                url = domain.textContent;
+	            }
 
+	            if (url != '') {
+	                var parter = /(.+\/\/).+(\/.+)/;
+	                this.url = this.url.replace(parter, "$1" + url + "$2");
+	            }
+	        }
+	        var stropheConn = new Strophe.Connection(this.url, {
+	            inactivity: this.inactivity,
+	            maxRetries: this.maxRetries,
+	            pollingTime: this.pollingTime
+	        });
+	        return stropheConn;
+	    };
+	    connection.prototype.getHostsByTag = function (data, tagName) {
+	        var tag = _utils.getXmlFirstChild(data, tagName);
+	        if (!tag) {
+	            console.log(tagName + ' hosts error');
+	            return null;
+	        }
+	        var hosts = tag.getElementsByTagName('hosts');
+	        if (hosts.length == 0) {
+	            console.log(tagName + ' hosts error2');
+	            return null;
+	        }
+	        return hosts[0].getElementsByTagName('host');
+	    };
+	    connection.prototype.openFromDNS = function (options) {
+	        if (this.restIndex >= this.restTotal) {
+	            console.log('rest hosts all tried,quit');
+	            return;
+	        }
+	        var self = this;
+	        var url = '';
+	        var host = this.restHosts[this.restIndex];
+	        var domain = _utils.getXmlFirstChild(host, 'domain');
+	        var ip = _utils.getXmlFirstChild(host, 'ip');
+	        if (ip) {
+	            var port = _utils.getXmlFirstChild(host, 'port');
+	            url = ip.textContent + ':' + port.textContent;
+	        } else {
+	            url = domain.textContent;
+	        }
+
+	        if (url != '') {
+	            WebIM.config.apiURL = '//' + url;
+	            options.apiUrl = '//' + url;
+	        }
+	        Demo.conn.open(options);
+	    };
+	    connection.prototype.getDNS = function (options) {
+	        var self = this;
+	        var suc = function suc(data, xhr) {
+	            data = new DOMParser().parseFromString(data, "text/xml").documentElement;
+	            //get rest ips
+	            var restHosts = self.getHostsByTag(data, 'rest');
+	            if (!restHosts) {
+	                console.log('rest hosts error3');
+	                return;
+	            }
+	            self.restHosts = restHosts;
+	            self.restTotal = restHosts.length;
+
+	            //get xmpp ips
+	            var xmppHosts = self.getHostsByTag(data, 'webim');
+	            if (!xmppHosts) {
+	                console.log('xmpp hosts error3');
+	                return;
+	            }
+	            self.xmppHosts = xmppHosts;
+	            self.xmppTotal = xmppHosts.length;
+
+	            self.openFromDNS(options);
+	        };
+	        var error = function error(res, xhr, msg) {
+
+	            console.log('getDNS error', res, msg);
+	            self.dnsIndex++;
+	            if (self.dnsIndex < self.dnsTotal) {
+	                self.getDNS(options);
+	            }
+	        };
+	        var options2 = {
+	            url: '//' + this.dnsArr[this.dnsIndex] + '/easemob/server.xml',
+	            dataType: 'text',
+	            type: 'GET',
+
+	            // url: 'http://www.easemob.com/easemob/server.xml',
+	            // dataType: 'xml',
+	            data: { app_key: encodeURIComponent("easemob-demo#sandboxdemo") },
+	            // data: {app_key: encodeURIComponent(options.appKey)},
+	            success: suc || _utils.emptyfn,
+	            error: error || _utils.emptyfn
+	        };
+	        _utils.ajax(options2);
+	    };
+
+	    connection.prototype.open = function (options) {
 	        var pass = _validCheck(options, this);
 
 	        if (!pass) {
@@ -759,6 +868,7 @@
 	            _login(options, conn);
 	        } else {
 	            var apiUrl = options.apiUrl;
+	            console.log(apiUrl);
 	            var userId = this.context.userId;
 	            var pwd = options.pwd || '';
 	            var appName = this.context.appName;
@@ -770,8 +880,14 @@
 	                _login(data, conn);
 	            };
 	            var error = function error(res, xhr, msg) {
+	                if (WebIM.config.isDNS) {
+	                    conn.restIndex++;
+	                    if (conn.restIndex < conn.restTotal) {
+	                        conn.openFromDNS(options);
+	                        return;
+	                    }
+	                }
 	                conn.clear();
-
 	                if (res.error && res.error_description) {
 	                    conn.onError({
 	                        type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
@@ -797,14 +913,14 @@
 	            };
 	            var loginfo = _utils.stringify(loginJson);
 
-	            var options = {
+	            var options2 = {
 	                url: apiUrl + '/' + orgName + '/' + appName + '/token',
 	                dataType: 'json',
 	                data: loginfo,
 	                success: suc || _utils.emptyfn,
 	                error: error || _utils.emptyfn
 	            };
-	            _utils.ajax(options);
+	            _utils.ajax(options2);
 	        }
 	    };
 
@@ -842,12 +958,7 @@
 	            return;
 	        }
 
-	        var stropheConn = new Strophe.Connection(this.url, {
-	            inactivity: this.inactivity,
-	            maxRetries: this.maxRetries,
-	            pollingTime: this.pollingTime,
-	            heartBeatWait: this.heartBeatWait
-	        });
+	        var stropheConn = this.getStrophe();
 
 	        this.context.accessToken = accessToken;
 	        this.context.stropheConn = stropheConn;
@@ -1038,7 +1149,9 @@
 	            info.presence_type = presence_type;
 	            info.original_type = type;
 
-	            if (info.type) {} else if (type == "" && !info.status && !info.error) {
+	            if (/subscribe/.test(info.type)) {
+	                //subscribe | subscribed | unsubscribe | unsubscribed
+	            } else if (type == "" && !info.status && !info.error) {
 	                info.type = 'joinPublicGroupSuccess';
 	            } else if (presence_type === 'unavailable' || type === 'unavailable') {
 	                // There is no roomtype when a chat room is deleted.
@@ -3348,6 +3461,14 @@
 
 	        xmlrequest: _xmlrequest,
 
+	        getXmlFirstChild: function getXmlFirstChild(data, tagName) {
+	            var children = data.getElementsByTagName(tagName);
+	            if (children.length == 0) {
+	                return null;
+	            } else {
+	                return children[0];
+	            }
+	        },
 	        ajax: function ajax(options) {
 	            var dataType = options.dataType || 'text';
 	            var suc = options.success || EMPTYFN;
@@ -3518,6 +3639,7 @@
 	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: connIndex++,
 	        WEBIM_CONNCTION_CLIENT_OFFLINE: connIndex++, //32: client offline
 	        WEBIM_CONNCTION_CLIENT_LOGOUT: connIndex++, //33: client logout
+	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: connIndex++, // Over amount of the tabs a user opened in the same browser
 
 
 	        WEBIM_UPLOADFILE_BROWSER_ERROR: uploadIndex++,
@@ -3626,7 +3748,8 @@
 	            msg: this.value,
 	            type: this.type,
 	            roomType: opt.roomType,
-	            ext: opt.ext || {}
+	            ext: opt.ext || {},
+	            success: opt.success
 	        };
 	        !opt.roomType && delete this.body.roomType;
 	    };

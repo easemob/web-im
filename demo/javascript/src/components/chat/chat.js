@@ -40,10 +40,6 @@ module.exports = React.createClass({
             onClosed: function (msg) {
                 // Demo.api.logout();
 
-                //webRTC:断线处理
-                if (WebIM.config.isWebRTC) {
-                    me.channel.close();
-                }
             },
             onTextMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -154,7 +150,16 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('onError:' + text);
                 }
 
+                //webRTC:断线处理
+                if (WebIM.config.isWebRTC) {
+                    var closeButton = document.getElementById('webrtc_close');
+                    closeButton && closeButton.click();
+                }
+
+
                 Demo.api.init(Demo.conn.errorType);
+
+
             }
 
         });
@@ -230,8 +235,6 @@ module.exports = React.createClass({
 
         var me = this;
 
-        var logger = WebIM.WebRTC.Util.logger;
-
         Demo.call = new WebIM.WebRTC.Call({
             connection: Demo.conn,
 
@@ -242,21 +245,38 @@ module.exports = React.createClass({
 
             listener: {
                 onAcceptCall: function (from, options) {
-                    debugger
+                    console.log('onAcceptCall', from, options);
                 },
                 onGotRemoteStream: function (stream) {
+                    console.log('onGotRemoteStream');
                     me.channel.setRemote(stream);
                 },
                 onGotLocalStream: function (stream) {
+                    console.log('onGotLocalStream');
                     me.channel.setLocal(stream);
                 },
                 onRinging: function (caller) {
-                    debugger
+                    console.log('onRinging', caller);
                 },
-                onTermCall: function () {
+                onTermCall: function (reason) {
+                    if (reason && reason == 'busy') {
+                        Demo.api.NotifyError('Target is busy. Try it later.');
+                    }
                     me.channel.close();
                 },
                 onError: function (e) {
+                    if (e && e.message) {
+                        switch (e.message) {
+                            case 'CALLLING_EACH_OTHER_AT_THE_SAME_TIME':
+                                e.message = "Target is calling. Please try again later.";
+                                break;
+                            case 'TARGET_OFFLINE':
+                                e.message = "Target is offline.";
+                                break;
+                        }
+                        var closeButton = document.getElementById('webrtc_close');
+                        closeButton && closeButton.click();
+                    }
                     Demo.api.NotifyError(e && e.message ? e.message : 'An error occured when calling webrtc');
                 }
             }

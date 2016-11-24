@@ -1,22 +1,40 @@
 /**
  * WebRTC
- * 
- * A | B | 1.createMedia:got streamA | 1.createMedia:got streamB 2.new
- * RTCPeerConnection: APeerConnection | 2.new RTCPeerConnection: BPeerConnection
- * 3.APeerConnection.createOffer:got offerA |
- * APeerConnection.setLocalDescription(offerA) | send offerA ---> ---> ---> --->
- * ---> | |---> 3.got offerA | offerA = new RTCSessionDescription(offerA); |
- * BPeerConnection.setRemoteDescription(offerA) | | |
- * 4.BPeerConnection.createAnswer: got answerB |
- * BPeerConnection.setLocalDescription(answerB) | <---- send answerB | 5.got
- * answerB <--- <--- <--- <--- | answerB = new RTCSessionDescription(answerB) |
- * APeerConnection.setRemoteDescription(answerB) | | 6.got candidateA ---> --->
- * ---> ---> | ---> got candidateA | BPeerConnection.addIceCandidate(new
- * RTCIceCandidate(candidateA)) | | | got candidateB <--- <--- <--- <--- | <---
- * 6.got candidateB APeerConnection.addIceCandidate(candidateB) | | | 7.
- * APeerConnection.addStream(streamA) | 7.BPeerConnection.addStream(streamB) |
- * streamA >>>>>>>>>>> | <<<<< see A seeB <<<<<<<<<<< | <<<<<
- * streamB |
+ *
+ *                              A                   |                                       B
+ *                                                  |
+ *   1.createMedia:got streamA                      | 1.createMedia:got streamB
+ *   2.new RTCPeerConnection: APeerConnection       | 2.new RTCPeerConnection: BPeerConnection
+ *   3.APeerConnection.createOffer:got offerA       |
+ *      APeerConnection.setLocalDescription(offerA) |
+ *      send offerA ---> ---> ---> --->        ---> |
+ *                                                  | ---> 3.got offerA | offerA = new RTCSessionDescription(offerA);
+ *                                                  | BPeerConnection.setRemoteDescription(offerA)
+ *                                                  |
+ *                                                  |
+ *                                                  | 4.BPeerConnection.createAnswer: got answerB
+ *                                                  | BPeerConnection.setLocalDescription(answerB)
+ *                                                  | <---- send answerB
+ *                                                  | 5.got answerB <--- <--- <--- <---
+ *                                                  | answerB = new RTCSessionDescription(answerB)
+ *                                                  |
+ * APeerConnection.setRemoteDescription(answerB)    |
+ *                                                  |
+ * 6.got candidateA ---> --->  ---> --->            | ---> got candidateA
+ *                                                  | BPeerConnection.addIceCandidate(new RTCIceCandidate(candidateA))
+ *                                                  |
+ *                                                  |
+ *                                                  | got candidateB <--- <--- <--- <---
+ *                                                  | <--- 6.got candidateB APeerConnection.addIceCandidate(candidateB)
+ *                                                  |
+ *                                                  |
+ *                                                  | 7. APeerConnection.addStream(streamA)
+ *                                                  | 7.BPeerConnection.addStream(streamB)
+ *                                                  |
+ *                              streamA >>>>>>>>>>> |  <<<<< see A
+ *                              seeB <<<<<<<<<<<    | <<<<< streamB
+ *                                                  |
+ *
  */
 var _util = require('./utils');
 var _logger = _util.logger;
@@ -203,7 +221,7 @@ var _SDPSection = {
             return arr;
         }
     },
-}
+};
 
 var SDPSection = function (sdp) {
     _util.extend(this, _SDPSection);
@@ -231,27 +249,27 @@ var _WebRTC = {
 
     createMedia: function (constaints, onGotStream) {
         var self = this;
-        
-        if(constaints && (typeof constaints === "function")){
+
+        if (constaints && (typeof constaints === "function")) {
             onGotStream = constaints;
             constaints = null;
         }
 
-        _logger.debug(' begin create media ......');
+        _logger.debug('[WebRTC-API] begin create media ......');
 
         function gotStream(stream) {
-            _logger.debug(' got local stream');
+            _logger.debug('[WebRTC-API] got local stream');
 
             self.localStream = stream;
-            
+
             var videoTracks = self.localStream.getVideoTracks();
             var audioTracks = self.localStream.getAudioTracks();
 
             if (videoTracks.length > 0) {
-                _logger.debug(' Using video device: ' + videoTracks[0].label);
+                _logger.debug('[WebRTC-API] Using video device: ' + videoTracks[0].label);
             }
             if (audioTracks.length > 0) {
-                _logger.debug(' Using audio device: ' + audioTracks[0].label);
+                _logger.debug('[WebRTC-API] Using audio device: ' + audioTracks[0].label);
             }
 
             onGotStream ? onGotStream(self, stream) : self.onGotStream(stream);
@@ -261,14 +279,14 @@ var _WebRTC = {
             .then(gotStream)
             .then(self.onCreateMedia)
             .catch(function (e) {
-                _logger.debug('getUserMedia() error: ', e);
+                _logger.debug('[WebRTC-API] getUserMedia() error: ', e);
                 self.onError(e);
             });
     },
-    
-    setLocalVideoSrcObject : function(stream){
+
+    setLocalVideoSrcObject: function (stream) {
         this.onGotLocalStream(stream);
-        _logger.debug(' you can see yourself !');
+        _logger.debug('[WebRTC-API] you can see yourself !');
     },
 
     createRtcPeerConnection: function (iceServerConfig) {
@@ -276,19 +294,35 @@ var _WebRTC = {
 
         if (iceServerConfig && iceServerConfig.iceServers) {
         } else {
-            iceServerConfig = null;
+            iceServerConfig = {};
         }
 
 
-        _logger.debug(' begin create RtcPeerConnection ......');
+        _logger.debug('[WebRTC-API] begin create RtcPeerConnection ......');
+
+
+        //reduce icecandidate number:add default value
+        if (!iceServerConfig.iceServers) {
+            iceServerConfig.iceServers = [];
+        }
+        if (!iceServerConfig.rtcpMuxPolicy) {
+            iceServerConfig.rtcpMuxPolicy = "require";
+        }
+        if (!iceServerConfig.bundlePolicy) {
+            iceServerConfig.bundlePolicy = "max-bundle";
+        }
 
         self.startTime = window.performance.now();
 
         var rtcPeerConnection = self.rtcPeerConnection = new RTCPeerConnection(iceServerConfig);
-        _logger.debug(' Created local peer connection object', rtcPeerConnection);
+        _logger.debug('[WebRTC-API] Created local peer connection object', rtcPeerConnection);
 
 
         rtcPeerConnection.onicecandidate = function (event) {
+            //reduce icecandidate number: don't deal with tcp, udp only
+            if (event.type == "icecandidate" && ((event.candidate == null) || / tcp /.test(event.candidate.candidate))) {
+                return;
+            }
             self.onIceCandidate(event);
         };
 
@@ -307,7 +341,7 @@ var _WebRTC = {
 
     _uploadLocalStream: function () {
         this.rtcPeerConnection.addStream(this.localStream);
-        _logger.debug('Added local stream to RtcPeerConnection');
+        _logger.debug('[WebRTC-API] Added local stream to RtcPeerConnection');
     },
 
     createOffer: function (onCreateOfferSuccess, onCreateOfferError) {
@@ -315,14 +349,14 @@ var _WebRTC = {
 
         self._uploadLocalStream();
 
-        _logger.debug(' createOffer start...');
+        _logger.debug('[WebRTC-API] createOffer start...');
 
         return self.rtcPeerConnection.createOffer(self.offerOptions).then(
             function (desc) {
                 self.offerDescription = desc;
 
-                _logger.debug(' Offer from \n' + desc.sdp);
-                _logger.debug(' setLocalDescription start');
+                _logger.debug('[WebRTC-API] Offer ');//_logger.debug('from \n' + desc.sdp);
+                _logger.debug('[WebRTC-API] setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
                     self.onSetLocalSessionDescriptionSuccess,
@@ -344,7 +378,7 @@ var _WebRTC = {
         // accept the incoming offer of audio and video.
         return self.rtcPeerConnection.createAnswer().then(
             function (desc) {
-                _logger.debug(' _____________PRAnswer from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] _____________PRAnswer ');//_logger.debug('from :\n' + desc.sdp);
 
                 desc.type = "pranswer";
                 desc.sdp = desc.sdp.replace(/a=recvonly/g, 'a=inactive');
@@ -352,8 +386,8 @@ var _WebRTC = {
 
                 self.prAnswerDescription = desc;
 
-                _logger.debug(' inactive PRAnswer from :\n' + desc.sdp);
-                _logger.debug(' setLocalDescription start');
+                _logger.debug('[WebRTC-API] inactive PRAnswer ');//_logger.debug('from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
                     self.onSetLocalSuccess,
@@ -366,7 +400,7 @@ var _WebRTC = {
 
                     desc.sdp = sdpSection.getUpdatedSDP();
 
-                    _logger.debug(' Send PRAnswer from :\n' + desc.sdp);
+                    _logger.debug('[WebRTC-API] Send PRAnswer ');//_logger.debug('from :\n' + desc.sdp);
 
                     (onCreatePRAnswerSuccess || self.onCreatePRAnswerSuccess)(desc);
                 });
@@ -380,13 +414,13 @@ var _WebRTC = {
 
         self._uploadLocalStream();
 
-        _logger.info(' createAnswer start');
+        _logger.info('[WebRTC-API] createAnswer start');
         // Since the 'remote' side has no media stream we need
         // to pass in the right constraints in order for it to
         // accept the incoming offer of audio and video.
         return self.rtcPeerConnection.createAnswer().then(
             function (desc) {
-                _logger.debug(' _____________________Answer from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] _____________________Answer ');//_logger.debug('from :\n' + desc.sdp);
 
                 desc.type = 'answer';
 
@@ -405,8 +439,8 @@ var _WebRTC = {
 
                 self.answerDescription = desc;
 
-                _logger.debug(' Answer from :\n' + desc.sdp);
-                _logger.debug(' setLocalDescription start');
+                _logger.debug('[WebRTC-API] Answer ');//_logger.debug('from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
                     self.onSetLocalSuccess,
@@ -419,7 +453,7 @@ var _WebRTC = {
 
                     desc.sdp = sdpSection.getUpdatedSDP();
 
-                    _logger.debug(' Send Answer from :\n' + desc.sdp);
+                    _logger.debug('[WebRTC-API] Send Answer ');//_logger.debug('from :\n' + desc.sdp);
 
                     (onCreateAnswerSuccess || self.onCreateAnswerSuccess)(desc);
                 });
@@ -432,10 +466,11 @@ var _WebRTC = {
         var self = this;
         try {
             self.rtcPeerConnection && self.rtcPeerConnection.close();
-        } catch ( e ) {}
+        } catch (e) {
+        }
 
-        if ( self.localStream ) {
-            self.localStream.getTracks().forEach(function(track) {
+        if (self.localStream) {
+            self.localStream.getTracks().forEach(function (track) {
                 track.stop();
             });
         }
@@ -450,7 +485,7 @@ var _WebRTC = {
         }
 
 
-        _logger.debug(' Add ICE candidate: \n', candidate);
+        _logger.debug('[WebRTC-API] Add ICE candidate: \n', candidate);
 
         var _cands = _util.isArray(candidate) ? candidate : [];
         !_util.isArray(candidate) && _cands.push(candidate);
@@ -468,7 +503,7 @@ var _WebRTC = {
     setRemoteDescription: function (desc) {
         var self = this;
 
-        _logger.debug(' setRemoteDescription start. ');
+        _logger.debug('[WebRTC-API] setRemoteDescription start. ');
 
         desc = new RTCSessionDescription(desc);
 
@@ -485,67 +520,69 @@ var _WebRTC = {
     },
 
     onCreateMedia: function () {
-        _logger.debug('media created.');
+        _logger.debug('[WebRTC-API] media created.');
     },
 
     _onGotRemoteStream: function (event) {
-        _logger.debug('onGotRemoteStream.', event);
+        _logger.debug('[WebRTC-API] onGotRemoteStream.', event);
 
         this.onGotRemoteStream(event.stream);
-        _logger.debug('received remote stream, you will see the other.');
+        _logger.debug('[WebRTC-API] received remote stream, you will see the other.');
     },
 
     onGotStream: function (stream) {
-        _logger.debug('on got a local stream');
+        _logger.debug('[WebRTC-API] on got a local stream');
     },
 
     onSetRemoteSuccess: function () {
-        _logger.info(' onSetRemoteSuccess complete');
+        _logger.info('[WebRTC-API] onSetRemoteSuccess complete');
     },
 
     onSetLocalSuccess: function () {
-        _logger.info(' setLocalDescription complete');
+        _logger.info('[WebRTC-API] setLocalDescription complete');
     },
 
     onAddIceCandidateSuccess: function () {
-        _logger.debug(' addIceCandidate success');
+        _logger.debug('[WebRTC-API] addIceCandidate success');
     },
 
     onAddIceCandidateError: function (error) {
-        _logger.debug(' failed to add ICE Candidate: ' + error.toString());
+        _logger.debug('[WebRTC-API] failed to add ICE Candidate: ' + error.toString());
     },
 
     onIceCandidate: function (event) {
-        _logger.debug(' onIceCandidate : ICE candidate: \n' + event.candidate);
+        _logger.debug('[WebRTC-API] onIceCandidate : ICE candidate: \n' + event.candidate);
     },
 
     onIceStateChange: function (event) {
-        _logger.debug(' onIceStateChange : ICE state change event: ', event);
+        _logger.debug('[WebRTC-API] onIceStateChange : ICE state change event: ', event);
     },
 
     onCreateSessionDescriptionError: function (error) {
-        _logger.error(' Failed to create session description: ' + error.toString());
+        _logger.error('[WebRTC-API] Failed to create session description: ' + error.toString());
     },
 
     onCreateOfferSuccess: function (desc) {
-        _logger.debug(' create offer success');
+        _logger.debug('[WebRTC-API] create offer success');
     },
 
     onCreatePRAnswerSuccess: function (desc) {
-        _logger.debug(' create answer success');
+        _logger.debug('[WebRTC-API] create answer success');
     },
 
     onCreateAnswerSuccess: function (desc) {
-        _logger.debug(' create answer success');
+        _logger.debug('[WebRTC-API] create answer success');
     },
 
     onSetSessionDescriptionError: function (error) {
-        _logger.error(' onSetSessionDescriptionError : Failed to set session description: ' + error.toString());
+        _logger.error('[WebRTC-API] onSetSessionDescriptionError : Failed to set session description: ' + error.toString());
     },
 
     onSetLocalSessionDescriptionSuccess: function () {
-        _logger.debug(' onSetLocalSessionDescriptionSuccess : setLocalDescription complete');
+        _logger.debug('[WebRTC-API] onSetLocalSessionDescriptionSuccess : setLocalDescription complete');
     }
+
+
 };
 
 module.exports = function (initConfigs) {
