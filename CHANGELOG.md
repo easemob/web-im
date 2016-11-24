@@ -3,23 +3,9 @@
 ###WebIM v1.4.0 @ 2016-11-25
 新功能
 
-- [demo] 支持同一账号最多8个标签页登录 `isMultiLoginSessions:true`
 - [demo] 好友之间可以通过webrtc进行视频聊天(仅支持 https + Webkit浏览器)
+- [demo] 支持同一账号最多8个标签页登录 `isMultiLoginSessions:true`
 - [demo] 加入ip策略功能,防止DNS劫持  
-- [demo] 第一次打开对话框,默认只读取十条聊天记录
-- [sdk]  新增 CDN 和 NPM 两种安装方式:
-    
-    方式1: 通过`<script>`引入CDN文件
-    
-    ```
-    <script src='//cdn.easemob.com/easemob-websdk-1.4.0.js'></script>
-    ```
-    方式2： [通过 NPM 安装](https://www.npmjs.com/package/easemob-websdk)
-    
-    ```
-    npm install easemob-websdk --save
-    ```
-    
 
 * Bug修复
     1. [sdk] 解散群组不更新UI

@@ -19,7 +19,7 @@
 ###v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了 (钟泽方 done)
 ###JavaScript Web SDK installation via CDN and NPM 的可行性和implementation 参考https://docs.layer.com/sdk/web/install 11.20前完成  (刘伟展)
 ###bug fix: 群组用rest接口解散不了
-
+    
 #V1.5.0 (2016.11~2016.12)
 ###新版UI
 ###检查所有Demo.api.notify. 普通提示用Demo.api.info,错误提示才用Demo.api.notify
@@ -34,6 +34,8 @@
 ###修改multi-select-box组件的UI
 ###© 2016 环信科技  2016不要写死
 ###所有eval('(' + message + ')');  改成 JSON.parse(message)  所有 eval('(' + str + ')');  改成 JSON.parse(str)  
+###加入单元测试
+###CI & CD
 ###引入promise库
 ###引入REDUX，减少原生dom操作
 ###http://docs.easemob.com/im/400webimintegration/60toolrelated 截图发送 还维护吗?
