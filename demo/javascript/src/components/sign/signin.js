@@ -9,7 +9,7 @@ var Checkbox = UI.Checkbox;
 module.exports = React.createClass({
     getInitialState: function(){
         return {
-            pageLimit: 2
+            pageLimit: 8
         };
     },
 
@@ -112,11 +112,9 @@ module.exports = React.createClass({
                 }
             } else {
                 if(this.validTabs() === true) {
-                    console.log("True");
                     Demo.conn.open(options);
                 }
                 else {
-                    console.log("False");
                     Demo.conn.onError({
                         type: "One account can't open more than " + this.state.pageLimit + ' pages in one minute on the same browser'
                     });
