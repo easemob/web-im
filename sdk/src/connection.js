@@ -833,7 +833,6 @@
             _login(options, conn);
         } else {
             var apiUrl = options.apiUrl;
-            console.log(apiUrl);
             var userId = this.context.userId;
             var pwd = options.pwd || '';
             var appName = this.context.appName;
