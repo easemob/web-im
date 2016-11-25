@@ -265,18 +265,29 @@ module.exports = React.createClass({
                     Demo.call.callee = '';
                     me.channel.close();
                 },
+                onIceConnectionStateChange: function (iceState) {
+                    // checking
+                    // connected completed
+                    // disconnected failed
+                    // closed
+                    console.log('onIceConnectionStateChange', iceState);
+                },
                 onError: function (e) {
                     if (e && e.message) {
+                        var close = false;
                         switch (e.message) {
                             case 'CALLLING_EACH_OTHER_AT_THE_SAME_TIME':
                                 e.message = "Target is calling. Please try again later.";
+                                close = true;
                                 break;
                             case 'TARGET_OFFLINE':
                                 e.message = "Target is offline.";
                                 break;
                         }
-                        var closeButton = document.getElementById('webrtc_close');
-                        closeButton && closeButton.click();
+                        if (close) {
+                            var closeButton = document.getElementById('webrtc_close');
+                            closeButton && closeButton.click();
+                        }
                     }
                     Demo.api.NotifyError(e && e.message ? e.message : 'An error occured when calling webrtc');
                 }

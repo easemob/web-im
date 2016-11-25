@@ -18,13 +18,15 @@ var _Call = {
 
     listener: {
         onAcceptCall: function (from, options) {
-
         },
+
         onRinging: function (caller) {
         },
 
         onTermCall: function () {
+        },
 
+        onIceConnectionStateChange: function (iceState) {
         }
     },
 
@@ -50,7 +52,11 @@ var _Call = {
 
         self.api.onInitC = function () {
             self._onInitC.apply(self, arguments);
-        }
+        },
+
+            self.api.onIceConnectionStateChange = function () {
+                self.listener.onIceConnectionStateChange.apply(self, arguments);
+            }
     },
 
     makeVideoCall: function (callee) {

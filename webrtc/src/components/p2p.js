@@ -274,19 +274,8 @@ var CommonPattern = {
 
     _onIceStateChange: function (event) {
         var self = this;
-
         event && _logger.debug("[WebRTC-API] " + self.webRtc.iceConnectionState() + " |||| ice state is " + event.target.iceConnectionState);
-        if (self.webRtc.iceConnectionState() == 'disconnected') {
-            self.webRtc.onError({message: 'TARGET_OFFLINE'});
-        }
-
-        if (self.webRtc.iceConnectionState() == 'connected') {
-            //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
-            //所以去掉在此处的振铃
-            // setTimeout(function () {
-            //     self.onRinging(self.callee);
-            // }, 500);
-        }
+        self.api.onIceConnectionStateChange(self.webRtc.iceConnectionState());
     },
 
     _onIceCandidate: function (event) {
