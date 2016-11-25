@@ -226,6 +226,8 @@ module.exports = React.createClass({
         }
     },
 
+    rtcTimeoutID: null,
+
     initWebRTC: function () {
 
         if (Demo.call) {
@@ -271,6 +273,20 @@ module.exports = React.createClass({
                     // disconnected failed
                     // closed
                     console.log('onIceConnectionStateChange', iceState);
+                    if (iceState == "disconnected") {
+                        if (!me.rtcTimeoutID) {
+                            me.rtcTimeoutID = setTimeout(function () {
+                                Demo.api.NotifyError('Target is offline');
+                                var closeButton = document.getElementById('webrtc_close');
+                                closeButton && closeButton.click();
+                            }, 10000);
+                        }
+                    } else if (iceState == "connected") {
+                        if (me.rtcTimeoutID) {
+                            clearTimeout(me.rtcTimeoutID);
+                            me.rtcTimeoutID = null;
+                        }
+                    }
                 },
                 onError: function (e) {
                     if (e && e.message) {
