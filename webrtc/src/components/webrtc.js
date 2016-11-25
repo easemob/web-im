@@ -290,26 +290,22 @@ var _WebRTC = {
     },
 
     createRtcPeerConnection: function (iceServerConfig) {
-        var self = this;
-
-        if (iceServerConfig && iceServerConfig.iceServers) {
-        } else {
-            iceServerConfig = {};
-        }
-
-
         _logger.debug('[WebRTC-API] begin create RtcPeerConnection ......');
 
+        var self = this;
 
-        //reduce icecandidate number:add default value
-        if (!iceServerConfig.iceServers) {
-            iceServerConfig.iceServers = [];
-        }
-        if (!iceServerConfig.rtcpMuxPolicy) {
+        // if (iceServerConfig && iceServerConfig.iceServers) {
+        // } else {
+        //     iceServerConfig = null;
+        // }
+
+        if (iceServerConfig){ //reduce icecandidate number:add default value
+            !iceServerConfig.iceServers && (iceServerConfig.iceServers = []);
+
             iceServerConfig.rtcpMuxPolicy = "require";
-        }
-        if (!iceServerConfig.bundlePolicy) {
             iceServerConfig.bundlePolicy = "max-bundle";
+        } else {
+            iceServerConfig = null;
         }
 
         self.startTime = window.performance.now();
