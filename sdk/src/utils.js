@@ -301,7 +301,6 @@
         },
 
         getFileUrl: function (fileInputId) {
-
             var uri = {
                 url: '',
                 filename: '',

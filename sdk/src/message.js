@@ -116,7 +116,9 @@
             flashUpload: opt.flashUpload,
             width: opt.width,
             height: opt.height,
-            body: opt.body
+            body: opt.body,
+            uploadError: opt.uploadError,
+            uploadComplete: opt.uploadComplete
         };
 
         !opt.roomType && delete this.body.roomType;

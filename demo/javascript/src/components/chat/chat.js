@@ -261,6 +261,8 @@ module.exports = React.createClass({
                     if (reason && reason == 'busy') {
                         Demo.api.NotifyError('Target is busy. Try it later.');
                     }
+                    Demo.call.caller = '';
+                    Demo.call.callee = '';
                     me.channel.close();
                 },
                 onError: function (e) {
