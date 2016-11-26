@@ -2491,7 +2491,7 @@
         var affiliation = 'admin';
         var to = this._getGroupJid(options.roomId);
         var iq = $iq({type: 'set', to: to});
-        var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
+        var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation});
         var keys = Object.keys(list);
         var len = keys.length;
 
@@ -2519,31 +2519,56 @@
      * addGroupMembers 添加群组成员
      *
      * @param options
+
+     Attention the sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
+     <!-- 添加成员通知：send -->
+     <message to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com'>
+     <x xmlns='http://jabber.org/protocol/muc#user'>
+     <invite to='easemob-demo#chatdemoui_lwz2@easemob.com'>
+     <reason>liuwz invite you to join group '谢谢'</reason>
+     </invite>
+     </x>
+     </message>
+     <!-- 添加成员：send -->
+     <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation' to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com' type='set'>
+     <query xmlns='http://jabber.org/protocol/muc#admin'>
+     <item affiliation='member' jid='easemob-demo#chatdemoui_lwz2@easemob.com'/>
+     </query>
+     </iq>
      */
-    // <iq id="09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477482739698@conference.easemob.com" type="set">
-    //     <query xmlns="http://jabber.org/protocol/muc#admin">
-    //         <item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
-    //     </query>
-    // </iq>
+
     connection.prototype.addGroupMembers = function (options) {
+        console.log(options);
+
         var sucFn = options.success || _utils.emptyfn;
         var errFn = options.error || _utils.emptyfn;
         var list = options.list || [];
         var affiliation = 'admin';
         var to = this._getGroupJid(options.roomId);
         var iq = $iq({type: 'set', to: to});
-        var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-        var keys = Object.keys(list);
-        var len = keys.length;
+        var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation});
+        var len = list.length;
 
         for (var i = 0; i < len; i++) {
-            var name = list[keys[i]];
+
+            var name = list[i];
             var jid = _getJidByName(name, this);
 
             piece = piece.c('item', {
                 affiliation: 'member',
                 jid: jid
             }).up();
+
+            var dom = $msg({
+                to: to
+            }).c('x', {
+                xmlns: 'http://jabber.org/protocol/muc#user'
+            }).c('invite', {
+                to: jid
+            }).c('reason').t(options.reason || '');
+
+            this.sendCommand(dom.tree());
+
         }
 
         this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {

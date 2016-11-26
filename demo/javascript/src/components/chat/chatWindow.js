@@ -200,7 +200,7 @@ module.exports = React.createClass({
         if (Demo.selectedCate == 'friends') {
             operations.push(<OperationsFriends key='operation_div' ref='operation_div' roomId={this.props.roomId}
                                                admin={this.state.admin}
-                                                owner={this.state.owner}
+                                               owner={this.state.owner}
                                                settings={this.state.settings}
                                                getGroupInfo={this.getGroupInfo}
                                                onBlur={this.handleOnBlur}
@@ -208,7 +208,8 @@ module.exports = React.createClass({
                                                updateNode={this.props.updateNode}
             />);
         } else if (Demo.selectedCate == 'groups') {
-            operations.push(<OperationsGroups key='operation_div' ref='operation_div' roomId={this.props.roomId}
+            operations.push(<OperationsGroups key='operation_div' ref='operation_div' name={this.props.name}
+                                              roomId={this.props.roomId}
                                               admin={this.state.admin}
                                               owner={this.state.owner}
                                               settings={this.state.settings}

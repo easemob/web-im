@@ -33,7 +33,7 @@ module.exports = React.createClass({
     },
 
     adminGroupMembers: function () {
-        AdminGroupMembers.show(this.props.roomId, this.props.settings);
+        AdminGroupMembers.show(this.props.name, this.props.roomId, this.props.settings);
         this.update();
     },
 
