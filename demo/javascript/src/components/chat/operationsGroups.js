@@ -60,6 +60,7 @@ module.exports = React.createClass({
         } else {
             // success update on chat.js async msg `deleteGroupChat`
             Demo.conn.destroyGroup({
+                reason: Demo.user + ' destory group ' + this.props.name,
                 roomId: this.props.roomId,
                 error: function (code, msg) {
                     Demo.api.NotifyError("destroyGroup:" + code + " " + msg);

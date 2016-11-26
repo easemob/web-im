@@ -2416,7 +2416,9 @@
      */
     // <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
     //     <query xmlns="http://jabber.org/protocol/muc#owner">
-    //         <destroy/>
+    //         <destroy>
+    //             <reason>xxx destory group yyy</reason>
+    //         </destroy>
     //     </query>
     // </iq>
     connection.prototype.destroyGroup = function (options) {
@@ -2429,7 +2431,8 @@
         var iq = $iq({type: 'set', to: to});
 
         iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-            .c('destroy');
+            .c('destroy')
+            .c('reason').t(options.reason || '');
 
         this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
             sucFn();
