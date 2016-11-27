@@ -246,18 +246,18 @@ module.exports = React.createClass({
 
             listener: {
                 onAcceptCall: function (from, options) {
-                    console.log('onAcceptCall', from, options);
+                    // console.log('onAcceptCall', from, options);
                 },
                 onGotRemoteStream: function (stream) {
-                    console.log('onGotRemoteStream');
+                    // console.log('onGotRemoteStream');
                     me.channel.setRemote(stream);
                 },
                 onGotLocalStream: function (stream) {
-                    console.log('onGotLocalStream');
+                    // console.log('onGotLocalStream');
                     me.channel.setLocal(stream);
                 },
                 onRinging: function (caller) {
-                    console.log('onRinging', caller);
+                    // console.log('onRinging', caller);
                 },
                 onTermCall: function (reason) {
                     if (reason && reason == 'busy') {
@@ -272,7 +272,7 @@ module.exports = React.createClass({
                     // connected completed
                     // disconnected failed
                     // closed
-                    console.log('onIceConnectionStateChange', iceState);
+                    // console.log('onIceConnectionStateChange', iceState);
                     if (iceState == "disconnected") {
                         if (!me.rtcTimeoutID) {
                             me.rtcTimeoutID = setTimeout(function () {
