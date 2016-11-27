@@ -770,7 +770,13 @@
 <message to='easemob-demo#chatdemoui_mt0010@easemob.com' from='easemob-demo#chatdemoui_mt001@easemob.com/mobile' id='17736B15-5DE3-4E1F-AD31-4AF1E942F294'><x xmlns='http://jabber.org/protocol/muc#user'><accept to='easemob-demo#chatdemoui_1478079622155@conference.easemob.com' from='easemob-demo#chatdemoui_mt001@easemob.com' fromNick='llllll'><reason/></accept></x></message>
 
 <!-- 拒绝入群申请通知：send -->
-<message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'><x xmlns='http://jabber.org/protocol/muc#user'><apply to='easemob-demo#chatdemoui_groupid1@conference.easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' toNick='llllll'><reason>hello</reason></apply></x></message>
+<message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
+	<x xmlns='http://jabber.org/protocol/muc#user'>
+		<apply to='easemob-demo#chatdemoui_groupid1@conference.easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' toNick='llllll'>
+			<reason>hello</reason>
+		</apply>
+	</x>
+</message>
 
 <!-- 被屏蔽时发送消息： -->
 <message from='easemob-demo#chatdemoui_1477542151740@conference.easemob.com' id='259122554994688444' to='easemob-demo#chatdemoui_liuwz@easemob.com/webim' type='error' xmlns='jabber:client'>

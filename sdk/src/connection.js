@@ -2273,8 +2273,7 @@
     connection.prototype._getGroupJid = function (to) {
         var appKey = this.context.appKey || '';
         return appKey + '_' + to + '@conference.' + this.domain;
-    }
-    ;
+    };
 
     // used for blacklist
     connection.prototype.addToGroupBlackList = function (options) {
@@ -2595,13 +2594,34 @@
     };
 
     /**
-     * rejectInviteFromGroup 拒绝加入申请
+     * rejectInviteFromGroup 拒绝入群申请
      *
      * throw request for now 暂时不处理，直接丢弃
+     *
+     <message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
+     <x xmlns='http://jabber.org/protocol/muc#user'>
+     <apply to='easemob-demo#chatdemoui_groupid1@conference.easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' toNick='llllll'>
+     <reason>reject</reason>
+     </apply>
+     </x>
+     </message>
      *
      * @param options
      */
     connection.prototype.rejectInviteFromGroup = function (options) {
+        // var from = _getJidByName(options.from, this);
+        // var dom = $msg({
+        //     from: from,
+        //     to: _getJidByName(options.to, this)
+        // }).c('x', {
+        //     xmlns: 'http://jabber.org/protocol/muc#user'
+        // }).c('apply', {
+        //     from: from,
+        //     to: this._getGroupJid(options.groupId),
+        //     toNick: options.groupName
+        // }).c('reason').t(options.reason || '');
+        //
+        // this.sendCommand(dom.tree());
     };
 
     /**
