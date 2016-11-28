@@ -1,6 +1,6 @@
 {
   "name": "webim",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "description": "",
   "main": "index.js",
   "devDependencies": {
@@ -50,6 +50,7 @@
   "license": "ISC",
   "dependencies": {
     "antd": "^2.1.0",
+    "easemob-websdk": "^1.4.2",
     "underscore": "^1.8.3"
   }
 }

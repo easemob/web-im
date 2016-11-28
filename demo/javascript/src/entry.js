@@ -1,4 +1,5 @@
 require('../../stylesheet/demo.scss');
+// require('easemob-websdk');
 
 var Api = require('./api');
 var Emoji = require('./components/chat/emoji');

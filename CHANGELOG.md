@@ -1,19 +1,21 @@
 #版本更新说明:
 
-###WebIM v1.4.0 @ 2016-11-25
-新功能
+##v1.4.2 @ 2016-11-29
+###新功能
 
-- [demo] 好友之间可以通过webrtc进行视频聊天(仅支持 https + Webkit浏览器)
+- GNU风格的版本号命名格式: 主版本号.子版本号.修正版本号
+- [demo] 好友之间可以通过webrtc进行视频聊(仅支持 https + Webkit浏览器)
 - [demo] 支持同一账号最多8个标签页登录 `isMultiLoginSessions:true`
-- [demo] 加入ip策略功能,防止DNS劫持  
+- [demo] 加入ip策略功能,防止DNS劫持  `isDNS:true`
 
-* Bug修复
-    1. [sdk] 解散群组不更新UI
-    2. [sdk] 修复了发送cmd消息成功后无法调用回调函数的bug
+###Bug修复
+
+- [sdk] 解散群组不更新UI
+- [sdk] 修复了发送cmd消息成功后无法调用回调函数的bug
 
 
 
-###WebIM v1.1.3 @ 2016-11-01
+##v1.1.3 @ 2016-11-01
 
 * [demo] 支持 Windows SDK. <http://www.easemob.com/download/im>
 * [demo] 新增黑名单功能.
@@ -36,20 +38,21 @@
 ---
 #ChangeLog:
 
-###WebIM v1.4.0 @ 2016-11-21
-Feature
+##v1.4.2 @ 2016-11-29
 
+###Feature
+
+- GNU version number: `Major_Version_Number.Minor_Version_Number.Revision_Number`
+- [demo] friends can video chat to each other (support https + Webkit only)
 - [demo] limite of a single user the number of opened tabs in the same browser `isMultiLoginSessions:true`
-- [demo] 好友之间可以通过webrtc进行视频聊天(仅支持 https + Webkit浏览器)
-- [demo] 加入ip策略功能,防止DNS劫持  
-- [demo] 第一次打开对话框,默认只读取十条聊天记录
-- [sdk]  提供 cdn 和 npm 两种安装方式
+- [demo] add ip policy, avoid DNS hijacking  `isDNS:true`
 
-BugFix
+###BugFix
 
-- [sdk] rest接口的解散群组功能失效
+- [sdk] does not update catact list UI after destory group
+- [sdk] does not call the callback function after send out the cmd message
 
-###WebIM v1.1.3 @ 2016-11-01
+##v1.1.3 @ 2016-11-01
 
 * [demo] support Windows SDK. <http://www.easemob.com/download/im>
 * [demo] add blacklist feature.

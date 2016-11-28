@@ -12,9 +12,8 @@ cp -r demo/javascript/src publish/demo/javascript/
 mkdir publish/sdk
 cp -r sdk/dist publish/sdk
 cp -r sdk/src publish/sdk
-mkdir publish/webrtc
-cp -r webrtc/dist publish/webrtc
-cp -r webrtc/src publish/webrtc
+cp sdk/*.* publish/sdk
+cp -r webrtc  publish
 cp favicon.ico publish/
 cp index.html publish/
 cp CHANGELOG.md publish/
