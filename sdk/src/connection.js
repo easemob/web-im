@@ -597,7 +597,7 @@ var connection = function (options) {
     this.isMultiLoginSessions = options.isMultiLoginSessions || false;
     this.wait = options.wait || 30;
     this.retry = options.retry || false;
-    this.https = (options.https !== 'undefined') ? options.https : (location.protocol === 'https:');
+    this.https = options.https || location.protocol === 'https:';
     this.url = _getXmppUrl(options.url, this.https);
     this.hold = options.hold || 1;
     this.route = options.route || null;

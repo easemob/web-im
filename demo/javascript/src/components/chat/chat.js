@@ -105,10 +105,14 @@ module.exports = React.createClass({
                 // log(WebIM.utils.ts(), 'online');
             },
             onOffline: function () {
-                // log(WebIM.utils.ts(), 'offline');
                 if (WebIM.config.isWindowSDK) {
                     Demo.api.NotifyError("Network connection is broken. reconnecting...");
                 } else {
+                    //webRTC:断线处理
+                    if (WebIM.config.isWebRTC) {
+                        var closeButton = document.getElementById('webrtc_close');
+                        closeButton && closeButton.click();
+                    }
                     Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_OFFLINE);
                 }
             },
@@ -123,6 +127,7 @@ module.exports = React.createClass({
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
                 // log(WebIM.utils.ts(), 'onError', message);
+                // console.log('onError', message);
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
