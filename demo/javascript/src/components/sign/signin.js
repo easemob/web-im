@@ -7,16 +7,16 @@ var Button = UI.Button;
 var Checkbox = UI.Checkbox;
 
 module.exports = React.createClass({
-    getInitialState: function(){
+    getInitialState: function () {
         return {
             pageLimit: 8
         };
     },
 
-    validTabs: function(){
-        if(!WebIM.config.isMultiLoginSessions || !window.localStorage) {
+    validTabs: function () {
+        if (!WebIM.config.isMultiLoginSessions || !window.localStorage) {
             return true;
-        }else{
+        } else {
             Demo.userTimestamp = new Date().getTime();
 
             var key = 'easemob_' + Demo.user;
@@ -24,7 +24,7 @@ module.exports = React.createClass({
             var count = 0;
             var oneMinute = 60 * 1000;
 
-            if(val === undefined || val === '' || val === null){
+            if (val === undefined || val === '' || val === null) {
                 val = 'last';
             }
             val = Demo.userTimestamp + ',' + val;
@@ -32,20 +32,20 @@ module.exports = React.createClass({
             var uniqueTimestampArr = [];
             // Unique
 
-            for(var o in timestampArr){
-                if(timestampArr[o] === 'last')
+            for (var o in timestampArr) {
+                if (timestampArr[o] === 'last')
                     continue;
                 uniqueTimestampArr[timestampArr[o]] = 1;
             }
 
             val = 'last';
-            for(var o in uniqueTimestampArr){
+            for (var o in uniqueTimestampArr) {
                 // if more than one minute, cut it
-                if(parseInt(o) + oneMinute < Demo.userTimestamp){
+                if (parseInt(o) + oneMinute < Demo.userTimestamp) {
                     continue;
                 }
                 count++;
-                if(count > this.state.pageLimit){
+                if (count > this.state.pageLimit) {
                     return false;
                 }
                 val = o + ',' + val;
@@ -100,9 +100,9 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('open:' + code + " - " + msg);
                 });
         } else {
-            if (WebIM.config.isDNS) {
-                if(this.validTabs() === true) {
-                    Demo.conn.getDNS(options);
+            if (location.protocol == 'http:' && WebIM.config.isHttpDNS) {
+                if (this.validTabs() === true) {
+                    Demo.conn.getHttpDNS(options);
                 }
                 else {
                     Demo.conn.onError({
@@ -111,7 +111,7 @@ module.exports = React.createClass({
                     return;
                 }
             } else {
-                if(this.validTabs() === true) {
+                if (this.validTabs() === true) {
                     Demo.conn.open(options);
                 }
                 else {

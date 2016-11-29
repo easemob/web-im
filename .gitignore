@@ -6,7 +6,7 @@ node_modules
 demo/javascript/dist/demo.js
 demo/javascript/dist/debug.js
 demo/javascript/dist/webim.config.js
-#sdk/dist/websdk-*.js
-#webrtc/dist/webrtc-*.js
-#webrtc/dist/webrtc-*.js
+demo/javascript/dist/demo-*.js
+sdk/dist/websdk-*.js
+webrtc/dist/webrtc-*.js
 publish/*

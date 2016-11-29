@@ -1,11 +1,12 @@
 # Changelog
 
-## v1.4.2
+## v1.4.3
 
 ###Feature
 
 * GNU version number: `Major_Version_Number.Minor_Version_Number.Revision_Number`
 * support webrtc
+* while http access,use ip directly instead of ServerName,avoid DNS hijacking.  `isHttpDNS:true`
 
 ###BugFix
 

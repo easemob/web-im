@@ -597,7 +597,7 @@ var connection = function (options) {
     this.isMultiLoginSessions = options.isMultiLoginSessions || false;
     this.wait = options.wait || 30;
     this.retry = options.retry || false;
-    this.https = options.https || location.protocol === 'https:';
+    this.https = (options.https !== 'undefined') ? options.https : (location.protocol === 'https:');
     this.url = _getXmppUrl(options.url, this.https);
     this.hold = options.hold || 1;
     this.route = options.route || null;
@@ -615,7 +615,7 @@ var connection = function (options) {
     this.sendQueue = new Queue();  //instead of sending message immediately,cache them in this queue
     this.intervalId = null;   //clearInterval return value
 
-    this.dnsArr = ['182.92.174.78', '112.126.66.111']; //dns server ips
+    this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
     this.dnsIndex = 0;   //the dns ip used in dnsArr currently
     this.dnsTotal = this.dnsArr.length;  //max number of getting dns retries
     this.restHosts = null; //rest server ips
@@ -701,15 +701,18 @@ connection.prototype.cacheReceiptsMessage = function (options) {
 };
 
 connection.prototype.getStrophe = function () {
-    if (WebIM && WebIM.config.isDNS) {
+    if (location.protocol == 'http:' && WebIM.config.isHttpDNS) {
         //TODO: try this.xmppTotal times on fail
         var url = '';
         var host = this.xmppHosts[this.xmppIndex];
         var domain = _utils.getXmlFirstChild(host, 'domain');
         var ip = _utils.getXmlFirstChild(host, 'ip');
         if (ip) {
+            url = ip.textContent;
             var port = _utils.getXmlFirstChild(host, 'port');
-            url = ip.textContent + ':' + port.textContent;
+            if (port.textContent != '80') {
+                url += ':' + port.textContent;
+            }
         } else {
             url = domain.textContent;
         }
@@ -719,6 +722,7 @@ connection.prototype.getStrophe = function () {
             this.url = this.url.replace(parter, "$1" + url + "$2");
         }
     }
+
     var stropheConn = new Strophe.Connection(this.url, {
         inactivity: this.inactivity,
         maxRetries: this.maxRetries,
@@ -740,30 +744,30 @@ connection.prototype.getHostsByTag = function (data, tagName) {
     return hosts[0].getElementsByTagName('host');
 
 };
-connection.prototype.openFromDNS = function (options) {
+connection.prototype.openFromHttpDNS = function (options) {
     if (this.restIndex >= this.restTotal) {
         console.log('rest hosts all tried,quit');
         return;
     }
-    var self = this;
     var url = '';
     var host = this.restHosts[this.restIndex];
     var domain = _utils.getXmlFirstChild(host, 'domain');
     var ip = _utils.getXmlFirstChild(host, 'ip');
     if (ip) {
         var port = _utils.getXmlFirstChild(host, 'port');
-        url = ip.textContent + ':' + port.textContent;
+        url = '//' + ip.textContent + ':' + port.textContent;
     } else {
-        url = domain.textContent;
+        url = '//' + domain.textContent;
     }
 
     if (url != '') {
-        WebIM.config.apiURL = '//' + url;
-        options.apiUrl = '//' + url;
+        WebIM.config.apiURL = url;
+        options.apiUrl = url;
     }
     Demo.conn.open(options);
 };
-connection.prototype.getDNS = function (options) {
+
+connection.prototype.getHttpDNS = function (options) {
     var self = this;
     var suc = function (data, xhr) {
         data = new DOMParser().parseFromString(data, "text/xml").documentElement;
@@ -786,19 +790,19 @@ connection.prototype.getDNS = function (options) {
         self.xmppHosts = xmppHosts;
         self.xmppTotal = xmppHosts.length;
 
-        self.openFromDNS(options);
+        self.openFromHttpDNS(options);
     };
     var error = function (res, xhr, msg) {
 
-        console.log('getDNS error', res, msg);
+        console.log('getHttpDNS error', res, msg);
         self.dnsIndex++;
         if (self.dnsIndex < self.dnsTotal) {
-            self.getDNS(options);
+            self.getHttpDNS(options);
         }
 
     };
     var options2 = {
-        url: '//' + this.dnsArr[this.dnsIndex] + '/easemob/server.xml',
+        url: this.dnsArr[this.dnsIndex] + '/easemob/server.xml',
         dataType: 'text',
         type: 'GET',
 
@@ -841,10 +845,10 @@ connection.prototype.open = function (options) {
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
-            if (WebIM.config.isDNS) {
+            if (location.protocol == 'http:' && WebIM.config.isHttpDNS) {
                 conn.restIndex++;
                 if (conn.restIndex < conn.restTotal) {
-                    conn.openFromDNS(options);
+                    conn.openFromHttpDNS(options);
                     return;
                 }
             }
@@ -1927,6 +1931,9 @@ connection.prototype.clear = function () {
     if (this.intervalId) {
         clearInterval(this.intervalId);
     }
+    this.restIndex = 0;
+    this.xmppIndex = 0;
+
     if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
         Demo.api.init();
     }

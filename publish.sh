@@ -18,6 +18,7 @@ cp favicon.ico publish/
 cp index.html publish/
 cp CHANGELOG.md publish/
 cp package.json publish/
+mv publish/demo/javascript/dist/webim.config.js.default publish/demo/javascript/dist/webim.config.js
 cp webpack.config.js publish/
 cp README.md publish/
 cp -r build publish/

@@ -1,12 +1,12 @@
 #版本更新说明:
 
-##v1.4.2 @ 2016-11-29
+##v1.4.3 @ 2016-11-29
 ###新功能
 
 - GNU风格的版本号命名格式: 主版本号.子版本号.修正版本号
 - [demo] 好友之间可以通过webrtc进行视频聊(仅支持 https + Webkit浏览器)
 - [demo] 支持同一账号最多8个标签页登录 `isMultiLoginSessions:true`
-- [demo] 加入ip策略功能,防止DNS劫持  `isDNS:true`
+- [demo] http访问加入ip策略功能,防止DNS劫持  `isHttpDNS:true`
 
 ###Bug修复
 
@@ -38,14 +38,14 @@
 ---
 #ChangeLog:
 
-##v1.4.2 @ 2016-11-29
+##v1.4.3 @ 2016-11-29
 
 ###Feature
 
 - GNU version number: `Major_Version_Number.Minor_Version_Number.Revision_Number`
 - [demo] friends can video chat to each other (support https + Webkit only)
 - [demo] limite of a single user the number of opened tabs in the same browser `isMultiLoginSessions:true`
-- [demo] add ip policy, avoid DNS hijacking  `isDNS:true`
+- [demo] while http access,use ip directly instead of ServerName,avoid DNS hijacking.  `isHttpDNS:true`
 
 ###BugFix
 
