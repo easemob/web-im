@@ -45,12 +45,20 @@
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = __webpack_require__(228);
+
+
+/***/ },
+
+/***/ 228:
+/***/ function(module, exports, __webpack_require__) {
+
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {'use strict';
 
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var Util = __webpack_require__(226);
-	var Call = __webpack_require__(227);
+	var Util = __webpack_require__(230);
+	var Call = __webpack_require__(231);
 
 	window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
 	WebIM.WebRTC = WebIM.WebRTC || {};
@@ -64,11 +72,20 @@
 	        return WebIM.WebRTC;
 	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(225)(module)))
+
+	/**
+	 * 判断是否支持pranswer
+	 */
+	if (/Chrome/.test(navigator.userAgent)) {
+	    WebIM.WebRTC.supportPRAnswer = navigator.userAgent.split("Chrome/")[1].split(".")[0] >= 50 ? true : false;
+	}
+
+	//WebIM.WebRTC.supportPRAnswer = false;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(229)(module)))
 
 /***/ },
 
-/***/ 225:
+/***/ 229:
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -85,7 +102,7 @@
 
 /***/ },
 
-/***/ 226:
+/***/ 230:
 /***/ function(module, exports) {
 
 	'use strict';
@@ -185,14 +202,14 @@
 
 	/**
 	 * Util
-	 * 
+	 *
 	 * @constructor
 	 */
 	function Util() {}
 
 	/**
 	 * Function Logger
-	 * 
+	 *
 	 * @constructor
 	 */
 	var Logger = function Logger() {
@@ -216,7 +233,9 @@
 
 	        var text = arguments[1];
 
-	        console.log.apply(console, arguments);
+	        if (WebIM && WebIM.config && WebIM.config.isDebug) {
+	            console.log.apply(console, arguments);
+	        }
 	    };
 
 	    function callLog(level, args) {
@@ -260,7 +279,7 @@
 
 	/**
 	 * parse json
-	 * 
+	 *
 	 * @param jsonString
 	 */
 	Util.prototype.parseJSON = function (jsonString) {
@@ -269,7 +288,7 @@
 
 	/**
 	 * json to string
-	 * 
+	 *
 	 * @type {Util.stringifyJSON}
 	 */
 	var stringifyJSON = Util.prototype.stringifyJSON = function (jsonObj) {
@@ -288,7 +307,7 @@
 
 	/**
 	 * check object type
-	 * 
+	 *
 	 * @type {Util.isPlainObject}
 	 */
 	var isPlainObject = Util.prototype.isPlainObject = function (obj) {
@@ -317,7 +336,7 @@
 
 	/**
 	 * check empty object
-	 * 
+	 *
 	 * @param obj
 	 * @returns {boolean}
 	 */
@@ -338,7 +357,7 @@
 
 	/**
 	 * Function extend
-	 * 
+	 *
 	 * @returns {*|{}}
 	 */
 	Util.prototype.extend = function () {
@@ -417,7 +436,7 @@
 
 	/**
 	 * get local cache
-	 * 
+	 *
 	 * @memberOf tool
 	 * @name hasLocalData
 	 * @param key{string}
@@ -443,13 +462,13 @@
 
 	/**
 	 * set cookie
-	 * 
+	 *
 	 * @param name{String}
-	 * 
+	 *
 	 * @param value{String}
-	 * 
+	 *
 	 * @param hour{Number}
-	 * 
+	 *
 	 * @return void
 	 */
 	Util.prototype.setCookie = function (name, value, hour) {
@@ -460,7 +479,7 @@
 
 	/**
 	 * read cookie
-	 * 
+	 *
 	 * @param name(String)
 	 *            cookie key
 	 * @return cookie value
@@ -476,11 +495,11 @@
 
 	/**
 	 * query parameter from url
-	 * 
+	 *
 	 * @name parseURL
 	 * @memberof C.Tools
 	 * @param {string}
-	 * 
+	 *
 	 * @return {string}
 	 * @type function
 	 * @public
@@ -498,16 +517,16 @@
 
 /***/ },
 
-/***/ 227:
+/***/ 231:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Util = __webpack_require__(226);
-	var RTCIQHandler = __webpack_require__(228);
-	var API = __webpack_require__(229);
-	var WebRTC = __webpack_require__(230);
-	var CommonPattern = __webpack_require__(231);
+	var Util = __webpack_require__(230);
+	var RTCIQHandler = __webpack_require__(232);
+	var API = __webpack_require__(233);
+	var WebRTC = __webpack_require__(234);
+	var CommonPattern = __webpack_require__(235);
 
 	var RouteTo = API.RouteTo;
 	var Api = API.Api;
@@ -522,9 +541,12 @@
 
 	    listener: {
 	        onAcceptCall: function onAcceptCall(from, options) {},
+
 	        onRinging: function onRinging(caller) {},
 
-	        onTermCall: function onTermCall() {}
+	        onTermCall: function onTermCall() {},
+
+	        onIceConnectionStateChange: function onIceConnectionStateChange(iceState) {}
 	    },
 
 	    mediaStreamConstaints: {
@@ -549,6 +571,8 @@
 
 	        self.api.onInitC = function () {
 	            self._onInitC.apply(self, arguments);
+	        }, self.api.onIceConnectionStateChange = function () {
+	            self.listener.onIceConnectionStateChange.apply(self, arguments);
 	        };
 	    },
 
@@ -684,7 +708,7 @@
 
 /***/ },
 
-/***/ 228:
+/***/ 232:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -693,9 +717,9 @@
 	 * IQ Message，IM -> CMServer --> IM
 	 */
 
-	var _util = __webpack_require__(226);
+	var _util = __webpack_require__(230);
 	var _logger = _util.logger;
-	var API = __webpack_require__(229);
+	var API = __webpack_require__(233);
 	var RouteTo = API.RouteTo;
 
 	var CONFERENCE_XMLNS = "urn:xmpp:media-conference";
@@ -1001,7 +1025,7 @@
 
 /***/ },
 
-/***/ 229:
+/***/ 233:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1011,7 +1035,7 @@
 	/**
 	 * API
 	 */
-	var _util = __webpack_require__(226);
+	var _util = __webpack_require__(230);
 	var _logger = _util.logger;
 
 	var _RouteTo = {
@@ -1632,7 +1656,7 @@
 
 /***/ },
 
-/***/ 230:
+/***/ 234:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1675,7 +1699,7 @@
 	 *                                                  |
 	 *
 	 */
-	var _util = __webpack_require__(226);
+	var _util = __webpack_require__(230);
 	var _logger = _util.logger;
 
 	var _SDPSection = {
@@ -1916,23 +1940,23 @@
 	    },
 
 	    createRtcPeerConnection: function createRtcPeerConnection(iceServerConfig) {
-	        var self = this;
-
-	        if (iceServerConfig && iceServerConfig.iceServers) {} else {
-	            iceServerConfig = {};
-	        }
-
 	        _logger.debug('[WebRTC-API] begin create RtcPeerConnection ......');
 
-	        //reduce icecandidate number:add default value
-	        if (!iceServerConfig.iceServers) {
-	            iceServerConfig.iceServers = [];
-	        }
-	        if (!iceServerConfig.rtcpMuxPolicy) {
+	        var self = this;
+
+	        // if (iceServerConfig && iceServerConfig.iceServers) {
+	        // } else {
+	        //     iceServerConfig = null;
+	        // }
+
+	        if (iceServerConfig) {
+	            //reduce icecandidate number:add default value
+	            !iceServerConfig.iceServers && (iceServerConfig.iceServers = []);
+
 	            iceServerConfig.rtcpMuxPolicy = "require";
-	        }
-	        if (!iceServerConfig.bundlePolicy) {
 	            iceServerConfig.bundlePolicy = "max-bundle";
+	        } else {
+	            iceServerConfig = null;
 	        }
 
 	        self.startTime = window.performance.now();
@@ -2185,7 +2209,7 @@
 
 /***/ },
 
-/***/ 231:
+/***/ 235:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2193,8 +2217,8 @@
 	/**
 	 * P2P
 	 */
-	var _util = __webpack_require__(226);
-	var RouteTo = __webpack_require__(229).RouteTo;
+	var _util = __webpack_require__(230);
+	var RouteTo = __webpack_require__(233).RouteTo;
 	var _logger = _util.logger;
 
 	var P2PRouteTo = RouteTo({
@@ -2310,16 +2334,26 @@
 	    _onAcptC: function _onAcptC(from, options) {
 	        var self = this;
 
-	        _logger.info("[WebRTC-API] _onAcptC : recv pranswer. ");
-
-	        if (options.sdp || options.cands) {
-	            // options.sdp && (options.sdp.type = "pranswer");
-	            options.sdp && self.webRtc.setRemoteDescription(options.sdp);
-	            options.cands && self._onTcklC(from, options);
-
-	            //self._onHandShake(from, options);
-
+	        if (options.ans && options.ans == 1) {
+	            _logger.info("[WebRTC-API] _onAcptC : 104, ans = 1, it is a answer. will onAcceptCall");
 	            self.onAcceptCall(from, options);
+	            self._onAnsC(from, options);
+	        }
+	        if (!WebIM.WebRTC.supportPRAnswer) {
+	            _logger.info("[WebRTC-API] _onAcptC : not supported pranswer. drop it. will onAcceptCall");
+	            self.onAcceptCall(from, options);
+	        } else {
+	            _logger.info("[WebRTC-API] _onAcptC : recv pranswer. ");
+
+	            if (options.sdp || options.cands) {
+	                // options.sdp && (options.sdp.type = "pranswer");
+	                options.sdp && self.webRtc.setRemoteDescription(options.sdp);
+	                options.cands && self._onTcklC(from, options);
+
+	                //self._onHandShake(from, options);
+
+	                self.onAcceptCall(from, options);
+	            }
 	        }
 	    },
 
@@ -2332,6 +2366,7 @@
 	        _logger.info("[WebRTC-API] _onAnsC : recv answer. ");
 
 	        options.sdp && self.webRtc.setRemoteDescription(options.sdp);
+	        options.cands && self._onTcklC(from, options);
 	    },
 
 	    _onInitC: function _onInitC(from, options, rtkey, tsxId, fromSid) {
@@ -2354,25 +2389,24 @@
 	        options.sdp && self.webRtc.setRemoteDescription(options.sdp).then(function () {
 	            self._onHandShake(from, options);
 
-	            var chromeVersion = navigator.userAgent.split("Chrome/")[1].split(".")[0];
 	            /*
 	             * chrome 版本 大于 50时，可以使用pranswer。
 	             * 小于50 不支持pranswer，此时处理逻辑是，直接进入振铃状态
 	             *
 	             */
-	            if (chromeVersion >= "50") {
+	            if (WebIM.WebRTC.supportPRAnswer) {
 	                self.webRtc.createPRAnswer(function (prAnswer) {
 	                    self._onGotWebRtcPRAnswer(prAnswer);
 
 	                    setTimeout(function () {
 	                        //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
-	                        _logger.info("[WebRTC-API] onRinging : after pranswer. ", self.callee);
+	                        _logger.info("[WebRTC-API] onRinging : after send pranswer. ", self.callee);
 	                        self.onRinging(self.callee);
 	                    }, 500);
 	                });
 	            } else {
 	                setTimeout(function () {
-	                    _logger.info("[WebRTC-API] onRinging : after pranswer. ", self.callee);
+	                    _logger.info("[WebRTC-API] onRinging : After iniC, cause by: not supported pranswer. ", self.callee);
 	                    self.onRinging(self.callee);
 	                }, 500);
 	                self._ping();
@@ -2391,7 +2425,8 @@
 
 	        //self._onHandShake();
 
-	        self.api.acptC(rt, self._sessId, self._rtcId, prAnswer, null, 1);
+	        //self.api.acptC(rt, self._sessId, self._rtcId, prAnswer, null, 1);
+	        self.api.acptC(rt, self._sessId, self._rtcId, prAnswer);
 
 	        self._ping();
 	    },
@@ -2404,14 +2439,18 @@
 	        function createAndSendAnswer() {
 	            _logger.info("createAndSendAnswer : ...... ");
 
-	            self.webRtc.createAnswer(function (desc) {
+	            self.webRtc.createAnswer(function (answer) {
 	                var rt = new P2PRouteTo({
 	                    //tsxId: self._tsxId,
 	                    to: self.callee,
 	                    rtKey: self._rtKey
 	                });
 
-	                self.api.ansC(rt, self._sessId, self._rtcId, desc, null);
+	                if (WebIM.WebRTC.supportPRAnswer) {
+	                    self.api.ansC(rt, self._sessId, self._rtcId, answer);
+	                } else {
+	                    self.api.acptC(rt, self._sessId, self._rtcId, answer, null, 1);
+	                }
 	            });
 	        }
 
@@ -2458,19 +2497,8 @@
 
 	    _onIceStateChange: function _onIceStateChange(event) {
 	        var self = this;
-
 	        event && _logger.debug("[WebRTC-API] " + self.webRtc.iceConnectionState() + " |||| ice state is " + event.target.iceConnectionState);
-	        if (self.webRtc.iceConnectionState() == 'disconnected') {
-	            self.webRtc.onError({ message: 'TARGET_OFFLINE' });
-	        }
-
-	        if (self.webRtc.iceConnectionState() == 'connected') {
-	            //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
-	            //所以去掉在此处的振铃
-	            // setTimeout(function () {
-	            //     self.onRinging(self.callee);
-	            // }, 500);
-	        }
+	        self.api.onIceConnectionStateChange(self.webRtc.iceConnectionState());
 	    },
 
 	    _onIceCandidate: function _onIceCandidate(event) {

@@ -14,13 +14,13 @@ WebIM.config = {
     /*
      * Backend REST API URL
      */
-    apiURL:  '//a1.easemob.com',
+    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
     /*
      * Application AppKey
      */
     appkey: 'easemob-demo#chatdemoui',
     /*
-     * Whether to use HTTPS
+     * Whether to use wss
      * @parameter {Boolean} true or false
      */
     https: false,
@@ -65,7 +65,7 @@ WebIM.config = {
      */
     isWebRTC: /WebKit/.test(navigator.userAgent) && /^https\:$/.test(window.location.protocol),
     /**
-     * use ip directly,instead of ServerName,avoiding DNS problem.
+     * while http access,use ip directly,instead of ServerName,avoiding DNS problem.
      */
-    isDNS: false
+    isHttpDNS: false
 };
