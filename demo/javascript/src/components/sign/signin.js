@@ -100,26 +100,14 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('open:' + code + " - " + msg);
                 });
         } else {
-            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
-                if (this.validTabs() === true) {
-                    Demo.conn.getHttpDNS(options);
-                }
-                else {
-                    Demo.conn.onError({
-                        type: "One account can't open more than " + this.state.pageLimit + ' pages in one minute on the same browser'
-                    });
-                    return;
-                }
-            } else {
-                if (this.validTabs() === true) {
-                    Demo.conn.open(options);
-                }
-                else {
-                    Demo.conn.onError({
-                        type: "One account can't open more than " + this.state.pageLimit + ' pages in one minute on the same browser'
-                    });
-                    return;
-                }
+            if (this.validTabs() === true) {
+                Demo.conn.open(options);
+            }
+            else {
+                Demo.conn.onError({
+                    type: "One account can't open more than " + this.state.pageLimit + ' pages in one minute on the same browser'
+                });
+                return;
             }
         }
     },

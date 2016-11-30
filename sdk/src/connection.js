@@ -744,8 +744,8 @@ connection.prototype.getHostsByTag = function (data, tagName) {
     return hosts[0].getElementsByTagName('host');
 
 };
-connection.prototype.openFromHttpDNS = function (options) {
-    if (this.restIndex >= this.restTotal) {
+connection.prototype.getRestFromHttpDNS = function (options, type) {
+    if (this.restIndex > this.restTotal) {
         console.log('rest hosts all tried,quit');
         return;
     }
@@ -764,10 +764,19 @@ connection.prototype.openFromHttpDNS = function (options) {
         WebIM.config.apiURL = url;
         options.apiUrl = url;
     }
-    Demo.conn.open(options);
+
+    if (type == 'login') {
+        this.login(options);
+    } else {
+        this.signup(options);
+    }
 };
 
-connection.prototype.getHttpDNS = function (options) {
+connection.prototype.getHttpDNS = function (options, type) {
+    if (this.restHosts) {
+        this.getRestFromHttpDNS(options, type);
+        return;
+    }
     var self = this;
     var suc = function (data, xhr) {
         data = new DOMParser().parseFromString(data, "text/xml").documentElement;
@@ -780,24 +789,23 @@ connection.prototype.getHttpDNS = function (options) {
         self.restHosts = restHosts;
         self.restTotal = restHosts.length;
 
-
         //get xmpp ips
-        var xmppHosts = self.getHostsByTag(data, 'webim');
+        var xmppHosts = self.getHostsByTag(data, 'xmpp');
         if (!xmppHosts) {
-            console.log('webim hosts error3');
+            console.log('xmpp hosts error3');
             return;
         }
         self.xmppHosts = xmppHosts;
         self.xmppTotal = xmppHosts.length;
 
-        self.openFromHttpDNS(options);
+        self.getRestFromHttpDNS(options, type);
     };
     var error = function (res, xhr, msg) {
 
         console.log('getHttpDNS error', res, msg);
         self.dnsIndex++;
         if (self.dnsIndex < self.dnsTotal) {
-            self.getHttpDNS(options);
+            self.getHttpDNS(options, type);
         }
 
     };
@@ -815,7 +823,71 @@ connection.prototype.getHttpDNS = function (options) {
     _utils.ajax(options2);
 };
 
+connection.prototype.signup = function (options) {
+    var self = this;
+    var orgName = options.orgName || '';
+    var appName = options.appName || '';
+    var appKey = options.appKey || '';
+    var suc = options.success || EMPTYFN;
+    var err = options.error || EMPTYFN;
+
+    if (!orgName && !appName && appKey) {
+        var devInfos = appKey.split('#');
+        if (devInfos.length === 2) {
+            orgName = devInfos[0];
+            appName = devInfos[1];
+        }
+    }
+    if (!orgName && !appName) {
+        err({
+            type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+        });
+        return;
+    }
+
+    var error = function (res, xhr, msg) {
+        if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+            if ((self.restIndex + 1) < self.restTotal) {
+                self.restIndex++;
+                self.getRestFromHttpDNS(options, 'signup');
+                return;
+            }
+        }
+        self.clear();
+        err(res);
+    };
+    var https = options.https || https;
+    var apiUrl = options.apiUrl;
+    var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
+
+    var userjson = {
+        username: options.username,
+        password: options.password,
+        nickname: options.nickname || ''
+    };
+
+    var userinfo = _utils.stringify(userjson);
+    var options2 = {
+        url: restUrl,
+        dataType: 'json',
+        data: userinfo,
+        success: suc,
+        error: error
+    };
+    _utils.ajax(options2);
+};
+
+
 connection.prototype.open = function (options) {
+    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+        this.dnsIndex = 0;
+        this.getHttpDNS(options, 'login');
+    } else {
+        this.login(options);
+    }
+};
+
+connection.prototype.login = function (options) {
     var pass = _validCheck(options, this);
 
     if (!pass) {
@@ -824,7 +896,7 @@ connection.prototype.open = function (options) {
 
     var conn = this;
 
-    if (conn.isOpening() || conn.isOpened()) {
+    if (conn.isOpened()) {
         return;
     }
 
@@ -845,9 +917,9 @@ connection.prototype.open = function (options) {
         };
         var error = function (res, xhr, msg) {
             if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
-                conn.restIndex++;
-                if (conn.restIndex < conn.restTotal) {
-                    conn.openFromHttpDNS(options);
+                if ((conn.restIndex + 1) < conn.restTotal) {
+                    conn.restIndex++;
+                    conn.getRestFromHttpDNS(options, 'login');
                     return;
                 }
             }
