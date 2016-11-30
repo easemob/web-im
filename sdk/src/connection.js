@@ -701,7 +701,7 @@ connection.prototype.cacheReceiptsMessage = function (options) {
 };
 
 connection.prototype.getStrophe = function () {
-    if (location.protocol == 'http:' && WebIM.config.isHttpDNS) {
+    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
         //TODO: try this.xmppTotal times on fail
         var url = '';
         var host = this.xmppHosts[this.xmppIndex];
@@ -755,9 +755,9 @@ connection.prototype.openFromHttpDNS = function (options) {
     var ip = _utils.getXmlFirstChild(host, 'ip');
     if (ip) {
         var port = _utils.getXmlFirstChild(host, 'port');
-        url = '//' + ip.textContent + ':' + port.textContent;
+        url = (location.protocol === 'https:' ? 'https:' : 'http:') + '//' + ip.textContent + ':' + port.textContent;
     } else {
-        url = '//' + domain.textContent;
+        url = (location.protocol === 'https:' ? 'https:' : 'http:') + '//' + domain.textContent;
     }
 
     if (url != '') {
@@ -784,7 +784,7 @@ connection.prototype.getHttpDNS = function (options) {
         //get xmpp ips
         var xmppHosts = self.getHostsByTag(data, 'webim');
         if (!xmppHosts) {
-            console.log('xmpp hosts error3');
+            console.log('webim hosts error3');
             return;
         }
         self.xmppHosts = xmppHosts;
@@ -808,8 +808,7 @@ connection.prototype.getHttpDNS = function (options) {
 
         // url: 'http://www.easemob.com/easemob/server.xml',
         // dataType: 'xml',
-        data: {app_key: encodeURIComponent("easemob-demo#sandboxdemo")},
-        // data: {app_key: encodeURIComponent(options.appKey)},
+        data: {app_key: encodeURIComponent(options.appKey)},
         success: suc || _utils.emptyfn,
         error: error || _utils.emptyfn
     };
@@ -845,7 +844,7 @@ connection.prototype.open = function (options) {
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
-            if (location.protocol == 'http:' && WebIM.config.isHttpDNS) {
+            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
                 conn.restIndex++;
                 if (conn.restIndex < conn.restTotal) {
                     conn.openFromHttpDNS(options);

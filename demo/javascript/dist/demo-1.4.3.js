@@ -22699,7 +22699,7 @@
 	                Demo.api.NotifyError('open:' + code + " - " + msg);
 	            });
 	        } else {
-	            if (location.protocol == 'http:' && WebIM.config.isHttpDNS) {
+	            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
 	                if (this.validTabs() === true) {
 	                    Demo.conn.getHttpDNS(options);
 	                } else {

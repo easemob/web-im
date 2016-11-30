@@ -1721,7 +1721,7 @@
 	};
 
 	connection.prototype.getStrophe = function () {
-	    if (location.protocol == 'http:' && WebIM.config.isHttpDNS) {
+	    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
 	        //TODO: try this.xmppTotal times on fail
 	        var url = '';
 	        var host = this.xmppHosts[this.xmppIndex];
@@ -1774,9 +1774,9 @@
 	    var ip = _utils.getXmlFirstChild(host, 'ip');
 	    if (ip) {
 	        var port = _utils.getXmlFirstChild(host, 'port');
-	        url = '//' + ip.textContent + ':' + port.textContent;
+	        url = (location.protocol === 'https:' ? 'https:' : 'http:') + '//' + ip.textContent + ':' + port.textContent;
 	    } else {
-	        url = '//' + domain.textContent;
+	        url = (location.protocol === 'https:' ? 'https:' : 'http:') + '//' + domain.textContent;
 	    }
 
 	    if (url != '') {
@@ -1825,8 +1825,7 @@
 
 	        // url: 'http://www.easemob.com/easemob/server.xml',
 	        // dataType: 'xml',
-	        data: { app_key: encodeURIComponent("easemob-demo#sandboxdemo") },
-	        // data: {app_key: encodeURIComponent(options.appKey)},
+	        data: { app_key: encodeURIComponent(options.appKey) },
 	        success: suc || _utils.emptyfn,
 	        error: error || _utils.emptyfn
 	    };
@@ -1862,7 +1861,7 @@
 	            _login(data, conn);
 	        };
 	        var error = function error(res, xhr, msg) {
-	            if (location.protocol == 'http:' && WebIM.config.isHttpDNS) {
+	            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
 	                conn.restIndex++;
 	                if (conn.restIndex < conn.restTotal) {
 	                    conn.openFromHttpDNS(options);
