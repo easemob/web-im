@@ -80,8 +80,9 @@ var CommonPattern = {
         _logger.debug('_onPing from', fromSid);
     },
 
-    initC: function (mediaStreamConstaints) {
+    initC: function (mediaStreamConstaints, accessSid) {
         var self = this;
+        self.sid = accessSid;
 
         self.createLocalMedia(mediaStreamConstaints);
     },
@@ -108,6 +109,7 @@ var CommonPattern = {
         var self = this;
 
         var rt = new P2PRouteTo({
+            sid: self.sid,
             to: self.callee,
             rtKey: self._rtKey
         });
