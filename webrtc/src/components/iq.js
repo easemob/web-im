@@ -244,7 +244,9 @@ var _RtcHandler = {
         var to = rt.to || _conn.domain;
 
         var sid = rt.sid || self._fromSessionID && self._fromSessionID[to];
-        sid = sid || ((self._fromSessionID || (self._fromSessionID = {}))[to] = _conn.getUniqueId("CONFR_"));
+        //sid = sid || ((self._fromSessionID || (self._fromSessionID = {}))[to] = _conn.getUniqueId("CONFR_"));
+        sid = sid || _conn.getUniqueId("CONFR_");
+        (self._fromSessionID || (self._fromSessionID = {}))[to] = sid;
 
         if (to.indexOf("@") >= 0) {
             if (self._connectedSid == '' && options.data.op == 102) {

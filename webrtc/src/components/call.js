@@ -54,27 +54,27 @@ var _Call = {
             self._onInitC.apply(self, arguments);
         },
 
-            self.api.onIceConnectionStateChange = function () {
-                self.listener.onIceConnectionStateChange.apply(self, arguments);
-            }
+        self.api.onIceConnectionStateChange = function () {
+            self.listener.onIceConnectionStateChange.apply(self, arguments);
+        }
     },
 
-    makeVideoCall: function (callee) {
+    makeVideoCall: function (callee, accessSid) {
 
         var mediaStreamConstaints = {};
         Util.extend(mediaStreamConstaints, this.mediaStreamConstaints);
 
-        this.call(callee, mediaStreamConstaints);
+        this.call(callee, mediaStreamConstaints, accessSid);
     },
 
-    makeVoiceCall: function (callee) {
+    makeVoiceCall: function (callee, accessSid) {
         var self = this;
 
         var mediaStreamConstaints = {};
         Util.extend(mediaStreamConstaints, self.mediaStreamConstaints);
         self.mediaStreamConstaints.video = false;
 
-        self.call(callee, mediaStreamConstaints);
+        self.call(callee, mediaStreamConstaints, accessSid);
     },
 
     acceptCall: function () {
@@ -88,12 +88,13 @@ var _Call = {
         self.pattern.termCall();
     },
 
-    call: function (callee, mediaStreamConstaints) {
+    call: function (callee, mediaStreamConstaints, accessSid) {
         var self = this;
         this.callee = this.api.jid(callee);
 
         var rt = new RouteTo({
             rtKey: "",
+            sid: accessSid,
 
             success: function (result) {
                 _logger.debug("iq to server success", result);
@@ -115,7 +116,7 @@ var _Call = {
                     return;
                 }
                 self._onGotServerP2PConfig(from, rtcOptions);
-                self.pattern.initC(self.mediaStreamConstaints);
+                self.pattern.initC(self.mediaStreamConstaints, accessSid);
             });
     },
 
