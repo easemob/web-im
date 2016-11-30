@@ -62,14 +62,14 @@ var Channel = React.createClass({
 
 
     componentWillReceiveProps: function (nextProps) {
-        console.log('componentWillReceiveProps', nextProps);
+        // console.log('componentWillReceiveProps', nextProps);
         this.setStream(nextProps);
     },
 
 
     componentDidMount: function () {
-        console.log('did mount', this.props);
-        new Drag(this.refs.rtc);
+        // console.log('did mount', this.props);
+        new Drag(this.refs.onAcceptCallrtc);
         this.resetButtonPosition();
 
         var localVideo = this.refs.localVideo;
@@ -217,7 +217,7 @@ module.exports = function (dom) {
     var me = this;
     return {
         setLocal: function (stream) {
-            console.log('channel setLocal', Demo.user, Demo.call.caller, Demo.call.callee);
+            // console.log('channel setLocal', 'user=', Demo.user, 'caller=', Demo.call.caller, 'callee=', Demo.call.callee);
             this.localStream = stream;
             var title = '';
             var hideAccept = false;
@@ -235,7 +235,7 @@ module.exports = function (dom) {
             );
         },
         setRemote: function (stream) {
-            console.log('channel setRemote', Demo.user, Demo.call.caller, Demo.call.callee);
+            // console.log('channel setRemote', 'user=', Demo.user, 'caller=', Demo.call.caller, 'callee=', Demo.call.callee);
             this.remoteStream = stream;
             var title = '';
             var localFullRemoteCorner = false;

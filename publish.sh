@@ -12,13 +12,13 @@ cp -r demo/javascript/src publish/demo/javascript/
 mkdir publish/sdk
 cp -r sdk/dist publish/sdk
 cp -r sdk/src publish/sdk
-mkdir publish/webrtc
-cp -r webrtc/dist publish/webrtc
-cp -r webrtc/src publish/webrtc
+cp sdk/*.* publish/sdk
+cp -r webrtc  publish
 cp favicon.ico publish/
 cp index.html publish/
 cp CHANGELOG.md publish/
 cp package.json publish/
+mv publish/demo/javascript/dist/webim.config.js.default publish/demo/javascript/dist/webim.config.js
 cp webpack.config.js publish/
 cp README.md publish/
 cp -r build publish/

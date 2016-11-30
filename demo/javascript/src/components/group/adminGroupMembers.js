@@ -141,7 +141,8 @@ var AdminGroupMembers = React.createClass({
             if (value_add.length > 0) {
                 Demo.conn.addGroupMembers({
                     list: value_add,
-                    roomId: this.props.roomId
+                    roomId: this.props.roomId,
+                    reason: Demo.user + " invite you to join group '" + this.props.name + "'"
                 })
             }
             if (value_del.length > 0) {
@@ -177,9 +178,9 @@ var AdminGroupMembers = React.createClass({
 });
 
 module.exports = {
-    show: function (roomId, settings) {
+    show: function (name, roomId, settings) {
         ReactDOM.render(
-            <AdminGroupMembers onClose={this.close} roomId={roomId} settings={settings}/>,
+            <AdminGroupMembers onClose={this.close} name={name} roomId={roomId} settings={settings}/>,
             dom
         );
     },

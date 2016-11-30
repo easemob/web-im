@@ -122,16 +122,26 @@ var CommonPattern = {
     _onAcptC: function (from, options) {
         var self = this;
 
-        _logger.info("[WebRTC-API] _onAcptC : recv pranswer. ");
-
-        if (options.sdp || options.cands) {
-            // options.sdp && (options.sdp.type = "pranswer");
-            options.sdp && self.webRtc.setRemoteDescription(options.sdp);
-            options.cands && self._onTcklC(from, options);
-
-            //self._onHandShake(from, options);
-
+        if (options.ans && options.ans == 1) {
+            _logger.info("[WebRTC-API] _onAcptC : 104, ans = 1, it is a answer. will onAcceptCall");
             self.onAcceptCall(from, options);
+            self._onAnsC(from, options);
+        }
+        if (!WebIM.WebRTC.supportPRAnswer) {
+            _logger.info("[WebRTC-API] _onAcptC : not supported pranswer. drop it. will onAcceptCall");
+            self.onAcceptCall(from, options);
+        } else {
+            _logger.info("[WebRTC-API] _onAcptC : recv pranswer. ");
+
+            if (options.sdp || options.cands) {
+                // options.sdp && (options.sdp.type = "pranswer");
+                options.sdp && self.webRtc.setRemoteDescription(options.sdp);
+                options.cands && self._onTcklC(from, options);
+
+                //self._onHandShake(from, options);
+
+                self.onAcceptCall(from, options);
+            }
         }
     },
 
@@ -145,6 +155,7 @@ var CommonPattern = {
         _logger.info("[WebRTC-API] _onAnsC : recv answer. ");
 
         options.sdp && self.webRtc.setRemoteDescription(options.sdp);
+        options.cands && self._onTcklC(from, options);
     },
 
 
@@ -168,24 +179,24 @@ var CommonPattern = {
         options.sdp && (self.webRtc.setRemoteDescription(options.sdp).then(function () {
             self._onHandShake(from, options);
 
-            var chromeVersion = navigator.userAgent.split("Chrome/")[1].split(".")[0];
+
             /*
              * chrome 版本 大于 50时，可以使用pranswer。
              * 小于50 不支持pranswer，此时处理逻辑是，直接进入振铃状态
              *
              */
-            if (chromeVersion >= "50") {
+            if (WebIM.WebRTC.supportPRAnswer) {
                 self.webRtc.createPRAnswer(function (prAnswer) {
                     self._onGotWebRtcPRAnswer(prAnswer);
 
                     setTimeout(function () { //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
-                        _logger.info("[WebRTC-API] onRinging : after pranswer. ", self.callee);
+                        _logger.info("[WebRTC-API] onRinging : after send pranswer. ", self.callee);
                         self.onRinging(self.callee);
                     }, 500);
                 });
             } else {
                 setTimeout(function () {
-                    _logger.info("[WebRTC-API] onRinging : after pranswer. ", self.callee);
+                    _logger.info("[WebRTC-API] onRinging : After iniC, cause by: not supported pranswer. ", self.callee);
                     self.onRinging(self.callee);
                 }, 500)
                 self._ping();
@@ -206,7 +217,8 @@ var CommonPattern = {
 
         //self._onHandShake();
 
-        self.api.acptC(rt, self._sessId, self._rtcId, prAnswer, null, 1);
+        //self.api.acptC(rt, self._sessId, self._rtcId, prAnswer, null, 1);
+        self.api.acptC(rt, self._sessId, self._rtcId, prAnswer);
 
         self._ping();
     },
@@ -220,14 +232,18 @@ var CommonPattern = {
         function createAndSendAnswer() {
             _logger.info("createAndSendAnswer : ...... ");
 
-            self.webRtc.createAnswer(function (desc) {
+            self.webRtc.createAnswer(function (answer) {
                 var rt = new P2PRouteTo({
                     //tsxId: self._tsxId,
                     to: self.callee,
                     rtKey: self._rtKey
                 });
 
-                self.api.ansC(rt, self._sessId, self._rtcId, desc, null);
+                if (WebIM.WebRTC.supportPRAnswer) {
+                    self.api.ansC(rt, self._sessId, self._rtcId, answer);
+                } else {
+                    self.api.acptC(rt, self._sessId, self._rtcId, answer, null, 1);
+                }
             });
         }
 
@@ -274,19 +290,8 @@ var CommonPattern = {
 
     _onIceStateChange: function (event) {
         var self = this;
-
         event && _logger.debug("[WebRTC-API] " + self.webRtc.iceConnectionState() + " |||| ice state is " + event.target.iceConnectionState);
-        if (self.webRtc.iceConnectionState() == 'disconnected') {
-            self.webRtc.onError({message: 'TARGET_OFFLINE'});
-        }
-
-        if (self.webRtc.iceConnectionState() == 'connected') {
-            //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
-            //所以去掉在此处的振铃
-            // setTimeout(function () {
-            //     self.onRinging(self.callee);
-            // }, 500);
-        }
+        self.api.onIceConnectionStateChange(self.webRtc.iceConnectionState());
     },
 
     _onIceCandidate: function (event) {

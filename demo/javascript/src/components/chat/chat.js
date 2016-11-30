@@ -30,7 +30,6 @@ module.exports = React.createClass({
                     chat: true,
                     loadingStatus: 'hide'
                 });
-
                 // blacklist and it's callback call updateRoster
                 me.getBlacklist();
                 me.getGroup();
@@ -106,10 +105,14 @@ module.exports = React.createClass({
                 // log(WebIM.utils.ts(), 'online');
             },
             onOffline: function () {
-                // log(WebIM.utils.ts(), 'offline');
                 if (WebIM.config.isWindowSDK) {
                     Demo.api.NotifyError("Network connection is broken. reconnecting...");
                 } else {
+                    //webRTC:断线处理
+                    if (WebIM.config.isWebRTC) {
+                        var closeButton = document.getElementById('webrtc_close');
+                        closeButton && closeButton.click();
+                    }
                     Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_OFFLINE);
                 }
             },
@@ -124,6 +127,7 @@ module.exports = React.createClass({
             onError: function (message) {
                 /*if ( msg && msg.reconnect ) {}*/
                 // log(WebIM.utils.ts(), 'onError', message);
+                // console.log('onError', message);
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -227,6 +231,8 @@ module.exports = React.createClass({
         }
     },
 
+    rtcTimeoutID: null,
+
     initWebRTC: function () {
 
         if (Demo.call) {
@@ -245,37 +251,64 @@ module.exports = React.createClass({
 
             listener: {
                 onAcceptCall: function (from, options) {
-                    console.log('onAcceptCall', from, options);
+                    // console.log('onAcceptCall', from, options);
                 },
                 onGotRemoteStream: function (stream) {
-                    console.log('onGotRemoteStream');
+                    // console.log('onGotRemoteStream');
                     me.channel.setRemote(stream);
                 },
                 onGotLocalStream: function (stream) {
-                    console.log('onGotLocalStream');
+                    // console.log('onGotLocalStream');
                     me.channel.setLocal(stream);
                 },
                 onRinging: function (caller) {
-                    console.log('onRinging', caller);
+                    // console.log('onRinging', caller);
                 },
                 onTermCall: function (reason) {
                     if (reason && reason == 'busy') {
                         Demo.api.NotifyError('Target is busy. Try it later.');
                     }
+                    Demo.call.caller = '';
+                    Demo.call.callee = '';
                     me.channel.close();
+                },
+                onIceConnectionStateChange: function (iceState) {
+                    // checking
+                    // connected completed
+                    // disconnected failed
+                    // closed
+                    // console.log('onIceConnectionStateChange', iceState);
+                    if (iceState == "disconnected") {
+                        if (!me.rtcTimeoutID) {
+                            me.rtcTimeoutID = setTimeout(function () {
+                                Demo.api.NotifyError('Target is offline');
+                                var closeButton = document.getElementById('webrtc_close');
+                                closeButton && closeButton.click();
+                            }, 10000);
+                        }
+                    } else if (iceState == "connected") {
+                        if (me.rtcTimeoutID) {
+                            clearTimeout(me.rtcTimeoutID);
+                            me.rtcTimeoutID = null;
+                        }
+                    }
                 },
                 onError: function (e) {
                     if (e && e.message) {
+                        var close = false;
                         switch (e.message) {
                             case 'CALLLING_EACH_OTHER_AT_THE_SAME_TIME':
                                 e.message = "Target is calling. Please try again later.";
+                                close = true;
                                 break;
                             case 'TARGET_OFFLINE':
                                 e.message = "Target is offline.";
                                 break;
                         }
-                        var closeButton = document.getElementById('webrtc_close');
-                        closeButton && closeButton.click();
+                        if (close) {
+                            var closeButton = document.getElementById('webrtc_close');
+                            closeButton && closeButton.click();
+                        }
                     }
                     Demo.api.NotifyError(e && e.message ? e.message : 'An error occured when calling webrtc');
                 }

@@ -1,19 +1,21 @@
 #版本更新说明:
 
-###WebIM v1.4.0 @ 2016-11-25
-新功能
+##v1.4.3 @ 2016-11-30
+###新功能
 
-- [demo] 好友之间可以通过webrtc进行视频聊天(仅支持 https + Webkit浏览器)
+- GNU风格的版本号命名格式: 主版本号.子版本号.修正版本号
+- [demo] 好友之间可以通过webrtc进行视频聊(仅支持 https + Webkit浏览器)
 - [demo] 支持同一账号最多8个标签页登录 `isMultiLoginSessions:true`
-- [demo] 加入ip策略功能,防止DNS劫持  
+- [demo] http访问加入ip策略功能,防止DNS劫持  `isHttpDNS:true`
 
-* Bug修复
-    1. [sdk] 解散群组不更新UI
-    2. [sdk] 修复了发送cmd消息成功后无法调用回调函数的bug
+###Bug修复
+
+- [sdk] 解散群组不更新UI
+- [sdk] 修复了发送cmd消息成功后无法调用回调函数的bug
 
 
 
-###WebIM v1.1.3 @ 2016-11-01
+##v1.1.3 @ 2016-11-01
 
 * [demo] 支持 Windows SDK. <http://www.easemob.com/download/im>
 * [demo] 新增黑名单功能.
@@ -32,3 +34,40 @@
     4. [sdk] 修复了存在大量离线消息时收发消息延迟的bug。客户端将发送ack应答消息的速度限制在5个/秒，不影响其他正常消息。
     5. [sdk] 将心跳消息从 空body的json message 切换为 ping/pong iq。前者会作为离线消息被XMPP Server缓存。
    
+   
+---
+#ChangeLog:
+
+##v1.4.3 @ 2016-11-30
+
+###Feature
+
+- GNU version number: `Major_Version_Number.Minor_Version_Number.Revision_Number`
+- [demo] friends can video chat to each other (support https + Webkit only)
+- [demo] limite of a single user the number of opened tabs in the same browser `isMultiLoginSessions:true`
+- [demo] while http access,use ip directly instead of ServerName,avoid DNS hijacking.  `isHttpDNS:true`
+
+###BugFix
+
+- [sdk] does not update catact list UI after destory group
+- [sdk] does not call the callback function after send out the cmd message
+
+##v1.1.3 @ 2016-11-01
+
+* [demo] support Windows SDK. <http://www.easemob.com/download/im>
+* [demo] add blacklist feature.
+* [demo] paging getChatrooms, add 2 params:pagenum and pagesize. 
+* [demo] easy debug, webpack support development and production mode。
+    * `npm run dev`  debug mode, support hot reload, start a webserver and listen at http://localhost:3000.
+    * `npm run prod` product mode, faster than before.
+* [demo] groups add features: createGroup,changeGroupSubject,changeGroupDesc,adminGroupMembers,joinPublicGroup.
+* [sdk]  upgrade strophe from v1.2.2 to v1.2.8, and use strophe-1.2.8.min.js in the product mode, use strophe.js in the debug mode.
+* [sdk]  auto reconnect while configured `autoReconnectNumMax` and `autoReconnectInterval` in webim.config.js.
+
+* Bug fixes:
+    1. [demo] Fixed a bug of HTML5 elements are not supported in IE by add `babel-core/browser-polyfill.js`.
+    2. [demo] Fixed a bug of friends contact is not clickable while there are unread messages.
+    3. [sdk] Fixed a bug of strophe.js v1.2.8 using BOSH in IE9.  <https://github.com/strophe/strophejs/issues/213>
+    4. [sdk] Fixed a bug of send/receive message delay while there was a lot of offline messages.Client should limit the speed of sending ack messages  up to 5/s, the other nomal send/recv will not be influenced.
+    5. [sdk] switch heartBeat from empty body json message to ping/pong iq, the former will be cached as offline message by XMPP Server.
+

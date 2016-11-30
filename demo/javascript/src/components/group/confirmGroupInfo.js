@@ -21,7 +21,13 @@ var ConfirmGroupInfo = React.createClass({
     onCancel: function (e) {
         // throw request
         // Demo.conn.rejectInviteFromGroup();
-        this.close();
+
+        // Demo.conn.rejectInviteFromGroup({
+        //     reason: 'reject invite',
+        //     roomId: this.props.groupName,
+        //     list: [this.props.from]
+        // });
+        // this.close();
     },
 
     onSubmit: function () {

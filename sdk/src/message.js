@@ -116,7 +116,9 @@
             flashUpload: opt.flashUpload,
             width: opt.width,
             height: opt.height,
-            body: opt.body
+            body: opt.body,
+            uploadError: opt.uploadError,
+            uploadComplete: opt.uploadComplete
         };
 
         !opt.roomType && delete this.body.roomType;
@@ -207,7 +209,7 @@
         }
 
         this.msg = message;
-    }
+    };
 
     _Message.prototype.send = function (conn) {
         var me = this;
@@ -244,7 +246,7 @@
                 }
             }, 60000);
             conn.sendCommand(dom.tree(), message.id);
-        }
+        };
 
 
         if (me.msg.file) {
