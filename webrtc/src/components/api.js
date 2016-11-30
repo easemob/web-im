@@ -97,9 +97,12 @@ var _clazz = {
     },
 
     jid: function (shortUserName) {
-        if (shortUserName.indexOf(this.imConnection.context.appKey) >= 0) {
+        if(/^.+#.+_.+@.+$/g.test(shortUserName)){
             return shortUserName;
         }
+        // if (shortUserName.indexOf(this.imConnection.context.appKey) >= 0) {
+        //     return shortUserName;
+        // }
         return this.imConnection.context.appKey + "_" + shortUserName + "@" + this.imConnection.domain;
     },
 
