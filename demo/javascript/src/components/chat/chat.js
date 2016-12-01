@@ -593,7 +593,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = data.uri + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.picture.value = null;
             },
             success: function (id) {
@@ -646,7 +646,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = data.uri + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.audio.value = null;
             },
             success: function (id, sid) {
@@ -765,7 +765,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = data.uri + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
             },
             success: function (id) {

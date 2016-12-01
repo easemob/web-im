@@ -1360,7 +1360,8 @@ connection.prototype.handleMessage = function (msginfo) {
                         , type: chattype
                         , from: from
                         , to: too
-                        , url: msgBody.url
+                        ,
+                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , thumb: msgBody.thumb
@@ -1385,7 +1386,8 @@ connection.prototype.handleMessage = function (msginfo) {
                         , type: chattype
                         , from: from
                         , to: too
-                        , url: msgBody.url
+                        ,
+                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , length: msgBody.length || ''
@@ -1407,7 +1409,8 @@ connection.prototype.handleMessage = function (msginfo) {
                         , type: chattype
                         , from: from
                         , to: too
-                        , url: msgBody.url
+                        ,
+                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , file_length: msgBody.file_length
@@ -1445,7 +1448,8 @@ connection.prototype.handleMessage = function (msginfo) {
                         , type: chattype
                         , from: from
                         , to: too
-                        , url: msgBody.url
+                        ,
+                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , file_length: msgBody.file_length
