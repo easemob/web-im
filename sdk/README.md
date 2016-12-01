@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.4.3
+## v1.4.4
 
 ###Feature
 
@@ -23,6 +23,23 @@
 
 npm install easemob-webim --save
 
+
+```
+require('easemob-websdk');
+```
+
+
+```
+Demo.conn = new WebIM.connection({
+    isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
+    https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
+    url: WebIM.config.xmppURL,
+    isAutoLogin: false,
+    heartBeatWait: WebIM.config.heartBeatWait,
+    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+    autoReconnectInterval: WebIM.config.autoReconnectInterval
+});
+```
 
 # How to release
 
