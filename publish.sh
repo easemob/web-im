@@ -1,5 +1,18 @@
 #! /bin/bash
+# todo
+#get version from sdk/package.json
+#replace follows:
+#sdk/README.md
+#npm run build
+#package.json
+#CHANGELOG.md
+#index.html
+#webpack.config.js
+#build/webpack.dev.js
+#build/webpack.prod.js
 
+
+echo 'webpack begin...'
 webpack
 echo 'webpack done!'
 

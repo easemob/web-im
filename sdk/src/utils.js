@@ -219,46 +219,13 @@
             }
         },
         registerUser: function (options) {
-            var orgName = options.orgName || '';
-            var appName = options.appName || '';
-            var appKey = options.appKey || '';
-            var suc = options.success || EMPTYFN;
-            var err = options.error || EMPTYFN;
-
-            if (!orgName && !appName && appKey) {
-                var devInfos = appKey.split('#');
-                if (devInfos.length === 2) {
-                    orgName = devInfos[0];
-                    appName = devInfos[1];
-                }
-            }
-            if (!orgName && !appName) {
-                err({
-                    type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
-                });
-                return;
+            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+                Demo.conn.dnsIndex = 0;
+                Demo.conn.getHttpDNS(options, 'signup');
+            } else {
+                Demo.conn.signup(options);
             }
 
-
-            var https = options.https || https;
-            var apiUrl = options.apiUrl;
-            var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
-
-            var userjson = {
-                username: options.username,
-                password: options.password,
-                nickname: options.nickname || ''
-            };
-
-            var userinfo = utils.stringify(userjson);
-            var options = {
-                url: restUrl,
-                dataType: 'json',
-                data: userinfo,
-                success: suc,
-                error: err
-            };
-            return utils.ajax(options);
         },
         login: function (options) {
             var options = options || {};
