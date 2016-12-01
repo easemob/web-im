@@ -6,7 +6,7 @@ node_modules
 publish/*
 npm-debug.log
 web-im
-web-im.zip
+web-im-*.zip
 demo/javascript/dist/demo-*.js
 sdk/dist/websdk-*.js
 sdk/dist/websdk-*.js.map
