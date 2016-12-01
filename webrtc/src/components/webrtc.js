@@ -304,9 +304,15 @@ var _WebRTC = {
 
             iceServerConfig.rtcpMuxPolicy = "require";
             iceServerConfig.bundlePolicy = "max-bundle";
+
+            //iceServerConfig.iceTransportPolicy = 'relay';
+            if(iceServerConfig.relayOnly){
+                iceServerConfig.iceTransportPolicy = 'relay';
+            }
         } else {
             iceServerConfig = null;
         }
+        _logger.debug('[WebRTC-API] RtcPeerConnection config:', iceServerConfig);
 
         self.startTime = window.performance.now();
 
