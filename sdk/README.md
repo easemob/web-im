@@ -17,3 +17,15 @@
 
 * add browser version support umd
 * remove strophe from sdk because it't too big for webpack or other compiler
+
+
+# How to install
+
+npm install easemob-webim --save
+
+
+# How to release
+
+npm install
+
+npm run build
