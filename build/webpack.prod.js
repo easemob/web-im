@@ -2,9 +2,9 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: {
-        './sdk/dist/websdk-1.4.4': ['./sdk/index'],
-        './demo/javascript/dist/demo-1.4.4': ['./demo/javascript/src/entry'],
-        './webrtc/dist/webrtc-1.4.4': ['./webrtc/src/entry']
+        './sdk/dist/websdk-1.4.5': ['./sdk/index'],
+        './demo/javascript/dist/demo-1.4.5': ['./demo/javascript/src/entry'],
+        './webrtc/dist/webrtc-1.4.5': ['./webrtc/src/entry']
     },
     output: {
         path: './',

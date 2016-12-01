@@ -18,12 +18,14 @@ echo 'webpack begin...'
 webpack
 echo 'webpack done!'
 
+rm -rf web-im
 rm -f web-im-*.zip
 rm -rf publish
 mkdir -p publish/demo/javascript
 cp -r demo/images publish/demo
 cp -r demo/stylesheet publish/demo
 cp -r demo/javascript/dist publish/demo/javascript/
+rm publish/demo/javascript/dist/debug.js
 cp -r demo/javascript/src publish/demo/javascript/
 mkdir publish/sdk
 cp -r sdk/dist publish/sdk

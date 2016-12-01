@@ -1,13 +1,28 @@
 #版本更新说明:
 
-##v1.4.4 @ 2016-12-01
+##v1.4.5 @ 2016-12-01
 ###新功能
 
-- GNU风格的版本号命名格式: 主版本号.子版本号.修正版本号
+- GNU风格的版本号命名格式: 主版本号.子版本号.修正版本号  (新版本规则的1.4.5 = 旧版本规则的1.1.4.5)
 - [demo] 好友之间可以通过webrtc进行视频聊(仅支持 https + Webkit浏览器)
 - [demo] 支持同一账号最多8个标签页登录 `isMultiLoginSessions:true`
 - [demo] http访问加入ip策略功能,防止DNS劫持  `isHttpDNS:true`
+- [sdk]  新增 cdn 和npm package 两种安装引用方式
+    - 引用 cdn 文件
+    ```
+    <script src='http://downloads.easemob.com/downloads/cdn/websdk-1.4.5.js'></script>
+    或者
+    <script src='http://downloads.easemob.com/downloads/cdn/websdk-1.4.5.min.js'></script>
+    ```
+    - npm package 安装和引用
+    ```
+    先安装npm package
+    npm install easemob-websdk --save
+    
+    然后在js文件中引用
+    require('easemob-websdk'); 
 
+    ```
 ###Bug修复
 
 - [sdk] 解散群组不更新UI
@@ -38,7 +53,7 @@
 ---
 #ChangeLog:
 
-##v1.4.4 @ 2016-12-01
+##v1.4.5 @ 2016-12-01
 
 ###Feature
 

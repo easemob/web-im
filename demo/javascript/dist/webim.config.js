@@ -44,7 +44,7 @@ WebIM.config = {
      * isSandBox=false: xmppURL: 'im-api.easemob.com',          apiURL: '//a1.easemob.com',
      * @parameter {Boolean} true or false
      */
-    isSandBox: false,
+    isSandBox: true,
     /**
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
@@ -67,5 +67,5 @@ WebIM.config = {
     /**
      * while http access,use ip directly,instead of ServerName,avoiding DNS problem.
      */
-    isHttpDNS: true
+    isHttpDNS: false
 };
