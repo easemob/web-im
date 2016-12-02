@@ -7,20 +7,50 @@
 - [demo] 好友之间可以通过webrtc进行视频聊(仅支持 https + Webkit浏览器)
 - [demo] 支持同一账号最多8个标签页登录 `isMultiLoginSessions:true`
 - [demo] http访问加入ip策略功能,防止DNS劫持  `isHttpDNS:true`
-- [sdk]  新增 cdn 和npm package 两种安装引用方式
-    - 引用 cdn 文件
+- [sdk]  新增两种安装引用方式
+    -  添加 `<script>` 标签
+    
     ```
     <script src='http://downloads.easemob.com/downloads/cdn/websdk-1.4.5.js'></script>
-    或者
+    or
     <script src='http://downloads.easemob.com/downloads/cdn/websdk-1.4.5.min.js'></script>
     ```
-    - npm package 安装和引用
-    ```
-    先安装npm package
-    npm install easemob-websdk --save
+    通过WebIM 命名空间访问websdk:
     
-    然后在js文件中引用
+    ```
+	 Demo.conn = new WebIM.connection({
+	    isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
+	    https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
+	    url: WebIM.config.xmppURL,
+	    isAutoLogin: false,
+	    heartBeatWait: WebIM.config.heartBeatWait,
+	    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+	    autoReconnectInterval: WebIM.config.autoReconnectInterval
+	});
+	```
+	
+    - NPM 
+    
+    websdk 已经发布到 [NPM](https://www.npmjs.com/package/easemob-websdk):
+    
+    ```
+    npm install easemob-websdk --save
+    ```
+    先require,再访问WebIM:
+    
+    ```
     require('easemob-websdk'); 
+    //... blablabla
+    Demo.conn = new WebIM.connection({
+	    isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
+	    https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
+	    url: WebIM.config.xmppURL,
+	    isAutoLogin: false,
+	    heartBeatWait: WebIM.config.heartBeatWait,
+	    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+	    autoReconnectInterval: WebIM.config.autoReconnectInterval
+	});
+
 
     ```
 ###Bug修复
@@ -57,11 +87,56 @@
 
 ###Feature
 
-- GNU version number: `Major_Version_Number.Minor_Version_Number.Revision_Number`
+- GNU version number: `Major_Version_Number.Minor_Version_Number.Revision_Number` (new v1.4.5 = old v1.1.4.5)
 - [demo] friends can video chat to each other (support https + Webkit only)
 - [demo] limite of a single user the number of opened tabs in the same browser `isMultiLoginSessions:true`
 - [demo] while http access,use ip directly instead of ServerName,avoid DNS hijacking.  `isHttpDNS:true`
+- [sdk]  add tow way to load websdk:
+    -  `<script>` tag
+    
+    ```
+    <script src='http://downloads.easemob.com/downloads/cdn/websdk-1.4.5.js'></script>
+    or
+    <script src='http://downloads.easemob.com/downloads/cdn/websdk-1.4.5.min.js'></script>
+    ```
+    All classes can then be accessed via the WebIM namespace:
+    
+    ```
+	 Demo.conn = new WebIM.connection({
+	    isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
+	    https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
+	    url: WebIM.config.xmppURL,
+	    isAutoLogin: false,
+	    heartBeatWait: WebIM.config.heartBeatWait,
+	    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+	    autoReconnectInterval: WebIM.config.autoReconnectInterval
+	});
+	```
+	
+    - NPM 
+    
+    websdk is also available on [NPM](https://www.npmjs.com/package/easemob-websdk):
+    
+    ```
+    npm install easemob-websdk --save
+    ```
+    All classes can then be accessed by requiring the module:
+    
+    ```
+    require('easemob-websdk'); 
+    //... blablabla
+    Demo.conn = new WebIM.connection({
+	    isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
+	    https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
+	    url: WebIM.config.xmppURL,
+	    isAutoLogin: false,
+	    heartBeatWait: WebIM.config.heartBeatWait,
+	    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+	    autoReconnectInterval: WebIM.config.autoReconnectInterval
+	});
 
+
+    ```
 ###BugFix
 
 - [sdk] does not update catact list UI after destory group
