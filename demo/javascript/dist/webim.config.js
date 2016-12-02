@@ -44,7 +44,7 @@ WebIM.config = {
      * isSandBox=false: xmppURL: 'im-api.easemob.com',          apiURL: '//a1.easemob.com',
      * @parameter {Boolean} true or false
      */
-    isSandBox: true,
+    isSandBox: false,
     /**
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
