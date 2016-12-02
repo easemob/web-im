@@ -507,6 +507,9 @@ var _WebRTC = {
 
         _logger.debug('[WebRTC-API] setRemoteDescription start. ');
 
+        desc.sdp = desc.sdp.replace(/UDP\/TLS\/RTP\/SAVPF/g, "RTP/SAVPF");
+        _logger.debug('[WebRTC-API] setRemoteDescription.', desc);
+
         desc = new RTCSessionDescription(desc);
 
         return self.rtcPeerConnection.setRemoteDescription(desc).then(
