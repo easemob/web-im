@@ -116,18 +116,11 @@ module.exports = React.createClass({
                     Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_OFFLINE);
                 }
             },
-            // used for blacklist
-            onBlacklistUpdate: function (list) {
-                // log('onBlacklistUpdate', list);
-                Demo.api.blacklist.parse(list);
-                me.setState({blacklist: list});
-                // TODO 增量更新
-                Demo.api.updateRoster();
-            },
             onError: function (message) {
-                /*if ( msg && msg.reconnect ) {}*/
-                // log(WebIM.utils.ts(), 'onError', message);
-                // console.log('onError', message);
+                if(typeof message === 'string'){
+                    Demo.api.NotifyError(message);
+                    return;
+                }
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -164,8 +157,15 @@ module.exports = React.createClass({
                 Demo.api.init(Demo.conn.errorType);
 
 
+            },
+            // used for blacklist
+            onBlacklistUpdate: function (list) {
+                // log('onBlacklistUpdate', list);
+                Demo.api.blacklist.parse(list);
+                me.setState({blacklist: list});
+                // TODO 增量更新
+                Demo.api.updateRoster();
             }
-
         });
 
         return {

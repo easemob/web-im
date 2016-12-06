@@ -72,7 +72,7 @@ module.exports = React.createClass({
                     alert("registerUser:" + code + " - " + msg);
                 });
         } else {
-            WebIM.utils.registerUser(options);
+            Demo.conn.registerUser(options);
         }
     },
 

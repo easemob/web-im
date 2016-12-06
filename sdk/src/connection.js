@@ -452,8 +452,8 @@ var _loginCallback = function (status, msg, conn) {
         }
     } else if (status == Strophe.Status.DISCONNECTED) {
         if (conn.isOpened()) {
-            if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
-                Demo.conn.reconnect();
+            if (conn.autoReconnectNumTotal < conn.autoReconnectNumMax) {
+                conn.reconnect();
                 return;
             } else {
                 error = {
@@ -625,6 +625,15 @@ var connection = function (options) {
     this.xmppIndex = 0;    //the xmpp ip used in xmppHosts currently
     this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
 };
+
+connection.prototype.registerUser = function (options){
+    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+        this.dnsIndex = 0;
+        this.getHttpDNS(options, 'signup');
+    } else {
+        this.signup(options);
+    }
+}
 
 connection.prototype.handelSendQueue = function () {
     var options = this.sendQueue.pop();
@@ -1587,7 +1596,7 @@ connection.prototype.send = function (message) {
             function (response) {
             },
             function (code, msg) {
-                Demo.api.NotifyError('send:' + code + " - " + msg);
+                this.onError('send:' + code + " - " + msg);
             });
     } else {
         if (Object.prototype.toString.call(message) === '[object Object]') {
@@ -2010,7 +2019,7 @@ connection.prototype.clear = function () {
     this.xmppIndex = 0;
 
     if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
-        Demo.api.init();
+        // Demo.api.init();
     }
 };
 
@@ -2132,14 +2141,16 @@ connection.prototype._onReceiveInviteFromGroup = function (info) {
         agree: function agree() {
             WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("acceptInvitationFromGroup error:" + msg);
+                // Demo.api.NotifyError("acceptInvitationFromGroup error:" + msg);
+                this.onError("acceptInvitationFromGroup error:" + msg);
             });
 
         },
         reject: function reject() {
             WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("declineInvitationFromGroup error:" + msg);
+                // Demo.api.NotifyError("declineInvitationFromGroup error:" + msg);
+                this.onError("declineInvitationFromGroup error:" + msg);
             });
         }
     };
@@ -2194,13 +2205,15 @@ connection.prototype._onReceiveJoinGroupApplication = function (info) {
         agree: function agree() {
             WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("acceptJoinGroupApplication error:" + msg);
+                // Demo.api.NotifyError("acceptJoinGroupApplication error:" + msg);
+                this.onError("acceptJoinGroupApplication error:" + msg);
             });
         },
         reject: function reject() {
             WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("declineJoinGroupApplication error:" + msg);
+                this.onError("declineJoinGroupApplication error:" + msg);
+                // Demo.api.NotifyError("declineJoinGroupApplication error:" + msg);
             });
         }
     };
@@ -2239,8 +2252,10 @@ connection.prototype.reconnect = function () {
     }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
     this.autoReconnectNumTotal++;
 };
-connection.prototype.closed = function () {
-    Demo.api.init();
+
+connection.prototype.closed = function (fn) {
+    // Demo.api.init();
+    console.log('connection closed.');
 };
 
 // used for blacklist
