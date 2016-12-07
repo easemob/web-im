@@ -615,6 +615,7 @@ var connection = function (options) {
     this.context = {status: _code.STATUS_INIT};
     this.sendQueue = new Queue();  //instead of sending message immediately,cache them in this queue
     this.intervalId = null;   //clearInterval return value
+    this.apiUrl = options.apiUrl || '';
 
     this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
     this.dnsIndex = 0;   //the dns ip used in dnsArr currently
@@ -711,7 +712,7 @@ connection.prototype.cacheReceiptsMessage = function (options) {
 };
 
 connection.prototype.getStrophe = function () {
-    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+    if (location.protocol != 'https:' && this.isHttpDNS) {
         //TODO: try this.xmppTotal times on fail
         var url = '';
         var host = this.xmppHosts[this.xmppIndex];
@@ -771,7 +772,8 @@ connection.prototype.getRestFromHttpDNS = function (options, type) {
     }
 
     if (url != '') {
-        WebIM.config.apiURL = url;
+        // WebIM.config.apiURL = url;
+        this.apiUrl = url;
         options.apiUrl = url;
     }
 
@@ -856,7 +858,7 @@ connection.prototype.signup = function (options) {
     }
 
     var error = function (res, xhr, msg) {
-        if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+        if (location.protocol != 'https:' && self.isHttpDNS) {
             if ((self.restIndex + 1) < self.restTotal) {
                 self.restIndex++;
                 self.getRestFromHttpDNS(options, 'signup');
@@ -889,7 +891,7 @@ connection.prototype.signup = function (options) {
 
 
 connection.prototype.open = function (options) {
-    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+    if (location.protocol != 'https:' && this.isHttpDNS) {
         this.dnsIndex = 0;
         this.getHttpDNS(options, 'login');
     } else {
@@ -926,7 +928,7 @@ connection.prototype.login = function (options) {
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
-            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+            if (location.protocol != 'https:' && conn.isHttpDNS) {
                 if ((conn.restIndex + 1) < conn.restTotal) {
                     conn.restIndex++;
                     conn.getRestFromHttpDNS(options, 'login');
@@ -1371,7 +1373,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && this.isHttpDNS) ? (this.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , thumb: msgBody.thumb
@@ -1397,7 +1399,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && this.isHttpDNS) ? (this.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , length: msgBody.length || ''
@@ -1420,7 +1422,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && this.isHttpDNS) ? (this.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , file_length: msgBody.file_length
@@ -1459,7 +1461,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && this.isHttpDNS) ? (this.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , file_length: msgBody.file_length
@@ -2023,7 +2025,7 @@ connection.prototype.clear = function () {
     if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
         var message = {
             data: {
-                data: "clear error"
+                data: "clear"
             },
             type: WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT
         };

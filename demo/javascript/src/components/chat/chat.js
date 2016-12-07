@@ -118,7 +118,6 @@ module.exports = React.createClass({
             },
             onError: function (message) {
 
-                console.log('init1');
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -162,7 +161,6 @@ module.exports = React.createClass({
                     var closeButton = document.getElementById('webrtc_close');
                     closeButton && closeButton.click();
                 }
-                console.log('init0');
                 Demo.api.init();
             },
             // used for blacklist
