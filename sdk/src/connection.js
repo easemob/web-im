@@ -594,6 +594,7 @@ var connection = function (options) {
 
     var options = options || {};
 
+    this.isHttpDNS = options.isHttpDNS || false;
     this.isMultiLoginSessions = options.isMultiLoginSessions || false;
     this.wait = options.wait || 30;
     this.retry = options.retry || false;
@@ -627,7 +628,7 @@ var connection = function (options) {
 };
 
 connection.prototype.registerUser = function (options){
-    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+    if (location.protocol != 'https:' && this.isHttpDNS) {
         this.dnsIndex = 0;
         this.getHttpDNS(options, 'signup');
     } else {
@@ -2018,8 +2019,15 @@ connection.prototype.clear = function () {
     this.restIndex = 0;
     this.xmppIndex = 0;
 
+
     if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
-        // Demo.api.init();
+        var message = {
+            data: {
+                data: "clear error"
+            },
+            type: WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT
+        };
+        this.onError(message);
     }
 };
 
@@ -2135,22 +2143,32 @@ connection.prototype.quitChatRoom = function (options) {
 
 connection.prototype._onReceiveInviteFromGroup = function (info) {
     info = eval('(' + info + ')');
+    var self = this;
     var options = {
         title: "Group invitation",
         msg: info.user + " invites you to join into group:" + info.group_id,
         agree: function agree() {
             WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                // Demo.api.NotifyError("acceptInvitationFromGroup error:" + msg);
-                this.onError("acceptInvitationFromGroup error:" + msg);
+                var message = {
+                    data: {
+                        data: "acceptInvitationFromGroup error:" + msg
+                    },
+                    type: WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
+                };
+                self.onError(message);
             });
-
         },
         reject: function reject() {
             WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                // Demo.api.NotifyError("declineInvitationFromGroup error:" + msg);
-                this.onError("declineInvitationFromGroup error:" + msg);
+                var message = {
+                    data: {
+                        data: "declineInvitationFromGroup error:" + msg
+                    },
+                    type: WebIM.statusCode.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
+                };
+                self.onError(message);
             });
         }
     };
@@ -2199,21 +2217,32 @@ connection.prototype._onLeaveGroup = function (info) {
 };
 connection.prototype._onReceiveJoinGroupApplication = function (info) {
     info = eval('(' + info + ')');
+    var self = this;
     var options = {
         title: "Group join application",
         msg: info.user + " applys to join into group:" + info.group_id,
         agree: function agree() {
             WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                // Demo.api.NotifyError("acceptJoinGroupApplication error:" + msg);
-                this.onError("acceptJoinGroupApplication error:" + msg);
+                var message = {
+                    data: {
+                        data: "acceptJoinGroupApplication error:" + msg
+                    },
+                    type: WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
+                };
+                self.onError(message);
             });
         },
         reject: function reject() {
             WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                this.onError("declineJoinGroupApplication error:" + msg);
-                // Demo.api.NotifyError("declineJoinGroupApplication error:" + msg);
+                var message = {
+                    data: {
+                        data: "declineJoinGroupApplication error:" + msg
+                    },
+                    type: WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
+                };
+                self.onError(message);
             });
         }
     };
@@ -2253,9 +2282,14 @@ connection.prototype.reconnect = function () {
     this.autoReconnectNumTotal++;
 };
 
-connection.prototype.closed = function (fn) {
-    // Demo.api.init();
-    console.log('connection closed.');
+connection.prototype.closed = function () {
+    var message = {
+        data: {
+            data: "Closed error"
+        },
+        type: WebIM.statusCode.WEBIM_CONNECTION_CLOSED
+    };
+    this.onError(message);
 };
 
 // used for blacklist

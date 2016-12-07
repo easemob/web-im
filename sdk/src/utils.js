@@ -218,17 +218,6 @@
                 return iterate(json);
             }
         },
-        /*
-        registerUser: function (options) {
-            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
-                Demo.conn.dnsIndex = 0;
-                Demo.conn.getHttpDNS(options, 'signup');
-            } else {
-                Demo.conn.signup(options);
-            }
-
-        },
-        */
         login: function (options) {
             var options = options || {};
             var suc = options.success || EMPTYFN;

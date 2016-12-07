@@ -117,10 +117,8 @@ module.exports = React.createClass({
                 }
             },
             onError: function (message) {
-                if(typeof message === 'string'){
-                    Demo.api.NotifyError(message);
-                    return;
-                }
+
+                console.log('init1');
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -141,10 +139,22 @@ module.exports = React.createClass({
                     } else {
                         text = WebIM.utils.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
                     }
-                    // Demo.api.logout(message.type);
                 }
                 if (Demo.conn.errorType != WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
-                    Demo.api.NotifyError('onError:' + text);
+                    if(message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_CLOSED){
+                        Demo.api.NotifyError(text);
+                        return;
+                    }else{
+                        Demo.api.NotifyError('onError:' + text);
+                    }
                 }
 
                 //webRTC:断线处理
@@ -152,11 +162,8 @@ module.exports = React.createClass({
                     var closeButton = document.getElementById('webrtc_close');
                     closeButton && closeButton.click();
                 }
-
-
-                Demo.api.init(Demo.conn.errorType);
-
-
+                console.log('init0');
+                Demo.api.init();
             },
             // used for blacklist
             onBlacklistUpdate: function (list) {
