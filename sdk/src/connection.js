@@ -1267,6 +1267,7 @@ connection.prototype.handleIqRoster = function (e) {
 };
 
 connection.prototype.handleMessage = function (msginfo) {
+    var self = this;
     if (this.isClosed()) {
         return;
     }
@@ -1373,7 +1374,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && this.isHttpDNS) ? (this.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , thumb: msgBody.thumb
@@ -1399,7 +1400,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && this.isHttpDNS) ? (this.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , length: msgBody.length || ''
@@ -1422,7 +1423,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && this.isHttpDNS) ? (this.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , file_length: msgBody.file_length
@@ -1461,7 +1462,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && this.isHttpDNS) ? (this.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , file_length: msgBody.file_length
