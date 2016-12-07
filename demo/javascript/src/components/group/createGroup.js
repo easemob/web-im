@@ -84,7 +84,7 @@ var CreateGroup = React.createClass({
                     Demo.api.NotifyError("onSubmit:" + code);
                 });
         } else {
-
+            Demo.createGroupName = value;
             Demo.conn.createGroup({
                 subject: value,
                 description: info,

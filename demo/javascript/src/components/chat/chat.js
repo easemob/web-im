@@ -361,11 +361,7 @@ module.exports = React.createClass({
                 break;
             case 'joinPublicGroupSuccess':
                 Demo.api.NotifyError(`You have been invited to group ${msg.from}`);
-                //TODO: 服务器端有bug，先延迟1秒刷新列表,找易乐天
-                setTimeout(function () {
-                    Demo.api.updateGroup()
-                }, 1000);
-
+                Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
                 Demo.currentChatroom = msg.from;
@@ -810,6 +806,13 @@ module.exports = React.createClass({
         for (var i = 0; i < this.state.groups.length; i++) {
             id = this.state.groups[i].roomId;
             props.name = this.state.groups[i].name;
+            //createGroup is two step progresses.first send presence,second send iq.
+            //on first recv group list, the newest created one's roomId=name,
+            //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+                this.state.groups[i].name = Demo.createGroupName;
+                Demo.createGroupName = '';
+            }
 
             windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
                                      className={id === this.state.curNode ? '' : 'hide'}/>);
