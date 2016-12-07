@@ -63,7 +63,8 @@ Demo.conn = new WebIM.connection({
     heartBeatWait: WebIM.config.heartBeatWait,
     autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
     autoReconnectInterval: WebIM.config.autoReconnectInterval,
-    apiUrl: WebIM.config.apiURL
+    apiUrl: WebIM.config.apiURL,
+    isHttpDNS: WebIM.config.isHttpDNS
 });
 
 Demo.api.render(document.getElementById('demo'));

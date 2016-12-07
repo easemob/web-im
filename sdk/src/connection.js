@@ -1595,12 +1595,19 @@ connection.prototype.getUniqueId = function (prefix) {
 };
 
 connection.prototype.send = function (message) {
+    var self = this;
     if (WebIM.config.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
             },
             function (code, msg) {
-                this.onError('send:' + code + " - " + msg);
+                var message = {
+                    data: {
+                        data: "send"
+                    },
+                    type: WebIM.statusCode.WEBIM_MESSAGE_SED_ERROR
+                };
+                self.onError(message);
             });
     } else {
         if (Object.prototype.toString.call(message) === '[object Object]') {
