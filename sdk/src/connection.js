@@ -1737,20 +1737,6 @@ connection.prototype.unsubscribed = function (options) {
     this.sendCommand(pres.tree());
 };
 
-connection.prototype.createRoom = function (options) {
-    var suc = options.success || _utils.emptyfn;
-    var err = options.error || _utils.emptyfn;
-    var roomiq;
-
-    roomiq = $iq({
-        to: options.roomName,
-        type: 'set'
-    })
-        .c('query', {xmlns: Strophe.NS.MUC_OWNER})
-        .c('x', {xmlns: 'jabber:x:data', type: 'submit'});
-
-    return this.context.stropheConn.sendIQ(roomiq.tree(), suc, err);
-};
 
 connection.prototype.joinPublicGroup = function (options) {
     var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
