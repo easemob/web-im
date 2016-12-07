@@ -19,16 +19,18 @@
 ###v1.1.1里面有限制浏览器多标签页登录最多8个的逻辑 v1.1.2里面这个逻辑没有了 (钟泽方 done)
 ###JavaScript Web SDK installation via CDN and NPM 的可行性和implementation 参考https://docs.layer.com/sdk/web/install 11.20前完成  (刘伟展)
 ###bug fix: 群组用rest接口解散不了
-    
-#V1.5.0 (2016.11~2016.12)
+###文档整理 (钟泽方)
+
+
+#V1.5.0 (2016.12)
 ###新版UI
 ###检查所有Demo.api.notify. 普通提示用Demo.api.info,错误提示才用Demo.api.notify
+###leftbar分类切换时，右侧的聊天窗口需要替换成遮罩，避免歧义和bug
+###现有的机制是登录就创建所有的好友/群组/群的chatwindow,性能有问题。需要改成动态创建。
+###webrtc视频弹窗增加声音开关按钮
 
 #TODO 
 ###调整框架目录结构:src/dist/publish
-###文档整理 (钟泽方)
-###leftbar分类切换时，右侧的聊天窗口需要替换成遮罩，避免歧义和bug
-###现有的机制是登录就创建所有的好友/群组/群的chatwindow,性能有问题。需要改成动态创建。
 ###文件下载前，先发ajax请求带token参数去fileserver做验证
 ###增加搜索功能
 ###修改multi-select-box组件的UI
