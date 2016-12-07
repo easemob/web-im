@@ -84,7 +84,7 @@ module.exports = function (options) {
                         var res = WebIM.utils.parseUploadResponse(response);
                         res = JSON.parse(res);
                         if (file && !file.url && res.entities && res.entities.length > 0) {
-                            file.url = ( (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? WebIM.config.apiURL : res.uri) + '/' + res.entities[0].uuid;
+                            file.url = ( (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? Demo.conn.apiUrl : res.uri) + '/' + res.entities[0].uuid;
                         }
 
                         var msg = new WebIM.message(this.filetype, Demo.conn.getUniqueId());

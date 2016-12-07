@@ -509,7 +509,7 @@ module.exports = React.createClass({
                 });
         } else {
             Demo.conn.getChatRooms({
-                apiUrl: WebIM.config.apiURL,
+                apiUrl: Demo.conn.apiUrl,
                 pagenum: pagenum,
                 pagesize: Demo.api.pagesize,
                 success: function (list) {
@@ -579,7 +579,7 @@ module.exports = React.createClass({
         var msg = new WebIM.message('img', Demo.conn.getUniqueId());
 
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             to: Demo.selected,
             roomType: chatroom,
@@ -594,7 +594,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.picture.value = null;
             },
             success: function (id) {
@@ -631,7 +631,7 @@ module.exports = React.createClass({
             me = this;
 
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             to: Demo.selected,
             roomType: chatroom,
@@ -647,7 +647,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.audio.value = null;
             },
             success: function (id, sid) {
@@ -750,7 +750,7 @@ module.exports = React.createClass({
         }
 
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             filename: filename,
             to: Demo.selected,
@@ -766,7 +766,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
             },
             success: function (id) {

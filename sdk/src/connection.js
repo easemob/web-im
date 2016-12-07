@@ -772,7 +772,6 @@ connection.prototype.getRestFromHttpDNS = function (options, type) {
     }
 
     if (url != '') {
-        // WebIM.config.apiURL = url;
         this.apiUrl = url;
         options.apiUrl = url;
     }
