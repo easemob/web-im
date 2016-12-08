@@ -616,6 +616,7 @@ var connection = function (options) {
     this.sendQueue = new Queue();  //instead of sending message immediately,cache them in this queue
     this.intervalId = null;   //clearInterval return value
     this.apiUrl = options.apiUrl || '';
+    this.isWindowSDK = options.isWindowSDK || false;
 
     this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
     this.dnsIndex = 0;   //the dns ip used in dnsArr currently
@@ -1595,7 +1596,7 @@ connection.prototype.getUniqueId = function (prefix) {
 
 connection.prototype.send = function (message) {
     var self = this;
-    if (WebIM.config.isWindowSDK) {
+    if (this.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
             },
@@ -1604,7 +1605,7 @@ connection.prototype.send = function (message) {
                     data: {
                         data: "send"
                     },
-                    type: WebIM.statusCode.WEBIM_MESSAGE_SED_ERROR
+                    type: _code.WEBIM_MESSAGE_SED_ERROR
                 };
                 self.onError(message);
             });
@@ -2002,7 +2003,7 @@ connection.prototype.isClosed = function () {
 
 connection.prototype.clear = function () {
     var key = this.context.appKey;
-    if (this.errorType != WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
+    if (this.errorType != _code.WEBIM_CONNCTION_DISCONNECTED) {
         this.context = {
             status: _code.STATUS_INIT,
             appKey: key
@@ -2015,12 +2016,12 @@ connection.prototype.clear = function () {
     this.xmppIndex = 0;
 
 
-    if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
+    if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
         var message = {
             data: {
                 data: "clear"
             },
-            type: WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT
+            type: _code.WEBIM_CONNCTION_CLIENT_LOGOUT
         };
         this.onError(message);
     }
@@ -2149,7 +2150,7 @@ connection.prototype._onReceiveInviteFromGroup = function (info) {
                     data: {
                         data: "acceptInvitationFromGroup error:" + msg
                     },
-                    type: WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
+                    type: _code.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
                 };
                 self.onError(message);
             });
@@ -2161,7 +2162,7 @@ connection.prototype._onReceiveInviteFromGroup = function (info) {
                     data: {
                         data: "declineInvitationFromGroup error:" + msg
                     },
-                    type: WebIM.statusCode.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
+                    type: _code.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
                 };
                 self.onError(message);
             });
@@ -2223,7 +2224,7 @@ connection.prototype._onReceiveJoinGroupApplication = function (info) {
                     data: {
                         data: "acceptJoinGroupApplication error:" + msg
                     },
-                    type: WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
+                    type: _code.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
                 };
                 self.onError(message);
             });
@@ -2235,7 +2236,7 @@ connection.prototype._onReceiveJoinGroupApplication = function (info) {
                     data: {
                         data: "declineJoinGroupApplication error:" + msg
                     },
-                    type: WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
+                    type: _code.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
                 };
                 self.onError(message);
             });
@@ -2282,7 +2283,7 @@ connection.prototype.closed = function () {
         data: {
             data: "Closed error"
         },
-        type: WebIM.statusCode.WEBIM_CONNECTION_CLOSED
+        type: _code.WEBIM_CONNECTION_CLOSED
     };
     this.onError(message);
 };

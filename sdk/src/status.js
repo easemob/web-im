@@ -1,10 +1,5 @@
 ;
 (function () {
-    var connIndex = 0,
-        uploadIndex = 100,
-        downloadIndex = 200,
-        msgIndex = 300,
-        statusIndex = 400;
 
     exports.code = {
         WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: 0,
