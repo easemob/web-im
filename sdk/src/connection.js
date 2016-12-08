@@ -2512,15 +2512,15 @@ connection.prototype.changeGroupSubject = function (options) {
 
     iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
         .c('x', {type: 'submit', xmlns: 'jabber:x:data'})
-        .c('field', {var: 'FORM_TYPE'})
+        .c('field', {'var': 'FORM_TYPE'})
         .c('value')
         .t('http://jabber.org/protocol/muc#roomconfig')
         .up().up()
-        .c('field', {var: 'muc#roomconfig_roomname'})
+        .c('field', {'var': 'muc#roomconfig_roomname'})
         .c('value')
         .t(options.subject)
         .up().up()
-        .c('field', {var: 'muc#roomconfig_roomdesc'})
+        .c('field', {'var': 'muc#roomconfig_roomdesc'})
         .c('value')
         .t(options.description);
 
