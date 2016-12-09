@@ -269,7 +269,7 @@
                 me.msg.body = {
                     type: me.msg.type || 'file'
                     ,
-                    url: ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0]['uuid']
+                    url: ((location.protocol != 'https:' && conn.isHttpDNS) ? (conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0]['uuid']
                     , secret: data.entities[0]['share-secret']
                     , filename: me.msg.file.filename || me.msg.filename
                     , size: {
@@ -280,7 +280,6 @@
                     , file_length: me.msg.file_length || 0
                     , filetype: me.msg.filetype
                 }
-
                 _send(me.msg);
                 _tmpComplete instanceof Function && _tmpComplete(data, me.msg.id);
             };
