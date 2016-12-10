@@ -736,29 +736,34 @@ module.exports = React.createClass({
             msg = new WebIM.message('file', Demo.conn.getUniqueId()),
             chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.file),
+            fileSize = WebIM.utils.getFileSize(me.refs.file),
             filename = file.filename;
+
+        if(!fileSize)
+            return false;
 
         if (!file.filename) {
             me.refs.file.value = null;
             return false;
         }
-
         if (!Demo.FILETYPE[file.filetype.toLowerCase()]) {
             me.refs.file.value = null;
             Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
             return;
         }
-
         msg.set({
             apiUrl: Demo.conn.apiUrl,
             file: file,
             filename: filename,
             to: Demo.selected,
             roomType: chatroom,
+            ext:{
+                fileSize: fileSize
+            },
             onFileUploadError: function (error) {
+                debugger
                 log(error);
                 me.refs.file.value = null;
-
                 Demo.api.appendMsg({
                     data: Demo.lan.sendFileFailed,
                     from: Demo.user,
@@ -779,7 +784,6 @@ module.exports = React.createClass({
             },
             flashUpload: WebIM.flashUpload
         });
-
         if (Demo.selectedCate === 'groups') {
             msg.setGroup(Demo.groupType);
         } else if (chatroom) {
