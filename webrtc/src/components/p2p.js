@@ -346,11 +346,23 @@ var CommonPattern = {
         self.onTermCall(reason);
     },
 
+    /**
+     *
+     * @param from
+     * @param options
+     * @param options.reason
+     *               "ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+     *               "decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
+     * @private
+     */
     _onTermC: function (from, options) {
+        _logger.debug("[_onTermC] options.reason = " + options.reason);
+
         var self = this;
 
         self.hangup = true;
         self.termCall(options.reason);
+
     },
 
     onTermCall: function () {
