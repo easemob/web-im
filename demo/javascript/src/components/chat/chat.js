@@ -738,7 +738,7 @@ module.exports = React.createClass({
             file = WebIM.utils.getFileUrl(me.refs.file),
             fileSize = WebIM.utils.getFileSize(me.refs.file),
             filename = file.filename;
-        
+
         if(!fileSize){
             Demo.api.NotifyError(Demo.lan.fileOverSize);
             return false;

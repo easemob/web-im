@@ -4,7 +4,7 @@
     <title>Clock</title>
     <script src="../demo/javascript/dist/webim.config.js"></script>
     <script src="./dist/strophe-1.2.8.min.js"></script>
-    <script src="./dist/websdk-1.4.5.js"></script>
+    <script src="./dist/websdk-1.4.6.js"></script>
 </head>
 <body>
 
@@ -66,8 +66,10 @@
     /**
      * Created by clock on 16-11-25.
      */
-
-    var conn = new WebIM.connection({
+    console.log('WebIM: ', WebIM);
+    console.log('WebIM.connection: ', WebIM.connection);
+    var conn = {};
+    conn = new WebIM.connection({
         isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
         https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
         url: WebIM.config.xmppURL,
