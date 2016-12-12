@@ -318,7 +318,6 @@
                 }
             }
             if(fileSize > 300000){
-                Demo.api.NotifyError(Demo.lan.fileOverSize);
                 return false;
             }
             var kb = Math.round(fileSize / 1000);

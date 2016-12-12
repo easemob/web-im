@@ -739,8 +739,10 @@ module.exports = React.createClass({
             fileSize = WebIM.utils.getFileSize(me.refs.file),
             filename = file.filename;
 
-        if(!fileSize)
+        if(!fileSize){
+            Demo.api.NotifyError(Demo.lan.fileOverSize);
             return false;
+        }
 
         if (!file.filename) {
             me.refs.file.value = null;
@@ -761,7 +763,6 @@ module.exports = React.createClass({
                 fileSize: fileSize
             },
             onFileUploadError: function (error) {
-                debugger
                 log(error);
                 me.refs.file.value = null;
                 Demo.api.appendMsg({
