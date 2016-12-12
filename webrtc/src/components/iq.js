@@ -120,6 +120,9 @@ var _RtcHandler = {
         if (rtcOptions.op == 107) {
             self._connectedSid = '';
             self._fromSessionID = {};
+
+            var endReason = msginfo.getElementsByTagName('reason')[0].innerHTML;
+            rtcOptions.reason = endReason;
         }
 
 
@@ -285,7 +288,7 @@ var _RtcHandler = {
             .up().c('content').t(_util.stringifyJSON(options.data));
 
         if (options.data.op == 107 && options.reason) {
-            iq.up().c('reaseon').t(options.reason);
+            iq.up().c('reason').t(options.reason);
         }
         _logger.debug("Send [op = " + options.data.op + "] : \r\n", iq.tree());
 
