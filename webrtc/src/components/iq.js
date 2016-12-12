@@ -121,8 +121,9 @@ var _RtcHandler = {
             self._connectedSid = '';
             self._fromSessionID = {};
 
-            var endReason = msginfo.getElementsByTagName('reason')[0].innerHTML;
-            rtcOptions.reason = endReason;
+            var reasonObj = msginfo.getElementsByTagName('reason');
+            //var endReason = msginfo.getElementsByTagName('reason')[0].innerHTML;
+            reasonObj && reasonObj.length > 0 && (rtcOptions.reason = reasonObj[0].innerHTML);
         }
 
 
