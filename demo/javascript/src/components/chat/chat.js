@@ -384,7 +384,13 @@ module.exports = React.createClass({
             msg = new WebIM.message('file', Demo.conn.getUniqueId()),
             chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.file),
+            fileSize = WebIM.utils.getFileSize(me.refs.file),
             filename = file.filename;
+
+        if(!fileSize) {
+            Demo.api.NotifyError(Demo.lan.fileOverSize);
+            return false;
+        }
 
         if ( !file.filename ) {
             me.refs.file.value = null;
@@ -396,13 +402,15 @@ module.exports = React.createClass({
             Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
             return;
         }
-
         msg.set({
             apiUrl: WebIM.config.apiURL,
             file: file,
             filename: filename,
             to: Demo.selected,
             roomType: chatroom,
+            ext: {
+              fileSize: fileSize
+            },
             onFileUploadError: function ( error ) {
                 log(error);
                 me.refs.file.value = null;

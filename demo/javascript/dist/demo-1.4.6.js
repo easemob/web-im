@@ -44,13 +44,21 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = __webpack_require__(1);
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
-	__webpack_require__(1);
+	__webpack_require__(2);
+	// require('easemob-websdk');
 
-	var Api = __webpack_require__(8);
-	var Emoji = __webpack_require__(211);
-	var Language = __webpack_require__(212);
+	var Api = __webpack_require__(10);
+	var Emoji = __webpack_require__(228);
+	var Language = __webpack_require__(229);
 
 	// import emoji
 	WebIM.Emoji = Emoji;
@@ -70,7 +78,9 @@
 	Demo.api = Api;
 
 	Demo.roster = {};
+	Demo.friends = [];
 	Demo.strangers = {};
+	Demo.blacklist = {};
 
 	Demo.IMGTYPE = {
 	    gif: 1,
@@ -96,27 +106,39 @@
 	    wmv: 1
 	};
 
+	Demo.selectedCate = ''; //friends|groups|chatrooms|strangers
+
 	// initialize webIM connection
 	Demo.conn = new WebIM.connection({
 	    isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
 	    https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
 	    url: WebIM.config.xmppURL,
+	    heartBeatWait: WebIM.config.heartBeatWait,
+	    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+	    autoReconnectInterval: WebIM.config.autoReconnectInterval,
+	    apiUrl: WebIM.config.apiURL,
+	    isHttpDNS: WebIM.config.isHttpDNS,
+	    isWindowSDK: WebIM.config.isWindowSDK,
 	    isAutoLogin: false
 	});
 
 	Demo.api.render(document.getElementById('demo'));
 
+	if (false) {
+	    module.hot.accept();
+	}
+
 /***/ },
-/* 1 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(2);
+	var content = __webpack_require__(3);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(7)(content, {});
+	var update = __webpack_require__(9)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -133,21 +155,21 @@
 	}
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(3)();
+	exports = module.exports = __webpack_require__(4)();
 	// imports
 
 
 	// module
-	exports.push([module.id, "html, body, section, article, h1, h2, h3, h4, h5, h6, p, div, i, em, span, ul, li, ol {\n  font-family: Arial, Helvetica, sans-serif;\n  margin: 0;\n  padding: 0; }\n\nhtml, body {\n  width: 100%;\n  height: 100%;\n  font-size: 13px;\n  overflow-y: hidden;\n  background-color: #fafafa;\n  border: 1px solid rgba(250, 250, 250, 0);\n  -webkit-font-smoothing: antialiased; }\n\ninput, button {\n  outline: none; }\n  input:focus, button:focus {\n    border: 1px solid #4eb1f4;\n    box-shadow: rgba(25, 161, 219, 0.247059) 0px 0px 5px 0px; }\n\ntextarea {\n  outline: none;\n  resize: none; }\n\nul, ol, li {\n  list-style: none; }\n\n.pointer {\n  cursor: pointer; }\n\n.left {\n  float: left; }\n\n.right {\n  float: right; }\n\n.w100 {\n  width: 100%;\n  height: 100%; }\n\n.pad0 {\n  padding: 0; }\n\n.top50 {\n  margin-top: 50px; }\n\n.rel {\n  position: relative; }\n\n.dib {\n  display: inline-block; }\n\nobject {\n  z-index: 3;\n  position: absolute;\n  left: 340px;\n  bottom: 118px;\n  width: 84px; }\n\n@font-face {\n  font-family: 'webim';\n  src: url(" + __webpack_require__(4) + ");\n  src: url(" + __webpack_require__(5) + ") format(\"woff\"), url(" + __webpack_require__(6) + "#iconfont) format(\"svg\"); }\n\n.font {\n  width: 40px;\n  height: 40px;\n  font-family: 'webim' !important;\n  font-size: 40px;\n  font-style: normal;\n  -webkit-font-smoothing: antialiased;\n  -webkit-text-stroke-width: 0.2px;\n  -moz-osx-font-smoothing: grayscale; }\n  .font.small {\n    width: 30px;\n    height: 30px;\n    font-size: 30px; }\n  .font.xsmaller {\n    width: 26px;\n    height: 26px;\n    font-size: 26px; }\n  .font.smaller {\n    width: 24px;\n    height: 24px;\n    font-size: 24px; }\n  .font.smallest {\n    width: 16px;\n    height: 16px;\n    font-size: 16px; }\n\n.hide {\n  display: none; }\n\n.bg-color {\n  color: #fff;\n  border: 1px solid #4eb1f4;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #4eb1f4; }\n\n.color {\n  color: #4eb1f4; }\n\n.hover-color:hover {\n  color: #4eb1f4; }\n\n.webim-logo {\n  width: 200px;\n  margin: 0 auto; }\n\n.webim {\n  position: absolute;\n  right: 0;\n  left: 0;\n  margin: auto;\n  top: 10%;\n  bottom: 10%; }\n\n.copyright {\n  z-index: 3;\n  position: absolute;\n  width: 100%;\n  bottom: 10px;\n  text-align: center;\n  color: #cccccc; }\n\n/*\n * loading\n */\n.webim-loading {\n  position: fixed;\n  z-index: 3;\n  background-color: #FAFAFA;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0; }\n  .webim-loading img {\n    position: absolute;\n    margin: auto;\n    left: 0;\n    right: 0;\n    top: 0;\n    bottom: 0;\n    width: 24px; }\n\n/*\n * button\n */\n.webim-button {\n  font-size: 16px;\n  box-sizing: border-box;\n  display: inline-block;\n  margin: 10px auto;\n  width: 300px;\n  height: 36px;\n  cursor: pointer;\n  border-radius: 2px; }\n  .webim-button.error {\n    background-color: #ff3a00;\n    border: 1px solid #ff3a00; }\n  .webim-button:hover {\n    background-color: #1aa1e4; }\n\n/*\n * input\n */\n.webim-input {\n  box-sizing: border-box;\n  font-size: 14px;\n  padding: 0 4px;\n  display: inline-block;\n  margin: 10px auto 0;\n  width: 300px;\n  height: 36px;\n  line-height: 36px;\n  cursor: pointer;\n  border-radius: 2px;\n  border: 1px solid #e5e5e5;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n/*\n * checkbox\n */\n.webim-checkbox {\n  text-align: left;\n  margin: 10px 0 10px 5px;\n  padding-left: 50px;\n  box-sizing: border-box; }\n  .webim-checkbox span {\n    height: 30px;\n    line-height: 30px; }\n  .webim-checkbox > i {\n    position: relative;\n    margin-right: 6px;\n    width: 14px;\n    height: 14px;\n    border-radius: 2px;\n    display: inline-block;\n    vertical-align: middle;\n    border: 1px solid #cccccc;\n    cursor: pointer; }\n    .webim-checkbox > i:hover {\n      background-color: #fff; }\n      .webim-checkbox > i:hover em {\n        display: inline-block;\n        color: #cccccc; }\n    .webim-checkbox > i.checked {\n      background-color: #afd7e8; }\n      .webim-checkbox > i.checked em {\n        display: inline-block;\n        color: #000; }\n    .webim-checkbox > i em {\n      display: none;\n      position: absolute;\n      left: -6px;\n      top: -10px;\n      color: #000; }\n\n/*\n * left bar\n */\n.webim-leftbar {\n  position: relative;\n  float: left;\n  width: 50px;\n  height: 100%;\n  text-align: center;\n  border-radius: 2px 0px 0px 2px;\n  border: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #fcfdfb; }\n\n/*\n * contact list\n */\n.webim-contact-wrapper {\n  float: left;\n  height: 100%;\n  width: 250px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  border-right: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n.webim-contact-item {\n  cursor: pointer;\n  position: relative;\n  width: 100%;\n  overflow: hidden;\n  height: 60px; }\n  .webim-contact-item .webim-avatar-icon {\n    float: left;\n    margin: 10px; }\n  .webim-contact-item > span {\n    color: #1a1a1a;\n    font-size: 14px;\n    margin: 10px 0;\n    display: inline-block;\n    width: calc(100% - 70px);\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis; }\n  .webim-contact-item > i {\n    display: inline-block;\n    right: 2px;\n    bottom: 10px;\n    top: auto; }\n  .webim-contact-item > em {\n    display: block;\n    height: 20px;\n    line-height: 20px;\n    width: calc(100% - 100px);\n    position: absolute;\n    margin: auto;\n    left: 30px;\n    top: 30px;\n    right: 10px;\n    color: #999999;\n    font-style: normal;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden; }\n    .webim-contact-item > em img {\n      width: 20px;\n      vertical-align: middle; }\n  .webim-contact-item.selected {\n    background-color: #f3f6f6; }\n\n.webim-profile-avatar {\n  display: inline-block;\n  margin: 10px auto; }\n\n.webim-avatar-icon {\n  width: 40px;\n  height: 40px;\n  border-radius: 50%;\n  overflow: hidden;\n  -webkit-filter: contrast(1.2);\n  -webkit-tap-highlight-color: transparent; }\n  .webim-avatar-icon.small {\n    width: 30px;\n    height: 30px; }\n\n.webim-operations-icon,\n.webim-leftbar-icon {\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  margin-bottom: 10px;\n  color: #cccccc; }\n\n.webim-operations-icon:hover,\n.webim-leftbar-icon:hover,\n.webim-operations-icon.selected,\n.webim-leftbar-icon.selected {\n  color: #4eb1f4; }\n\n.webim-operations-icon {\n  color: #cccccc;\n  position: absolute;\n  margin-bottom: 0;\n  bottom: 10px;\n  left: 10px; }\n  .webim-operations-icon:hover {\n    color: #4eb1f4; }\n\n/*\n * operations\n */\n.webim-operations {\n  z-index: 1;\n  position: absolute;\n  text-align: left;\n  left: 40px;\n  bottom: 10px;\n  width: 160px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  background-color: #fff; }\n  .webim-operations i {\n    margin: 0 10px;\n    color: #cccccc; }\n  .webim-operations span {\n    vertical-align: top; }\n  .webim-operations li {\n    height: 30px;\n    line-height: 30px;\n    cursor: pointer; }\n    .webim-operations li:hover {\n      color: #4eb1f4;\n      background-color: #f2f2f2; }\n      .webim-operations li:hover i {\n        color: #4eb1f4; }\n    .webim-operations li:nth-child(2) i {\n      display: inline-block;\n      margin-top: -4px;\n      vertical-align: top; }\n    .webim-operations li:last-child:hover {\n      color: #e90101; }\n      .webim-operations li:last-child:hover i {\n        color: #e90101; }\n\n.webim-msg-prompt {\n  position: absolute;\n  top: -4px;\n  right: 0;\n  line-height: 20px;\n  font-style: normal;\n  width: 18px;\n  height: 18px;\n  font-size: 12px;\n  text-align: center;\n  color: #fff;\n  border-radius: 50%;\n  border: 2px solid #fcfdfb;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #ff3a00; }\n\n.webim-msg-icon-prompt {\n  width: 10px;\n  height: 10px;\n  top: 0px;\n  right: 8px; }\n\n/*\n * notify\n */\n.webim-notify {\n  z-index: 3;\n  position: fixed;\n  top: 10px;\n  word-wrap: break-word;\n  padding: 4px;\n  width: 50%;\n  color: #fff;\n  left: 0;\n  right: 0;\n  margin: 0 auto;\n  max-width: 90%;\n  min-height: 30px;\n  border-radius: 2px;\n  line-height: 30px;\n  text-align: center;\n  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 6px 0px;\n  -webkit-tap-highlight-color: transparent;\n  border: 0px none black; }\n  .webim-notify.success {\n    background-color: #aeda3e; }\n  .webim-notify.error {\n    background-color: #ff3a00; }\n  .webim-notify i {\n    position: absolute;\n    right: 10px;\n    top: 9px; }\n\n/*\n * signin & signup\n */\n.webim-sign {\n  overflow: hidden;\n  width: 400px;\n  margin: 40px auto;\n  text-align: center;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n  .webim-sign h2 {\n    font-size: 24px;\n    color: #1a1a1a;\n    width: 100%;\n    line-height: 84px;\n    height: 64px; }\n  .webim-sign p {\n    margin: 0px auto 40px;\n    width: 300px;\n    text-align: left; }\n    .webim-sign p i {\n      font-style: normal;\n      color: #4eb1f4;\n      cursor: pointer; }\n  .webim-sign.webim-signup button {\n    margin-top: 30px; }\n\n.webim-chat {\n  position: relative;\n  max-width: 1024px;\n  min-width: 960px;\n  max-height: 600px;\n  height: 100%;\n  margin: auto;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white;\n  border-radius: 2px;\n  overflow: hidden; }\n\n.webim-chatwindow {\n  position: relative;\n  float: left;\n  height: 100%;\n  width: calc(100% - 303px); }\n  .webim-chatwindow textarea {\n    position: absolute;\n    bottom: 40px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: none;\n    width: 100%;\n    padding: 10px 15px; }\n  .webim-chatwindow .webim-group-memeber {\n    position: absolute;\n    left: 0;\n    right: 0;\n    top: 40px;\n    margin: auto;\n    padding: 10px 7px;\n    border-radius: 2px;\n    width: 200px;\n    overflow: auto;\n    box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n    z-index: 2;\n    background: #fff;\n    max-height: 300px; }\n    .webim-chatwindow .webim-group-memeber li {\n      height: 30px;\n      line-height: 30px;\n      padding: 0 4px;\n      box-sizing: border-box;\n      text-align: left; }\n      .webim-chatwindow .webim-group-memeber li > div {\n        display: inline-block;\n        vertical-align: middle;\n        margin: 0 6px;\n        width: 20px;\n        height: 20px; }\n\n.webim-chatwindow-title {\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  font-size: 14px; }\n  .webim-chatwindow-title i {\n    color: #cccccc;\n    vertical-align: middle;\n    cursor: pointer;\n    margin-left: 10px;\n    padding-bottom: 22px; }\n    .webim-chatwindow-title i.webim-up-icon {\n      transform: rotate(180deg); }\n\n.webim-chatwindow-options {\n  border-top: 1px solid #f2f2f2;\n  width: 100%;\n  z-index: 1;\n  position: absolute;\n  bottom: 120px;\n  left: 0;\n  height: 30px;\n  line-height: 30px; }\n  .webim-chatwindow-options > span {\n    margin-left: 6px;\n    color: #cccccc;\n    cursor: pointer; }\n  .webim-chatwindow-options > span:hover {\n    color: #4eb1f4; }\n\n.webim-send-btn {\n  position: absolute;\n  bottom: 0;\n  right: 10px;\n  width: 80px;\n  height: 24px;\n  font-size: 12px; }\n\n.webim-chatwindow-msg {\n  z-index: 1;\n  position: absolute;\n  top: 40px;\n  bottom: 150px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  box-sizing: border-box;\n  padding: 20px 10px;\n  width: 100%; }\n\n.webim-send-wrapper > ul {\n  z-index: 1;\n  position: absolute;\n  width: 280px;\n  height: 194px;\n  bottom: 150px;\n  left: -140px;\n  border-radius: 2px;\n  background: #fff;\n  box-sizing: border-box;\n  padding: 4px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 4px 12px 0px; }\n  .webim-send-wrapper > ul li {\n    cursor: pointer;\n    display: inline-block;\n    margin: 2px 3px 0 3px; }\n\n.webim-msg-container {\n  overflow: hidden;\n  margin: 24px 0; }\n  .webim-msg-container > div {\n    max-width: 60%;\n    overflow: hidden; }\n  .webim-msg-container .right > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-right: 10px; }\n  .webim-msg-container .right .webim-msg-icon {\n    color: #b4e4fc;\n    right: -40px; }\n  .webim-msg-container .right .webim-msg-value {\n    float: right;\n    margin: 6px 10px 0 0;\n    background-color: #b4e4fc; }\n  .webim-msg-container .right .webim-msg-header {\n    text-align: right; }\n  .webim-msg-container .left > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-left: 10px; }\n  .webim-msg-container .left .webim-msg-icon {\n    color: #f1f2ec;\n    left: -10px; }\n  .webim-msg-container .left .webim-msg-value {\n    background-color: #f1f2ec;\n    float: left;\n    margin: 6px 0 0 10px; }\n  .webim-msg-container .left .webim-msg-header {\n    text-align: left; }\n\n.webim-msg-icon {\n  position: absolute;\n  top: 4px;\n  font-size: 10px; }\n\n.webim-msg-value {\n  position: relative;\n  min-height: 30px;\n  max-width: calc(100% - 40px);\n  border-radius: 4px;\n  padding: 6px;\n  box-sizing: border-box;\n  min-width: 60%; }\n  .webim-msg-value video {\n    width: 100%; }\n  .webim-msg-value.webim-img-msg-wrapper {\n    padding: 1px; }\n  .webim-msg-value > div,\n  .webim-msg-value > pre {\n    white-space: pre-wrap;\n    word-break: break-all;\n    color: #1a1a1a;\n    font-size: 14px;\n    line-height: 20px;\n    margin: 0; }\n  .webim-msg-value .emoji {\n    width: 32px;\n    vertical-align: bottom; }\n  .webim-msg-value i {\n    display: block;\n    font-style: normal;\n    margin-left: 40px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25); }\n  .webim-msg-value a {\n    display: block;\n    margin-left: 30px;\n    margin-top: -28px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25);\n    text-decoration: none; }\n\n.webim-msg-img {\n  max-width: 100%;\n  vertical-align: middle;\n  cursor: pointer;\n  border-radius: 4px; }\n\n.webim-msg-header {\n  line-height: 30px;\n  margin-bottom: 4px;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.15); }\n\n.webim-msg-header-icon {\n  vertical-align: middle;\n  display: inline-block;\n  margin: -46px 4px 0 -4px;\n  line-height: 40px;\n  color: #868683; }\n\n.webim-msg-name {\n  width: calc(100% - 80px);\n  display: inline-block;\n  height: 40px;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden; }\n\n.webim-msg-fileSize {\n  display: inline-block;\n  float: right;\n  width: 47px;\n  overflow: hidden; }\n\n.webim-img-expand {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.3);\n  z-index: 3; }\n  .webim-img-expand img {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    max-width: 90%;\n    max-height: 90%;\n    margin: auto; }\n\n.webim-audio-slash {\n  background-color: transparent;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  border-radius: 4px; }\n\n.slash {\n  animation: slash 1s infinite;\n  -moz-animation: slash 1s infinite;\n  -webkit-animation: slash 1s infinite; }\n\n@keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-moz-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-webkit-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n/*\n * dialog\n */\n.webim-dialog {\n  z-index: 3;\n  position: absolute;\n  width: 400px;\n  height: 168px;\n  top: 20%;\n  left: 0;\n  right: 0;\n  margin: auto;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 8px 0px;\n  background-color: white; }\n  .webim-dialog h3 {\n    line-height: 40px;\n    box-sizing: border-box;\n    padding-left: 10px;\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    font-weight: normal; }\n  .webim-dialog .font {\n    font-size: 20px;\n    position: absolute;\n    right: 6px;\n    top: 6px;\n    width: 20px;\n    height: 20px;\n    color: rgba(0, 0, 0, 0.1);\n    cursor: pointer; }\n  .webim-dialog > div {\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    padding: 10px 10px 20px; }\n  .webim-dialog .webim-dialog-button {\n    position: absolute;\n    right: 8px;\n    bottom: 2px;\n    width: 80px;\n    height: 26px; }\n  .webim-dialog .webim-subscribe-button {\n    width: 60px;\n    height: 30px;\n    margin-left: 10px; }\n  .webim-dialog input {\n    height: 30px;\n    width: 220px; }\n\n.webim-friend-requests {\n  height: auto; }\n  .webim-friend-requests span {\n    width: 60%;\n    display: inline-block;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap; }\n  .webim-friend-requests > div {\n    overflow: auto;\n    max-height: 400px; }\n\n/*\n * layer\n */\n.webim-layer {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n  background-color: rgba(0, 0, 0, 0.25); }\n", ""]);
+	exports.push([module.id, "@charset \"UTF-8\";\nhtml, body, section, article, h1, h2, h3, h4, h5, h6, p, div, i, em, span, ul, li, ol {\n  font-family: Arial, Helvetica, sans-serif;\n  margin: 0;\n  padding: 0; }\n\nhtml, body {\n  width: 100%;\n  height: 100%;\n  font-size: 13px;\n  overflow-y: hidden;\n  overflow-x: hidden;\n  background-color: #fafafa;\n  border: 1px solid rgba(250, 250, 250, 0);\n  -webkit-font-smoothing: antialiased; }\n\ninput, button {\n  outline: none; }\n  input:focus, button:focus {\n    border: 1px solid #4eb1f4;\n    box-shadow: rgba(25, 161, 219, 0.247059) 0px 0px 5px 0px; }\n\ntextarea {\n  outline: none;\n  resize: none; }\n\nul, ol, li {\n  list-style: none; }\n\n.pointer {\n  cursor: pointer; }\n\n.left {\n  float: left; }\n\n.right {\n  float: right; }\n\n.w100 {\n  width: 100%;\n  height: 100%; }\n\n.pad0 {\n  padding: 0; }\n\n.top50 {\n  margin-top: 50px; }\n\n.rel {\n  position: relative; }\n\n.dib {\n  display: inline-block; }\n\nobject {\n  z-index: 3;\n  position: absolute;\n  left: 340px;\n  bottom: 118px;\n  width: 84px; }\n\n@font-face {\n  font-family: 'webim';\n  src: url(" + __webpack_require__(5) + ");\n  src: url(" + __webpack_require__(6) + ") format(\"woff\"), url(" + __webpack_require__(7) + ") format(\"truetype\"), url(" + __webpack_require__(8) + "#iconfont) format(\"svg\"); }\n\n.font {\n  width: 40px;\n  height: 40px;\n  font-family: 'webim' !important;\n  font-size: 40px;\n  font-style: normal;\n  -webkit-font-smoothing: antialiased;\n  -webkit-text-stroke-width: 0.2px;\n  -moz-osx-font-smoothing: grayscale; }\n  .font.small {\n    width: 30px;\n    height: 30px;\n    font-size: 30px; }\n  .font.xsmaller {\n    width: 26px;\n    height: 26px;\n    font-size: 26px; }\n  .font.smaller {\n    width: 24px;\n    height: 24px;\n    font-size: 24px; }\n  .font.smallest {\n    width: 16px;\n    height: 16px;\n    font-size: 16px; }\n\n.hide {\n  display: none; }\n\n.bg-color {\n  color: #fff;\n  border: 1px solid #4eb1f4;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #4eb1f4; }\n\n.color {\n  color: #4eb1f4; }\n\n.hover-color:hover {\n  color: #4eb1f4; }\n\n.webim-logo {\n  width: 200px;\n  margin: 0 auto; }\n\n.webim {\n  position: absolute;\n  right: 0;\n  left: 0;\n  margin: auto;\n  top: 10%;\n  bottom: 10%; }\n\n.copyright {\n  z-index: 3;\n  position: absolute;\n  width: 100%;\n  bottom: 10px;\n  text-align: center;\n  color: #cccccc; }\n\n.webim-rtc-video {\n  z-index: 3;\n  cursor: pointer;\n  position: fixed;\n  margin: auto;\n  right: 0;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  overflow: hidden;\n  border-radius: 4px;\n  background-color: #cccccc; }\n  .webim-rtc-video video {\n    position: absolute; }\n    .webim-rtc-video video.full {\n      z-index: 1;\n      width: 100%;\n      height: 100%;\n      object-fit: contain; }\n    .webim-rtc-video video.corner {\n      z-index: 2;\n      top: 40px;\n      left: auto;\n      right: 10px;\n      bottom: auto;\n      max-height: 17%;\n      max-width: 17%;\n      object-fit: contain; }\n  .webim-rtc-video span {\n    z-index: 2;\n    position: absolute;\n    margin: 0 auto;\n    left: 0;\n    right: 0;\n    top: 6px;\n    bottom: 0;\n    width: 200px;\n    height: 80px;\n    text-align: center;\n    color: #fff; }\n  .webim-rtc-video i {\n    z-index: 2;\n    position: absolute;\n    background-color: rgba(255, 255, 255, 0.2);\n    font-style: normal;\n    border-radius: 50%;\n    text-align: center;\n    color: rgba(0, 0, 0, 0.2);\n    cursor: pointer; }\n    .webim-rtc-video i.close {\n      color: #e90101; }\n    .webim-rtc-video i.toggle {\n      color: #98e024; }\n    .webim-rtc-video i.accept {\n      color: #98e024; }\n\n/*\n * loading\n */\n.webim-loading {\n  position: fixed;\n  z-index: 3;\n  background-color: #FAFAFA;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0; }\n  .webim-loading img {\n    position: absolute;\n    margin: auto;\n    left: 0;\n    right: 0;\n    top: 0;\n    bottom: 0;\n    width: 24px; }\n\n/*\n * button\n */\n.webim-button {\n  font-size: 16px;\n  box-sizing: border-box;\n  display: inline-block;\n  margin: 10px auto;\n  width: 300px;\n  height: 36px;\n  cursor: pointer;\n  border-radius: 2px; }\n  .webim-button.error {\n    background-color: #ff3a00;\n    border: 1px solid #ff3a00; }\n  .webim-button:hover {\n    background-color: #1aa1e4; }\n\n/*\n * input\n */\n.webim-input {\n  box-sizing: border-box;\n  font-size: 14px;\n  padding: 0 4px;\n  display: inline-block;\n  margin: 10px auto 0;\n  width: 300px;\n  height: 36px;\n  line-height: 36px;\n  cursor: pointer;\n  border-radius: 2px;\n  border: 1px solid #e5e5e5;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n/*\n * checkbox\n */\n.webim-checkbox {\n  text-align: left;\n  margin: 10px 0 10px 5px;\n  padding-left: 50px;\n  box-sizing: border-box; }\n  .webim-checkbox span {\n    height: 30px;\n    line-height: 30px; }\n  .webim-checkbox > i {\n    position: relative;\n    margin-right: 6px;\n    width: 14px;\n    height: 14px;\n    border-radius: 2px;\n    display: inline-block;\n    vertical-align: middle;\n    border: 1px solid #cccccc;\n    cursor: pointer; }\n    .webim-checkbox > i:hover {\n      background-color: #fff; }\n      .webim-checkbox > i:hover em {\n        display: inline-block;\n        color: #cccccc; }\n    .webim-checkbox > i.checked {\n      background-color: #afd7e8; }\n      .webim-checkbox > i.checked em {\n        display: inline-block;\n        color: #000; }\n    .webim-checkbox > i em {\n      display: none;\n      position: absolute;\n      left: -6px;\n      top: -10px;\n      color: #000; }\n\n/*\n * left bar\n */\n.webim-leftbar {\n  position: relative;\n  float: left;\n  width: 50px;\n  height: 100%;\n  text-align: center;\n  border-radius: 2px 0px 0px 2px;\n  border: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #fcfdfb; }\n\n/*\n * contact list\n */\n.webim-contact-wrapper {\n  float: left;\n  height: 100%;\n  width: 250px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  border-right: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n.webim-contact-item {\n  cursor: pointer;\n  position: relative;\n  width: 100%;\n  overflow: hidden;\n  height: 60px; }\n  .webim-contact-item .webim-avatar-icon {\n    float: left;\n    margin: 10px; }\n  .webim-contact-item .webim-contact-info {\n    position: relative; }\n  .webim-contact-item .webim-contact-handlers {\n    text-align: right;\n    position: absolute;\n    right: 2px;\n    top: 0; }\n    .webim-contact-item .webim-contact-handlers i {\n      font-size: 16px;\n      line-height: 36px; }\n  .webim-contact-item > span, .webim-contact-item .webim-contact-username {\n    color: #1a1a1a;\n    font-size: 14px;\n    margin: 10px 0;\n    display: inline-block;\n    width: calc(100% - 70px);\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis; }\n  .webim-contact-item > i {\n    display: inline-block;\n    right: 2px;\n    bottom: 10px;\n    top: auto; }\n  .webim-contact-item > em {\n    display: block;\n    height: 20px;\n    line-height: 20px;\n    width: calc(100% - 100px);\n    position: absolute;\n    margin: auto;\n    left: 30px;\n    top: 30px;\n    right: 10px;\n    color: #999999;\n    font-style: normal;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden; }\n    .webim-contact-item > em img {\n      width: 20px;\n      vertical-align: middle; }\n  .webim-contact-item.selected {\n    background-color: #f3f6f6; }\n\n.webim-profile-avatar {\n  display: inline-block;\n  margin: 10px auto; }\n\n.webim-avatar-icon {\n  width: 40px;\n  height: 40px;\n  border-radius: 50%;\n  overflow: hidden;\n  -webkit-filter: contrast(1.2);\n  -webkit-tap-highlight-color: transparent; }\n  .webim-avatar-icon.small {\n    width: 30px;\n    height: 30px; }\n\n.webim-operations-icon,\n.webim-leftbar-icon {\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  margin-bottom: 10px;\n  color: #cccccc; }\n\n.webim-operations-icon:hover,\n.webim-leftbar-icon:hover,\n.webim-operations-icon.selected,\n.webim-leftbar-icon.selected {\n  color: #4eb1f4; }\n\n.webim-operations-icon {\n  color: #cccccc;\n  position: absolute;\n  margin-bottom: 0;\n  bottom: 10px;\n  left: 10px; }\n  .webim-operations-icon:hover {\n    color: #4eb1f4; }\n\n/*\n * operations\n */\n.webim-operations {\n  z-index: 1;\n  position: absolute;\n  text-align: left;\n  left: 40px;\n  bottom: 10px;\n  width: 160px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  background-color: #fff; }\n  .webim-operations i {\n    margin: 0 10px;\n    color: #cccccc; }\n  .webim-operations span {\n    vertical-align: top;\n    word-break: keep-all;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis; }\n  .webim-operations li {\n    height: 30px;\n    line-height: 30px;\n    cursor: pointer;\n    overflow: hidden; }\n    .webim-operations li:hover {\n      color: #4eb1f4;\n      background-color: #f2f2f2; }\n      .webim-operations li:hover i {\n        color: #4eb1f4; }\n    .webim-operations li:nth-child(2) i {\n      display: inline-block;\n      margin-top: -4px;\n      vertical-align: top; }\n    .webim-operations li:last-child:hover {\n      color: #e90101; }\n      .webim-operations li:last-child:hover i {\n        color: #e90101; }\n\n.webim-msg-prompt {\n  position: absolute;\n  top: -4px;\n  right: 0;\n  line-height: 16px;\n  font-style: normal;\n  width: 16px;\n  height: 16px;\n  font-size: 12px;\n  text-align: center;\n  color: #fff;\n  border-radius: 50%;\n  border: 2px solid #fcfdfb;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #ff3a00; }\n\n.webim-msg-icon-prompt {\n  width: 10px;\n  height: 10px;\n  top: 0px;\n  right: 8px; }\n\n.webim-blacklist-wrapper {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  overflow-x: hidden;\n  overflow-y: auto;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white;\n  margin-bottom: 30px; }\n\n.webim-blacklist-item {\n  position: relative;\n  cursor: pointer;\n  display: block;\n  width: 100%;\n  overflow: hidden;\n  height: 30px;\n  font-size: 20px;\n  line-height: 30px; }\n  .webim-blacklist-item i.font {\n    line-height: 30px;\n    float: right;\n    position: static; }\n\n.webim-operation-icon {\n  width: 100px;\n  float: right;\n  margin-right: 10px;\n  text-align: right; }\n\n* :focus {\n  outline: 0; }\n\n/*\n * notify\n */\n.webim-notify {\n  z-index: 3;\n  position: fixed;\n  top: 10px;\n  word-wrap: break-word;\n  padding: 4px;\n  width: 50%;\n  color: #fff;\n  left: 0;\n  right: 0;\n  margin: 0 auto;\n  max-width: 90%;\n  min-height: 30px;\n  border-radius: 2px;\n  line-height: 30px;\n  text-align: center;\n  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 6px 0px;\n  -webkit-tap-highlight-color: transparent;\n  border: 0px none black; }\n  .webim-notify.success {\n    background-color: #aeda3e; }\n  .webim-notify.error {\n    background-color: #ff3a00; }\n  .webim-notify i {\n    position: absolute;\n    right: 10px;\n    top: 9px; }\n\n/*\n * signin & signup\n */\n.webim-sign {\n  overflow: hidden;\n  width: 400px;\n  margin: 40px auto;\n  text-align: center;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n  .webim-sign h2 {\n    font-size: 24px;\n    color: #1a1a1a;\n    width: 100%;\n    line-height: 84px;\n    height: 64px; }\n  .webim-sign p {\n    margin: 0px auto 40px;\n    width: 300px;\n    text-align: left; }\n    .webim-sign p i {\n      font-style: normal;\n      color: #4eb1f4;\n      cursor: pointer; }\n  .webim-sign.webim-signup button {\n    margin-top: 30px; }\n\n.webim-chat {\n  position: relative;\n  max-width: 1024px;\n  min-width: 960px;\n  max-height: 600px;\n  height: 100%;\n  margin: auto;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white;\n  border-radius: 2px;\n  overflow: hidden; }\n\n.webim-chatwindow {\n  position: relative;\n  float: left;\n  height: 100%;\n  width: calc(100% - 303px); }\n  .webim-chatwindow textarea {\n    position: absolute;\n    bottom: 40px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: none;\n    width: 100%;\n    padding: 10px 15px; }\n  .webim-chatwindow .webim-group-memeber {\n    position: absolute;\n    left: 0;\n    right: 0;\n    top: 40px;\n    margin: auto;\n    padding: 10px 7px;\n    border-radius: 2px;\n    width: 200px;\n    overflow: auto;\n    box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n    z-index: 2;\n    background: #fff;\n    max-height: 300px; }\n    .webim-chatwindow .webim-group-memeber li {\n      height: 30px;\n      line-height: 30px;\n      padding: 0 4px;\n      box-sizing: border-box;\n      text-align: left; }\n      .webim-chatwindow .webim-group-memeber li > div {\n        display: inline-block;\n        vertical-align: middle;\n        margin: 0 6px;\n        width: 20px;\n        height: 20px; }\n\n.webim-chatwindow-title {\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  font-size: 14px; }\n  .webim-chatwindow-title i {\n    color: #cccccc;\n    vertical-align: middle;\n    cursor: pointer;\n    margin-left: 10px;\n    padding-bottom: 22px; }\n    .webim-chatwindow-title i.webim-up-icon {\n      transform: rotate(180deg); }\n    .webim-chatwindow-title i.webim-call-icon {\n      position: absolute;\n      left: 0;\n      top: 0; }\n    .webim-chatwindow-title i.webim-accept-icon {\n      position: absolute;\n      left: 40px;\n      top: 0; }\n\n.webim-chatwindow-options {\n  border-top: 1px solid #f2f2f2;\n  width: 100%;\n  z-index: 1;\n  position: absolute;\n  bottom: 120px;\n  left: 0;\n  height: 30px;\n  line-height: 30px; }\n  .webim-chatwindow-options > span {\n    margin-left: 6px;\n    color: #cccccc;\n    cursor: pointer; }\n  .webim-chatwindow-options > span:hover {\n    color: #4eb1f4; }\n\n.webim-send-btn {\n  position: absolute;\n  bottom: 0;\n  right: 10px;\n  width: 80px;\n  height: 24px;\n  font-size: 12px; }\n\n.webim-chatwindow-msg {\n  z-index: 1;\n  position: absolute;\n  top: 40px;\n  bottom: 150px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  box-sizing: border-box;\n  padding: 20px 10px;\n  width: 100%; }\n\n.webim-send-wrapper > ul {\n  z-index: 1;\n  position: absolute;\n  width: 280px;\n  height: 194px;\n  bottom: 150px;\n  left: -140px;\n  border-radius: 2px;\n  background: #fff;\n  box-sizing: border-box;\n  padding: 4px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 4px 12px 0px; }\n  .webim-send-wrapper > ul li {\n    cursor: pointer;\n    display: inline-block;\n    margin: 2px 3px 0 3px; }\n\n#test {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  z-index: 2222; }\n\n.webim-msg-container {\n  overflow: hidden;\n  margin: 24px 0; }\n  .webim-msg-container > div {\n    max-width: 60%;\n    overflow: hidden; }\n  .webim-msg-container .right > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-right: 10px; }\n  .webim-msg-container .right .webim-msg-icon {\n    color: #b4e4fc;\n    right: -40px; }\n  .webim-msg-container .right .webim-msg-value {\n    float: right;\n    margin: 6px 10px 0 0;\n    background-color: #b4e4fc; }\n  .webim-msg-container .right .webim-msg-error {\n    float: right;\n    margin: 6px 10px 0 0; }\n  .webim-msg-container .right .webim-msg-header {\n    text-align: right; }\n  .webim-msg-container .left > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-left: 10px; }\n  .webim-msg-container .left .webim-msg-icon {\n    color: #f1f2ec;\n    left: -10px; }\n  .webim-msg-container .left .webim-msg-value {\n    background-color: #f1f2ec;\n    float: left;\n    margin: 6px 0 0 10px; }\n  .webim-msg-container .left .webim-msg-header {\n    text-align: left; }\n\n.webim-msg-icon {\n  position: absolute;\n  top: 4px;\n  font-size: 10px; }\n\n.webim-msg-value {\n  position: relative;\n  min-height: 30px;\n  max-width: calc(100% - 80px);\n  border-radius: 4px;\n  padding: 6px;\n  box-sizing: border-box;\n  min-width: 60%; }\n  .webim-msg-value video {\n    width: 100%; }\n  .webim-msg-value.webim-img-msg-wrapper {\n    padding: 1px; }\n  .webim-msg-value > div,\n  .webim-msg-value > pre {\n    white-space: pre-wrap;\n    word-break: break-all;\n    color: #1a1a1a;\n    font-size: 14px;\n    line-height: 20px;\n    margin: 0; }\n  .webim-msg-value .emoji {\n    width: 32px;\n    vertical-align: bottom; }\n  .webim-msg-value i {\n    display: block;\n    font-style: normal;\n    margin-left: 40px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25); }\n  .webim-msg-value a {\n    display: block;\n    margin-left: 30px;\n    margin-top: -28px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25);\n    text-decoration: none; }\n\n.webim-msg-img {\n  max-width: 100%;\n  vertical-align: middle;\n  cursor: pointer;\n  border-radius: 4px; }\n\n.webim-msg-header {\n  line-height: 30px;\n  margin-bottom: 4px;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.15); }\n\n.webim-msg-header-icon {\n  vertical-align: middle;\n  display: inline-block;\n  margin: -46px 4px 0 -4px;\n  line-height: 40px;\n  color: #868683; }\n\n.webim-msg-name {\n  width: calc(100% - 80px);\n  display: inline-block;\n  height: 40px;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden; }\n\n.webim-msg-fileSize {\n  display: inline-block;\n  float: right;\n  width: 47px;\n  overflow: hidden; }\n\n.webim-img-expand {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.3);\n  z-index: 3; }\n  .webim-img-expand img {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    max-width: 90%;\n    max-height: 90%;\n    margin: auto; }\n\n.webim-audio-slash {\n  background-color: transparent;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  border-radius: 4px; }\n\n.slash {\n  animation: slash 1s infinite;\n  -moz-animation: slash 1s infinite;\n  -webkit-animation: slash 1s infinite; }\n\n@keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-moz-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-webkit-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n.clearfix:after {\n  content: ' ';\n  display: table;\n  clear: both; }\n\n/*\n * dialog\n */\n.webim-dialog {\n  z-index: 3;\n  position: absolute;\n  width: 400px;\n  min-height: 168px;\n  top: 20%;\n  left: 0;\n  right: 0;\n  margin: auto;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 8px 0px;\n  background-color: white; }\n  .webim-dialog h3 {\n    line-height: 40px;\n    box-sizing: border-box;\n    padding-left: 10px;\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    font-weight: normal; }\n  .webim-dialog .font {\n    font-size: 20px;\n    position: absolute;\n    right: 6px;\n    top: 6px;\n    width: 20px;\n    height: 20px;\n    color: rgba(0, 0, 0, 0.1);\n    cursor: pointer; }\n  .webim-dialog > div {\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    padding: 10px 10px 20px; }\n  .webim-dialog .webim-dialog-button {\n    position: absolute;\n    right: 8px;\n    bottom: 2px;\n    width: 80px;\n    height: 26px; }\n  .webim-dialog .webim-subscribe-button {\n    width: 60px;\n    height: 30px;\n    margin-left: 10px; }\n  .webim-dialog input {\n    height: 30px;\n    width: 220px; }\n  .webim-dialog textarea {\n    margin-top: 20px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: 1px solid rgba(0, 0, 0, 0.1);\n    width: 220px; }\n  .webim-dialog-body {\n    min-height: 100px; }\n  .webim-dialog .webim-dialog-footer {\n    padding: 10px;\n    position: relative;\n    min-height: 20px;\n    text-align: right; }\n    .webim-dialog .webim-dialog-footer .webim-button {\n      position: static;\n      margin-right: 10px; }\n\n.webim-dialog-2 {\n  height: 450px; }\n\n.webim-friend-requests {\n  height: auto; }\n  .webim-friend-requests span {\n    width: 60%;\n    display: inline-block;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap; }\n  .webim-friend-requests > div {\n    overflow: auto;\n    max-height: 400px; }\n\n/*\n * layer\n */\n.webim-layer {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n  background-color: rgba(0, 0, 0, 0.25); }\n\n/*\n  说明:\n  下面的css都是为了快速实现功能，覆盖旧有属性的各种trick\n  后期需要找专门的css人员整理一遍，合并入正常的文件，然后删除本文件!\n*/\n/******************* multiple select box ********************/\n.react-multi-select-box-container {\n  position: relative;\n  width: 240px;\n  display: inline-block;\n  background-color: #fff;\n  border-radius: 4px;\n  text-align: left;\n  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); }\n\n.react-multi-select-box {\n  padding: 10px 0;\n  display: inline-block;\n  cursor: pointer;\n  border: none;\n  width: 100%;\n  text-align: left;\n  background-color: transparent; }\n  .react-multi-select-box::before {\n    content: ' ';\n    position: absolute;\n    z-index: 1;\n    height: 20px;\n    top: -7px;\n    right: 13px;\n    border-left: 3px solid transparent;\n    border-right: 3px solid transparent;\n    border-bottom: 4px solid #a7a8aa; }\n  .react-multi-select-box::after {\n    content: ' ';\n    position: absolute;\n    z-index: 1;\n    top: 20px;\n    right: 13px;\n    border-top: 4px solid #a7a8aa;\n    border-left: 3px solid transparent;\n    border-right: 3px solid transparent; }\n\n.react-multi-select-box-label {\n  padding: 0 40px 0 10px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #333;\n  line-height: 16px; }\n\n.react-multi-select-box-empty .react-multi-select-box-label {\n  color: #c5c5c5; }\n\n.react-multi-select-area {\n  position: absolute;\n  margin-top: 4px;\n  padding: 0 10px;\n  height: 225px;\n  min-width: 260px;\n  border-radius: 4px;\n  background-color: #fff;\n  z-index: 4;\n  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); }\n\n.react-multi-select-box-hidden {\n  display: none; }\n\n.react-multi-select-hide {\n  display: none; }\n\n.react-multi-select-panel {\n  display: flex;\n  height: 185px; }\n\n.react-multi-select-col {\n  min-width: 110px;\n  overflow-y: auto; }\n  .react-multi-select-col .selected-option-row {\n    padding: 5px 0;\n    cursor: pointer; }\n\n.react-multi-select-sign {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  width: 15px; }\n  .react-multi-select-sign i {\n    width: 6px;\n    height: 6px;\n    border-top: 2px solid #a9a9a9;\n    border-right: 2px solid #a9a9a9;\n    -webkit-transform: rotate(45deg);\n    -moz-transform: rotate(45deg);\n    -o-transform: rotate(45deg);\n    transform: rotate(45deg); }\n\n.react-multi-select-area-btn {\n  padding: 5px 0;\n  height: 40px;\n  border-top: 1px solid #eee;\n  text-align: center; }\n  .react-multi-select-area-btn .eg-btn {\n    padding: 4px 20px;\n    margin-right: 10px; }\n    .react-multi-select-area-btn .eg-btn:last-child {\n      margin-right: 0; }\n\n.classification {\n  padding: 5px 0;\n  cursor: pointer; }\n\n.react-multi-select-list-arrow {\n  position: relative;\n  display: inline-block;\n  vertical-align: middle;\n  width: 8px;\n  height: 8px; }\n  .react-multi-select-list-arrow::before {\n    content: ' ';\n    position: absolute;\n    border-top: 3px solid transparent;\n    border-bottom: 3px solid transparent;\n    border-left: 4px solid #87c2e5; }\n\n.react-multi-select-list-arrow.expand::before {\n  content: ' ';\n  position: absolute;\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  border-top: 4px solid #87c2e5; }\n\n.react-multi-select-sub-options {\n  padding-left: 16px; }\n\n.react-multi-select-list-option:last-child {\n  padding-bottom: 0; }\n\n.react-multi-select-list-option .eg-input.checkbox .input-icon {\n  margin-right: 2px; }\n\n.react-multi-select-list-option .eg-input.checkbox.active .input-icon {\n  fill: #87c2e5; }\n\n.react-multi-select-list-option .react-multi-select-box-option {\n  position: relative;\n  padding: 5px 0 5px 20px;\n  margin: 0;\n  cursor: pointer;\n  display: block;\n  text-decoration: none; }\n  .react-multi-select-list-option .react-multi-select-box-option:before {\n    content: ' ';\n    position: absolute;\n    text-align: center;\n    line-height: 1.1;\n    left: 2px;\n    top: 8px;\n    height: 12px;\n    width: 12px;\n    margin-right: 10px;\n    border: 1px solid #7B8E9B;\n    background: #f9f9f9;\n    vertical-align: middle; }\n\n.react-multi-select-list-option .react-multi-select-box-option-selected:before {\n  content: '\\2713';\n  color: #87c2e5; }\n\n.react-multiple-select-type-name {\n  padding: 5px 0 4px 0;\n  border-bottom: 1px solid #eee;\n  color: #c5c5c5; }\n\n.react-multi-select-btn {\n  padding: 4px 20px;\n  border-radius: 6px;\n  background-color: #307fc8;\n  display: inline-block;\n  margin-right: 10px;\n  margin-bottom: 0;\n  text-align: center;\n  vertical-align: middle;\n  touch-action: manipulation;\n  cursor: pointer;\n  background-image: none;\n  border: 1px solid transparent;\n  white-space: nowrap;\n  outline: 0;\n  text-decoration: none;\n  font-weight: normal;\n  font-size: 14px;\n  line-height: 1.42857143;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  color: #fff;\n  border-color: transparent; }\n  .react-multi-select-btn:last-child {\n    margin-right: 0; }\n\n.react-multi-select-btn-white {\n  background-color: #fff;\n  color: #333;\n  border-color: #d5d5d5; }\n\n/******************* multiple select box ********************/\n.webim-chatwindow .webim-operations-icon {\n  top: 5px;\n  left: auto;\n  right: 10px;\n  bottom: 0px; }\n\n.webim-chatwindow .webim-operations {\n  left: inherit;\n  right: 40px;\n  top: 10px;\n  bottom: auto;\n  z-index: 2; }\n\n.webim-friend-options span.radio_span {\n  width: 80px;\n  display: inline-block; }\n\n.webim-friend-options input.radio {\n  height: 10px;\n  width: 20px; }\n\n.webim_isWindowSDK {\n  top: 0;\n  bottom: 0; }\n\n.webim_isWindowSDK .webim-chat {\n  max-width: 100%;\n  min-width: 100%;\n  max-height: 100%;\n  width: 100%; }\n\n.webim-friend-requests-windowSDK {\n  width: 500px; }\n\n.webim-friend-requests-windowSDK span {\n  width: 100%; }\n\n.webim-msg-value a.dir {\n  margin-left: 130px;\n  margin-top: -20px; }\n\n.webim-leftbar .username {\n  width: 100%;\n  overflow: hidden; }\n\n.webim-loading span {\n  position: absolute;\n  margin: auto;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  width: 200px;\n  height: 80px;\n  text-align: center; }\n\nspan.red {\n  color: #ff2a00; }\n\n.webim-contact-loading {\n  width: 24px;\n  margin: 0 auto; }\n\n.webim-contact-loading img {\n  width: 24px; }\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	/*
@@ -203,25 +225,31 @@
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "demo/stylesheet/src/font/iconfont.eot";
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "demo/stylesheet/src/font/iconfont.woff";
 
 /***/ },
-/* 6 */
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__.p + "demo/stylesheet/src/font/iconfont.ttf";
+
+/***/ },
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "demo/stylesheet/src/font/iconfont.svg";
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -473,34 +501,229 @@
 
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	var Webim = __webpack_require__(186);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
 
-	var textMsg = __webpack_require__(205);
-	var imgMsg = __webpack_require__(206);
-	var fileMsg = __webpack_require__(207);
-	var locMsg = __webpack_require__(208);
-	var audioMsg = __webpack_require__(209);
-	var videoMsg = __webpack_require__(210);
-	var Notify = __webpack_require__(188);
+	var Webim = __webpack_require__(188);
+	var textMsg = __webpack_require__(220);
+	var imgMsg = __webpack_require__(221);
+	var fileMsg = __webpack_require__(222);
+	var locMsg = __webpack_require__(225);
+	var audioMsg = __webpack_require__(226);
+	var videoMsg = __webpack_require__(227);
+	var Notify = __webpack_require__(190);
+	var _ = __webpack_require__(201);
+
+	var Blacklist = function () {
+	    var _data = {};
+	    var dataGroup = {};
+	    var isWin = WebIM.config.isWindowSDK;
+	    var order = 2;
+	    var emptyfn = function emptyfn() {};
+
+	    function _set() {
+	        Demo.blacklist = _data;
+	        return _data;
+	    }
+
+	    function _add(name) {
+	        _data[name] = _.find(Demo.friends, function (item) {
+	            log('name', name, item.name);
+	            return item.name == name;
+	        });
+
+	        return _set();
+	    }
+
+	    function _addWin(name) {
+	        _data[name] = {
+	            type: 'jid',
+	            order: order++,
+	            jid: name,
+	            name: name
+	        };
+
+	        return _set();
+	    }
+
+	    function _remove(name) {
+	        log(JSON.stringify(_data));
+
+	        try {
+	            delete _data[name];
+	        } catch (e) {}
+	        return _set();
+	    }
+
+	    function _removeWin(name) {
+	        try {
+	            delete _data[name];
+	        } catch (e) {
+	            log('blacklist remove error');
+	        }
+
+	        return _set();
+	    }
+
+	    function _parse(list) {
+	        _data = list;
+	        return _set();
+	    }
+
+	    function _parseWin(str) {
+	        _data = {};
+	        var blacklist = str ? JSON.parse(str) : [];
+
+	        _.each(blacklist, function (item, k) {
+	            _data[item.name] = {
+	                type: 'jid',
+	                order: order++,
+	                jid: item.name,
+	                name: item.name
+	            };
+	        });
+
+	        return _set();
+	    }
+
+	    function _getBlacklist(options) {
+	        var sucFn = options.success || emptyfn;
+	        var errFn = options.success || emptyfn;
+
+	        Demo.conn.getBlacklist();
+	    }
+
+	    function _getBlacklistWin(options) {
+	        var sucFn = options.success || emptyfn;
+	        var errFn = options.success || emptyfn;
+
+	        WebIM.doQuery('{"type":"getBlacklist"}', function success(str) {
+	            var list = Demo.api.blacklist.parse(str);
+	            Demo.api.updateRoster();
+	            sucFn(list);
+	        }, function failure(errCode, errMessage) {
+	            Demo.api.NotifyError('getRoster:' + errCode);
+	            errFn();
+	        });
+	    }
+
+	    function _getGroupBlacklist(options) {
+	        var sucFn = options.success || emptyfn;
+	        var errFn = options.success || emptyfn;
+
+	        options.success = function (list) {
+	            dataGroup = list;
+	            sucFn(list);
+	        };
+	        Demo.conn.getGroupBlacklist(options);
+	    }
+
+	    function _getGroupBlacklistWin(options) {
+	        var sucFn = options.success || emptyfn;
+	        var errFn = options.success || emptyfn;
+
+	        WebIM.doQuery('{"type":"groupSpecification","id":"' + options.roomId + '"}', function success(str) {
+	            if (!str) return;
+	            var json = JSON.parse(str) || {};
+	            var p = {
+	                owner: [{
+	                    jid: json.owner,
+	                    affiliation: "owner"
+	                }],
+	                members: json.members,
+	                blacklist: json.bans
+	            };
+	            sucFn(p.blacklist, p.members);
+	        }, function failure(errCode, errMessage) {
+	            Demo.api.NotifyError("queryRoomInfo:" + errCode);
+	        });
+	    }
+
+	    function _removeGroupMember(options) {
+	        var sucFn = options.success || emptyfn;
+	        var errFn = options.success || emptyfn;
+
+	        options.success = function (list) {
+	            dataGroup = list;
+	            sucFn(list);
+	        };
+
+	        Demo.conn.removeGroupMemberFromBlacklist(options);
+	    }
+
+	    function _removeGroupMemberWin(options) {
+	        var sucFn = options.success || emptyfn;
+	        var errFn = options.success || emptyfn;
+
+	        var query = {
+	            type: 'unblockGroupMembers',
+	            id: options.roomId,
+	            members: [options.to]
+	        };
+
+	        WebIM.doQuery(JSON.stringify(query), function () {
+	            sucFn();
+	        }, function failure(errCode, errMessage) {
+	            Demo.api.NotifyError('_removeGoupMemberWin:' + errCode);
+	            errFn();
+	        });
+	    }
+
+	    function _addGroupMemberToBlacklist(options) {
+	        var sucFn = options.success || emptyfn;
+	        var errFn = options.success || emptyfn;
+
+	        Demo.conn.addToGroupBlackList(options);
+	    }
+
+	    function _addGroupMemberToBlacklistWin(options) {
+	        var sucFn = options.success || emptyfn;
+	        var errFn = options.success || emptyfn;
+
+	        var query = {
+	            type: 'blockGroupMembers',
+	            reason: '',
+	            id: options.roomId,
+	            members: [options.to]
+	        };
+
+	        WebIM.doQuery(JSON.stringify(query), sucFn, function failure(errCode, errMessage) {
+	            Demo.api.NotifyError('_addGroupMemberToBlacklistWin:' + errCode);
+	            errFn();
+	        });
+	    }
+
+	    return {
+	        add: isWin ? _addWin : _add,
+	        parse: isWin ? _parseWin : _parse,
+	        remove: isWin ? _removeWin : _remove,
+	        getBlacklist: isWin ? _getBlacklistWin : _getBlacklist,
+	        getGroupBlacklist: isWin ? _getGroupBlacklistWin : _getGroupBlacklist,
+	        removeGroupMemberFromBlacklist: isWin ? _removeGroupMemberWin : _removeGroupMember,
+	        addGroupMemberToBlacklist: isWin ? _addGroupMemberToBlacklistWin : _addGroupMemberToBlacklist,
+	        data: function data() {
+	            return _data;
+	        }
+	    };
+	}();
 
 	module.exports = {
-	    log: function () {
-	        if (typeof console !== 'undefined' && console.log) {
-	            return function () {
-	                console.log.apply(window.console, arguments);
-	            };
-	        } else return function () {};
-	    }(),
+	    log: function log() {
+	        if ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) === 'object') {
+	            if (typeof console !== 'undefined' && typeof console.log === 'function') {
+	                console.log.apply(console, arguments);
+	            }
+	        }
+	    },
 
 	    render: function render(node, change) {
 	        this.node = node;
@@ -522,7 +745,7 @@
 	            default:
 	                props = null;
 	                break;
-	        };
+	        }
 
 	        if (props) {
 	            ReactDOM.render(React.createElement(Webim, _extends({ config: WebIM.config, close: this.logout }, props)), this.node);
@@ -531,9 +754,29 @@
 	        }
 	    },
 
-	    logout: function logout() {
-	        Demo.conn.stopHeartBeat();
-	        Demo.conn.close();
+	    logout: function logout(type) {
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"logout"}', function (response) {
+	                Demo.api.init();
+	            }, function (code, msg) {
+	                Demo.api.NotifyError("logout:" + msg);
+	            });
+	        } else {
+	            Demo.conn.close('logout');
+	            if (type == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
+	                Demo.conn.errorType = type;
+	            }
+	        }
+	    },
+
+	    init: function init() {
+	        Demo.selected = null;
+	        Demo.user = null;
+	        Demo.call = null;
+	        Demo.roster = {};
+	        Demo.strangers = {};
+	        Demo.blacklist = {};
+
 	        ReactDOM.unmountComponentAtNode(this.node);
 	        this.render(this.node);
 	    },
@@ -553,12 +796,16 @@
 	            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
 	            targetNode = document.getElementById('wrapper' + targetId);
 
+	        // TODO: ios/android client doesn't encodeURIComponent yet
+	        // if (typeof data === "string") {
+	        // data = decodeURIComponent(data);
+	        // }
+
 	        if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
 	            Demo.strangers[targetId] = Demo.strangers[targetId] || [];
 	        } else if (!targetNode) {
 	            return;
 	        }
-
 	        switch (type) {
 	            case 'txt':
 	                if (!targetNode) {
@@ -568,7 +815,9 @@
 	                    textMsg({
 	                        wrapper: targetNode,
 	                        name: name,
-	                        value: brief
+	                        value: brief,
+	                        error: msg.error,
+	                        errorText: msg.errorText
 	                    }, this.sentByMe);
 	                }
 	                break;
@@ -582,7 +831,9 @@
 	                    textMsg({
 	                        wrapper: targetNode,
 	                        name: name,
-	                        value: brief
+	                        value: brief,
+	                        error: msg.error,
+	                        errorText: msg.errorText
 	                    }, this.sentByMe);
 	                }
 	                break;
@@ -590,26 +841,80 @@
 	                if (!targetNode) {
 	                    Demo.strangers[targetId].push({ msg: msg, type: 'img' });
 	                } else {
-	                    brief = '[' + Demo.lan.image + ']';
-	                    imgMsg({
-	                        wrapper: targetNode,
-	                        name: name,
-	                        value: data || msg.url
-	                    }, this.sentByMe);
+	                    if (WebIM.config.isWindowSDK) {
+	                        var cur = document.getElementById('file_' + msg.id);
+	                        if (cur) {
+	                            var listenerName = 'onUpdateFileUrl' + msg.id;
+	                            if (Demo.api[listenerName]) {
+	                                Demo.api[listenerName]({ url: msg.url });
+	                                Demo.api[listenerName] = null;
+	                            } else {
+	                                console.log('listenerName not exists:' + msg.id);
+	                            }
+	                            return;
+	                        } else {
+	                            brief = '[' + Demo.lan.image + ']';
+	                            imgMsg({
+	                                id: msg.id,
+	                                wrapper: targetNode,
+	                                name: name,
+	                                value: data || msg.url,
+	                                error: msg.error,
+	                                errorText: msg.errorText
+	                            }, this.sentByMe);
+	                        }
+	                    } else {
+	                        brief = '[' + Demo.lan.image + ']';
+	                        imgMsg({
+	                            id: msg.id,
+	                            wrapper: targetNode,
+	                            name: name,
+	                            value: data || msg.url,
+	                            error: msg.error,
+	                            errorText: msg.errorText
+	                        }, this.sentByMe);
+	                    }
 	                }
 	                break;
 	            case 'aud':
 	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'aud' });
+	                    Demo.strangers[targetId].push({ msg: msg, type: type });
 	                } else {
-	                    brief = '[' + Demo.lan.audio + ']';
-	                    audioMsg({
-	                        wrapper: targetNode,
-	                        name: name,
-	                        value: data || msg.url,
-	                        length: msg.length,
-	                        id: msg.id
-	                    }, this.sentByMe);
+	                    if (WebIM.config.isWindowSDK) {
+	                        var cur = document.getElementById('file_' + msg.id);
+	                        if (cur) {
+	                            var listenerName = 'onUpdateFileUrl' + msg.id;
+	                            if (Demo.api[listenerName]) {
+	                                Demo.api[listenerName]({ url: msg.url });
+	                                Demo.api[listenerName] = null;
+	                            } else {
+	                                console.log('listenerName not exists:' + msg.id);
+	                            }
+	                            return;
+	                        } else {
+	                            brief = '[' + Demo.lan.file + ']';
+	                            fileMsg({
+	                                id: msg.id,
+	                                wrapper: targetNode,
+	                                name: name,
+	                                value: data || msg.url,
+	                                filename: msg.filename,
+	                                error: msg.error,
+	                                errorText: msg.errorText
+	                            }, this.sentByMe);
+	                        }
+	                    } else {
+	                        brief = '[' + Demo.lan.audio + ']';
+	                        audioMsg({
+	                            wrapper: targetNode,
+	                            name: name,
+	                            value: data || msg.url,
+	                            length: msg.length,
+	                            id: msg.id,
+	                            error: msg.error,
+	                            errorText: msg.errorText
+	                        }, this.sentByMe);
+	                    }
 	                }
 	                break;
 	            case 'cmd':
@@ -623,18 +928,45 @@
 	                if (!targetNode) {
 	                    Demo.strangers[targetId].push({ msg: msg, type: 'file' });
 	                } else {
-	                    brief = '[' + Demo.lan.file + ']';
-	                    var option = {
-	                        id: msg.id,
-	                        wrapper: targetNode,
-	                        name: name,
-	                        filename: msg.filename,
-	                        value: data || msg.url
-	                    };
-	                    if (msg.ext) {
-	                        option.fileSize = msg.ext.fileSize;
+	                    if (WebIM.config.isWindowSDK) {
+	                        var cur = document.getElementById('file_' + msg.id);
+	                        if (cur) {
+	                            var listenerName = 'onUpdateFileUrl' + msg.id;
+	                            if (Demo.api[listenerName]) {
+	                                Demo.api[listenerName]({ url: msg.url });
+	                                Demo.api[listenerName] = null;
+	                            } else {
+	                                console.log('listenerName not exists:' + msg.id);
+	                            }
+	                            return;
+	                        } else {
+	                            brief = '[' + Demo.lan.file + ']';
+	                            fileMsg({
+	                                id: msg.id,
+	                                wrapper: targetNode,
+	                                name: name,
+	                                value: data || msg.url,
+	                                filename: msg.filename,
+	                                error: msg.error,
+	                                errorText: msg.errorText
+	                            }, this.sentByMe);
+	                        }
+	                    } else {
+	                        brief = '[' + Demo.lan.file + ']';
+	                        var option = {
+	                            id: msg.id,
+	                            wrapper: targetNode,
+	                            name: name,
+	                            value: data || msg.url,
+	                            filename: msg.filename,
+	                            error: msg.error,
+	                            errorText: msg.errorText
+	                        };
+	                        if (msg.ext) {
+	                            option.fileSize = msg.ext.fileSize;
+	                        }
+	                        fileMsg(option, this.sentByMe);
 	                    }
-	                    fileMsg(option, this.sentByMe);
 	                }
 	                break;
 	            case 'loc':
@@ -645,27 +977,56 @@
 	                    locMsg({
 	                        wrapper: targetNode,
 	                        name: name,
-	                        value: data || msg.addr
+	                        value: data || msg.addr,
+	                        error: msg.error,
+	                        errorText: msg.errorText
 	                    }, this.sentByMe);
 	                }
 	                break;
 	            case 'video':
 	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'video' });
+	                    Demo.strangers[targetId].push({ msg: msg, type: type });
 	                } else {
-	                    brief = '[' + Demo.lan.video + ']';
-	                    videoMsg({
-	                        wrapper: targetNode,
-	                        name: name,
-	                        value: data || msg.url,
-	                        length: msg.length,
-	                        id: msg.id
-	                    }, this.sentByMe);
+	                    if (WebIM.config.isWindowSDK) {
+	                        var cur = document.getElementById('file_' + msg.id);
+	                        if (cur) {
+	                            var listenerName = 'onUpdateFileUrl' + msg.id;
+	                            if (Demo.api[listenerName]) {
+	                                Demo.api[listenerName]({ url: msg.url });
+	                                Demo.api[listenerName] = null;
+	                            } else {
+	                                console.log('listenerName not exists:' + msg.id);
+	                            }
+	                            return;
+	                        } else {
+	                            brief = '[' + Demo.lan.file + ']';
+	                            fileMsg({
+	                                id: msg.id,
+	                                wrapper: targetNode,
+	                                name: name,
+	                                value: data || msg.url,
+	                                filename: msg.filename,
+	                                error: msg.error,
+	                                errorText: msg.errorText
+	                            }, this.sentByMe);
+	                        }
+	                    } else {
+	                        brief = '[' + Demo.lan.video + ']';
+	                        videoMsg({
+	                            wrapper: targetNode,
+	                            name: name,
+	                            value: data || msg.url,
+	                            length: msg.length,
+	                            id: msg.id,
+	                            error: msg.error,
+	                            errorText: msg.errorText
+	                        }, this.sentByMe);
+	                    }
 	                }
 	                break;
 	            default:
 	                break;
-	        };
+	        }
 
 	        if (!targetNode) {
 	            this.render(this.node, 'stranger');
@@ -691,11 +1052,11 @@
 	                this.addCount(msg.from, cate);
 	                break;
 	            case 'groupchat':
-	                var cate = msg.roomtype ? 'chatrooms' : 'groups';
+	                var cate = msg.roomtype ? msg.roomtype : 'groups';
 
 	                this.addCount(msg.to, cate);
 	                break;
-	        };
+	        }
 	    },
 
 	    appendBrief: function appendBrief(id, value) {
@@ -704,11 +1065,15 @@
 	    },
 
 	    addCount: function addCount(id, cate) {
+	        // TODO: don't handle dom directly,use react way.
 	        if (Demo.selectedCate !== cate) {
 	            var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
 	            curCate.style.display = 'block';
+	            var curCateCount = curCate.getAttribute('count') / 1;
+	            curCateCount++;
+	            curCate.setAttribute('count', curCateCount);
 
-	            var cur = document.getElementById(id).querySelector('i');
+	            var cur = document.getElementById(id).getElementsByTagName('i')[0];
 	            var curCount = cur.getAttribute('count') / 1;
 	            curCount++;
 	            cur.setAttribute('count', curCount);
@@ -716,7 +1081,7 @@
 	            cur.style.display = 'block';
 	        } else {
 	            if (!this.sentByMe && id !== Demo.selected) {
-	                var cur = document.getElementById(id).querySelector('i');
+	                var cur = document.getElementById(id).getElementsByTagName('i')[0];
 	                var curCount = cur.getAttribute('count') / 1;
 	                curCount++;
 	                cur.setAttribute('count', curCount);
@@ -753,6 +1118,11 @@
 	        });
 	    },
 
+	    changeGroupSubjectCallBack: function changeGroupSubjectCallBack(id, subject) {
+	        var cur = document.getElementById(id);
+	        cur.querySelector('span').innerHTML = subject;
+	    },
+
 	    encode: function encode(str) {
 	        if (!str || str.length === 0) {
 	            return '';
@@ -765,33 +1135,37 @@
 	        s = s.replace(/\n/g, "<br>");
 	        return s;
 	    },
-
 	    NotifyError: function NotifyError(msg) {
 	        Notify.error(msg);
 	    },
-
 	    NotifySuccess: function NotifySuccess(msg) {
 	        Notify.success(msg);
 	    },
-
 	    scrollIntoView: function scrollIntoView(node) {
 	        setTimeout(function () {
 	            node.scrollIntoView(true);
 	        }, 50);
-	    }
+	    },
+	    listen: function listen(options) {
+	        for (var key in options) {
+	            this[key] = options[key];
+	        }
+	    },
+	    blacklist: Blacklist,
+	    pagesize: 20
 	};
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(10);
+	module.exports = __webpack_require__(12);
 
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -806,26 +1180,26 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var ReactChildren = __webpack_require__(13);
-	var ReactComponent = __webpack_require__(26);
-	var ReactPureComponent = __webpack_require__(29);
-	var ReactClass = __webpack_require__(30);
-	var ReactDOMFactories = __webpack_require__(32);
-	var ReactElement = __webpack_require__(17);
-	var ReactPropTypes = __webpack_require__(37);
-	var ReactVersion = __webpack_require__(38);
+	var ReactChildren = __webpack_require__(15);
+	var ReactComponent = __webpack_require__(28);
+	var ReactPureComponent = __webpack_require__(31);
+	var ReactClass = __webpack_require__(32);
+	var ReactDOMFactories = __webpack_require__(34);
+	var ReactElement = __webpack_require__(19);
+	var ReactPropTypes = __webpack_require__(39);
+	var ReactVersion = __webpack_require__(40);
 
-	var onlyChild = __webpack_require__(39);
-	var warning = __webpack_require__(19);
+	var onlyChild = __webpack_require__(41);
+	var warning = __webpack_require__(21);
 
 	var createElement = ReactElement.createElement;
 	var createFactory = ReactElement.createFactory;
 	var cloneElement = ReactElement.cloneElement;
 
 	if (process.env.NODE_ENV !== 'production') {
-	  var ReactElementValidator = __webpack_require__(33);
+	  var ReactElementValidator = __webpack_require__(35);
 	  createElement = ReactElementValidator.createElement;
 	  createFactory = ReactElementValidator.createFactory;
 	  cloneElement = ReactElementValidator.cloneElement;
@@ -882,10 +1256,10 @@
 	};
 
 	module.exports = React;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -1071,7 +1445,7 @@
 
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1160,7 +1534,7 @@
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -1175,11 +1549,11 @@
 
 	'use strict';
 
-	var PooledClass = __webpack_require__(14);
-	var ReactElement = __webpack_require__(17);
+	var PooledClass = __webpack_require__(16);
+	var ReactElement = __webpack_require__(19);
 
-	var emptyFunction = __webpack_require__(20);
-	var traverseAllChildren = __webpack_require__(23);
+	var emptyFunction = __webpack_require__(22);
+	var traverseAllChildren = __webpack_require__(25);
 
 	var twoArgumentPooler = PooledClass.twoArgumentPooler;
 	var fourArgumentPooler = PooledClass.fourArgumentPooler;
@@ -1355,7 +1729,7 @@
 	module.exports = ReactChildren;
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -1371,9 +1745,9 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(15);
+	var _prodInvariant = __webpack_require__(17);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Static poolers. Several custom versions for each potential number of
@@ -1481,10 +1855,10 @@
 	};
 
 	module.exports = PooledClass;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports) {
 
 	/**
@@ -1527,7 +1901,7 @@
 	module.exports = reactProdInvariant;
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -1579,10 +1953,10 @@
 	}
 
 	module.exports = invariant;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -1597,15 +1971,15 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var ReactCurrentOwner = __webpack_require__(18);
+	var ReactCurrentOwner = __webpack_require__(20);
 
-	var warning = __webpack_require__(19);
-	var canDefineProperty = __webpack_require__(21);
+	var warning = __webpack_require__(21);
+	var canDefineProperty = __webpack_require__(23);
 	var hasOwnProperty = Object.prototype.hasOwnProperty;
 
-	var REACT_ELEMENT_TYPE = __webpack_require__(22);
+	var REACT_ELEMENT_TYPE = __webpack_require__(24);
 
 	var RESERVED_PROPS = {
 	  key: true,
@@ -1925,10 +2299,10 @@
 	};
 
 	module.exports = ReactElement;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports) {
 
 	/**
@@ -1963,7 +2337,7 @@
 	module.exports = ReactCurrentOwner;
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -1978,7 +2352,7 @@
 
 	'use strict';
 
-	var emptyFunction = __webpack_require__(20);
+	var emptyFunction = __webpack_require__(22);
 
 	/**
 	 * Similar to invariant but only logs a warning if the condition is not met.
@@ -2032,10 +2406,10 @@
 	}
 
 	module.exports = warning;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -2078,7 +2452,7 @@
 	module.exports = emptyFunction;
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -2106,10 +2480,10 @@
 	}
 
 	module.exports = canDefineProperty;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports) {
 
 	/**
@@ -2133,7 +2507,7 @@
 	module.exports = REACT_ELEMENT_TYPE;
 
 /***/ },
-/* 23 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -2148,15 +2522,15 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(15);
+	var _prodInvariant = __webpack_require__(17);
 
-	var ReactCurrentOwner = __webpack_require__(18);
-	var REACT_ELEMENT_TYPE = __webpack_require__(22);
+	var ReactCurrentOwner = __webpack_require__(20);
+	var REACT_ELEMENT_TYPE = __webpack_require__(24);
 
-	var getIteratorFn = __webpack_require__(24);
-	var invariant = __webpack_require__(16);
-	var KeyEscapeUtils = __webpack_require__(25);
-	var warning = __webpack_require__(19);
+	var getIteratorFn = __webpack_require__(26);
+	var invariant = __webpack_require__(18);
+	var KeyEscapeUtils = __webpack_require__(27);
+	var warning = __webpack_require__(21);
 
 	var SEPARATOR = '.';
 	var SUBSEPARATOR = ':';
@@ -2311,10 +2685,10 @@
 	}
 
 	module.exports = traverseAllChildren;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 24 */
+/* 26 */
 /***/ function(module, exports) {
 
 	/**
@@ -2359,7 +2733,7 @@
 	module.exports = getIteratorFn;
 
 /***/ },
-/* 25 */
+/* 27 */
 /***/ function(module, exports) {
 
 	/**
@@ -2422,7 +2796,7 @@
 	module.exports = KeyEscapeUtils;
 
 /***/ },
-/* 26 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -2437,14 +2811,14 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(15);
+	var _prodInvariant = __webpack_require__(17);
 
-	var ReactNoopUpdateQueue = __webpack_require__(27);
+	var ReactNoopUpdateQueue = __webpack_require__(29);
 
-	var canDefineProperty = __webpack_require__(21);
-	var emptyObject = __webpack_require__(28);
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var canDefineProperty = __webpack_require__(23);
+	var emptyObject = __webpack_require__(30);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	/**
 	 * Base class helpers for the updating state of a component.
@@ -2542,10 +2916,10 @@
 	}
 
 	module.exports = ReactComponent;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 27 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -2560,7 +2934,7 @@
 
 	'use strict';
 
-	var warning = __webpack_require__(19);
+	var warning = __webpack_require__(21);
 
 	function warnNoop(publicInstance, callerName) {
 	  if (process.env.NODE_ENV !== 'production') {
@@ -2643,10 +3017,10 @@
 	};
 
 	module.exports = ReactNoopUpdateQueue;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 28 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -2668,10 +3042,10 @@
 	}
 
 	module.exports = emptyObject;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 29 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -2686,12 +3060,12 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var ReactComponent = __webpack_require__(26);
-	var ReactNoopUpdateQueue = __webpack_require__(27);
+	var ReactComponent = __webpack_require__(28);
+	var ReactNoopUpdateQueue = __webpack_require__(29);
 
-	var emptyObject = __webpack_require__(28);
+	var emptyObject = __webpack_require__(30);
 
 	/**
 	 * Base class helpers for the updating state of a component.
@@ -2717,7 +3091,7 @@
 	module.exports = ReactPureComponent;
 
 /***/ },
-/* 30 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -2732,17 +3106,17 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(15),
-	    _assign = __webpack_require__(12);
+	var _prodInvariant = __webpack_require__(17),
+	    _assign = __webpack_require__(14);
 
-	var ReactComponent = __webpack_require__(26);
-	var ReactElement = __webpack_require__(17);
-	var ReactPropTypeLocationNames = __webpack_require__(31);
-	var ReactNoopUpdateQueue = __webpack_require__(27);
+	var ReactComponent = __webpack_require__(28);
+	var ReactElement = __webpack_require__(19);
+	var ReactPropTypeLocationNames = __webpack_require__(33);
+	var ReactNoopUpdateQueue = __webpack_require__(29);
 
-	var emptyObject = __webpack_require__(28);
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var emptyObject = __webpack_require__(30);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	var MIXINS_KEY = 'mixins';
 
@@ -3436,10 +3810,10 @@
 	};
 
 	module.exports = ReactClass;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -3466,10 +3840,10 @@
 	}
 
 	module.exports = ReactPropTypeLocationNames;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 32 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -3484,7 +3858,7 @@
 
 	'use strict';
 
-	var ReactElement = __webpack_require__(17);
+	var ReactElement = __webpack_require__(19);
 
 	/**
 	 * Create a factory that creates HTML tag elements.
@@ -3493,7 +3867,7 @@
 	 */
 	var createDOMFactory = ReactElement.createFactory;
 	if (process.env.NODE_ENV !== 'production') {
-	  var ReactElementValidator = __webpack_require__(33);
+	  var ReactElementValidator = __webpack_require__(35);
 	  createDOMFactory = ReactElementValidator.createFactory;
 	}
 
@@ -3641,10 +4015,10 @@
 	};
 
 	module.exports = ReactDOMFactories;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 33 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -3666,15 +4040,15 @@
 
 	'use strict';
 
-	var ReactCurrentOwner = __webpack_require__(18);
-	var ReactComponentTreeHook = __webpack_require__(34);
-	var ReactElement = __webpack_require__(17);
+	var ReactCurrentOwner = __webpack_require__(20);
+	var ReactComponentTreeHook = __webpack_require__(36);
+	var ReactElement = __webpack_require__(19);
 
-	var checkReactTypeSpec = __webpack_require__(35);
+	var checkReactTypeSpec = __webpack_require__(37);
 
-	var canDefineProperty = __webpack_require__(21);
-	var getIteratorFn = __webpack_require__(24);
-	var warning = __webpack_require__(19);
+	var canDefineProperty = __webpack_require__(23);
+	var getIteratorFn = __webpack_require__(26);
+	var warning = __webpack_require__(21);
 
 	function getDeclarationErrorAddendum() {
 	  if (ReactCurrentOwner.current) {
@@ -3873,10 +4247,10 @@
 	};
 
 	module.exports = ReactElementValidator;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 34 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -3892,12 +4266,12 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(15);
+	var _prodInvariant = __webpack_require__(17);
 
-	var ReactCurrentOwner = __webpack_require__(18);
+	var ReactCurrentOwner = __webpack_require__(20);
 
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	function isNative(fn) {
 	  // Based on isNative() from Lodash
@@ -4212,10 +4586,10 @@
 	};
 
 	module.exports = ReactComponentTreeHook;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 35 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -4230,13 +4604,13 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(15);
+	var _prodInvariant = __webpack_require__(17);
 
-	var ReactPropTypeLocationNames = __webpack_require__(31);
-	var ReactPropTypesSecret = __webpack_require__(36);
+	var ReactPropTypeLocationNames = __webpack_require__(33);
+	var ReactPropTypesSecret = __webpack_require__(38);
 
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	var ReactComponentTreeHook;
 
@@ -4246,7 +4620,7 @@
 	  // https://github.com/facebook/react/issues/7240
 	  // Remove the inline requires when we don't need them anymore:
 	  // https://github.com/facebook/react/pull/7178
-	  ReactComponentTreeHook = __webpack_require__(34);
+	  ReactComponentTreeHook = __webpack_require__(36);
 	}
 
 	var loggedTypeFailures = {};
@@ -4288,7 +4662,7 @@
 
 	        if (process.env.NODE_ENV !== 'production') {
 	          if (!ReactComponentTreeHook) {
-	            ReactComponentTreeHook = __webpack_require__(34);
+	            ReactComponentTreeHook = __webpack_require__(36);
 	          }
 	          if (debugID !== null) {
 	            componentStackInfo = ReactComponentTreeHook.getStackAddendumByID(debugID);
@@ -4304,10 +4678,10 @@
 	}
 
 	module.exports = checkReactTypeSpec;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 36 */
+/* 38 */
 /***/ function(module, exports) {
 
 	/**
@@ -4328,7 +4702,7 @@
 	module.exports = ReactPropTypesSecret;
 
 /***/ },
-/* 37 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -4343,13 +4717,13 @@
 
 	'use strict';
 
-	var ReactElement = __webpack_require__(17);
-	var ReactPropTypeLocationNames = __webpack_require__(31);
-	var ReactPropTypesSecret = __webpack_require__(36);
+	var ReactElement = __webpack_require__(19);
+	var ReactPropTypeLocationNames = __webpack_require__(33);
+	var ReactPropTypesSecret = __webpack_require__(38);
 
-	var emptyFunction = __webpack_require__(20);
-	var getIteratorFn = __webpack_require__(24);
-	var warning = __webpack_require__(19);
+	var emptyFunction = __webpack_require__(22);
+	var getIteratorFn = __webpack_require__(26);
+	var warning = __webpack_require__(21);
 
 	/**
 	 * Collection of methods that allow declaration and validation of props that are
@@ -4764,10 +5138,10 @@
 	}
 
 	module.exports = ReactPropTypes;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports) {
 
 	/**
@@ -4785,7 +5159,7 @@
 	module.exports = '15.4.1';
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -4799,11 +5173,11 @@
 	 */
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(15);
+	var _prodInvariant = __webpack_require__(17);
 
-	var ReactElement = __webpack_require__(17);
+	var ReactElement = __webpack_require__(19);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Returns the first child in a collection of children and verifies that there
@@ -4825,19 +5199,19 @@
 	}
 
 	module.exports = onlyChild;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 40 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(41);
+	module.exports = __webpack_require__(43);
 
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -4854,17 +5228,17 @@
 
 	'use strict';
 
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactDefaultInjection = __webpack_require__(46);
-	var ReactMount = __webpack_require__(174);
-	var ReactReconciler = __webpack_require__(67);
-	var ReactUpdates = __webpack_require__(64);
-	var ReactVersion = __webpack_require__(179);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactDefaultInjection = __webpack_require__(48);
+	var ReactMount = __webpack_require__(176);
+	var ReactReconciler = __webpack_require__(69);
+	var ReactUpdates = __webpack_require__(66);
+	var ReactVersion = __webpack_require__(181);
 
-	var findDOMNode = __webpack_require__(180);
-	var getHostComponentFromComposite = __webpack_require__(181);
-	var renderSubtreeIntoContainer = __webpack_require__(182);
-	var warning = __webpack_require__(19);
+	var findDOMNode = __webpack_require__(182);
+	var getHostComponentFromComposite = __webpack_require__(183);
+	var renderSubtreeIntoContainer = __webpack_require__(184);
+	var warning = __webpack_require__(21);
 
 	ReactDefaultInjection.inject();
 
@@ -4903,7 +5277,7 @@
 	}
 
 	if (process.env.NODE_ENV !== 'production') {
-	  var ExecutionEnvironment = __webpack_require__(56);
+	  var ExecutionEnvironment = __webpack_require__(58);
 	  if (ExecutionEnvironment.canUseDOM && window.top === window.self) {
 
 	    // First check if devtools is not installed
@@ -4939,10 +5313,10 @@
 	}
 
 	if (process.env.NODE_ENV !== 'production') {
-	  var ReactInstrumentation = __webpack_require__(70);
-	  var ReactDOMUnknownPropertyHook = __webpack_require__(183);
-	  var ReactDOMNullInputValuePropHook = __webpack_require__(184);
-	  var ReactDOMInvalidARIAHook = __webpack_require__(185);
+	  var ReactInstrumentation = __webpack_require__(72);
+	  var ReactDOMUnknownPropertyHook = __webpack_require__(185);
+	  var ReactDOMNullInputValuePropHook = __webpack_require__(186);
+	  var ReactDOMInvalidARIAHook = __webpack_require__(187);
 
 	  ReactInstrumentation.debugTool.addHook(ReactDOMUnknownPropertyHook);
 	  ReactInstrumentation.debugTool.addHook(ReactDOMNullInputValuePropHook);
@@ -4950,10 +5324,10 @@
 	}
 
 	module.exports = ReactDOM;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -4968,12 +5342,12 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var DOMProperty = __webpack_require__(44);
-	var ReactDOMComponentFlags = __webpack_require__(45);
+	var DOMProperty = __webpack_require__(46);
+	var ReactDOMComponentFlags = __webpack_require__(47);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	var ATTR_NAME = DOMProperty.ID_ATTRIBUTE_NAME;
 	var Flags = ReactDOMComponentFlags;
@@ -5143,10 +5517,10 @@
 	};
 
 	module.exports = ReactDOMComponentTree;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports) {
 
 	/**
@@ -5189,7 +5563,7 @@
 	module.exports = reactProdInvariant;
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -5204,9 +5578,9 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	function checkMask(value, bitmask) {
 	  return (value & bitmask) === bitmask;
@@ -5401,10 +5775,10 @@
 	};
 
 	module.exports = DOMProperty;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 45 */
+/* 47 */
 /***/ function(module, exports) {
 
 	/**
@@ -5426,7 +5800,7 @@
 	module.exports = ReactDOMComponentFlags;
 
 /***/ },
-/* 46 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5441,25 +5815,25 @@
 
 	'use strict';
 
-	var ARIADOMPropertyConfig = __webpack_require__(47);
-	var BeforeInputEventPlugin = __webpack_require__(48);
-	var ChangeEventPlugin = __webpack_require__(63);
-	var DefaultEventPluginOrder = __webpack_require__(80);
-	var EnterLeaveEventPlugin = __webpack_require__(81);
-	var HTMLDOMPropertyConfig = __webpack_require__(86);
-	var ReactComponentBrowserEnvironment = __webpack_require__(87);
-	var ReactDOMComponent = __webpack_require__(100);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactDOMEmptyComponent = __webpack_require__(145);
-	var ReactDOMTreeTraversal = __webpack_require__(146);
-	var ReactDOMTextComponent = __webpack_require__(147);
-	var ReactDefaultBatchingStrategy = __webpack_require__(148);
-	var ReactEventListener = __webpack_require__(149);
-	var ReactInjection = __webpack_require__(152);
-	var ReactReconcileTransaction = __webpack_require__(153);
-	var SVGDOMPropertyConfig = __webpack_require__(161);
-	var SelectEventPlugin = __webpack_require__(162);
-	var SimpleEventPlugin = __webpack_require__(163);
+	var ARIADOMPropertyConfig = __webpack_require__(49);
+	var BeforeInputEventPlugin = __webpack_require__(50);
+	var ChangeEventPlugin = __webpack_require__(65);
+	var DefaultEventPluginOrder = __webpack_require__(82);
+	var EnterLeaveEventPlugin = __webpack_require__(83);
+	var HTMLDOMPropertyConfig = __webpack_require__(88);
+	var ReactComponentBrowserEnvironment = __webpack_require__(89);
+	var ReactDOMComponent = __webpack_require__(102);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactDOMEmptyComponent = __webpack_require__(147);
+	var ReactDOMTreeTraversal = __webpack_require__(148);
+	var ReactDOMTextComponent = __webpack_require__(149);
+	var ReactDefaultBatchingStrategy = __webpack_require__(150);
+	var ReactEventListener = __webpack_require__(151);
+	var ReactInjection = __webpack_require__(154);
+	var ReactReconcileTransaction = __webpack_require__(155);
+	var SVGDOMPropertyConfig = __webpack_require__(163);
+	var SelectEventPlugin = __webpack_require__(164);
+	var SimpleEventPlugin = __webpack_require__(165);
 
 	var alreadyInjected = false;
 
@@ -5516,7 +5890,7 @@
 	};
 
 /***/ },
-/* 47 */
+/* 49 */
 /***/ function(module, exports) {
 
 	/**
@@ -5594,7 +5968,7 @@
 	module.exports = ARIADOMPropertyConfig;
 
 /***/ },
-/* 48 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -5609,11 +5983,11 @@
 
 	'use strict';
 
-	var EventPropagators = __webpack_require__(49);
-	var ExecutionEnvironment = __webpack_require__(56);
-	var FallbackCompositionState = __webpack_require__(57);
-	var SyntheticCompositionEvent = __webpack_require__(60);
-	var SyntheticInputEvent = __webpack_require__(62);
+	var EventPropagators = __webpack_require__(51);
+	var ExecutionEnvironment = __webpack_require__(58);
+	var FallbackCompositionState = __webpack_require__(59);
+	var SyntheticCompositionEvent = __webpack_require__(62);
+	var SyntheticInputEvent = __webpack_require__(64);
 
 	var END_KEYCODES = [9, 13, 27, 32]; // Tab, Return, Esc, Space
 	var START_KEYCODE = 229;
@@ -5983,7 +6357,7 @@
 	module.exports = BeforeInputEventPlugin;
 
 /***/ },
-/* 49 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -5998,12 +6372,12 @@
 
 	'use strict';
 
-	var EventPluginHub = __webpack_require__(50);
-	var EventPluginUtils = __webpack_require__(52);
+	var EventPluginHub = __webpack_require__(52);
+	var EventPluginUtils = __webpack_require__(54);
 
-	var accumulateInto = __webpack_require__(54);
-	var forEachAccumulated = __webpack_require__(55);
-	var warning = __webpack_require__(19);
+	var accumulateInto = __webpack_require__(56);
+	var forEachAccumulated = __webpack_require__(57);
+	var warning = __webpack_require__(21);
 
 	var getListener = EventPluginHub.getListener;
 
@@ -6119,10 +6493,10 @@
 	};
 
 	module.exports = EventPropagators;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -6137,15 +6511,15 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var EventPluginRegistry = __webpack_require__(51);
-	var EventPluginUtils = __webpack_require__(52);
-	var ReactErrorUtils = __webpack_require__(53);
+	var EventPluginRegistry = __webpack_require__(53);
+	var EventPluginUtils = __webpack_require__(54);
+	var ReactErrorUtils = __webpack_require__(55);
 
-	var accumulateInto = __webpack_require__(54);
-	var forEachAccumulated = __webpack_require__(55);
-	var invariant = __webpack_require__(16);
+	var accumulateInto = __webpack_require__(56);
+	var forEachAccumulated = __webpack_require__(57);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Internal store for event listeners
@@ -6402,10 +6776,10 @@
 	};
 
 	module.exports = EventPluginHub;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 51 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -6421,9 +6795,9 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Injectable ordering of event plugins.
@@ -6662,10 +7036,10 @@
 	};
 
 	module.exports = EventPluginRegistry;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -6680,12 +7054,12 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var ReactErrorUtils = __webpack_require__(53);
+	var ReactErrorUtils = __webpack_require__(55);
 
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	/**
 	 * Injected dependencies:
@@ -6893,10 +7267,10 @@
 	};
 
 	module.exports = EventPluginUtils;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -6975,10 +7349,10 @@
 	}
 
 	module.exports = ReactErrorUtils;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -6994,9 +7368,9 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Accumulates items that must not be null or undefined into the first one. This
@@ -7038,10 +7412,10 @@
 	}
 
 	module.exports = accumulateInto;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 55 */
+/* 57 */
 /***/ function(module, exports) {
 
 	/**
@@ -7076,7 +7450,7 @@
 	module.exports = forEachAccumulated;
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports) {
 
 	/**
@@ -7116,7 +7490,7 @@
 	module.exports = ExecutionEnvironment;
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7131,11 +7505,11 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var PooledClass = __webpack_require__(58);
+	var PooledClass = __webpack_require__(60);
 
-	var getTextContentAccessor = __webpack_require__(59);
+	var getTextContentAccessor = __webpack_require__(61);
 
 	/**
 	 * This helper class stores information about text content of a target node,
@@ -7215,7 +7589,7 @@
 	module.exports = FallbackCompositionState;
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -7231,9 +7605,9 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Static poolers. Several custom versions for each potential number of
@@ -7341,10 +7715,10 @@
 	};
 
 	module.exports = PooledClass;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 59 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7359,7 +7733,7 @@
 
 	'use strict';
 
-	var ExecutionEnvironment = __webpack_require__(56);
+	var ExecutionEnvironment = __webpack_require__(58);
 
 	var contentKey = null;
 
@@ -7381,7 +7755,7 @@
 	module.exports = getTextContentAccessor;
 
 /***/ },
-/* 60 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7396,7 +7770,7 @@
 
 	'use strict';
 
-	var SyntheticEvent = __webpack_require__(61);
+	var SyntheticEvent = __webpack_require__(63);
 
 	/**
 	 * @interface Event
@@ -7421,7 +7795,7 @@
 	module.exports = SyntheticCompositionEvent;
 
 /***/ },
-/* 61 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -7436,12 +7810,12 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var PooledClass = __webpack_require__(58);
+	var PooledClass = __webpack_require__(60);
 
-	var emptyFunction = __webpack_require__(20);
-	var warning = __webpack_require__(19);
+	var emptyFunction = __webpack_require__(22);
+	var warning = __webpack_require__(21);
 
 	var didWarnForAddedNewProperty = false;
 	var isProxySupported = typeof Proxy === 'function';
@@ -7691,10 +8065,10 @@
 	    process.env.NODE_ENV !== 'production' ? warning(warningCondition, 'This synthetic event is reused for performance reasons. If you\'re seeing this, ' + 'you\'re %s `%s` on a released/nullified synthetic event. %s. ' + 'If you must keep the original synthetic event around, use event.persist(). ' + 'See https://fb.me/react-event-pooling for more information.', action, propName, result) : void 0;
 	  }
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 62 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7709,7 +8083,7 @@
 
 	'use strict';
 
-	var SyntheticEvent = __webpack_require__(61);
+	var SyntheticEvent = __webpack_require__(63);
 
 	/**
 	 * @interface Event
@@ -7735,7 +8109,7 @@
 	module.exports = SyntheticInputEvent;
 
 /***/ },
-/* 63 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7750,16 +8124,16 @@
 
 	'use strict';
 
-	var EventPluginHub = __webpack_require__(50);
-	var EventPropagators = __webpack_require__(49);
-	var ExecutionEnvironment = __webpack_require__(56);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactUpdates = __webpack_require__(64);
-	var SyntheticEvent = __webpack_require__(61);
+	var EventPluginHub = __webpack_require__(52);
+	var EventPropagators = __webpack_require__(51);
+	var ExecutionEnvironment = __webpack_require__(58);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactUpdates = __webpack_require__(66);
+	var SyntheticEvent = __webpack_require__(63);
 
-	var getEventTarget = __webpack_require__(77);
-	var isEventSupported = __webpack_require__(78);
-	var isTextInputElement = __webpack_require__(79);
+	var getEventTarget = __webpack_require__(79);
+	var isEventSupported = __webpack_require__(80);
+	var isTextInputElement = __webpack_require__(81);
 
 	var eventTypes = {
 	  change: {
@@ -8060,7 +8434,7 @@
 	module.exports = ChangeEventPlugin;
 
 /***/ },
-/* 64 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -8075,16 +8449,16 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43),
-	    _assign = __webpack_require__(12);
+	var _prodInvariant = __webpack_require__(45),
+	    _assign = __webpack_require__(14);
 
-	var CallbackQueue = __webpack_require__(65);
-	var PooledClass = __webpack_require__(58);
-	var ReactFeatureFlags = __webpack_require__(66);
-	var ReactReconciler = __webpack_require__(67);
-	var Transaction = __webpack_require__(76);
+	var CallbackQueue = __webpack_require__(67);
+	var PooledClass = __webpack_require__(60);
+	var ReactFeatureFlags = __webpack_require__(68);
+	var ReactReconciler = __webpack_require__(69);
+	var Transaction = __webpack_require__(78);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	var dirtyComponents = [];
 	var updateBatchNumber = 0;
@@ -8313,10 +8687,10 @@
 	};
 
 	module.exports = ReactUpdates;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 65 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -8332,13 +8706,13 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var PooledClass = __webpack_require__(58);
+	var PooledClass = __webpack_require__(60);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * A specialized pseudo-event module to help keep track of components waiting to
@@ -8437,10 +8811,10 @@
 	}();
 
 	module.exports = PooledClass.addPoolingTo(CallbackQueue);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 66 */
+/* 68 */
 /***/ function(module, exports) {
 
 	/**
@@ -8466,7 +8840,7 @@
 	module.exports = ReactFeatureFlags;
 
 /***/ },
-/* 67 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -8481,10 +8855,10 @@
 
 	'use strict';
 
-	var ReactRef = __webpack_require__(68);
-	var ReactInstrumentation = __webpack_require__(70);
+	var ReactRef = __webpack_require__(70);
+	var ReactInstrumentation = __webpack_require__(72);
 
-	var warning = __webpack_require__(19);
+	var warning = __webpack_require__(21);
 
 	/**
 	 * Helper to call ReactRef.attachRefs with this composite component, split out
@@ -8636,10 +9010,10 @@
 	};
 
 	module.exports = ReactReconciler;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 68 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -8655,7 +9029,7 @@
 
 	'use strict';
 
-	var ReactOwner = __webpack_require__(69);
+	var ReactOwner = __webpack_require__(71);
 
 	var ReactRef = {};
 
@@ -8732,7 +9106,7 @@
 	module.exports = ReactRef;
 
 /***/ },
-/* 69 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -8748,9 +9122,9 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * @param {?object} object
@@ -8828,10 +9202,10 @@
 	};
 
 	module.exports = ReactOwner;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 70 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -8852,15 +9226,15 @@
 	var debugTool = null;
 
 	if (process.env.NODE_ENV !== 'production') {
-	  var ReactDebugTool = __webpack_require__(71);
+	  var ReactDebugTool = __webpack_require__(73);
 	  debugTool = ReactDebugTool;
 	}
 
 	module.exports = { debugTool: debugTool };
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 71 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -8876,13 +9250,13 @@
 
 	'use strict';
 
-	var ReactInvalidSetStateWarningHook = __webpack_require__(72);
-	var ReactHostOperationHistoryHook = __webpack_require__(73);
-	var ReactComponentTreeHook = __webpack_require__(34);
-	var ExecutionEnvironment = __webpack_require__(56);
+	var ReactInvalidSetStateWarningHook = __webpack_require__(74);
+	var ReactHostOperationHistoryHook = __webpack_require__(75);
+	var ReactComponentTreeHook = __webpack_require__(36);
+	var ExecutionEnvironment = __webpack_require__(58);
 
-	var performanceNow = __webpack_require__(74);
-	var warning = __webpack_require__(19);
+	var performanceNow = __webpack_require__(76);
+	var warning = __webpack_require__(21);
 
 	var hooks = [];
 	var didHookThrowForEvent = {};
@@ -9223,10 +9597,10 @@
 	}
 
 	module.exports = ReactDebugTool;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 72 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -9242,7 +9616,7 @@
 
 	'use strict';
 
-	var warning = __webpack_require__(19);
+	var warning = __webpack_require__(21);
 
 	if (process.env.NODE_ENV !== 'production') {
 	  var processingChildContext = false;
@@ -9265,10 +9639,10 @@
 	};
 
 	module.exports = ReactInvalidSetStateWarningHook;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 73 */
+/* 75 */
 /***/ function(module, exports) {
 
 	/**
@@ -9306,7 +9680,7 @@
 	module.exports = ReactHostOperationHistoryHook;
 
 /***/ },
-/* 74 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9322,7 +9696,7 @@
 	 * @typechecks
 	 */
 
-	var performance = __webpack_require__(75);
+	var performance = __webpack_require__(77);
 
 	var performanceNow;
 
@@ -9344,7 +9718,7 @@
 	module.exports = performanceNow;
 
 /***/ },
-/* 75 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9360,7 +9734,7 @@
 
 	'use strict';
 
-	var ExecutionEnvironment = __webpack_require__(56);
+	var ExecutionEnvironment = __webpack_require__(58);
 
 	var performance;
 
@@ -9371,7 +9745,7 @@
 	module.exports = performance || {};
 
 /***/ },
-/* 76 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -9387,9 +9761,9 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	var OBSERVED_ERROR = {};
 
@@ -9598,10 +9972,10 @@
 	};
 
 	module.exports = TransactionImpl;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 77 */
+/* 79 */
 /***/ function(module, exports) {
 
 	/**
@@ -9640,7 +10014,7 @@
 	module.exports = getEventTarget;
 
 /***/ },
-/* 78 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9655,7 +10029,7 @@
 
 	'use strict';
 
-	var ExecutionEnvironment = __webpack_require__(56);
+	var ExecutionEnvironment = __webpack_require__(58);
 
 	var useHasFeature;
 	if (ExecutionEnvironment.canUseDOM) {
@@ -9704,7 +10078,7 @@
 	module.exports = isEventSupported;
 
 /***/ },
-/* 79 */
+/* 81 */
 /***/ function(module, exports) {
 
 	/**
@@ -9759,7 +10133,7 @@
 	module.exports = isTextInputElement;
 
 /***/ },
-/* 80 */
+/* 82 */
 /***/ function(module, exports) {
 
 	/**
@@ -9789,7 +10163,7 @@
 	module.exports = DefaultEventPluginOrder;
 
 /***/ },
-/* 81 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9804,9 +10178,9 @@
 
 	'use strict';
 
-	var EventPropagators = __webpack_require__(49);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var SyntheticMouseEvent = __webpack_require__(82);
+	var EventPropagators = __webpack_require__(51);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var SyntheticMouseEvent = __webpack_require__(84);
 
 	var eventTypes = {
 	  mouseEnter: {
@@ -9893,7 +10267,7 @@
 	module.exports = EnterLeaveEventPlugin;
 
 /***/ },
-/* 82 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9908,10 +10282,10 @@
 
 	'use strict';
 
-	var SyntheticUIEvent = __webpack_require__(83);
-	var ViewportMetrics = __webpack_require__(84);
+	var SyntheticUIEvent = __webpack_require__(85);
+	var ViewportMetrics = __webpack_require__(86);
 
-	var getEventModifierState = __webpack_require__(85);
+	var getEventModifierState = __webpack_require__(87);
 
 	/**
 	 * @interface MouseEvent
@@ -9969,7 +10343,7 @@
 	module.exports = SyntheticMouseEvent;
 
 /***/ },
-/* 83 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -9984,9 +10358,9 @@
 
 	'use strict';
 
-	var SyntheticEvent = __webpack_require__(61);
+	var SyntheticEvent = __webpack_require__(63);
 
-	var getEventTarget = __webpack_require__(77);
+	var getEventTarget = __webpack_require__(79);
 
 	/**
 	 * @interface UIEvent
@@ -10032,7 +10406,7 @@
 	module.exports = SyntheticUIEvent;
 
 /***/ },
-/* 84 */
+/* 86 */
 /***/ function(module, exports) {
 
 	/**
@@ -10063,7 +10437,7 @@
 	module.exports = ViewportMetrics;
 
 /***/ },
-/* 85 */
+/* 87 */
 /***/ function(module, exports) {
 
 	/**
@@ -10110,7 +10484,7 @@
 	module.exports = getEventModifierState;
 
 /***/ },
-/* 86 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10125,7 +10499,7 @@
 
 	'use strict';
 
-	var DOMProperty = __webpack_require__(44);
+	var DOMProperty = __webpack_require__(46);
 
 	var MUST_USE_PROPERTY = DOMProperty.injection.MUST_USE_PROPERTY;
 	var HAS_BOOLEAN_VALUE = DOMProperty.injection.HAS_BOOLEAN_VALUE;
@@ -10326,7 +10700,7 @@
 	module.exports = HTMLDOMPropertyConfig;
 
 /***/ },
-/* 87 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10341,8 +10715,8 @@
 
 	'use strict';
 
-	var DOMChildrenOperations = __webpack_require__(88);
-	var ReactDOMIDOperations = __webpack_require__(99);
+	var DOMChildrenOperations = __webpack_require__(90);
+	var ReactDOMIDOperations = __webpack_require__(101);
 
 	/**
 	 * Abstracts away all functionality of the reconciler that requires knowledge of
@@ -10360,7 +10734,7 @@
 	module.exports = ReactComponentBrowserEnvironment;
 
 /***/ },
-/* 88 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -10375,14 +10749,14 @@
 
 	'use strict';
 
-	var DOMLazyTree = __webpack_require__(89);
-	var Danger = __webpack_require__(95);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactInstrumentation = __webpack_require__(70);
+	var DOMLazyTree = __webpack_require__(91);
+	var Danger = __webpack_require__(97);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactInstrumentation = __webpack_require__(72);
 
-	var createMicrosoftUnsafeLocalFunction = __webpack_require__(92);
-	var setInnerHTML = __webpack_require__(91);
-	var setTextContent = __webpack_require__(93);
+	var createMicrosoftUnsafeLocalFunction = __webpack_require__(94);
+	var setInnerHTML = __webpack_require__(93);
+	var setTextContent = __webpack_require__(95);
 
 	function getNodeAfter(parentNode, node) {
 	  // Special case for text components, which return [open, close] comments
@@ -10587,10 +10961,10 @@
 	};
 
 	module.exports = DOMChildrenOperations;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 89 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10605,11 +10979,11 @@
 
 	'use strict';
 
-	var DOMNamespaces = __webpack_require__(90);
-	var setInnerHTML = __webpack_require__(91);
+	var DOMNamespaces = __webpack_require__(92);
+	var setInnerHTML = __webpack_require__(93);
 
-	var createMicrosoftUnsafeLocalFunction = __webpack_require__(92);
-	var setTextContent = __webpack_require__(93);
+	var createMicrosoftUnsafeLocalFunction = __webpack_require__(94);
+	var setTextContent = __webpack_require__(95);
 
 	var ELEMENT_NODE_TYPE = 1;
 	var DOCUMENT_FRAGMENT_NODE_TYPE = 11;
@@ -10712,7 +11086,7 @@
 	module.exports = DOMLazyTree;
 
 /***/ },
-/* 90 */
+/* 92 */
 /***/ function(module, exports) {
 
 	/**
@@ -10736,7 +11110,7 @@
 	module.exports = DOMNamespaces;
 
 /***/ },
-/* 91 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10751,13 +11125,13 @@
 
 	'use strict';
 
-	var ExecutionEnvironment = __webpack_require__(56);
-	var DOMNamespaces = __webpack_require__(90);
+	var ExecutionEnvironment = __webpack_require__(58);
+	var DOMNamespaces = __webpack_require__(92);
 
 	var WHITESPACE_TEST = /^[ \r\n\t\f]/;
 	var NONVISIBLE_TEST = /<(!--|link|noscript|meta|script|style)[ \r\n\t\f\/>]/;
 
-	var createMicrosoftUnsafeLocalFunction = __webpack_require__(92);
+	var createMicrosoftUnsafeLocalFunction = __webpack_require__(94);
 
 	// SVG temp container for IE lacking innerHTML
 	var reusableSVGContainer;
@@ -10838,7 +11212,7 @@
 	module.exports = setInnerHTML;
 
 /***/ },
-/* 92 */
+/* 94 */
 /***/ function(module, exports) {
 
 	/**
@@ -10874,7 +11248,7 @@
 	module.exports = createMicrosoftUnsafeLocalFunction;
 
 /***/ },
-/* 93 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -10889,9 +11263,9 @@
 
 	'use strict';
 
-	var ExecutionEnvironment = __webpack_require__(56);
-	var escapeTextContentForBrowser = __webpack_require__(94);
-	var setInnerHTML = __webpack_require__(91);
+	var ExecutionEnvironment = __webpack_require__(58);
+	var escapeTextContentForBrowser = __webpack_require__(96);
+	var setInnerHTML = __webpack_require__(93);
 
 	/**
 	 * Set the textContent property of a node, ensuring that whitespace is preserved
@@ -10930,7 +11304,7 @@
 	module.exports = setTextContent;
 
 /***/ },
-/* 94 */
+/* 96 */
 /***/ function(module, exports) {
 
 	/**
@@ -11057,7 +11431,7 @@
 	module.exports = escapeTextContentForBrowser;
 
 /***/ },
-/* 95 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -11072,14 +11446,14 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var DOMLazyTree = __webpack_require__(89);
-	var ExecutionEnvironment = __webpack_require__(56);
+	var DOMLazyTree = __webpack_require__(91);
+	var ExecutionEnvironment = __webpack_require__(58);
 
-	var createNodesFromMarkup = __webpack_require__(96);
-	var emptyFunction = __webpack_require__(20);
-	var invariant = __webpack_require__(16);
+	var createNodesFromMarkup = __webpack_require__(98);
+	var emptyFunction = __webpack_require__(22);
+	var invariant = __webpack_require__(18);
 
 	var Danger = {
 
@@ -11107,10 +11481,10 @@
 	};
 
 	module.exports = Danger;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 96 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -11128,11 +11502,11 @@
 
 	/*eslint-disable fb-www/unsafe-html*/
 
-	var ExecutionEnvironment = __webpack_require__(56);
+	var ExecutionEnvironment = __webpack_require__(58);
 
-	var createArrayFromMixed = __webpack_require__(97);
-	var getMarkupWrap = __webpack_require__(98);
-	var invariant = __webpack_require__(16);
+	var createArrayFromMixed = __webpack_require__(99);
+	var getMarkupWrap = __webpack_require__(100);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Dummy container used to render all markup.
@@ -11196,10 +11570,10 @@
 	}
 
 	module.exports = createNodesFromMarkup;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 97 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -11215,7 +11589,7 @@
 	 * @typechecks
 	 */
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Convert array-like objects to arrays.
@@ -11328,10 +11702,10 @@
 	}
 
 	module.exports = createArrayFromMixed;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 98 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -11348,9 +11722,9 @@
 
 	/*eslint-disable fb-www/unsafe-html */
 
-	var ExecutionEnvironment = __webpack_require__(56);
+	var ExecutionEnvironment = __webpack_require__(58);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Dummy container used to detect which wraps are necessary.
@@ -11428,10 +11802,10 @@
 	}
 
 	module.exports = getMarkupWrap;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 99 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -11446,8 +11820,8 @@
 
 	'use strict';
 
-	var DOMChildrenOperations = __webpack_require__(88);
-	var ReactDOMComponentTree = __webpack_require__(42);
+	var DOMChildrenOperations = __webpack_require__(90);
+	var ReactDOMComponentTree = __webpack_require__(44);
 
 	/**
 	 * Operations used to process updates to DOM nodes.
@@ -11469,7 +11843,7 @@
 	module.exports = ReactDOMIDOperations;
 
 /***/ },
-/* 100 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -11486,35 +11860,35 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43),
-	    _assign = __webpack_require__(12);
+	var _prodInvariant = __webpack_require__(45),
+	    _assign = __webpack_require__(14);
 
-	var AutoFocusUtils = __webpack_require__(101);
-	var CSSPropertyOperations = __webpack_require__(103);
-	var DOMLazyTree = __webpack_require__(89);
-	var DOMNamespaces = __webpack_require__(90);
-	var DOMProperty = __webpack_require__(44);
-	var DOMPropertyOperations = __webpack_require__(111);
-	var EventPluginHub = __webpack_require__(50);
-	var EventPluginRegistry = __webpack_require__(51);
-	var ReactBrowserEventEmitter = __webpack_require__(113);
-	var ReactDOMComponentFlags = __webpack_require__(45);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactDOMInput = __webpack_require__(116);
-	var ReactDOMOption = __webpack_require__(119);
-	var ReactDOMSelect = __webpack_require__(120);
-	var ReactDOMTextarea = __webpack_require__(121);
-	var ReactInstrumentation = __webpack_require__(70);
-	var ReactMultiChild = __webpack_require__(122);
-	var ReactServerRenderingTransaction = __webpack_require__(141);
+	var AutoFocusUtils = __webpack_require__(103);
+	var CSSPropertyOperations = __webpack_require__(105);
+	var DOMLazyTree = __webpack_require__(91);
+	var DOMNamespaces = __webpack_require__(92);
+	var DOMProperty = __webpack_require__(46);
+	var DOMPropertyOperations = __webpack_require__(113);
+	var EventPluginHub = __webpack_require__(52);
+	var EventPluginRegistry = __webpack_require__(53);
+	var ReactBrowserEventEmitter = __webpack_require__(115);
+	var ReactDOMComponentFlags = __webpack_require__(47);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactDOMInput = __webpack_require__(118);
+	var ReactDOMOption = __webpack_require__(121);
+	var ReactDOMSelect = __webpack_require__(122);
+	var ReactDOMTextarea = __webpack_require__(123);
+	var ReactInstrumentation = __webpack_require__(72);
+	var ReactMultiChild = __webpack_require__(124);
+	var ReactServerRenderingTransaction = __webpack_require__(143);
 
-	var emptyFunction = __webpack_require__(20);
-	var escapeTextContentForBrowser = __webpack_require__(94);
-	var invariant = __webpack_require__(16);
-	var isEventSupported = __webpack_require__(78);
-	var shallowEqual = __webpack_require__(131);
-	var validateDOMNesting = __webpack_require__(144);
-	var warning = __webpack_require__(19);
+	var emptyFunction = __webpack_require__(22);
+	var escapeTextContentForBrowser = __webpack_require__(96);
+	var invariant = __webpack_require__(18);
+	var isEventSupported = __webpack_require__(80);
+	var shallowEqual = __webpack_require__(133);
+	var validateDOMNesting = __webpack_require__(146);
+	var warning = __webpack_require__(21);
 
 	var Flags = ReactDOMComponentFlags;
 	var deleteListener = EventPluginHub.deleteListener;
@@ -12466,10 +12840,10 @@
 	_assign(ReactDOMComponent.prototype, ReactDOMComponent.Mixin, ReactMultiChild.Mixin);
 
 	module.exports = ReactDOMComponent;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 101 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -12484,9 +12858,9 @@
 
 	'use strict';
 
-	var ReactDOMComponentTree = __webpack_require__(42);
+	var ReactDOMComponentTree = __webpack_require__(44);
 
-	var focusNode = __webpack_require__(102);
+	var focusNode = __webpack_require__(104);
 
 	var AutoFocusUtils = {
 	  focusDOMComponent: function () {
@@ -12497,7 +12871,7 @@
 	module.exports = AutoFocusUtils;
 
 /***/ },
-/* 102 */
+/* 104 */
 /***/ function(module, exports) {
 
 	/**
@@ -12528,7 +12902,7 @@
 	module.exports = focusNode;
 
 /***/ },
-/* 103 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -12543,15 +12917,15 @@
 
 	'use strict';
 
-	var CSSProperty = __webpack_require__(104);
-	var ExecutionEnvironment = __webpack_require__(56);
-	var ReactInstrumentation = __webpack_require__(70);
+	var CSSProperty = __webpack_require__(106);
+	var ExecutionEnvironment = __webpack_require__(58);
+	var ReactInstrumentation = __webpack_require__(72);
 
-	var camelizeStyleName = __webpack_require__(105);
-	var dangerousStyleValue = __webpack_require__(107);
-	var hyphenateStyleName = __webpack_require__(108);
-	var memoizeStringOnly = __webpack_require__(110);
-	var warning = __webpack_require__(19);
+	var camelizeStyleName = __webpack_require__(107);
+	var dangerousStyleValue = __webpack_require__(109);
+	var hyphenateStyleName = __webpack_require__(110);
+	var memoizeStringOnly = __webpack_require__(112);
+	var warning = __webpack_require__(21);
 
 	var processStyleName = memoizeStringOnly(function (styleName) {
 	  return hyphenateStyleName(styleName);
@@ -12739,10 +13113,10 @@
 	};
 
 	module.exports = CSSPropertyOperations;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 104 */
+/* 106 */
 /***/ function(module, exports) {
 
 	/**
@@ -12894,7 +13268,7 @@
 	module.exports = CSSProperty;
 
 /***/ },
-/* 105 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -12910,7 +13284,7 @@
 
 	'use strict';
 
-	var camelize = __webpack_require__(106);
+	var camelize = __webpack_require__(108);
 
 	var msPattern = /^-ms-/;
 
@@ -12938,7 +13312,7 @@
 	module.exports = camelizeStyleName;
 
 /***/ },
-/* 106 */
+/* 108 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12974,7 +13348,7 @@
 	module.exports = camelize;
 
 /***/ },
-/* 107 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -12989,8 +13363,8 @@
 
 	'use strict';
 
-	var CSSProperty = __webpack_require__(104);
-	var warning = __webpack_require__(19);
+	var CSSProperty = __webpack_require__(106);
+	var warning = __webpack_require__(21);
 
 	var isUnitlessNumber = CSSProperty.isUnitlessNumber;
 	var styleWarnings = {};
@@ -13055,10 +13429,10 @@
 	}
 
 	module.exports = dangerousStyleValue;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 108 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -13074,7 +13448,7 @@
 
 	'use strict';
 
-	var hyphenate = __webpack_require__(109);
+	var hyphenate = __webpack_require__(111);
 
 	var msPattern = /^ms-/;
 
@@ -13101,7 +13475,7 @@
 	module.exports = hyphenateStyleName;
 
 /***/ },
-/* 109 */
+/* 111 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -13138,7 +13512,7 @@
 	module.exports = hyphenate;
 
 /***/ },
-/* 110 */
+/* 112 */
 /***/ function(module, exports) {
 
 	/**
@@ -13172,7 +13546,7 @@
 	module.exports = memoizeStringOnly;
 
 /***/ },
-/* 111 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -13187,12 +13561,12 @@
 
 	'use strict';
 
-	var DOMProperty = __webpack_require__(44);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactInstrumentation = __webpack_require__(70);
+	var DOMProperty = __webpack_require__(46);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactInstrumentation = __webpack_require__(72);
 
-	var quoteAttributeValueForBrowser = __webpack_require__(112);
-	var warning = __webpack_require__(19);
+	var quoteAttributeValueForBrowser = __webpack_require__(114);
+	var warning = __webpack_require__(21);
 
 	var VALID_ATTRIBUTE_NAME_REGEX = new RegExp('^[' + DOMProperty.ATTRIBUTE_NAME_START_CHAR + '][' + DOMProperty.ATTRIBUTE_NAME_CHAR + ']*$');
 	var illegalAttributeNameCache = {};
@@ -13411,10 +13785,10 @@
 	};
 
 	module.exports = DOMPropertyOperations;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 112 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -13429,7 +13803,7 @@
 
 	'use strict';
 
-	var escapeTextContentForBrowser = __webpack_require__(94);
+	var escapeTextContentForBrowser = __webpack_require__(96);
 
 	/**
 	 * Escapes attribute value to prevent scripting attacks.
@@ -13444,7 +13818,7 @@
 	module.exports = quoteAttributeValueForBrowser;
 
 /***/ },
-/* 113 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -13459,14 +13833,14 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var EventPluginRegistry = __webpack_require__(51);
-	var ReactEventEmitterMixin = __webpack_require__(114);
-	var ViewportMetrics = __webpack_require__(84);
+	var EventPluginRegistry = __webpack_require__(53);
+	var ReactEventEmitterMixin = __webpack_require__(116);
+	var ViewportMetrics = __webpack_require__(86);
 
-	var getVendorPrefixedEventName = __webpack_require__(115);
-	var isEventSupported = __webpack_require__(78);
+	var getVendorPrefixedEventName = __webpack_require__(117);
+	var isEventSupported = __webpack_require__(80);
 
 	/**
 	 * Summary of `ReactBrowserEventEmitter` event handling:
@@ -13776,7 +14150,7 @@
 	module.exports = ReactBrowserEventEmitter;
 
 /***/ },
-/* 114 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -13791,7 +14165,7 @@
 
 	'use strict';
 
-	var EventPluginHub = __webpack_require__(50);
+	var EventPluginHub = __webpack_require__(52);
 
 	function runEventQueueInBatch(events) {
 	  EventPluginHub.enqueueEvents(events);
@@ -13813,7 +14187,7 @@
 	module.exports = ReactEventEmitterMixin;
 
 /***/ },
-/* 115 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -13828,7 +14202,7 @@
 
 	'use strict';
 
-	var ExecutionEnvironment = __webpack_require__(56);
+	var ExecutionEnvironment = __webpack_require__(58);
 
 	/**
 	 * Generate a mapping of standard vendor prefixes using the defined style property and event name.
@@ -13918,7 +14292,7 @@
 	module.exports = getVendorPrefixedEventName;
 
 /***/ },
-/* 116 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -13933,16 +14307,16 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43),
-	    _assign = __webpack_require__(12);
+	var _prodInvariant = __webpack_require__(45),
+	    _assign = __webpack_require__(14);
 
-	var DOMPropertyOperations = __webpack_require__(111);
-	var LinkedValueUtils = __webpack_require__(117);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactUpdates = __webpack_require__(64);
+	var DOMPropertyOperations = __webpack_require__(113);
+	var LinkedValueUtils = __webpack_require__(119);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactUpdates = __webpack_require__(66);
 
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	var didWarnValueLink = false;
 	var didWarnCheckedLink = false;
@@ -14188,10 +14562,10 @@
 	}
 
 	module.exports = ReactDOMInput;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 117 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -14206,13 +14580,13 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var React = __webpack_require__(10);
-	var ReactPropTypesSecret = __webpack_require__(118);
+	var React = __webpack_require__(12);
+	var ReactPropTypesSecret = __webpack_require__(120);
 
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	var hasReadOnlyValue = {
 	  'button': true,
@@ -14328,10 +14702,10 @@
 	};
 
 	module.exports = LinkedValueUtils;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 118 */
+/* 120 */
 /***/ function(module, exports) {
 
 	/**
@@ -14352,7 +14726,7 @@
 	module.exports = ReactPropTypesSecret;
 
 /***/ },
-/* 119 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -14367,13 +14741,13 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var React = __webpack_require__(10);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactDOMSelect = __webpack_require__(120);
+	var React = __webpack_require__(12);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactDOMSelect = __webpack_require__(122);
 
-	var warning = __webpack_require__(19);
+	var warning = __webpack_require__(21);
 	var didWarnInvalidOptionChildren = false;
 
 	function flattenChildren(children) {
@@ -14477,10 +14851,10 @@
 	};
 
 	module.exports = ReactDOMOption;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 120 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -14495,13 +14869,13 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var LinkedValueUtils = __webpack_require__(117);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactUpdates = __webpack_require__(64);
+	var LinkedValueUtils = __webpack_require__(119);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactUpdates = __webpack_require__(66);
 
-	var warning = __webpack_require__(19);
+	var warning = __webpack_require__(21);
 
 	var didWarnValueLink = false;
 	var didWarnValueDefaultValue = false;
@@ -14682,10 +15056,10 @@
 	}
 
 	module.exports = ReactDOMSelect;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 121 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -14700,15 +15074,15 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43),
-	    _assign = __webpack_require__(12);
+	var _prodInvariant = __webpack_require__(45),
+	    _assign = __webpack_require__(14);
 
-	var LinkedValueUtils = __webpack_require__(117);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactUpdates = __webpack_require__(64);
+	var LinkedValueUtils = __webpack_require__(119);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactUpdates = __webpack_require__(66);
 
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	var didWarnValueLink = false;
 	var didWarnValDefaultVal = false;
@@ -14841,10 +15215,10 @@
 	}
 
 	module.exports = ReactDOMTextarea;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 122 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -14859,19 +15233,19 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var ReactComponentEnvironment = __webpack_require__(123);
-	var ReactInstanceMap = __webpack_require__(124);
-	var ReactInstrumentation = __webpack_require__(70);
+	var ReactComponentEnvironment = __webpack_require__(125);
+	var ReactInstanceMap = __webpack_require__(126);
+	var ReactInstrumentation = __webpack_require__(72);
 
-	var ReactCurrentOwner = __webpack_require__(18);
-	var ReactReconciler = __webpack_require__(67);
-	var ReactChildReconciler = __webpack_require__(125);
+	var ReactCurrentOwner = __webpack_require__(20);
+	var ReactReconciler = __webpack_require__(69);
+	var ReactChildReconciler = __webpack_require__(127);
 
-	var emptyFunction = __webpack_require__(20);
-	var flattenChildren = __webpack_require__(140);
-	var invariant = __webpack_require__(16);
+	var emptyFunction = __webpack_require__(22);
+	var flattenChildren = __webpack_require__(142);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Make an update for markup to be rendered and inserted at a supplied index.
@@ -15296,10 +15670,10 @@
 	};
 
 	module.exports = ReactMultiChild;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 123 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -15315,9 +15689,9 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	var injected = false;
 
@@ -15347,10 +15721,10 @@
 	};
 
 	module.exports = ReactComponentEnvironment;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 124 */
+/* 126 */
 /***/ function(module, exports) {
 
 	/**
@@ -15402,7 +15776,7 @@
 	module.exports = ReactInstanceMap;
 
 /***/ },
-/* 125 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -15417,13 +15791,13 @@
 
 	'use strict';
 
-	var ReactReconciler = __webpack_require__(67);
+	var ReactReconciler = __webpack_require__(69);
 
-	var instantiateReactComponent = __webpack_require__(126);
-	var KeyEscapeUtils = __webpack_require__(136);
-	var shouldUpdateReactComponent = __webpack_require__(132);
-	var traverseAllChildren = __webpack_require__(137);
-	var warning = __webpack_require__(19);
+	var instantiateReactComponent = __webpack_require__(128);
+	var KeyEscapeUtils = __webpack_require__(138);
+	var shouldUpdateReactComponent = __webpack_require__(134);
+	var traverseAllChildren = __webpack_require__(139);
+	var warning = __webpack_require__(21);
 
 	var ReactComponentTreeHook;
 
@@ -15433,7 +15807,7 @@
 	  // https://github.com/facebook/react/issues/7240
 	  // Remove the inline requires when we don't need them anymore:
 	  // https://github.com/facebook/react/pull/7178
-	  ReactComponentTreeHook = __webpack_require__(34);
+	  ReactComponentTreeHook = __webpack_require__(36);
 	}
 
 	function instantiateChild(childInstances, child, name, selfDebugID) {
@@ -15441,7 +15815,7 @@
 	  var keyUnique = childInstances[name] === undefined;
 	  if (process.env.NODE_ENV !== 'production') {
 	    if (!ReactComponentTreeHook) {
-	      ReactComponentTreeHook = __webpack_require__(34);
+	      ReactComponentTreeHook = __webpack_require__(36);
 	    }
 	    if (!keyUnique) {
 	      process.env.NODE_ENV !== 'production' ? warning(false, 'flattenChildren(...): Encountered two children with the same key, ' + '`%s`. Child keys must be unique; when two children share a key, only ' + 'the first child will be used.%s', KeyEscapeUtils.unescape(name), ReactComponentTreeHook.getStackAddendumByID(selfDebugID)) : void 0;
@@ -15558,10 +15932,10 @@
 	};
 
 	module.exports = ReactChildReconciler;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 126 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -15576,16 +15950,16 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43),
-	    _assign = __webpack_require__(12);
+	var _prodInvariant = __webpack_require__(45),
+	    _assign = __webpack_require__(14);
 
-	var ReactCompositeComponent = __webpack_require__(127);
-	var ReactEmptyComponent = __webpack_require__(133);
-	var ReactHostComponent = __webpack_require__(134);
+	var ReactCompositeComponent = __webpack_require__(129);
+	var ReactEmptyComponent = __webpack_require__(135);
+	var ReactHostComponent = __webpack_require__(136);
 
-	var getNextDebugID = __webpack_require__(135);
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var getNextDebugID = __webpack_require__(137);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	// To avoid a cyclic dependency, we create the final class in this module
 	var ReactCompositeComponentWrapper = function (element) {
@@ -15681,10 +16055,10 @@
 	}
 
 	module.exports = instantiateReactComponent;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 127 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -15699,27 +16073,27 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43),
-	    _assign = __webpack_require__(12);
+	var _prodInvariant = __webpack_require__(45),
+	    _assign = __webpack_require__(14);
 
-	var React = __webpack_require__(10);
-	var ReactComponentEnvironment = __webpack_require__(123);
-	var ReactCurrentOwner = __webpack_require__(18);
-	var ReactErrorUtils = __webpack_require__(53);
-	var ReactInstanceMap = __webpack_require__(124);
-	var ReactInstrumentation = __webpack_require__(70);
-	var ReactNodeTypes = __webpack_require__(128);
-	var ReactReconciler = __webpack_require__(67);
+	var React = __webpack_require__(12);
+	var ReactComponentEnvironment = __webpack_require__(125);
+	var ReactCurrentOwner = __webpack_require__(20);
+	var ReactErrorUtils = __webpack_require__(55);
+	var ReactInstanceMap = __webpack_require__(126);
+	var ReactInstrumentation = __webpack_require__(72);
+	var ReactNodeTypes = __webpack_require__(130);
+	var ReactReconciler = __webpack_require__(69);
 
 	if (process.env.NODE_ENV !== 'production') {
-	  var checkReactTypeSpec = __webpack_require__(129);
+	  var checkReactTypeSpec = __webpack_require__(131);
 	}
 
-	var emptyObject = __webpack_require__(28);
-	var invariant = __webpack_require__(16);
-	var shallowEqual = __webpack_require__(131);
-	var shouldUpdateReactComponent = __webpack_require__(132);
-	var warning = __webpack_require__(19);
+	var emptyObject = __webpack_require__(30);
+	var invariant = __webpack_require__(18);
+	var shallowEqual = __webpack_require__(133);
+	var shouldUpdateReactComponent = __webpack_require__(134);
+	var warning = __webpack_require__(21);
 
 	var CompositeTypes = {
 	  ImpureClass: 0,
@@ -16588,10 +16962,10 @@
 	};
 
 	module.exports = ReactCompositeComponent;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 128 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -16607,11 +16981,11 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var React = __webpack_require__(10);
+	var React = __webpack_require__(12);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	var ReactNodeTypes = {
 	  HOST: 0,
@@ -16633,10 +17007,10 @@
 	};
 
 	module.exports = ReactNodeTypes;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 129 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -16651,13 +17025,13 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var ReactPropTypeLocationNames = __webpack_require__(130);
-	var ReactPropTypesSecret = __webpack_require__(118);
+	var ReactPropTypeLocationNames = __webpack_require__(132);
+	var ReactPropTypesSecret = __webpack_require__(120);
 
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	var ReactComponentTreeHook;
 
@@ -16667,7 +17041,7 @@
 	  // https://github.com/facebook/react/issues/7240
 	  // Remove the inline requires when we don't need them anymore:
 	  // https://github.com/facebook/react/pull/7178
-	  ReactComponentTreeHook = __webpack_require__(34);
+	  ReactComponentTreeHook = __webpack_require__(36);
 	}
 
 	var loggedTypeFailures = {};
@@ -16709,7 +17083,7 @@
 
 	        if (process.env.NODE_ENV !== 'production') {
 	          if (!ReactComponentTreeHook) {
-	            ReactComponentTreeHook = __webpack_require__(34);
+	            ReactComponentTreeHook = __webpack_require__(36);
 	          }
 	          if (debugID !== null) {
 	            componentStackInfo = ReactComponentTreeHook.getStackAddendumByID(debugID);
@@ -16725,10 +17099,10 @@
 	}
 
 	module.exports = checkReactTypeSpec;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 130 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -16755,10 +17129,10 @@
 	}
 
 	module.exports = ReactPropTypeLocationNames;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 131 */
+/* 133 */
 /***/ function(module, exports) {
 
 	/**
@@ -16830,7 +17204,7 @@
 	module.exports = shallowEqual;
 
 /***/ },
-/* 132 */
+/* 134 */
 /***/ function(module, exports) {
 
 	/**
@@ -16876,7 +17250,7 @@
 	module.exports = shouldUpdateReactComponent;
 
 /***/ },
-/* 133 */
+/* 135 */
 /***/ function(module, exports) {
 
 	/**
@@ -16910,7 +17284,7 @@
 	module.exports = ReactEmptyComponent;
 
 /***/ },
-/* 134 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -16925,10 +17299,10 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43),
-	    _assign = __webpack_require__(12);
+	var _prodInvariant = __webpack_require__(45),
+	    _assign = __webpack_require__(14);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	var genericComponentClass = null;
 	// This registry keeps track of wrapper classes around host tags.
@@ -16988,10 +17362,10 @@
 	};
 
 	module.exports = ReactHostComponent;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 135 */
+/* 137 */
 /***/ function(module, exports) {
 
 	/**
@@ -17016,7 +17390,7 @@
 	module.exports = getNextDebugID;
 
 /***/ },
-/* 136 */
+/* 138 */
 /***/ function(module, exports) {
 
 	/**
@@ -17079,7 +17453,7 @@
 	module.exports = KeyEscapeUtils;
 
 /***/ },
-/* 137 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -17094,15 +17468,15 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var ReactCurrentOwner = __webpack_require__(18);
-	var REACT_ELEMENT_TYPE = __webpack_require__(138);
+	var ReactCurrentOwner = __webpack_require__(20);
+	var REACT_ELEMENT_TYPE = __webpack_require__(140);
 
-	var getIteratorFn = __webpack_require__(139);
-	var invariant = __webpack_require__(16);
-	var KeyEscapeUtils = __webpack_require__(136);
-	var warning = __webpack_require__(19);
+	var getIteratorFn = __webpack_require__(141);
+	var invariant = __webpack_require__(18);
+	var KeyEscapeUtils = __webpack_require__(138);
+	var warning = __webpack_require__(21);
 
 	var SEPARATOR = '.';
 	var SUBSEPARATOR = ':';
@@ -17257,10 +17631,10 @@
 	}
 
 	module.exports = traverseAllChildren;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 138 */
+/* 140 */
 /***/ function(module, exports) {
 
 	/**
@@ -17284,7 +17658,7 @@
 	module.exports = REACT_ELEMENT_TYPE;
 
 /***/ },
-/* 139 */
+/* 141 */
 /***/ function(module, exports) {
 
 	/**
@@ -17329,7 +17703,7 @@
 	module.exports = getIteratorFn;
 
 /***/ },
-/* 140 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -17345,9 +17719,9 @@
 
 	'use strict';
 
-	var KeyEscapeUtils = __webpack_require__(136);
-	var traverseAllChildren = __webpack_require__(137);
-	var warning = __webpack_require__(19);
+	var KeyEscapeUtils = __webpack_require__(138);
+	var traverseAllChildren = __webpack_require__(139);
+	var warning = __webpack_require__(21);
 
 	var ReactComponentTreeHook;
 
@@ -17357,7 +17731,7 @@
 	  // https://github.com/facebook/react/issues/7240
 	  // Remove the inline requires when we don't need them anymore:
 	  // https://github.com/facebook/react/pull/7178
-	  ReactComponentTreeHook = __webpack_require__(34);
+	  ReactComponentTreeHook = __webpack_require__(36);
 	}
 
 	/**
@@ -17373,7 +17747,7 @@
 	    var keyUnique = result[name] === undefined;
 	    if (process.env.NODE_ENV !== 'production') {
 	      if (!ReactComponentTreeHook) {
-	        ReactComponentTreeHook = __webpack_require__(34);
+	        ReactComponentTreeHook = __webpack_require__(36);
 	      }
 	      if (!keyUnique) {
 	        process.env.NODE_ENV !== 'production' ? warning(false, 'flattenChildren(...): Encountered two children with the same key, ' + '`%s`. Child keys must be unique; when two children share a key, only ' + 'the first child will be used.%s', KeyEscapeUtils.unescape(name), ReactComponentTreeHook.getStackAddendumByID(selfDebugID)) : void 0;
@@ -17407,10 +17781,10 @@
 	}
 
 	module.exports = flattenChildren;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 141 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -17425,12 +17799,12 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var PooledClass = __webpack_require__(58);
-	var Transaction = __webpack_require__(76);
-	var ReactInstrumentation = __webpack_require__(70);
-	var ReactServerUpdateQueue = __webpack_require__(142);
+	var PooledClass = __webpack_require__(60);
+	var Transaction = __webpack_require__(78);
+	var ReactInstrumentation = __webpack_require__(72);
+	var ReactServerUpdateQueue = __webpack_require__(144);
 
 	/**
 	 * Executed within the scope of the `Transaction` instance. Consider these as
@@ -17502,10 +17876,10 @@
 	PooledClass.addPoolingTo(ReactServerRenderingTransaction);
 
 	module.exports = ReactServerRenderingTransaction;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 142 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -17523,9 +17897,9 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var ReactUpdateQueue = __webpack_require__(143);
+	var ReactUpdateQueue = __webpack_require__(145);
 
-	var warning = __webpack_require__(19);
+	var warning = __webpack_require__(21);
 
 	function warnNoop(publicInstance, callerName) {
 	  if (process.env.NODE_ENV !== 'production') {
@@ -17646,10 +18020,10 @@
 	}();
 
 	module.exports = ReactServerUpdateQueue;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 143 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -17664,15 +18038,15 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var ReactCurrentOwner = __webpack_require__(18);
-	var ReactInstanceMap = __webpack_require__(124);
-	var ReactInstrumentation = __webpack_require__(70);
-	var ReactUpdates = __webpack_require__(64);
+	var ReactCurrentOwner = __webpack_require__(20);
+	var ReactInstanceMap = __webpack_require__(126);
+	var ReactInstrumentation = __webpack_require__(72);
+	var ReactUpdates = __webpack_require__(66);
 
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	function enqueueUpdate(internalInstance) {
 	  ReactUpdates.enqueueUpdate(internalInstance);
@@ -17877,10 +18251,10 @@
 	};
 
 	module.exports = ReactUpdateQueue;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 144 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -17895,10 +18269,10 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var emptyFunction = __webpack_require__(20);
-	var warning = __webpack_require__(19);
+	var emptyFunction = __webpack_require__(22);
+	var warning = __webpack_require__(21);
 
 	var validateDOMNesting = emptyFunction;
 
@@ -18264,10 +18638,10 @@
 	}
 
 	module.exports = validateDOMNesting;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 145 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18282,10 +18656,10 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var DOMLazyTree = __webpack_require__(89);
-	var ReactDOMComponentTree = __webpack_require__(42);
+	var DOMLazyTree = __webpack_require__(91);
+	var ReactDOMComponentTree = __webpack_require__(44);
 
 	var ReactDOMEmptyComponent = function (instantiate) {
 	  // ReactCompositeComponent uses this:
@@ -18331,7 +18705,7 @@
 	module.exports = ReactDOMEmptyComponent;
 
 /***/ },
-/* 146 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -18346,9 +18720,9 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var invariant = __webpack_require__(16);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Return the lowest common ancestor of A and B, or null if they are in
@@ -18469,10 +18843,10 @@
 	  traverseTwoPhase: traverseTwoPhase,
 	  traverseEnterLeave: traverseEnterLeave
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 147 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -18487,16 +18861,16 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43),
-	    _assign = __webpack_require__(12);
+	var _prodInvariant = __webpack_require__(45),
+	    _assign = __webpack_require__(14);
 
-	var DOMChildrenOperations = __webpack_require__(88);
-	var DOMLazyTree = __webpack_require__(89);
-	var ReactDOMComponentTree = __webpack_require__(42);
+	var DOMChildrenOperations = __webpack_require__(90);
+	var DOMLazyTree = __webpack_require__(91);
+	var ReactDOMComponentTree = __webpack_require__(44);
 
-	var escapeTextContentForBrowser = __webpack_require__(94);
-	var invariant = __webpack_require__(16);
-	var validateDOMNesting = __webpack_require__(144);
+	var escapeTextContentForBrowser = __webpack_require__(96);
+	var invariant = __webpack_require__(18);
+	var validateDOMNesting = __webpack_require__(146);
 
 	/**
 	 * Text nodes violate a couple assumptions that React makes about components:
@@ -18638,10 +19012,10 @@
 	});
 
 	module.exports = ReactDOMTextComponent;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 148 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18656,12 +19030,12 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var ReactUpdates = __webpack_require__(64);
-	var Transaction = __webpack_require__(76);
+	var ReactUpdates = __webpack_require__(66);
+	var Transaction = __webpack_require__(78);
 
-	var emptyFunction = __webpack_require__(20);
+	var emptyFunction = __webpack_require__(22);
 
 	var RESET_BATCHED_UPDATES = {
 	  initialize: emptyFunction,
@@ -18713,7 +19087,7 @@
 	module.exports = ReactDefaultBatchingStrategy;
 
 /***/ },
-/* 149 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18728,16 +19102,16 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var EventListener = __webpack_require__(150);
-	var ExecutionEnvironment = __webpack_require__(56);
-	var PooledClass = __webpack_require__(58);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactUpdates = __webpack_require__(64);
+	var EventListener = __webpack_require__(152);
+	var ExecutionEnvironment = __webpack_require__(58);
+	var PooledClass = __webpack_require__(60);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactUpdates = __webpack_require__(66);
 
-	var getEventTarget = __webpack_require__(77);
-	var getUnboundedScrollPosition = __webpack_require__(151);
+	var getEventTarget = __webpack_require__(79);
+	var getUnboundedScrollPosition = __webpack_require__(153);
 
 	/**
 	 * Find the deepest React component completely containing the root of the
@@ -18872,7 +19246,7 @@
 	module.exports = ReactEventListener;
 
 /***/ },
-/* 150 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -18895,7 +19269,7 @@
 	 * @typechecks
 	 */
 
-	var emptyFunction = __webpack_require__(20);
+	var emptyFunction = __webpack_require__(22);
 
 	/**
 	 * Upstream version of event listener. Does not take into account specific
@@ -18958,10 +19332,10 @@
 	};
 
 	module.exports = EventListener;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 151 */
+/* 153 */
 /***/ function(module, exports) {
 
 	/**
@@ -19004,7 +19378,7 @@
 	module.exports = getUnboundedScrollPosition;
 
 /***/ },
-/* 152 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19019,14 +19393,14 @@
 
 	'use strict';
 
-	var DOMProperty = __webpack_require__(44);
-	var EventPluginHub = __webpack_require__(50);
-	var EventPluginUtils = __webpack_require__(52);
-	var ReactComponentEnvironment = __webpack_require__(123);
-	var ReactEmptyComponent = __webpack_require__(133);
-	var ReactBrowserEventEmitter = __webpack_require__(113);
-	var ReactHostComponent = __webpack_require__(134);
-	var ReactUpdates = __webpack_require__(64);
+	var DOMProperty = __webpack_require__(46);
+	var EventPluginHub = __webpack_require__(52);
+	var EventPluginUtils = __webpack_require__(54);
+	var ReactComponentEnvironment = __webpack_require__(125);
+	var ReactEmptyComponent = __webpack_require__(135);
+	var ReactBrowserEventEmitter = __webpack_require__(115);
+	var ReactHostComponent = __webpack_require__(136);
+	var ReactUpdates = __webpack_require__(66);
 
 	var ReactInjection = {
 	  Component: ReactComponentEnvironment.injection,
@@ -19042,7 +19416,7 @@
 	module.exports = ReactInjection;
 
 /***/ },
-/* 153 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -19057,15 +19431,15 @@
 
 	'use strict';
 
-	var _assign = __webpack_require__(12);
+	var _assign = __webpack_require__(14);
 
-	var CallbackQueue = __webpack_require__(65);
-	var PooledClass = __webpack_require__(58);
-	var ReactBrowserEventEmitter = __webpack_require__(113);
-	var ReactInputSelection = __webpack_require__(154);
-	var ReactInstrumentation = __webpack_require__(70);
-	var Transaction = __webpack_require__(76);
-	var ReactUpdateQueue = __webpack_require__(143);
+	var CallbackQueue = __webpack_require__(67);
+	var PooledClass = __webpack_require__(60);
+	var ReactBrowserEventEmitter = __webpack_require__(115);
+	var ReactInputSelection = __webpack_require__(156);
+	var ReactInstrumentation = __webpack_require__(72);
+	var Transaction = __webpack_require__(78);
+	var ReactUpdateQueue = __webpack_require__(145);
 
 	/**
 	 * Ensures that, when possible, the selection range (currently selected text
@@ -19222,10 +19596,10 @@
 	PooledClass.addPoolingTo(ReactReconcileTransaction);
 
 	module.exports = ReactReconcileTransaction;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 154 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19240,11 +19614,11 @@
 
 	'use strict';
 
-	var ReactDOMSelection = __webpack_require__(155);
+	var ReactDOMSelection = __webpack_require__(157);
 
-	var containsNode = __webpack_require__(157);
-	var focusNode = __webpack_require__(102);
-	var getActiveElement = __webpack_require__(160);
+	var containsNode = __webpack_require__(159);
+	var focusNode = __webpack_require__(104);
+	var getActiveElement = __webpack_require__(162);
 
 	function isInDocument(node) {
 	  return containsNode(document.documentElement, node);
@@ -19353,7 +19727,7 @@
 	module.exports = ReactInputSelection;
 
 /***/ },
-/* 155 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19368,10 +19742,10 @@
 
 	'use strict';
 
-	var ExecutionEnvironment = __webpack_require__(56);
+	var ExecutionEnvironment = __webpack_require__(58);
 
-	var getNodeForCharacterOffset = __webpack_require__(156);
-	var getTextContentAccessor = __webpack_require__(59);
+	var getNodeForCharacterOffset = __webpack_require__(158);
+	var getTextContentAccessor = __webpack_require__(61);
 
 	/**
 	 * While `isCollapsed` is available on the Selection object and `collapsed`
@@ -19569,7 +19943,7 @@
 	module.exports = ReactDOMSelection;
 
 /***/ },
-/* 156 */
+/* 158 */
 /***/ function(module, exports) {
 
 	/**
@@ -19647,7 +20021,7 @@
 	module.exports = getNodeForCharacterOffset;
 
 /***/ },
-/* 157 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -19663,7 +20037,7 @@
 	 * 
 	 */
 
-	var isTextNode = __webpack_require__(158);
+	var isTextNode = __webpack_require__(160);
 
 	/*eslint-disable no-bitwise */
 
@@ -19691,7 +20065,7 @@
 	module.exports = containsNode;
 
 /***/ },
-/* 158 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -19707,7 +20081,7 @@
 	 * @typechecks
 	 */
 
-	var isNode = __webpack_require__(159);
+	var isNode = __webpack_require__(161);
 
 	/**
 	 * @param {*} object The object to check.
@@ -19720,7 +20094,7 @@
 	module.exports = isTextNode;
 
 /***/ },
-/* 159 */
+/* 161 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -19747,7 +20121,7 @@
 	module.exports = isNode;
 
 /***/ },
-/* 160 */
+/* 162 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -19786,7 +20160,7 @@
 	module.exports = getActiveElement;
 
 /***/ },
-/* 161 */
+/* 163 */
 /***/ function(module, exports) {
 
 	/**
@@ -20092,7 +20466,7 @@
 	module.exports = SVGDOMPropertyConfig;
 
 /***/ },
-/* 162 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20107,15 +20481,15 @@
 
 	'use strict';
 
-	var EventPropagators = __webpack_require__(49);
-	var ExecutionEnvironment = __webpack_require__(56);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactInputSelection = __webpack_require__(154);
-	var SyntheticEvent = __webpack_require__(61);
+	var EventPropagators = __webpack_require__(51);
+	var ExecutionEnvironment = __webpack_require__(58);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactInputSelection = __webpack_require__(156);
+	var SyntheticEvent = __webpack_require__(63);
 
-	var getActiveElement = __webpack_require__(160);
-	var isTextInputElement = __webpack_require__(79);
-	var shallowEqual = __webpack_require__(131);
+	var getActiveElement = __webpack_require__(162);
+	var isTextInputElement = __webpack_require__(81);
+	var shallowEqual = __webpack_require__(133);
 
 	var skipSelectionChangeEvent = ExecutionEnvironment.canUseDOM && 'documentMode' in document && document.documentMode <= 11;
 
@@ -20287,7 +20661,7 @@
 	module.exports = SelectEventPlugin;
 
 /***/ },
-/* 163 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -20303,26 +20677,26 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var EventListener = __webpack_require__(150);
-	var EventPropagators = __webpack_require__(49);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var SyntheticAnimationEvent = __webpack_require__(164);
-	var SyntheticClipboardEvent = __webpack_require__(165);
-	var SyntheticEvent = __webpack_require__(61);
-	var SyntheticFocusEvent = __webpack_require__(166);
-	var SyntheticKeyboardEvent = __webpack_require__(167);
-	var SyntheticMouseEvent = __webpack_require__(82);
-	var SyntheticDragEvent = __webpack_require__(170);
-	var SyntheticTouchEvent = __webpack_require__(171);
-	var SyntheticTransitionEvent = __webpack_require__(172);
-	var SyntheticUIEvent = __webpack_require__(83);
-	var SyntheticWheelEvent = __webpack_require__(173);
+	var EventListener = __webpack_require__(152);
+	var EventPropagators = __webpack_require__(51);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var SyntheticAnimationEvent = __webpack_require__(166);
+	var SyntheticClipboardEvent = __webpack_require__(167);
+	var SyntheticEvent = __webpack_require__(63);
+	var SyntheticFocusEvent = __webpack_require__(168);
+	var SyntheticKeyboardEvent = __webpack_require__(169);
+	var SyntheticMouseEvent = __webpack_require__(84);
+	var SyntheticDragEvent = __webpack_require__(172);
+	var SyntheticTouchEvent = __webpack_require__(173);
+	var SyntheticTransitionEvent = __webpack_require__(174);
+	var SyntheticUIEvent = __webpack_require__(85);
+	var SyntheticWheelEvent = __webpack_require__(175);
 
-	var emptyFunction = __webpack_require__(20);
-	var getEventCharCode = __webpack_require__(168);
-	var invariant = __webpack_require__(16);
+	var emptyFunction = __webpack_require__(22);
+	var getEventCharCode = __webpack_require__(170);
+	var invariant = __webpack_require__(18);
 
 	/**
 	 * Turns
@@ -20517,10 +20891,10 @@
 	};
 
 	module.exports = SimpleEventPlugin;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 164 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20535,7 +20909,7 @@
 
 	'use strict';
 
-	var SyntheticEvent = __webpack_require__(61);
+	var SyntheticEvent = __webpack_require__(63);
 
 	/**
 	 * @interface Event
@@ -20563,7 +20937,7 @@
 	module.exports = SyntheticAnimationEvent;
 
 /***/ },
-/* 165 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20578,7 +20952,7 @@
 
 	'use strict';
 
-	var SyntheticEvent = __webpack_require__(61);
+	var SyntheticEvent = __webpack_require__(63);
 
 	/**
 	 * @interface Event
@@ -20605,7 +20979,7 @@
 	module.exports = SyntheticClipboardEvent;
 
 /***/ },
-/* 166 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20620,7 +20994,7 @@
 
 	'use strict';
 
-	var SyntheticUIEvent = __webpack_require__(83);
+	var SyntheticUIEvent = __webpack_require__(85);
 
 	/**
 	 * @interface FocusEvent
@@ -20645,7 +21019,7 @@
 	module.exports = SyntheticFocusEvent;
 
 /***/ },
-/* 167 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20660,11 +21034,11 @@
 
 	'use strict';
 
-	var SyntheticUIEvent = __webpack_require__(83);
+	var SyntheticUIEvent = __webpack_require__(85);
 
-	var getEventCharCode = __webpack_require__(168);
-	var getEventKey = __webpack_require__(169);
-	var getEventModifierState = __webpack_require__(85);
+	var getEventCharCode = __webpack_require__(170);
+	var getEventKey = __webpack_require__(171);
+	var getEventModifierState = __webpack_require__(87);
 
 	/**
 	 * @interface KeyboardEvent
@@ -20733,7 +21107,7 @@
 	module.exports = SyntheticKeyboardEvent;
 
 /***/ },
-/* 168 */
+/* 170 */
 /***/ function(module, exports) {
 
 	/**
@@ -20787,7 +21161,7 @@
 	module.exports = getEventCharCode;
 
 /***/ },
-/* 169 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20802,7 +21176,7 @@
 
 	'use strict';
 
-	var getEventCharCode = __webpack_require__(168);
+	var getEventCharCode = __webpack_require__(170);
 
 	/**
 	 * Normalization of deprecated HTML5 `key` values
@@ -20893,7 +21267,7 @@
 	module.exports = getEventKey;
 
 /***/ },
-/* 170 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20908,7 +21282,7 @@
 
 	'use strict';
 
-	var SyntheticMouseEvent = __webpack_require__(82);
+	var SyntheticMouseEvent = __webpack_require__(84);
 
 	/**
 	 * @interface DragEvent
@@ -20933,7 +21307,7 @@
 	module.exports = SyntheticDragEvent;
 
 /***/ },
-/* 171 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20948,9 +21322,9 @@
 
 	'use strict';
 
-	var SyntheticUIEvent = __webpack_require__(83);
+	var SyntheticUIEvent = __webpack_require__(85);
 
-	var getEventModifierState = __webpack_require__(85);
+	var getEventModifierState = __webpack_require__(87);
 
 	/**
 	 * @interface TouchEvent
@@ -20982,7 +21356,7 @@
 	module.exports = SyntheticTouchEvent;
 
 /***/ },
-/* 172 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20997,7 +21371,7 @@
 
 	'use strict';
 
-	var SyntheticEvent = __webpack_require__(61);
+	var SyntheticEvent = __webpack_require__(63);
 
 	/**
 	 * @interface Event
@@ -21025,7 +21399,7 @@
 	module.exports = SyntheticTransitionEvent;
 
 /***/ },
-/* 173 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21040,7 +21414,7 @@
 
 	'use strict';
 
-	var SyntheticMouseEvent = __webpack_require__(82);
+	var SyntheticMouseEvent = __webpack_require__(84);
 
 	/**
 	 * @interface WheelEvent
@@ -21083,7 +21457,7 @@
 	module.exports = SyntheticWheelEvent;
 
 /***/ },
-/* 174 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -21098,30 +21472,30 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var DOMLazyTree = __webpack_require__(89);
-	var DOMProperty = __webpack_require__(44);
-	var React = __webpack_require__(10);
-	var ReactBrowserEventEmitter = __webpack_require__(113);
-	var ReactCurrentOwner = __webpack_require__(18);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactDOMContainerInfo = __webpack_require__(175);
-	var ReactDOMFeatureFlags = __webpack_require__(176);
-	var ReactFeatureFlags = __webpack_require__(66);
-	var ReactInstanceMap = __webpack_require__(124);
-	var ReactInstrumentation = __webpack_require__(70);
-	var ReactMarkupChecksum = __webpack_require__(177);
-	var ReactReconciler = __webpack_require__(67);
-	var ReactUpdateQueue = __webpack_require__(143);
-	var ReactUpdates = __webpack_require__(64);
+	var DOMLazyTree = __webpack_require__(91);
+	var DOMProperty = __webpack_require__(46);
+	var React = __webpack_require__(12);
+	var ReactBrowserEventEmitter = __webpack_require__(115);
+	var ReactCurrentOwner = __webpack_require__(20);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactDOMContainerInfo = __webpack_require__(177);
+	var ReactDOMFeatureFlags = __webpack_require__(178);
+	var ReactFeatureFlags = __webpack_require__(68);
+	var ReactInstanceMap = __webpack_require__(126);
+	var ReactInstrumentation = __webpack_require__(72);
+	var ReactMarkupChecksum = __webpack_require__(179);
+	var ReactReconciler = __webpack_require__(69);
+	var ReactUpdateQueue = __webpack_require__(145);
+	var ReactUpdates = __webpack_require__(66);
 
-	var emptyObject = __webpack_require__(28);
-	var instantiateReactComponent = __webpack_require__(126);
-	var invariant = __webpack_require__(16);
-	var setInnerHTML = __webpack_require__(91);
-	var shouldUpdateReactComponent = __webpack_require__(132);
-	var warning = __webpack_require__(19);
+	var emptyObject = __webpack_require__(30);
+	var instantiateReactComponent = __webpack_require__(128);
+	var invariant = __webpack_require__(18);
+	var setInnerHTML = __webpack_require__(93);
+	var shouldUpdateReactComponent = __webpack_require__(134);
+	var warning = __webpack_require__(21);
 
 	var ATTR_NAME = DOMProperty.ID_ATTRIBUTE_NAME;
 	var ROOT_ATTR_NAME = DOMProperty.ROOT_ATTRIBUTE_NAME;
@@ -21623,10 +21997,10 @@
 	};
 
 	module.exports = ReactMount;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 175 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -21641,7 +22015,7 @@
 
 	'use strict';
 
-	var validateDOMNesting = __webpack_require__(144);
+	var validateDOMNesting = __webpack_require__(146);
 
 	var DOC_NODE_TYPE = 9;
 
@@ -21661,10 +22035,10 @@
 	}
 
 	module.exports = ReactDOMContainerInfo;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 176 */
+/* 178 */
 /***/ function(module, exports) {
 
 	/**
@@ -21687,7 +22061,7 @@
 	module.exports = ReactDOMFeatureFlags;
 
 /***/ },
-/* 177 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21702,7 +22076,7 @@
 
 	'use strict';
 
-	var adler32 = __webpack_require__(178);
+	var adler32 = __webpack_require__(180);
 
 	var TAG_END = /\/?>/;
 	var COMMENT_START = /^<\!\-\-/;
@@ -21741,7 +22115,7 @@
 	module.exports = ReactMarkupChecksum;
 
 /***/ },
-/* 178 */
+/* 180 */
 /***/ function(module, exports) {
 
 	/**
@@ -21789,7 +22163,7 @@
 	module.exports = adler32;
 
 /***/ },
-/* 179 */
+/* 181 */
 /***/ function(module, exports) {
 
 	/**
@@ -21807,7 +22181,7 @@
 	module.exports = '15.4.1';
 
 /***/ },
-/* 180 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -21822,15 +22196,15 @@
 
 	'use strict';
 
-	var _prodInvariant = __webpack_require__(43);
+	var _prodInvariant = __webpack_require__(45);
 
-	var ReactCurrentOwner = __webpack_require__(18);
-	var ReactDOMComponentTree = __webpack_require__(42);
-	var ReactInstanceMap = __webpack_require__(124);
+	var ReactCurrentOwner = __webpack_require__(20);
+	var ReactDOMComponentTree = __webpack_require__(44);
+	var ReactInstanceMap = __webpack_require__(126);
 
-	var getHostComponentFromComposite = __webpack_require__(181);
-	var invariant = __webpack_require__(16);
-	var warning = __webpack_require__(19);
+	var getHostComponentFromComposite = __webpack_require__(183);
+	var invariant = __webpack_require__(18);
+	var warning = __webpack_require__(21);
 
 	/**
 	 * Returns the DOM node rendered by this element.
@@ -21869,10 +22243,10 @@
 	}
 
 	module.exports = findDOMNode;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 181 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21887,7 +22261,7 @@
 
 	'use strict';
 
-	var ReactNodeTypes = __webpack_require__(128);
+	var ReactNodeTypes = __webpack_require__(130);
 
 	function getHostComponentFromComposite(inst) {
 	  var type;
@@ -21906,7 +22280,7 @@
 	module.exports = getHostComponentFromComposite;
 
 /***/ },
-/* 182 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21921,12 +22295,12 @@
 
 	'use strict';
 
-	var ReactMount = __webpack_require__(174);
+	var ReactMount = __webpack_require__(176);
 
 	module.exports = ReactMount.renderSubtreeIntoContainer;
 
 /***/ },
-/* 183 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -21941,11 +22315,11 @@
 
 	'use strict';
 
-	var DOMProperty = __webpack_require__(44);
-	var EventPluginRegistry = __webpack_require__(51);
-	var ReactComponentTreeHook = __webpack_require__(34);
+	var DOMProperty = __webpack_require__(46);
+	var EventPluginRegistry = __webpack_require__(53);
+	var ReactComponentTreeHook = __webpack_require__(36);
 
-	var warning = __webpack_require__(19);
+	var warning = __webpack_require__(21);
 
 	if (process.env.NODE_ENV !== 'production') {
 	  var reactProps = {
@@ -22040,10 +22414,10 @@
 	};
 
 	module.exports = ReactDOMUnknownPropertyHook;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 184 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -22058,9 +22432,9 @@
 
 	'use strict';
 
-	var ReactComponentTreeHook = __webpack_require__(34);
+	var ReactComponentTreeHook = __webpack_require__(36);
 
-	var warning = __webpack_require__(19);
+	var warning = __webpack_require__(21);
 
 	var didWarnValueNull = false;
 
@@ -22088,10 +22462,10 @@
 	};
 
 	module.exports = ReactDOMNullInputValuePropHook;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 185 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -22106,10 +22480,10 @@
 
 	'use strict';
 
-	var DOMProperty = __webpack_require__(44);
-	var ReactComponentTreeHook = __webpack_require__(34);
+	var DOMProperty = __webpack_require__(46);
+	var ReactComponentTreeHook = __webpack_require__(36);
 
-	var warning = __webpack_require__(19);
+	var warning = __webpack_require__(21);
 
 	var warnedProperties = {};
 	var rARIA = new RegExp('^(aria)-[' + DOMProperty.ATTRIBUTE_NAME_CHAR + ']*$');
@@ -22186,22 +22560,21 @@
 	};
 
 	module.exports = ReactDOMInvalidARIAHook;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13)))
 
 /***/ },
-/* 186 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
-	var SignIn = __webpack_require__(187);
-	var SignUp = __webpack_require__(190);
-	var Chat = __webpack_require__(191);
-	var Loading = __webpack_require__(204);
+	var React = __webpack_require__(11);
+	var SignIn = __webpack_require__(189);
+	var SignUp = __webpack_require__(192);
+	var Chat = __webpack_require__(193);
+	var Loading = __webpack_require__(219);
 
 	module.exports = React.createClass({
 	    displayName: 'exports',
@@ -22212,7 +22585,8 @@
 	            signIn: true,
 	            signUp: false,
 	            chat: false,
-	            loadingStatus: false
+	            loadingStatus: false,
+	            loadingMsg: ''
 	        };
 	    },
 
@@ -22222,13 +22596,15 @@
 	            signUp: state.signUp,
 	            chat: state.chat,
 	            loadingStatus: state.loadingStatus,
+	            loadingMsg: state.loadingMsg,
 	            content: state.content,
 	            status: state.status
 	        });
 	    },
 
-	    loading: function loading(status) {
-	        this.setState({ loadingStatus: status });
+	    loading: function loading(status, msg) {
+	        msg = msg || Demo.lan.loading;
+	        this.setState({ loadingStatus: status, loadingMsg: msg });
 	    },
 
 	    render: function render() {
@@ -22243,20 +22619,21 @@
 	            null,
 	            React.createElement(
 	                'div',
-	                { className: 'webim' },
+	                { className: 'webim' + (WebIM.config.isWindowSDK ? ' webim_isWindowSDK' : '') },
 	                React.createElement(
 	                    'div',
 	                    { className: 'webim-logo' + (!this.state.signIn && !this.state.signUp ? ' hide' : '') },
-	                    React.createElement('img', { src: 'demo/images/logo.png' })
+	                    React.createElement('img', { src: 'demo/images/logo' + (WebIM.config.isWindowSDK ? '-windowSDK' : '') + '.png' })
 	                ),
 	                React.createElement(SignIn, _extends({ show: this.state.signIn }, this.props, { update: this.update, loading: this.loading })),
 	                React.createElement(SignUp, _extends({ show: this.state.signUp }, this.props, { update: this.update, loading: this.loading })),
-	                React.createElement(Chat, _extends({ show: this.state.chat }, this.props, { update: this.update, loading: this.loading }, props)),
-	                React.createElement(Loading, { show: this.state.loadingStatus })
+	                React.createElement(Chat, _extends({ show: this.state.chat }, this.props, { update: this.update,
+	                    loading: this.loading }, props)),
+	                React.createElement(Loading, { show: this.state.loadingStatus, msg: this.state.loadingMsg })
 	            ),
 	            React.createElement(
 	                'footer',
-	                { className: 'copyright' },
+	                { className: 'copyright' + (WebIM.config.isWindowSDK ? ' hide' : '') },
 	                '\xA9 2016 \u73AF\u4FE1\u79D1\u6280'
 	            )
 	        );
@@ -22264,14 +22641,14 @@
 	});
 
 /***/ },
-/* 187 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
-	var Notify = __webpack_require__(188);
-	var UI = __webpack_require__(189);
+	var React = __webpack_require__(11);
+	var Notify = __webpack_require__(190);
+	var UI = __webpack_require__(191);
 
 	var Input = UI.Input;
 	var Button = UI.Button;
@@ -22280,6 +22657,52 @@
 	module.exports = React.createClass({
 	    displayName: 'exports',
 
+	    getInitialState: function getInitialState() {
+	        return {
+	            pageLimit: 8
+	        };
+	    },
+
+	    validTabs: function validTabs() {
+	        if (!WebIM.config.isMultiLoginSessions || !window.localStorage) {
+	            return true;
+	        } else {
+	            Demo.userTimestamp = new Date().getTime();
+
+	            var key = 'easemob_' + Demo.user;
+	            var val = window.localStorage.getItem(key);
+	            var count = 0;
+	            var oneMinute = 60 * 1000;
+
+	            if (val === undefined || val === '' || val === null) {
+	                val = 'last';
+	            }
+	            val = Demo.userTimestamp + ',' + val;
+	            var timestampArr = val.split(',');
+	            var uniqueTimestampArr = [];
+	            // Unique
+
+	            for (var o in timestampArr) {
+	                if (timestampArr[o] === 'last') continue;
+	                uniqueTimestampArr[timestampArr[o]] = 1;
+	            }
+
+	            val = 'last';
+	            for (var o in uniqueTimestampArr) {
+	                // if more than one minute, cut it
+	                if (parseInt(o) + oneMinute < Demo.userTimestamp) {
+	                    continue;
+	                }
+	                count++;
+	                if (count > this.state.pageLimit) {
+	                    return false;
+	                }
+	                val = o + ',' + val;
+	            }
+	            window.localStorage.setItem(key, val);
+	            return true;
+	        }
+	    },
 
 	    keyDown: function keyDown(e) {
 	        if (e && e.keyCode === 13) {
@@ -22288,20 +22711,20 @@
 	    },
 
 	    signin: function signin() {
-	        var username = this.refs.name.refs.input.value;
-	        var auth = this.refs.auth.refs.input.value;
+	        var username = this.refs.name.refs.input.value || (WebIM.config.autoSignIn ? WebIM.config.autoSignInName : '');
+	        var auth = this.refs.auth.refs.input.value || (WebIM.config.autoSignIn ? WebIM.config.autoSignInPwd : '');
 	        var type = this.refs.token.refs.input.checked;
 
 	        if (!username || !auth) {
-	            Notify.error(Demo.lan.notEmpty);
+	            Demo.api.NotifyError(Demo.lan.notEmpty);
 	            return false;
 	        }
 
 	        var options = {
 	            apiUrl: this.props.config.apiURL,
 	            user: username.toLowerCase(),
-	            accessToken: auth,
 	            pwd: auth,
+	            accessToken: auth,
 	            appKey: this.props.config.appkey
 	        };
 
@@ -22311,7 +22734,27 @@
 	        Demo.user = username;
 
 	        this.props.loading('show');
-	        Demo.conn.open(options);
+
+	        Demo.conn.autoReconnectNumTotal = 0;
+
+	        if (WebIM.config.isWindowSDK) {
+	            var me = this;
+	            WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}', function (response) {
+	                Demo.conn.onOpened();
+	            }, function (code, msg) {
+	                me.props.loading('hide');
+	                Demo.api.NotifyError('open:' + code + " - " + msg);
+	            });
+	        } else {
+	            if (this.validTabs() === true) {
+	                Demo.conn.open(options);
+	            } else {
+	                Demo.conn.onError({
+	                    type: "One account can't open more than " + this.state.pageLimit + ' pages in one minute on the same browser'
+	                });
+	                return;
+	            }
+	        }
 	    },
 
 	    signup: function signup() {
@@ -22320,6 +22763,12 @@
 	            signUp: true,
 	            chat: false
 	        });
+	    },
+
+	    componentDidMount: function componentDidMount() {
+	        if (WebIM.config.autoSignIn) {
+	            this.refs.button.refs.button.click();
+	        }
 	    },
 
 	    render: function render() {
@@ -22334,13 +22783,17 @@
 	            ),
 	            React.createElement(Input, { placeholder: Demo.lan.username, defaultFocus: 'true', ref: 'name', keydown: this.keyDown }),
 	            React.createElement(Input, { placeholder: Demo.lan.password, ref: 'auth', type: 'password', keydown: this.keyDown }),
-	            React.createElement(Checkbox, { text: Demo.lan.tokenSignin, ref: 'token' }),
-	            React.createElement(Button, { text: Demo.lan.signIn, onClick: this.signin }),
+	            React.createElement(
+	                'div',
+	                { className: WebIM.config.isWindowSDK ? 'hide' : '' },
+	                React.createElement(Checkbox, { text: Demo.lan.tokenSignin, ref: 'token' })
+	            ),
+	            React.createElement(Button, { ref: 'button', text: Demo.lan.signIn, onClick: this.signin }),
 	            React.createElement(
 	                'p',
 	                null,
 	                Demo.lan.noaccount,
-	                ', ',
+	                ',',
 	                React.createElement(
 	                    'i',
 	                    { onClick: this.signup },
@@ -22352,13 +22805,13 @@
 	});
 
 /***/ },
-/* 188 */
+/* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
 
 	var componentsNode = document.getElementById('components');
 	var dom = document.createElement('div');
@@ -22408,19 +22861,29 @@
 	};
 
 /***/ },
-/* 189 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
+	var React = __webpack_require__(11);
 
 	exports.Input = React.createClass({
 	    displayName: 'Input',
 
 
-	    handleChange: function handleChange() {
+	    getInitialState: function getInitialState() {
+	        return {
+	            value: this.props.value || ''
+	        };
+	    },
+
+	    handleChange: function handleChange(e) {
 	        typeof this.props.change === 'function' && this.props.change(this.refs.input.value);
+
+	        var v = e.target.value;
+	        this.setState({ value: v });
+	        typeof this.props.onChange == 'function' && this.props.onChange(e);
 	    },
 
 	    componentWillUnmount: function componentWillUnmount() {
@@ -22441,7 +22904,9 @@
 
 	    render: function render() {
 	        var type = this.props.type || 'text';
-	        return React.createElement('input', { className: 'webim-input', type: type, defaultValue: this.props.text, ref: 'input', placeholder: this.props.placeholder, onChange: this.handleChange });
+	        return React.createElement('input', { className: 'webim-input', type: type, defaultValue: this.props.text, ref: 'input',
+	            value: this.state.value,
+	            placeholder: this.props.placeholder, onChange: this.handleChange });
 	    }
 	});
 
@@ -22453,7 +22918,8 @@
 	        var className = this.props.className ? ' ' + this.props.className : '';
 	        return React.createElement(
 	            'button',
-	            { className: 'webim-button bg-color' + className, onClick: this.props.onClick },
+	            { className: 'webim-button bg-color' + className, ref: 'button',
+	                onClick: this.props.onClick },
 	            this.props.text
 	        );
 	    }
@@ -22467,7 +22933,8 @@
 	        var className = this.props.status ? ' ' + this.props.status : '';
 	        return React.createElement(
 	            'button',
-	            { className: 'webim-button small' + className, onClick: this.props.click },
+	            { className: 'webim-button small' + className,
+	                onClick: this.props.click },
 	            this.props.text
 	        );
 	    }
@@ -22482,7 +22949,8 @@
 	    },
 
 	    render: function render() {
-	        return React.createElement('input', { ref: 'input', type: 'radio', className: 'webim-input', defaultValue: this.props.text, onChange: this.handleChange });
+	        return React.createElement('input', { ref: 'input', type: 'radio', className: 'webim-input', defaultValue: this.props.text,
+	            onChange: this.handleChange });
 	    }
 	});
 
@@ -22540,21 +23008,20 @@
 	});
 
 /***/ },
-/* 190 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
-	var React = __webpack_require__(9);
-	var Notify = __webpack_require__(188);
-	var UI = __webpack_require__(189);
+	var React = __webpack_require__(11);
+	var UI = __webpack_require__(191);
 
 	var Input = UI.Input;
 	var Button = UI.Button;
 	var submiting = false;
 
 	module.exports = React.createClass({
-	    displayName: 'exports',
+	    displayName: "exports",
 
 	    keyDown: function keyDown(e) {
 	        if (e && e.keyCode === 13) {
@@ -22570,10 +23037,11 @@
 	        });
 	    },
 
+	    submiting: false,
 	    signup: function signup() {
 	        var me = this;
 
-	        if (submiting) {
+	        if (this.submiting) {
 	            return false;
 	        }
 
@@ -22581,20 +23049,22 @@
 	        var pwd = this.refs.auth.refs.input.value;
 	        var nickname = this.refs.nickname.refs.input.value;
 
-	        if (!username || !pwd || !nickname) {
-	            Notify.error(Demo.lan.notEmpty);
+	        if (!username || !pwd) {
+	            Demo.api.NotifyError(Demo.lan.notEmpty);
 	            return false;
 	        }
 
-	        submiting = true;
+	        this.submiting = true;
+
 	        var options = {
 	            username: username.toLowerCase(),
 	            password: pwd,
 	            nickname: nickname,
 	            appKey: this.props.config.appkey,
+	            apiUrl: this.props.config.apiURL,
 	            success: function success() {
-	                submiting = false;
-	                Notify.success(Demo.lan.signUpSuccessfully);
+	                me.submiting = false;
+	                Demo.api.NotifySuccess(Demo.lan.signUpSuccessfully);
 	                setTimeout(function () {
 	                    me.props.update({
 	                        signIn: true,
@@ -22604,34 +23074,46 @@
 	                }, 1000);
 	            },
 	            error: function error(e) {
-	                submiting = false;
-	                Notify.error(e.data);
-	            },
-	            apiUrl: this.props.config.apiURL
+	                me.submiting = false;
+	                Demo.api.NotifyError(e.data || "registerUser error! Please check the network and try again!");
+	            }
 	        };
-	        WebIM.utils.registerUser(options);
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"createAccount","id":"' + options.username + '","password":"' + options.password + '"}', function (response) {
+	                options.success();
+	            }, function (code, msg) {
+	                me.submiting = false;
+	                alert("registerUser:" + code + " - " + msg);
+	            });
+	        } else {
+	            Demo.conn.registerUser(options);
+	        }
 	    },
 
 	    render: function render() {
 	        return React.createElement(
-	            'div',
+	            "div",
 	            { className: this.props.show ? 'webim-sign webim-signup' : 'webim-sign webim-signup hide' },
 	            React.createElement(
-	                'h2',
+	                "h2",
 	                null,
 	                Demo.lan.signUp
 	            ),
-	            React.createElement(Input, { ref: 'name', placeholder: Demo.lan.username, defaultFocus: 'true', keydown: this.keyDown }),
-	            React.createElement(Input, { ref: 'auth', placeholder: Demo.lan.password, type: 'password', keydown: this.keyDown }),
-	            React.createElement(Input, { ref: 'nickname', placeholder: Demo.lan.nickname, keydown: this.keyDown }),
+	            React.createElement(Input, { ref: "name", placeholder: Demo.lan.username, defaultFocus: "true", keydown: this.keyDown }),
+	            React.createElement(Input, { ref: "auth", placeholder: Demo.lan.password, type: "password", keydown: this.keyDown }),
+	            React.createElement(
+	                "div",
+	                { className: WebIM.config.isWindowSDK ? 'hide' : '' },
+	                React.createElement(Input, { ref: "nickname", placeholder: Demo.lan.nickname, keydown: this.keyDown })
+	            ),
 	            React.createElement(Button, { text: Demo.lan.signUp, onClick: this.signup }),
 	            React.createElement(
-	                'p',
+	                "p",
 	                null,
 	                Demo.lan.haveaccount,
-	                ', ',
+	                ",",
 	                React.createElement(
-	                    'i',
+	                    "i",
 	                    { onClick: this.signin },
 	                    Demo.lan.signIn
 	                )
@@ -22641,7 +23123,7 @@
 	});
 
 /***/ },
-/* 191 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22650,12 +23132,15 @@
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-	var React = __webpack_require__(9);
-	var LeftBar = __webpack_require__(192);
-	var Contact = __webpack_require__(198);
-	var ChatWindow = __webpack_require__(200);
-	var Notify = __webpack_require__(188);
-	var Subscribe = __webpack_require__(203);
+	var React = __webpack_require__(11);
+	var LeftBar = __webpack_require__(194);
+	var Contact = __webpack_require__(204);
+	var ChatWindow = __webpack_require__(206);
+	var RTCChannel = __webpack_require__(214);
+	var Subscribe = __webpack_require__(216);
+	var ConfirmPop = __webpack_require__(217);
+	var _ = __webpack_require__(201);
+	var ConfirmGroupInfo = __webpack_require__(218);
 
 	module.exports = React.createClass({
 	    displayName: 'exports',
@@ -22665,6 +23150,15 @@
 	        var me = this;
 
 	        Demo.conn.listen({
+	            onUpdateMyRoster: function onUpdateMyRoster(options) {
+	                me.updateMyRoster(options);
+	            },
+	            onUpdateMyGroupList: function onUpdateMyGroupList(options) {
+	                me.updateMyGroupList(options);
+	            },
+	            onConfirmPop: function onConfirmPop(options) {
+	                me.confirmPop(options);
+	            },
 	            onOpened: function onOpened() {
 	                me.props.update({
 	                    signIn: false,
@@ -22672,60 +23166,138 @@
 	                    chat: true,
 	                    loadingStatus: 'hide'
 	                });
-
-	                me.getRoster();
+	                // blacklist and it's callback call updateRoster
+	                me.getBlacklist();
+	                me.getGroup();
 	                me.getChatroom();
+	                Demo.conn.errorType = -1;
 	            },
 	            onClosed: function onClosed(msg) {
-	                /*if ( msg && msg.reconnect ) {}*/
-	                log('onClosed');
-	                Demo.api.logout();
+	                // Demo.api.logout();
+
 	            },
 	            onTextMessage: function onTextMessage(message) {
+	                if (WebIM.config.isWindowSDK) {
+	                    message = eval('(' + message + ')');
+	                }
 	                Demo.api.appendMsg(message, 'txt');
 	            },
 	            onEmojiMessage: function onEmojiMessage(message) {
+	                if (WebIM.config.isWindowSDK) {
+	                    message = eval('(' + message + ')');
+	                }
 	                Demo.api.appendMsg(message, 'emoji');
 	            },
 	            onPictureMessage: function onPictureMessage(message) {
+	                if (WebIM.config.isWindowSDK) {
+	                    message = eval('(' + message + ')');
+	                }
 	                Demo.api.appendMsg(message, 'img');
 	            },
 	            onCmdMessage: function onCmdMessage(message) {
+	                if (WebIM.config.isWindowSDK) {
+	                    message = eval('(' + message + ')');
+	                }
 	                Demo.api.appendMsg(message, 'cmd');
 	            },
 	            onAudioMessage: function onAudioMessage(message) {
+	                if (WebIM.config.isWindowSDK) {
+	                    message = eval('(' + message + ')');
+	                }
 	                Demo.api.appendMsg(message, 'aud');
 	            },
 	            onLocationMessage: function onLocationMessage(message) {
+	                if (WebIM.config.isWindowSDK) {
+	                    message = eval('(' + message + ')');
+	                }
 	                Demo.api.appendMsg(message, 'loc');
 	            },
 	            onFileMessage: function onFileMessage(message) {
+	                if (WebIM.config.isWindowSDK) {
+	                    message = eval('(' + message + ')');
+	                }
 	                Demo.api.appendMsg(message, 'file');
 	            },
 	            onVideoMessage: function onVideoMessage(message) {
+	                if (WebIM.config.isWindowSDK) {
+	                    message = eval('(' + message + ')');
+	                }
 	                Demo.api.appendMsg(message, 'video');
 	            },
 	            onPresence: function onPresence(message) {
+	                if (WebIM.config.isWindowSDK) {
+	                    message = eval('(' + message + ')');
+	                }
 	                me.handlePresence(message);
 	            },
 	            onRoster: function onRoster(message) {
 	                me.getRoster('doNotUpdateGroup');
 	            },
 	            onInviteMessage: function onInviteMessage(message) {
+	                message.reason && Demo.api.NotifyError(message.reason);
 	                me.getGroup();
 	            },
 	            onOnline: function onOnline() {
-	                log('online');
+	                // log(WebIM.utils.ts(), 'online');
 	            },
 	            onOffline: function onOffline() {
-	                log('offline');
-	                Demo.api.logout();
+	                if (WebIM.config.isWindowSDK) {
+	                    Demo.api.NotifyError("Network connection is broken. reconnecting...");
+	                } else {
+	                    //webRTC:断线处理
+	                    if (WebIM.config.isWebRTC) {
+	                        var closeButton = document.getElementById('webrtc_close');
+	                        closeButton && closeButton.click();
+	                    }
+	                    Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_OFFLINE);
+	                }
 	            },
 	            onError: function onError(message) {
 
-	                Notify.error(message.data && message.data.data ? message.data.data : 'Error: type=' + message.type);
-	                Demo.api.logout();
-	                log('onError', message);
+	                var text = '';
+	                if (WebIM.config.isWindowSDK) {
+	                    message = eval('(' + message + ')');
+	                    text = message.desc;
+	                    if (message.code == '206') {
+	                        Demo.api.logout();
+	                    }
+	                    //do nothing
+	                } else {
+	                    if (message.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
+	                        if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
+	                            Demo.conn.errorType = message.type;
+	                            return;
+	                        }
+	                    }
+	                    if (message.data && message.data.data) {
+	                        text = message.data.data;
+	                    } else {
+	                        text = WebIM.utils.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
+	                    }
+	                }
+	                if (Demo.conn.errorType != WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
+	                    if (message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP || message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP || message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP || message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP || message.type === WebIM.statusCode.WEBIM_CONNECTION_CLOSED) {
+	                        Demo.api.NotifyError(text);
+	                        return;
+	                    } else {
+	                        Demo.api.NotifyError('onError:' + text);
+	                    }
+	                }
+
+	                //webRTC:断线处理
+	                if (WebIM.config.isWebRTC) {
+	                    var closeButton = document.getElementById('webrtc_close');
+	                    closeButton && closeButton.click();
+	                }
+	                Demo.api.init();
+	            },
+	            // used for blacklist
+	            onBlacklistUpdate: function onBlacklistUpdate(list) {
+	                // log('onBlacklistUpdate', list);
+	                Demo.api.blacklist.parse(list);
+	                me.setState({ blacklist: list });
+	                // TODO 增量更新
+	                Demo.api.updateRoster();
 	            }
 	        });
 
@@ -22735,10 +23307,35 @@
 	            friends: [],
 	            groups: [],
 	            chatrooms: [],
-	            strangers: []
+	            strangers: [],
+	            blacklist: {},
+	            chatrooms_totalnum: Demo.api.pagesize,
+	            contact_loading_show: false
 	        };
 	    },
-
+	    confirmPop: function confirmPop(options) {
+	        ConfirmPop.show(options);
+	    },
+	    //for WindosSDK
+	    updateMyRoster: function updateMyRoster(options) {
+	        var friends = [];
+	        var roster = eval('(' + options + ')');
+	        Demo.roster = [];
+	        for (var i in roster) {
+	            var ros = roster[i];
+	            if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
+	                friends.push(ros);
+	                Demo.roster[ros.name] = 1;
+	            }
+	        }
+	        Demo.friends = friends;
+	        this.setState({ friends: friends });
+	    },
+	    //for WindosSDK
+	    updateMyGroupList: function updateMyGroupList(options) {
+	        var rooms = eval('(' + options + ')');
+	        this.setState({ groups: rooms });
+	    },
 	    friendRequest: function friendRequest(msg) {
 	        if (msg && msg.status === '[resp:true]') {
 	            return;
@@ -22759,6 +23356,98 @@
 	        }
 	    },
 
+	    componentDidMount: function componentDidMount() {
+	        if (WebIM.config.isWebRTC && WebIM.WebRTC) {
+	            this.initWebRTC();
+	            this.channel = new RTCChannel(this.refs.rtcWrapper);
+	        }
+	    },
+
+	    rtcTimeoutID: null,
+
+	    initWebRTC: function initWebRTC() {
+
+	        if (Demo.call) {
+	            return;
+	        }
+
+	        var me = this;
+
+	        Demo.call = new WebIM.WebRTC.Call({
+	            connection: Demo.conn,
+
+	            mediaStreamConstaints: {
+	                audio: true,
+	                video: true
+	            },
+
+	            listener: {
+	                onAcceptCall: function onAcceptCall(from, options) {
+	                    // console.log('onAcceptCall', from, options);
+	                },
+	                onGotRemoteStream: function onGotRemoteStream(stream) {
+	                    // console.log('onGotRemoteStream');
+	                    me.channel.setRemote(stream);
+	                },
+	                onGotLocalStream: function onGotLocalStream(stream) {
+	                    // console.log('onGotLocalStream');
+	                    me.channel.setLocal(stream);
+	                },
+	                onRinging: function onRinging(caller) {
+	                    // console.log('onRinging', caller);
+	                },
+	                onTermCall: function onTermCall(reason) {
+	                    if (reason && reason == 'busy') {
+	                        Demo.api.NotifyError('Target is busy. Try it later.');
+	                    }
+	                    Demo.call.caller = '';
+	                    Demo.call.callee = '';
+	                    me.channel.close();
+	                },
+	                onIceConnectionStateChange: function onIceConnectionStateChange(iceState) {
+	                    // checking
+	                    // connected completed
+	                    // disconnected failed
+	                    // closed
+	                    // console.log('onIceConnectionStateChange', iceState);
+	                    if (iceState == "disconnected") {
+	                        if (!me.rtcTimeoutID) {
+	                            me.rtcTimeoutID = setTimeout(function () {
+	                                Demo.api.NotifyError('Target is offline');
+	                                var closeButton = document.getElementById('webrtc_close');
+	                                closeButton && closeButton.click();
+	                            }, 10000);
+	                        }
+	                    } else if (iceState == "connected") {
+	                        if (me.rtcTimeoutID) {
+	                            clearTimeout(me.rtcTimeoutID);
+	                            me.rtcTimeoutID = null;
+	                        }
+	                    }
+	                },
+	                onError: function onError(e) {
+	                    if (e && e.message) {
+	                        var close = false;
+	                        switch (e.message) {
+	                            case 'CALLLING_EACH_OTHER_AT_THE_SAME_TIME':
+	                                e.message = "Target is calling. Please try again later.";
+	                                close = true;
+	                                break;
+	                            case 'TARGET_OFFLINE':
+	                                e.message = "Target is offline.";
+	                                break;
+	                        }
+	                        if (close) {
+	                            var closeButton = document.getElementById('webrtc_close');
+	                            closeButton && closeButton.click();
+	                        }
+	                    }
+	                    Demo.api.NotifyError(e && e.message ? e.message : 'An error occured when calling webrtc');
+	                }
+	            }
+	        });
+	    },
+
 	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 	        if (nextProps.groupChange) {
 	            this.getGroup();
@@ -22775,8 +23464,15 @@
 	        var me = this;
 
 	        switch (msg.type) {
+	            case 'joinGroupNotifications':
+	                ConfirmGroupInfo.show(msg);
+	                break;
+	            case 'createGroupACK':
+
+	                break;
 	            case 'leaveGroup':
-	                // dismissied by admin
+	                // dismissed by admin
+	                Demo.api.NotifyError((msg.kicked || 'You') + ' have been dismissed by ' + (msg.actor || 'admin') + ' .');
 	                Demo.api.updateGroup();
 	                break;
 	            case 'subscribe':
@@ -22799,6 +23495,10 @@
 	                    delete Demo.roster[msg.from];
 	                }
 	                break;
+	            case 'joinPublicGroupSuccess':
+	                Demo.api.NotifyError('You have been invited to group ' + msg.from);
+	                Demo.api.updateGroup();
+	                break;
 	            case 'joinChatRoomSuccess':
 	                // Join the chat room successfully
 	                Demo.currentChatroom = msg.from;
@@ -22806,20 +23506,37 @@
 	            case 'reachChatRoomCapacity':
 	                // Failed to join the chat room
 	                Demo.currentChatroom = null;
-	                Notify.error('加入聊天室失败');
+	                Demo.api.NotifyError('Fail to Join the group');
 	                break;
 	            case 'leaveChatRoom':
 	                // Leave the chat room
 	                break;
 	            case 'deleteGroupChat':
 	                // The chat room or group is deleted.
+	                // ignore the sync `recv` request
+	                // only handle on async request
+	                if (msg.original_type == 'unavailable') return;
+
 	                var target = document.getElementById(msg.from);
+	                var options = {
+	                    title: "Group notification",
+	                    msg: "You have been out of the group"
+	                };
+
+	                _.find(this.state.groups, function (group, k) {
+	                    if (group.roomId == msg.from) {
+	                        options.msg = "You have been out of the group: " + group.name;
+	                        return true;
+	                    }
+	                });
 
 	                if (target) {
 	                    Demo.api.updateGroup();
 	                }
+
+	                Demo.api.NotifyError(options.msg);
 	                break;
-	        };
+	        }
 	    },
 
 	    getStrangers: function getStrangers() {
@@ -22838,65 +23555,136 @@
 	            conn = Demo.conn,
 	            friends = [],
 	            groups = [];
-
-	        conn.getRoster({
-	            success: function success(roster) {
-	                var curroster;
-	                for (var i in roster) {
-	                    var ros = roster[i];
-	                    if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
-	                        friends.push(ros);
-	                        Demo.roster[ros.name] = 1;
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"getRoster"}', function success(str) {
+	                Demo.roster = [];
+	                if (str) {
+	                    var roster = eval('(' + str + ')');
+	                    for (var i in roster) {
+	                        var ros = roster[i];
+	                        if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
+	                            friends.push(ros);
+	                            Demo.roster[ros.name] = 1;
+	                        }
 	                    }
 	                }
 	                me.setState({ friends: friends });
 
 	                doNotUpdateGroup || me.getGroup();
-	            }
-	        });
+	            }, function failure(errCode, errMessage) {
+	                Demo.api.NotifyError('getRoster:' + errCode);
+	            });
+	        } else {
+	            conn.getRoster({
+	                success: function success(roster) {
+	                    var curroster;
+	                    for (var i in roster) {
+	                        var ros = roster[i];
+	                        if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
+	                            friends.push(ros);
+	                            Demo.roster[ros.name] = 1;
+	                        }
+	                    }
+	                    me.setState({ friends: friends });
+
+	                    doNotUpdateGroup || me.getGroup();
+	                }
+	            });
+	        }
+	        Demo.friends = friends;
 	    },
 
 	    getGroup: function getGroup() {
 	        var me = this;
-
-	        Demo.conn.listRooms({
-	            success: function success(rooms) {
-	                Demo.conn.setPresence();
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"getGroup"}', function success(str) {
+	                var rooms = [];
+	                if (str) {
+	                    rooms = eval('(' + str + ')');
+	                }
 	                me.setState({ groups: rooms });
-	            },
-	            error: function error(e) {
-	                Demo.conn.setPresence();
-	            }
-	        });
+	            }, function failure(errCode, errMessage) {
+	                Demo.api.NotifyError('getGroup:' + errCode);
+	            });
+	        } else {
+	            Demo.conn.listRooms({
+	                success: function success(rooms) {
+	                    Demo.conn.setPresence();
+	                    me.setState({ groups: rooms });
+	                },
+	                error: function error(e) {
+	                    Demo.conn.setPresence();
+	                }
+	            });
+	        }
 	    },
 
 	    getChatroom: function getChatroom() {
 	        var me = this;
-
-	        Demo.conn.getChatRooms({
-	            apiUrl: WebIM.config.apiURL,
-	            success: function success(list) {
-
-	                if (list.data && list.data.length > 0) {
-	                    me.setState({ chatrooms: list.data });
+	        var pagenum = Math.ceil(this.state.chatrooms.length / Demo.api.pagesize);
+	        var pageTotal = Math.ceil(this.state.chatrooms_totalnum / Demo.api.pagesize);
+	        if (pagenum == pageTotal) {
+	            return;
+	        }
+	        pagenum++;
+	        this.setState({ contact_loading_show: true });
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"getChatroom"}', function success(str) {
+	                var rooms = eval('(' + str + ')');
+	                me.setState({ chatrooms: rooms });
+	            }, function failure(errCode, errMessage) {
+	                Demo.api.NotifyError('getChatroom:' + errCode);
+	            });
+	        } else {
+	            Demo.conn.getChatRooms({
+	                apiUrl: Demo.conn.apiUrl,
+	                pagenum: pagenum,
+	                pagesize: Demo.api.pagesize,
+	                success: function success(list) {
+	                    var states = {};
+	                    if (list.data) {
+	                        //TODO: 等接口返回totalnum这个参数之后，就不要再计算totalnum了。 直接states.chatrooms_totalnum=list.totalnum
+	                        if (list.data.length > 0) {
+	                            states.chatrooms_totalnum = (parseInt(list.params.pagenum[0]) + 1) * Demo.api.pagesize;
+	                            states.chatrooms = me.state.chatrooms.concat(list.data);
+	                        } else {
+	                            states.chatrooms_totalnum = parseInt(list.params.pagenum[0] - 1) * Demo.api.pagesize;
+	                        }
+	                    }
+	                    states.contact_loading_show = false;
+	                    me.setState(states);
+	                },
+	                error: function error(e) {
+	                    Demo.api.NotifyError('getChatroom:' + e);
 	                }
-	            },
-	            error: function error(e) {
-	                log(e);
+	            });
+	        }
+	    },
+
+	    // when signed then get blacklist
+	    getBlacklist: function getBlacklist() {
+	        var me = this;
+	        Demo.api.blacklist.getBlacklist({
+	            success: function success(list) {
+	                me.setState({ blacklist: list });
 	            }
 	        });
 	    },
 
 	    update: function update(cur) {
-	        this.setState({ cur: cur });
+	        this.setState({ cur: cur, contact_loading_show: false });
 	    },
 
 	    updateNode: function updateNode(id) {
 	        this.setState({ curNode: id });
 	    },
 
-	    sendPicture: function sendPicture() {
-	        this.refs.picture.click();
+	    sendPicture: function sendPicture(chatType) {
+	        if (WebIM.config.isWindowSDK) {
+	            this.sendFileImpl("img", chatType);
+	        } else {
+	            this.refs.picture.click();
+	        }
 	    },
 
 	    pictureChange: function pictureChange() {
@@ -22912,14 +23700,14 @@
 
 	        if (!Demo.IMGTYPE[file.filetype.toLowerCase()]) {
 	            me.refs.picture.value = null;
-	            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
+	            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
 	            return;
 	        }
 
 	        var msg = new WebIM.message('img', Demo.conn.getUniqueId());
 
 	        msg.set({
-	            apiUrl: WebIM.config.apiURL,
+	            apiUrl: Demo.conn.apiUrl,
 	            file: file,
 	            to: Demo.selected,
 	            roomType: chatroom,
@@ -22934,7 +23722,7 @@
 	                }, 'txt');
 	            },
 	            onFileUploadComplete: function onFileUploadComplete(data) {
-	                url = data.uri + '/' + data.entities[0].uuid;
+	                url = (location.protocol != 'https:' && WebIM.config.isHttpDNS ? Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0].uuid;
 	                me.refs.picture.value = null;
 	            },
 	            success: function success(id) {
@@ -22956,8 +23744,12 @@
 	        Demo.conn.send(msg.body);
 	    },
 
-	    sendAudio: function sendAudio() {
-	        this.refs.audio.click();
+	    sendAudio: function sendAudio(chatType) {
+	        if (WebIM.config.isWindowSDK) {
+	            this.sendFileImpl("aud", chatType);
+	        } else {
+	            this.refs.audio.click();
+	        }
 	    },
 
 	    sendAudioMsg: function sendAudioMsg(file, duration) {
@@ -22967,7 +23759,7 @@
 	            me = this;
 
 	        msg.set({
-	            apiUrl: WebIM.config.apiURL,
+	            apiUrl: Demo.conn.apiUrl,
 	            file: file,
 	            to: Demo.selected,
 	            roomType: chatroom,
@@ -22983,7 +23775,7 @@
 	                }, 'txt');
 	            },
 	            onFileUploadComplete: function onFileUploadComplete(data) {
-	                url = data.uri + '/' + data.entities[0].uuid;
+	                url = (location.protocol != 'https:' && WebIM.config.isHttpDNS ? Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0].uuid;
 	                me.refs.audio.value = null;
 	            },
 	            success: function success(id, sid) {
@@ -23018,7 +23810,7 @@
 
 	        if (!Demo.AUDIOTYPE[file.filetype.toLowerCase()]) {
 	            me.refs.audio.value = null;
-	            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
+	            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
 	            return;
 	        }
 
@@ -23027,7 +23819,6 @@
 	            var audio = document.createElement('audio');
 
 	            audio.oncanplay = function () {
-	                log('audio_length:' + this.duration);
 	                me.sendAudioMsg(file, Math.ceil(this.duration));
 	                audio = null;
 	            };
@@ -23036,10 +23827,36 @@
 	        }
 	    },
 
-	    sendFile: function sendFile() {
-	        this.refs.file.click();
+	    sendFile: function sendFile(chatType) {
+	        if (WebIM.config.isWindowSDK) {
+	            this.sendFileImpl("file", chatType);
+	        } else {
+	            this.refs.file.click();
+	        }
 	    },
+	    sendFileImpl: function sendFileImpl(type, chatType) {
+	        //this.refs.file.click();
+	        var is_chatroom = Demo.selectedCate === 'chatrooms' ? "true" : "false";
+	        var is_group = Demo.selectedCate === 'chatrooms' || Demo.selectedCate === 'groups' ? "groupchat" : "singlechat";
+	        WebIM.doQuery('{"type":"sendFileMessage","to":"' + Demo.selected + '","message_type":"' + type + '","group":"' + is_group + '","chatType":"' + chatType + '","roomType":"' + is_chatroom + '"}', function (response) {
+	            var res = eval('(' + response + ')');
 
+	            var url = decodeURI(res.url);
+	            var pathSplitted = url.split("\\");
+
+	            url = url.replace(/\\/ig, "/");
+	            var fileurl = 'file:///' + url;
+	            Demo.api.appendMsg({
+	                id: res.id,
+	                data: fileurl,
+	                filename: pathSplitted[pathSplitted.length - 1],
+	                from: Demo.user,
+	                to: Demo.selected
+	            }, type);
+	        }, function (code, msg) {
+	            alert(code + " - " + msg);
+	        });
+	    },
 	    fileChange: function fileChange() {
 	        var me = this,
 	            url,
@@ -23058,14 +23875,13 @@
 	            me.refs.file.value = null;
 	            return false;
 	        }
-
 	        if (!Demo.FILETYPE[file.filetype.toLowerCase()]) {
 	            me.refs.file.value = null;
-	            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
+	            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
 	            return;
 	        }
 	        msg.set({
-	            apiUrl: WebIM.config.apiURL,
+	            apiUrl: Demo.conn.apiUrl,
 	            file: file,
 	            filename: filename,
 	            to: Demo.selected,
@@ -23076,7 +23892,6 @@
 	            onFileUploadError: function onFileUploadError(error) {
 	                log(error);
 	                me.refs.file.value = null;
-
 	                Demo.api.appendMsg({
 	                    data: Demo.lan.sendFileFailed,
 	                    from: Demo.user,
@@ -23084,7 +23899,7 @@
 	                }, 'txt');
 	            },
 	            onFileUploadComplete: function onFileUploadComplete(data) {
-	                url = data.uri + '/' + data.entities[0].uuid;
+	                url = (location.protocol != 'https:' && WebIM.config.isHttpDNS ? Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0].uuid;
 	                me.refs.file.value = null;
 	            },
 	            success: function success(id) {
@@ -23097,7 +23912,6 @@
 	            },
 	            flashUpload: WebIM.flashUpload
 	        });
-
 	        if (Demo.selectedCate === 'groups') {
 	            msg.setGroup(Demo.groupType);
 	        } else if (chatroom) {
@@ -23108,6 +23922,8 @@
 	    },
 
 	    render: function render() {
+	        // Demo.api.curLength = this.state[this.state.cur].length;
+
 	        var windows = [],
 	            id,
 	            props = {
@@ -23120,16 +23936,23 @@
 	        for (var i = 0; i < this.state.friends.length; i++) {
 	            id = this.state.friends[i].name;
 	            props.name = id;
-
-	            windows.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, {
+	            windows.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, { chatType: 'singleChat',
+	                updateNode: this.updateNode,
 	                className: this.state.friends[i].name === this.state.curNode ? '' : 'hide' })));
 	        }
 
 	        for (var i = 0; i < this.state.groups.length; i++) {
 	            id = this.state.groups[i].roomId;
 	            props.name = this.state.groups[i].name;
+	            //createGroup is two step progresses.first send presence,second send iq.
+	            //on first recv group list, the newest created one's roomId=name,
+	            //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+	            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+	                this.state.groups[i].name = Demo.createGroupName;
+	                Demo.createGroupName = '';
+	            }
 
-	            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, {
+	            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'groupChat',
 	                className: id === this.state.curNode ? '' : 'hide' })));
 	        }
 
@@ -23137,7 +23960,7 @@
 	            id = this.state.chatrooms[i].id;
 	            props.name = this.state.chatrooms[i].name;
 
-	            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, {
+	            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'chatRoom',
 	                className: id === this.state.curNode ? '' : 'hide' })));
 	        }
 
@@ -23153,28 +23976,38 @@
 	            'div',
 	            { className: this.props.show ? 'webim-chat' : 'webim-chat hide' },
 	            React.createElement(LeftBar, { cur: this.state.cur, update: this.update }),
-	            React.createElement(Contact, { cur: this.state.cur, curNode: this.state.curNode, updateNode: this.updateNode, update: this.update,
-	                friends: this.state.friends, groups: this.state.groups, chatrooms: this.state.chatrooms, strangers: this.state.strangers }),
+	            React.createElement(Contact, { cur: this.state.cur,
+	                curNode: this.state.curNode,
+	                updateNode: this.updateNode,
+	                update: this.update,
+	                friends: this.state.friends,
+	                blacklist: this.state.blacklist,
+	                groups: this.state.groups,
+	                chatrooms: this.state.chatrooms,
+	                strangers: this.state.strangers,
+	                getChatroom: this.getChatroom,
+	                loading: this.state.contact_loading_show }),
 	            windows,
 	            React.createElement('input', { ref: 'picture', onChange: this.pictureChange, type: 'file', className: 'hide' }),
 	            React.createElement('input', { ref: 'audio', onChange: this.audioChange, type: 'file', className: 'hide' }),
 	            React.createElement('input', { ref: 'file', onChange: this.fileChange, type: 'file', className: 'hide' }),
-	            React.createElement('input', { id: 'uploadShim', type: 'file', className: 'hide' })
+	            React.createElement('input', { id: 'uploadShim', type: 'file', className: 'hide' }),
+	            React.createElement('div', { ref: 'rtcWrapper' })
 	        );
 	    }
 	});
 
 /***/ },
-/* 192 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
+	var React = __webpack_require__(11);
 
-	var Avatar = __webpack_require__(193);
-	var Cate = __webpack_require__(194);
-	var Operations = __webpack_require__(195);
+	var Avatar = __webpack_require__(195);
+	var Cate = __webpack_require__(196);
+	var Operations = __webpack_require__(197);
 
 	module.exports = React.createClass({
 	    displayName: 'exports',
@@ -23216,22 +24049,27 @@
 	            'div',
 	            { className: 'webim-leftbar' },
 	            React.createElement(Avatar, { className: 'webim-profile-avatar small', title: Demo.user }),
+	            React.createElement(
+	                'div',
+	                { className: 'username' },
+	                Demo.user
+	            ),
 	            React.createElement(Cate, { name: 'friend', update: this.updateFriend, cur: this.props.cur }),
 	            React.createElement(Cate, { name: 'group', update: this.updateGroup, cur: this.props.cur }),
 	            React.createElement(Cate, { name: 'chatroom', update: this.updateChatroom, cur: this.props.cur }),
 	            React.createElement(Cate, { name: 'stranger', update: this.updateStranger, cur: this.props.cur }),
-	            React.createElement(Operations, null)
+	            React.createElement(Operations, { username: Demo.user })
 	        );
 	    }
 	});
 
 /***/ },
-/* 193 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
+	var React = __webpack_require__(11);
 
 	module.exports = React.createClass({
 	    displayName: 'exports',
@@ -23256,12 +24094,12 @@
 	});
 
 /***/ },
-/* 194 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
+	var React = __webpack_require__(11);
 
 	module.exports = React.createClass({
 	    displayName: 'exports',
@@ -23292,7 +24130,7 @@
 	                topClass = ' top50';
 	                describe = Demo.lan.friends;
 	                break;
-	        };
+	        }
 
 	        return React.createElement(
 	            'div',
@@ -23308,136 +24146,186 @@
 	});
 
 /***/ },
-/* 195 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
-	var React = __webpack_require__(9);
-	var AddFriend = __webpack_require__(196);
-	var DelFriend = __webpack_require__(197);
+	var React = __webpack_require__(11);
+	var AddFriend = __webpack_require__(198);
+	var CreateGroup = __webpack_require__(199);
+	var JoinPublicGroup = __webpack_require__(202);
+	var ShowBlacklist = __webpack_require__(203);
 
 	module.exports = React.createClass({
-		displayName: "exports",
+	    displayName: "exports",
 
 
-		getInitialState: function getInitialState() {
-			var me = this;
+	    getInitialState: function getInitialState() {
+	        var me = this;
+	        // TODO 关闭各种弹出框
+	        return { hide: 'hide' };
+	    },
 
-			return { hide: 'hide' };
-		},
+	    update: function update() {
+	        this.setState({
+	            hide: this.state.hide ? '' : ' hide'
+	        });
+	    },
 
-		update: function update() {
-			this.setState({
-				hide: this.state.hide ? '' : ' hide'
-			});
-		},
+	    addFriends: function addFriends() {
+	        AddFriend.show();
+	        this.update();
+	    },
 
-		addFriends: function addFriends() {
-			AddFriend.show();
-		},
+	    createGroup: function createGroup() {
+	        CreateGroup.show();
+	        this.update();
+	    },
 
-		delFriends: function delFriends() {
-			DelFriend.show();
-		},
+	    joinPublicGroup: function joinPublicGroup() {
+	        JoinPublicGroup.show();
+	        this.update();
+	    },
 
-		close: function close() {
-			Demo.api.logout();
-		},
+	    showBlacklist: function showBlacklist() {
+	        ShowBlacklist.show();
+	        this.update();
+	    },
 
-		render: function render() {
-			var className = this.state.hide ? ' ' + this.state.hide : '';
-			return React.createElement(
-				"div",
-				null,
-				React.createElement(
-					"i",
-					{ className: "webim-operations-icon font xsmaller", onClick: this.update },
-					"M"
-				),
-				React.createElement(
-					"ul",
-					{ className: 'webim-operations' + className },
-					React.createElement(
-						"li",
-						{ onClick: this.addFriends },
-						React.createElement(
-							"i",
-							{ className: "font smallest" },
-							"L"
-						),
-						React.createElement(
-							"span",
-							null,
-							Demo.lan.addAFriend
-						)
-					),
-					React.createElement(
-						"li",
-						{ onClick: this.delFriends },
-						React.createElement(
-							"i",
-							{ className: "font smallest" },
-							"C"
-						),
-						React.createElement(
-							"span",
-							null,
-							Demo.lan.delAFriend
-						)
-					),
-					React.createElement(
-						"li",
-						{ onClick: this.close },
-						React.createElement(
-							"i",
-							{ className: "font smallest" },
-							"Q"
-						),
-						React.createElement(
-							"span",
-							null,
-							Demo.lan.quit
-						)
-					)
-				)
-			);
-		}
+	    logout: function logout() {
+	        Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT);
+	    },
+
+	    render: function render() {
+	        var className = this.state.hide ? ' ' + this.state.hide : '';
+	        return React.createElement(
+	            "div",
+	            null,
+	            React.createElement(
+	                "i",
+	                { className: "webim-operations-icon font xsmaller", onClick: this.update },
+	                "M"
+	            ),
+	            React.createElement(
+	                "ul",
+	                { className: 'webim-operations' + className },
+	                React.createElement(
+	                    "li",
+	                    { onClick: this.addFriends },
+	                    React.createElement(
+	                        "i",
+	                        { className: "font smallest" },
+	                        "L"
+	                    ),
+	                    React.createElement(
+	                        "span",
+	                        null,
+	                        Demo.lan.addAFriend
+	                    )
+	                ),
+	                React.createElement(
+	                    "li",
+	                    { onClick: this.showBlacklist },
+	                    React.createElement(
+	                        "i",
+	                        { className: "font smallest" },
+	                        "n"
+	                    ),
+	                    React.createElement(
+	                        "span",
+	                        null,
+	                        Demo.lan.blacklist
+	                    )
+	                ),
+	                React.createElement(
+	                    "li",
+	                    { onClick: this.createGroup },
+	                    React.createElement(
+	                        "i",
+	                        { className: "font smallest" },
+	                        "L"
+	                    ),
+	                    React.createElement(
+	                        "span",
+	                        null,
+	                        Demo.lan.createGroup
+	                    )
+	                ),
+	                React.createElement(
+	                    "li",
+	                    { onClick: this.logout },
+	                    React.createElement(
+	                        "i",
+	                        { className: "font smallest" },
+	                        "Q"
+	                    ),
+	                    React.createElement(
+	                        "span",
+	                        null,
+	                        Demo.lan.quit,
+	                        "(",
+	                        this.props.username,
+	                        ")"
+	                    )
+	                )
+	            )
+	        );
+	    }
 	});
 
 /***/ },
-/* 196 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
 
 	var componentsNode = document.getElementById('components');
 	var dom = document.createElement('div');
 	componentsNode.appendChild(dom);
 
-	var UI = __webpack_require__(189);
+	var UI = __webpack_require__(191);
 	var Button = UI.Button;
 	var Input = UI.Input;
 
-	var AddFriend = React.createClass({
-	    displayName: 'AddFriend',
+	var AddMember = React.createClass({
+	    displayName: 'AddMember',
 
 
-	    addFriend: function addFriend() {
+	    addMember: function addMember() {
 
 	        var value = this.refs.input.refs.input.value;
 
 	        if (!value) {
+	            Demo.api.NotifyError(Demo.lan.username + Demo.lan.notEmpty);
+	            return;
+	        }
+	        if (value == Demo.user) {
+	            Demo.api.NotifyError(Demo.lan.addFriendSelfInvalid);
+	            this.close();
+	            return;
+	        }
+	        if (Demo.roster[value] == 1) {
+	            Demo.api.NotifyError(value + ' ' + Demo.lan.addFriendRepeat);
+	            this.close();
 	            return;
 	        }
 
-	        Demo.conn.subscribe({
-	            to: value,
-	            message: Demo.user + Demo.lan.request
-	        });
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"addFriend","to":"' + value + '","message":"' + Demo.user + Demo.lan.request + '"}', function success(str) {
+	                alert(Demo.lan.contact_added);
+	            }, function failure(errCode, errMessage) {
+	                Demo.api.NotifyError('addMember:' + errCode);
+	            });
+	        } else {
+	            Demo.conn.subscribe({
+	                to: value,
+	                message: Demo.user + Demo.lan.request
+	            });
+	        }
 	        this.close();
 	    },
 
@@ -23464,7 +24352,7 @@
 	                    { ref: 'content' },
 	                    React.createElement(Input, { defaultFocus: 'true', ref: 'input', placeholder: Demo.lan.username })
 	                ),
-	                React.createElement(Button, { text: Demo.lan.add, onClick: this.addFriend, className: 'webim-dialog-button' }),
+	                React.createElement(Button, { text: Demo.lan.add, onClick: this.addMember, className: 'webim-dialog-button' }),
 	                React.createElement(
 	                    'span',
 	                    { className: 'font', onClick: this.close },
@@ -23477,7 +24365,7 @@
 
 	module.exports = {
 	    show: function show() {
-	        ReactDOM.render(React.createElement(AddFriend, { onClose: this.close }), dom);
+	        ReactDOM.render(React.createElement(AddMember, { onClose: this.close }), dom);
 	    },
 
 	    close: function close() {
@@ -23486,49 +24374,2338 @@
 	};
 
 /***/ },
-/* 197 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
+	var _multiSelectBoxList = __webpack_require__(200);
+
+	var _multiSelectBoxList2 = _interopRequireDefault(_multiSelectBoxList);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var _ = __webpack_require__(201);
 
 	var componentsNode = document.getElementById('components');
 	var dom = document.createElement('div');
 	componentsNode.appendChild(dom);
 
-	var UI = __webpack_require__(189);
+	var UI = __webpack_require__(191);
 	var Button = UI.Button;
 	var Input = UI.Input;
+	var Checkbox = UI.Checkbox;
+	var Radio = UI.Radio;
 
-	var DelFriend = React.createClass({
-	    displayName: 'DelFriend',
+	var FridendList = React.createClass({
+	    displayName: 'FridendList',
 
 
-	    delFriend: function delFriend() {
-	        var me = this,
-	            value = this.refs.input.refs.input.value;
+	    getInitialState: function getInitialState() {
+	        var options = [];
+	        var id = 0;
+	        for (var name in this.props.optionData) {
+	            options.push({ "id": id++, "text": name });
+	        }
+	        return {
+	            options: options,
+	            value: []
+	        };
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            'div',
+	            { className: 'container' },
+	            React.createElement(_multiSelectBoxList2.default, {
+	                ref: 'multiSelected',
+	                options: this.state.options,
+	                value: this.state.value,
+	                nameText: Demo.lan.groupMemberLabel,
+	                label: Demo.lan.chooseGroupMember,
+	                selectedLabel: Demo.lan.selectedLabel
+	            })
+	        );
+	    }
+	});
 
+	var CreateGroup = React.createClass({
+	    displayName: 'CreateGroup',
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            selectedOption: 'option1',
+	            selectedOption2: 'option3',
+	            colors: []
+	        };
+	    },
+	    onSubmit: function onSubmit() {
+	        var value = this.refs.input.refs.input.value;
+	        var info = this.refs.textarea.value;
+	        // log('onSubmit', value, info);
+	        var permission_group = this.state.selectedOption;
+	        var permission_member = this.state.selectedOption2;
+	        var friendsSelected = []; //this.refs.friendList.refs.multiSelected.label();
+	        var friendsValues = this.refs.friendList.refs.multiSelected.value();
 	        if (!value) {
+	            Demo.api.NotifyError("群组名不能为空");
 	            return;
 	        }
 
-	        Demo.conn.removeRoster({
-	            to: value,
-	            success: function success() {
-
-	                if (Demo.roster[value]) {
-	                    delete Demo.roster[value];
-	                }
-
-	                Demo.conn.unsubscribed({
-	                    to: value
-	                });
-	            },
-	            error: function error() {}
+	        _.each(friendsValues, function (v, k) {
+	            friendsSelected.push(v.text);
 	        });
-	        me.close();
+
+	        var styles = ["PUBLIC_JOIN_APPROVAL", "PUBLIC_JOIN_OPEN", "PRIVATE_OWNER_INVITE", "PRIVATE_MEMBER_INVITE"];
+	        var option1 = permission_group == "option1" ? 0 : 1;
+	        var option2 = permission_member == "option3" ? 0 : 1;
+	        var style = styles[option1 * 2 + option2];
+
+	        // friendsSelected = '["' + friendsSelected.replace(/, /g, '","') + '"]';
+	        // log(style)
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + JSON.stringify(friendsSelected) + '}', function (response) {
+	                Demo.api.NotifyError('createGroup successfully');
+	            }, function (code, msg) {
+	                Demo.api.NotifyError("onSubmit:" + code);
+	            });
+	        } else {
+	            Demo.createGroupName = value;
+	            Demo.conn.createGroup({
+	                subject: value,
+	                description: info,
+	                members: friendsSelected,
+	                optionsPublic: style == 'PUBLIC_JOIN_OPEN' || style == 'PUBLIC_JOIN_APPROVAL',
+	                optionsModerate: style != 'PUBLIC_JOIN_OPEN',
+	                // 是否只允许 会员进入 ??
+	                optionsMembersOnly: style != 'PUBLIC_JOIN_OPEN',
+	                optionsAllowInvites: style == 'PRIVATE_MEMBER_INVITE'
+	            });
+	        }
+
+	        this.close();
+	    },
+
+	    close: function close() {
+	        typeof this.props.onClose === 'function' && this.props.onClose();
+	    },
+	    handleOptionChange: function handleOptionChange(changeEvent) {
+	        this.setState({
+	            selectedOption: changeEvent.target.value
+	        });
+	    },
+	    handleOptionChange2: function handleOptionChange2(changeEvent) {
+	        this.setState({
+	            selectedOption2: changeEvent.target.value
+	        });
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            'div',
+	            { className: 'webim-friend-options' },
+	            React.createElement('div', { ref: 'layer', className: 'webim-layer' }),
+	            React.createElement(
+	                'div',
+	                { className: 'webim-dialog webim-dialog-2' },
+	                React.createElement(
+	                    'h3',
+	                    null,
+	                    Demo.lan.createGroup
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { ref: 'content' },
+	                    React.createElement(Input, { defaultFocus: 'true', ref: 'input', placeholder: Demo.lan.groupSubject }),
+	                    React.createElement('br', null),
+	                    React.createElement('textarea', { ref: 'textarea', placeholder: Demo.lan.groupDescription }),
+	                    React.createElement('br', null),
+	                    React.createElement('br', null),
+	                    React.createElement(
+	                        'div',
+	                        null,
+	                        React.createElement(
+	                            'label',
+	                            null,
+	                            Demo.lan.groupPermission,
+	                            ':'
+	                        ),
+	                        React.createElement(
+	                            'label',
+	                            null,
+	                            React.createElement('input', { className: 'radio', type: 'radio', value: 'option1',
+	                                checked: this.state.selectedOption === 'option1',
+	                                onChange: this.handleOptionChange }),
+	                            React.createElement(
+	                                'span',
+	                                { className: 'radio_span' },
+	                                '\u516C\u6709\u7FA4'
+	                            )
+	                        ),
+	                        React.createElement(
+	                            'label',
+	                            null,
+	                            React.createElement('input', { className: 'radio', type: 'radio', value: 'option2',
+	                                checked: this.state.selectedOption === 'option2',
+	                                onChange: this.handleOptionChange }),
+	                            React.createElement(
+	                                'span',
+	                                { className: 'radio_span' },
+	                                '\u79C1\u6709\u7FA4'
+	                            )
+	                        )
+	                    ),
+	                    React.createElement(
+	                        'div',
+	                        null,
+	                        React.createElement(
+	                            'label',
+	                            null,
+	                            Demo.lan.groupMemberPermission,
+	                            ':'
+	                        ),
+	                        React.createElement(
+	                            'label',
+	                            null,
+	                            React.createElement('input', { className: 'radio', type: 'radio', value: 'option3',
+	                                checked: this.state.selectedOption2 === 'option3',
+	                                onChange: this.handleOptionChange2 }),
+	                            React.createElement(
+	                                'span',
+	                                {
+	                                    className: 'radio_span' },
+	                                this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'
+	                            )
+	                        ),
+	                        React.createElement(
+	                            'label',
+	                            null,
+	                            React.createElement('input', { className: 'radio', type: 'radio', value: 'option4',
+	                                checked: this.state.selectedOption2 === 'option4',
+	                                onChange: this.handleOptionChange2 }),
+	                            React.createElement(
+	                                'span',
+	                                {
+	                                    className: 'radio_span' },
+	                                this.state.selectedOption === 'option1' ? '随便加' : '允许'
+	                            )
+	                        )
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    null,
+	                    React.createElement(FridendList, { ref: 'friendList', optionData: Demo.roster })
+	                ),
+	                React.createElement(Button, { text: Demo.lan.add, onClick: this.onSubmit, className: 'webim-dialog-button' }),
+	                React.createElement(
+	                    'span',
+	                    { className: 'font', onClick: this.close },
+	                    'A'
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = {
+	    show: function show() {
+	        ReactDOM.render(React.createElement(CreateGroup, { onClose: this.close }), dom);
+	    },
+
+	    close: function close() {
+	        ReactDOM.unmountComponentAtNode(dom);
+	    }
+	};
+
+/***/ },
+/* 200 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _react = __webpack_require__(11);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /**
+	                                                                                                                                                                                                     * 参考 https://github.com/wheatma/react-multiple-select-box
+	                                                                                                                                                                                                     *
+	                                                                                                                                                                                                     * 修改
+	                                                                                                                                                                                                     * 1.名称： MultipleSelectBox -> MultipleSelectBoxList
+	                                                                                                                                                                                                     * 2.去掉select框 options列表默认显示
+	                                                                                                                                                                                                     * 3.去掉 ok 和 cancel 按钮
+	                                                                                                                                                                                                     */
+
+
+	var idInc = 0;
+
+	var interceptEvent = function interceptEvent(event) {
+	    if (event) {
+	        event.preventDefault();
+	        event.stopPropagation();
+	    }
+	};
+
+	var toggleClass = function toggleClass() {
+	    var fullClassName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	    var className = arguments[1];
+
+	    return fullClassName.includes(className) ? fullClassName.replace(className, '') : fullClassName.trim() + ' ' + className;
+	};
+
+	var removeClass = function removeClass() {
+	    var fullClassName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	    var className = arguments[1];
+
+	    return fullClassName.replace(className, '');
+	};
+
+	var addClass = function addClass() {
+	    var fullClassName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	    var className = arguments[1];
+
+	    return fullClassName.trim() + ' ' + className;
+	};
+
+	var MultipleSelectBoxList = _react2.default.createClass({
+	    displayName: 'MultipleSelectBoxList',
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            id: 'react-multi-select-box-' + ++idInc,
+	            open: false,
+	            focusedIndex: -1,
+	            pendingValue: this.props.value,
+	            value: this.props.value,
+	            options: this.props.options,
+	            clickingOption: false,
+	            blurTimeout: null
+	        };
+	    },
+
+	    getDefaultProps: function getDefaultProps() {
+	        return {
+	            label: 'Choose ...',
+	            closeText: 'close',
+	            clearText: 'clear',
+	            confirmText: 'ok',
+	            cancelText: 'cancel',
+	            selectedLabel: 'selected ',
+	            nameText: '',
+	            value: [],
+	            options: [],
+	            async: false,
+	            onConfirmCallback: function onConfirmCallback() {},
+	            onCancelCallback: function onCancelCallback() {}
+	        };
+	    },
+	    componentWillMount: function componentWillMount() {
+	        var _this = this;
+
+	        if (this.state.options.length === 0 && this.props.async && typeof this.props.asyncFetch == 'function') {
+	            this.props.asyncFetch(-1).then(function (data) {
+	                _this.setState({
+	                    options: data
+	                });
+	            });
+	        }
+	    },
+	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	        this.setState({
+	            pendingValue: nextProps.value,
+	            value: nextProps.value
+	        });
+	    },
+	    label: function label() {
+	        var selected = this.state.value.map(function (option) {
+	            return option.text;
+	        });
+	        return selected.length > 0 ? selected.join(', ') : this.props.label;
+	    },
+	    value: function value() {
+	        return this.state.value;
+	    },
+	    hasValue: function hasValue() {
+	        return this.value().length > 0;
+	    },
+	    handleConfirm: function handleConfirm() {
+	        var _this2 = this;
+
+	        var value = this.state.pendingValue;
+	        this.setState({
+	            open: false,
+	            value: value
+	        }, function () {
+	            _this2.props.onConfirmCallback(_this2.state.value);
+	        });
+	    },
+	    handleCancel: function handleCancel() {
+	        var _this3 = this;
+
+	        var pendingValue = this.state.value;
+	        this.setState({
+	            open: false,
+	            pendingValue: pendingValue
+	        }, function () {
+	            _this3.props.onCancelCallback();
+	        });
+	    },
+	    isInclude: function isInclude(value, id) {
+	        var isIn = false;
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+
+	        try {
+	            for (var _iterator = value[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                var o = _step.value;
+
+	                if (id == o.id) {
+	                    isIn = true;
+	                    break;
+	                }
+	            }
+	        } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion && _iterator.return) {
+	                    _iterator.return();
+	                }
+	            } finally {
+	                if (_didIteratorError) {
+	                    throw _iteratorError;
+	                }
+	            }
+	        }
+
+	        return isIn;
+	    },
+	    getPendingValueIndex: function getPendingValueIndex(id) {
+	        var key = 0,
+	            index = -1,
+	            pendingValue = this.state.pendingValue;
+	        var _iteratorNormalCompletion2 = true;
+	        var _didIteratorError2 = false;
+	        var _iteratorError2 = undefined;
+
+	        try {
+	            for (var _iterator2 = pendingValue[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                var o = _step2.value;
+
+	                if (id == o.id) {
+	                    index = key;
+	                    break;
+	                } else {
+	                    key++;
+	                }
+	            }
+	        } catch (err) {
+	            _didIteratorError2 = true;
+	            _iteratorError2 = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	                    _iterator2.return();
+	                }
+	            } finally {
+	                if (_didIteratorError2) {
+	                    throw _iteratorError2;
+	                }
+	            }
+	        }
+
+	        return index;
+	    },
+	    toggleOpenClose: function toggleOpenClose(event) {
+	        interceptEvent(event);
+	        this.setState({
+	            open: !this.state.open
+	        });
+	        if (this.state.open) {
+	            return this.setState({
+	                open: false
+	            });
+	        }
+
+	        this.handleOpen();
+	    },
+	    handleOpen: function handleOpen(event) {
+	        var _this4 = this;
+
+	        interceptEvent(event);
+	        this.setState({
+	            open: true
+	        }, function () {
+	            _this4.refs.selectArea.focus();
+	        });
+	    },
+	    handleClose: function handleClose(event) {
+	        interceptEvent(event);
+	        if (!this.clickingOption) {
+	            this.setState({
+	                open: false,
+	                focusedIndex: -1
+	            });
+	        }
+	        this.handleCancel();
+	    },
+	    handleFocus: function handleFocus() {
+	        clearTimeout(this.blurTimeout);
+	    },
+	    handleBlur: function handleBlur() {
+	        clearTimeout(this.blurTimeout);
+	        this.blurTimeout = setTimeout(this.handleClose, 0);
+	    },
+	    handleMouseDown: function handleMouseDown() {
+	        this.clickingOption = true;
+	    },
+	    handleSelect: function handleSelect(item, event) {
+	        var _this5 = this;
+
+	        var pendingValue = this.state.pendingValue;
+	        if (!event.target.className.includes('react-multi-select-box-option-selected')) {
+	            this.setState({
+	                pendingValue: [].concat(_toConsumableArray(pendingValue), [item])
+	            });
+	        } else {
+	            (function () {
+	                var index = _this5.getPendingValueIndex(item.id);
+	                setTimeout(function () {
+	                    if (index >= 0) {
+	                        _this5.setState({
+	                            pendingValue: [].concat(_toConsumableArray(pendingValue.slice(0, index)), _toConsumableArray(pendingValue.slice(index + 1)))
+	                        });
+	                    }
+	                }, 10);
+	            })();
+	        }
+	    },
+	    handleSelectedOptionClick: function handleSelectedOptionClick(index, event) {
+	        var pendingValue = this.state.pendingValue;
+	        this.setState({
+	            pendingValue: [].concat(_toConsumableArray(pendingValue.slice(0, index)), _toConsumableArray(pendingValue.slice(index + 1)))
+	        });
+	    },
+	    handleToggleOption: function handleToggleOption(key, index, loaded, event) {
+	        var _this6 = this;
+
+	        var iconDOM = event.currentTarget.firstChild;
+	        var ulDOM = event.currentTarget.parentNode.lastChild;
+	        if (!this.props.async || loaded) {
+	            iconDOM.setAttribute('class', toggleClass(iconDOM.getAttribute('class'), 'expand'));
+	            ulDOM.setAttribute('class', toggleClass(ulDOM.getAttribute('class'), 'react-multi-select-hide'));
+	        } else {
+	            this.props.asyncFetch(key).then(function (items) {
+	                _this6.setState({
+	                    options: _this6.setOption(_this6.state.options, items, index)
+	                });
+	                iconDOM.setAttribute('class', toggleClass(iconDOM.getAttribute('class'), 'expand'));
+	                ulDOM.setAttribute('class', toggleClass(ulDOM.getAttribute('class'), 'react-multi-select-hide'));
+	            });
+	        }
+	    },
+	    setOption: function setOption(options, items, index) {
+	        var keys = index.split('-');
+	        var tmp = options;
+	        var _iteratorNormalCompletion3 = true;
+	        var _didIteratorError3 = false;
+	        var _iteratorError3 = undefined;
+
+	        try {
+	            for (var _iterator3 = keys[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                var i = _step3.value;
+
+	                i = +i;
+	                if (!tmp[i]['sub']) {
+	                    tmp[i]['sub'] = [];
+	                }
+	                tmp = tmp[i]['sub'];
+	            }
+	        } catch (err) {
+	            _didIteratorError3 = true;
+	            _iteratorError3 = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	                    _iterator3.return();
+	                }
+	            } finally {
+	                if (_didIteratorError3) {
+	                    throw _iteratorError3;
+	                }
+	            }
+	        }
+
+	        Array.prototype.push.apply(tmp, items);
+	        return options;
+	    },
+	    renderButton: function renderButton() {
+	        var label = this.label();
+	        var title = this.hasValue() ? label : '';
+	        return _react2.default.createElement(
+	            'button',
+	            { className: 'react-multi-select-box', ref: 'button', tabIndex: '0', onClick: this.toggleOpenClose },
+	            _react2.default.createElement(
+	                'div',
+	                { className: 'react-multi-select-box-label', title: title },
+	                label
+	            )
+	        );
+	    },
+	    renderOption: function renderOption(item, index, key) {
+	        if (item.hasOwnProperty('subLen') || item.hasOwnProperty('sub')) {
+	            return this.renderClassification(item, index, key);
+	        } else {
+	            return this.renderRow(item);
+	        }
+	    },
+	    renderClassification: function renderClassification(item, index, key) {
+	        var _this7 = this;
+
+	        var loaded = item.hasOwnProperty('sub') && item.sub.length == item.subLen || !item.hasOwnProperty('subLen') ? true : false;
+	        if (key === '') {
+	            key = item.id;
+	        } else {
+	            key += '-' + item.id;
+	        }
+	        return _react2.default.createElement(
+	            'li',
+	            { key: key, className: 'react-multi-select-classification' },
+	            _react2.default.createElement(
+	                'div',
+	                { className: 'classification', onClick: this.handleToggleOption.bind(this, key, index, loaded), loaded: loaded },
+	                _react2.default.createElement('i', { className: 'react-multi-select-list-arrow' }),
+	                _react2.default.createElement(
+	                    'span',
+	                    null,
+	                    item.text + '(' + (item.subLen ? item.subLen : item.sub ? item.sub.length : 0) + ')'
+	                )
+	            ),
+	            _react2.default.createElement(
+	                'ul',
+	                { key: 'sub' + item.id, className: 'react-multi-select-sub-options react-multi-select-hide' },
+	                loaded && item.sub.map(function (sub, i) {
+	                    return _this7.renderOption(sub, index + '-' + i, key);
+	                })
+	            )
+	        );
+	    },
+	    renderRow: function renderRow(item) {
+	        var className = 'react-multi-select-box-option';
+	        if (this.isInclude(this.state.pendingValue, item.id)) {
+	            className += ' react-multi-select-box-option-selected';
+	        }
+	        return _react2.default.createElement(
+	            'li',
+	            { key: item.id, className: 'react-multi-select-list-option' },
+	            _react2.default.createElement(
+	                'div',
+	                { className: className, value: item.id, label: item.text, onClick: this.handleSelect.bind(this, item) },
+	                item.text
+	            )
+	        );
+	    },
+	    renderSelectOption: function renderSelectOption() {
+	        var _this8 = this;
+
+	        return _react2.default.createElement(
+	            'ul',
+	            { className: 'react-multi-select-col' },
+	            this.state.options.map(function (item, index) {
+	                return _this8.renderOption(item, index + '', '');
+	            })
+	        );
+	    },
+	    renderSelectedOption: function renderSelectedOption(item, index) {
+	        return _react2.default.createElement(
+	            'li',
+	            { key: item.id, className: 'selected-option-row', onClick: this.handleSelectedOptionClick.bind(this, index) },
+	            item.text
+	        );
+	    },
+	    renderSelectedValue: function renderSelectedValue() {
+	        var _this9 = this;
+
+	        return _react2.default.createElement(
+	            'div',
+	            { className: 'react-multi-select-col' },
+	            _react2.default.createElement(
+	                'div',
+	                { className: 'react-multiple-select-type-name' },
+	                this.props.selectedLabel + this.props.nameText,
+	                '\uFF1A'
+	            ),
+	            _react2.default.createElement(
+	                'ul',
+	                null,
+	                this.state.pendingValue.map(function (item, index) {
+	                    return _this9.renderSelectedOption(item, index);
+	                })
+	            )
+	        );
+	    },
+	    renderSelectOptBtn: function renderSelectOptBtn() {
+	        return _react2.default.createElement(
+	            'div',
+	            { className: 'react-multi-select-area-btn' },
+	            _react2.default.createElement(
+	                'button',
+	                { className: 'react-multi-select-btn', onClick: this.handleConfirm },
+	                this.props.confirmText
+	            ),
+	            _react2.default.createElement(
+	                'button',
+	                { className: 'react-multi-select-btn react-multi-select-btn-white', onClick: this.handleCancel },
+	                this.props.cancelText
+	            )
+	        );
+	    },
+	    renderSelectArea: function renderSelectArea() {
+	        var className = 'react-multi-select-area';
+	        if (!this.state.open) {
+	            className += ' react-multi-select-box-hidden';
+	        }
+	        return _react2.default.createElement(
+	            'div',
+	            { className: className, ref: 'selectArea', tabIndex: '0', onBlur: this.handleBlur, onFocus: this.handleFocus },
+	            _react2.default.createElement(
+	                'div',
+	                { className: 'react-multi-select-panel', tabIndex: '-1' },
+	                this.renderSelectOption(),
+	                _react2.default.createElement(
+	                    'div',
+	                    { className: 'react-multi-select-sign' },
+	                    _react2.default.createElement('i', null)
+	                ),
+	                this.renderSelectedValue()
+	            ),
+	            this.renderSelectOptBtn()
+	        );
+	    },
+	    render: function render() {
+	        var className = 'react-multi-select-box-container';
+	        if (this.props.className) {
+	            className += ' ' + this.props.className;
+	        }
+	        if (!this.hasValue()) {
+	            className += ' react-multi-select-box-empty';
+	        }
+	        return _react2.default.createElement(
+	            'div',
+	            { className: className, id: this.state.id },
+	            this.renderButton(),
+	            this.renderSelectArea()
+	        );
+	    }
+	});
+
+	module.exports = MultipleSelectBoxList;
+
+/***/ },
+/* 201 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.8.3
+	//     http://underscorejs.org
+	//     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+	//     Underscore may be freely distributed under the MIT license.
+
+	(function() {
+
+	  // Baseline setup
+	  // --------------
+
+	  // Establish the root object, `window` in the browser, or `exports` on the server.
+	  var root = this;
+
+	  // Save the previous value of the `_` variable.
+	  var previousUnderscore = root._;
+
+	  // Save bytes in the minified (but not gzipped) version:
+	  var ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype;
+
+	  // Create quick reference variables for speed access to core prototypes.
+	  var
+	    push             = ArrayProto.push,
+	    slice            = ArrayProto.slice,
+	    toString         = ObjProto.toString,
+	    hasOwnProperty   = ObjProto.hasOwnProperty;
+
+	  // All **ECMAScript 5** native function implementations that we hope to use
+	  // are declared here.
+	  var
+	    nativeIsArray      = Array.isArray,
+	    nativeKeys         = Object.keys,
+	    nativeBind         = FuncProto.bind,
+	    nativeCreate       = Object.create;
+
+	  // Naked function reference for surrogate-prototype-swapping.
+	  var Ctor = function(){};
+
+	  // Create a safe reference to the Underscore object for use below.
+	  var _ = function(obj) {
+	    if (obj instanceof _) return obj;
+	    if (!(this instanceof _)) return new _(obj);
+	    this._wrapped = obj;
+	  };
+
+	  // Export the Underscore object for **Node.js**, with
+	  // backwards-compatibility for the old `require()` API. If we're in
+	  // the browser, add `_` as a global object.
+	  if (true) {
+	    if (typeof module !== 'undefined' && module.exports) {
+	      exports = module.exports = _;
+	    }
+	    exports._ = _;
+	  } else {
+	    root._ = _;
+	  }
+
+	  // Current version.
+	  _.VERSION = '1.8.3';
+
+	  // Internal function that returns an efficient (for current engines) version
+	  // of the passed-in callback, to be repeatedly applied in other Underscore
+	  // functions.
+	  var optimizeCb = function(func, context, argCount) {
+	    if (context === void 0) return func;
+	    switch (argCount == null ? 3 : argCount) {
+	      case 1: return function(value) {
+	        return func.call(context, value);
+	      };
+	      case 2: return function(value, other) {
+	        return func.call(context, value, other);
+	      };
+	      case 3: return function(value, index, collection) {
+	        return func.call(context, value, index, collection);
+	      };
+	      case 4: return function(accumulator, value, index, collection) {
+	        return func.call(context, accumulator, value, index, collection);
+	      };
+	    }
+	    return function() {
+	      return func.apply(context, arguments);
+	    };
+	  };
+
+	  // A mostly-internal function to generate callbacks that can be applied
+	  // to each element in a collection, returning the desired result — either
+	  // identity, an arbitrary callback, a property matcher, or a property accessor.
+	  var cb = function(value, context, argCount) {
+	    if (value == null) return _.identity;
+	    if (_.isFunction(value)) return optimizeCb(value, context, argCount);
+	    if (_.isObject(value)) return _.matcher(value);
+	    return _.property(value);
+	  };
+	  _.iteratee = function(value, context) {
+	    return cb(value, context, Infinity);
+	  };
+
+	  // An internal function for creating assigner functions.
+	  var createAssigner = function(keysFunc, undefinedOnly) {
+	    return function(obj) {
+	      var length = arguments.length;
+	      if (length < 2 || obj == null) return obj;
+	      for (var index = 1; index < length; index++) {
+	        var source = arguments[index],
+	            keys = keysFunc(source),
+	            l = keys.length;
+	        for (var i = 0; i < l; i++) {
+	          var key = keys[i];
+	          if (!undefinedOnly || obj[key] === void 0) obj[key] = source[key];
+	        }
+	      }
+	      return obj;
+	    };
+	  };
+
+	  // An internal function for creating a new object that inherits from another.
+	  var baseCreate = function(prototype) {
+	    if (!_.isObject(prototype)) return {};
+	    if (nativeCreate) return nativeCreate(prototype);
+	    Ctor.prototype = prototype;
+	    var result = new Ctor;
+	    Ctor.prototype = null;
+	    return result;
+	  };
+
+	  var property = function(key) {
+	    return function(obj) {
+	      return obj == null ? void 0 : obj[key];
+	    };
+	  };
+
+	  // Helper for collection methods to determine whether a collection
+	  // should be iterated as an array or as an object
+	  // Related: http://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
+	  // Avoids a very nasty iOS 8 JIT bug on ARM-64. #2094
+	  var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
+	  var getLength = property('length');
+	  var isArrayLike = function(collection) {
+	    var length = getLength(collection);
+	    return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
+	  };
+
+	  // Collection Functions
+	  // --------------------
+
+	  // The cornerstone, an `each` implementation, aka `forEach`.
+	  // Handles raw objects in addition to array-likes. Treats all
+	  // sparse array-likes as if they were dense.
+	  _.each = _.forEach = function(obj, iteratee, context) {
+	    iteratee = optimizeCb(iteratee, context);
+	    var i, length;
+	    if (isArrayLike(obj)) {
+	      for (i = 0, length = obj.length; i < length; i++) {
+	        iteratee(obj[i], i, obj);
+	      }
+	    } else {
+	      var keys = _.keys(obj);
+	      for (i = 0, length = keys.length; i < length; i++) {
+	        iteratee(obj[keys[i]], keys[i], obj);
+	      }
+	    }
+	    return obj;
+	  };
+
+	  // Return the results of applying the iteratee to each element.
+	  _.map = _.collect = function(obj, iteratee, context) {
+	    iteratee = cb(iteratee, context);
+	    var keys = !isArrayLike(obj) && _.keys(obj),
+	        length = (keys || obj).length,
+	        results = Array(length);
+	    for (var index = 0; index < length; index++) {
+	      var currentKey = keys ? keys[index] : index;
+	      results[index] = iteratee(obj[currentKey], currentKey, obj);
+	    }
+	    return results;
+	  };
+
+	  // Create a reducing function iterating left or right.
+	  function createReduce(dir) {
+	    // Optimized iterator function as using arguments.length
+	    // in the main function will deoptimize the, see #1991.
+	    function iterator(obj, iteratee, memo, keys, index, length) {
+	      for (; index >= 0 && index < length; index += dir) {
+	        var currentKey = keys ? keys[index] : index;
+	        memo = iteratee(memo, obj[currentKey], currentKey, obj);
+	      }
+	      return memo;
+	    }
+
+	    return function(obj, iteratee, memo, context) {
+	      iteratee = optimizeCb(iteratee, context, 4);
+	      var keys = !isArrayLike(obj) && _.keys(obj),
+	          length = (keys || obj).length,
+	          index = dir > 0 ? 0 : length - 1;
+	      // Determine the initial value if none is provided.
+	      if (arguments.length < 3) {
+	        memo = obj[keys ? keys[index] : index];
+	        index += dir;
+	      }
+	      return iterator(obj, iteratee, memo, keys, index, length);
+	    };
+	  }
+
+	  // **Reduce** builds up a single result from a list of values, aka `inject`,
+	  // or `foldl`.
+	  _.reduce = _.foldl = _.inject = createReduce(1);
+
+	  // The right-associative version of reduce, also known as `foldr`.
+	  _.reduceRight = _.foldr = createReduce(-1);
+
+	  // Return the first value which passes a truth test. Aliased as `detect`.
+	  _.find = _.detect = function(obj, predicate, context) {
+	    var key;
+	    if (isArrayLike(obj)) {
+	      key = _.findIndex(obj, predicate, context);
+	    } else {
+	      key = _.findKey(obj, predicate, context);
+	    }
+	    if (key !== void 0 && key !== -1) return obj[key];
+	  };
+
+	  // Return all the elements that pass a truth test.
+	  // Aliased as `select`.
+	  _.filter = _.select = function(obj, predicate, context) {
+	    var results = [];
+	    predicate = cb(predicate, context);
+	    _.each(obj, function(value, index, list) {
+	      if (predicate(value, index, list)) results.push(value);
+	    });
+	    return results;
+	  };
+
+	  // Return all the elements for which a truth test fails.
+	  _.reject = function(obj, predicate, context) {
+	    return _.filter(obj, _.negate(cb(predicate)), context);
+	  };
+
+	  // Determine whether all of the elements match a truth test.
+	  // Aliased as `all`.
+	  _.every = _.all = function(obj, predicate, context) {
+	    predicate = cb(predicate, context);
+	    var keys = !isArrayLike(obj) && _.keys(obj),
+	        length = (keys || obj).length;
+	    for (var index = 0; index < length; index++) {
+	      var currentKey = keys ? keys[index] : index;
+	      if (!predicate(obj[currentKey], currentKey, obj)) return false;
+	    }
+	    return true;
+	  };
+
+	  // Determine if at least one element in the object matches a truth test.
+	  // Aliased as `any`.
+	  _.some = _.any = function(obj, predicate, context) {
+	    predicate = cb(predicate, context);
+	    var keys = !isArrayLike(obj) && _.keys(obj),
+	        length = (keys || obj).length;
+	    for (var index = 0; index < length; index++) {
+	      var currentKey = keys ? keys[index] : index;
+	      if (predicate(obj[currentKey], currentKey, obj)) return true;
+	    }
+	    return false;
+	  };
+
+	  // Determine if the array or object contains a given item (using `===`).
+	  // Aliased as `includes` and `include`.
+	  _.contains = _.includes = _.include = function(obj, item, fromIndex, guard) {
+	    if (!isArrayLike(obj)) obj = _.values(obj);
+	    if (typeof fromIndex != 'number' || guard) fromIndex = 0;
+	    return _.indexOf(obj, item, fromIndex) >= 0;
+	  };
+
+	  // Invoke a method (with arguments) on every item in a collection.
+	  _.invoke = function(obj, method) {
+	    var args = slice.call(arguments, 2);
+	    var isFunc = _.isFunction(method);
+	    return _.map(obj, function(value) {
+	      var func = isFunc ? method : value[method];
+	      return func == null ? func : func.apply(value, args);
+	    });
+	  };
+
+	  // Convenience version of a common use case of `map`: fetching a property.
+	  _.pluck = function(obj, key) {
+	    return _.map(obj, _.property(key));
+	  };
+
+	  // Convenience version of a common use case of `filter`: selecting only objects
+	  // containing specific `key:value` pairs.
+	  _.where = function(obj, attrs) {
+	    return _.filter(obj, _.matcher(attrs));
+	  };
+
+	  // Convenience version of a common use case of `find`: getting the first object
+	  // containing specific `key:value` pairs.
+	  _.findWhere = function(obj, attrs) {
+	    return _.find(obj, _.matcher(attrs));
+	  };
+
+	  // Return the maximum element (or element-based computation).
+	  _.max = function(obj, iteratee, context) {
+	    var result = -Infinity, lastComputed = -Infinity,
+	        value, computed;
+	    if (iteratee == null && obj != null) {
+	      obj = isArrayLike(obj) ? obj : _.values(obj);
+	      for (var i = 0, length = obj.length; i < length; i++) {
+	        value = obj[i];
+	        if (value > result) {
+	          result = value;
+	        }
+	      }
+	    } else {
+	      iteratee = cb(iteratee, context);
+	      _.each(obj, function(value, index, list) {
+	        computed = iteratee(value, index, list);
+	        if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
+	          result = value;
+	          lastComputed = computed;
+	        }
+	      });
+	    }
+	    return result;
+	  };
+
+	  // Return the minimum element (or element-based computation).
+	  _.min = function(obj, iteratee, context) {
+	    var result = Infinity, lastComputed = Infinity,
+	        value, computed;
+	    if (iteratee == null && obj != null) {
+	      obj = isArrayLike(obj) ? obj : _.values(obj);
+	      for (var i = 0, length = obj.length; i < length; i++) {
+	        value = obj[i];
+	        if (value < result) {
+	          result = value;
+	        }
+	      }
+	    } else {
+	      iteratee = cb(iteratee, context);
+	      _.each(obj, function(value, index, list) {
+	        computed = iteratee(value, index, list);
+	        if (computed < lastComputed || computed === Infinity && result === Infinity) {
+	          result = value;
+	          lastComputed = computed;
+	        }
+	      });
+	    }
+	    return result;
+	  };
+
+	  // Shuffle a collection, using the modern version of the
+	  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
+	  _.shuffle = function(obj) {
+	    var set = isArrayLike(obj) ? obj : _.values(obj);
+	    var length = set.length;
+	    var shuffled = Array(length);
+	    for (var index = 0, rand; index < length; index++) {
+	      rand = _.random(0, index);
+	      if (rand !== index) shuffled[index] = shuffled[rand];
+	      shuffled[rand] = set[index];
+	    }
+	    return shuffled;
+	  };
+
+	  // Sample **n** random values from a collection.
+	  // If **n** is not specified, returns a single random element.
+	  // The internal `guard` argument allows it to work with `map`.
+	  _.sample = function(obj, n, guard) {
+	    if (n == null || guard) {
+	      if (!isArrayLike(obj)) obj = _.values(obj);
+	      return obj[_.random(obj.length - 1)];
+	    }
+	    return _.shuffle(obj).slice(0, Math.max(0, n));
+	  };
+
+	  // Sort the object's values by a criterion produced by an iteratee.
+	  _.sortBy = function(obj, iteratee, context) {
+	    iteratee = cb(iteratee, context);
+	    return _.pluck(_.map(obj, function(value, index, list) {
+	      return {
+	        value: value,
+	        index: index,
+	        criteria: iteratee(value, index, list)
+	      };
+	    }).sort(function(left, right) {
+	      var a = left.criteria;
+	      var b = right.criteria;
+	      if (a !== b) {
+	        if (a > b || a === void 0) return 1;
+	        if (a < b || b === void 0) return -1;
+	      }
+	      return left.index - right.index;
+	    }), 'value');
+	  };
+
+	  // An internal function used for aggregate "group by" operations.
+	  var group = function(behavior) {
+	    return function(obj, iteratee, context) {
+	      var result = {};
+	      iteratee = cb(iteratee, context);
+	      _.each(obj, function(value, index) {
+	        var key = iteratee(value, index, obj);
+	        behavior(result, value, key);
+	      });
+	      return result;
+	    };
+	  };
+
+	  // Groups the object's values by a criterion. Pass either a string attribute
+	  // to group by, or a function that returns the criterion.
+	  _.groupBy = group(function(result, value, key) {
+	    if (_.has(result, key)) result[key].push(value); else result[key] = [value];
+	  });
+
+	  // Indexes the object's values by a criterion, similar to `groupBy`, but for
+	  // when you know that your index values will be unique.
+	  _.indexBy = group(function(result, value, key) {
+	    result[key] = value;
+	  });
+
+	  // Counts instances of an object that group by a certain criterion. Pass
+	  // either a string attribute to count by, or a function that returns the
+	  // criterion.
+	  _.countBy = group(function(result, value, key) {
+	    if (_.has(result, key)) result[key]++; else result[key] = 1;
+	  });
+
+	  // Safely create a real, live array from anything iterable.
+	  _.toArray = function(obj) {
+	    if (!obj) return [];
+	    if (_.isArray(obj)) return slice.call(obj);
+	    if (isArrayLike(obj)) return _.map(obj, _.identity);
+	    return _.values(obj);
+	  };
+
+	  // Return the number of elements in an object.
+	  _.size = function(obj) {
+	    if (obj == null) return 0;
+	    return isArrayLike(obj) ? obj.length : _.keys(obj).length;
+	  };
+
+	  // Split a collection into two arrays: one whose elements all satisfy the given
+	  // predicate, and one whose elements all do not satisfy the predicate.
+	  _.partition = function(obj, predicate, context) {
+	    predicate = cb(predicate, context);
+	    var pass = [], fail = [];
+	    _.each(obj, function(value, key, obj) {
+	      (predicate(value, key, obj) ? pass : fail).push(value);
+	    });
+	    return [pass, fail];
+	  };
+
+	  // Array Functions
+	  // ---------------
+
+	  // Get the first element of an array. Passing **n** will return the first N
+	  // values in the array. Aliased as `head` and `take`. The **guard** check
+	  // allows it to work with `_.map`.
+	  _.first = _.head = _.take = function(array, n, guard) {
+	    if (array == null) return void 0;
+	    if (n == null || guard) return array[0];
+	    return _.initial(array, array.length - n);
+	  };
+
+	  // Returns everything but the last entry of the array. Especially useful on
+	  // the arguments object. Passing **n** will return all the values in
+	  // the array, excluding the last N.
+	  _.initial = function(array, n, guard) {
+	    return slice.call(array, 0, Math.max(0, array.length - (n == null || guard ? 1 : n)));
+	  };
+
+	  // Get the last element of an array. Passing **n** will return the last N
+	  // values in the array.
+	  _.last = function(array, n, guard) {
+	    if (array == null) return void 0;
+	    if (n == null || guard) return array[array.length - 1];
+	    return _.rest(array, Math.max(0, array.length - n));
+	  };
+
+	  // Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
+	  // Especially useful on the arguments object. Passing an **n** will return
+	  // the rest N values in the array.
+	  _.rest = _.tail = _.drop = function(array, n, guard) {
+	    return slice.call(array, n == null || guard ? 1 : n);
+	  };
+
+	  // Trim out all falsy values from an array.
+	  _.compact = function(array) {
+	    return _.filter(array, _.identity);
+	  };
+
+	  // Internal implementation of a recursive `flatten` function.
+	  var flatten = function(input, shallow, strict, startIndex) {
+	    var output = [], idx = 0;
+	    for (var i = startIndex || 0, length = getLength(input); i < length; i++) {
+	      var value = input[i];
+	      if (isArrayLike(value) && (_.isArray(value) || _.isArguments(value))) {
+	        //flatten current level of array or arguments object
+	        if (!shallow) value = flatten(value, shallow, strict);
+	        var j = 0, len = value.length;
+	        output.length += len;
+	        while (j < len) {
+	          output[idx++] = value[j++];
+	        }
+	      } else if (!strict) {
+	        output[idx++] = value;
+	      }
+	    }
+	    return output;
+	  };
+
+	  // Flatten out an array, either recursively (by default), or just one level.
+	  _.flatten = function(array, shallow) {
+	    return flatten(array, shallow, false);
+	  };
+
+	  // Return a version of the array that does not contain the specified value(s).
+	  _.without = function(array) {
+	    return _.difference(array, slice.call(arguments, 1));
+	  };
+
+	  // Produce a duplicate-free version of the array. If the array has already
+	  // been sorted, you have the option of using a faster algorithm.
+	  // Aliased as `unique`.
+	  _.uniq = _.unique = function(array, isSorted, iteratee, context) {
+	    if (!_.isBoolean(isSorted)) {
+	      context = iteratee;
+	      iteratee = isSorted;
+	      isSorted = false;
+	    }
+	    if (iteratee != null) iteratee = cb(iteratee, context);
+	    var result = [];
+	    var seen = [];
+	    for (var i = 0, length = getLength(array); i < length; i++) {
+	      var value = array[i],
+	          computed = iteratee ? iteratee(value, i, array) : value;
+	      if (isSorted) {
+	        if (!i || seen !== computed) result.push(value);
+	        seen = computed;
+	      } else if (iteratee) {
+	        if (!_.contains(seen, computed)) {
+	          seen.push(computed);
+	          result.push(value);
+	        }
+	      } else if (!_.contains(result, value)) {
+	        result.push(value);
+	      }
+	    }
+	    return result;
+	  };
+
+	  // Produce an array that contains the union: each distinct element from all of
+	  // the passed-in arrays.
+	  _.union = function() {
+	    return _.uniq(flatten(arguments, true, true));
+	  };
+
+	  // Produce an array that contains every item shared between all the
+	  // passed-in arrays.
+	  _.intersection = function(array) {
+	    var result = [];
+	    var argsLength = arguments.length;
+	    for (var i = 0, length = getLength(array); i < length; i++) {
+	      var item = array[i];
+	      if (_.contains(result, item)) continue;
+	      for (var j = 1; j < argsLength; j++) {
+	        if (!_.contains(arguments[j], item)) break;
+	      }
+	      if (j === argsLength) result.push(item);
+	    }
+	    return result;
+	  };
+
+	  // Take the difference between one array and a number of other arrays.
+	  // Only the elements present in just the first array will remain.
+	  _.difference = function(array) {
+	    var rest = flatten(arguments, true, true, 1);
+	    return _.filter(array, function(value){
+	      return !_.contains(rest, value);
+	    });
+	  };
+
+	  // Zip together multiple lists into a single array -- elements that share
+	  // an index go together.
+	  _.zip = function() {
+	    return _.unzip(arguments);
+	  };
+
+	  // Complement of _.zip. Unzip accepts an array of arrays and groups
+	  // each array's elements on shared indices
+	  _.unzip = function(array) {
+	    var length = array && _.max(array, getLength).length || 0;
+	    var result = Array(length);
+
+	    for (var index = 0; index < length; index++) {
+	      result[index] = _.pluck(array, index);
+	    }
+	    return result;
+	  };
+
+	  // Converts lists into objects. Pass either a single array of `[key, value]`
+	  // pairs, or two parallel arrays of the same length -- one of keys, and one of
+	  // the corresponding values.
+	  _.object = function(list, values) {
+	    var result = {};
+	    for (var i = 0, length = getLength(list); i < length; i++) {
+	      if (values) {
+	        result[list[i]] = values[i];
+	      } else {
+	        result[list[i][0]] = list[i][1];
+	      }
+	    }
+	    return result;
+	  };
+
+	  // Generator function to create the findIndex and findLastIndex functions
+	  function createPredicateIndexFinder(dir) {
+	    return function(array, predicate, context) {
+	      predicate = cb(predicate, context);
+	      var length = getLength(array);
+	      var index = dir > 0 ? 0 : length - 1;
+	      for (; index >= 0 && index < length; index += dir) {
+	        if (predicate(array[index], index, array)) return index;
+	      }
+	      return -1;
+	    };
+	  }
+
+	  // Returns the first index on an array-like that passes a predicate test
+	  _.findIndex = createPredicateIndexFinder(1);
+	  _.findLastIndex = createPredicateIndexFinder(-1);
+
+	  // Use a comparator function to figure out the smallest index at which
+	  // an object should be inserted so as to maintain order. Uses binary search.
+	  _.sortedIndex = function(array, obj, iteratee, context) {
+	    iteratee = cb(iteratee, context, 1);
+	    var value = iteratee(obj);
+	    var low = 0, high = getLength(array);
+	    while (low < high) {
+	      var mid = Math.floor((low + high) / 2);
+	      if (iteratee(array[mid]) < value) low = mid + 1; else high = mid;
+	    }
+	    return low;
+	  };
+
+	  // Generator function to create the indexOf and lastIndexOf functions
+	  function createIndexFinder(dir, predicateFind, sortedIndex) {
+	    return function(array, item, idx) {
+	      var i = 0, length = getLength(array);
+	      if (typeof idx == 'number') {
+	        if (dir > 0) {
+	            i = idx >= 0 ? idx : Math.max(idx + length, i);
+	        } else {
+	            length = idx >= 0 ? Math.min(idx + 1, length) : idx + length + 1;
+	        }
+	      } else if (sortedIndex && idx && length) {
+	        idx = sortedIndex(array, item);
+	        return array[idx] === item ? idx : -1;
+	      }
+	      if (item !== item) {
+	        idx = predicateFind(slice.call(array, i, length), _.isNaN);
+	        return idx >= 0 ? idx + i : -1;
+	      }
+	      for (idx = dir > 0 ? i : length - 1; idx >= 0 && idx < length; idx += dir) {
+	        if (array[idx] === item) return idx;
+	      }
+	      return -1;
+	    };
+	  }
+
+	  // Return the position of the first occurrence of an item in an array,
+	  // or -1 if the item is not included in the array.
+	  // If the array is large and already in sort order, pass `true`
+	  // for **isSorted** to use binary search.
+	  _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
+	  _.lastIndexOf = createIndexFinder(-1, _.findLastIndex);
+
+	  // Generate an integer Array containing an arithmetic progression. A port of
+	  // the native Python `range()` function. See
+	  // [the Python documentation](http://docs.python.org/library/functions.html#range).
+	  _.range = function(start, stop, step) {
+	    if (stop == null) {
+	      stop = start || 0;
+	      start = 0;
+	    }
+	    step = step || 1;
+
+	    var length = Math.max(Math.ceil((stop - start) / step), 0);
+	    var range = Array(length);
+
+	    for (var idx = 0; idx < length; idx++, start += step) {
+	      range[idx] = start;
+	    }
+
+	    return range;
+	  };
+
+	  // Function (ahem) Functions
+	  // ------------------
+
+	  // Determines whether to execute a function as a constructor
+	  // or a normal function with the provided arguments
+	  var executeBound = function(sourceFunc, boundFunc, context, callingContext, args) {
+	    if (!(callingContext instanceof boundFunc)) return sourceFunc.apply(context, args);
+	    var self = baseCreate(sourceFunc.prototype);
+	    var result = sourceFunc.apply(self, args);
+	    if (_.isObject(result)) return result;
+	    return self;
+	  };
+
+	  // Create a function bound to a given object (assigning `this`, and arguments,
+	  // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
+	  // available.
+	  _.bind = function(func, context) {
+	    if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
+	    if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
+	    var args = slice.call(arguments, 2);
+	    var bound = function() {
+	      return executeBound(func, bound, context, this, args.concat(slice.call(arguments)));
+	    };
+	    return bound;
+	  };
+
+	  // Partially apply a function by creating a version that has had some of its
+	  // arguments pre-filled, without changing its dynamic `this` context. _ acts
+	  // as a placeholder, allowing any combination of arguments to be pre-filled.
+	  _.partial = function(func) {
+	    var boundArgs = slice.call(arguments, 1);
+	    var bound = function() {
+	      var position = 0, length = boundArgs.length;
+	      var args = Array(length);
+	      for (var i = 0; i < length; i++) {
+	        args[i] = boundArgs[i] === _ ? arguments[position++] : boundArgs[i];
+	      }
+	      while (position < arguments.length) args.push(arguments[position++]);
+	      return executeBound(func, bound, this, this, args);
+	    };
+	    return bound;
+	  };
+
+	  // Bind a number of an object's methods to that object. Remaining arguments
+	  // are the method names to be bound. Useful for ensuring that all callbacks
+	  // defined on an object belong to it.
+	  _.bindAll = function(obj) {
+	    var i, length = arguments.length, key;
+	    if (length <= 1) throw new Error('bindAll must be passed function names');
+	    for (i = 1; i < length; i++) {
+	      key = arguments[i];
+	      obj[key] = _.bind(obj[key], obj);
+	    }
+	    return obj;
+	  };
+
+	  // Memoize an expensive function by storing its results.
+	  _.memoize = function(func, hasher) {
+	    var memoize = function(key) {
+	      var cache = memoize.cache;
+	      var address = '' + (hasher ? hasher.apply(this, arguments) : key);
+	      if (!_.has(cache, address)) cache[address] = func.apply(this, arguments);
+	      return cache[address];
+	    };
+	    memoize.cache = {};
+	    return memoize;
+	  };
+
+	  // Delays a function for the given number of milliseconds, and then calls
+	  // it with the arguments supplied.
+	  _.delay = function(func, wait) {
+	    var args = slice.call(arguments, 2);
+	    return setTimeout(function(){
+	      return func.apply(null, args);
+	    }, wait);
+	  };
+
+	  // Defers a function, scheduling it to run after the current call stack has
+	  // cleared.
+	  _.defer = _.partial(_.delay, _, 1);
+
+	  // Returns a function, that, when invoked, will only be triggered at most once
+	  // during a given window of time. Normally, the throttled function will run
+	  // as much as it can, without ever going more than once per `wait` duration;
+	  // but if you'd like to disable the execution on the leading edge, pass
+	  // `{leading: false}`. To disable execution on the trailing edge, ditto.
+	  _.throttle = function(func, wait, options) {
+	    var context, args, result;
+	    var timeout = null;
+	    var previous = 0;
+	    if (!options) options = {};
+	    var later = function() {
+	      previous = options.leading === false ? 0 : _.now();
+	      timeout = null;
+	      result = func.apply(context, args);
+	      if (!timeout) context = args = null;
+	    };
+	    return function() {
+	      var now = _.now();
+	      if (!previous && options.leading === false) previous = now;
+	      var remaining = wait - (now - previous);
+	      context = this;
+	      args = arguments;
+	      if (remaining <= 0 || remaining > wait) {
+	        if (timeout) {
+	          clearTimeout(timeout);
+	          timeout = null;
+	        }
+	        previous = now;
+	        result = func.apply(context, args);
+	        if (!timeout) context = args = null;
+	      } else if (!timeout && options.trailing !== false) {
+	        timeout = setTimeout(later, remaining);
+	      }
+	      return result;
+	    };
+	  };
+
+	  // Returns a function, that, as long as it continues to be invoked, will not
+	  // be triggered. The function will be called after it stops being called for
+	  // N milliseconds. If `immediate` is passed, trigger the function on the
+	  // leading edge, instead of the trailing.
+	  _.debounce = function(func, wait, immediate) {
+	    var timeout, args, context, timestamp, result;
+
+	    var later = function() {
+	      var last = _.now() - timestamp;
+
+	      if (last < wait && last >= 0) {
+	        timeout = setTimeout(later, wait - last);
+	      } else {
+	        timeout = null;
+	        if (!immediate) {
+	          result = func.apply(context, args);
+	          if (!timeout) context = args = null;
+	        }
+	      }
+	    };
+
+	    return function() {
+	      context = this;
+	      args = arguments;
+	      timestamp = _.now();
+	      var callNow = immediate && !timeout;
+	      if (!timeout) timeout = setTimeout(later, wait);
+	      if (callNow) {
+	        result = func.apply(context, args);
+	        context = args = null;
+	      }
+
+	      return result;
+	    };
+	  };
+
+	  // Returns the first function passed as an argument to the second,
+	  // allowing you to adjust arguments, run code before and after, and
+	  // conditionally execute the original function.
+	  _.wrap = function(func, wrapper) {
+	    return _.partial(wrapper, func);
+	  };
+
+	  // Returns a negated version of the passed-in predicate.
+	  _.negate = function(predicate) {
+	    return function() {
+	      return !predicate.apply(this, arguments);
+	    };
+	  };
+
+	  // Returns a function that is the composition of a list of functions, each
+	  // consuming the return value of the function that follows.
+	  _.compose = function() {
+	    var args = arguments;
+	    var start = args.length - 1;
+	    return function() {
+	      var i = start;
+	      var result = args[start].apply(this, arguments);
+	      while (i--) result = args[i].call(this, result);
+	      return result;
+	    };
+	  };
+
+	  // Returns a function that will only be executed on and after the Nth call.
+	  _.after = function(times, func) {
+	    return function() {
+	      if (--times < 1) {
+	        return func.apply(this, arguments);
+	      }
+	    };
+	  };
+
+	  // Returns a function that will only be executed up to (but not including) the Nth call.
+	  _.before = function(times, func) {
+	    var memo;
+	    return function() {
+	      if (--times > 0) {
+	        memo = func.apply(this, arguments);
+	      }
+	      if (times <= 1) func = null;
+	      return memo;
+	    };
+	  };
+
+	  // Returns a function that will be executed at most one time, no matter how
+	  // often you call it. Useful for lazy initialization.
+	  _.once = _.partial(_.before, 2);
+
+	  // Object Functions
+	  // ----------------
+
+	  // Keys in IE < 9 that won't be iterated by `for key in ...` and thus missed.
+	  var hasEnumBug = !{toString: null}.propertyIsEnumerable('toString');
+	  var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString',
+	                      'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
+
+	  function collectNonEnumProps(obj, keys) {
+	    var nonEnumIdx = nonEnumerableProps.length;
+	    var constructor = obj.constructor;
+	    var proto = (_.isFunction(constructor) && constructor.prototype) || ObjProto;
+
+	    // Constructor is a special case.
+	    var prop = 'constructor';
+	    if (_.has(obj, prop) && !_.contains(keys, prop)) keys.push(prop);
+
+	    while (nonEnumIdx--) {
+	      prop = nonEnumerableProps[nonEnumIdx];
+	      if (prop in obj && obj[prop] !== proto[prop] && !_.contains(keys, prop)) {
+	        keys.push(prop);
+	      }
+	    }
+	  }
+
+	  // Retrieve the names of an object's own properties.
+	  // Delegates to **ECMAScript 5**'s native `Object.keys`
+	  _.keys = function(obj) {
+	    if (!_.isObject(obj)) return [];
+	    if (nativeKeys) return nativeKeys(obj);
+	    var keys = [];
+	    for (var key in obj) if (_.has(obj, key)) keys.push(key);
+	    // Ahem, IE < 9.
+	    if (hasEnumBug) collectNonEnumProps(obj, keys);
+	    return keys;
+	  };
+
+	  // Retrieve all the property names of an object.
+	  _.allKeys = function(obj) {
+	    if (!_.isObject(obj)) return [];
+	    var keys = [];
+	    for (var key in obj) keys.push(key);
+	    // Ahem, IE < 9.
+	    if (hasEnumBug) collectNonEnumProps(obj, keys);
+	    return keys;
+	  };
+
+	  // Retrieve the values of an object's properties.
+	  _.values = function(obj) {
+	    var keys = _.keys(obj);
+	    var length = keys.length;
+	    var values = Array(length);
+	    for (var i = 0; i < length; i++) {
+	      values[i] = obj[keys[i]];
+	    }
+	    return values;
+	  };
+
+	  // Returns the results of applying the iteratee to each element of the object
+	  // In contrast to _.map it returns an object
+	  _.mapObject = function(obj, iteratee, context) {
+	    iteratee = cb(iteratee, context);
+	    var keys =  _.keys(obj),
+	          length = keys.length,
+	          results = {},
+	          currentKey;
+	      for (var index = 0; index < length; index++) {
+	        currentKey = keys[index];
+	        results[currentKey] = iteratee(obj[currentKey], currentKey, obj);
+	      }
+	      return results;
+	  };
+
+	  // Convert an object into a list of `[key, value]` pairs.
+	  _.pairs = function(obj) {
+	    var keys = _.keys(obj);
+	    var length = keys.length;
+	    var pairs = Array(length);
+	    for (var i = 0; i < length; i++) {
+	      pairs[i] = [keys[i], obj[keys[i]]];
+	    }
+	    return pairs;
+	  };
+
+	  // Invert the keys and values of an object. The values must be serializable.
+	  _.invert = function(obj) {
+	    var result = {};
+	    var keys = _.keys(obj);
+	    for (var i = 0, length = keys.length; i < length; i++) {
+	      result[obj[keys[i]]] = keys[i];
+	    }
+	    return result;
+	  };
+
+	  // Return a sorted list of the function names available on the object.
+	  // Aliased as `methods`
+	  _.functions = _.methods = function(obj) {
+	    var names = [];
+	    for (var key in obj) {
+	      if (_.isFunction(obj[key])) names.push(key);
+	    }
+	    return names.sort();
+	  };
+
+	  // Extend a given object with all the properties in passed-in object(s).
+	  _.extend = createAssigner(_.allKeys);
+
+	  // Assigns a given object with all the own properties in the passed-in object(s)
+	  // (https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
+	  _.extendOwn = _.assign = createAssigner(_.keys);
+
+	  // Returns the first key on an object that passes a predicate test
+	  _.findKey = function(obj, predicate, context) {
+	    predicate = cb(predicate, context);
+	    var keys = _.keys(obj), key;
+	    for (var i = 0, length = keys.length; i < length; i++) {
+	      key = keys[i];
+	      if (predicate(obj[key], key, obj)) return key;
+	    }
+	  };
+
+	  // Return a copy of the object only containing the whitelisted properties.
+	  _.pick = function(object, oiteratee, context) {
+	    var result = {}, obj = object, iteratee, keys;
+	    if (obj == null) return result;
+	    if (_.isFunction(oiteratee)) {
+	      keys = _.allKeys(obj);
+	      iteratee = optimizeCb(oiteratee, context);
+	    } else {
+	      keys = flatten(arguments, false, false, 1);
+	      iteratee = function(value, key, obj) { return key in obj; };
+	      obj = Object(obj);
+	    }
+	    for (var i = 0, length = keys.length; i < length; i++) {
+	      var key = keys[i];
+	      var value = obj[key];
+	      if (iteratee(value, key, obj)) result[key] = value;
+	    }
+	    return result;
+	  };
+
+	   // Return a copy of the object without the blacklisted properties.
+	  _.omit = function(obj, iteratee, context) {
+	    if (_.isFunction(iteratee)) {
+	      iteratee = _.negate(iteratee);
+	    } else {
+	      var keys = _.map(flatten(arguments, false, false, 1), String);
+	      iteratee = function(value, key) {
+	        return !_.contains(keys, key);
+	      };
+	    }
+	    return _.pick(obj, iteratee, context);
+	  };
+
+	  // Fill in a given object with default properties.
+	  _.defaults = createAssigner(_.allKeys, true);
+
+	  // Creates an object that inherits from the given prototype object.
+	  // If additional properties are provided then they will be added to the
+	  // created object.
+	  _.create = function(prototype, props) {
+	    var result = baseCreate(prototype);
+	    if (props) _.extendOwn(result, props);
+	    return result;
+	  };
+
+	  // Create a (shallow-cloned) duplicate of an object.
+	  _.clone = function(obj) {
+	    if (!_.isObject(obj)) return obj;
+	    return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+	  };
+
+	  // Invokes interceptor with the obj, and then returns obj.
+	  // The primary purpose of this method is to "tap into" a method chain, in
+	  // order to perform operations on intermediate results within the chain.
+	  _.tap = function(obj, interceptor) {
+	    interceptor(obj);
+	    return obj;
+	  };
+
+	  // Returns whether an object has a given set of `key:value` pairs.
+	  _.isMatch = function(object, attrs) {
+	    var keys = _.keys(attrs), length = keys.length;
+	    if (object == null) return !length;
+	    var obj = Object(object);
+	    for (var i = 0; i < length; i++) {
+	      var key = keys[i];
+	      if (attrs[key] !== obj[key] || !(key in obj)) return false;
+	    }
+	    return true;
+	  };
+
+
+	  // Internal recursive comparison function for `isEqual`.
+	  var eq = function(a, b, aStack, bStack) {
+	    // Identical objects are equal. `0 === -0`, but they aren't identical.
+	    // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
+	    if (a === b) return a !== 0 || 1 / a === 1 / b;
+	    // A strict comparison is necessary because `null == undefined`.
+	    if (a == null || b == null) return a === b;
+	    // Unwrap any wrapped objects.
+	    if (a instanceof _) a = a._wrapped;
+	    if (b instanceof _) b = b._wrapped;
+	    // Compare `[[Class]]` names.
+	    var className = toString.call(a);
+	    if (className !== toString.call(b)) return false;
+	    switch (className) {
+	      // Strings, numbers, regular expressions, dates, and booleans are compared by value.
+	      case '[object RegExp]':
+	      // RegExps are coerced to strings for comparison (Note: '' + /a/i === '/a/i')
+	      case '[object String]':
+	        // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
+	        // equivalent to `new String("5")`.
+	        return '' + a === '' + b;
+	      case '[object Number]':
+	        // `NaN`s are equivalent, but non-reflexive.
+	        // Object(NaN) is equivalent to NaN
+	        if (+a !== +a) return +b !== +b;
+	        // An `egal` comparison is performed for other numeric values.
+	        return +a === 0 ? 1 / +a === 1 / b : +a === +b;
+	      case '[object Date]':
+	      case '[object Boolean]':
+	        // Coerce dates and booleans to numeric primitive values. Dates are compared by their
+	        // millisecond representations. Note that invalid dates with millisecond representations
+	        // of `NaN` are not equivalent.
+	        return +a === +b;
+	    }
+
+	    var areArrays = className === '[object Array]';
+	    if (!areArrays) {
+	      if (typeof a != 'object' || typeof b != 'object') return false;
+
+	      // Objects with different constructors are not equivalent, but `Object`s or `Array`s
+	      // from different frames are.
+	      var aCtor = a.constructor, bCtor = b.constructor;
+	      if (aCtor !== bCtor && !(_.isFunction(aCtor) && aCtor instanceof aCtor &&
+	                               _.isFunction(bCtor) && bCtor instanceof bCtor)
+	                          && ('constructor' in a && 'constructor' in b)) {
+	        return false;
+	      }
+	    }
+	    // Assume equality for cyclic structures. The algorithm for detecting cyclic
+	    // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
+
+	    // Initializing stack of traversed objects.
+	    // It's done here since we only need them for objects and arrays comparison.
+	    aStack = aStack || [];
+	    bStack = bStack || [];
+	    var length = aStack.length;
+	    while (length--) {
+	      // Linear search. Performance is inversely proportional to the number of
+	      // unique nested structures.
+	      if (aStack[length] === a) return bStack[length] === b;
+	    }
+
+	    // Add the first object to the stack of traversed objects.
+	    aStack.push(a);
+	    bStack.push(b);
+
+	    // Recursively compare objects and arrays.
+	    if (areArrays) {
+	      // Compare array lengths to determine if a deep comparison is necessary.
+	      length = a.length;
+	      if (length !== b.length) return false;
+	      // Deep compare the contents, ignoring non-numeric properties.
+	      while (length--) {
+	        if (!eq(a[length], b[length], aStack, bStack)) return false;
+	      }
+	    } else {
+	      // Deep compare objects.
+	      var keys = _.keys(a), key;
+	      length = keys.length;
+	      // Ensure that both objects contain the same number of properties before comparing deep equality.
+	      if (_.keys(b).length !== length) return false;
+	      while (length--) {
+	        // Deep compare each member
+	        key = keys[length];
+	        if (!(_.has(b, key) && eq(a[key], b[key], aStack, bStack))) return false;
+	      }
+	    }
+	    // Remove the first object from the stack of traversed objects.
+	    aStack.pop();
+	    bStack.pop();
+	    return true;
+	  };
+
+	  // Perform a deep comparison to check if two objects are equal.
+	  _.isEqual = function(a, b) {
+	    return eq(a, b);
+	  };
+
+	  // Is a given array, string, or object empty?
+	  // An "empty" object has no enumerable own-properties.
+	  _.isEmpty = function(obj) {
+	    if (obj == null) return true;
+	    if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
+	    return _.keys(obj).length === 0;
+	  };
+
+	  // Is a given value a DOM element?
+	  _.isElement = function(obj) {
+	    return !!(obj && obj.nodeType === 1);
+	  };
+
+	  // Is a given value an array?
+	  // Delegates to ECMA5's native Array.isArray
+	  _.isArray = nativeIsArray || function(obj) {
+	    return toString.call(obj) === '[object Array]';
+	  };
+
+	  // Is a given variable an object?
+	  _.isObject = function(obj) {
+	    var type = typeof obj;
+	    return type === 'function' || type === 'object' && !!obj;
+	  };
+
+	  // Add some isType methods: isArguments, isFunction, isString, isNumber, isDate, isRegExp, isError.
+	  _.each(['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp', 'Error'], function(name) {
+	    _['is' + name] = function(obj) {
+	      return toString.call(obj) === '[object ' + name + ']';
+	    };
+	  });
+
+	  // Define a fallback version of the method in browsers (ahem, IE < 9), where
+	  // there isn't any inspectable "Arguments" type.
+	  if (!_.isArguments(arguments)) {
+	    _.isArguments = function(obj) {
+	      return _.has(obj, 'callee');
+	    };
+	  }
+
+	  // Optimize `isFunction` if appropriate. Work around some typeof bugs in old v8,
+	  // IE 11 (#1621), and in Safari 8 (#1929).
+	  if (typeof /./ != 'function' && typeof Int8Array != 'object') {
+	    _.isFunction = function(obj) {
+	      return typeof obj == 'function' || false;
+	    };
+	  }
+
+	  // Is a given object a finite number?
+	  _.isFinite = function(obj) {
+	    return isFinite(obj) && !isNaN(parseFloat(obj));
+	  };
+
+	  // Is the given value `NaN`? (NaN is the only number which does not equal itself).
+	  _.isNaN = function(obj) {
+	    return _.isNumber(obj) && obj !== +obj;
+	  };
+
+	  // Is a given value a boolean?
+	  _.isBoolean = function(obj) {
+	    return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
+	  };
+
+	  // Is a given value equal to null?
+	  _.isNull = function(obj) {
+	    return obj === null;
+	  };
+
+	  // Is a given variable undefined?
+	  _.isUndefined = function(obj) {
+	    return obj === void 0;
+	  };
+
+	  // Shortcut function for checking if an object has a given property directly
+	  // on itself (in other words, not on a prototype).
+	  _.has = function(obj, key) {
+	    return obj != null && hasOwnProperty.call(obj, key);
+	  };
+
+	  // Utility Functions
+	  // -----------------
+
+	  // Run Underscore.js in *noConflict* mode, returning the `_` variable to its
+	  // previous owner. Returns a reference to the Underscore object.
+	  _.noConflict = function() {
+	    root._ = previousUnderscore;
+	    return this;
+	  };
+
+	  // Keep the identity function around for default iteratees.
+	  _.identity = function(value) {
+	    return value;
+	  };
+
+	  // Predicate-generating functions. Often useful outside of Underscore.
+	  _.constant = function(value) {
+	    return function() {
+	      return value;
+	    };
+	  };
+
+	  _.noop = function(){};
+
+	  _.property = property;
+
+	  // Generates a function for a given object that returns a given property.
+	  _.propertyOf = function(obj) {
+	    return obj == null ? function(){} : function(key) {
+	      return obj[key];
+	    };
+	  };
+
+	  // Returns a predicate for checking whether an object has a given set of
+	  // `key:value` pairs.
+	  _.matcher = _.matches = function(attrs) {
+	    attrs = _.extendOwn({}, attrs);
+	    return function(obj) {
+	      return _.isMatch(obj, attrs);
+	    };
+	  };
+
+	  // Run a function **n** times.
+	  _.times = function(n, iteratee, context) {
+	    var accum = Array(Math.max(0, n));
+	    iteratee = optimizeCb(iteratee, context, 1);
+	    for (var i = 0; i < n; i++) accum[i] = iteratee(i);
+	    return accum;
+	  };
+
+	  // Return a random integer between min and max (inclusive).
+	  _.random = function(min, max) {
+	    if (max == null) {
+	      max = min;
+	      min = 0;
+	    }
+	    return min + Math.floor(Math.random() * (max - min + 1));
+	  };
+
+	  // A (possibly faster) way to get the current timestamp as an integer.
+	  _.now = Date.now || function() {
+	    return new Date().getTime();
+	  };
+
+	   // List of HTML entities for escaping.
+	  var escapeMap = {
+	    '&': '&amp;',
+	    '<': '&lt;',
+	    '>': '&gt;',
+	    '"': '&quot;',
+	    "'": '&#x27;',
+	    '`': '&#x60;'
+	  };
+	  var unescapeMap = _.invert(escapeMap);
+
+	  // Functions for escaping and unescaping strings to/from HTML interpolation.
+	  var createEscaper = function(map) {
+	    var escaper = function(match) {
+	      return map[match];
+	    };
+	    // Regexes for identifying a key that needs to be escaped
+	    var source = '(?:' + _.keys(map).join('|') + ')';
+	    var testRegexp = RegExp(source);
+	    var replaceRegexp = RegExp(source, 'g');
+	    return function(string) {
+	      string = string == null ? '' : '' + string;
+	      return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string;
+	    };
+	  };
+	  _.escape = createEscaper(escapeMap);
+	  _.unescape = createEscaper(unescapeMap);
+
+	  // If the value of the named `property` is a function then invoke it with the
+	  // `object` as context; otherwise, return it.
+	  _.result = function(object, property, fallback) {
+	    var value = object == null ? void 0 : object[property];
+	    if (value === void 0) {
+	      value = fallback;
+	    }
+	    return _.isFunction(value) ? value.call(object) : value;
+	  };
+
+	  // Generate a unique integer id (unique within the entire client session).
+	  // Useful for temporary DOM ids.
+	  var idCounter = 0;
+	  _.uniqueId = function(prefix) {
+	    var id = ++idCounter + '';
+	    return prefix ? prefix + id : id;
+	  };
+
+	  // By default, Underscore uses ERB-style template delimiters, change the
+	  // following template settings to use alternative delimiters.
+	  _.templateSettings = {
+	    evaluate    : /<%([\s\S]+?)%>/g,
+	    interpolate : /<%=([\s\S]+?)%>/g,
+	    escape      : /<%-([\s\S]+?)%>/g
+	  };
+
+	  // When customizing `templateSettings`, if you don't want to define an
+	  // interpolation, evaluation or escaping regex, we need one that is
+	  // guaranteed not to match.
+	  var noMatch = /(.)^/;
+
+	  // Certain characters need to be escaped so that they can be put into a
+	  // string literal.
+	  var escapes = {
+	    "'":      "'",
+	    '\\':     '\\',
+	    '\r':     'r',
+	    '\n':     'n',
+	    '\u2028': 'u2028',
+	    '\u2029': 'u2029'
+	  };
+
+	  var escaper = /\\|'|\r|\n|\u2028|\u2029/g;
+
+	  var escapeChar = function(match) {
+	    return '\\' + escapes[match];
+	  };
+
+	  // JavaScript micro-templating, similar to John Resig's implementation.
+	  // Underscore templating handles arbitrary delimiters, preserves whitespace,
+	  // and correctly escapes quotes within interpolated code.
+	  // NB: `oldSettings` only exists for backwards compatibility.
+	  _.template = function(text, settings, oldSettings) {
+	    if (!settings && oldSettings) settings = oldSettings;
+	    settings = _.defaults({}, settings, _.templateSettings);
+
+	    // Combine delimiters into one regular expression via alternation.
+	    var matcher = RegExp([
+	      (settings.escape || noMatch).source,
+	      (settings.interpolate || noMatch).source,
+	      (settings.evaluate || noMatch).source
+	    ].join('|') + '|$', 'g');
+
+	    // Compile the template source, escaping string literals appropriately.
+	    var index = 0;
+	    var source = "__p+='";
+	    text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
+	      source += text.slice(index, offset).replace(escaper, escapeChar);
+	      index = offset + match.length;
+
+	      if (escape) {
+	        source += "'+\n((__t=(" + escape + "))==null?'':_.escape(__t))+\n'";
+	      } else if (interpolate) {
+	        source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
+	      } else if (evaluate) {
+	        source += "';\n" + evaluate + "\n__p+='";
+	      }
+
+	      // Adobe VMs need the match returned to produce the correct offest.
+	      return match;
+	    });
+	    source += "';\n";
+
+	    // If a variable is not specified, place data values in local scope.
+	    if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
+
+	    source = "var __t,__p='',__j=Array.prototype.join," +
+	      "print=function(){__p+=__j.call(arguments,'');};\n" +
+	      source + 'return __p;\n';
+
+	    try {
+	      var render = new Function(settings.variable || 'obj', '_', source);
+	    } catch (e) {
+	      e.source = source;
+	      throw e;
+	    }
+
+	    var template = function(data) {
+	      return render.call(this, data, _);
+	    };
+
+	    // Provide the compiled source as a convenience for precompilation.
+	    var argument = settings.variable || 'obj';
+	    template.source = 'function(' + argument + '){\n' + source + '}';
+
+	    return template;
+	  };
+
+	  // Add a "chain" function. Start chaining a wrapped Underscore object.
+	  _.chain = function(obj) {
+	    var instance = _(obj);
+	    instance._chain = true;
+	    return instance;
+	  };
+
+	  // OOP
+	  // ---------------
+	  // If Underscore is called as a function, it returns a wrapped object that
+	  // can be used OO-style. This wrapper holds altered versions of all the
+	  // underscore functions. Wrapped objects may be chained.
+
+	  // Helper function to continue chaining intermediate results.
+	  var result = function(instance, obj) {
+	    return instance._chain ? _(obj).chain() : obj;
+	  };
+
+	  // Add your own custom functions to the Underscore object.
+	  _.mixin = function(obj) {
+	    _.each(_.functions(obj), function(name) {
+	      var func = _[name] = obj[name];
+	      _.prototype[name] = function() {
+	        var args = [this._wrapped];
+	        push.apply(args, arguments);
+	        return result(this, func.apply(_, args));
+	      };
+	    });
+	  };
+
+	  // Add all of the Underscore functions to the wrapper object.
+	  _.mixin(_);
+
+	  // Add all mutator Array functions to the wrapper.
+	  _.each(['pop', 'push', 'reverse', 'shift', 'sort', 'splice', 'unshift'], function(name) {
+	    var method = ArrayProto[name];
+	    _.prototype[name] = function() {
+	      var obj = this._wrapped;
+	      method.apply(obj, arguments);
+	      if ((name === 'shift' || name === 'splice') && obj.length === 0) delete obj[0];
+	      return result(this, obj);
+	    };
+	  });
+
+	  // Add all accessor Array functions to the wrapper.
+	  _.each(['concat', 'join', 'slice'], function(name) {
+	    var method = ArrayProto[name];
+	    _.prototype[name] = function() {
+	      return result(this, method.apply(this._wrapped, arguments));
+	    };
+	  });
+
+	  // Extracts the result from a wrapped and chained object.
+	  _.prototype.value = function() {
+	    return this._wrapped;
+	  };
+
+	  // Provide unwrapping proxy for some methods used in engine operations
+	  // such as arithmetic and JSON stringification.
+	  _.prototype.valueOf = _.prototype.toJSON = _.prototype.value;
+
+	  _.prototype.toString = function() {
+	    return '' + this._wrapped;
+	  };
+
+	  // AMD registration happens at the end for compatibility with AMD loaders
+	  // that may not enforce next-turn semantics on modules. Even though general
+	  // practice for AMD registration is to be anonymous, underscore registers
+	  // as a named module because, like jQuery, it is a base library that is
+	  // popular enough to be bundled in a third party lib, but not be part of
+	  // an AMD load request. Those cases could generate an error when an
+	  // anonymous define() is called outside of a loader request.
+	  if (true) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() {
+	      return _;
+	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  }
+	}.call(this));
+
+
+/***/ },
+/* 202 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+
+	var componentsNode = document.getElementById('components');
+	var dom = document.createElement('div');
+	componentsNode.appendChild(dom);
+
+	var UI = __webpack_require__(191);
+	var Button = UI.Button;
+	var Input = UI.Input;
+
+	var JoinPublicGroup = React.createClass({
+	    displayName: 'JoinPublicGroup',
+
+
+	    onSubmit: function onSubmit() {
+
+	        var value = this.refs.input.refs.input.value;
+
+	        if (!value) {
+	            Demo.api.NotifyError("群组名不能为空");
+	            return;
+	        }
+	        if (WebIM.config.isWindowSDK) {
+	            //TODO:@lhr 申请加入群组
+	            WebIM.doQuery('{"type":"joinPublicGroup"}', function (response) {
+	                Demo.api.updateGroup();
+	            }, function (code, msg) {
+	                Demo.api.NotifyError("JoinPublicGroup error:" + code);
+	            });
+	        } else {
+	            Demo.conn.joinPublicGroup({
+	                roomId: value,
+	                success: function success() {},
+	                error: function error(e) {
+	                    Demo.api.NotifyError("JoinPublicGroup error:" + e);
+	                }
+	            });
+	        }
+	        this.close();
 	    },
 
 	    close: function close() {
@@ -23547,14 +26724,14 @@
 	                React.createElement(
 	                    'h3',
 	                    null,
-	                    Demo.lan.delAFriend
+	                    Demo.lan.joinPublicGroup
 	                ),
 	                React.createElement(
 	                    'div',
 	                    { ref: 'content' },
-	                    React.createElement(Input, { defaultFocus: 'true', ref: 'input', placeholder: Demo.lan.username })
+	                    React.createElement(Input, { defaultFocus: 'true', ref: 'input', placeholder: Demo.lan.groupSubject })
 	                ),
-	                React.createElement(Button, { text: Demo.lan.delete, onClick: this.delFriend, className: 'webim-dialog-button' }),
+	                React.createElement(Button, { text: Demo.lan.confirm, onClick: this.onSubmit, className: 'webim-dialog-button' }),
 	                React.createElement(
 	                    'span',
 	                    { className: 'font', onClick: this.close },
@@ -23567,7 +26744,7 @@
 
 	module.exports = {
 	    show: function show() {
-	        ReactDOM.render(React.createElement(DelFriend, { onClose: this.close }), dom);
+	        ReactDOM.render(React.createElement(JoinPublicGroup, { onClose: this.close }), dom);
 	    },
 
 	    close: function close() {
@@ -23576,13 +26753,133 @@
 	};
 
 /***/ },
-/* 198 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
-	var Item = __webpack_require__(199);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+
+	var componentsNode = document.getElementById('components');
+	var dom = document.createElement('div');
+	componentsNode.appendChild(dom);
+
+	var UI = __webpack_require__(191);
+	var Button = UI.Button;
+
+	var ShowBlacklist = React.createClass({
+	    displayName: 'ShowBlacklist',
+
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            change: false
+	        };
+	    },
+
+	    // used for blacklist
+	    onRemoveFromBlackList: function onRemoveFromBlackList(value) {
+	        //TODO by lwz 重构
+	        var me = this;
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"removeFromBlackList", "username": "' + value + '"}', function success(str) {
+	                Demo.api.blacklist.remove(value);
+	                me.setState({ change: true });
+	                Demo.api.updateRoster();
+	            }, function failure(errCode, errMessage) {
+	                Demo.api.NotifyError('getRoster:' + errCode);
+	            });
+	        } else {
+	            var list = Demo.api.blacklist.remove(value);
+	            Demo.conn.removeFromBlackList({
+	                // must the whole new blacklist
+	                list: list,
+	                success: function success() {
+	                    me.setState({ change: true });
+	                },
+	                error: function error(e) {
+	                    Demo.api.NotifyError("ShowBlacklist error:" + e);
+	                }
+	            });
+	        }
+	    },
+
+	    close: function close() {
+	        typeof this.props.onClose === 'function' && this.props.onClose();
+	    },
+
+	    render: function render() {
+
+	        var items = [];
+	        for (var i in Demo.blacklist) {
+	            var item = Demo.blacklist[i];
+	            items.push(React.createElement(
+	                'li',
+	                { className: 'webim-blacklist-item', key: i },
+	                item.name,
+	                React.createElement(
+	                    'i',
+	                    { className: 'webim-leftbar-icon font smaller',
+	                        onClick: this.onRemoveFromBlackList.bind(this, item.name) },
+	                    'd'
+	                )
+	            ));
+	        }
+	        return React.createElement(
+	            'div',
+	            { className: 'webim-friend-options' },
+	            React.createElement('div', { ref: 'layer', className: 'webim-layer' }),
+	            React.createElement(
+	                'div',
+	                { className: 'webim-dialog', style: { height: 'auto' } },
+	                React.createElement(
+	                    'h3',
+	                    null,
+	                    Demo.lan.ShowBlacklist
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { ref: 'content', className: 'webim-dialog-body' },
+	                    React.createElement(
+	                        'ul',
+	                        { className: 'webim-blacklist-wrapper' },
+	                        items
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: 'webim-dialog-footer' },
+	                    React.createElement(Button, { text: Demo.lan.confirm, onClick: this.close, className: 'webim-dialog-button' })
+	                ),
+	                React.createElement(
+	                    'span',
+	                    { className: 'font', onClick: this.close },
+	                    'A'
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = {
+	    show: function show() {
+	        ReactDOM.render(React.createElement(ShowBlacklist, { onClose: this.close }), dom);
+	    },
+
+	    close: function close() {
+	        ReactDOM.unmountComponentAtNode(dom);
+	    }
+	};
+
+/***/ },
+/* 204 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(11);
+	var Item = __webpack_require__(205);
 
 	module.exports = React.createClass({
 	    displayName: 'exports',
@@ -23600,6 +26897,14 @@
 	        this.props.updateNode(id);
 	    },
 
+	    onscroll: function onscroll() {
+	        var scrollTop = this.refs.contactContainer.scrollTop;
+	        var scollTopNum = scrollTop / 60;
+	        if (scrollTop / 60 + 10 == this.props[Demo.selectedCate].length) {
+	            this.props.getChatroom();
+	        }
+	    },
+
 	    render: function render() {
 	        var f = [],
 	            g = [],
@@ -23607,24 +26912,32 @@
 	            c = [];
 
 	        for (var i = 0; i < this.props.friends.length; i++) {
-	            f.push(React.createElement(Item, { id: this.props.friends[i].name, cate: 'friends', key: i, username: this.props.friends[i].name, update: this.update, cur: this.props.curNode }));
+	            if (this.props.friends[i].name in this.props.blacklist) {
+	                continue;
+	            }
+	            f.push(React.createElement(Item, { id: this.props.friends[i].name, cate: 'friends', key: i, username: this.props.friends[i].name,
+	                update: this.update, cur: this.props.curNode }));
 	        }
 
 	        for (var i = 0; i < this.props.groups.length; i++) {
-	            g.push(React.createElement(Item, { id: this.props.groups[i].roomId, cate: 'groups', key: i, username: this.props.groups[i].name, update: this.update, cur: this.props.curNode, src: this.state.src }));
+	            g.push(React.createElement(Item, { id: this.props.groups[i].roomId, cate: 'groups', key: i, username: this.props.groups[i].name,
+	                update: this.update, cur: this.props.curNode, src: this.state.src }));
 	        }
 
 	        for (var i = 0; i < this.props.chatrooms.length; i++) {
-	            c.push(React.createElement(Item, { id: this.props.chatrooms[i].id, cate: 'chatrooms', key: i, username: this.props.chatrooms[i].name, update: this.update, cur: this.props.curNode, src: this.state.src }));
+	            c.push(React.createElement(Item, { id: this.props.chatrooms[i].id, cate: 'chatrooms', key: i,
+	                username: this.props.chatrooms[i].name, update: this.update, cur: this.props.curNode,
+	                src: this.state.src }));
 	        }
 
 	        for (var i = 0; i < this.props.strangers.length; i++) {
-	            s.push(React.createElement(Item, { id: this.props.strangers[i].name, cate: 'strangers', key: i, username: this.props.strangers[i].name, update: this.update, cur: this.props.curNode }));
+	            s.push(React.createElement(Item, { id: this.props.strangers[i].name, cate: 'strangers', key: i,
+	                username: this.props.strangers[i].name, update: this.update, cur: this.props.curNode }));
 	        }
 
 	        return React.createElement(
 	            'div',
-	            { className: 'webim-contact-wrapper' },
+	            { ref: 'contactContainer', className: 'webim-contact-wrapper', onScroll: this.onscroll },
 	            React.createElement(
 	                'div',
 	                { className: this.props.cur === 'friend' ? '' : ' hide' },
@@ -23644,19 +26957,25 @@
 	                'div',
 	                { className: this.props.cur === 'stranger' ? '' : ' hide' },
 	                s
+	            ),
+	            React.createElement(
+	                'div',
+	                { ref: 'loading', className: 'webim-contact-loading ' + (this.props.loading ? '' : 'hide') },
+	                React.createElement('img', { src: 'demo/images/loading.gif' })
 	            )
 	        );
 	    }
 	});
 
 /***/ },
-/* 199 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
-	var Avatar = __webpack_require__(193);
+	var React = __webpack_require__(11);
+	var Avatar = __webpack_require__(195);
+	var _ = __webpack_require__(201);
 
 	module.exports = React.createClass({
 	    displayName: 'exports',
@@ -23667,14 +26986,16 @@
 
 	        return {
 	            msg: '',
-	            avatar: ''
+	            avatar: '',
+	            countShow: false
 	        };
 	    },
 
-	    handleIconCount: function handleIconCount(count) {
+	    handleCurCateIconCount: function handleCurCateIconCount(count) {
 	        var curCate = document.getElementById(this.props.cate).getElementsByTagName('i')[1];
-	        var curCateCount = curCate.getAttribute('data-count') / 1;
+	        var curCateCount = curCate.getAttribute('count') / 1;
 	        curCateCount -= count;
+	        curCateCount = Math.max(0, curCateCount);
 
 	        if (curCateCount > 0) {
 	            curCate.style.display = 'block';
@@ -23682,20 +27003,22 @@
 	            curCateCount = 0;
 	            curCate.style.display = 'none';
 	        }
-	        //curCate.setAttribute('count', curCateCount);
+	        curCate.setAttribute('count', curCateCount);
 	    },
 
 	    update: function update() {
-	        var count = this.refs.i.getAttribute('count') / 1;
-	        this.handleIconCount(count);
+	        if (this.refs['i']) {
+	            var count = this.refs['i'].getAttribute('count') / 1;
+	            this.handleCurCateIconCount(count);
 
-	        this.refs.i.style.display = 'none';
-	        this.refs.i.setAttribute('count', 0);
-	        this.refs.i.innerText = '';
-
-	        if (this.props.id === Demo.selected) {
-	            return;
+	            this.refs['i'].style.display = 'none';
+	            this.refs['i'].setAttribute('count', 0);
+	            this.refs['i'].innerText = '';
 	        }
+
+	        // if (this.props.id === Demo.selected) {
+	        //     return;
+	        // }
 
 	        if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
 	            Demo.selected = this.props.id;
@@ -23707,10 +27030,17 @@
 	        if (Demo.currentChatroom) {
 	            document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
 	            document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
-
-	            Demo.conn.quitChatRoom({
-	                roomId: Demo.currentChatroom
-	            });
+	            if (WebIM.config.isWindowSDK) {
+	                WebIM.doQuery('{"type":"quitChatroom","id":"' + Demo.currentChatroom + '"}', function success(str) {
+	                    //do nothing
+	                }, function failure(errCode, errMessage) {
+	                    Demo.api.NotifyError('update currentChatroom:' + errCode);
+	                });
+	            } else {
+	                Demo.conn.quitChatRoom({
+	                    roomId: Demo.currentChatroom
+	                });
+	            }
 
 	            Demo.currentChatroom = null;
 	        }
@@ -23721,9 +27051,30 @@
 	            document.getElementById(this.props.id).querySelector('em').innerHTML = '';
 
 	            // join chatroom
-	            Demo.conn.joinChatRoom({
-	                roomId: this.props.id
-	            });
+	            if (WebIM.config.isWindowSDK) {
+	                WebIM.doQuery('{"type":"joinChatroom","id":"' + this.props.id + '"}', function success(str) {
+	                    Demo.currentChatroom = str;
+	                }, function failure(errCode, errMessage) {
+	                    Demo.api.NotifyError('update chatrooms:' + errCode);
+	                });
+	            } else {
+	                Demo.conn.joinChatRoom({
+	                    roomId: this.props.id
+	                });
+	            }
+	        } else {
+	            //get the last 10 messages
+	            if (WebIM.config.isWindowSDK) {
+	                console.log(document.getElementById(this.props.id).querySelector('em').innerHTML);
+	                if (document.getElementById(this.props.id).querySelector('em').innerHTML == '') {
+	                    WebIM.doQuery('{"type":"loadMoreMessages","id":"' + this.props.id + '","chatType":"singlechat"}', function success(str) {
+	                        //Add seperator
+	                    }, function failure(errCode, errMessage) {
+	                        Demo.api.NotifyError('getRoster:' + errCode);
+	                        errFn();
+	                    });
+	                }
+	            } else {}
 	        }
 
 	        this.props.update(Demo.selected);
@@ -23737,74 +27088,194 @@
 	            { id: this.props.id, className: 'webim-contact-item' + className, onClick: this.update },
 	            React.createElement(Avatar, { src: this.props.src }),
 	            React.createElement(
-	                'span',
-	                null,
-	                this.props.username
+	                'div',
+	                { className: 'webim-contact-info' },
+	                React.createElement(
+	                    'span',
+	                    { className: 'webim-contact-username' },
+	                    this.props.username
+	                )
 	            ),
 	            React.createElement('em', null),
-	            React.createElement('i', { ref: 'i', 'data-count': '0', className: 'webim-msg-prompt', style: { display: 'none' } })
+	            React.createElement('i', { ref: 'i', className: 'webim-msg-prompt', style: { display: 'none' } })
 	        );
 	    }
 	});
 
 /***/ },
-/* 200 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var React = __webpack_require__(9);
-	var SendWrapper = __webpack_require__(201);
-	var Notify = __webpack_require__(188);
-	var Avatar = __webpack_require__(193);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var SendWrapper = __webpack_require__(207);
+	var Avatar = __webpack_require__(195);
+	var OperationsGroups = __webpack_require__(209);
+	var OperationsFriends = __webpack_require__(213);
+	var _ = __webpack_require__(201);
 
 	module.exports = React.createClass({
 	    displayName: 'exports',
 
-
 	    getInitialState: function getInitialState() {
-	        var me = this;
-
 	        return {
+	            settings: '',
+	            admin: 0,
+	            owner: [],
 	            members: [],
+	            fields: {},
 	            memberShowStatus: false
 	        };
 	    },
 
-	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {},
-
-	    listMember: function listMember() {
-	        var me = this;
-
-	        if (me.refs.i.className.indexOf('up') < 0) {
-
-	            Demo.conn.queryRoomMember({
-	                roomId: me.props.roomId,
-	                success: function success(members) {
-	                    if (members && members.length > 0) {
-	                        me.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
-
-	                        me.setState({ members: members, memberShowStatus: true });
+	    getGroupInfo: function getGroupInfo(cb_type) {
+	        //only group window
+	        if (this.props.chatType == 'groupChat') {
+	            var me = this;
+	            if (WebIM.config.isWindowSDK) {
+	                WebIM.doQuery('{"type":"groupSpecification","id":"' + me.props.roomId + '"}', function success(str) {
+	                    if (str == '') {
+	                        return;
 	                    }
-	                },
-	                error: function error() {}
-	            });
-	        } else {
-	            me.refs.i.className = 'webim-down-icon font smallest dib';
-	            me.setState({ members: [], memberShowStatus: false });
+	                    var json = eval('(' + str + ')');
+	                    var owner = [{ jid: json.owner, affiliation: "owner" }];
+	                    var admin = 0;
+	                    if (json.owner == Demo.user) {
+	                        admin = 1;
+	                    }
+	                    me.setState({ settings: json.style, admin: admin, owner: owner });
+	                    if (cb_type == 'listMember') {
+	                        me.listMember();
+	                    } else {
+	                        me.refs['operation_div'].refs['switch'].click();
+	                    }
+	                }, function failure(errCode, errMessage) {
+	                    Demo.api.NotifyError("queryRoomInfo:" + errCode);
+	                });
+	            } else {
+	                Demo.conn.queryRoomInfo({
+	                    roomId: me.props.roomId,
+	                    success: function success(settings, members, fields) {
+	                        if (members && members.length > 0) {
+	                            var jid = members[0].jid;
+	                            var username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+	                            var admin = 0;
+	                            if (members[0].affiliation == 'owner' && username == Demo.user) {
+	                                admin = 1;
+	                            }
+	                            me.setState({ settings: settings, admin: admin, owner: members, fields: fields });
+	                            if (cb_type == 'listMember') {
+	                                me.listMember();
+	                            } else if (cb_type == 'opertion') {
+	                                me.refs['operation_div'].refs['switch'].click();
+	                            }
+	                        }
+	                    },
+	                    error: function error() {
+	                        Demo.api.NotifyError('queryRoomInfo error', me.props.roomId);
+	                    }
+	                });
+	            }
 	        }
 	    },
 
+	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {},
+
+	    preListMember: function preListMember() {
+	        if (this.state.owner.length == 0) {
+	            this.getGroupInfo('listMember');
+	        } else {
+	            this.listMember();
+	        }
+	    },
+
+	    listMember: function listMember() {
+	        if (!this.state.memberShowStatus) {
+	            var me = this;
+	            if (WebIM.config.isWindowSDK) {
+	                WebIM.doQuery('{"type":"groupMembers","id":"' + me.props.roomId + '"}', function success(str) {
+	                    if (str == '') {
+	                        return;
+	                    }
+	                    var members = eval('(' + str + ')');
+	                    if (members && members.length > 0) {
+	                        me.refreshMemberList(members);
+	                    } else {
+	                        //trigger adding owner to members
+	                        me.refreshMemberList([]);
+	                    }
+	                }, function failure(errCode, errMessage) {
+	                    Demo.api.NotifyError("listMember:" + errCode);
+	                });
+	            } else {
+	                Demo.conn.queryRoomMember({
+	                    roomId: me.props.roomId,
+	                    success: function success(members) {
+	                        if (members && members.length > 0) {
+	                            me.refreshMemberList(members);
+	                        } else {
+	                            //trigger adding owner to members
+	                            me.refreshMemberList([]);
+	                        }
+	                    },
+	                    error: function error() {}
+	                });
+	            }
+	        } else {
+	            this.setState({ members: [], memberShowStatus: false });
+	        }
+	    },
+
+	    addToGroupBlackList: function addToGroupBlackList(username, index) {
+	        var me = this;
+	        var members = this.state.members;
+	        var item = _.find(this.state.members, function (item) {
+	            return new RegExp(Demo.user).test(item.jid);
+	        });
+
+	        Demo.api.blacklist.addGroupMemberToBlacklist({
+	            to: username,
+	            roomId: this.props.roomId,
+	            affiliation: item.affiliation,
+	            success: function success() {
+	                log('memebers', members);
+	                members.splice(index, 1);
+	                me.setState({
+	                    members: members
+	                });
+	            }
+	        });
+	    },
+
+	    refreshMemberList: function refreshMemberList(members) {
+	        // this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
+	        this.setState({ members: this.state.owner.concat(members), memberShowStatus: true });
+	    },
+
 	    send: function send(msg) {
+	        msg.chatType = this.props.chatType;
 	        Demo.conn.send(msg);
 	        Demo.api.appendMsg(msg, 'txt');
+	    },
+
+	    // hide when blur | bind focus event
+	    componentDidUpdate: function componentDidUpdate() {
+	        // this.state.memberShowStatus && ReactDOM.findDOMNode(this.refs['member']).focus();
+	    },
+
+	    // hide when blur close
+	    handleOnBlur: function handleOnBlur() {
+	        // this.setState({memberShowStatus: false});
 	    },
 
 	    render: function render() {
 	        var className = this.props.roomId ? ' dib' : ' hide',
 	            props = {
+	            chatType: this.props.chatType,
 	            sendPicture: this.props.sendPicture,
 	            sendAudio: this.props.sendAudio,
 	            sendFile: this.props.sendFile
@@ -23814,7 +27285,8 @@
 
 	        for (var i = 0, l = this.state.members.length; i < l; i++) {
 	            var jid = this.state.members[i].jid,
-	                username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+	                username = jid.substring(jid.indexOf('_') + 1).split('@')[0],
+	                affiliation = this.state.members[i].affiliation;
 
 	            roomMember.push(React.createElement(
 	                'li',
@@ -23824,26 +27296,68 @@
 	                    'span',
 	                    null,
 	                    username
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: 'webim-operation-icon', style: { display: affiliation == 'owner' ? 'none' : '' } },
+	                    React.createElement(
+	                        'i',
+	                        { className: "webim-leftbar-icon font smaller " + className,
+	                            style: { display: this.state.admin != 1 ? 'none' : '' },
+	                            onClick: this.addToGroupBlackList.bind(this, username, i) },
+	                        'n'
+	                    )
 	                )
 	            ));
+	        }
+
+	        var operations = [];
+	        if (Demo.selectedCate == 'friends') {
+	            operations.push(React.createElement(OperationsFriends, { key: 'operation_div', ref: 'operation_div', roomId: this.props.roomId,
+	                admin: this.state.admin,
+	                owner: this.state.owner,
+	                settings: this.state.settings,
+	                getGroupInfo: this.getGroupInfo,
+	                onBlur: this.handleOnBlur,
+	                name: this.props.name,
+	                updateNode: this.props.updateNode
+	            }));
+	        } else if (Demo.selectedCate == 'groups') {
+	            operations.push(React.createElement(OperationsGroups, { key: 'operation_div', ref: 'operation_div', name: this.props.name,
+	                roomId: this.props.roomId,
+	                admin: this.state.admin,
+	                owner: this.state.owner,
+	                settings: this.state.settings,
+	                fields: this.state.fields,
+	                getGroupInfo: this.getGroupInfo,
+	                onBlur: this.handleOnBlur
+	            }));
 	        }
 
 	        return React.createElement(
 	            'div',
 	            { className: 'webim-chatwindow ' + this.props.className },
 	            React.createElement(
-	                'p',
+	                'div',
 	                { className: 'webim-chatwindow-title' },
-	                this.props.name,
+	                Demo.selectedCate == 'chatrooms' || Demo.selectedCate == 'groups' ? Demo.lan.groupMemberLabel : this.props.name,
 	                React.createElement(
 	                    'i',
-	                    { ref: 'i', className: 'webim-down-icon font smallest' + className, onClick: this.listMember },
+	                    { ref: 'i',
+	                        className: 'webim-down-icon font smallest ' + className + " " + (this.state.memberShowStatus ? 'webim-up-icon' : 'webim-down-icon'),
+	                        onClick: this.preListMember },
 	                    'D'
 	                )
 	            ),
 	            React.createElement(
+	                'div',
+	                { className: operations.length > 0 ? '' : 'hide' },
+	                operations
+	            ),
+	            React.createElement(
 	                'ul',
-	                { ref: 'member', className: 'webim-group-memeber' + memberStatus },
+	                { onBlur: this.handleOnBlur, tabIndex: '-1', ref: 'member',
+	                    className: 'webim-group-memeber' + memberStatus },
 	                roomMember
 	            ),
 	            React.createElement('div', { id: this.props.id, ref: 'wrapper', className: 'webim-chatwindow-msg' }),
@@ -23853,16 +27367,15 @@
 	});
 
 /***/ },
-/* 201 */
+/* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
-	var UI = __webpack_require__(189);
+	var React = __webpack_require__(11);
+	var UI = __webpack_require__(191);
 	var Button = UI.Button;
-	var UploadShim = __webpack_require__(202);
-	var Notify = __webpack_require__(188);
+	var UploadShim = __webpack_require__(208);
 
 	module.exports = React.createClass({
 	    displayName: 'exports',
@@ -23893,9 +27406,19 @@
 	        };
 	    },
 
+	    ctrl_down: false,
 	    handleKeyDown: function handleKeyDown(e) {
-	        if (e && e.keyCode === 13) {
-	            this.sendText();
+	        if (e) {
+	            if (e.keyCode == 17) {
+	                this.ctrl_down = true;
+	            } else if (e.keyCode == 13) {
+	                if (this.ctrl_down) {
+	                    this.ctrl_down = false; //换行后记得将全局变量置为1，否则enter将变成换行，失去发送功能
+	                    this.refs.textarea.value += '\n';
+	                } else {
+	                    this.sendText();
+	                }
+	            }
 	        }
 
 	        return false;
@@ -23910,13 +27433,18 @@
 	            return;
 	        }
 
+	        // TODO: ios/android client doesn't encodeURIComponent yet
+	        // value = encodeURIComponent(value);
+
 	        setTimeout(function () {
-	            me.refs.textarea.value = '';
+	            if (me.refs['textarea']) {
+	                me.refs['textarea'].value = '';
+	            }
 	        }, 0);
 
 	        if (chatroom && Demo.currentChatroom !== Demo.selected) {
 
-	            Notify.error(Demo.lan.notin);
+	            Demo.api.NotifyError(Demo.lan.notin);
 	            return false;
 	        }
 
@@ -23927,7 +27455,6 @@
 	            to: Demo.selected,
 	            roomType: chatroom,
 	            success: function success(id) {
-	                log('send success', id);
 	                me.state.showEmoji && me.setState({ showEmoji: false });
 	            }
 	        });
@@ -23961,55 +27488,85 @@
 
 	    selectEmoji: function selectEmoji(e) {
 	        var value = e.target.parentNode.getAttribute('key');
-	        this.refs.textarea.value += value;
+	        if (value != null) {
+	            this.refs.textarea.value += value;
+	        }
 	    },
 
+	    call: function call() {
+	        Demo.call.caller = Demo.user;
+	        Demo.call.makeVideoCall(Demo.selected);
+	    },
+
+	    sendPicture: function sendPicture() {
+	        this.props.sendPicture(this.props.chatType);
+	    },
+	    sendAudio: function sendAudio() {
+	        this.props.sendAudio(this.props.chatType);
+	    },
+	    sendFile: function sendFile() {
+	        this.props.sendFile(this.props.chatType);
+	    },
 	    render: function render() {
 
 	        var showEmoji = this.state.showEmoji ? '' : ' hide',
 	            disabled = this.state.send ? '' : ' disabled';
 
+	        var roomMember = [];
+	        var keyValue = 0;
+	        roomMember.push(React.createElement(
+	            'span',
+	            { key: keyValue++, className: 'webim-emoji-icon font smaller',
+	                onClick: this.showEmoji },
+	            'J'
+	        ));
+	        roomMember.push(React.createElement(
+	            'span',
+	            { key: keyValue++, className: 'webim-picture-icon font smaller',
+	                onClick: this.sendPicture },
+	            'K'
+	        ));
+	        roomMember.push(React.createElement(
+	            'span',
+	            { key: keyValue++, className: 'webim-audio-icon font smaller',
+	                onClick: this.sendAudio },
+	            'R'
+	        ));
+	        roomMember.push(React.createElement(
+	            'span',
+	            { key: keyValue++, className: 'webim-file-icon font smaller',
+	                onClick: this.sendFile },
+	            'S'
+	        ));
+	        if (WebIM.config.isWebRTC) {
+	            roomMember.push(React.createElement(
+	                'span',
+	                { key: keyValue++, className: 'webim-audio-icon font smaller',
+	                    onClick: this.call },
+	                'a'
+	            ));
+	        }
 	        return React.createElement(
 	            'div',
 	            { className: 'webim-send-wrapper' },
 	            React.createElement(
 	                'div',
 	                { className: 'webim-chatwindow-options' },
-	                React.createElement(
-	                    'span',
-	                    { className: 'webim-emoji-icon font smaller', onClick: this.showEmoji },
-	                    'J'
-	                ),
-	                React.createElement(
-	                    'span',
-	                    { className: 'webim-picture-icon font smaller', onClick: this.props.sendPicture },
-	                    'K'
-	                ),
-	                React.createElement(
-	                    'span',
-	                    { className: 'webim-audio-icon font smaller', onClick: this.props.sendAudio },
-	                    'R'
-	                ),
-	                React.createElement(
-	                    'span',
-	                    { className: 'webim-file-icon font smaller', onClick: this.props.sendFile },
-	                    'S'
-	                )
+	                roomMember
 	            ),
 	            React.createElement('ul', { ref: 'emoji', onClick: this.selectEmoji, className: showEmoji }),
 	            React.createElement('textarea', { ref: 'textarea', onKeyDown: this.handleKeyDown }),
-	            React.createElement(Button, { className: 'webim-send-btn base-bgcolor' + disabled, text: Demo.lan.send, onClick: this.sendText })
+	            React.createElement(Button, { className: 'webim-send-btn base-bgcolor' + disabled, text: Demo.lan.send,
+	                onClick: this.sendText })
 	        );
 	    }
 	});
 
 /***/ },
-/* 202 */
-/***/ function(module, exports, __webpack_require__) {
+/* 208 */
+/***/ function(module, exports) {
 
 	'use strict';
-
-	var Notify = __webpack_require__(188);
 
 	module.exports = function (options) {
 	    var swfupload;
@@ -24057,7 +27614,7 @@
 	                        this.cancelUpload();
 	                    }
 	                    if (10485760 < file.size) {
-	                        Notify.error(Demo.lan.exceed);
+	                        Demo.api.NotifyError(Demo.lan.exceed);
 	                        this.cancelUpload();
 	                    } else if (Demo.IMGTYPE[file.type.slice(1).toLowerCase()]) {
 	                        this.filetype = 'img';
@@ -24069,7 +27626,7 @@
 	                        this.filetype = 'file';
 	                        startUpload();
 	                    } else {
-	                        Notify.error(Demo.lan.invalidType + file.type);
+	                        Demo.api.NotifyError(Demo.lan.invalidType + file.type);
 	                        this.cancelUpload();
 	                    }
 	                },
@@ -24092,7 +27649,7 @@
 	                        var res = WebIM.utils.parseUploadResponse(response);
 	                        res = JSON.parse(res);
 	                        if (file && !file.url && res.entities && res.entities.length > 0) {
-	                            file.url = res.uri + '/' + res.entities[0].uuid;
+	                            file.url = (location.protocol != 'https:' && WebIM.config.isHttpDNS ? Demo.conn.apiUrl : res.uri) + '/' + res.entities[0].uuid;
 	                        }
 
 	                        var msg = new WebIM.message(this.filetype, Demo.conn.getUniqueId());
@@ -24125,7 +27682,7 @@
 
 	                        Demo.conn.send(msg.body);
 	                    } catch (e) {
-	                        Notify.error('文件发送失败');
+	                        Demo.api.NotifyError('文件发送失败');
 	                    }
 	                }
 	            });
@@ -24140,19 +27697,1256 @@
 	};
 
 /***/ },
-/* 203 */
+/* 209 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var ChangeGroupInfo = __webpack_require__(210);
+	var AdminGroupMembers = __webpack_require__(211);
+	var ShowGroupBlacklist = __webpack_require__(212);
+
+	module.exports = React.createClass({
+	    displayName: "exports",
+
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            // the operations list whether show or not
+	            hide: true
+	        };
+	    },
+
+	    update: function update() {
+	        if (this.props.owner.length == 0) {
+	            this.props.getGroupInfo('opertion');
+	            return;
+	        }
+
+	        this.setState({ hide: !this.state.hide });
+	    },
+
+	    // hide when blur | bind focus event
+	    componentDidUpdate: function componentDidUpdate() {
+	        !this.state.hide && ReactDOM.findDOMNode(this.refs['webim-operations']).focus();
+	    },
+
+	    // hide when blur close
+	    handleOnBlur: function handleOnBlur() {
+	        this.setState({ hide: true });
+	    },
+
+	    adminGroupMembers: function adminGroupMembers() {
+	        AdminGroupMembers.show(this.props.name, this.props.roomId, this.props.settings);
+	        this.update();
+	    },
+
+	    changeGroupInfo: function changeGroupInfo() {
+	        ChangeGroupInfo.show(this.props.roomId, this.props.fields, this.props.getGroupInfo);
+	        this.update();
+	    },
+
+	    showGroupBlacklist: function showGroupBlacklist() {
+	        ShowGroupBlacklist.show(this.props.roomId);
+	        this.update();
+	    },
+
+	    destroyGroup: function destroyGroup() {
+	        log('destroyGroup:' + this.props.roomId);
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"destroyGroup","id":"' + this.props.roomId + '"}', function () {
+	                Demo.api.updateGroup();
+	            }, function (code, msg) {
+	                Demo.api.NotifyError("destroyGroup:" + code + " " + msg);
+	            });
+	        } else {
+	            // success update on chat.js async msg `deleteGroupChat`
+	            Demo.conn.destroyGroup({
+	                reason: Demo.user + ' destory group ' + this.props.name,
+	                roomId: this.props.roomId,
+	                error: function error(code, msg) {
+	                    Demo.api.NotifyError("destroyGroup:" + code + " " + msg);
+	                }
+	            });
+	        }
+	        this.update();
+	    },
+
+	    leaveGroupBySelf: function leaveGroupBySelf() {
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"leaveGroup","id":"' + this.props.roomId + '"}', function (response) {
+	                Demo.api.updateGroup();
+	            }, function (code, msg) {
+	                Demo.api.NotifyError("leaveGroup:" + code + " " + msg);
+	            });
+	        } else {
+	            // success update on chat.js async msg `deleteGroupChat`
+	            Demo.conn.leaveGroupBySelf({
+	                to: Demo.user,
+	                roomId: this.props.roomId,
+	                success: function success() {
+	                    Demo.api.updateGroup();
+	                },
+	                error: function error(code, msg) {
+	                    Demo.api.NotifyError("leaveGroup:" + code + " " + msg);
+	                }
+	            });
+	        }
+	        this.update();
+	    },
+
+	    render: function render() {
+	        var actionName = this.props.admin == 1 ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
+	        var actionMethod = this.props.admin == 1 ? this.destroyGroup : this.leaveGroupBySelf;
+	        var adminMemberLabel = '';
+	        if (this.props.admin) {
+	            adminMemberLabel = Demo.lan.adminGroupMembers;
+	        } else if (this.props.settings == "PRIVATE_MEMBER_INVITE") {
+	            adminMemberLabel = Demo.lan.inviteGroupMembers;
+	        }
+	        return React.createElement(
+	            "div",
+	            null,
+	            React.createElement(
+	                "i",
+	                { ref: "switch", className: "webim-operations-icon font xsmaller", onClick: this.update },
+	                "M"
+	            ),
+	            React.createElement(
+	                "ul",
+	                { tabIndex: "-1", ref: "webim-operations",
+	                    className: 'webim-operations ' + (this.state.hide ? 'hide' : ''),
+	                    onBlur: this.handleOnBlur },
+	                React.createElement(
+	                    "li",
+	                    { onClick: this.adminGroupMembers, className: this.props.admin ? '' : 'hide' },
+	                    React.createElement(
+	                        "i",
+	                        { className: "font smallest" },
+	                        "F"
+	                    ),
+	                    React.createElement(
+	                        "span",
+	                        null,
+	                        adminMemberLabel
+	                    )
+	                ),
+	                React.createElement(
+	                    "li",
+	                    { onClick: this.changeGroupInfo, className: this.props.admin ? '' : 'hide' },
+	                    React.createElement(
+	                        "i",
+	                        { className: "font smallest" },
+	                        "B"
+	                    ),
+	                    React.createElement(
+	                        "span",
+	                        null,
+	                        Demo.lan.changeGroupInfo
+	                    )
+	                ),
+	                React.createElement(
+	                    "li",
+	                    { onClick: this.showGroupBlacklist, className: this.props.admin ? '' : 'hide' },
+	                    React.createElement(
+	                        "i",
+	                        { className: "font smallest" },
+	                        "n"
+	                    ),
+	                    React.createElement(
+	                        "span",
+	                        null,
+	                        Demo.lan.groupBlacklist
+	                    )
+	                ),
+	                React.createElement(
+	                    "li",
+	                    { onClick: actionMethod },
+	                    React.createElement(
+	                        "i",
+	                        { className: "font smallest" },
+	                        "Q"
+	                    ),
+	                    React.createElement(
+	                        "span",
+	                        null,
+	                        actionName
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
+/***/ },
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
 
 	var componentsNode = document.getElementById('components');
 	var dom = document.createElement('div');
 	componentsNode.appendChild(dom);
 
-	var UI = __webpack_require__(189);
+	var UI = __webpack_require__(191);
+	var Button = UI.Button;
+	var Input = UI.Input;
+
+	var ChangeGroupSubject = React.createClass({
+	    displayName: 'ChangeGroupSubject',
+
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            subject: this.props.fields.name || '',
+	            description: this.props.fields.description || ''
+	        };
+	    },
+
+	    onSubjectChange: function onSubjectChange(e) {
+	        this.setState({ subject: e.target.value });
+	    },
+
+	    onDescriptionChange: function onDescriptionChange(e) {
+	        this.setState({ description: e.target.value });
+	    },
+
+	    onSubmit: function onSubmit() {
+	        var _this = this;
+
+	        var value = this.state.subject;
+	        if (!value) {
+	            Demo.api.NotifyError("Group subject couldn't be null.");
+	            return;
+	        }
+
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"changeGroupSubject", "id":"' + this.props.roomId + '", "subject":"' + this.state.subject + '"}', function (response) {
+	                var json = eval('(' + str + ')');
+	                Demo.api.changeGroupSubjectCallBack(json.id, json.subject);
+	            }, function (code, msg) {
+	                Demo.api.NotifyError("changeGroupSubject:" + code);
+	            });
+
+	            WebIM.doQuery('{"type":"changeGroupDescription", "id":"' + this.props.roomId + '", "description":"' + this.state.description + '"}', function (response) {}, function (code, msg) {
+	                Demo.api.NotifyError("changeGroupDescription:" + code);
+	            });
+	        } else {
+	            Demo.conn.changeGroupSubject({
+	                roomId: this.props.roomId,
+	                subject: this.state.subject,
+	                description: this.state.description,
+	                success: function success() {
+	                    Demo.api.changeGroupSubjectCallBack(_this.props.roomId, value);
+	                    typeof _this.props.getGroupInfo == 'function' && _this.props.getGroupInfo('groupChat');
+	                }
+	            });
+	        }
+	        this.close();
+	    },
+
+	    close: function close() {
+	        typeof this.props.onClose === 'function' && this.props.onClose();
+	    },
+
+	    render: function render() {
+
+	        return React.createElement(
+	            'div',
+	            { className: 'webim-friend-options' },
+	            React.createElement('div', { ref: 'layer', className: 'webim-layer' }),
+	            React.createElement(
+	                'div',
+	                { className: 'webim-dialog' },
+	                React.createElement(
+	                    'h3',
+	                    null,
+	                    Demo.lan.changeGroupInfo
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: 'webim-dialog-body' },
+	                    React.createElement(Input, { defaultFocus: 'true', placeholder: Demo.lan.groupSubject,
+	                        value: this.state.subject, onChange: this.onSubjectChange }),
+	                    React.createElement(Input, { defaultFocus: 'false', placeholder: Demo.lan.groupDescription,
+	                        value: this.state.description, onChange: this.onDescriptionChange })
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: 'webim-dialog-footer' },
+	                    React.createElement(Button, { text: Demo.lan.confirm, onClick: this.onSubmit, className: 'webim-dialog-button' })
+	                ),
+	                React.createElement(
+	                    'span',
+	                    { className: 'font', onClick: this.close },
+	                    'A'
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = {
+	    show: function show(roomId, fields, getGroupInfo) {
+	        ReactDOM.render(React.createElement(ChangeGroupSubject, { onClose: this.close, roomId: roomId, fields: fields, getGroupInfo: getGroupInfo }), dom);
+	    },
+
+	    close: function close() {
+	        ReactDOM.unmountComponentAtNode(dom);
+	    }
+	};
+
+/***/ },
+/* 211 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _multiSelectBoxList = __webpack_require__(200);
+
+	var _multiSelectBoxList2 = _interopRequireDefault(_multiSelectBoxList);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var _ = __webpack_require__(201);
+
+	var componentsNode = document.getElementById('components');
+	var dom = document.createElement('div');
+	componentsNode.appendChild(dom);
+
+	var UI = __webpack_require__(191);
+	var Button = UI.Button;
+	var Input = UI.Input;
+
+	var FridendList = React.createClass({
+	    displayName: 'FridendList',
+
+
+	    getInitialState: function getInitialState() {
+	        var me = this;
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"groupMembers","id":"' + me.props.roomId + '"}', function success(str) {
+	                var members = eval('(' + str + ')');
+	                if (members && members.length > 0) {
+	                    var values = [];
+	                    var values_old = [];
+	                    for (var i = 0, l = members.length; i < l; i++) {
+	                        var jid = members[i].jid,
+	                            username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+	                        values.push({ "id": username, "text": username });
+	                        values_old.push(username);
+	                    }
+	                    me.setState({ value: values, value_old: values_old });
+	                }
+	            }, function failure(errCode, errMessage) {
+	                Demo.api.NotifyError("FridendList queryRoomMember:" + errCode);
+	            });
+	        } else {
+	            Demo.conn.queryRoomMember({
+	                roomId: me.props.roomId,
+	                success: function success(members) {
+	                    if (members && members.length > 0) {
+	                        var values = [];
+	                        var values_old = [];
+	                        for (var i = 0, l = members.length; i < l; i++) {
+	                            var jid = members[i].jid,
+	                                username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+	                            values.push({ "id": username, "text": username });
+	                            values_old.push(username);
+	                        }
+
+	                        me.setState({ value: values, value_old: values_old });
+	                    }
+	                },
+	                error: function error(e) {
+	                    Demo.api.NotifyError("FridendList queryRoomMember:" + e);
+	                }
+	            });
+	        }
+
+	        var options = [];
+	        for (var name in this.props.optionData) {
+	            options.push({ "id": name, "text": name });
+	        }
+	        return {
+	            options: options,
+	            value: [],
+	            value_old: []
+	        };
+	    },
+	    getValueOld: function getValueOld() {
+	        return this.state.value_old;
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            'div',
+	            { className: 'container' },
+	            React.createElement(_multiSelectBoxList2.default, {
+	                ref: 'multiSelected',
+	                options: this.state.options,
+	                value: this.state.value,
+	                nameText: Demo.lan.groupMemberLabel,
+	                label: Demo.lan.chooseGroupMember,
+	                selectedLabel: Demo.lan.selectedLabel,
+	                value_old: this.state.value_old
+	            })
+	        );
+	    }
+	});
+
+	var AdminGroupMembers = React.createClass({
+	    displayName: 'AdminGroupMembers',
+
+
+	    onSubmit: function onSubmit() {
+
+	        var friendsSelected = []; //this.refs.friendList.refs.multiSelected.label();
+	        var friendsValues = this.refs.friendList.refs.multiSelected.value();
+
+	        _.each(friendsValues, function (v, k) {
+	            friendsSelected.push(v.text);
+	        });
+
+	        // log("AdminGroupMembers:", value, this.props.roomId);
+	        var value_old = this.refs.friendList.getValueOld();
+	        var value_new = friendsSelected;
+	        var value_add = [];
+	        var value_del = [];
+	        for (var i = 0, l = value_new.length; i < l; i++) {
+	            if (!value_old.includes(value_new[i])) {
+	                value_add.push(value_new[i]);
+	            }
+	        }
+	        for (var i = 0, l = value_old.length; i < l; i++) {
+	            if (!value_new.includes(value_old[i])) {
+	                value_del.push(value_old[i]);
+	            }
+	        }
+
+	        if (this.props.value == "PRIVATE_MEMBER_INVITE" && value_del.length > 0) {
+	            Demo.api.NotifyError("权限不够，不能删除私有群成员");
+	            return;
+	        }
+	        //TODO:@lhr  value_add 和 value_del 需要分成两个doQuery 处理
+	        if (WebIM.config.isWindowSDK) {
+	            if (value_add.length > 0) {
+	                var value_add = '["' + value_add.join('","') + '"]';
+	                WebIM.doQuery('{"type":"addGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + value_add + '}', function (response) {}, function (code, msg) {
+	                    Demo.api.NotifyError("onSubmit:code:" + code + " " + msg);
+	                });
+	            }
+	            if (value_del.length > 0) {
+	                var value_del = '["' + value_del.join('","') + '"]';
+	                WebIM.doQuery('{"type":"removeGroupMembers","welcomeMessage":"","id":"' + this.props.roomId + '","members":' + value_del + '}', function (response) {}, function (code, msg) {
+	                    Demo.api.NotifyError("onSubmit:code:" + code + " " + msg);
+	                });
+	            }
+	        } else {
+	            if (value_add.length > 0) {
+	                Demo.conn.addGroupMembers({
+	                    list: value_add,
+	                    roomId: this.props.roomId,
+	                    reason: Demo.user + " invite you to join group '" + this.props.name + "'"
+	                });
+	            }
+	            if (value_del.length > 0) {
+	                Demo.conn.leaveGroup({
+	                    list: value_del,
+	                    roomId: this.props.roomId
+	                });
+	            }
+	        }
+	        this.close();
+	    },
+
+	    close: function close() {
+	        typeof this.props.onClose === 'function' && this.props.onClose();
+	    },
+
+	    render: function render() {
+
+	        return React.createElement(
+	            'div',
+	            { className: 'webim-friend-options' },
+	            React.createElement('div', { ref: 'layer', className: 'webim-layer' }),
+	            React.createElement(
+	                'div',
+	                { className: 'webim-dialog' },
+	                React.createElement(
+	                    'h3',
+	                    null,
+	                    Demo.lan.adminGroupMembers
+	                ),
+	                React.createElement(
+	                    'div',
+	                    null,
+	                    React.createElement(FridendList, { ref: 'friendList', optionData: Demo.roster, roomId: this.props.roomId })
+	                ),
+	                React.createElement(Button, { text: Demo.lan.confirm, onClick: this.onSubmit, className: 'webim-dialog-button' }),
+	                React.createElement(
+	                    'span',
+	                    { className: 'font', onClick: this.close },
+	                    'A'
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = {
+	    show: function show(name, roomId, settings) {
+	        ReactDOM.render(React.createElement(AdminGroupMembers, { onClose: this.close, name: name, roomId: roomId, settings: settings }), dom);
+	    },
+
+	    close: function close() {
+	        ReactDOM.unmountComponentAtNode(dom);
+	    }
+	};
+
+/***/ },
+/* 212 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var _ = __webpack_require__(201);
+
+	var componentsNode = document.getElementById('components');
+	var dom = document.createElement('div');
+	componentsNode.appendChild(dom);
+
+	var UI = __webpack_require__(191);
+	var Button = UI.Button;
+
+	var ShowGroupBlacklist = React.createClass({
+	    displayName: 'ShowGroupBlacklist',
+
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            list: []
+	        };
+	    },
+
+	    componentDidMount: function componentDidMount() {
+	        var me = this;
+	        Demo.api.blacklist.getGroupBlacklist({
+	            roomId: this.props.roomId,
+	            success: function success(list) {
+	                me.setState({
+	                    list: list
+	                });
+	            }
+	        });
+	    },
+
+	    onRemoveFromGroupBlackList: function onRemoveFromGroupBlackList(value) {
+	        var me = this;
+	        var list = this.state.list;
+
+	        Demo.api.blacklist.removeGroupMemberFromBlacklist({
+	            roomId: this.props.roomId,
+	            to: value,
+	            success: function success() {
+	                delete list[value];
+	                me.setState({
+	                    list: list
+	                });
+	            }
+	        });
+	    },
+
+	    close: function close() {
+	        typeof this.props.onClose === 'function' && this.props.onClose();
+	    },
+
+	    render: function render() {
+	        var _this = this;
+
+	        var items = [];
+	        _.each(this.state.list, function (item, k) {
+	            items.push(React.createElement(
+	                'li',
+	                { className: 'webim-blacklist-item', key: item.name },
+	                item.name,
+	                React.createElement(
+	                    'i',
+	                    { className: 'webim-leftbar-icon font smaller',
+	                        onClick: _this.onRemoveFromGroupBlackList.bind(_this, item.name) },
+	                    'd'
+	                )
+	            ));
+	        });
+
+	        return React.createElement(
+	            'div',
+	            { className: 'webim-friend-options' },
+	            React.createElement('div', { ref: 'layer', className: 'webim-layer' }),
+	            React.createElement(
+	                'div',
+	                { className: 'webim-dialog', style: { height: 'auto' } },
+	                React.createElement(
+	                    'h3',
+	                    null,
+	                    Demo.lan.showGroupBlacklist
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { ref: 'content', className: 'webim-dialog-body' },
+	                    React.createElement(
+	                        'ul',
+	                        { className: 'webim-blacklist-wrapper' },
+	                        items
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: 'webim-dialog-footer' },
+	                    React.createElement(Button, { text: Demo.lan.confirm, onClick: this.close, className: 'webim-dialog-button' })
+	                ),
+	                React.createElement(
+	                    'span',
+	                    { className: 'font', onClick: this.close },
+	                    'A'
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = {
+	    show: function show(roomId) {
+	        ReactDOM.render(React.createElement(ShowGroupBlacklist, { onClose: this.close, roomId: roomId }), dom);
+	    },
+
+	    close: function close() {
+	        ReactDOM.unmountComponentAtNode(dom);
+	    }
+	};
+
+/***/ },
+/* 213 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+
+	module.exports = React.createClass({
+	    displayName: 'exports',
+
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            // the operations list whether show or not
+	            hide: true
+	        };
+	    },
+
+	    update: function update() {
+	        this.setState({ hide: !this.state.hide });
+	    },
+
+	    // hide when blur | bind focus event
+	    componentDidUpdate: function componentDidUpdate() {
+	        // !this.state.hide && ReactDOM.findDOMNode(this.refs['webim-operations']).focus();
+	    },
+
+	    // hide when blur close
+	    handleOnBlur: function handleOnBlur() {
+	        this.setState({ hide: true });
+	    },
+
+	    delFriend: function delFriend() {
+
+	        var value = this.props.name;
+
+	        if (!value) {
+	            return;
+	        }
+
+	        if (value == Demo.user || !Demo.roster[value]) {
+	            Demo.api.NotifyError(value + ' ' + Demo.lan.delFriendSelfInvalid);
+	            this.update();
+	            return;
+	        }
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"delFriend","to":"' + value + '"}', function success(str) {
+	                alert(Demo.lan.contact_deleted);
+	            }, function failure(errCode, errMessage) {
+	                Demo.api.NotifyError('delFriend:' + errCode);
+	            });
+	        } else {
+	            Demo.conn.removeRoster({
+	                to: value,
+	                success: function success() {
+	                    if (Demo.roster[value]) {
+	                        delete Demo.roster[value];
+	                    }
+
+	                    Demo.conn.unsubscribed({
+	                        to: value
+	                    });
+	                },
+	                error: function error() {}
+	            });
+	        }
+	        this.update();
+	    },
+
+	    addToBlackList: function addToBlackList(e) {
+	        var value = this.props.name;
+
+	        if (!value) {
+	            return;
+	        }
+
+	        var value = this.props.name;
+	        var me = this;
+
+	        //TODO by lwz 重构
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"addToBlackList", "username": "' + value + '"}', function success(str) {
+	                var list = Demo.api.bBlacklist.add(value);
+	                me.setState({ blacklist: list });
+	                Demo.api.updateRoster();
+	            }, function failure(errCode, errMessage) {
+	                Demo.api.NotifyError('getRoster:' + errCode);
+	            });
+	        } else {
+	            var list = Demo.api.blacklist.add(value);
+
+	            Demo.conn.addToBlackList({
+	                list: list,
+	                type: 'jid',
+	                success: function success() {
+	                    me.props.updateNode(null);
+	                },
+	                error: function error() {}
+	            });
+	        }
+	    },
+
+	    render: function render() {
+
+	        return React.createElement(
+	            'div',
+	            null,
+	            React.createElement(
+	                'i',
+	                { ref: 'switch', className: 'webim-operations-icon font xsmaller', onClick: this.update },
+	                'M'
+	            ),
+	            React.createElement(
+	                'ul',
+	                { tabIndex: '-1', ref: 'webim-operations',
+	                    className: 'webim-operations ' + (this.state.hide ? 'hide' : ''),
+	                    onBlur: this.handleOnBlur },
+	                React.createElement(
+	                    'li',
+	                    { onClick: this.delFriend },
+	                    React.createElement(
+	                        'i',
+	                        { className: 'font smallest' },
+	                        'C'
+	                    ),
+	                    React.createElement(
+	                        'span',
+	                        null,
+	                        Demo.lan.delAFriend
+	                    )
+	                ),
+	                React.createElement(
+	                    'li',
+	                    { onClick: this.addToBlackList },
+	                    React.createElement(
+	                        'i',
+	                        { className: 'font smallest' },
+	                        'n'
+	                    ),
+	                    React.createElement(
+	                        'span',
+	                        null,
+	                        Demo.lan.addToBlackList
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
+/***/ },
+/* 214 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var Drag = __webpack_require__(215);
+
+	var Channel = React.createClass({
+	    displayName: 'Channel',
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            localFullRemoteCorner: this.props.localFullRemoteCorner,
+	            full_width: 400,
+	            full_height: 400,
+	            toggle_right: 0,
+	            toggle_top: 0,
+	            toggle_display: 'none',
+	            close_right: 0,
+	            close_bottom: 0,
+	            accept_left: 0,
+	            accept_bottom: 0,
+	            accept_display: this.props.hideAccept ? 'none' : 'block'
+	        };
+	    },
+
+	    close: function close() {
+	        //close stream and camera first
+	        this.props.close();
+
+	        try {
+	            Demo.call.endCall();
+	        } catch (e) {
+	            console.log('endCall error1:', e);
+	        }
+	    },
+
+	    accept: function accept() {
+	        Demo.call.acceptCall();
+	    },
+
+	    toggle: function toggle() {
+	        // console.log('toggle', this.local_width, '*', this.local_height, ',', this.remote_width, '*', this.remote_height);
+	        if (this.state.full_width == this.local_width && this.state.full_height == this.local_height) {
+	            this.state.full_width = this.remote_width;
+	            this.state.full_height = this.remote_height;
+	        } else {
+	            this.state.full_width = this.local_width;
+	            this.state.full_height = this.local_height;
+	        }
+	        this.setState({
+	            localFullRemoteCorner: !this.state.localFullRemoteCorner,
+	            full_width: this.state.full_width,
+	            full_height: this.state.full_height
+	        });
+	    },
+
+	    setStream: function setStream(props) {
+
+	        this.refs.remoteVideo.srcObject = props.remoteStream;
+	        this.refs.localVideo.srcObject = props.localStream;
+	    },
+
+	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+	        // console.log('componentWillReceiveProps', nextProps);
+	        this.setStream(nextProps);
+	    },
+
+	    componentDidMount: function componentDidMount() {
+	        // console.log('did mount', this.props);
+	        new Drag(this.refs.onAcceptCallrtc);
+	        this.resetButtonPosition();
+
+	        var localVideo = this.refs.localVideo;
+	        var remoteVideo = this.refs.remoteVideo;
+
+	        remoteVideo.addEventListener('canplay', this.canplayRemoteHandler);
+
+	        //caution: |this| differ between addEventListener + anonymous function and addEventListener + non-anonymous function
+	        localVideo.addEventListener('loadedmetadata', this.loadedmetadataLocalHandler);
+
+	        remoteVideo.addEventListener('loadedmetadata', this.loadedmetadataRemoteHandler);
+
+	        localVideo.addEventListener('resize', this.resizeLocalHandler);
+
+	        remoteVideo.addEventListener('resize', this.resizeRemoteHandler);
+	    },
+
+	    componentWillUnmount: function componentWillUnmount() {
+	        var localVideo = this.refs.localVideo;
+	        var remoteVideo = this.refs.remoteVideo;
+
+	        remoteVideo.removeEventListener('canplay', this.canplayRemoteHandler);
+
+	        localVideo.removeEventListener('loadedmetadata', this.loadedmetadataLocalHandler);
+
+	        remoteVideo.removeEventListener('loadedmetadata', this.loadedmetadataRemoteHandler);
+
+	        localVideo.removeEventListener('resize', this.resizeLocalHandler);
+
+	        remoteVideo.removeEventListener('resize', this.resizeRemoteHandler);
+	    },
+
+	    canplayRemoteHandler: function canplayRemoteHandler() {
+
+	        this.setState({
+	            toggle_display: 'block',
+	            accept_display: 'none'
+	        });
+	    },
+
+	    loadedmetadataLocalHandler: function loadedmetadataLocalHandler() {
+	        var video = this.refs.localVideo;
+
+	        this.local_width = video.videoWidth;
+	        this.local_height = video.videoHeight;
+	        this.setState({
+	            full_width: video.videoWidth,
+	            full_height: video.videoHeight
+	        });
+	    },
+
+	    loadedmetadataRemoteHandler: function loadedmetadataRemoteHandler() {
+
+	        var video = this.refs.remoteVideo;
+	        this.remote_width = video.videoWidth;
+	        this.remote_height = video.videoHeight;
+	        this.setState({
+	            full_width: video.videoWidth,
+	            full_height: video.videoHeight
+	        });
+	    },
+
+	    resizeLocalHandler: function resizeLocalHandler() {
+	        var video = this.refs.localVideo;
+
+	        if (this.state.localFullRemoteCorner) {
+	            this.local_width = video.videoWidth;
+	            this.local_height = video.videoHeight;
+	            this.setState({
+	                full_width: video.videoWidth,
+	                full_height: video.videoHeight
+	            });
+	        }
+	    },
+
+	    resizeRemoteHandler: function resizeRemoteHandler() {
+	        var video = this.refs.remoteVideo;
+
+	        if (!this.state.localFullRemoteCorner) {
+	            this.remote_width = video.videoWidth;
+	            this.remote_height = video.videoHeight;
+	            this.setState({
+	                full_width: video.videoWidth,
+	                full_height: video.videoHeight
+	            });
+	        }
+	    },
+
+	    resetButtonPosition: function resetButtonPosition() {
+	        this.setState({
+	            toggle_right: 6,
+	            toggle_top: 6,
+	            close_right: 6,
+	            close_bottom: 6,
+	            accept_left: 6,
+	            accept_bottom: 6
+	        });
+	    },
+
+	    render: function render() {
+	        var localClassName = this.state.localFullRemoteCorner ? 'full' : 'corner';
+	        var remoteClassName = this.state.localFullRemoteCorner ? 'corner' : 'full';
+	        return React.createElement(
+	            'div',
+	            { ref: 'rtc', className: 'webim-rtc-video',
+	                style: { width: this.state.full_width + 'px', height: this.state.full_height + 'px' } },
+	            React.createElement('video', { ref: 'localVideo', className: localClassName, muted: true, autoPlay: true }),
+	            React.createElement('video', { ref: 'remoteVideo', className: remoteClassName, autoPlay: true }),
+	            React.createElement(
+	                'span',
+	                null,
+	                this.props.title
+	            ),
+	            React.createElement(
+	                'i',
+	                { ref: 'close', id: 'webrtc_close', className: 'font small close', style: {
+	                        left: 'auto',
+	                        right: this.state.close_right + 'px',
+	                        top: 'auto',
+	                        bottom: this.state.close_bottom + 'px'
+	                    }, onClick: this.close },
+	                'Q'
+	            ),
+	            React.createElement(
+	                'i',
+	                { ref: 'accept', className: 'font small accept', style: {
+	                        display: this.state.accept_display,
+	                        left: this.state.accept_left + 'px',
+	                        right: 'auto',
+	                        top: 'auto',
+	                        bottom: this.state.accept_bottom + 'px'
+	                    }, onClick: this.accept },
+	                'z'
+	            ),
+	            React.createElement(
+	                'i',
+	                { ref: 'toggle', className: 'font small toggle',
+	                    style: {
+	                        display: this.state.toggle_display,
+	                        left: 'auto',
+	                        right: this.state.toggle_right + 'px',
+	                        top: this.state.toggle_top + 'px',
+	                        bottom: 'auto'
+	                    }, onClick: this.toggle },
+	                'd'
+	            )
+	        );
+	    }
+	});
+
+	module.exports = function (dom) {
+	    this.dom = dom;
+	    var me = this;
+	    return {
+	        setLocal: function setLocal(stream) {
+	            // console.log('channel setLocal', 'user=', Demo.user, 'caller=', Demo.call.caller, 'callee=', Demo.call.callee);
+	            this.localStream = stream;
+	            var title = '';
+	            var hideAccept = false;
+	            var localFullRemoteCorner = false;
+	            if (Demo.user == Demo.call.caller) {
+	                title = '等候 ' + Demo.call.callee.split('@')[0].split('_')[1] + ' 视频中...';
+	                hideAccept = true;
+	            } else {
+	                title = Demo.call.callee.split('@')[0].split('_')[1];
+	            }
+	            ReactDOM.render(React.createElement(Channel, { close: this.close, localStream: this.localStream, remoteStream: this.remoteStream,
+	                title: title, hideAccept: hideAccept, localFullRemoteCorner: localFullRemoteCorner }), me.dom);
+	        },
+	        setRemote: function setRemote(stream) {
+	            // console.log('channel setRemote', 'user=', Demo.user, 'caller=', Demo.call.caller, 'callee=', Demo.call.callee);
+	            this.remoteStream = stream;
+	            var title = '';
+	            var localFullRemoteCorner = false;
+	            if (Demo.call.caller != '' && Demo.call.caller == Demo.user) {
+	                title = Demo.call.callee.split('@')[0].split('_')[1];
+	            } else {
+	                title = Demo.call.callee.split('@')[0].split('_')[1] + ' 请求视频通话...';
+	            }
+	            ReactDOM.render(React.createElement(Channel, { close: this.close, localStream: this.localStream, remoteStream: this.remoteStream,
+	                title: title, localFullRemoteCorner: localFullRemoteCorner }), me.dom);
+	        },
+	        close: function close() {
+	            var local = this.localStream;
+	            var remote = this.remoteStream;
+
+	            if (remote) {
+	                remote.getTracks().forEach(function (track) {
+	                    track.stop();
+	                });
+	            }
+
+	            if (local) {
+	                local.getTracks().forEach(function (track) {
+	                    track.stop();
+	                });
+	            }
+
+	            ReactDOM.unmountComponentAtNode(me.dom);
+	        }
+	    };
+	};
+
+/***/ },
+/* 215 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = function (window) {
+
+	    var _ev = function () {
+
+	        var obj = {};
+
+	        if (document.addEventListener) {
+	            obj.bind = function (dom, event, fn) {
+	                dom.addEventListener(event, fn, false);
+	            };
+	            obj.unbind = function (dom, event, fn) {
+	                dom.removeEventListener(event, fn);
+	            };
+	        } else if (document.attachEvent) {
+	            obj.bind = function (dom, event, fn) {
+	                dom.attachEvent('on' + event, fn, false);
+	            };
+	            obj.unbind = function (dom, event, fn) {
+	                dom.detachEvent(event, fn);
+	            };
+	        } else {
+	            obj.bind = function (dom, event, fn) {
+	                dom['on' + event] = fn;
+	            };
+	            obj.unbind = function (dom, event, fn) {
+	                dom['on' + event] = null;
+	            };
+	        }
+	        return obj;
+	    }();
+
+	    return function (dom) {
+	        var me = this;
+
+	        me.dom = dom;
+
+	        if (!me.dom) {
+	            return false;
+	        }
+
+	        me._dragFlag = false;
+	        me._st = 0, me._startPosition = {
+	            x: 0,
+	            y: 0
+	        };
+
+	        var _start = function _start(ev) {
+
+	            var e = window.event || ev;
+
+	            var data = me.dom.getBoundingClientRect();
+
+	            me._dragFlag = true;
+
+	            // window size
+	            me._width = document.documentElement.clientWidth;
+	            me._height = document.documentElement.clientHeight;
+
+	            me._startPosition.x = e.clientX - data.left;
+	            me._startPosition.y = e.clientY - data.top;
+
+	            // dom size
+	            me.rect = {
+	                width: data.width,
+	                height: data.height
+	            };
+
+	            _ev.bind(document, 'mousemove', _move);
+	        };
+
+	        var _move = function _move(ev) {
+
+	            if (!me._dragFlag) {
+	                return false;
+	            }
+
+	            var e = window.event || ev,
+	                _x = me._width - e.clientX - me.rect.width + me._startPosition.x,
+	                _y = me._height - e.clientY - me.rect.height + me._startPosition.y;
+
+	            if (e.clientX - me._startPosition.x <= 0) {
+	                //left
+	                _x = me._width - me.rect.width;
+	            } else if (e.clientX + me.rect.width - me._startPosition.x >= me._width) {
+	                //right
+	                _x = 0;
+	            }
+	            if (e.clientY - me._startPosition.y <= 0) {
+	                //top
+	                _y = me._height - me.rect.height;
+	            } else if (e.clientY + me.rect.height - me._startPosition.y >= me._height) {
+	                //bottom
+	                _y = 0;
+	            }
+	            me.dom.style.left = 'auto';
+	            me.dom.style.top = 'auto';
+	            me.dom.style.right = _x + 'px';
+	            me.dom.style.bottom = _y + 'px';
+
+	            me.position = {
+	                x: _x,
+	                y: _y
+	            };
+
+	            clearTimeout(me._st);
+	            me._st = setTimeout(_moveend, 500);
+	        };
+
+	        var _moveend = function _moveend() {
+	            me._dragFlag = false;
+	            _ev.unbind(document, 'mousemove', _move);
+
+	            if (!me.position) {
+	                return false;
+	            }
+
+	            me.dom.style.left = 'auto';
+	            me.dom.style.top = 'auto';
+	            me.dom.style.right = me.position.x + 'px';
+	            me.dom.style.bottom = me.position.y + 'px';
+	            me.dom.style.display = 'block';
+	        };
+
+	        var _resize = function _resize() {
+
+	            _ev.bind(window, 'resize', function () {
+	                if (!me.rect || !me.rect.width) {
+	                    return;
+	                }
+
+	                var _width = document.documentElement.clientWidth,
+	                    _height = document.documentElement.clientHeight,
+	                    _right = Number(me.dom.style.right.slice(0, -2)),
+	                    _bottom = Number(me.dom.style.bottom.slice(0, -2));
+
+	                //width
+	                if (_width < me.rect.width) {
+	                    me.dom.style.left = 'auto';
+	                    me.dom.style.right = 0;
+	                } else if (_width - _right < me.rect.width) {
+	                    me.dom.style.right = _width - me.rect.width + 'px';
+	                    me.dom.style.left = 0;
+	                } else {
+	                    me.dom.style.left = 'auto';
+	                }
+
+	                //height
+	                if (_height < me.rect.height) {
+	                    me.dom.style.top = 'auto';
+	                    me.dom.style.bottom = 0;
+	                } else if (_height - _bottom < me.rect.height) {
+	                    me.dom.style.bottom = _height - me.rect.height + 'px';
+	                    me.dom.style.top = 0;
+	                } else {
+	                    me.dom.style.top = 'auto';
+	                }
+	            });
+	        };
+
+	        _ev.bind(me.dom, 'mousedown', _start);
+	        _ev.bind(me.dom, 'mouseup', _moveend);
+	        _ev.bind(window, 'resize', _resize);
+	    };
+	}(window);
+
+/***/ },
+/* 216 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+
+	var componentsNode = document.getElementById('components');
+	var dom = document.createElement('div');
+	componentsNode.appendChild(dom);
+
+	var UI = __webpack_require__(191);
 	var Button = UI.Button;
 	var Input = UI.Input;
 
@@ -24160,42 +28954,59 @@
 	    displayName: 'Subscribe',
 
 
-	    check: function check(node) {
+	    check: function check(node, name) {
 	        if (node.parentNode.childNodes.length === 1) {
 	            node.parentNode.removeChild(node);
 	            this.close();
 	        } else {
 	            node.parentNode.removeChild(node);
 	        }
+	        this.props.onHandle(name);
 	    },
 
 	    agree: function agree(e) {
 	        var li = e.target.parentNode,
 	            name = li.getAttribute('id');
 
-	        Demo.conn.subscribed({
-	            to: name,
-	            message: '[resp:true]'
-	        });
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"acceptInvitation","to":"' + name + '"}', function success(str) {
+	                //do nothing
+	            }, function failure(errCode, errMessage) {
+	                Demo.api.NotifyError('agree:' + errCode);
+	            });
+	        } else {
+	            Demo.conn.subscribed({
+	                to: name,
+	                message: '[resp:true]'
+	            });
 
-	        Demo.conn.subscribe({
-	            to: name,
-	            message: '[resp:true]'
-	        });
+	            Demo.conn.subscribe({
+	                to: name,
+	                message: '[resp:true]'
+	            });
+	        }
 
-	        this.check(li);
+	        this.check(li, name);
 	    },
 
 	    reject: function reject(e) {
 	        var li = e.target.parentNode,
 	            name = li.getAttribute('id');
 
-	        Demo.conn.unsubscribed({
-	            to: name,
-	            message: new Date().toLocaleString()
-	        });
+	        if (WebIM.config.isWindowSDK) {
+	            WebIM.doQuery('{"type":"declineInvitation","to":"' + name + '"}', function success(str) {
+	                //do nothing
+	            }, function failure(errCode, errMessage) {
+	                Demo.api.NotifyError('reject:' + errCode);
+	            });
+	        } else {
+	            Demo.conn.unsubscribed({
+	                to: name,
+	                message: new Date().toLocaleString()
+	            });
+	        }
 
-	        this.check(li);
+	        this.check(li, name);
 	    },
 
 	    close: function close() {
@@ -24206,8 +29017,8 @@
 	        var requests = [];
 
 	        for (var i in this.props.data) {
-	            if (this.props.data.hasOwnProperty(i)) {
-	                var msg = this.props.data[i];
+	            if (!this.props.data[i].handled) {
+	                var msg = this.props.data[i].msg;
 
 	                requests.push(React.createElement(
 	                    'li',
@@ -24252,10 +29063,20 @@
 	module.exports = {
 	    requests: {},
 	    show: function show(data) {
+	        if (!this.requests[data.from]) {
+	            this.requests[data.from] = { msg: data.from + ': ' + data.status, handled: false };
+	        } else {
+	            if (this.requests[data.from].handled) {
+	                this.requests[data.from].handled = false;
+	            }
+	        }
 
-	        !this.requests[data.from] && (this.requests[data.from] = data.from + ': ' + data.status);
-
-	        ReactDOM.render(React.createElement(Subscribe, { onClose: this.close, data: this.requests }), dom);
+	        ReactDOM.render(React.createElement(Subscribe, { onClose: this.close, onHandle: this.handle, data: this.requests }), dom);
+	    },
+	    handle: function handle(name) {
+	        if (module.exports.requests[name]) {
+	            module.exports.requests[name].handled = true;
+	        }
 	    },
 
 	    close: function close() {
@@ -24264,37 +29085,266 @@
 	};
 
 /***/ },
-/* 204 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var React = __webpack_require__(9);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
 
-	module.exports = React.createClass({
-	    displayName: 'exports',
+	var componentsNode = document.getElementById('components');
+	var dom = document.createElement('div');
+	componentsNode.appendChild(dom);
+
+	var UI = __webpack_require__(191);
+	var Button = UI.Button;
+	var Input = UI.Input;
+
+	var ConfirmPop = React.createClass({
+	    displayName: 'ConfirmPop',
+
+
+	    check: function check(node) {
+	        if (node.parentNode.childNodes.length === 1) {
+	            node.parentNode.removeChild(node);
+	            this.close();
+	        } else {
+	            node.parentNode.removeChild(node);
+	        }
+	    },
+
+	    agree: function agree(e) {
+	        var li = e.target.parentNode,
+	            name = li.getAttribute('id');
+
+	        this.props.data.agree();
+
+	        this.check(li);
+	    },
+
+	    reject: function reject(e) {
+	        var li = e.target.parentNode,
+	            name = li.getAttribute('id');
+
+	        this.props.data.reject();
+
+	        this.check(li);
+	    },
+
+	    close: function close() {
+	        typeof this.props.onClose === 'function' && this.props.onClose();
+	    },
 
 	    render: function render() {
+	        var requests = [];
+
+	        var i = 0;
+	        if (this.props.data.hasOwnProperty('reject')) {
+	            requests.push(React.createElement(
+	                'li',
+	                { id: i, key: i },
+	                React.createElement(
+	                    'span',
+	                    null,
+	                    this.props.data.msg
+	                ),
+	                React.createElement('br', null),
+	                React.createElement(Button, { text: Demo.lan.agree, onClick: this.agree, className: 'webim-subscribe-button' }),
+	                React.createElement(Button, { text: Demo.lan.reject, onClick: this.reject, className: 'error webim-subscribe-button' })
+	            ));
+	        } else {
+	            requests.push(React.createElement(
+	                'li',
+	                { id: i, key: i },
+	                React.createElement(
+	                    'span',
+	                    null,
+	                    this.props.data.msg
+	                ),
+	                React.createElement('br', null),
+	                React.createElement(Button, { text: Demo.lan.confirm, onClick: this.agree, className: 'webim-subscribe-button' })
+	            ));
+	        }
 
 	        return React.createElement(
 	            'div',
-	            { className: 'webim-loading' + (this.props.show === 'show' ? '' : ' hide') },
-	            React.createElement('img', { src: 'demo/images/loading.gif' })
+	            null,
+	            React.createElement('div', { ref: 'layer', className: 'webim-layer' }),
+	            React.createElement(
+	                'div',
+	                { className: 'webim-dialog webim-friend-requests-widnowSDK' },
+	                React.createElement(
+	                    'h3',
+	                    null,
+	                    this.props.data.title
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { ref: 'content' },
+	                    React.createElement(
+	                        'ul',
+	                        null,
+	                        requests
+	                    )
+	                )
+	            )
 	        );
 	    }
 	});
 
+	module.exports = {
+	    requests: {},
+	    show: function show(options) {
+
+	        ReactDOM.render(React.createElement(ConfirmPop, { onClose: this.close, data: options }), dom);
+	    },
+
+	    close: function close() {
+	        ReactDOM.unmountComponentAtNode(dom);
+	    }
+	};
+
 /***/ },
-/* 205 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
-	var Avatar = __webpack_require__(193);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+
+	var componentsNode = document.getElementById('components');
+	var dom = document.createElement('div');
+	componentsNode.appendChild(dom);
+
+	var UI = __webpack_require__(191);
+	var Button = UI.Button;
+
+	var ConfirmGroupInfo = React.createClass({
+	    displayName: 'ConfirmGroupInfo',
+
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            toNick: '',
+	            groupName: '',
+	            reason: ''
+	        };
+	    },
+
+	    onCancel: function onCancel(e) {
+	        // throw request
+	        // Demo.conn.rejectInviteFromGroup();
+
+	        // Demo.conn.rejectInviteFromGroup({
+	        //     reason: 'reject invite',
+	        //     roomId: this.props.groupName,
+	        //     list: [this.props.from]
+	        // });
+	        // this.close();
+	    },
+
+	    onSubmit: function onSubmit() {
+	        Demo.conn.acceptInviteFromGroup({
+	            roomId: this.props.groupName,
+	            list: [this.props.from]
+	        });
+	        this.close();
+	    },
+
+	    close: function close() {
+	        typeof this.props.onClose === 'function' && this.props.onClose();
+	    },
+
+	    render: function render() {
+
+	        return React.createElement(
+	            'div',
+	            { className: 'webim-friend-options' },
+	            React.createElement('div', { ref: 'layer', className: 'webim-layer' }),
+	            React.createElement(
+	                'div',
+	                { className: 'webim-dialog' },
+	                React.createElement(
+	                    'h3',
+	                    null,
+	                    Demo.lan.groupNotification
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: 'webim-dialog-body' },
+	                    this.props.from + " applys to join into group:" + this.props.toNick,
+	                    React.createElement(
+	                        'p',
+	                        null,
+	                        this.props.reason
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: 'webim-dialog-footer' },
+	                    React.createElement(Button, { text: Demo.lan.reject, onClick: this.onCancel, className: 'webim-dialog-button' }),
+	                    React.createElement(Button, { text: Demo.lan.agree, onClick: this.onSubmit, className: 'webim-dialog-button' })
+	                ),
+	                React.createElement(
+	                    'span',
+	                    { className: 'font', onClick: this.close },
+	                    'A'
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = {
+	    show: function show(msgInfo) {
+	        ReactDOM.render(React.createElement(ConfirmGroupInfo, _extends({}, msgInfo, { onClose: this.close })), dom);
+	    },
+
+	    close: function close() {
+	        ReactDOM.unmountComponentAtNode(dom);
+	    }
+	};
+
+/***/ },
+/* 219 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(11);
+
+	module.exports = React.createClass({
+	    displayName: 'exports',
+
+	    render: function render() {
+	        return React.createElement(
+	            'div',
+	            { className: 'webim-loading' + (this.props.show === 'show' ? '' : ' hide') },
+	            React.createElement('img', { src: 'demo/images/loading.gif' }),
+	            React.createElement(
+	                'span',
+	                null,
+	                this.props.msg
+	            )
+	        );
+	    }
+	});
+
+/***/ },
+/* 220 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var Avatar = __webpack_require__(195);
 
 	var TextMsg = React.createClass({
 	    displayName: 'TextMsg',
@@ -24316,179 +29366,24 @@
 	            ),
 	            React.createElement(
 	                'div',
-	                { className: 'webim-msg-value' },
-	                React.createElement(
-	                    'span',
-	                    { className: 'webim-msg-icon font' },
-	                    icon
-	                ),
-	                React.createElement('pre', { dangerouslySetInnerHTML: { __html: this.props.value } })
-	            )
-	        );
-	    }
-	});
-
-	module.exports = function (options, sentByMe) {
-	    var props = {
-	        src: options.avatar || 'demo/images/default.png',
-	        time: options.time || new Date().toLocaleString(),
-	        value: options.value || '',
-	        name: options.name
-	    };
-
-	    var node = document.createElement('div');
-	    node.className = 'webim-msg-container rel';
-	    options.wrapper.appendChild(node);
-
-	    Demo.api.scrollIntoView(node);
-
-	    return ReactDOM.render(React.createElement(TextMsg, _extends({}, props, { className: sentByMe ? 'right' : 'left' })), node);
-	};
-
-/***/ },
-/* 206 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
-	var Avatar = __webpack_require__(193);
-
-	var ImgMsg = React.createClass({
-	    displayName: 'ImgMsg',
-
-
-	    show: function show() {
-	        var dom = document.createElement('div');
-	        dom.className = 'webim-img-expand';
-	        dom.onclick = function () {
-	            this.parentNode.removeChild(this);
-	        };
-	        dom.innerHTML = '<img src="' + this.refs.img.getAttribute('src') + '" />';
-	        document.body.appendChild(dom);
-	    },
-
-	    render: function render() {
-	        var icon = this.props.className === 'left' ? 'H' : 'I';
-
-	        return React.createElement(
-	            'div',
-	            { className: 'rel ' + this.props.className },
-	            React.createElement(Avatar, { src: this.props.src, className: this.props.className + ' small' }),
-	            React.createElement(
-	                'p',
-	                { className: this.props.className },
-	                this.props.name,
-	                ' ',
-	                this.props.time
-	            ),
-	            React.createElement(
-	                'div',
-	                { className: 'webim-msg-value webim-img-msg-wrapper' },
-	                React.createElement(
-	                    'span',
-	                    { className: 'webim-msg-icon font' },
-	                    icon
-	                ),
+	                { className: 'clearfix' },
 	                React.createElement(
 	                    'div',
-	                    null,
-	                    React.createElement('img', { ref: 'img', className: 'webim-msg-img', src: this.props.value, onClick: this.show })
-	                )
-	            )
-	        );
-	    }
-	});
-
-	module.exports = function (options, sentByMe) {
-	    var props = {
-	        src: options.avatar || 'demo/images/default.png',
-	        time: options.time || new Date().toLocaleString(),
-	        value: options.value || '',
-	        name: options.name
-	    };
-
-	    var node = document.createElement('div');
-	    node.className = 'webim-msg-container rel';
-	    options.wrapper.appendChild(node);
-
-	    Demo.api.scrollIntoView(node);
-
-	    return ReactDOM.render(React.createElement(ImgMsg, _extends({}, props, { className: sentByMe ? 'right' : 'left' })), node);
-	};
-
-/***/ },
-/* 207 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
-	var Avatar = __webpack_require__(193);
-
-	var FileMsg = React.createClass({
-	    displayName: 'FileMsg',
-
-
-	    render: function render() {
-	        var icon = this.props.className === 'left' ? 'H' : 'I';
-
-	        return React.createElement(
-	            'div',
-	            { className: 'rel ' + this.props.className },
-	            React.createElement(Avatar, { src: this.props.src, className: this.props.className + ' small' }),
-	            React.createElement(
-	                'p',
-	                { className: this.props.className },
-	                this.props.name,
-	                ' ',
-	                this.props.time
-	            ),
-	            React.createElement(
-	                'div',
-	                { className: 'webim-msg-value', style: { minWidth: '200px' } },
-	                React.createElement(
-	                    'span',
-	                    { className: 'webim-msg-icon font' },
-	                    icon
-	                ),
-	                React.createElement(
-	                    'div',
-	                    null,
+	                    { className: 'webim-msg-value' },
 	                    React.createElement(
-	                        'p',
-	                        { className: 'webim-msg-header' },
-	                        Demo.lan.file
+	                        'span',
+	                        { className: 'webim-msg-icon font' },
+	                        icon
 	                    ),
+	                    React.createElement('pre', { dangerouslySetInnerHTML: { __html: this.props.value } })
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: "webim-msg-error " + (this.props.error ? ' ' : 'hide') },
 	                    React.createElement(
-	                        'div',
-	                        null,
-	                        React.createElement(
-	                            'span',
-	                            { className: 'webim-msg-header-icon font small' },
-	                            'S'
-	                        ),
-	                        React.createElement(
-	                            'span',
-	                            { className: 'webim-msg-name' },
-	                            this.props.filename
-	                        ),
-	                        React.createElement(
-	                            'span',
-	                            { className: 'webim-msg-fileSize' },
-	                            this.props.fileSize
-	                        ),
-	                        React.createElement(
-	                            'a',
-	                            { target: '_blank', href: this.props.value },
-	                            Demo.lan.download
-	                        )
+	                        'span',
+	                        { className: 'webim-file-icon font smaller red', title: this.props.errorText },
+	                        'k'
 	                    )
 	                )
 	            )
@@ -24502,11 +29397,302 @@
 	        time: options.time || new Date().toLocaleString(),
 	        value: options.value || '',
 	        name: options.name,
-	        filename: options.filename || ''
+	        error: options.error,
+	        errorText: options.errorText
+	    };
+
+	    var node = document.createElement('div');
+	    node.className = 'webim-msg-container rel';
+	    options.wrapper.appendChild(node);
+
+	    Demo.api.scrollIntoView(node);
+
+	    return ReactDOM.render(React.createElement(TextMsg, _extends({}, props, { className: sentByMe ? 'right' : 'left' })), node);
+	};
+
+/***/ },
+/* 221 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var Avatar = __webpack_require__(195);
+
+	var ImgMsg = React.createClass({
+	    displayName: 'ImgMsg',
+
+	    getInitialState: function getInitialState() {
+	        var me = this;
+	        var options = {};
+	        options['onUpdateFileUrl' + this.props.id] = function (options) {
+	            me.updateFileUrl(options);
+	        };
+	        Demo.api.listen(options);
+
+	        return {
+	            value: this.props.value
+	        };
+	    },
+	    updateFileUrl: function updateFileUrl(options) {
+	        this.setState({ value: options.url });
+	    },
+	    show: function show() {
+	        var dom = document.createElement('div');
+	        dom.className = 'webim-img-expand';
+	        dom.onclick = function () {
+	            this.parentNode.removeChild(this);
+	        };
+	        dom.innerHTML = '<img src="' + this.refs.img.getAttribute('src') + '" />';
+	        document.body.appendChild(dom);
+	    },
+
+	    render: function render() {
+	        var icon = this.props.className === 'left' ? 'H' : 'I';
+	        var imgs = [];
+	        if (WebIM.config.isWindowSDK) {
+	            if (this.state.value == "") {
+	                imgs.push(React.createElement(
+	                    'span',
+	                    { key: '0' },
+	                    Demo.lan.image,
+	                    Demo.lan.FileLoading
+	                ));
+	            } else {
+	                imgs.push(React.createElement('img', { key: '0', ref: 'img', className: 'webim-msg-img', src: this.state.value,
+	                    onClick: this.show }));
+	            }
+	        } else {
+	            imgs.push(React.createElement('img', { key: '0', ref: 'img', className: 'webim-msg-img', src: this.props.value, onClick: this.show }));
+	        }
+	        return React.createElement(
+	            'div',
+	            { className: 'rel ' + this.props.className },
+	            React.createElement(Avatar, { src: this.props.src, className: this.props.className + ' small' }),
+	            React.createElement(
+	                'p',
+	                { className: this.props.className },
+	                this.props.name,
+	                ' ',
+	                this.props.time
+	            ),
+	            React.createElement(
+	                'div',
+	                { className: 'clearfix' },
+	                React.createElement(
+	                    'div',
+	                    { className: 'webim-msg-value webim-img-msg-wrapper' },
+	                    React.createElement(
+	                        'span',
+	                        { className: 'webim-msg-icon font' },
+	                        icon
+	                    ),
+	                    React.createElement(
+	                        'div',
+	                        { id: 'file_' + this.props.id },
+	                        imgs
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: "webim-msg-error " + (this.props.error ? ' ' : 'hide') },
+	                    React.createElement(
+	                        'span',
+	                        { className: 'webim-file-icon font smaller red', title: this.props.errorText },
+	                        'k'
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = function (options, sentByMe) {
+	    var props = {
+	        id: options.id,
+	        src: options.avatar || 'demo/images/default.png',
+	        time: options.time || new Date().toLocaleString(),
+	        value: options.value || '',
+	        name: options.name,
+	        error: options.error,
+	        errorText: options.errorText
+	    };
+
+	    var node = document.createElement('div');
+	    node.className = 'webim-msg-container rel';
+	    options.wrapper.appendChild(node);
+
+	    Demo.api.scrollIntoView(node);
+
+	    return ReactDOM.render(React.createElement(ImgMsg, _extends({}, props, { className: sentByMe ? 'right' : 'left' })), node);
+	};
+
+/***/ },
+/* 222 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var Avatar = __webpack_require__(195);
+	var _utils = __webpack_require__(223).utils;
+
+	var FileMsg = React.createClass({
+	    displayName: 'FileMsg',
+
+	    getInitialState: function getInitialState() {
+	        var me = this;
+	        var options = {};
+	        options['onUpdateFileUrl' + this.props.id] = function (options) {
+	            me.updateFileUrl(options);
+	        };
+	        Demo.api.listen(options);
+
+	        return {
+	            value: this.props.value
+	        };
+	    },
+	    updateFileUrl: function updateFileUrl(options) {
+	        this.setState({ value: options.url });
+	    },
+
+	    download: function download() {
+	        var suc = function suc(data, xhr) {
+	            // console.log(data);
+	        };
+	        var error = function error(res, xhr, msg) {
+	            // console.log(res)
+	        };
+	        var options = {
+	            url: this.props.value,
+	            dataType: 'json',
+	            type: 'GET',
+	            headers: { 'Authorization': 'Bearer ' + Demo.conn.context.accessToken },
+	            success: suc || _utils.emptyfn,
+	            error: error || _utils.emptyfn
+	        };
+	        _utils.ajax(options);
+	    },
+	    render: function render() {
+	        var icon = this.props.className === 'left' ? 'H' : 'I';
+	        var links = [];
+	        if (WebIM.config.isWindowSDK) {
+	            if (this.state.value == "") {
+	                links.push(React.createElement(
+	                    'a',
+	                    { key: '0', href: 'javascript:void(0)' },
+	                    Demo.lan.FileLoading
+	                ));
+	            } else {
+	                var dirPath = this.state.value.replace("file:", "location:");
+	                links.push(React.createElement(
+	                    'a',
+	                    { target: '_blank', key: '0', href: this.state.value },
+	                    Demo.lan.openFile
+	                ));
+	                links.push(React.createElement(
+	                    'a',
+	                    { target: '_blank', key: '1', href: dirPath, className: 'dir' },
+	                    Demo.lan.openDir
+	                ));
+	            }
+	        } else {
+	            links.push(React.createElement(
+	                'a',
+	                { target: '_blank', key: '0', href: this.props.value },
+	                Demo.lan.download
+	            ));
+	            //links.push(<a key='0' href="javascript:void(0)" onClick={this.download}>{Demo.lan.download}</a>);
+	        }
+
+	        return React.createElement(
+	            'div',
+	            { className: 'rel ' + this.props.className },
+	            React.createElement(Avatar, { src: this.props.src, className: this.props.className + ' small' }),
+	            React.createElement(
+	                'p',
+	                { className: this.props.className },
+	                this.props.name,
+	                ' ',
+	                this.props.time
+	            ),
+	            React.createElement(
+	                'div',
+	                { className: 'clearfix', style: { minWidth: '280px' } },
+	                React.createElement(
+	                    'div',
+	                    { className: 'webim-msg-value', style: { minWidth: '200px' } },
+	                    React.createElement(
+	                        'span',
+	                        { className: 'webim-msg-icon font' },
+	                        icon
+	                    ),
+	                    React.createElement(
+	                        'div',
+	                        null,
+	                        React.createElement(
+	                            'p',
+	                            { className: 'webim-msg-header' },
+	                            Demo.lan.file
+	                        ),
+	                        React.createElement(
+	                            'div',
+	                            { id: 'file_' + this.props.id },
+	                            React.createElement(
+	                                'span',
+	                                { className: 'webim-msg-header-icon font small' },
+	                                'S'
+	                            ),
+	                            React.createElement(
+	                                'span',
+	                                { className: 'webim-msg-name' },
+	                                ' ',
+	                                this.props.filename
+	                            ),
+	                            React.createElement(
+	                                'span',
+	                                { className: 'webim-msg-fileSize' },
+	                                this.props.fileSize
+	                            ),
+	                            links
+	                        )
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { className: "webim-msg-error " + (this.props.error ? ' ' : 'hide') },
+	                    React.createElement(
+	                        'span',
+	                        { className: 'webim-file-icon font smaller red', title: this.props.errorText },
+	                        'k'
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = function (options, sentByMe) {
+	    var props = {
+	        id: options.id,
+	        src: options.avatar || 'demo/images/default.png',
+	        time: options.time || new Date().toLocaleString(),
+	        value: options.value || '',
+	        name: options.name,
+	        filename: options.filename || '',
+	        error: options.error,
+	        errorText: options.errorText
 	    };
 
 	    if (options.fileSize) {
 	        props.fileSize = options.fileSize;
+	        console.log('props.fileSize: ', options.fileSize);
 	    }
 
 	    var node = document.createElement('div');
@@ -24519,16 +29705,955 @@
 	};
 
 /***/ },
-/* 208 */
+/* 223 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	;
+	(function () {
+
+	    var EMPTYFN = function EMPTYFN() {};
+	    var _code = __webpack_require__(224).code;
+	    var WEBIM_FILESIZE_LIMIT = 10485760;
+
+	    var _createStandardXHR = function _createStandardXHR() {
+	        try {
+	            return new window.XMLHttpRequest();
+	        } catch (e) {
+	            return false;
+	        }
+	    };
+
+	    var _createActiveXHR = function _createActiveXHR() {
+	        try {
+	            return new window.ActiveXObject('Microsoft.XMLHTTP');
+	        } catch (e) {
+	            return false;
+	        }
+	    };
+
+	    var _xmlrequest = function _xmlrequest(crossDomain) {
+	        crossDomain = crossDomain || true;
+	        var temp = _createStandardXHR() || _createActiveXHR();
+
+	        if ('withCredentials' in temp) {
+	            return temp;
+	        }
+	        if (!crossDomain) {
+	            return temp;
+	        }
+	        if (typeof window.XDomainRequest === 'undefined') {
+	            return temp;
+	        }
+	        var xhr = new XDomainRequest();
+	        xhr.readyState = 0;
+	        xhr.status = 100;
+	        xhr.onreadystatechange = EMPTYFN;
+	        xhr.onload = function () {
+	            xhr.readyState = 4;
+	            xhr.status = 200;
+
+	            var xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
+	            xmlDoc.async = 'false';
+	            xmlDoc.loadXML(xhr.responseText);
+	            xhr.responseXML = xmlDoc;
+	            xhr.response = xhr.responseText;
+	            xhr.onreadystatechange();
+	        };
+	        xhr.ontimeout = xhr.onerror = function () {
+	            xhr.readyState = 4;
+	            xhr.status = 500;
+	            xhr.onreadystatechange();
+	        };
+	        return xhr;
+	    };
+
+	    var _hasFlash = function () {
+	        if ('ActiveXObject' in window) {
+	            try {
+	                return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+	            } catch (ex) {
+	                return 0;
+	            }
+	        } else {
+	            if (navigator.plugins && navigator.plugins.length > 0) {
+	                return navigator.plugins['Shockwave Flash'];
+	            }
+	        }
+	        return 0;
+	    }();
+
+	    var _tmpUtilXHR = _xmlrequest(),
+	        _hasFormData = typeof FormData !== 'undefined',
+	        _hasBlob = typeof Blob !== 'undefined',
+	        _isCanSetRequestHeader = _tmpUtilXHR.setRequestHeader || false,
+	        _hasOverrideMimeType = _tmpUtilXHR.overrideMimeType || false,
+	        _isCanUploadFileAsync = _isCanSetRequestHeader && _hasFormData,
+	        _isCanUploadFile = _isCanUploadFileAsync || _hasFlash,
+	        _isCanDownLoadFile = _isCanSetRequestHeader && (_hasBlob || _hasOverrideMimeType);
+
+	    if (!Object.keys) {
+	        Object.keys = function () {
+	            'use strict';
+
+	            var hasOwnProperty = Object.prototype.hasOwnProperty,
+	                hasDontEnumBug = !{ toString: null }.propertyIsEnumerable('toString'),
+	                dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'],
+	                dontEnumsLength = dontEnums.length;
+
+	            return function (obj) {
+	                if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object' && (typeof obj !== 'function' || obj === null)) {
+	                    throw new TypeError('Object.keys called on non-object');
+	                }
+
+	                var result = [],
+	                    prop,
+	                    i;
+
+	                for (prop in obj) {
+	                    if (hasOwnProperty.call(obj, prop)) {
+	                        result.push(prop);
+	                    }
+	                }
+
+	                if (hasDontEnumBug) {
+	                    for (i = 0; i < dontEnumsLength; i++) {
+	                        if (hasOwnProperty.call(obj, dontEnums[i])) {
+	                            result.push(dontEnums[i]);
+	                        }
+	                    }
+	                }
+	                return result;
+	            };
+	        }();
+	    }
+
+	    var utils = {
+	        hasFormData: _hasFormData,
+
+	        hasBlob: _hasBlob,
+
+	        emptyfn: EMPTYFN,
+
+	        isCanSetRequestHeader: _isCanSetRequestHeader,
+
+	        hasOverrideMimeType: _hasOverrideMimeType,
+
+	        isCanUploadFileAsync: _isCanUploadFileAsync,
+
+	        isCanUploadFile: _isCanUploadFile,
+
+	        isCanDownLoadFile: _isCanDownLoadFile,
+
+	        isSupportWss: function () {
+	            var notSupportList = [
+	            //1: QQ browser X5 core
+	            /MQQBrowser[\/]5([.]\d+)?\sTBS/
+
+	            //2: etc.
+	            //...
+	            ];
+
+	            if (!window.WebSocket) {
+	                return false;
+	            }
+
+	            var ua = window.navigator.userAgent;
+	            for (var i = 0, l = notSupportList.length; i < l; i++) {
+	                if (notSupportList[i].test(ua)) {
+	                    return false;
+	                }
+	            }
+	            return true;
+	        }(),
+
+	        getIEVersion: function () {
+	            var ua = navigator.userAgent,
+	                matches,
+	                tridentMap = { '4': 8, '5': 9, '6': 10, '7': 11 };
+
+	            matches = ua.match(/MSIE (\d+)/i);
+
+	            if (matches && matches[1]) {
+	                return +matches[1];
+	            }
+	            matches = ua.match(/Trident\/(\d+)/i);
+	            if (matches && matches[1]) {
+	                return tridentMap[matches[1]] || null;
+	            }
+	            return null;
+	        }(),
+
+	        stringify: function stringify(json) {
+	            if (typeof JSON !== 'undefined' && JSON.stringify) {
+	                return JSON.stringify(json);
+	            } else {
+	                var s = '',
+	                    arr = [];
+
+	                var iterate = function iterate(json) {
+	                    var isArr = false;
+
+	                    if (Object.prototype.toString.call(json) === '[object Array]') {
+	                        arr.push(']', '[');
+	                        isArr = true;
+	                    } else if (Object.prototype.toString.call(json) === '[object Object]') {
+	                        arr.push('}', '{');
+	                    }
+
+	                    for (var o in json) {
+	                        if (Object.prototype.toString.call(json[o]) === '[object Null]') {
+	                            json[o] = 'null';
+	                        } else if (Object.prototype.toString.call(json[o]) === '[object Undefined]') {
+	                            json[o] = 'undefined';
+	                        }
+
+	                        if (json[o] && _typeof(json[o]) === 'object') {
+	                            s += ',' + (isArr ? '' : '"' + o + '":' + (isArr ? '"' : '')) + iterate(json[o]) + '';
+	                        } else {
+	                            s += ',"' + (isArr ? '' : o + '":"') + json[o] + '"';
+	                        }
+	                    }
+
+	                    if (s != '') {
+	                        s = s.slice(1);
+	                    }
+
+	                    return arr.pop() + s + arr.pop();
+	                };
+	                return iterate(json);
+	            }
+	        },
+	        login: function login(options) {
+	            var options = options || {};
+	            var suc = options.success || EMPTYFN;
+	            var err = options.error || EMPTYFN;
+
+	            var appKey = options.appKey || '';
+	            var devInfos = appKey.split('#');
+	            if (devInfos.length !== 2) {
+	                err({
+	                    type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	                });
+	                return false;
+	            }
+
+	            var orgName = devInfos[0];
+	            var appName = devInfos[1];
+	            var https = https || options.https;
+	            var user = options.user || '';
+	            var pwd = options.pwd || '';
+
+	            var apiUrl = options.apiUrl;
+
+	            var loginJson = {
+	                grant_type: 'password',
+	                username: user,
+	                password: pwd,
+	                timestamp: +new Date()
+	            };
+	            var loginfo = utils.stringify(loginJson);
+
+	            var options = {
+	                url: apiUrl + '/' + orgName + '/' + appName + '/token',
+	                dataType: 'json',
+	                data: loginfo,
+	                success: suc,
+	                error: err
+	            };
+	            return utils.ajax(options);
+	        },
+
+	        getFileUrl: function getFileUrl(fileInputId) {
+	            var uri = {
+	                url: '',
+	                filename: '',
+	                filetype: '',
+	                data: ''
+	            };
+
+	            var fileObj = typeof fileInputId === 'string' ? document.getElementById(fileInputId) : fileInputId;
+
+	            if (!utils.isCanUploadFileAsync || !fileObj) {
+	                return uri;
+	            }
+	            try {
+	                if (window.URL.createObjectURL) {
+	                    var fileItems = fileObj.files;
+	                    if (fileItems.length > 0) {
+	                        var u = fileItems.item(0);
+	                        uri.data = u;
+	                        uri.url = window.URL.createObjectURL(u);
+	                        uri.filename = u.name || '';
+	                    }
+	                } else {
+	                    // IE
+	                    var u = document.getElementById(fileInputId).value;
+	                    uri.url = u;
+	                    var pos1 = u.lastIndexOf('/');
+	                    var pos2 = u.lastIndexOf('\\');
+	                    var pos = Math.max(pos1, pos2);
+	                    if (pos < 0) uri.filename = u;else uri.filename = u.substring(pos + 1);
+	                }
+	                var index = uri.filename.lastIndexOf('.');
+	                if (index != -1) {
+	                    uri.filetype = uri.filename.substring(index + 1).toLowerCase();
+	                }
+	                return uri;
+	            } catch (e) {
+	                throw e;
+	            }
+	        },
+
+	        getFileSize: function getFileSize(file) {
+	            // var file = document.getElementById(fileInputId);
+	            var fileSize = 0;
+	            if (file) {
+	                if (file.files) {
+	                    if (file.files.length > 0) {
+	                        fileSize = file.files[0].size;
+	                    }
+	                } else if (file.select && 'ActiveXObject' in window) {
+	                    file.select();
+	                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
+	                    var file = fileobject.GetFile(file.value);
+	                    fileSize = file.Size;
+	                }
+	            }
+	            if (fileSize > 300000) {
+	                return false;
+	            }
+	            var kb = Math.round(fileSize / 1000);
+	            if (kb < 1000) {
+	                fileSize = kb + ' KB';
+	            } else if (kb >= 1000) {
+	                var mb = Math.round(kb / 1000);
+	                if (mb < 1000) {
+	                    mb = mb / 10 + mb % 10 / 10;
+	                    fileSize = mb + ' MB';
+	                } else {
+	                    var gb = Math.round(mb / 1000);
+	                    gb = gb / 10 + gb % 10 / 10;
+	                    fileSize = gb + ' GB';
+	                }
+	            }
+	            return fileSize;
+	        },
+
+	        hasFlash: _hasFlash,
+
+	        trim: function trim(str) {
+
+	            str = typeof str === 'string' ? str : '';
+
+	            return str.trim ? str.trim() : str.replace(/^\s|\s$/g, '');
+	        },
+
+	        parseEmoji: function parseEmoji(msg) {
+	            if (typeof WebIM.Emoji === 'undefined' || typeof WebIM.Emoji.map === 'undefined') {
+	                return msg;
+	            } else {
+	                var emoji = WebIM.Emoji,
+	                    reg = null;
+
+	                for (var face in emoji.map) {
+	                    if (emoji.map.hasOwnProperty(face)) {
+	                        while (msg.indexOf(face) > -1) {
+	                            msg = msg.replace(face, '<img class="emoji" src="' + emoji.path + emoji.map[face] + '" />');
+	                        }
+	                    }
+	                }
+	                return msg;
+	            }
+	        },
+
+	        parseLink: function parseLink(msg) {
+
+	            var reg = /(https?\:\/\/|www\.)([a-zA-Z0-9-]+(\.[a-zA-Z0-9]+)+)(\:[0-9]{2,4})?\/?((\.[:_0-9a-zA-Z-]+)|[:_0-9a-zA-Z-]*\/?)*\??[:_#@*&%0-9a-zA-Z-/=]*/gm;
+
+	            msg = msg.replace(reg, function (v) {
+
+	                var prefix = /^https?/gm.test(v);
+
+	                return "<a href='" + (prefix ? v : '//' + v) + "' target='_blank'>" + v + "</a>";
+	            });
+
+	            return msg;
+	        },
+
+	        parseJSON: function parseJSON(data) {
+
+	            if (window.JSON && window.JSON.parse) {
+	                return window.JSON.parse(data + '');
+	            }
+
+	            var requireNonComma,
+	                depth = null,
+	                str = utils.trim(data + '');
+
+	            return str && !utils.trim(str.replace(/(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g, function (token, comma, open, close) {
+
+	                if (requireNonComma && comma) {
+	                    depth = 0;
+	                }
+
+	                if (depth === 0) {
+	                    return token;
+	                }
+
+	                requireNonComma = open || comma;
+	                depth += !close - !open;
+	                return '';
+	            })) ? Function('return ' + str)() : Function('Invalid JSON: ' + data)();
+	        },
+
+	        parseUploadResponse: function parseUploadResponse(response) {
+	            return response.indexOf('callback') > -1 ? //lte ie9
+	            response.slice(9, -1) : response;
+	        },
+
+	        parseDownloadResponse: function parseDownloadResponse(response) {
+	            return response && response.type && response.type === 'application/json' || 0 > Object.prototype.toString.call(response).indexOf('Blob') ? this.url + '?token=' : window.URL.createObjectURL(response);
+	        },
+
+	        uploadFile: function uploadFile(options) {
+	            var options = options || {};
+	            options.onFileUploadProgress = options.onFileUploadProgress || EMPTYFN;
+	            options.onFileUploadComplete = options.onFileUploadComplete || EMPTYFN;
+	            options.onFileUploadError = options.onFileUploadError || EMPTYFN;
+	            options.onFileUploadCanceled = options.onFileUploadCanceled || EMPTYFN;
+
+	            var acc = options.accessToken || this.context.accessToken;
+	            if (!acc) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_NO_LOGIN,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var orgName, appName, devInfos;
+	            var appKey = options.appKey || this.context.appKey || '';
+
+	            if (appKey) {
+	                devInfos = appKey.split('#');
+	                orgName = devInfos[0];
+	                appName = devInfos[1];
+	            }
+
+	            if (!orgName && !appName) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var apiUrl = options.apiUrl;
+	            var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
+
+	            if (!utils.isCanUploadFileAsync) {
+	                if (utils.hasFlash && typeof options.flashUpload === 'function') {
+	                    options.flashUpload && options.flashUpload(uploadUrl, options);
+	                } else {
+	                    options.onFileUploadError({
+	                        type: _code.WEBIM_UPLOADFILE_BROWSER_ERROR,
+	                        id: options.id
+	                    });
+	                }
+	                return;
+	            }
+
+	            var fileSize = options.file.data ? options.file.data.size : undefined;
+	            if (fileSize > WEBIM_FILESIZE_LIMIT) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            } else if (fileSize <= 0) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var xhr = utils.xmlrequest();
+	            var onError = function onError(e) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id,
+	                    xhr: xhr
+	                });
+	            };
+	            if (xhr.upload) {
+	                xhr.upload.addEventListener('progress', options.onFileUploadProgress, false);
+	            }
+	            if (xhr.addEventListener) {
+	                xhr.addEventListener('abort', options.onFileUploadCanceled, false);
+	                xhr.addEventListener('load', function (e) {
+	                    try {
+	                        var json = utils.parseJSON(xhr.responseText);
+	                        try {
+	                            options.onFileUploadComplete(json);
+	                        } catch (e) {
+	                            options.onFileUploadError({
+	                                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                                data: e
+	                            });
+	                        }
+	                    } catch (e) {
+	                        options.onFileUploadError({
+	                            type: _code.WEBIM_UPLOADFILE_ERROR,
+	                            data: xhr.responseText,
+	                            id: options.id,
+	                            xhr: xhr
+	                        });
+	                    }
+	                }, false);
+	                xhr.addEventListener('error', onError, false);
+	            } else if (xhr.onreadystatechange) {
+	                xhr.onreadystatechange = function () {
+	                    if (xhr.readyState === 4) {
+	                        if (ajax.status === 200) {
+	                            try {
+	                                var json = utils.parseJSON(xhr.responseText);
+	                                options.onFileUploadComplete(json);
+	                            } catch (e) {
+	                                options.onFileUploadError({
+	                                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                                    data: xhr.responseText,
+	                                    id: options.id,
+	                                    xhr: xhr
+	                                });
+	                            }
+	                        } else {
+	                            options.onFileUploadError({
+	                                type: _code.WEBIM_UPLOADFILE_ERROR,
+	                                data: xhr.responseText,
+	                                id: options.id,
+	                                xhr: xhr
+	                            });
+	                        }
+	                    } else {
+	                        xhr.abort();
+	                        options.onFileUploadCanceled();
+	                    }
+	                };
+	            }
+
+	            xhr.open('POST', uploadUrl);
+
+	            xhr.setRequestHeader('restrict-access', 'true');
+	            xhr.setRequestHeader('Accept', '*/*'); // Android QQ browser has some problem with this attribute.
+	            xhr.setRequestHeader('Authorization', 'Bearer ' + acc);
+
+	            var formData = new FormData();
+	            formData.append('file', options.file.data);
+	            xhr.send(formData);
+	        },
+
+	        download: function download(options) {
+	            options.onFileDownloadComplete = options.onFileDownloadComplete || EMPTYFN;
+	            options.onFileDownloadError = options.onFileDownloadError || EMPTYFN;
+
+	            var accessToken = options.accessToken || this.context.accessToken;
+	            if (!accessToken) {
+	                options.onFileDownloadError({
+	                    type: _code.WEBIM_DOWNLOADFILE_NO_LOGIN,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var onError = function onError(e) {
+	                options.onFileDownloadError({
+	                    type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                    id: options.id,
+	                    xhr: xhr
+	                });
+	            };
+
+	            if (!utils.isCanDownLoadFile) {
+	                options.onFileDownloadComplete();
+	                return;
+	            }
+	            var xhr = utils.xmlrequest();
+	            if ('addEventListener' in xhr) {
+	                xhr.addEventListener('load', function (e) {
+	                    options.onFileDownloadComplete(xhr.response, xhr);
+	                }, false);
+	                xhr.addEventListener('error', onError, false);
+	            } else if ('onreadystatechange' in xhr) {
+	                xhr.onreadystatechange = function () {
+	                    if (xhr.readyState === 4) {
+	                        if (ajax.status === 200) {
+	                            options.onFileDownloadComplete(xhr.response, xhr);
+	                        } else {
+	                            options.onFileDownloadError({
+	                                type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                                id: options.id,
+	                                xhr: xhr
+	                            });
+	                        }
+	                    } else {
+	                        xhr.abort();
+	                        options.onFileDownloadError({
+	                            type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                            id: options.id,
+	                            xhr: xhr
+	                        });
+	                    }
+	                };
+	            }
+
+	            var method = options.method || 'GET';
+	            var resType = options.responseType || 'blob';
+	            var mimeType = options.mimeType || 'text/plain; charset=x-user-defined';
+	            xhr.open(method, options.url);
+	            if (typeof Blob !== 'undefined') {
+	                xhr.responseType = resType;
+	            } else {
+	                xhr.overrideMimeType(mimeType);
+	            }
+
+	            var innerHeaer = {
+	                'X-Requested-With': 'XMLHttpRequest',
+	                'Accept': 'application/octet-stream',
+	                'share-secret': options.secret,
+	                'Authorization': 'Bearer ' + accessToken
+	            };
+	            var headers = options.headers || {};
+	            for (var key in headers) {
+	                innerHeaer[key] = headers[key];
+	            }
+	            for (var key in innerHeaer) {
+	                if (innerHeaer[key]) {
+	                    xhr.setRequestHeader(key, innerHeaer[key]);
+	                }
+	            }
+	            xhr.send(null);
+	        },
+
+	        parseTextMessage: function parseTextMessage(message, faces) {
+	            if (typeof message !== 'string') {
+	                return;
+	            }
+
+	            if (Object.prototype.toString.call(faces) !== '[object Object]') {
+	                return {
+	                    isemoji: false,
+	                    body: [{
+	                        type: 'txt',
+	                        data: message
+	                    }]
+	                };
+	            }
+
+	            var receiveMsg = message;
+	            var emessage = [];
+	            var expr = /\[[^[\]]{2,3}\]/mg;
+	            var emoji = receiveMsg.match(expr);
+
+	            if (!emoji || emoji.length < 1) {
+	                return {
+	                    isemoji: false,
+	                    body: [{
+	                        type: 'txt',
+	                        data: message
+	                    }]
+	                };
+	            }
+	            var isemoji = false;
+	            for (var i = 0; i < emoji.length; i++) {
+	                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emoji[i])),
+	                    existEmoji = WebIM.Emoji.map[emoji[i]];
+
+	                if (tmsg) {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: tmsg
+	                    });
+	                }
+	                if (!existEmoji) {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: emoji[i]
+	                    });
+	                    continue;
+	                }
+	                var emojiStr = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
+
+	                if (emojiStr) {
+	                    isemoji = true;
+	                    emessage.push({
+	                        type: 'emoji',
+	                        data: emojiStr
+	                    });
+	                } else {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: emoji[i]
+	                    });
+	                }
+	                var restMsgIndex = receiveMsg.indexOf(emoji[i]) + emoji[i].length;
+	                receiveMsg = receiveMsg.substring(restMsgIndex);
+	            }
+	            if (receiveMsg) {
+	                emessage.push({
+	                    type: 'txt',
+	                    data: receiveMsg
+	                });
+	            }
+	            if (isemoji) {
+	                return {
+	                    isemoji: isemoji,
+	                    body: emessage
+	                };
+	            }
+	            return {
+	                isemoji: false,
+	                body: [{
+	                    type: 'txt',
+	                    data: message
+	                }]
+	            };
+	        },
+
+	        xmlrequest: _xmlrequest,
+
+	        getXmlFirstChild: function getXmlFirstChild(data, tagName) {
+	            var children = data.getElementsByTagName(tagName);
+	            if (children.length == 0) {
+	                return null;
+	            } else {
+	                return children[0];
+	            }
+	        },
+	        ajax: function ajax(options) {
+	            var dataType = options.dataType || 'text';
+	            var suc = options.success || EMPTYFN;
+	            var error = options.error || EMPTYFN;
+	            var xhr = utils.xmlrequest();
+
+	            xhr.onreadystatechange = function () {
+	                if (xhr.readyState === 4) {
+	                    var status = xhr.status || 0;
+	                    if (status === 200) {
+	                        try {
+	                            switch (dataType) {
+	                                case 'text':
+	                                    suc(xhr.responseText);
+	                                    return;
+	                                case 'json':
+	                                    var json = utils.parseJSON(xhr.responseText);
+	                                    suc(json, xhr);
+	                                    return;
+	                                case 'xml':
+	                                    if (xhr.responseXML && xhr.responseXML.documentElement) {
+	                                        suc(xhr.responseXML.documentElement, xhr);
+	                                    } else {
+	                                        error({
+	                                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                                            data: xhr.responseText
+	                                        });
+	                                    }
+	                                    return;
+	                            }
+	                            suc(xhr.response || xhr.responseText, xhr);
+	                        } catch (e) {
+	                            error({
+	                                type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                                data: e
+	                            });
+	                        }
+	                        return;
+	                    } else {
+	                        error({
+	                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                            data: xhr.responseText
+	                        });
+	                        return;
+	                    }
+	                }
+	                if (xhr.readyState === 0) {
+	                    error({
+	                        type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                        data: xhr.responseText
+	                    });
+	                }
+	            };
+
+	            if (options.responseType) {
+	                if (xhr.responseType) {
+	                    xhr.responseType = options.responseType;
+	                }
+	            }
+	            if (options.mimeType) {
+	                if (utils.hasOverrideMimeType) {
+	                    xhr.overrideMimeType(options.mimeType);
+	                }
+	            }
+
+	            var type = options.type || 'POST',
+	                data = options.data || null,
+	                tempData = '';
+
+	            if (type.toLowerCase() === 'get' && data) {
+	                for (var o in data) {
+	                    if (data.hasOwnProperty(o)) {
+	                        tempData += o + '=' + data[o] + '&';
+	                    }
+	                }
+	                tempData = tempData ? tempData.slice(0, -1) : tempData;
+	                options.url += (options.url.indexOf('?') > 0 ? '&' : '?') + (tempData ? tempData + '&' : tempData) + '_v=' + new Date().getTime();
+	                data = null;
+	                tempData = null;
+	            }
+	            xhr.open(type, options.url);
+
+	            if (utils.isCanSetRequestHeader) {
+	                var headers = options.headers || {};
+	                for (var key in headers) {
+	                    if (headers.hasOwnProperty(key)) {
+	                        xhr.setRequestHeader(key, headers[key]);
+	                    }
+	                }
+	            }
+
+	            xhr.send(data);
+	            return xhr;
+	        },
+	        ts: function ts() {
+	            var d = new Date();
+	            var Hours = d.getHours(); //获取当前小时数(0-23)
+	            var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
+	            var Seconds = d.getSeconds(); //获取当前秒数(0-59)
+	            var Milliseconds = d.getMilliseconds(); //获取当前毫秒
+	            return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
+	        },
+
+	        getObjectKey: function getObjectKey(obj, val) {
+	            for (var key in obj) {
+	                if (obj[key] == val) {
+	                    return key;
+	                }
+	            }
+	            return '';
+	        }
+
+	    };
+
+	    exports.utils = utils;
+	})();
+
+/***/ },
+/* 224 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	;
+	(function () {
+
+	    exports.code = {
+	        WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: 0,
+	        WEBIM_CONNCTION_OPEN_ERROR: 1,
+	        WEBIM_CONNCTION_AUTH_ERROR: 2,
+	        WEBIM_CONNCTION_OPEN_USERGRID_ERROR: 3,
+	        WEBIM_CONNCTION_ATTACH_ERROR: 4,
+	        WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: 5,
+	        WEBIM_CONNCTION_REOPEN_ERROR: 6,
+	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7, //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+	        WEBIM_CONNCTION_SERVER_ERROR: 8, //8: offline by multi login
+	        WEBIM_CONNCTION_IQ_ERROR: 9,
+
+	        WEBIM_CONNCTION_PING_ERROR: 10,
+	        WEBIM_CONNCTION_NOTIFYVERSION_ERROR: 11,
+	        WEBIM_CONNCTION_GETROSTER_ERROR: 12,
+	        WEBIM_CONNCTION_CROSSDOMAIN_ERROR: 13,
+	        WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: 14,
+	        WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: 15,
+	        WEBIM_CONNCTION_DISCONNECTED: 16, //16: server-side close the websocket connection
+	        WEBIM_CONNCTION_AJAX_ERROR: 17,
+	        WEBIM_CONNCTION_JOINROOM_ERROR: 18,
+	        WEBIM_CONNCTION_GETROOM_ERROR: 19,
+
+	        WEBIM_CONNCTION_GETROOMINFO_ERROR: 20,
+	        WEBIM_CONNCTION_GETROOMMEMBER_ERROR: 21,
+	        WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR: 22,
+	        WEBIM_CONNCTION_LOAD_CHATROOM_ERROR: 23,
+	        WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR: 24,
+	        WEBIM_CONNCTION_JOINCHATROOM_ERROR: 25,
+	        WEBIM_CONNCTION_QUITCHATROOM_ERROR: 26,
+	        WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR: 27,
+	        WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR: 28,
+	        WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: 29,
+
+	        WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: 30,
+	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,
+	        WEBIM_CONNCTION_CLIENT_OFFLINE: 32, //32: client offline
+	        WEBIM_CONNCTION_CLIENT_LOGOUT: 33, //33: client logout
+	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34, // Over amount of the tabs a user opened in the same browser
+	        WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP: 35,
+	        WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP: 36,
+	        WEBIM_CONNECTION_ACCEPT_JOIN_GROUP: 37,
+	        WEBIM_CONNECTION_DECLINE_JOIN_GROUP: 38,
+	        WEBIM_CONNECTION_CLOSED: 39,
+
+	        WEBIM_UPLOADFILE_BROWSER_ERROR: 100,
+	        WEBIM_UPLOADFILE_ERROR: 101,
+	        WEBIM_UPLOADFILE_NO_LOGIN: 102,
+	        WEBIM_UPLOADFILE_NO_FILE: 103,
+
+	        WEBIM_DOWNLOADFILE_ERROR: 200,
+	        WEBIM_DOWNLOADFILE_NO_LOGIN: 201,
+	        WEBIM_DOWNLOADFILE_BROWSER_ERROR: 202,
+
+	        WEBIM_MESSAGE_REC_TEXT: 300,
+	        WEBIM_MESSAGE_REC_TEXT_ERROR: 301,
+	        WEBIM_MESSAGE_REC_EMOTION: 302,
+	        WEBIM_MESSAGE_REC_PHOTO: 303,
+	        WEBIM_MESSAGE_REC_AUDIO: 304,
+	        WEBIM_MESSAGE_REC_AUDIO_FILE: 305,
+	        WEBIM_MESSAGE_REC_VEDIO: 306,
+	        WEBIM_MESSAGE_REC_VEDIO_FILE: 307,
+	        WEBIM_MESSAGE_REC_FILE: 308,
+	        WEBIM_MESSAGE_SED_TEXT: 309,
+	        WEBIM_MESSAGE_SED_EMOTION: 310,
+	        WEBIM_MESSAGE_SED_PHOTO: 311,
+	        WEBIM_MESSAGE_SED_AUDIO: 312,
+	        WEBIM_MESSAGE_SED_AUDIO_FILE: 313,
+	        WEBIM_MESSAGE_SED_VEDIO: 314,
+	        WEBIM_MESSAGE_SED_VEDIO_FILE: 315,
+	        WEBIM_MESSAGE_SED_FILE: 316,
+	        WEBIM_MESSAGE_SED_ERROR: 317,
+
+	        STATUS_INIT: 400,
+	        STATUS_DOLOGIN_USERGRID: 401,
+	        STATUS_DOLOGIN_IM: 402,
+	        STATUS_OPENED: 403,
+	        STATUS_CLOSING: 404,
+	        STATUS_CLOSED: 405,
+	        STATUS_ERROR: 406
+	    };
+	})();
+
+/***/ },
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
-	var Avatar = __webpack_require__(193);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var Avatar = __webpack_require__(195);
 
 	var LocMsg = React.createClass({
 	    displayName: 'LocMsg',
@@ -24574,7 +30699,8 @@
 	                        ),
 	                        React.createElement(
 	                            'span',
-	                            { title: this.props.value, style: { lineHeight: '40px' }, className: 'webim-msg-name' },
+	                            { title: this.props.value, style: { lineHeight: '40px' },
+	                                className: 'webim-msg-name' },
 	                            this.props.value
 	                        )
 	                    )
@@ -24589,7 +30715,10 @@
 	        src: options.avatar || 'demo/images/default.png',
 	        time: options.time || new Date().toLocaleString(),
 	        value: options.value || '',
-	        name: options.name
+	        name: options.name,
+
+	        error: options.error,
+	        errorText: options.errorText
 	    };
 
 	    var node = document.createElement('div');
@@ -24602,16 +30731,16 @@
 	};
 
 /***/ },
-/* 209 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
-	var Avatar = __webpack_require__(193);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var Avatar = __webpack_require__(195);
 
 	var AudioMsg = React.createClass({
 	    displayName: 'AudioMsg',
@@ -24736,7 +30865,10 @@
 	        value: options.value || '',
 	        name: options.name,
 	        length: options.length || '',
-	        id: options.id
+	        id: options.id,
+
+	        error: options.error,
+	        errorText: options.errorText
 	    };
 
 	    var node = document.createElement('div');
@@ -24749,16 +30881,16 @@
 	};
 
 /***/ },
-/* 210 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var React = __webpack_require__(9);
-	var ReactDOM = __webpack_require__(40);
-	var Avatar = __webpack_require__(193);
+	var React = __webpack_require__(11);
+	var ReactDOM = __webpack_require__(42);
+	var Avatar = __webpack_require__(195);
 
 	var VideoMsg = React.createClass({
 	    displayName: 'VideoMsg',
@@ -24773,7 +30905,6 @@
 	            var objectURL = WebIM.utils.parseDownloadResponse.call(Demo.conn, response);
 
 	            me.refs.video.src = objectURL;
-	            log(objectURL);
 	        };
 
 	        options.onFileDownloadError = function () {};
@@ -24801,16 +30932,29 @@
 	            ),
 	            React.createElement(
 	                'div',
-	                { className: 'webim-msg-value' },
+	                { className: 'clearfix' },
 	                React.createElement(
-	                    'span',
-	                    { className: 'webim-msg-icon font' },
-	                    icon
+	                    'div',
+	                    { className: 'webim-msg-value' },
+	                    React.createElement(
+	                        'span',
+	                        { className: 'webim-msg-icon font' },
+	                        icon
+	                    ),
+	                    React.createElement(
+	                        'div',
+	                        { className: 'webim-video-msg' },
+	                        React.createElement('video', { id: this.props.id, ref: 'video', controls: true })
+	                    )
 	                ),
 	                React.createElement(
 	                    'div',
-	                    { className: 'webim-video-msg' },
-	                    React.createElement('video', { id: this.props.id, ref: 'video', controls: true })
+	                    { className: "webim-msg-error " + (this.props.error ? ' ' : 'hide') },
+	                    React.createElement(
+	                        'span',
+	                        { className: 'webim-file-icon font smaller red', title: this.props.errorText },
+	                        'k'
+	                    )
 	                )
 	            )
 	        );
@@ -24824,7 +30968,9 @@
 	        value: options.value || '',
 	        name: options.name,
 	        length: options.length || '',
-	        id: options.id
+	        id: options.id,
+	        error: options.error,
+	        errorText: options.errorText
 	    };
 
 	    var node = document.createElement('div');
@@ -24837,7 +30983,7 @@
 	};
 
 /***/ },
-/* 211 */
+/* 228 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -24884,7 +31030,7 @@
 	};
 
 /***/ },
-/* 212 */
+/* 229 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -24925,9 +31071,43 @@
 	    video: 'Video',
 	    cmd: 'Command',
 	    download: 'Download',
+	    loading: 'Loading',
+	    FileLoading: 'Loading...',
+	    openFile: 'Open File',
+	    openDir: 'Open Dir',
 	    noaccount: 'No account',
 	    signupnow: 'Sign up now',
+	    joinPublicGroup: 'Join Group',
+	    createGroup: 'Create Group',
+	    chooseGroupMember: 'Choose Member',
+	    selectedLabel: "Selected",
+	    groupMemberLabel: "Member",
+	    groupSubject: 'Group Subject',
+	    groupDescription: 'Group Description',
+	    groupPermission: 'Group Permission',
+	    groupMemberPermission: 'Group Member Permission',
+	    adminGroupMembers: 'Admin Group Members',
+	    inviteGroupMembers: 'Invite Group Members',
+	    changeGroupSubject: 'Change Subjec',
+	    changeGroupDescription: 'Change Description',
+	    destroyGroup: 'Destroy',
+	    leaveGroup: 'Leave',
 	    haveaccount: 'i have account',
+	    confirm: "confirm",
+	    cancel: "cancel",
+	    contact_added: 'Contact added!',
+	    contact_deleted: 'Contact deleted!',
+	    addFriendSelfInvalid: 'Can\'t add youself as friend',
+	    delFriendSelfInvalid: 'Can\'t del youself as friend',
+	    addFriendRepeat: 'is friend already',
+	    addToBlackList: 'add to blacklist',
+	    blacklist: 'Blacklist',
+	    ShowBlacklist: 'Blacklist',
+	    groupBlacklist: 'Blacklist',
+	    showGroupBlacklist: 'Blacklist',
+	    memberInvite: 'Invite',
+	    changeGroupInfo: 'Edit group info',
+	    groupNotification: 'Group Notification',
 	    fileOverSize: 'Size of file can\'t over 300 KB',
 	    last: ''
 	};
@@ -24968,9 +31148,45 @@
 	    video: '视频',
 	    cmd: '命令消息',
 	    download: '点击下载',
+	    loading: '正在加载',
+	    FileLoading: '正在下载...',
+	    openFile: '打开文件',
+	    openDir: '打开文件夹',
 	    noaccount: '没有账号',
 	    signupnow: '现在注册',
+	    joinPublicGroup: '申请加入公开群',
+	    createGroup: '创建群组',
+	    chooseGroupMember: '选择成员',
+	    selectedLabel: "选中",
+	    groupMemberLabel: "成员",
+	    groupSubject: '群组名',
+	    groupDescription: '群组简介',
+	    groupPermission: '群组权限',
+	    groupMemberPermission: '成员权限',
+	    adminGroupMembers: '管理群成员',
+	    inviteGroupMembers: '邀请群成员',
+	    changeGroupSubject: '修改群名称',
+	    changeGroupDescription: '修改群简介',
+	    destroyGroup: '解散群组',
+	    leaveGroup: '退出群组',
 	    haveaccount: '已有账号',
+	    confirm: "确定",
+	    cancel: "取消",
+	    contact_added: '已发送添加请求!',
+	    contact_deleted: '好友已删除!',
+	    addFriendSelfInvalid: '不能添加自己为好友',
+	    delFriendSelfInvalid: '该好友不存在',
+	    addFriendRepeat: '已经是好友',
+	    addToBlackList: '加入黑名单',
+	    blacklist: '好友黑名单',
+	    ShowBlacklist: '好友黑名单',
+	    // button
+	    groupBlacklist: '群组黑名单',
+	    // title
+	    showGroupBlacklist: '群组黑名单',
+	    memberInvite: '邀请好友',
+	    changeGroupInfo: '修改群信息',
+	    groupNotification: '群消息',
 	    fileOverSize: '文件最大不能超过300KB',
 	    last: ''
 	};

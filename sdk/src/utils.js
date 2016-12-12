@@ -300,8 +300,7 @@
             }
         }
 
-        , getFileSize: function ( fileInputId ) {
-            var file = document.getElementById(fileInputId)
+        , getFileSize: function ( file ) {
             var fileSize = 0;
             if ( file ) {
                 if ( file.files ) {
@@ -315,6 +314,25 @@
                     fileSize = file.Size;
                 }
             }
+
+            if(fileSize > 300000)
+                return false;
+
+            var kb = Math.round(fileSize / 1000);
+            if(kb < 1000){
+                fileSize = kb + ' KB';
+            }else if(kb >= 1000){
+                var mb = Math.round(kb / 1000);
+                if(mb < 1000){
+                    mv = (mb / 10) + (mb % 10) / 10;
+                    fileSize = mb + ' MB';
+                }else{
+                    var gb = Math.round(mb / 1000);
+                    gb = (gb / 10) + (gb % 10) / 10;
+                    fileSize = gb + ' GB';
+                }
+            }
+
             return fileSize;
         }
 

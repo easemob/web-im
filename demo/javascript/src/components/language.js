@@ -36,7 +36,9 @@ exports.English = {
     download: 'Download',
     noaccount: 'No account',
     signupnow: 'Sign up now',
-    haveaccount: 'i have account'
+    haveaccount: 'i have account',
+    fileOverSize: 'Size of file can\'t over 300 KB',
+    last: ''
 };
 
 exports.Chinese = {
@@ -67,7 +69,7 @@ exports.Chinese = {
     notin: '您不在当前聊天室',
     sendImageFailed: '图片发送失败',
     sendAudioFailed: '发送音频失败',
-    sendFileFailed: '文件音频失败',
+    sendFileFailed: '文件发送失败',
     image: '图片',
     audio: '音频',
     file: '文件',
@@ -77,5 +79,7 @@ exports.Chinese = {
     download: '点击下载',
     noaccount: '没有账号',
     signupnow: '现在注册',
-    haveaccount: '已有账号'
+    haveaccount: '已有账号',
+    fileOverSize: '文件最大不能超过300KB',
+    last: ''
 };

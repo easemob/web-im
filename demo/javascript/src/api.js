@@ -9,6 +9,8 @@ var fileMsg = require('./components/message/file');
 var locMsg = require('./components/message/loc');
 var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
+var Notify = require('./components/common/notify');
+
 
 module.exports = {
     log: (function () {
@@ -144,12 +146,17 @@ module.exports = {
                     Demo.strangers[targetId].push({ msg: msg, type: 'file' });
                 } else {
                     brief = '[' + Demo.lan.file + ']';
-                    fileMsg({
+                    var option = {
+                        id: msg.id,
                         wrapper: targetNode,
                         name: name,
-                        value: data || msg.url,
-                        filename: msg.filename
-                    }, this.sentByMe);
+                        filename: msg.filename,
+                        value: data || msg.url
+                    };
+                    if(msg.ext){
+                        option.fileSize = msg.ext.fileSize;
+                    }
+                    fileMsg(option, this.sentByMe);
                 }
                 break;
             case 'loc':
@@ -278,6 +285,14 @@ module.exports = {
         s = s.replace(/\"/g, "&quot;");
         s = s.replace(/\n/g, "<br>");
         return s;
+    },
+
+    NotifyError: function(msg){
+        Notify.error(msg);
+    },
+
+    NotifySuccess: function (msg) {
+        Notify.success(msg);
     },
 
     scrollIntoView: function ( node ) {

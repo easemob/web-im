@@ -50,9 +50,9 @@
 	;(function (window, undefined) {
 
 	    var _version = '1.1.2';
-	    var _code = __webpack_require__(210).code;
-	    var _utils = __webpack_require__(211).utils;
-	    var _msg = __webpack_require__(212);
+	    var _code = __webpack_require__(213).code;
+	    var _utils = __webpack_require__(214).utils;
+	    var _msg = __webpack_require__(215);
 	    var _message = _msg._msg;
 	    var _msgHash = {};
 
@@ -1619,7 +1619,7 @@
 
 /***/ },
 
-/***/ 210:
+/***/ 213:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1706,17 +1706,17 @@
 
 /***/ },
 
-/***/ 211:
+/***/ 214:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	;(function () {
 
 	    var EMPTYFN = function EMPTYFN() {},
-	        _code = __webpack_require__(210).code,
+	        _code = __webpack_require__(213).code,
 	        WEBIM_FILESIZE_LIMIT;
 
 	    var _createStandardXHR = function _createStandardXHR() {
@@ -2014,8 +2014,7 @@
 	            }
 	        },
 
-	        getFileSize: function getFileSize(fileInputId) {
-	            var file = document.getElementById(fileInputId);
+	        getFileSize: function getFileSize(file) {
 	            var fileSize = 0;
 	            if (file) {
 	                if (file.files) {
@@ -2029,6 +2028,24 @@
 	                    fileSize = file.Size;
 	                }
 	            }
+
+	            if (fileSize > 300000) return false;
+
+	            var kb = Math.round(fileSize / 1000);
+	            if (kb < 1000) {
+	                fileSize = kb + ' KB';
+	            } else if (kb >= 1000) {
+	                var mb = Math.round(kb / 1000);
+	                if (mb < 1000) {
+	                    mv = mb / 10 + mb % 10 / 10;
+	                    fileSize = mb + ' MB';
+	                } else {
+	                    var gb = Math.round(mb / 1000);
+	                    gb = gb / 10 + gb % 10 / 10;
+	                    fileSize = gb + ' GB';
+	                }
+	            }
+
 	            return fileSize;
 	        },
 
@@ -2509,7 +2526,7 @@
 
 /***/ },
 
-/***/ 212:
+/***/ 215:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2517,7 +2534,7 @@
 	;(function () {
 	    'use strict';
 
-	    var _utils = __webpack_require__(211).utils;
+	    var _utils = __webpack_require__(214).utils;
 	    var Message = function Message(type, id) {
 	        if (!this instanceof Message) {
 	            return new Message(type);
