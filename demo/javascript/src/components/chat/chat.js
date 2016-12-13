@@ -748,11 +748,6 @@ module.exports = React.createClass({
             me.refs.file.value = null;
             return false;
         }
-        if (!Demo.FILETYPE[file.filetype.toLowerCase()]) {
-            me.refs.file.value = null;
-            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
-            return;
-        }
         msg.set({
             apiUrl: Demo.conn.apiUrl,
             file: file,

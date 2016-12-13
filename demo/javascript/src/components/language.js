@@ -71,7 +71,7 @@ exports.English = {
     memberInvite: 'Invite',
     changeGroupInfo: 'Edit group info',
     groupNotification: 'Group Notification',
-    fileOverSize: 'Size of file can\'t over 300 KB',
+    fileOverSize: 'Size of file can\'t over 10 MB',
     last: ''
 };
 
@@ -150,6 +150,6 @@ exports.Chinese = {
     memberInvite: '邀请好友',
     changeGroupInfo: '修改群信息',
     groupNotification: '群消息',
-    fileOverSize: '文件最大不能超过300KB',
+    fileOverSize: '文件最大不能超过10MB',
     last: ''
 };
