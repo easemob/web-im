@@ -314,25 +314,21 @@
                     fileSize = file.Size;
                 }
             }
-
-            if(fileSize > 300000)
+            if(fileSize > 10000000)
                 return false;
 
             var kb = Math.round(fileSize / 1000);
             if(kb < 1000){
                 fileSize = kb + ' KB';
             }else if(kb >= 1000){
-                var mb = Math.round(kb / 1000);
+                var mb = kb / 1000;
                 if(mb < 1000){
-                    mv = (mb / 10) + (mb % 10) / 10;
-                    fileSize = mb + ' MB';
+                    fileSize = mb.toFixed(1) + ' MB';
                 }else{
-                    var gb = Math.round(mb / 1000);
-                    gb = (gb / 10) + (gb % 10) / 10;
-                    fileSize = gb + ' GB';
+                    var gb = mb / 1000;
+                    fileSize = gb.toFixed(1) + ' GB';
                 }
             }
-
             return fileSize;
         }
 
@@ -556,6 +552,7 @@
             xhr.setRequestHeader('restrict-access', 'true');
             xhr.setRequestHeader('Accept', '*/*');// Android QQ browser has some problem with this attribute.
             xhr.setRequestHeader('Authorization', 'Bearer ' + acc);
+            // xhr.setRequestHeader('Content-Length', '10000000');
 
             var formData = new FormData();
             formData.append('file', options.file.data);

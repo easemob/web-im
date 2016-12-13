@@ -23059,11 +23059,6 @@
 	            return false;
 	        }
 
-	        if (!Demo.FILETYPE[file.filetype.toLowerCase()]) {
-	            me.refs.file.value = null;
-	            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
-	            return;
-	        }
 	        msg.set({
 	            apiUrl: WebIM.config.apiURL,
 	            file: file,
@@ -24928,7 +24923,7 @@
 	    noaccount: 'No account',
 	    signupnow: 'Sign up now',
 	    haveaccount: 'i have account',
-	    fileOverSize: 'Size of file can\'t over 300 KB',
+	    fileOverSize: 'Size of file can\'t over 10 MB',
 	    last: ''
 	};
 
@@ -24971,7 +24966,7 @@
 	    noaccount: '没有账号',
 	    signupnow: '现在注册',
 	    haveaccount: '已有账号',
-	    fileOverSize: '文件最大不能超过300KB',
+	    fileOverSize: '文件最大不能超过10MB',
 	    last: ''
 	};
 

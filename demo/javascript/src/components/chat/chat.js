@@ -397,11 +397,6 @@ module.exports = React.createClass({
             return false;
         }
 
-        if ( !Demo.FILETYPE[file.filetype.toLowerCase()] ) {
-            me.refs.file.value = null;
-            Notify.error(Demo.lan.invalidType + ': ' + file.filetype);
-            return;
-        }
         msg.set({
             apiUrl: WebIM.config.apiURL,
             file: file,
