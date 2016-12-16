@@ -360,6 +360,13 @@ module.exports = React.createClass({
                 break;
             case 'unsubscribe':// The sender deletes a friend.
             case 'unsubscribed':// The other party has removed you from the friend list.
+                if('code' in msg){
+                    // you were refused by xxx
+                    // xxx拒绝了你的请求
+                    Demo.api.NotifySuccess(Demo.lan.refuse(msg.from));
+                }else{
+                    console.log('Deleted');
+                }
                 if (Demo.roster[msg.from]) {
                     delete Demo.roster[msg.from];
                 }

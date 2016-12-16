@@ -72,6 +72,10 @@ exports.English = {
     changeGroupInfo: 'Edit group info',
     groupNotification: 'Group Notification',
     fileOverSize: 'Size of file can\'t over 10 MB',
+    refuse: function (name) {
+        var str = 'You were refused by ' + name;
+        return str;
+    },
     last: ''
 };
 
@@ -151,5 +155,9 @@ exports.Chinese = {
     changeGroupInfo: '修改群信息',
     groupNotification: '群消息',
     fileOverSize: '文件最大不能超过10MB',
+    refuse: function (name) {
+        var str = name + '拒绝了你的请求';
+        return str;
+    },
     last: ''
 };

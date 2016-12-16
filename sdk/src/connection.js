@@ -367,6 +367,7 @@ var _loginCallback = function (status, msg, conn) {
         conn.onError(error);
     } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
         // client should limit the speed of sending ack messages  up to 5/s
+        conn.autoReconnectNumTotal = 0;
         conn.intervalId = setInterval(function () {
             conn.handelSendQueue();
         }, 200);
