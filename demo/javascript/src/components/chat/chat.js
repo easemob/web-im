@@ -276,16 +276,16 @@ module.exports = React.createClass({
                     //"decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
                     // TODO reason undefine if reason is busy
                     if (reason && (reason == 'busy' || reason == 'BUSY')) {
-                        Demo.api.NotifySuccess('Target is busy. Try it later.');
+                        Demo.api.NotifyError('Target is busy. Try it later.');
                     }
                     if (reason && (reason == 'timeout' || reason == 'NORESPONSE')) {
-                        Demo.api.NotifySuccess('Target no response. Try it later.');
+                        Demo.api.NotifyError('Target no response. Try it later.');
                     }
                     if (reason && (reason == 'decline' || reason == 'REJECT')) {
-                        Demo.api.NotifySuccess('Target reject. Try it later.');
+                        Demo.api.NotifyError('Target reject.');
                     }
                     if (reason && (reason == 'failed-transport' || reason == 'FAIL')) {
-                        Demo.api.NotifySuccess('Call failed. Try it later.');
+                        Demo.api.NotifyError('Call failed. Try it later.');
                     }
                     if (reason && (reason == 'ok' || reason == 'success' || reason == 'HANGUP')) {
                         Demo.api.NotifySuccess('Target hangup. ');
