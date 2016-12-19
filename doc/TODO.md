@@ -24,18 +24,18 @@
 
 #V1.5.0 (2016.12)
 ###新版UI
-###检查所有Demo.api.notify. 普通提示用Demo.api.info,错误提示才用Demo.api.notify
+###检查所有Demo.api.Notify. 普通提示用Demo.api.NotitySuccess,错误提示才用Demo.api.NotifyError (钟泽方 done)
 ###leftbar分类切换时，右侧的聊天窗口需要替换成遮罩，避免歧义和bug
 ###现有的机制是登录就创建所有的好友/群组/群的chatwindow,性能有问题。需要改成动态创建。
 ###webrtc视频弹窗增加声音开关按钮
-###传文件的时候 把文件大小传过去，方便没下载之前先看到文件大小。与客户端保持一致功能。(合创需要)
+###传文件的时候 把文件大小传过去，方便没下载之前先看到文件大小。与客户端保持一致功能。(钟泽方 done)
 
 #TODO 
 ###调整框架目录结构:src/dist/publish
 ###文件下载前，先发ajax请求带token参数去fileserver做验证
 ###增加搜索功能
 ###修改multi-select-box组件的UI
-###© 2016 环信科技  2016不要写死
+###© 2016 环信科技  2016不要写死 (钟泽方 done)
 ###所有eval('(' + message + ')');  改成 JSON.parse(message)  所有 eval('(' + str + ')');  改成 JSON.parse(str)  
 ###加入单元测试
 ###CI & CD

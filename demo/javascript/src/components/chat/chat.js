@@ -98,7 +98,7 @@ module.exports = React.createClass({
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
-                message.reason && Demo.api.NotifyError(message.reason);
+                message.reason && Demo.api.NotifySuccess(message.reason);
                 me.getGroup();
             },
             onOnline: function () {
@@ -149,7 +149,7 @@ module.exports = React.createClass({
                         message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
                         ||
                         message.type === WebIM.statusCode.WEBIM_CONNECTION_CLOSED){
-                        Demo.api.NotifyError(text);
+                        Demo.api.NotifySuccess(text);
                         return;
                     }else{
                         Demo.api.NotifyError('onError:' + text);
@@ -260,6 +260,8 @@ module.exports = React.createClass({
                 },
                 onGotRemoteStream: function (stream) {
                     // console.log('onGotRemoteStream');
+                    // 收到远程数据流
+                    // 渲染界面
                     me.channel.setRemote(stream);
                 },
                 onGotLocalStream: function (stream) {
@@ -270,8 +272,9 @@ module.exports = React.createClass({
                     // console.log('onRinging', caller);
                 },
                 onTermCall: function (reason) {
+                    // TODO reason undefine if reason is busy
                     if (reason && reason == 'busy') {
-                        Demo.api.NotifyError('Target is busy. Try it later.');
+                        Demo.api.NotifySuccess('Target is busy. Try it later.');
                     }
                     Demo.call.caller = '';
                     Demo.call.callee = '';
@@ -286,7 +289,7 @@ module.exports = React.createClass({
                     if (iceState == "disconnected") {
                         if (!me.rtcTimeoutID) {
                             me.rtcTimeoutID = setTimeout(function () {
-                                Demo.api.NotifyError('Target is offline');
+                                Demo.api.NotifySuccess('Target is offline');
                                 var closeButton = document.getElementById('webrtc_close');
                                 closeButton && closeButton.click();
                             }, 10000);
@@ -344,7 +347,7 @@ module.exports = React.createClass({
 
                 break;
             case 'leaveGroup':// dismissed by admin
-                Demo.api.NotifyError(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
+                Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
@@ -361,9 +364,7 @@ module.exports = React.createClass({
             case 'unsubscribe':// The sender deletes a friend.
             case 'unsubscribed':// The other party has removed you from the friend list.
                 if('code' in msg){
-                    // you were refused by xxx
-                    // xxx拒绝了你的请求
-                    Demo.api.NotifySuccess(Demo.lan.refuse(msg.from));
+                    Demo.api.NotifySuccess(WebIM.utils.sprintf(Demo.lan.refuse, msg.from));
                 }else{
                     console.log('Deleted');
                 }
@@ -372,7 +373,7 @@ module.exports = React.createClass({
                 }
                 break;
             case 'joinPublicGroupSuccess':
-                Demo.api.NotifyError(`You have been invited to group ${msg.from}`);
+                Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
                 Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
@@ -380,7 +381,7 @@ module.exports = React.createClass({
                 break;
             case 'reachChatRoomCapacity':// Failed to join the chat room
                 Demo.currentChatroom = null;
-                Demo.api.NotifyError('Fail to Join the group');
+                Demo.api.NotifySuccess('Fail to Join the group');
                 break;
             case 'leaveChatRoom':// Leave the chat room
                 break;
@@ -406,7 +407,7 @@ module.exports = React.createClass({
                     Demo.api.updateGroup();
                 }
 
-                Demo.api.NotifyError(options.msg);
+                Demo.api.NotifySuccess(options.msg);
                 break;
         }
 

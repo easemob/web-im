@@ -61,6 +61,7 @@ var _Call = {
 
     makeVideoCall: function (callee, accessSid) {
 
+        console.log('callee: ', callee);
         var mediaStreamConstaints = {};
         Util.extend(mediaStreamConstaints, this.mediaStreamConstaints);
 

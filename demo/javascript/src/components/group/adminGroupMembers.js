@@ -117,7 +117,7 @@ var AdminGroupMembers = React.createClass({
 
 
         if (this.props.value == "PRIVATE_MEMBER_INVITE" && value_del.length > 0) {
-            Demo.api.NotifyError("权限不够，不能删除私有群成员");
+            Demo.api.NotifyError(Demo.lan.deletePrivateGroupMember);
             return;
         }
         //TODO:@lhr  value_add 和 value_del 需要分成两个doQuery 处理

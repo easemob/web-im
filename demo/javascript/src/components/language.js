@@ -72,10 +72,9 @@ exports.English = {
     changeGroupInfo: 'Edit group info',
     groupNotification: 'Group Notification',
     fileOverSize: 'Size of file can\'t over 10 MB',
-    refuse: function (name) {
-        var str = 'You were refused by ' + name;
-        return str;
-    },
+    deletePrivateGroupMember: "Permission denied, can\'t delete private members",
+    groupNameNotEmpty: 'Group name can\'t be empty',
+    refuse: 'You were refused by %s',
     last: ''
 };
 
@@ -155,9 +154,8 @@ exports.Chinese = {
     changeGroupInfo: '修改群信息',
     groupNotification: '群消息',
     fileOverSize: '文件最大不能超过10MB',
-    refuse: function (name) {
-        var str = name + '拒绝了你的请求';
-        return str;
-    },
+    deletePrivateGroupMember: '权限不够，不能删除私有群成员',
+    groupNameNotEmpty: '群组名不能为空',
+    refuse: '%s拒绝了你的请求',
     last: ''
 };

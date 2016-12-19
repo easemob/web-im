@@ -294,6 +294,8 @@ module.exports = {
 
         this.sentByMe = msg.from === Demo.user;
 
+        console.log('msg: ', msg);
+
         var brief = '',
             data = msg.data || msg.msg || '',
             name = this.sendByMe ? Demo.user : msg.from,

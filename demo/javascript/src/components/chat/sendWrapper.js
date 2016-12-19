@@ -70,7 +70,7 @@ module.exports = React.createClass({
 
         if (chatroom && Demo.currentChatroom !== Demo.selected) {
 
-            Demo.api.NotifyError(Demo.lan.notin);
+            Demo.api.NotifySuccess(Demo.lan.notin);
             return false;
         }
 

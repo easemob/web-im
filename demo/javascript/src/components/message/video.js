@@ -23,6 +23,7 @@ var VideoMsg = React.createClass({
             'Accept': 'audio/mp4'
         };
 
+        console.log('options: ', options);
         WebIM.utils.download.call(Demo.conn, options);
 
     },
