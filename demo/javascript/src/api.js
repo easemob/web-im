@@ -247,7 +247,6 @@ module.exports = {
                 props = null;
                 break;
         }
-
         if (props) {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout} {...props} />, this.node);
         } else {
@@ -293,8 +292,6 @@ module.exports = {
         msg.type = msg.type || 'chat';
 
         this.sentByMe = msg.from === Demo.user;
-
-        console.log('msg: ', msg);
 
         var brief = '',
             data = msg.data || msg.msg || '',
@@ -568,8 +565,6 @@ module.exports = {
                 this.addCount(msg.to, cate);
                 break;
         }
-
-
     },
 
     appendBrief: function (id, value) {

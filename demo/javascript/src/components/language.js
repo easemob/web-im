@@ -75,6 +75,7 @@ exports.English = {
     deletePrivateGroupMember: "Permission denied, can\'t delete private members",
     groupNameNotEmpty: 'Group name can\'t be empty',
     refuse: 'You were refused by %s',
+    inviteToGroup: '%s invite you to the group',
     last: ''
 };
 
@@ -157,5 +158,6 @@ exports.Chinese = {
     deletePrivateGroupMember: '权限不够，不能删除私有群成员',
     groupNameNotEmpty: '群组名不能为空',
     refuse: '%s拒绝了你的请求',
+    inviteToGroup: '%s邀请您进群',
     last: ''
 };

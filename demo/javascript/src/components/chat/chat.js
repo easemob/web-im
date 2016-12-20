@@ -18,6 +18,7 @@ module.exports = React.createClass({
                 me.updateMyRoster(options);
             },
             onUpdateMyGroupList: function (options) {
+                console.log('onUpdateMyGroupList');
                 me.updateMyGroupList(options);
             },
             onConfirmPop: function (options) {
@@ -98,7 +99,8 @@ module.exports = React.createClass({
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
-                message.reason && Demo.api.NotifySuccess(message.reason);
+                var notify = WebIM.utils.sprintf(Demo.lan.inviteToGroup, message.from);
+                message.type === "invite" && Demo.api.NotifySuccess(notify);
                 me.getGroup();
             },
             onOnline: function () {
@@ -203,8 +205,8 @@ module.exports = React.createClass({
         Demo.friends = friends;
         this.setState({friends: friends});
     },
-    //for WindosSDK
     updateMyGroupList: function (options) {
+        console.log('updateMygroupList');
         var rooms = eval('(' + options + ')');
         this.setState({groups: rooms});
     },
@@ -260,8 +262,6 @@ module.exports = React.createClass({
                 },
                 onGotRemoteStream: function (stream) {
                     // console.log('onGotRemoteStream');
-                    // 收到远程数据流
-                    // 渲染界面
                     me.channel.setRemote(stream);
                 },
                 onGotLocalStream: function (stream) {
@@ -344,7 +344,13 @@ module.exports = React.createClass({
                 ConfirmGroupInfo.show(msg);
                 break;
             case 'createGroupACK':
-
+                Demo.conn.createGroupAsync({
+                    from: msg.from,
+                    success: function() {
+                        Demo.api.updateGroup();
+                    }
+                });
+                Demo.api.NotifySuccess(Demo.lan.createGroup);
                 break;
             case 'leaveGroup':// dismissed by admin
                 Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
@@ -388,8 +394,10 @@ module.exports = React.createClass({
             case 'deleteGroupChat':// The chat room or group is deleted.
                 // ignore the sync `recv` request
                 // only handle on async request
-                if (msg.original_type == 'unavailable') return;
-
+                if (msg.original_type == 'unavailable'){
+                    Demo.api.updateGroup();
+                    return;
+                }
                 var target = document.getElementById(msg.from);
                 var options = {
                     title: "Group notification",
@@ -491,6 +499,7 @@ module.exports = React.createClass({
                     me.setState({groups: rooms});
                 },
                 error: function (e) {
+                    console.log('error');
                     Demo.conn.setPresence();
                 }
             });
