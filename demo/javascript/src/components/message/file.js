@@ -65,7 +65,8 @@ var FileMsg = React.createClass({
                             <p className='webim-msg-header'>{Demo.lan.file}</p>
                             <div id={'file_' + this.props.id}>
                                 <span className='webim-msg-header-icon font small'>S</span>
-                                <span className='webim-msg-name'>{this.props.filename}</span>
+                                <span className='webim-msg-name'> {this.props.filename}</span>
+                                <span className='webim-msg-fileSize'>{this.props.fileSize}</span>
                                 {links}
                             </div>
                         </div>
@@ -90,6 +91,11 @@ module.exports = function (options, sentByMe) {
         error: options.error,
         errorText: options.errorText
     };
+
+    if(options.fileSize){
+        props.fileSize = options.fileSize;
+        console.log('props.fileSize: ', options.fileSize);
+    }
 
     var node = document.createElement('div');
     node.className = 'webim-msg-container rel';

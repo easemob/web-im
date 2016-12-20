@@ -65,6 +65,10 @@ WebIM.config = {
      */
     isWebRTC: /WebKit/.test(navigator.userAgent) && /^https\:$/.test(window.location.protocol),
     /**
+     * after login, send empty message to xmpp server like heartBeat every 45s, to keep the ws connection alive.
+     */
+    heartBeatWait:4500,
+    /**
      * while http access,use ip directly,instead of ServerName,avoiding DNS problem.
      */
     isHttpDNS: false

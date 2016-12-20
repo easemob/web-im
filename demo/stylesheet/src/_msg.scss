@@ -136,11 +136,18 @@
 }
 
 .webim-msg-name {
-  width: calc(100% - 40px);
+  width: calc(100% - 80px);
   display: inline-block;
   height: 40px;
   text-overflow: ellipsis;
   white-space: nowrap;
+  overflow: hidden;
+}
+
+.webim-msg-fileSize{
+  display: inline-block;
+  float: right;
+  width: 47px;
   overflow: hidden;
 }
 

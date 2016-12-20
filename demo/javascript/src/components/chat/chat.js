@@ -116,18 +116,8 @@ module.exports = React.createClass({
                     Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_OFFLINE);
                 }
             },
-            // used for blacklist
-            onBlacklistUpdate: function (list) {
-                // log('onBlacklistUpdate', list);
-                Demo.api.blacklist.parse(list);
-                me.setState({blacklist: list});
-                // TODO 增量更新
-                Demo.api.updateRoster();
-            },
             onError: function (message) {
-                /*if ( msg && msg.reconnect ) {}*/
-                // log(WebIM.utils.ts(), 'onError', message);
-                // console.log('onError', message);
+
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -148,10 +138,22 @@ module.exports = React.createClass({
                     } else {
                         text = WebIM.utils.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
                     }
-                    // Demo.api.logout(message.type);
                 }
                 if (Demo.conn.errorType != WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
-                    Demo.api.NotifyError('onError:' + text);
+                    if(message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_CLOSED){
+                        Demo.api.NotifyError(text);
+                        return;
+                    }else{
+                        Demo.api.NotifyError('onError:' + text);
+                    }
                 }
 
                 //webRTC:断线处理
@@ -159,13 +161,16 @@ module.exports = React.createClass({
                     var closeButton = document.getElementById('webrtc_close');
                     closeButton && closeButton.click();
                 }
-
-
-                Demo.api.init(Demo.conn.errorType);
-
-
+                Demo.api.init();
+            },
+            // used for blacklist
+            onBlacklistUpdate: function (list) {
+                // log('onBlacklistUpdate', list);
+                Demo.api.blacklist.parse(list);
+                me.setState({blacklist: list});
+                // TODO 增量更新
+                Demo.api.updateRoster();
             }
-
         });
 
         return {
@@ -361,11 +366,7 @@ module.exports = React.createClass({
                 break;
             case 'joinPublicGroupSuccess':
                 Demo.api.NotifyError(`You have been invited to group ${msg.from}`);
-                //TODO: 服务器端有bug，先延迟1秒刷新列表,找易乐天
-                setTimeout(function () {
-                    Demo.api.updateGroup()
-                }, 1000);
-
+                Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
                 Demo.currentChatroom = msg.from;
@@ -508,7 +509,7 @@ module.exports = React.createClass({
                 });
         } else {
             Demo.conn.getChatRooms({
-                apiUrl: WebIM.config.apiURL,
+                apiUrl: Demo.conn.apiUrl,
                 pagenum: pagenum,
                 pagesize: Demo.api.pagesize,
                 success: function (list) {
@@ -578,7 +579,7 @@ module.exports = React.createClass({
         var msg = new WebIM.message('img', Demo.conn.getUniqueId());
 
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             to: Demo.selected,
             roomType: chatroom,
@@ -593,7 +594,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.picture.value = null;
             },
             success: function (id) {
@@ -630,7 +631,7 @@ module.exports = React.createClass({
             me = this;
 
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             to: Demo.selected,
             roomType: chatroom,
@@ -646,7 +647,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.audio.value = null;
             },
             success: function (id, sid) {
@@ -735,29 +736,30 @@ module.exports = React.createClass({
             msg = new WebIM.message('file', Demo.conn.getUniqueId()),
             chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.file),
+            fileSize = WebIM.utils.getFileSize(me.refs.file),
             filename = file.filename;
+
+        if(!fileSize){
+            Demo.api.NotifyError(Demo.lan.fileOverSize);
+            return false;
+        }
 
         if (!file.filename) {
             me.refs.file.value = null;
             return false;
         }
-
-        if (!Demo.FILETYPE[file.filetype.toLowerCase()]) {
-            me.refs.file.value = null;
-            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
-            return;
-        }
-
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             filename: filename,
             to: Demo.selected,
             roomType: chatroom,
+            ext:{
+                fileSize: fileSize
+            },
             onFileUploadError: function (error) {
                 log(error);
                 me.refs.file.value = null;
-
                 Demo.api.appendMsg({
                     data: Demo.lan.sendFileFailed,
                     from: Demo.user,
@@ -765,7 +767,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
             },
             success: function (id) {
@@ -778,7 +780,6 @@ module.exports = React.createClass({
             },
             flashUpload: WebIM.flashUpload
         });
-
         if (Demo.selectedCate === 'groups') {
             msg.setGroup(Demo.groupType);
         } else if (chatroom) {
@@ -810,6 +811,13 @@ module.exports = React.createClass({
         for (var i = 0; i < this.state.groups.length; i++) {
             id = this.state.groups[i].roomId;
             props.name = this.state.groups[i].name;
+            //createGroup is two step progresses.first send presence,second send iq.
+            //on first recv group list, the newest created one's roomId=name,
+            //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+                this.state.groups[i].name = Demo.createGroupName;
+                Demo.createGroupName = '';
+            }
 
             windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
                                      className={id === this.state.curNode ? '' : 'hide'}/>);

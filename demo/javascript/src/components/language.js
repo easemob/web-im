@@ -71,6 +71,7 @@ exports.English = {
     memberInvite: 'Invite',
     changeGroupInfo: 'Edit group info',
     groupNotification: 'Group Notification',
+    fileOverSize: 'Size of file can\'t over 10 MB',
     last: ''
 };
 
@@ -102,7 +103,7 @@ exports.Chinese = {
     notin: '您不在当前聊天室',
     sendImageFailed: '图片发送失败',
     sendAudioFailed: '发送音频失败',
-    sendFileFailed: '文件音频失败',
+    sendFileFailed: '文件发送失败',
     image: '图片',
     audio: '音频',
     file: '文件',
@@ -149,5 +150,6 @@ exports.Chinese = {
     memberInvite: '邀请好友',
     changeGroupInfo: '修改群信息',
     groupNotification: '群消息',
+    fileOverSize: '文件最大不能超过10MB',
     last: ''
 };

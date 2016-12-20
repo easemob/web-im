@@ -1,5 +1,19 @@
 #版本更新说明:
 
+## v1.4.6 @ 2016-12-08
+
+###Feature
+
+* [sdk] 新增 demo.html, 演示如何调用sdk的各种接口
+
+###BugFix
+
+* [demo] 创建群组成功之后，立即刷新群组列表，不再等1秒
+* [sdk]  sdk与上层Demo解耦，删除Demo相关代码
+* [sdk]  删除server不支持的connection.prototype.createRoom
+
+
+
 ##v1.4.5 @ 2016-12-01
 ###新功能
 
@@ -82,6 +96,19 @@
    
 ---
 #ChangeLog:
+
+## v1.4.6 @ 2016-12-08
+
+###Feature
+
+* [sdk] add demo.html, listing how to use sdk's interfaces
+
+###BugFix
+
+* [demo] after create group success, UI will refresh group list immediately, won't wait 1 second any more.
+* [sdk] to decoupling from Demo namespaces, delete codes using Demo
+* [sdk] delete connection.prototype.createRoom, which is not supported by server
+
 
 ##v1.4.5 @ 2016-12-01
 

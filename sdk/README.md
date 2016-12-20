@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.4.6
+
+###Feature
+
+* add demo.html
+
+###BugFix
+
+* to decoupling from Demo namespaces, delete codes using Demo
+* delete connection.prototype.createRoom, which is not supported by server
+
 ## v1.4.5
 
 ###Feature

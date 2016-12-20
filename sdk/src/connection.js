@@ -452,8 +452,8 @@ var _loginCallback = function (status, msg, conn) {
         }
     } else if (status == Strophe.Status.DISCONNECTED) {
         if (conn.isOpened()) {
-            if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
-                Demo.conn.reconnect();
+            if (conn.autoReconnectNumTotal < conn.autoReconnectNumMax) {
+                conn.reconnect();
                 return;
             } else {
                 error = {
@@ -594,6 +594,7 @@ var connection = function (options) {
 
     var options = options || {};
 
+    this.isHttpDNS = options.isHttpDNS || false;
     this.isMultiLoginSessions = options.isMultiLoginSessions || false;
     this.wait = options.wait || 30;
     this.retry = options.retry || false;
@@ -614,6 +615,8 @@ var connection = function (options) {
     this.context = {status: _code.STATUS_INIT};
     this.sendQueue = new Queue();  //instead of sending message immediately,cache them in this queue
     this.intervalId = null;   //clearInterval return value
+    this.apiUrl = options.apiUrl || '';
+    this.isWindowSDK = options.isWindowSDK || false;
 
     this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
     this.dnsIndex = 0;   //the dns ip used in dnsArr currently
@@ -625,6 +628,15 @@ var connection = function (options) {
     this.xmppIndex = 0;    //the xmpp ip used in xmppHosts currently
     this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
 };
+
+connection.prototype.registerUser = function (options){
+    if (location.protocol != 'https:' && this.isHttpDNS) {
+        this.dnsIndex = 0;
+        this.getHttpDNS(options, 'signup');
+    } else {
+        this.signup(options);
+    }
+}
 
 connection.prototype.handelSendQueue = function () {
     var options = this.sendQueue.pop();
@@ -701,7 +713,7 @@ connection.prototype.cacheReceiptsMessage = function (options) {
 };
 
 connection.prototype.getStrophe = function () {
-    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+    if (location.protocol != 'https:' && this.isHttpDNS) {
         //TODO: try this.xmppTotal times on fail
         var url = '';
         var host = this.xmppHosts[this.xmppIndex];
@@ -761,7 +773,7 @@ connection.prototype.getRestFromHttpDNS = function (options, type) {
     }
 
     if (url != '') {
-        WebIM.config.apiURL = url;
+        this.apiUrl = url;
         options.apiUrl = url;
     }
 
@@ -846,7 +858,7 @@ connection.prototype.signup = function (options) {
     }
 
     var error = function (res, xhr, msg) {
-        if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+        if (location.protocol != 'https:' && self.isHttpDNS) {
             if ((self.restIndex + 1) < self.restTotal) {
                 self.restIndex++;
                 self.getRestFromHttpDNS(options, 'signup');
@@ -879,7 +891,7 @@ connection.prototype.signup = function (options) {
 
 
 connection.prototype.open = function (options) {
-    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+    if (location.protocol != 'https:' && this.isHttpDNS) {
         this.dnsIndex = 0;
         this.getHttpDNS(options, 'login');
     } else {
@@ -916,7 +928,7 @@ connection.prototype.login = function (options) {
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
-            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+            if (location.protocol != 'https:' && conn.isHttpDNS) {
                 if ((conn.restIndex + 1) < conn.restTotal) {
                     conn.restIndex++;
                     conn.getRestFromHttpDNS(options, 'login');
@@ -1255,6 +1267,7 @@ connection.prototype.handleIqRoster = function (e) {
 };
 
 connection.prototype.handleMessage = function (msginfo) {
+    var self = this;
     if (this.isClosed()) {
         return;
     }
@@ -1361,7 +1374,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , thumb: msgBody.thumb
@@ -1387,7 +1400,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , length: msgBody.length || ''
@@ -1410,7 +1423,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , file_length: msgBody.file_length
@@ -1449,7 +1462,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , file_length: msgBody.file_length
@@ -1582,12 +1595,19 @@ connection.prototype.getUniqueId = function (prefix) {
 };
 
 connection.prototype.send = function (message) {
-    if (WebIM.config.isWindowSDK) {
+    var self = this;
+    if (this.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
             },
             function (code, msg) {
-                Demo.api.NotifyError('send:' + code + " - " + msg);
+                var message = {
+                    data: {
+                        data: "send"
+                    },
+                    type: _code.WEBIM_MESSAGE_SED_ERROR
+                };
+                self.onError(message);
             });
     } else {
         if (Object.prototype.toString.call(message) === '[object Object]') {
@@ -1717,20 +1737,6 @@ connection.prototype.unsubscribed = function (options) {
     this.sendCommand(pres.tree());
 };
 
-connection.prototype.createRoom = function (options) {
-    var suc = options.success || _utils.emptyfn;
-    var err = options.error || _utils.emptyfn;
-    var roomiq;
-
-    roomiq = $iq({
-        to: options.roomName,
-        type: 'set'
-    })
-        .c('query', {xmlns: Strophe.NS.MUC_OWNER})
-        .c('x', {xmlns: 'jabber:x:data', type: 'submit'});
-
-    return this.context.stropheConn.sendIQ(roomiq.tree(), suc, err);
-};
 
 connection.prototype.joinPublicGroup = function (options) {
     var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
@@ -1997,7 +2003,7 @@ connection.prototype.isClosed = function () {
 
 connection.prototype.clear = function () {
     var key = this.context.appKey;
-    if (this.errorType != WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
+    if (this.errorType != _code.WEBIM_CONNCTION_DISCONNECTED) {
         this.context = {
             status: _code.STATUS_INIT,
             appKey: key
@@ -2009,8 +2015,15 @@ connection.prototype.clear = function () {
     this.restIndex = 0;
     this.xmppIndex = 0;
 
-    if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
-        Demo.api.init();
+
+    if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
+        var message = {
+            data: {
+                data: "clear"
+            },
+            type: _code.WEBIM_CONNCTION_CLIENT_LOGOUT
+        };
+        this.onError(message);
     }
 };
 
@@ -2126,20 +2139,32 @@ connection.prototype.quitChatRoom = function (options) {
 
 connection.prototype._onReceiveInviteFromGroup = function (info) {
     info = eval('(' + info + ')');
+    var self = this;
     var options = {
         title: "Group invitation",
         msg: info.user + " invites you to join into group:" + info.group_id,
         agree: function agree() {
             WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("acceptInvitationFromGroup error:" + msg);
+                var message = {
+                    data: {
+                        data: "acceptInvitationFromGroup error:" + msg
+                    },
+                    type: _code.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
+                };
+                self.onError(message);
             });
-
         },
         reject: function reject() {
             WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("declineInvitationFromGroup error:" + msg);
+                var message = {
+                    data: {
+                        data: "declineInvitationFromGroup error:" + msg
+                    },
+                    type: _code.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
+                };
+                self.onError(message);
             });
         }
     };
@@ -2188,19 +2213,32 @@ connection.prototype._onLeaveGroup = function (info) {
 };
 connection.prototype._onReceiveJoinGroupApplication = function (info) {
     info = eval('(' + info + ')');
+    var self = this;
     var options = {
         title: "Group join application",
         msg: info.user + " applys to join into group:" + info.group_id,
         agree: function agree() {
             WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("acceptJoinGroupApplication error:" + msg);
+                var message = {
+                    data: {
+                        data: "acceptJoinGroupApplication error:" + msg
+                    },
+                    type: _code.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
+                };
+                self.onError(message);
             });
         },
         reject: function reject() {
             WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
             }, function (code, msg) {
-                Demo.api.NotifyError("declineJoinGroupApplication error:" + msg);
+                var message = {
+                    data: {
+                        data: "declineJoinGroupApplication error:" + msg
+                    },
+                    type: _code.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
+                };
+                self.onError(message);
             });
         }
     };
@@ -2239,8 +2277,15 @@ connection.prototype.reconnect = function () {
     }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
     this.autoReconnectNumTotal++;
 };
+
 connection.prototype.closed = function () {
-    Demo.api.init();
+    var message = {
+        data: {
+            data: "Closed error"
+        },
+        type: _code.WEBIM_CONNECTION_CLOSED
+    };
+    this.onError(message);
 };
 
 // used for blacklist
@@ -2467,15 +2512,15 @@ connection.prototype.changeGroupSubject = function (options) {
 
     iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
         .c('x', {type: 'submit', xmlns: 'jabber:x:data'})
-        .c('field', {var: 'FORM_TYPE'})
+        .c('field', {'var': 'FORM_TYPE'})
         .c('value')
         .t('http://jabber.org/protocol/muc#roomconfig')
         .up().up()
-        .c('field', {var: 'muc#roomconfig_roomname'})
+        .c('field', {'var': 'muc#roomconfig_roomname'})
         .c('value')
         .t(options.subject)
         .up().up()
-        .c('field', {var: 'muc#roomconfig_roomdesc'})
+        .c('field', {'var': 'muc#roomconfig_roomdesc'})
         .c('value')
         .t(options.description);
 
