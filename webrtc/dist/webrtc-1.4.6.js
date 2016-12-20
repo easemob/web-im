@@ -45,20 +45,20 @@
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(228);
+	module.exports = __webpack_require__(234);
 
 
 /***/ },
 
-/***/ 228:
+/***/ 234:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	var Util = __webpack_require__(230);
-	var Call = __webpack_require__(231);
+	var Util = __webpack_require__(236);
+	var Call = __webpack_require__(237);
 
 	window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
 	WebIM.WebRTC = WebIM.WebRTC || {};
@@ -81,11 +81,11 @@
 	}
 
 	//WebIM.WebRTC.supportPRAnswer = false;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(229)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(235)(module)))
 
 /***/ },
 
-/***/ 229:
+/***/ 235:
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -102,12 +102,12 @@
 
 /***/ },
 
-/***/ 230:
+/***/ 236:
 /***/ function(module, exports) {
 
 	'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	/*
 	 * ! Math.uuid.js (v1.4) http://www.broofa.com mailto:robert@broofa.com
@@ -517,16 +517,16 @@
 
 /***/ },
 
-/***/ 231:
+/***/ 237:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Util = __webpack_require__(230);
-	var RTCIQHandler = __webpack_require__(232);
-	var API = __webpack_require__(233);
-	var WebRTC = __webpack_require__(234);
-	var CommonPattern = __webpack_require__(235);
+	var Util = __webpack_require__(236);
+	var RTCIQHandler = __webpack_require__(238);
+	var API = __webpack_require__(239);
+	var WebRTC = __webpack_require__(240);
+	var CommonPattern = __webpack_require__(241);
 
 	var RouteTo = API.RouteTo;
 	var Api = API.Api;
@@ -709,7 +709,7 @@
 
 /***/ },
 
-/***/ 232:
+/***/ 238:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -718,9 +718,9 @@
 	 * IQ Message，IM -> CMServer --> IM
 	 */
 
-	var _util = __webpack_require__(230);
+	var _util = __webpack_require__(236);
 	var _logger = _util.logger;
-	var API = __webpack_require__(233);
+	var API = __webpack_require__(239);
 	var RouteTo = API.RouteTo;
 
 	var CONFERENCE_XMLNS = "urn:xmpp:media-conference";
@@ -832,6 +832,10 @@
 	        if (rtcOptions.op == 107) {
 	            self._connectedSid = '';
 	            self._fromSessionID = {};
+
+	            var reasonObj = msginfo.getElementsByTagName('reason');
+	            //var endReason = msginfo.getElementsByTagName('reason')[0].innerHTML;
+	            reasonObj && reasonObj.length > 0 && (rtcOptions.reason = reasonObj[0].innerHTML);
 	        }
 
 	        if (rtcOptions.sdp) {
@@ -987,7 +991,7 @@
 	        }).c("MediaReqExt").c('rtkey').t(rtKey).up().c('rtflag').t(rtflag).up().c('stream_type').t(streamType).up().c('sid').t(sid).up().c('content').t(_util.stringifyJSON(options.data));
 
 	        if (options.data.op == 107 && options.reason) {
-	            iq.up().c('reaseon').t(options.reason);
+	            iq.up().c('reason').t(options.reason);
 	        }
 	        _logger.debug("Send [op = " + options.data.op + "] : \r\n", iq.tree());
 
@@ -1028,17 +1032,17 @@
 
 /***/ },
 
-/***/ 233:
+/***/ 239:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	/**
 	 * API
 	 */
-	var _util = __webpack_require__(230);
+	var _util = __webpack_require__(236);
 	var _logger = _util.logger;
 
 	var _RouteTo = {
@@ -1662,7 +1666,7 @@
 
 /***/ },
 
-/***/ 234:
+/***/ 240:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1705,7 +1709,7 @@
 	 *                                                  |
 	 *
 	 */
-	var _util = __webpack_require__(230);
+	var _util = __webpack_require__(236);
 	var _logger = _util.logger;
 
 	var _SDPSection = {
@@ -2139,6 +2143,9 @@
 
 	        _logger.debug('[WebRTC-API] setRemoteDescription start. ');
 
+	        desc.sdp = desc.sdp.replace(/UDP\/TLS\/RTP\/SAVPF/g, "RTP/SAVPF");
+	        _logger.debug('[WebRTC-API] setRemoteDescription.', desc);
+
 	        desc = new RTCSessionDescription(desc);
 
 	        return self.rtcPeerConnection.setRemoteDescription(desc).then(self.onSetRemoteSuccess, self.onSetSessionDescriptionError);
@@ -2221,7 +2228,7 @@
 
 /***/ },
 
-/***/ 235:
+/***/ 241:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2229,8 +2236,8 @@
 	/**
 	 * P2P
 	 */
-	var _util = __webpack_require__(230);
-	var RouteTo = __webpack_require__(233).RouteTo;
+	var _util = __webpack_require__(236);
+	var RouteTo = __webpack_require__(239).RouteTo;
 	var _logger = _util.logger;
 
 	var P2PRouteTo = RouteTo({
@@ -2564,7 +2571,18 @@
 	        self.onTermCall(reason);
 	    },
 
+	    /**
+	     *
+	     * @param from
+	     * @param options
+	     * @param options.reason
+	     *               "ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+	     *               "decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
+	     * @private
+	     */
 	    _onTermC: function _onTermC(from, options) {
+	        _logger.debug("[_onTermC] options.reason = " + options.reason);
+
 	        var self = this;
 
 	        self.hangup = true;
