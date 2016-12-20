@@ -32,6 +32,9 @@ var CommonPattern = {
 
     consult: false,
 
+    isCaller: false,
+    accepted: false,
+
 
     init: function () {
         var self = this;
@@ -83,6 +86,9 @@ var CommonPattern = {
     initC: function (mediaStreamConstaints, accessSid) {
         var self = this;
         self.sid = accessSid;
+
+        self.isCaller = true;
+        self.accepted = false;
 
         self.createLocalMedia(mediaStreamConstaints);
     },
@@ -156,6 +162,8 @@ var CommonPattern = {
 
         _logger.info("[WebRTC-API] _onAnsC : recv answer. ");
 
+        self.accepted = true;
+
         options.sdp && self.webRtc.setRemoteDescription(options.sdp);
         options.cands && self._onTcklC(from, options);
     },
@@ -165,6 +173,9 @@ var CommonPattern = {
         var self = this;
 
         self.consult = false;
+
+        self.isCaller = false;
+        self.accepted = false;
 
         self.callee = from;
         self._rtcCfg2 = options.rtcCfg;
@@ -246,6 +257,8 @@ var CommonPattern = {
                 } else {
                     self.api.acptC(rt, self._sessId, self._rtcId, answer, null, 1);
                 }
+
+                self.accepted = true;
             });
         }
 
@@ -337,7 +350,10 @@ var CommonPattern = {
             rtKey: self._rtKey
         });
 
-        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, reason);
+        var sendReason;
+        reason || (!self.isCaller && !self.accepted && (sendReason = 'decline')) || (sendReason = 'success');
+
+        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, sendReason);
 
         self.webRtc.close();
 

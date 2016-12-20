@@ -272,10 +272,26 @@ module.exports = React.createClass({
                     // console.log('onRinging', caller);
                 },
                 onTermCall: function (reason) {
+                    //"ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+                    //"decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
                     // TODO reason undefine if reason is busy
-                    if (reason && reason == 'busy') {
-                        Demo.api.NotifySuccess('Target is busy. Try it later.');
+                    if (reason && (reason == 'busy' || reason == 'BUSY')) {
+                        Demo.api.NotifyError('Target is busy. Try it later.');
                     }
+                    if (reason && (reason == 'timeout' || reason == 'NORESPONSE')) {
+                        Demo.api.NotifyError('Target no response. Try it later.');
+                    }
+                    if (reason && (reason == 'decline' || reason == 'REJECT')) {
+                        Demo.api.NotifyError('Target reject.');
+                    }
+                    if (reason && (reason == 'failed-transport' || reason == 'FAIL')) {
+                        Demo.api.NotifyError('Call failed. Try it later.');
+                    }
+                    if (reason && (reason == 'ok' || reason == 'success' || reason == 'HANGUP')) {
+                        Demo.api.NotifySuccess('Target hangup. ');
+                    }
+
+
                     Demo.call.caller = '';
                     Demo.call.callee = '';
                     me.channel.close();
