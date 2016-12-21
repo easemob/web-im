@@ -395,7 +395,7 @@ module.exports = React.createClass({
                 }
                 break;
             case 'joinPublicGroupSuccess':
-                Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
+                // Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
                 Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
