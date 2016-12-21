@@ -142,8 +142,13 @@ var AdminGroupMembers = React.createClass({
                 Demo.conn.addGroupMembers({
                     list: value_add,
                     roomId: this.props.roomId,
-                    reason: Demo.user + " invite you to join group '" + this.props.name + "'"
-                })
+                    reason: Demo.user + " invite you to join group '" + this.props.name + "'",
+                    success: function (msgInfo) {
+                        var members = value_add.join(', ');
+                        var str = WebIM.utils.sprintf(Demo.lan.inviteGroup, members);
+                        Demo.api.NotifySuccess(str);
+                    }
+                });
             }
             if (value_del.length > 0) {
                 Demo.conn.leaveGroup({

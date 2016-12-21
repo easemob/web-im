@@ -2242,6 +2242,7 @@
 	            }
 	        }
 	    }
+	    console.log('info: ', info);
 	    this.onPresence(info, msginfo);
 	};
 

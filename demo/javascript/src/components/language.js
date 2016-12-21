@@ -76,6 +76,7 @@ exports.English = {
     groupNameNotEmpty: 'Group name can\'t be empty',
     refuse: 'You were refused by %s',
     inviteToGroup: '%s invite you to the group',
+    inviteGroup: 'You invited %s to this group',
     last: ''
 };
 
@@ -159,5 +160,6 @@ exports.Chinese = {
     groupNameNotEmpty: '群组名不能为空',
     refuse: '%s拒绝了你的请求',
     inviteToGroup: '%s邀请您进群',
+    inviteGroup: '您邀请了%s进群',
     last: ''
 };

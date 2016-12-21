@@ -1,6 +1,19 @@
 #版本更新说明:
 
-## v1.4.6 @ 2016-12-08
+## v1.4.7 @ 2016-12-21
+
+###Feature
+
+* [demo] 在demo.html中新增视频聊天及发送视频文件的功能
+
+###BugFix
+
+* [sdk] 解决在手机浏览器在后台运行时无法断线重连的问题
+* [demo] WebIM建群，等待后台建群成功后再拉取群信息并更新UI中的群列表
+* [demo] WebIM群加人，群主和被添加的群成员均可以收到通知
+* [demo] WebIM群主将群成员从黑名单移除后，不再回到群成员列表中，而直接被删除
+
+## v1.4.6 @ 2016-12-20
 
 ###Feature
 
@@ -97,7 +110,20 @@
 ---
 #ChangeLog:
 
-## v1.4.6 @ 2016-12-08
+## v1.4.7 @ 2016-12-21
+
+###Feature
+
+* [demo] Add video chat and send video file functions into the demo.html
+
+###BugFix
+
+* [sdk] Fix the bug when the browser runs in back end that WebIM can't reconnect on phones
+* [demo] Refresh the group list on the front end after create a group succeed on back end
+* [demo] The master of a group and the members will be added will receive a notification when add members to group
+* [demo] A member will leave group when the master of the group remove this member from group black list
+
+## v1.4.6 @ 2016-12-20
 
 ###Feature
 

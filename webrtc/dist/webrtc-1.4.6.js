@@ -2264,6 +2264,9 @@
 
 	    consult: false,
 
+	    isCaller: false,
+	    accepted: false,
+
 	    init: function init() {
 	        var self = this;
 
@@ -2314,6 +2317,9 @@
 	    initC: function initC(mediaStreamConstaints, accessSid) {
 	        var self = this;
 	        self.sid = accessSid;
+
+	        self.isCaller = true;
+	        self.accepted = false;
 
 	        self.createLocalMedia(mediaStreamConstaints);
 	    },
@@ -2386,6 +2392,8 @@
 
 	        _logger.info("[WebRTC-API] _onAnsC : recv answer. ");
 
+	        self.accepted = true;
+
 	        options.sdp && self.webRtc.setRemoteDescription(options.sdp);
 	        options.cands && self._onTcklC(from, options);
 	    },
@@ -2394,6 +2402,9 @@
 	        var self = this;
 
 	        self.consult = false;
+
+	        self.isCaller = false;
+	        self.accepted = false;
 
 	        self.callee = from;
 	        self._rtcCfg2 = options.rtcCfg;
@@ -2472,6 +2483,8 @@
 	                } else {
 	                    self.api.acptC(rt, self._sessId, self._rtcId, answer, null, 1);
 	                }
+
+	                self.accepted = true;
 	            });
 	        }
 
@@ -2562,7 +2575,10 @@
 	            rtKey: self._rtKey
 	        });
 
-	        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, reason);
+	        var sendReason;
+	        reason || !self.isCaller && !self.accepted && (sendReason = 'decline') || (sendReason = 'success');
+
+	        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, sendReason);
 
 	        self.webRtc.close();
 

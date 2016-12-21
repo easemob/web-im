@@ -1212,6 +1212,7 @@ connection.prototype.handlePresence = function (msginfo) {
             }
         }
     }
+    console.log('info: ', info);
     this.onPresence(info, msginfo);
 };
 
