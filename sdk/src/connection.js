@@ -1212,7 +1212,7 @@ connection.prototype.handlePresence = function (msginfo) {
             }
         }
     }
-    console.log('info: ', info);
+    console.log('msginfo: ', msginfo);
     this.onPresence(info, msginfo);
 };
 
@@ -2826,7 +2826,7 @@ connection.prototype.createGroupAsync = function (p) {
                 roomId: roomId
             });
 
-            suc();
+            suc(options);
         }, function (errInfo) {
             // errFn(errInfo);
         });

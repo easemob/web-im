@@ -77,6 +77,7 @@ exports.English = {
     refuse: 'You were refused by %s',
     inviteToGroup: '%s invite you to the group',
     inviteGroup: 'You invited %s to this group',
+    createGroupSuc: 'Group %s is successfully created',
     last: ''
 };
 
@@ -161,5 +162,6 @@ exports.Chinese = {
     refuse: '%s拒绝了你的请求',
     inviteToGroup: '%s邀请您进群',
     inviteGroup: '您邀请了%s进群',
+    createGroupSuc: '已成功创建群组%s',
     last: ''
 };

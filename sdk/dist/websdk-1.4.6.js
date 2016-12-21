@@ -2242,7 +2242,7 @@
 	            }
 	        }
 	    }
-	    console.log('info: ', info);
+	    console.log('msginfo: ', msginfo);
 	    this.onPresence(info, msginfo);
 	};
 
@@ -3801,7 +3801,7 @@
 	                roomId: roomId
 	            });
 
-	            suc();
+	            suc(options);
 	        }, function (errInfo) {
 	            // errFn(errInfo);
 	        });

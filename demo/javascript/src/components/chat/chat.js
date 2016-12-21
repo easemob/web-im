@@ -18,7 +18,6 @@ module.exports = React.createClass({
                 me.updateMyRoster(options);
             },
             onUpdateMyGroupList: function (options) {
-                console.log('onUpdateMyGroupList');
                 me.updateMyGroupList(options);
             },
             onConfirmPop: function (options) {
@@ -362,11 +361,12 @@ module.exports = React.createClass({
             case 'createGroupACK':
                 Demo.conn.createGroupAsync({
                     from: msg.from,
-                    success: function() {
+                    success: function(option) {
                         Demo.api.updateGroup();
+                        var str = WebIM.utils.sprintf(Demo.lan.createGroupSuc, option.subject);
+                        Demo.api.NotifySuccess(str);
                     }
                 });
-                Demo.api.NotifySuccess(Demo.lan.createGroup);
                 break;
             case 'leaveGroup':// dismissed by admin
                 Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
