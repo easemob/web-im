@@ -16,7 +16,7 @@ var JoinPublicGroup = React.createClass({
         var value = this.refs.input.refs.input.value;
 
         if (!value) {
-            Demo.api.NotifyError("群组名不能为空");
+            Demo.api.NotifyError(Demo.lan.groupNameNotEmpty);
             return;
         }
         if (WebIM.config.isWindowSDK) {

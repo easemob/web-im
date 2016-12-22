@@ -4,7 +4,9 @@
     <title>Clock</title>
     <script src="../demo/javascript/dist/webim.config.js"></script>
     <script src="./dist/strophe-1.2.8.min.js"></script>
-    <script src="./dist/websdk-1.4.6.js"></script>
+    <script src="./dist/websdk-1.4.7.js"></script>
+    <script src="../webrtc/dist/adapter.js"></script>
+    <script src="../webrtc/dist/webrtc-1.4.7.js"></script>
 </head>
 <body>
 
@@ -24,6 +26,7 @@
         <button id="privateImg">PrivateImg</button>
     </div>
     <br>
+    <video id="privateVideo" style="border: 1px solid black" autoplay controls></video>
 </div>
 
 <h2>ChatRoom</h2>
@@ -62,12 +65,25 @@
     <button id="removeFromBlackList">RemoveFromBlackList</button>
 </div>
 
+<h3>WebRTC</h3>
+<div>
+    <button id="rtCall">Call</button>
+    <button id="rtAcceptCall">AcceptCall</button>
+    <button id="rtEndCall">EndCall</button>
+    <div>
+        <video id="video" style="border: 1px solid red" autoplay>
+
+        </video>
+        <video id="localVideo" style="border: 1px solid blue" autoplay>
+
+        </video>
+    </div>
+</div>
+
 <script>
     /**
      * Created by clock on 16-11-25.
      */
-    console.log('WebIM: ', WebIM);
-    console.log('WebIM.connection: ', WebIM.connection);
     var conn = {};
     conn = new WebIM.connection({
         isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
@@ -98,7 +114,7 @@
             // 当type='emoji'时，data表示表情图像的路径，当type='txt'时，data表示文本消息
             console.log('Emoji');
             var data = message.data;
-            for(var i = 0 , l = data.length ; i < l ; i++){
+            for (var i = 0, l = data.length; i < l; i++) {
                 console.log(data[i]);
             }
         },   //收到表情消息
@@ -130,7 +146,21 @@
             console.log("File");
         },    //收到文件消息
         onVideoMessage: function (message) {
-            console.log("Video");
+            var node = document.getElementById('privateVideo');
+            var option = {
+                url: message.url,
+                headers: {
+                  'Accept': 'audio/mp4'
+                },
+                onFileDownloadComplete: function (response) {
+                    var objectURL = WebIM.utils.parseDownloadResponse.call(conn, response);
+                    node.src = objectURL;
+                },
+                onFileDownloadError: function () {
+                    console.log('File down load error.')
+                }
+            };
+            WebIM.utils.download.call(conn, option);
         },   //收到视频消息
         onPresence: function (message) {
             switch (message.type) {
@@ -160,7 +190,7 @@
                     break;
                 case 'unsubscribe':                         // 对方删除好友
                     break;
-                case 'unsubscribed':                        // 被拒绝添加好友，对方删除好友成功
+                case 'unsubscribed':                        // 被拒绝添加好友，或被对方删除好友成功
                     break;
                 case 'joinChatRoomSuccess':                 // 成功加入聊天室
                     console.log('join chat room success');
@@ -192,6 +222,44 @@
             // 查询黑名单，将好友拉黑，将好友从黑名单移除都会回调这个函数，list则是黑名单现有的所有好友信息
             console.log(list);
         }     // 黑名单变动
+    });
+    // 初始化WebRTC Call
+    var rtcCall = new WebIM.WebRTC.Call({
+        connection: conn,
+
+        mediaStreamConstaints: {
+            audio: true,
+            video: true
+        },
+
+        listener: {
+            onAcceptCall: function (from, options) {
+                console.log('onAcceptCall::', 'from: ', from, 'options: ', options);
+            },
+            onGotRemoteStream: function (stream) {
+                console.log('onGotRemoteStream::', 'stream: ', stream);
+                var video = document.getElementById('video');
+                video.src = window.URL.createObjectURL(stream);
+            },
+            onGotLocalStream: function (stream) {
+                console.log('onGotLocalStream::', 'stream:', stream);
+                var video = document.getElementById('localVideo');
+                video.src = window.URL.createObjectURL(stream);
+            },
+            onRinging: function (caller) {
+                console.log('onRinging::', 'caller:', caller);
+            },
+            onTermCall: function (reason) {
+                console.log('onTermCall::');
+                console.log('reason:', reason);
+            },
+            onIceConnectionStateChange: function (iceState) {
+                console.log('onIceConnectionStateChange::', 'iceState:', iceState);
+            },
+            onError: function (e) {
+                console.log(e);
+            }
+        }
     });
 </script>
 <script>
@@ -643,6 +711,23 @@
             }
         });
     };
+
+    /*
+     * WebRTC
+     */
+    // 视频呼叫对方
+    var call = function () {
+        rtcCall.caller = 'mengyuanyuan';
+        rtcCall.makeVideoCall('asdfghj');
+    };
+    // 关掉/拒绝视频
+    var endCall = function () {
+        rtcCall.endCall();
+    }
+    // 接受对方呼叫
+    var acceptCall = function () {
+        rtcCall.acceptCall();
+    }
 </script>
 <script>
     /**
@@ -678,6 +763,10 @@
         document.getElementById('getRoasters').onclick = getRoasters;
         document.getElementById('addFriends').onclick = addFriends;
         document.getElementById('removeRoster').onclick = removeFriends;
+
+        document.getElementById('rtCall').onclick = call;
+        document.getElementById('rtEndCall').onclick = endCall;
+        document.getElementById('rtAcceptCall').onclick = acceptCall;
 
     };
 </script>

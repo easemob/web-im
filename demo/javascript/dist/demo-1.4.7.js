@@ -746,7 +746,6 @@
 	                props = null;
 	                break;
 	        }
-
 	        if (props) {
 	            ReactDOM.render(React.createElement(Webim, _extends({ config: WebIM.config, close: this.logout }, props)), this.node);
 	        } else {
@@ -1927,12 +1926,18 @@
 	 * will remain to ensure logic does not differ in production.
 	 */
 
-	function invariant(condition, format, a, b, c, d, e, f) {
-	  if (process.env.NODE_ENV !== 'production') {
+	var validateFormat = function validateFormat(format) {};
+
+	if (process.env.NODE_ENV !== 'production') {
+	  validateFormat = function validateFormat(format) {
 	    if (format === undefined) {
 	      throw new Error('invariant requires an error message argument');
 	    }
-	  }
+	  };
+	}
+
+	function invariant(condition, format, a, b, c, d, e, f) {
+	  validateFormat(format);
 
 	  if (!condition) {
 	    var error;
@@ -22614,6 +22619,8 @@
 	        props.groupChange = this.props.groupChange;
 	        props.chatroomChange = this.props.chatroomChange;
 
+	        var year = new Date().getFullYear();
+
 	        return React.createElement(
 	            'div',
 	            null,
@@ -22634,7 +22641,9 @@
 	            React.createElement(
 	                'footer',
 	                { className: 'copyright' + (WebIM.config.isWindowSDK ? ' hide' : '') },
-	                '\xA9 2016 \u73AF\u4FE1\u79D1\u6280'
+	                '\xA9 ',
+	                year,
+	                ' \u73AF\u4FE1\u79D1\u6280'
 	            )
 	        );
 	    }
@@ -23234,7 +23243,8 @@
 	                me.getRoster('doNotUpdateGroup');
 	            },
 	            onInviteMessage: function onInviteMessage(message) {
-	                message.reason && Demo.api.NotifyError(message.reason);
+	                var notify = WebIM.utils.sprintf(Demo.lan.inviteToGroup, message.from);
+	                message.type === "invite" && Demo.api.NotifySuccess(notify);
 	                me.getGroup();
 	            },
 	            onOnline: function onOnline() {
@@ -23277,7 +23287,7 @@
 	                }
 	                if (Demo.conn.errorType != WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
 	                    if (message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP || message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP || message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP || message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP || message.type === WebIM.statusCode.WEBIM_CONNECTION_CLOSED) {
-	                        Demo.api.NotifyError(text);
+	                        Demo.api.NotifySuccess(text);
 	                        return;
 	                    } else {
 	                        Demo.api.NotifyError('onError:' + text);
@@ -23331,8 +23341,8 @@
 	        Demo.friends = friends;
 	        this.setState({ friends: friends });
 	    },
-	    //for WindosSDK
 	    updateMyGroupList: function updateMyGroupList(options) {
+	        console.log('updateMygroupList');
 	        var rooms = eval('(' + options + ')');
 	        this.setState({ groups: rooms });
 	    },
@@ -23397,9 +23407,25 @@
 	                    // console.log('onRinging', caller);
 	                },
 	                onTermCall: function onTermCall(reason) {
-	                    if (reason && reason == 'busy') {
+	                    //"ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+	                    //"decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
+	                    // TODO reason undefine if reason is busy
+	                    if (reason && (reason == 'busy' || reason == 'BUSY')) {
 	                        Demo.api.NotifyError('Target is busy. Try it later.');
 	                    }
+	                    if (reason && (reason == 'timeout' || reason == 'NORESPONSE')) {
+	                        Demo.api.NotifyError('Target no response. Try it later.');
+	                    }
+	                    if (reason && (reason == 'decline' || reason == 'REJECT')) {
+	                        Demo.api.NotifyError('Target reject.');
+	                    }
+	                    if (reason && (reason == 'failed-transport' || reason == 'FAIL')) {
+	                        Demo.api.NotifyError('Call failed. Try it later.');
+	                    }
+	                    if (reason && (reason == 'ok' || reason == 'success' || reason == 'HANGUP')) {
+	                        Demo.api.NotifySuccess('Target hangup. ');
+	                    }
+
 	                    Demo.call.caller = '';
 	                    Demo.call.callee = '';
 	                    me.channel.close();
@@ -23413,7 +23439,7 @@
 	                    if (iceState == "disconnected") {
 	                        if (!me.rtcTimeoutID) {
 	                            me.rtcTimeoutID = setTimeout(function () {
-	                                Demo.api.NotifyError('Target is offline');
+	                                Demo.api.NotifySuccess('Target is offline');
 	                                var closeButton = document.getElementById('webrtc_close');
 	                                closeButton && closeButton.click();
 	                            }, 10000);
@@ -23468,11 +23494,18 @@
 	                ConfirmGroupInfo.show(msg);
 	                break;
 	            case 'createGroupACK':
-
+	                Demo.conn.createGroupAsync({
+	                    from: msg.from,
+	                    success: function success(option) {
+	                        Demo.api.updateGroup();
+	                        var str = WebIM.utils.sprintf(Demo.lan.createGroupSuc, option.subject);
+	                        Demo.api.NotifySuccess(str);
+	                    }
+	                });
 	                break;
 	            case 'leaveGroup':
 	                // dismissed by admin
-	                Demo.api.NotifyError((msg.kicked || 'You') + ' have been dismissed by ' + (msg.actor || 'admin') + ' .');
+	                Demo.api.NotifySuccess((msg.kicked || 'You') + ' have been dismissed by ' + (msg.actor || 'admin') + ' .');
 	                Demo.api.updateGroup();
 	                break;
 	            case 'subscribe':
@@ -23491,12 +23524,17 @@
 	            case 'unsubscribe': // The sender deletes a friend.
 	            case 'unsubscribed':
 	                // The other party has removed you from the friend list.
+	                if ('code' in msg) {
+	                    Demo.api.NotifySuccess(WebIM.utils.sprintf(Demo.lan.refuse, msg.from));
+	                } else {
+	                    console.log('Deleted');
+	                }
 	                if (Demo.roster[msg.from]) {
 	                    delete Demo.roster[msg.from];
 	                }
 	                break;
 	            case 'joinPublicGroupSuccess':
-	                Demo.api.NotifyError('You have been invited to group ' + msg.from);
+	                // Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
 	                Demo.api.updateGroup();
 	                break;
 	            case 'joinChatRoomSuccess':
@@ -23506,7 +23544,7 @@
 	            case 'reachChatRoomCapacity':
 	                // Failed to join the chat room
 	                Demo.currentChatroom = null;
-	                Demo.api.NotifyError('Fail to Join the group');
+	                Demo.api.NotifySuccess('Fail to Join the group');
 	                break;
 	            case 'leaveChatRoom':
 	                // Leave the chat room
@@ -23515,8 +23553,10 @@
 	                // The chat room or group is deleted.
 	                // ignore the sync `recv` request
 	                // only handle on async request
-	                if (msg.original_type == 'unavailable') return;
-
+	                if (msg.original_type == 'unavailable') {
+	                    Demo.api.updateGroup();
+	                    return;
+	                }
 	                var target = document.getElementById(msg.from);
 	                var options = {
 	                    title: "Group notification",
@@ -23534,7 +23574,7 @@
 	                    Demo.api.updateGroup();
 	                }
 
-	                Demo.api.NotifyError(options.msg);
+	                Demo.api.NotifySuccess(options.msg);
 	                break;
 	        }
 	    },
@@ -23613,6 +23653,7 @@
 	                    me.setState({ groups: rooms });
 	                },
 	                error: function error(e) {
+	                    console.log('error');
 	                    Demo.conn.setPresence();
 	                }
 	            });
@@ -24444,7 +24485,7 @@
 	        var friendsSelected = []; //this.refs.friendList.refs.multiSelected.label();
 	        var friendsValues = this.refs.friendList.refs.multiSelected.value();
 	        if (!value) {
-	            Demo.api.NotifyError("群组名不能为空");
+	            Demo.api.NotifyError(Demo.lan.groupNameNotEmpty);
 	            return;
 	        }
 
@@ -24461,7 +24502,7 @@
 	        // log(style)
 	        if (WebIM.config.isWindowSDK) {
 	            WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + JSON.stringify(friendsSelected) + '}', function (response) {
-	                Demo.api.NotifyError('createGroup successfully');
+	                Demo.api.NotifySuccess('createGroup successfully');
 	            }, function (code, msg) {
 	                Demo.api.NotifyError("onSubmit:" + code);
 	            });
@@ -26681,7 +26722,7 @@
 	        var value = this.refs.input.refs.input.value;
 
 	        if (!value) {
-	            Demo.api.NotifyError("群组名不能为空");
+	            Demo.api.NotifyError(Demo.lan.groupNameNotEmpty);
 	            return;
 	        }
 	        if (WebIM.config.isWindowSDK) {
@@ -27439,7 +27480,7 @@
 
 	        if (chatroom && Demo.currentChatroom !== Demo.selected) {
 
-	            Demo.api.NotifyError(Demo.lan.notin);
+	            Demo.api.NotifySuccess(Demo.lan.notin);
 	            return false;
 	        }
 
@@ -27749,7 +27790,7 @@
 	    },
 
 	    destroyGroup: function destroyGroup() {
-	        log('destroyGroup:' + this.props.roomId);
+	        var roomId = this.props.roomId;
 	        if (WebIM.config.isWindowSDK) {
 	            WebIM.doQuery('{"type":"destroyGroup","id":"' + this.props.roomId + '"}', function () {
 	                Demo.api.updateGroup();
@@ -27806,68 +27847,90 @@
 	            null,
 	            React.createElement(
 	                "i",
-	                { ref: "switch", className: "webim-operations-icon font xsmaller", onClick: this.update },
-	                "M"
+	                {
+	                    ref: "switch",
+	                    className: "webim-operations-icon font xsmaller",
+	                    onClick: this.update },
+	                "M "
 	            ),
 	            React.createElement(
 	                "ul",
-	                { tabIndex: "-1", ref: "webim-operations",
+	                {
+	                    tabIndex: "-1",
+	                    ref: "webim-operations",
 	                    className: 'webim-operations ' + (this.state.hide ? 'hide' : ''),
 	                    onBlur: this.handleOnBlur },
 	                React.createElement(
 	                    "li",
-	                    { onClick: this.adminGroupMembers, className: this.props.admin ? '' : 'hide' },
+	                    {
+	                        onClick: this.adminGroupMembers,
+	                        className: this.props.admin ? '' : 'hide' },
 	                    React.createElement(
 	                        "i",
-	                        { className: "font smallest" },
-	                        "F"
+	                        {
+	                            className: "font smallest" },
+	                        " F "
 	                    ),
 	                    React.createElement(
 	                        "span",
 	                        null,
-	                        adminMemberLabel
+	                        " ",
+	                        adminMemberLabel,
+	                        " "
 	                    )
 	                ),
 	                React.createElement(
 	                    "li",
-	                    { onClick: this.changeGroupInfo, className: this.props.admin ? '' : 'hide' },
+	                    {
+	                        onClick: this.changeGroupInfo,
+	                        className: this.props.admin ? '' : 'hide' },
 	                    React.createElement(
 	                        "i",
-	                        { className: "font smallest" },
-	                        "B"
+	                        {
+	                            className: "font smallest" },
+	                        " B "
 	                    ),
 	                    React.createElement(
 	                        "span",
 	                        null,
+	                        " ",
 	                        Demo.lan.changeGroupInfo
 	                    )
 	                ),
 	                React.createElement(
 	                    "li",
-	                    { onClick: this.showGroupBlacklist, className: this.props.admin ? '' : 'hide' },
+	                    {
+	                        onClick: this.showGroupBlacklist,
+	                        className: this.props.admin ? '' : 'hide' },
 	                    React.createElement(
 	                        "i",
-	                        { className: "font smallest" },
-	                        "n"
+	                        {
+	                            className: "font smallest" },
+	                        " n "
 	                    ),
 	                    React.createElement(
 	                        "span",
 	                        null,
+	                        " ",
 	                        Demo.lan.groupBlacklist
 	                    )
 	                ),
 	                React.createElement(
 	                    "li",
-	                    { onClick: actionMethod },
+	                    {
+	                        onClick: actionMethod },
 	                    React.createElement(
 	                        "i",
-	                        { className: "font smallest" },
-	                        "Q"
+	                        {
+	                            className: "font smallest" },
+	                        " Q "
 	                    ),
 	                    React.createElement(
 	                        "span",
 	                        null,
-	                        actionName
+	                        " ",
+	                        actionName,
+	                        " "
 	                    )
 	                )
 	            )
@@ -28126,7 +28189,7 @@
 	        }
 
 	        if (this.props.value == "PRIVATE_MEMBER_INVITE" && value_del.length > 0) {
-	            Demo.api.NotifyError("权限不够，不能删除私有群成员");
+	            Demo.api.NotifyError(Demo.lan.deletePrivateGroupMember);
 	            return;
 	        }
 	        //TODO:@lhr  value_add 和 value_del 需要分成两个doQuery 处理
@@ -28148,7 +28211,12 @@
 	                Demo.conn.addGroupMembers({
 	                    list: value_add,
 	                    roomId: this.props.roomId,
-	                    reason: Demo.user + " invite you to join group '" + this.props.name + "'"
+	                    reason: Demo.user + " invite you to join group '" + this.props.name + "'",
+	                    success: function success(msgInfo) {
+	                        var members = value_add.join(', ');
+	                        var str = WebIM.utils.sprintf(Demo.lan.inviteGroup, members);
+	                        Demo.api.NotifySuccess(str);
+	                    }
 	                });
 	            }
 	            if (value_del.length > 0) {
@@ -28547,12 +28615,12 @@
 	    },
 
 	    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-	        // console.log('componentWillReceiveProps', nextProps);
+	        console.log('componentWillReceiveProps', nextProps);
 	        this.setStream(nextProps);
 	    },
 
 	    componentDidMount: function componentDidMount() {
-	        // console.log('did mount', this.props);
+	        console.log('did mount', this.props);
 	        new Drag(this.refs.onAcceptCallrtc);
 	        this.resetButtonPosition();
 
@@ -30537,8 +30605,53 @@
 	                }
 	            }
 	            return '';
-	        }
+	        },
 
+	        sprintf: function sprintf() {
+	            var arg = arguments,
+	                str = arg[0] || '',
+	                i,
+	                len;
+	            for (i = 1, len = arg.length; i < len; i++) {
+	                str = str.replace(/%s/, arg[i]);
+	            }
+	            return str;
+	        },
+
+	        clone: function clone(obj) {
+	            var o;
+	            switch (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) {
+	                case 'undefined':
+	                    break;
+	                case 'string':
+	                    o = obj + '';break;
+	                case 'number':
+	                    o = obj - 0;break;
+	                case 'boolean':
+	                    o = obj;break;
+	                case 'object':
+	                    if (obj === null) {
+	                        o = null;
+	                    } else {
+	                        if (obj instanceof Array) {
+	                            o = [];
+	                            for (var i = 0, len = obj.length; i < len; i++) {
+	                                o.push(this.clone(obj[i]));
+	                            }
+	                        } else {
+	                            o = {};
+	                            for (var k in obj) {
+	                                o[k] = this.clone(obj[k]);
+	                            }
+	                        }
+	                    }
+	                    break;
+	                default:
+	                    o = obj;
+	                    break;
+	            }
+	            return o;
+	        }
 	    };
 
 	    exports.utils = utils;
@@ -31102,6 +31215,12 @@
 	    changeGroupInfo: 'Edit group info',
 	    groupNotification: 'Group Notification',
 	    fileOverSize: 'Size of file can\'t over 10 MB',
+	    deletePrivateGroupMember: "Permission denied, can\'t delete private members",
+	    groupNameNotEmpty: 'Group name can\'t be empty',
+	    refuse: 'You were refused by %s',
+	    inviteToGroup: '%s invite you to the group',
+	    inviteGroup: 'You invited %s to this group',
+	    createGroupSuc: 'Group %s is successfully created',
 	    last: ''
 	};
 
@@ -31181,6 +31300,12 @@
 	    changeGroupInfo: '修改群信息',
 	    groupNotification: '群消息',
 	    fileOverSize: '文件最大不能超过10MB',
+	    deletePrivateGroupMember: '权限不够，不能删除私有群成员',
+	    groupNameNotEmpty: '群组名不能为空',
+	    refuse: '%s拒绝了你的请求',
+	    inviteToGroup: '%s邀请您进群',
+	    inviteGroup: '您邀请了%s进群',
+	    createGroupSuc: '已成功创建群组%s',
 	    last: ''
 	};
 

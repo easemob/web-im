@@ -72,6 +72,12 @@ exports.English = {
     changeGroupInfo: 'Edit group info',
     groupNotification: 'Group Notification',
     fileOverSize: 'Size of file can\'t over 10 MB',
+    deletePrivateGroupMember: "Permission denied, can\'t delete private members",
+    groupNameNotEmpty: 'Group name can\'t be empty',
+    refuse: 'You were refused by %s',
+    inviteToGroup: '%s invite you to the group',
+    inviteGroup: 'You invited %s to this group',
+    createGroupSuc: 'Group %s is successfully created',
     last: ''
 };
 
@@ -151,5 +157,11 @@ exports.Chinese = {
     changeGroupInfo: '修改群信息',
     groupNotification: '群消息',
     fileOverSize: '文件最大不能超过10MB',
+    deletePrivateGroupMember: '权限不够，不能删除私有群成员',
+    groupNameNotEmpty: '群组名不能为空',
+    refuse: '%s拒绝了你的请求',
+    inviteToGroup: '%s邀请您进群',
+    inviteGroup: '您邀请了%s进群',
+    createGroupSuc: '已成功创建群组%s',
     last: ''
 };

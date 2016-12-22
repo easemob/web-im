@@ -98,7 +98,8 @@ module.exports = React.createClass({
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
-                message.reason && Demo.api.NotifyError(message.reason);
+                var notify = WebIM.utils.sprintf(Demo.lan.inviteToGroup, message.from);
+                message.type === "invite" && Demo.api.NotifySuccess(notify);
                 me.getGroup();
             },
             onOnline: function () {
@@ -149,7 +150,7 @@ module.exports = React.createClass({
                         message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
                         ||
                         message.type === WebIM.statusCode.WEBIM_CONNECTION_CLOSED){
-                        Demo.api.NotifyError(text);
+                        Demo.api.NotifySuccess(text);
                         return;
                     }else{
                         Demo.api.NotifyError('onError:' + text);
@@ -203,8 +204,8 @@ module.exports = React.createClass({
         Demo.friends = friends;
         this.setState({friends: friends});
     },
-    //for WindosSDK
     updateMyGroupList: function (options) {
+        console.log('updateMygroupList');
         var rooms = eval('(' + options + ')');
         this.setState({groups: rooms});
     },
@@ -270,9 +271,26 @@ module.exports = React.createClass({
                     // console.log('onRinging', caller);
                 },
                 onTermCall: function (reason) {
-                    if (reason && reason == 'busy') {
+                    //"ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+                    //"decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
+                    // TODO reason undefine if reason is busy
+                    if (reason && (reason == 'busy' || reason == 'BUSY')) {
                         Demo.api.NotifyError('Target is busy. Try it later.');
                     }
+                    if (reason && (reason == 'timeout' || reason == 'NORESPONSE')) {
+                        Demo.api.NotifyError('Target no response. Try it later.');
+                    }
+                    if (reason && (reason == 'decline' || reason == 'REJECT')) {
+                        Demo.api.NotifyError('Target reject.');
+                    }
+                    if (reason && (reason == 'failed-transport' || reason == 'FAIL')) {
+                        Demo.api.NotifyError('Call failed. Try it later.');
+                    }
+                    if (reason && (reason == 'ok' || reason == 'success' || reason == 'HANGUP')) {
+                        Demo.api.NotifySuccess('Target hangup. ');
+                    }
+
+
                     Demo.call.caller = '';
                     Demo.call.callee = '';
                     me.channel.close();
@@ -286,7 +304,7 @@ module.exports = React.createClass({
                     if (iceState == "disconnected") {
                         if (!me.rtcTimeoutID) {
                             me.rtcTimeoutID = setTimeout(function () {
-                                Demo.api.NotifyError('Target is offline');
+                                Demo.api.NotifySuccess('Target is offline');
                                 var closeButton = document.getElementById('webrtc_close');
                                 closeButton && closeButton.click();
                             }, 10000);
@@ -341,10 +359,17 @@ module.exports = React.createClass({
                 ConfirmGroupInfo.show(msg);
                 break;
             case 'createGroupACK':
-
+                Demo.conn.createGroupAsync({
+                    from: msg.from,
+                    success: function(option) {
+                        Demo.api.updateGroup();
+                        var str = WebIM.utils.sprintf(Demo.lan.createGroupSuc, option.subject);
+                        Demo.api.NotifySuccess(str);
+                    }
+                });
                 break;
             case 'leaveGroup':// dismissed by admin
-                Demo.api.NotifyError(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
+                Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
@@ -360,12 +385,17 @@ module.exports = React.createClass({
                 break;
             case 'unsubscribe':// The sender deletes a friend.
             case 'unsubscribed':// The other party has removed you from the friend list.
+                if('code' in msg){
+                    Demo.api.NotifySuccess(WebIM.utils.sprintf(Demo.lan.refuse, msg.from));
+                }else{
+                    console.log('Deleted');
+                }
                 if (Demo.roster[msg.from]) {
                     delete Demo.roster[msg.from];
                 }
                 break;
             case 'joinPublicGroupSuccess':
-                Demo.api.NotifyError(`You have been invited to group ${msg.from}`);
+                // Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
                 Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
@@ -373,15 +403,17 @@ module.exports = React.createClass({
                 break;
             case 'reachChatRoomCapacity':// Failed to join the chat room
                 Demo.currentChatroom = null;
-                Demo.api.NotifyError('Fail to Join the group');
+                Demo.api.NotifySuccess('Fail to Join the group');
                 break;
             case 'leaveChatRoom':// Leave the chat room
                 break;
             case 'deleteGroupChat':// The chat room or group is deleted.
                 // ignore the sync `recv` request
                 // only handle on async request
-                if (msg.original_type == 'unavailable') return;
-
+                if (msg.original_type == 'unavailable'){
+                    Demo.api.updateGroup();
+                    return;
+                }
                 var target = document.getElementById(msg.from);
                 var options = {
                     title: "Group notification",
@@ -399,7 +431,7 @@ module.exports = React.createClass({
                     Demo.api.updateGroup();
                 }
 
-                Demo.api.NotifyError(options.msg);
+                Demo.api.NotifySuccess(options.msg);
                 break;
         }
 
@@ -483,6 +515,7 @@ module.exports = React.createClass({
                     me.setState({groups: rooms});
                 },
                 error: function (e) {
+                    console.log('error');
                     Demo.conn.setPresence();
                 }
             });

@@ -247,7 +247,6 @@ module.exports = {
                 props = null;
                 break;
         }
-
         if (props) {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout} {...props} />, this.node);
         } else {
@@ -566,8 +565,6 @@ module.exports = {
                 this.addCount(msg.to, cate);
                 break;
         }
-
-
     },
 
     appendBrief: function (id, value) {

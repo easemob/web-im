@@ -56,19 +56,17 @@ var Channel = React.createClass({
 
         this.refs.remoteVideo.srcObject = props.remoteStream;
         this.refs.localVideo.srcObject = props.localStream;
-
-
     },
 
 
     componentWillReceiveProps: function (nextProps) {
-        // console.log('componentWillReceiveProps', nextProps);
+        console.log('componentWillReceiveProps', nextProps);
         this.setStream(nextProps);
     },
 
 
     componentDidMount: function () {
-        // console.log('did mount', this.props);
+        console.log('did mount', this.props);
         new Drag(this.refs.onAcceptCallrtc);
         this.resetButtonPosition();
 
