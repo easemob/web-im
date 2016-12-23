@@ -41,9 +41,9 @@ module.exports = React.createClass({
             this.refs['i'].innerText = '';
         }
 
-        // if (this.props.id === Demo.selected) {
-        //     return;
-        // }
+        if (this.props.id === Demo.selected) {
+            return;
+        }
 
         if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
             Demo.selected = this.props.id;
@@ -73,9 +73,11 @@ module.exports = React.createClass({
         }
 
         if (Demo.selectedCate === 'chatrooms') {
-
+/*
+            清空聊天室消息
             document.getElementById('wrapper' + this.props.id).innerHTML = '';
             document.getElementById(this.props.id).querySelector('em').innerHTML = '';
+*/
 
             // join chatroom
             if (WebIM.config.isWindowSDK) {

@@ -77,6 +77,11 @@
 	// for webview in client
 	Demo.api = Api;
 
+	// The messages cache
+	Demo.chatRecord = {};
+	// The max messages count of a dialog
+	Demo.maxChatRecordCount = 20;
+
 	Demo.roster = {};
 	Demo.friends = [];
 	Demo.strangers = {};
@@ -87,17 +92,6 @@
 	    bmp: 1,
 	    jpg: 1,
 	    png: 1
-	};
-
-	Demo.FILETYPE = {
-	    gif: 1,
-	    bmp: 1,
-	    jpg: 1,
-	    png: 1,
-	    zip: 1,
-	    txt: 1,
-	    doc: 1,
-	    pdf: 1
 	};
 
 	Demo.AUDIOTYPE = {
@@ -780,7 +774,67 @@
 	        this.render(this.node);
 	    },
 
+	    addToChatRecord: function addToChatRecord(msg, type) {
+	        console.log('addToChatRecord');
+	        this.sentByMe = msg.from === Demo.user;
+	        var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
+	        if (!Demo.chatRecord[targetId]) {
+	            Demo.chatRecord[targetId] = [];
+	        } else if (Demo.chatRecord[targetId].length >= Demo.maxChatRecordCount) {
+	            Demo.chatRecord[targetId].shift();
+	        }
+	        Demo.chatRecord[targetId].push({ message: msg, type: type });
+	    },
+
+	    releaseChatRecord: function releaseChatRecord() {
+	        console.log('release');
+	        var targetId = Demo.selected;
+	        if (targetId) {
+	            if (Demo.chatRecord[targetId]) {
+	                for (var i = 0; i < Demo.chatRecord[targetId].length; i++) {
+	                    Demo.api.appendMsg(Demo.chatRecord[targetId][i].message, Demo.chatRecord[targetId][i].type);
+	                }
+	            }
+	        }
+	    },
+
+	    getBrief: function getBrief(data, type) {
+	        var brief = '';
+	        console.log('getBrief::data: ', data);
+	        console.log('getBrief::type: ', type);
+	        switch (type) {
+	            case 'txt':
+	                brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
+	                break;
+	            case 'emoji':
+	                for (var i = 0, l = data.length; i < l; i++) {
+	                    brief += data[i].type === 'emoji' ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />' : this.encode(data[i].data);
+	                }
+	                break;
+	            case 'img':
+	                brief = '[' + Demo.lan.image + ']';
+	                break;
+	            case 'aud':
+	                brief = '[' + Demo.lan.audio + ']';
+	                break;
+	            case 'cmd':
+	                brief = '[' + Demo.lan.cmd + ']';
+	                break;
+	            case 'file':
+	                brief = '[' + Demo.lan.file + ']';
+	                break;
+	            case 'loc':
+	                brief = '[' + Demo.lan.location + ']';
+	                break;
+	            case 'video':
+	                brief = '[' + Demo.lan.video + ']';
+	                break;
+	        }
+	        return brief;
+	    },
+
 	    appendMsg: function appendMsg(msg, type) {
+	        console.log('appendMsg');
 	        if (!msg) {
 	            return;
 	        }
@@ -793,66 +847,70 @@
 	            data = msg.data || msg.msg || '',
 	            name = this.sendByMe ? Demo.user : msg.from,
 	            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
-	            targetNode = document.getElementById('wrapper' + targetId);
+	            targetNode = document.getElementById('wrapper' + targetId),
+	            isStranger = !document.getElementById(targetId);
 
 	        // TODO: ios/android client doesn't encodeURIComponent yet
 	        // if (typeof data === "string") {
 	        // data = decodeURIComponent(data);
 	        // }
 
-	        if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
+	        if (!this.sentByMe && msg.type === 'chat' && isStranger) {
 	            Demo.strangers[targetId] = Demo.strangers[targetId] || [];
-	        } else if (!targetNode) {
+	        } else if (isStranger) {
 	            return;
 	        }
-	        switch (type) {
-	            case 'txt':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'txt' });
-	                } else {
-	                    brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
-	                    textMsg({
-	                        wrapper: targetNode,
-	                        name: name,
-	                        value: brief,
-	                        error: msg.error,
-	                        errorText: msg.errorText
-	                    }, this.sentByMe);
-	                }
-	                break;
-	            case 'emoji':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'emoji' });
-	                } else {
-	                    for (var i = 0, l = data.length; i < l; i++) {
-	                        brief += data[i].type === 'emoji' ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />' : this.encode(data[i].data);
-	                    }
-	                    textMsg({
-	                        wrapper: targetNode,
-	                        name: name,
-	                        value: brief,
-	                        error: msg.error,
-	                        errorText: msg.errorText
-	                    }, this.sentByMe);
-	                }
-	                break;
-	            case 'img':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'img' });
-	                } else {
-	                    if (WebIM.config.isWindowSDK) {
-	                        var cur = document.getElementById('file_' + msg.id);
-	                        if (cur) {
-	                            var listenerName = 'onUpdateFileUrl' + msg.id;
-	                            if (Demo.api[listenerName]) {
-	                                Demo.api[listenerName]({ url: msg.url });
-	                                Demo.api[listenerName] = null;
+
+	        if (isStranger) {
+	            Demo.strangers[targetId].push({ msg: msg, type: type });
+	            this.render(this.node, 'stranger');
+	            return;
+	        } else {
+	            brief = this.getBrief(data, type);
+	            if (targetNode) {
+	                switch (type) {
+	                    case 'txt':
+	                        textMsg({
+	                            wrapper: targetNode,
+	                            name: name,
+	                            value: brief,
+	                            error: msg.error,
+	                            errorText: msg.errorText
+	                        }, this.sentByMe);
+	                        break;
+	                    case 'emoji':
+	                        textMsg({
+	                            wrapper: targetNode,
+	                            name: name,
+	                            value: brief,
+	                            error: msg.error,
+	                            errorText: msg.errorText
+	                        }, this.sentByMe);
+	                        break;
+	                    case 'img':
+	                        if (WebIM.config.isWindowSDK) {
+	                            var cur = document.getElementById('file_' + msg.id);
+	                            if (cur) {
+	                                var listenerName = 'onUpdateFileUrl' + msg.id;
+	                                if (Demo.api[listenerName]) {
+	                                    Demo.api[listenerName]({ url: msg.url });
+	                                    Demo.api[listenerName] = null;
+	                                } else {
+	                                    console.log('listenerName not exists:' + msg.id);
+	                                }
+	                                return;
 	                            } else {
-	                                console.log('listenerName not exists:' + msg.id);
+	                                brief = '[' + Demo.lan.image + ']';
+	                                imgMsg({
+	                                    id: msg.id,
+	                                    wrapper: targetNode,
+	                                    name: name,
+	                                    value: data || msg.url,
+	                                    error: msg.error,
+	                                    errorText: msg.errorText
+	                                }, this.sentByMe);
 	                            }
-	                            return;
 	                        } else {
-	                            brief = '[' + Demo.lan.image + ']';
 	                            imgMsg({
 	                                id: msg.id,
 	                                wrapper: targetNode,
@@ -862,37 +920,71 @@
 	                                errorText: msg.errorText
 	                            }, this.sentByMe);
 	                        }
-	                    } else {
-	                        brief = '[' + Demo.lan.image + ']';
-	                        imgMsg({
-	                            id: msg.id,
-	                            wrapper: targetNode,
-	                            name: name,
-	                            value: data || msg.url,
-	                            error: msg.error,
-	                            errorText: msg.errorText
-	                        }, this.sentByMe);
-	                    }
-	                }
-	                break;
-	            case 'aud':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: type });
-	                } else {
-	                    if (WebIM.config.isWindowSDK) {
-	                        var cur = document.getElementById('file_' + msg.id);
-	                        if (cur) {
-	                            var listenerName = 'onUpdateFileUrl' + msg.id;
-	                            if (Demo.api[listenerName]) {
-	                                Demo.api[listenerName]({ url: msg.url });
-	                                Demo.api[listenerName] = null;
+	                        break;
+	                    case 'aud':
+	                        if (WebIM.config.isWindowSDK) {
+	                            var cur = document.getElementById('file_' + msg.id);
+	                            if (cur) {
+	                                var listenerName = 'onUpdateFileUrl' + msg.id;
+	                                if (Demo.api[listenerName]) {
+	                                    Demo.api[listenerName]({ url: msg.url });
+	                                    Demo.api[listenerName] = null;
+	                                } else {
+	                                    console.log('listenerName not exists:' + msg.id);
+	                                }
+	                                return;
 	                            } else {
-	                                console.log('listenerName not exists:' + msg.id);
+	                                brief = '[' + Demo.lan.file + ']';
+	                                fileMsg({
+	                                    id: msg.id,
+	                                    wrapper: targetNode,
+	                                    name: name,
+	                                    value: data || msg.url,
+	                                    filename: msg.filename,
+	                                    error: msg.error,
+	                                    errorText: msg.errorText
+	                                }, this.sentByMe);
 	                            }
-	                            return;
 	                        } else {
-	                            brief = '[' + Demo.lan.file + ']';
-	                            fileMsg({
+	                            audioMsg({
+	                                wrapper: targetNode,
+	                                name: name,
+	                                value: data || msg.url,
+	                                length: msg.length,
+	                                id: msg.id,
+	                                error: msg.error,
+	                                errorText: msg.errorText
+	                            }, this.sentByMe);
+	                        }
+	                        break;
+	                    case 'cmd':
+	                        break;
+	                    case 'file':
+	                        if (WebIM.config.isWindowSDK) {
+	                            var cur = document.getElementById('file_' + msg.id);
+	                            if (cur) {
+	                                var listenerName = 'onUpdateFileUrl' + msg.id;
+	                                if (Demo.api[listenerName]) {
+	                                    Demo.api[listenerName]({ url: msg.url });
+	                                    Demo.api[listenerName] = null;
+	                                } else {
+	                                    console.log('listenerName not exists:' + msg.id);
+	                                }
+	                                return;
+	                            } else {
+	                                brief = '[' + Demo.lan.file + ']';
+	                                fileMsg({
+	                                    id: msg.id,
+	                                    wrapper: targetNode,
+	                                    name: name,
+	                                    value: data || msg.url,
+	                                    filename: msg.filename,
+	                                    error: msg.error,
+	                                    errorText: msg.errorText
+	                                }, this.sentByMe);
+	                            }
+	                        } else {
+	                            var option = {
 	                                id: msg.id,
 	                                wrapper: targetNode,
 	                                name: name,
@@ -900,136 +992,62 @@
 	                                filename: msg.filename,
 	                                error: msg.error,
 	                                errorText: msg.errorText
-	                            }, this.sentByMe);
+	                            };
+	                            if (msg.ext) {
+	                                option.fileSize = msg.ext.fileSize;
+	                            }
+	                            fileMsg(option, this.sentByMe);
 	                        }
-	                    } else {
-	                        brief = '[' + Demo.lan.audio + ']';
-	                        audioMsg({
+	                        break;
+	                    case 'loc':
+	                        locMsg({
 	                            wrapper: targetNode,
 	                            name: name,
-	                            value: data || msg.url,
-	                            length: msg.length,
-	                            id: msg.id,
+	                            value: data || msg.addr,
 	                            error: msg.error,
 	                            errorText: msg.errorText
 	                        }, this.sentByMe);
-	                    }
-	                }
-	                break;
-	            case 'cmd':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'cmd' });
-	                } else {
-	                    brief = '[' + Demo.lan.cmd + ']';
-	                }
-	                break;
-	            case 'file':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'file' });
-	                } else {
-	                    if (WebIM.config.isWindowSDK) {
-	                        var cur = document.getElementById('file_' + msg.id);
-	                        if (cur) {
-	                            var listenerName = 'onUpdateFileUrl' + msg.id;
-	                            if (Demo.api[listenerName]) {
-	                                Demo.api[listenerName]({ url: msg.url });
-	                                Demo.api[listenerName] = null;
+	                        break;
+	                    case 'video':
+	                        if (WebIM.config.isWindowSDK) {
+	                            var cur = document.getElementById('file_' + msg.id);
+	                            if (cur) {
+	                                var listenerName = 'onUpdateFileUrl' + msg.id;
+	                                if (Demo.api[listenerName]) {
+	                                    Demo.api[listenerName]({ url: msg.url });
+	                                    Demo.api[listenerName] = null;
+	                                } else {
+	                                    console.log('listenerName not exists:' + msg.id);
+	                                }
+	                                return;
 	                            } else {
-	                                console.log('listenerName not exists:' + msg.id);
+	                                brief = '[' + Demo.lan.file + ']';
+	                                fileMsg({
+	                                    id: msg.id,
+	                                    wrapper: targetNode,
+	                                    name: name,
+	                                    value: data || msg.url,
+	                                    filename: msg.filename,
+	                                    error: msg.error,
+	                                    errorText: msg.errorText
+	                                }, this.sentByMe);
 	                            }
-	                            return;
 	                        } else {
-	                            brief = '[' + Demo.lan.file + ']';
-	                            fileMsg({
-	                                id: msg.id,
+	                            videoMsg({
 	                                wrapper: targetNode,
 	                                name: name,
 	                                value: data || msg.url,
-	                                filename: msg.filename,
+	                                length: msg.length,
+	                                id: msg.id,
 	                                error: msg.error,
 	                                errorText: msg.errorText
 	                            }, this.sentByMe);
 	                        }
-	                    } else {
-	                        brief = '[' + Demo.lan.file + ']';
-	                        var option = {
-	                            id: msg.id,
-	                            wrapper: targetNode,
-	                            name: name,
-	                            value: data || msg.url,
-	                            filename: msg.filename,
-	                            error: msg.error,
-	                            errorText: msg.errorText
-	                        };
-	                        if (msg.ext) {
-	                            option.fileSize = msg.ext.fileSize;
-	                        }
-	                        fileMsg(option, this.sentByMe);
-	                    }
+	                        break;
+	                    default:
+	                        break;
 	                }
-	                break;
-	            case 'loc':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'loc' });
-	                } else {
-	                    brief = '[' + Demo.lan.location + ']';
-	                    locMsg({
-	                        wrapper: targetNode,
-	                        name: name,
-	                        value: data || msg.addr,
-	                        error: msg.error,
-	                        errorText: msg.errorText
-	                    }, this.sentByMe);
-	                }
-	                break;
-	            case 'video':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: type });
-	                } else {
-	                    if (WebIM.config.isWindowSDK) {
-	                        var cur = document.getElementById('file_' + msg.id);
-	                        if (cur) {
-	                            var listenerName = 'onUpdateFileUrl' + msg.id;
-	                            if (Demo.api[listenerName]) {
-	                                Demo.api[listenerName]({ url: msg.url });
-	                                Demo.api[listenerName] = null;
-	                            } else {
-	                                console.log('listenerName not exists:' + msg.id);
-	                            }
-	                            return;
-	                        } else {
-	                            brief = '[' + Demo.lan.file + ']';
-	                            fileMsg({
-	                                id: msg.id,
-	                                wrapper: targetNode,
-	                                name: name,
-	                                value: data || msg.url,
-	                                filename: msg.filename,
-	                                error: msg.error,
-	                                errorText: msg.errorText
-	                            }, this.sentByMe);
-	                        }
-	                    } else {
-	                        brief = '[' + Demo.lan.video + ']';
-	                        videoMsg({
-	                            wrapper: targetNode,
-	                            name: name,
-	                            value: data || msg.url,
-	                            length: msg.length,
-	                            id: msg.id,
-	                            error: msg.error,
-	                            errorText: msg.errorText
-	                        }, this.sentByMe);
-	                    }
-	                }
-	                break;
-	            default:
-	                break;
-	        }
-
-	        if (!targetNode) {
-	            this.render(this.node, 'stranger');
-	            return;
+	            }
 	        }
 
 	        // show brief
@@ -1075,6 +1093,7 @@
 	            var cur = document.getElementById(id).getElementsByTagName('i')[0];
 	            var curCount = cur.getAttribute('count') / 1;
 	            curCount++;
+	            curCount = curCount > Demo.maxChatRecordCount ? Demo.maxChatRecordCount : curCount;
 	            cur.setAttribute('count', curCount);
 	            cur.innerText = curCount > 999 ? '...' : curCount + '';
 	            cur.style.display = 'block';
@@ -1083,6 +1102,7 @@
 	                var cur = document.getElementById(id).getElementsByTagName('i')[0];
 	                var curCount = cur.getAttribute('count') / 1;
 	                curCount++;
+	                curCount = curCount > Demo.maxChatRecordCount ? Demo.maxChatRecordCount : curCount;
 	                cur.setAttribute('count', curCount);
 	                cur.innerText = curCount > 999 ? '...' : curCount + '';
 	                cur.style.display = 'block';
@@ -1126,6 +1146,7 @@
 	        if (!str || str.length === 0) {
 	            return '';
 	        }
+	        console.log(str);
 	        var s = '';
 	        s = str.replace(/&amp;/g, "&");
 	        s = s.replace(/<(?=[^o][^)])/g, "&lt;");
@@ -23155,6 +23176,9 @@
 	    displayName: 'exports',
 
 
+	    // Switch the left bar doesn't release chat records
+	    release: true,
+
 	    getInitialState: function getInitialState() {
 	        var me = this;
 
@@ -23183,54 +23207,61 @@
 	            },
 	            onClosed: function onClosed(msg) {
 	                // Demo.api.logout();
-
 	            },
 	            onTextMessage: function onTextMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'txt');
 	                Demo.api.appendMsg(message, 'txt');
 	            },
 	            onEmojiMessage: function onEmojiMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'emoji');
 	                Demo.api.appendMsg(message, 'emoji');
 	            },
 	            onPictureMessage: function onPictureMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'img');
 	                Demo.api.appendMsg(message, 'img');
 	            },
 	            onCmdMessage: function onCmdMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'cmd');
 	                Demo.api.appendMsg(message, 'cmd');
 	            },
 	            onAudioMessage: function onAudioMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'aud');
 	                Demo.api.appendMsg(message, 'aud');
 	            },
 	            onLocationMessage: function onLocationMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'loc');
 	                Demo.api.appendMsg(message, 'loc');
 	            },
 	            onFileMessage: function onFileMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'file');
 	                Demo.api.appendMsg(message, 'file');
 	            },
 	            onVideoMessage: function onVideoMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'video');
 	                Demo.api.appendMsg(message, 'video');
 	            },
 	            onPresence: function onPresence(message) {
@@ -23320,7 +23351,8 @@
 	            strangers: [],
 	            blacklist: {},
 	            chatrooms_totalnum: Demo.api.pagesize,
-	            contact_loading_show: false
+	            contact_loading_show: false,
+	            window: []
 	        };
 	    },
 	    confirmPop: function confirmPop(options) {
@@ -23360,9 +23392,15 @@
 	                var msg = null;
 
 	                while (msg = Demo.strangers[o].pop()) {
+	                    Demo.api.addToChatRecord(msg.msg, msg.type);
 	                    Demo.api.appendMsg(msg.msg, msg.type);
 	                }
 	            }
+	        }
+	        if (this.release) {
+	            Demo.api.releaseChatRecord();
+	        } else {
+	            this.release = true;
 	        }
 	    },
 
@@ -23712,12 +23750,75 @@
 	        });
 	    },
 
-	    update: function update(cur) {
+	    update: function update(cur, leftBar) {
+	        if (leftBar) this.release = false;
 	        this.setState({ cur: cur, contact_loading_show: false });
 	    },
 
 	    updateNode: function updateNode(id) {
+	        var windows = [],
+	            id,
+	            cate = '',
+	            props = {
+	            sendPicture: this.sendPicture,
+	            sendAudio: this.sendAudio,
+	            sendFile: this.sendFile,
+	            name: ''
+	        };
+	        if (Demo.selected) {
+	            id = Demo.selected;
+	            cate = Demo.selectedCate;
+	            switch (cate) {
+	                case 'friends':
+	                    props.name = id;
+	                    windows.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, { chatType: 'singleChat',
+	                        updateNode: this.updateNode, className: '' })));
+	                    break;
+
+	                case 'groups':
+	                    //createGroup is two step progresses.first send presence,second send iq.
+	                    //on first recv group list, the newest created one's roomId=name,
+	                    //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+	                    for (var i = 0; i < this.state.groups.length; i++) {
+	                        if (id == this.state.groups[i].roomId) {
+	                            props.name = this.state.groups[i].name;
+	                            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+	                                this.state.groups[i].name = Demo.createGroupName;
+	                                Demo.createGroupName = '';
+	                            }
+	                            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'groupChat',
+	                                className: '' })));
+	                            break;
+	                        }
+	                    }
+	                    break;
+
+	                case 'chatrooms':
+	                    for (var i = 0; i < this.state.chatrooms.length; i++) {
+	                        if (id == this.state.chatrooms[i].id) {
+	                            props.name = this.state.chatrooms[i].name;
+	                            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'chatRoom',
+	                                className: '' })));
+	                        }
+	                    }
+	                    console.log('windows: ', windows);
+	                    break;
+
+	                case 'strangers':
+	                    props.name = id;
+	                    windows.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, {
+	                        className: '' })));
+
+	                    console.log('strangers');
+	                    console.log('windows: ', windows);
+	                    break;
+
+	                default:
+	                    console.log('Default: ', cate);
+	            }
+	        }
 	        this.setState({ curNode: id });
+	        this.setState({ window: windows });
 	    },
 
 	    sendPicture: function sendPicture(chatType) {
@@ -23752,26 +23853,34 @@
 	            file: file,
 	            to: Demo.selected,
 	            roomType: chatroom,
+	            ext: {
+	                fuck: 'fuck'
+	            },
 	            onFileUploadError: function onFileUploadError(error) {
 	                log(error);
 	                me.refs.picture.value = null;
 
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: Demo.lan.sendImageFailed,
 	                    from: Demo.user,
 	                    to: Demo.selected
-	                }, 'txt');
+	                };
+	                Demo.api.addToChatRecord(option, 'txt');
+	                Demo.api.appendMsg(option, 'txt');
 	            },
 	            onFileUploadComplete: function onFileUploadComplete(data) {
 	                url = (location.protocol != 'https:' && WebIM.config.isHttpDNS ? Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0].uuid;
 	                me.refs.picture.value = null;
+	                console.log('data: ', data);
 	            },
 	            success: function success(id) {
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: url,
 	                    from: Demo.user,
 	                    to: Demo.selected
-	                }, 'img');
+	                };
+	                Demo.api.addToChatRecord(option, 'img');
+	                Demo.api.appendMsg(option, 'img');
 	            },
 	            flashUpload: WebIM.flashUpload
 	        });
@@ -23809,24 +23918,28 @@
 	                log(error);
 	                me.refs.audio.value = null;
 
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: Demo.lan.sendAudioFailed,
 	                    from: Demo.user,
 	                    to: Demo.selected
-	                }, 'txt');
+	                };
+	                Demo.api.addToChatRecord(option, 'txt');
+	                Demo.api.appendMsg(option, 'txt');
 	            },
 	            onFileUploadComplete: function onFileUploadComplete(data) {
 	                url = (location.protocol != 'https:' && WebIM.config.isHttpDNS ? Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0].uuid;
 	                me.refs.audio.value = null;
 	            },
 	            success: function success(id, sid) {
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: url,
 	                    from: Demo.user,
 	                    to: Demo.selected,
 	                    id: sid,
 	                    length: duration
-	                }, 'aud');
+	                };
+	                Demo.api.addToChatRecord(option, 'aud');
+	                Demo.api.appendMsg(option, 'aud');
 	            },
 	            flashUpload: WebIM.flashUpload
 	        });
@@ -23928,23 +24041,27 @@
 	            onFileUploadError: function onFileUploadError(error) {
 	                log(error);
 	                me.refs.file.value = null;
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: Demo.lan.sendFileFailed,
 	                    from: Demo.user,
 	                    to: Demo.selected
-	                }, 'txt');
+	                };
+	                Demo.api.addToChatRecord(option, 'txt');
+	                Demo.api.appendMsg(option, 'txt');
 	            },
 	            onFileUploadComplete: function onFileUploadComplete(data) {
 	                url = (location.protocol != 'https:' && WebIM.config.isHttpDNS ? Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0].uuid;
 	                me.refs.file.value = null;
 	            },
 	            success: function success(id) {
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: url,
 	                    filename: filename,
 	                    from: Demo.user,
 	                    to: Demo.selected
-	                }, 'file');
+	                };
+	                Demo.api.addToChatRecord(option, 'file');
+	                Demo.api.appendMsg(option, 'file');
 	            },
 	            flashUpload: WebIM.flashUpload
 	        });
@@ -23959,54 +24076,55 @@
 
 	    render: function render() {
 	        // Demo.api.curLength = this.state[this.state.cur].length;
-
-	        var windows = [],
-	            id,
-	            props = {
-	            sendPicture: this.sendPicture,
-	            sendAudio: this.sendAudio,
-	            sendFile: this.sendFile,
-	            name: ''
-	        };
-
-	        for (var i = 0; i < this.state.friends.length; i++) {
-	            id = this.state.friends[i].name;
-	            props.name = id;
-	            windows.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, { chatType: 'singleChat',
-	                updateNode: this.updateNode,
-	                className: this.state.friends[i].name === this.state.curNode ? '' : 'hide' })));
-	        }
-
-	        for (var i = 0; i < this.state.groups.length; i++) {
-	            id = this.state.groups[i].roomId;
-	            props.name = this.state.groups[i].name;
-	            //createGroup is two step progresses.first send presence,second send iq.
-	            //on first recv group list, the newest created one's roomId=name,
-	            //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
-	            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
-	                this.state.groups[i].name = Demo.createGroupName;
-	                Demo.createGroupName = '';
-	            }
-
-	            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'groupChat',
-	                className: id === this.state.curNode ? '' : 'hide' })));
-	        }
-
-	        for (var i = 0; i < this.state.chatrooms.length; i++) {
-	            id = this.state.chatrooms[i].id;
-	            props.name = this.state.chatrooms[i].name;
-
-	            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'chatRoom',
-	                className: id === this.state.curNode ? '' : 'hide' })));
-	        }
-
-	        for (var i = 0; i < this.state.strangers.length; i++) {
-	            id = this.state.strangers[i].name;
-	            props.name = id;
-
-	            windows.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, {
-	                className: this.state.strangers[i].name === this.state.curNode ? '' : 'hide' })));
-	        }
+	        /*
+	        
+	                var windows = [], id,
+	                    props = {
+	                        sendPicture: this.sendPicture,
+	                        sendAudio: this.sendAudio,
+	                        sendFile: this.sendFile,
+	                        name: ''
+	                    };
+	        
+	                for (var i = 0; i < this.state.friends.length; i++) {
+	                    id = this.state.friends[i].name;
+	                    props.name = id;
+	                    windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
+	                                             updateNode={this.updateNode}
+	                                             className={this.state.friends[i].name === this.state.curNode ? '' : 'hide'}/>);
+	                }
+	        
+	                for (var i = 0; i < this.state.groups.length; i++) {
+	                    id = this.state.groups[i].roomId;
+	                    props.name = this.state.groups[i].name;
+	                    //createGroup is two step progresses.first send presence,second send iq.
+	                    //on first recv group list, the newest created one's roomId=name,
+	                    //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+	                    if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+	                        this.state.groups[i].name = Demo.createGroupName;
+	                        Demo.createGroupName = '';
+	                    }
+	        
+	                    windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
+	                                             className={id === this.state.curNode ? '' : 'hide'}/>);
+	                }
+	        
+	                for (var i = 0; i < this.state.chatrooms.length; i++) {
+	                    id = this.state.chatrooms[i].id;
+	                    props.name = this.state.chatrooms[i].name;
+	        
+	                    windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='chatRoom'
+	                                             className={id === this.state.curNode ? '' : 'hide'}/>);
+	                }
+	        
+	                for (var i = 0; i < this.state.strangers.length; i++) {
+	                    id = this.state.strangers[i].name;
+	                    props.name = id;
+	        
+	                    windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
+	                                             className={this.state.strangers[i].name === this.state.curNode ? '' : 'hide'}/>);
+	                }
+	        */
 
 	        return React.createElement(
 	            'div',
@@ -24023,7 +24141,7 @@
 	                strangers: this.state.strangers,
 	                getChatroom: this.getChatroom,
 	                loading: this.state.contact_loading_show }),
-	            windows,
+	            this.state.window,
 	            React.createElement('input', { ref: 'picture', onChange: this.pictureChange, type: 'file', className: 'hide' }),
 	            React.createElement('input', { ref: 'audio', onChange: this.audioChange, type: 'file', className: 'hide' }),
 	            React.createElement('input', { ref: 'file', onChange: this.fileChange, type: 'file', className: 'hide' }),
@@ -24062,22 +24180,22 @@
 
 	    updateFriend: function updateFriend() {
 	        Demo.selectedCate = 'friends';
-	        this.props.update('friend');
+	        this.props.update('friend', true);
 	    },
 
 	    updateGroup: function updateGroup() {
 	        Demo.selectedCate = 'groups';
-	        this.props.update('group');
+	        this.props.update('group', true);
 	    },
 
 	    updateStranger: function updateStranger() {
 	        Demo.selectedCate = 'strangers';
-	        this.props.update('stranger');
+	        this.props.update('stranger', true);
 	    },
 
 	    updateChatroom: function updateChatroom() {
 	        Demo.selectedCate = 'chatrooms';
-	        this.props.update('chatroom');
+	        this.props.update('chatroom', true);
 	    },
 
 	    render: function render() {
@@ -27052,9 +27170,9 @@
 	            this.refs['i'].innerText = '';
 	        }
 
-	        // if (this.props.id === Demo.selected) {
-	        //     return;
-	        // }
+	        if (this.props.id === Demo.selected) {
+	            return;
+	        }
 
 	        if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
 	            Demo.selected = this.props.id;
@@ -27082,9 +27200,11 @@
 	        }
 
 	        if (Demo.selectedCate === 'chatrooms') {
-
-	            document.getElementById('wrapper' + this.props.id).innerHTML = '';
-	            document.getElementById(this.props.id).querySelector('em').innerHTML = '';
+	            /*
+	                        清空聊天室消息
+	                        document.getElementById('wrapper' + this.props.id).innerHTML = '';
+	                        document.getElementById(this.props.id).querySelector('em').innerHTML = '';
+	            */
 
 	            // join chatroom
 	            if (WebIM.config.isWindowSDK) {
@@ -27295,6 +27415,7 @@
 	    send: function send(msg) {
 	        msg.chatType = this.props.chatType;
 	        Demo.conn.send(msg);
+	        Demo.api.addToChatRecord(msg, 'txt');
 	        Demo.api.appendMsg(msg, 'txt');
 	    },
 
@@ -27668,10 +27789,12 @@
 	                },
 	                upload_error_handler: function upload_error_handler(file, code, msg) {
 	                    if (code != SWFUpload.UPLOAD_ERROR.FILE_CANCELLED && code != SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED && code != SWFUpload.UPLOAD_ERROR.FILE_VALIDATION_FAILED) {
-	                        Demo.api.appendMsg({
+	                        var option = {
 	                            data: Demo.lan.uploadFileFailed,
 	                            to: Demo.selected
-	                        }, 'txt');
+	                        };
+	                        Demo.api.addToChatRecord(option, 'txt');
+	                        Demo.api.appendMsg(option, 'txt');
 	                    }
 	                },
 	                upload_success_handler: function upload_success_handler(file, response) {
@@ -27700,11 +27823,13 @@
 	                            to: Demo.selected,
 	                            roomType: Demo.selectedCate === 'chatrooms',
 	                            success: function success(id) {
-	                                Demo.api.appendMsg({
+	                                var option = {
 	                                    data: file.url,
 	                                    from: Demo.user,
 	                                    to: Demo.selected
-	                                }, me.filetype);
+	                                };
+	                                Demo.api.addToChatRecord(option, me.filetype);
+	                                Demo.api.appendMsg(option, me.filetype);
 	                            }
 	                        };
 

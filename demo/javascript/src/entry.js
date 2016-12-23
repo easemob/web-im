@@ -23,6 +23,11 @@ Demo.lan = Language.Chinese;
 // for webview in client
 Demo.api = Api;
 
+// The messages cache
+Demo.chatRecord = {};
+// The max messages count of a dialog
+Demo.maxChatRecordCount = 20;
+
 Demo.roster = {};
 Demo.friends = [];
 Demo.strangers = {};
@@ -33,17 +38,6 @@ Demo.IMGTYPE = {
     bmp: 1,
     jpg: 1,
     png: 1
-};
-
-Demo.FILETYPE = {
-    gif: 1,
-    bmp: 1,
-    jpg: 1,
-    png: 1,
-    zip: 1,
-    txt: 1,
-    doc: 1,
-    pdf: 1
 };
 
 Demo.AUDIOTYPE = {

@@ -1,14 +1,4 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else if(typeof exports === 'object')
-		exports["WebIM"] = factory();
-	else
-		root["WebIM"] = factory();
-})(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -44,30 +34,1027 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "./";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(1)
+	module.exports = __webpack_require__(230);
 
 
 /***/ },
-/* 1 */
+
+/***/ 223:
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	;
+	(function () {
+
+	    var EMPTYFN = function EMPTYFN() {};
+	    var _code = __webpack_require__(224).code;
+	    var WEBIM_FILESIZE_LIMIT = 10485760;
+
+	    var _createStandardXHR = function _createStandardXHR() {
+	        try {
+	            return new window.XMLHttpRequest();
+	        } catch (e) {
+	            return false;
+	        }
+	    };
+
+	    var _createActiveXHR = function _createActiveXHR() {
+	        try {
+	            return new window.ActiveXObject('Microsoft.XMLHTTP');
+	        } catch (e) {
+	            return false;
+	        }
+	    };
+
+	    var _xmlrequest = function _xmlrequest(crossDomain) {
+	        crossDomain = crossDomain || true;
+	        var temp = _createStandardXHR() || _createActiveXHR();
+
+	        if ('withCredentials' in temp) {
+	            return temp;
+	        }
+	        if (!crossDomain) {
+	            return temp;
+	        }
+	        if (typeof window.XDomainRequest === 'undefined') {
+	            return temp;
+	        }
+	        var xhr = new XDomainRequest();
+	        xhr.readyState = 0;
+	        xhr.status = 100;
+	        xhr.onreadystatechange = EMPTYFN;
+	        xhr.onload = function () {
+	            xhr.readyState = 4;
+	            xhr.status = 200;
+
+	            var xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
+	            xmlDoc.async = 'false';
+	            xmlDoc.loadXML(xhr.responseText);
+	            xhr.responseXML = xmlDoc;
+	            xhr.response = xhr.responseText;
+	            xhr.onreadystatechange();
+	        };
+	        xhr.ontimeout = xhr.onerror = function () {
+	            xhr.readyState = 4;
+	            xhr.status = 500;
+	            xhr.onreadystatechange();
+	        };
+	        return xhr;
+	    };
+
+	    var _hasFlash = function () {
+	        if ('ActiveXObject' in window) {
+	            try {
+	                return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+	            } catch (ex) {
+	                return 0;
+	            }
+	        } else {
+	            if (navigator.plugins && navigator.plugins.length > 0) {
+	                return navigator.plugins['Shockwave Flash'];
+	            }
+	        }
+	        return 0;
+	    }();
+
+	    var _tmpUtilXHR = _xmlrequest(),
+	        _hasFormData = typeof FormData !== 'undefined',
+	        _hasBlob = typeof Blob !== 'undefined',
+	        _isCanSetRequestHeader = _tmpUtilXHR.setRequestHeader || false,
+	        _hasOverrideMimeType = _tmpUtilXHR.overrideMimeType || false,
+	        _isCanUploadFileAsync = _isCanSetRequestHeader && _hasFormData,
+	        _isCanUploadFile = _isCanUploadFileAsync || _hasFlash,
+	        _isCanDownLoadFile = _isCanSetRequestHeader && (_hasBlob || _hasOverrideMimeType);
+
+	    if (!Object.keys) {
+	        Object.keys = function () {
+	            'use strict';
+
+	            var hasOwnProperty = Object.prototype.hasOwnProperty,
+	                hasDontEnumBug = !{ toString: null }.propertyIsEnumerable('toString'),
+	                dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'],
+	                dontEnumsLength = dontEnums.length;
+
+	            return function (obj) {
+	                if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object' && (typeof obj !== 'function' || obj === null)) {
+	                    throw new TypeError('Object.keys called on non-object');
+	                }
+
+	                var result = [],
+	                    prop,
+	                    i;
+
+	                for (prop in obj) {
+	                    if (hasOwnProperty.call(obj, prop)) {
+	                        result.push(prop);
+	                    }
+	                }
+
+	                if (hasDontEnumBug) {
+	                    for (i = 0; i < dontEnumsLength; i++) {
+	                        if (hasOwnProperty.call(obj, dontEnums[i])) {
+	                            result.push(dontEnums[i]);
+	                        }
+	                    }
+	                }
+	                return result;
+	            };
+	        }();
+	    }
+
+	    var utils = {
+	        hasFormData: _hasFormData,
+
+	        hasBlob: _hasBlob,
+
+	        emptyfn: EMPTYFN,
+
+	        isCanSetRequestHeader: _isCanSetRequestHeader,
+
+	        hasOverrideMimeType: _hasOverrideMimeType,
+
+	        isCanUploadFileAsync: _isCanUploadFileAsync,
+
+	        isCanUploadFile: _isCanUploadFile,
+
+	        isCanDownLoadFile: _isCanDownLoadFile,
+
+	        isSupportWss: function () {
+	            var notSupportList = [
+	            //1: QQ browser X5 core
+	            /MQQBrowser[\/]5([.]\d+)?\sTBS/
+
+	            //2: etc.
+	            //...
+	            ];
+
+	            if (!window.WebSocket) {
+	                return false;
+	            }
+
+	            var ua = window.navigator.userAgent;
+	            for (var i = 0, l = notSupportList.length; i < l; i++) {
+	                if (notSupportList[i].test(ua)) {
+	                    return false;
+	                }
+	            }
+	            return true;
+	        }(),
+
+	        getIEVersion: function () {
+	            var ua = navigator.userAgent,
+	                matches,
+	                tridentMap = { '4': 8, '5': 9, '6': 10, '7': 11 };
+
+	            matches = ua.match(/MSIE (\d+)/i);
+
+	            if (matches && matches[1]) {
+	                return +matches[1];
+	            }
+	            matches = ua.match(/Trident\/(\d+)/i);
+	            if (matches && matches[1]) {
+	                return tridentMap[matches[1]] || null;
+	            }
+	            return null;
+	        }(),
+
+	        stringify: function stringify(json) {
+	            if (typeof JSON !== 'undefined' && JSON.stringify) {
+	                return JSON.stringify(json);
+	            } else {
+	                var s = '',
+	                    arr = [];
+
+	                var iterate = function iterate(json) {
+	                    var isArr = false;
+
+	                    if (Object.prototype.toString.call(json) === '[object Array]') {
+	                        arr.push(']', '[');
+	                        isArr = true;
+	                    } else if (Object.prototype.toString.call(json) === '[object Object]') {
+	                        arr.push('}', '{');
+	                    }
+
+	                    for (var o in json) {
+	                        if (Object.prototype.toString.call(json[o]) === '[object Null]') {
+	                            json[o] = 'null';
+	                        } else if (Object.prototype.toString.call(json[o]) === '[object Undefined]') {
+	                            json[o] = 'undefined';
+	                        }
+
+	                        if (json[o] && _typeof(json[o]) === 'object') {
+	                            s += ',' + (isArr ? '' : '"' + o + '":' + (isArr ? '"' : '')) + iterate(json[o]) + '';
+	                        } else {
+	                            s += ',"' + (isArr ? '' : o + '":"') + json[o] + '"';
+	                        }
+	                    }
+
+	                    if (s != '') {
+	                        s = s.slice(1);
+	                    }
+
+	                    return arr.pop() + s + arr.pop();
+	                };
+	                return iterate(json);
+	            }
+	        },
+	        login: function login(options) {
+	            var options = options || {};
+	            var suc = options.success || EMPTYFN;
+	            var err = options.error || EMPTYFN;
+
+	            var appKey = options.appKey || '';
+	            var devInfos = appKey.split('#');
+	            if (devInfos.length !== 2) {
+	                err({
+	                    type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	                });
+	                return false;
+	            }
+
+	            var orgName = devInfos[0];
+	            var appName = devInfos[1];
+	            var https = https || options.https;
+	            var user = options.user || '';
+	            var pwd = options.pwd || '';
+
+	            var apiUrl = options.apiUrl;
+
+	            var loginJson = {
+	                grant_type: 'password',
+	                username: user,
+	                password: pwd,
+	                timestamp: +new Date()
+	            };
+	            var loginfo = utils.stringify(loginJson);
+
+	            var options = {
+	                url: apiUrl + '/' + orgName + '/' + appName + '/token',
+	                dataType: 'json',
+	                data: loginfo,
+	                success: suc,
+	                error: err
+	            };
+	            return utils.ajax(options);
+	        },
+
+	        getFileUrl: function getFileUrl(fileInputId) {
+	            var uri = {
+	                url: '',
+	                filename: '',
+	                filetype: '',
+	                data: ''
+	            };
+
+	            var fileObj = typeof fileInputId === 'string' ? document.getElementById(fileInputId) : fileInputId;
+
+	            if (!utils.isCanUploadFileAsync || !fileObj) {
+	                return uri;
+	            }
+	            try {
+	                if (window.URL.createObjectURL) {
+	                    var fileItems = fileObj.files;
+	                    if (fileItems.length > 0) {
+	                        var u = fileItems.item(0);
+	                        uri.data = u;
+	                        uri.url = window.URL.createObjectURL(u);
+	                        uri.filename = u.name || '';
+	                    }
+	                } else {
+	                    // IE
+	                    var u = document.getElementById(fileInputId).value;
+	                    uri.url = u;
+	                    var pos1 = u.lastIndexOf('/');
+	                    var pos2 = u.lastIndexOf('\\');
+	                    var pos = Math.max(pos1, pos2);
+	                    if (pos < 0) uri.filename = u;else uri.filename = u.substring(pos + 1);
+	                }
+	                var index = uri.filename.lastIndexOf('.');
+	                if (index != -1) {
+	                    uri.filetype = uri.filename.substring(index + 1).toLowerCase();
+	                }
+	                return uri;
+	            } catch (e) {
+	                throw e;
+	            }
+	        },
+
+	        getFileSize: function getFileSize(file) {
+	            var fileSize = 0;
+	            if (file) {
+	                if (file.files) {
+	                    if (file.files.length > 0) {
+	                        fileSize = file.files[0].size;
+	                    }
+	                } else if (file.select && 'ActiveXObject' in window) {
+	                    file.select();
+	                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
+	                    var file = fileobject.GetFile(file.value);
+	                    fileSize = file.Size;
+	                }
+	            }
+	            console.log('fileSize: ', fileSize);
+	            if (fileSize > 10000000) {
+	                return false;
+	            }
+	            var kb = Math.round(fileSize / 1000);
+	            if (kb < 1000) {
+	                fileSize = kb + ' KB';
+	            } else if (kb >= 1000) {
+	                var mb = kb / 1000;
+	                if (mb < 1000) {
+	                    fileSize = mb.toFixed(1) + ' MB';
+	                } else {
+	                    var gb = mb / 1000;
+	                    fileSize = gb.toFixed(1) + ' GB';
+	                }
+	            }
+	            return fileSize;
+	        },
+
+	        hasFlash: _hasFlash,
+
+	        trim: function trim(str) {
+
+	            str = typeof str === 'string' ? str : '';
+
+	            return str.trim ? str.trim() : str.replace(/^\s|\s$/g, '');
+	        },
+
+	        parseEmoji: function parseEmoji(msg) {
+	            if (typeof WebIM.Emoji === 'undefined' || typeof WebIM.Emoji.map === 'undefined') {
+	                return msg;
+	            } else {
+	                var emoji = WebIM.Emoji,
+	                    reg = null;
+
+	                for (var face in emoji.map) {
+	                    if (emoji.map.hasOwnProperty(face)) {
+	                        while (msg.indexOf(face) > -1) {
+	                            msg = msg.replace(face, '<img class="emoji" src="' + emoji.path + emoji.map[face] + '" />');
+	                        }
+	                    }
+	                }
+	                return msg;
+	            }
+	        },
+
+	        parseLink: function parseLink(msg) {
+
+	            var reg = /(https?\:\/\/|www\.)([a-zA-Z0-9-]+(\.[a-zA-Z0-9]+)+)(\:[0-9]{2,4})?\/?((\.[:_0-9a-zA-Z-]+)|[:_0-9a-zA-Z-]*\/?)*\??[:_#@*&%0-9a-zA-Z-/=]*/gm;
+
+	            msg = msg.replace(reg, function (v) {
+
+	                var prefix = /^https?/gm.test(v);
+
+	                return "<a href='" + (prefix ? v : '//' + v) + "' target='_blank'>" + v + "</a>";
+	            });
+
+	            return msg;
+	        },
+
+	        parseJSON: function parseJSON(data) {
+
+	            if (window.JSON && window.JSON.parse) {
+	                return window.JSON.parse(data + '');
+	            }
+
+	            var requireNonComma,
+	                depth = null,
+	                str = utils.trim(data + '');
+
+	            return str && !utils.trim(str.replace(/(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g, function (token, comma, open, close) {
+
+	                if (requireNonComma && comma) {
+	                    depth = 0;
+	                }
+
+	                if (depth === 0) {
+	                    return token;
+	                }
+
+	                requireNonComma = open || comma;
+	                depth += !close - !open;
+	                return '';
+	            })) ? Function('return ' + str)() : Function('Invalid JSON: ' + data)();
+	        },
+
+	        parseUploadResponse: function parseUploadResponse(response) {
+	            return response.indexOf('callback') > -1 ? //lte ie9
+	            response.slice(9, -1) : response;
+	        },
+
+	        parseDownloadResponse: function parseDownloadResponse(response) {
+	            return response && response.type && response.type === 'application/json' || 0 > Object.prototype.toString.call(response).indexOf('Blob') ? this.url + '?token=' : window.URL.createObjectURL(response);
+	        },
+
+	        uploadFile: function uploadFile(options) {
+	            var options = options || {};
+	            options.onFileUploadProgress = options.onFileUploadProgress || EMPTYFN;
+	            options.onFileUploadComplete = options.onFileUploadComplete || EMPTYFN;
+	            options.onFileUploadError = options.onFileUploadError || EMPTYFN;
+	            options.onFileUploadCanceled = options.onFileUploadCanceled || EMPTYFN;
+
+	            var acc = options.accessToken || this.context.accessToken;
+	            if (!acc) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_NO_LOGIN,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var orgName, appName, devInfos;
+	            var appKey = options.appKey || this.context.appKey || '';
+
+	            if (appKey) {
+	                devInfos = appKey.split('#');
+	                orgName = devInfos[0];
+	                appName = devInfos[1];
+	            }
+
+	            if (!orgName && !appName) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var apiUrl = options.apiUrl;
+	            var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
+
+	            if (!utils.isCanUploadFileAsync) {
+	                if (utils.hasFlash && typeof options.flashUpload === 'function') {
+	                    options.flashUpload && options.flashUpload(uploadUrl, options);
+	                } else {
+	                    options.onFileUploadError({
+	                        type: _code.WEBIM_UPLOADFILE_BROWSER_ERROR,
+	                        id: options.id
+	                    });
+	                }
+	                return;
+	            }
+
+	            var fileSize = options.file.data ? options.file.data.size : undefined;
+	            if (fileSize > WEBIM_FILESIZE_LIMIT) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            } else if (fileSize <= 0) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var xhr = utils.xmlrequest();
+	            var onError = function onError(e) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id,
+	                    xhr: xhr
+	                });
+	            };
+	            if (xhr.upload) {
+	                xhr.upload.addEventListener('progress', options.onFileUploadProgress, false);
+	            }
+	            if (xhr.addEventListener) {
+	                xhr.addEventListener('abort', options.onFileUploadCanceled, false);
+	                xhr.addEventListener('load', function (e) {
+	                    try {
+	                        var json = utils.parseJSON(xhr.responseText);
+	                        try {
+	                            options.onFileUploadComplete(json);
+	                        } catch (e) {
+	                            options.onFileUploadError({
+	                                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                                data: e
+	                            });
+	                        }
+	                    } catch (e) {
+	                        options.onFileUploadError({
+	                            type: _code.WEBIM_UPLOADFILE_ERROR,
+	                            data: xhr.responseText,
+	                            id: options.id,
+	                            xhr: xhr
+	                        });
+	                    }
+	                }, false);
+	                xhr.addEventListener('error', onError, false);
+	            } else if (xhr.onreadystatechange) {
+	                xhr.onreadystatechange = function () {
+	                    if (xhr.readyState === 4) {
+	                        if (ajax.status === 200) {
+	                            try {
+	                                var json = utils.parseJSON(xhr.responseText);
+	                                options.onFileUploadComplete(json);
+	                            } catch (e) {
+	                                options.onFileUploadError({
+	                                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                                    data: xhr.responseText,
+	                                    id: options.id,
+	                                    xhr: xhr
+	                                });
+	                            }
+	                        } else {
+	                            options.onFileUploadError({
+	                                type: _code.WEBIM_UPLOADFILE_ERROR,
+	                                data: xhr.responseText,
+	                                id: options.id,
+	                                xhr: xhr
+	                            });
+	                        }
+	                    } else {
+	                        xhr.abort();
+	                        options.onFileUploadCanceled();
+	                    }
+	                };
+	            }
+
+	            xhr.open('POST', uploadUrl);
+
+	            xhr.setRequestHeader('restrict-access', 'true');
+	            xhr.setRequestHeader('Accept', '*/*'); // Android QQ browser has some problem with this attribute.
+	            xhr.setRequestHeader('Authorization', 'Bearer ' + acc);
+
+	            var formData = new FormData();
+	            formData.append('file', options.file.data);
+	            xhr.send(formData);
+	        },
+
+	        download: function download(options) {
+	            options.onFileDownloadComplete = options.onFileDownloadComplete || EMPTYFN;
+	            options.onFileDownloadError = options.onFileDownloadError || EMPTYFN;
+
+	            var accessToken = options.accessToken || this.context.accessToken;
+	            if (!accessToken) {
+	                options.onFileDownloadError({
+	                    type: _code.WEBIM_DOWNLOADFILE_NO_LOGIN,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var onError = function onError(e) {
+	                options.onFileDownloadError({
+	                    type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                    id: options.id,
+	                    xhr: xhr
+	                });
+	            };
+
+	            if (!utils.isCanDownLoadFile) {
+	                options.onFileDownloadComplete();
+	                return;
+	            }
+	            var xhr = utils.xmlrequest();
+	            if ('addEventListener' in xhr) {
+	                xhr.addEventListener('load', function (e) {
+	                    options.onFileDownloadComplete(xhr.response, xhr);
+	                }, false);
+	                xhr.addEventListener('error', onError, false);
+	            } else if ('onreadystatechange' in xhr) {
+	                xhr.onreadystatechange = function () {
+	                    if (xhr.readyState === 4) {
+	                        if (ajax.status === 200) {
+	                            options.onFileDownloadComplete(xhr.response, xhr);
+	                        } else {
+	                            options.onFileDownloadError({
+	                                type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                                id: options.id,
+	                                xhr: xhr
+	                            });
+	                        }
+	                    } else {
+	                        xhr.abort();
+	                        options.onFileDownloadError({
+	                            type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                            id: options.id,
+	                            xhr: xhr
+	                        });
+	                    }
+	                };
+	            }
+
+	            var method = options.method || 'GET';
+	            var resType = options.responseType || 'blob';
+	            var mimeType = options.mimeType || 'text/plain; charset=x-user-defined';
+	            xhr.open(method, options.url);
+	            if (typeof Blob !== 'undefined') {
+	                xhr.responseType = resType;
+	            } else {
+	                xhr.overrideMimeType(mimeType);
+	            }
+
+	            var innerHeaer = {
+	                'X-Requested-With': 'XMLHttpRequest',
+	                'Accept': 'application/octet-stream',
+	                'share-secret': options.secret,
+	                'Authorization': 'Bearer ' + accessToken
+	            };
+	            var headers = options.headers || {};
+	            for (var key in headers) {
+	                innerHeaer[key] = headers[key];
+	            }
+	            for (var key in innerHeaer) {
+	                if (innerHeaer[key]) {
+	                    xhr.setRequestHeader(key, innerHeaer[key]);
+	                }
+	            }
+	            xhr.send(null);
+	        },
+
+	        parseTextMessage: function parseTextMessage(message, faces) {
+	            if (typeof message !== 'string') {
+	                return;
+	            }
+
+	            if (Object.prototype.toString.call(faces) !== '[object Object]') {
+	                return {
+	                    isemoji: false,
+	                    body: [{
+	                        type: 'txt',
+	                        data: message
+	                    }]
+	                };
+	            }
+
+	            var receiveMsg = message;
+	            var emessage = [];
+	            var expr = /\[[^[\]]{2,3}\]/mg;
+	            var emoji = receiveMsg.match(expr);
+
+	            if (!emoji || emoji.length < 1) {
+	                return {
+	                    isemoji: false,
+	                    body: [{
+	                        type: 'txt',
+	                        data: message
+	                    }]
+	                };
+	            }
+	            var isemoji = false;
+	            for (var i = 0; i < emoji.length; i++) {
+	                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emoji[i])),
+	                    existEmoji = WebIM.Emoji.map[emoji[i]];
+
+	                if (tmsg) {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: tmsg
+	                    });
+	                }
+	                if (!existEmoji) {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: emoji[i]
+	                    });
+	                    continue;
+	                }
+	                var emojiStr = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
+
+	                if (emojiStr) {
+	                    isemoji = true;
+	                    emessage.push({
+	                        type: 'emoji',
+	                        data: emojiStr
+	                    });
+	                } else {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: emoji[i]
+	                    });
+	                }
+	                var restMsgIndex = receiveMsg.indexOf(emoji[i]) + emoji[i].length;
+	                receiveMsg = receiveMsg.substring(restMsgIndex);
+	            }
+	            if (receiveMsg) {
+	                emessage.push({
+	                    type: 'txt',
+	                    data: receiveMsg
+	                });
+	            }
+	            if (isemoji) {
+	                return {
+	                    isemoji: isemoji,
+	                    body: emessage
+	                };
+	            }
+	            return {
+	                isemoji: false,
+	                body: [{
+	                    type: 'txt',
+	                    data: message
+	                }]
+	            };
+	        },
+
+	        xmlrequest: _xmlrequest,
+
+	        getXmlFirstChild: function getXmlFirstChild(data, tagName) {
+	            var children = data.getElementsByTagName(tagName);
+	            if (children.length == 0) {
+	                return null;
+	            } else {
+	                return children[0];
+	            }
+	        },
+	        ajax: function ajax(options) {
+	            var dataType = options.dataType || 'text';
+	            var suc = options.success || EMPTYFN;
+	            var error = options.error || EMPTYFN;
+	            var xhr = utils.xmlrequest();
+
+	            xhr.onreadystatechange = function () {
+	                if (xhr.readyState === 4) {
+	                    var status = xhr.status || 0;
+	                    if (status === 200) {
+	                        try {
+	                            switch (dataType) {
+	                                case 'text':
+	                                    suc(xhr.responseText);
+	                                    return;
+	                                case 'json':
+	                                    var json = utils.parseJSON(xhr.responseText);
+	                                    suc(json, xhr);
+	                                    return;
+	                                case 'xml':
+	                                    if (xhr.responseXML && xhr.responseXML.documentElement) {
+	                                        suc(xhr.responseXML.documentElement, xhr);
+	                                    } else {
+	                                        error({
+	                                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                                            data: xhr.responseText
+	                                        });
+	                                    }
+	                                    return;
+	                            }
+	                            suc(xhr.response || xhr.responseText, xhr);
+	                        } catch (e) {
+	                            error({
+	                                type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                                data: e
+	                            });
+	                        }
+	                        return;
+	                    } else {
+	                        error({
+	                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                            data: xhr.responseText
+	                        });
+	                        return;
+	                    }
+	                }
+	                if (xhr.readyState === 0) {
+	                    error({
+	                        type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                        data: xhr.responseText
+	                    });
+	                }
+	            };
+
+	            if (options.responseType) {
+	                if (xhr.responseType) {
+	                    xhr.responseType = options.responseType;
+	                }
+	            }
+	            if (options.mimeType) {
+	                if (utils.hasOverrideMimeType) {
+	                    xhr.overrideMimeType(options.mimeType);
+	                }
+	            }
+
+	            var type = options.type || 'POST',
+	                data = options.data || null,
+	                tempData = '';
+
+	            if (type.toLowerCase() === 'get' && data) {
+	                for (var o in data) {
+	                    if (data.hasOwnProperty(o)) {
+	                        tempData += o + '=' + data[o] + '&';
+	                    }
+	                }
+	                tempData = tempData ? tempData.slice(0, -1) : tempData;
+	                options.url += (options.url.indexOf('?') > 0 ? '&' : '?') + (tempData ? tempData + '&' : tempData) + '_v=' + new Date().getTime();
+	                data = null;
+	                tempData = null;
+	            }
+	            xhr.open(type, options.url);
+
+	            if (utils.isCanSetRequestHeader) {
+	                var headers = options.headers || {};
+	                for (var key in headers) {
+	                    if (headers.hasOwnProperty(key)) {
+	                        xhr.setRequestHeader(key, headers[key]);
+	                    }
+	                }
+	            }
+
+	            xhr.send(data);
+	            return xhr;
+	        },
+	        ts: function ts() {
+	            var d = new Date();
+	            var Hours = d.getHours(); //获取当前小时数(0-23)
+	            var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
+	            var Seconds = d.getSeconds(); //获取当前秒数(0-59)
+	            var Milliseconds = d.getMilliseconds(); //获取当前毫秒
+	            return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
+	        },
+
+	        getObjectKey: function getObjectKey(obj, val) {
+	            for (var key in obj) {
+	                if (obj[key] == val) {
+	                    return key;
+	                }
+	            }
+	            return '';
+	        },
+
+	        sprintf: function sprintf() {
+	            var arg = arguments,
+	                str = arg[0] || '',
+	                i,
+	                len;
+	            for (i = 1, len = arg.length; i < len; i++) {
+	                str = str.replace(/%s/, arg[i]);
+	            }
+	            return str;
+	        },
+
+	        clone: function clone(obj) {
+	            var o;
+	            switch (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) {
+	                case 'undefined':
+	                    break;
+	                case 'string':
+	                    o = obj + '';break;
+	                case 'number':
+	                    o = obj - 0;break;
+	                case 'boolean':
+	                    o = obj;break;
+	                case 'object':
+	                    if (obj === null) {
+	                        o = null;
+	                    } else {
+	                        if (obj instanceof Array) {
+	                            o = [];
+	                            for (var i = 0, len = obj.length; i < len; i++) {
+	                                o.push(this.clone(obj[i]));
+	                            }
+	                        } else {
+	                            o = {};
+	                            for (var k in obj) {
+	                                o[k] = this.clone(obj[k]);
+	                            }
+	                        }
+	                    }
+	                    break;
+	                default:
+	                    o = obj;
+	                    break;
+	            }
+	            return o;
+	        }
+	    };
+
+	    exports.utils = utils;
+	})();
+
+/***/ },
+
+/***/ 224:
+/***/ function(module, exports) {
+
+	"use strict";
+
+	;
+	(function () {
+
+	    exports.code = {
+	        WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: 0,
+	        WEBIM_CONNCTION_OPEN_ERROR: 1,
+	        WEBIM_CONNCTION_AUTH_ERROR: 2,
+	        WEBIM_CONNCTION_OPEN_USERGRID_ERROR: 3,
+	        WEBIM_CONNCTION_ATTACH_ERROR: 4,
+	        WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: 5,
+	        WEBIM_CONNCTION_REOPEN_ERROR: 6,
+	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7, //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+	        WEBIM_CONNCTION_SERVER_ERROR: 8, //8: offline by multi login
+	        WEBIM_CONNCTION_IQ_ERROR: 9,
+
+	        WEBIM_CONNCTION_PING_ERROR: 10,
+	        WEBIM_CONNCTION_NOTIFYVERSION_ERROR: 11,
+	        WEBIM_CONNCTION_GETROSTER_ERROR: 12,
+	        WEBIM_CONNCTION_CROSSDOMAIN_ERROR: 13,
+	        WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: 14,
+	        WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: 15,
+	        WEBIM_CONNCTION_DISCONNECTED: 16, //16: server-side close the websocket connection
+	        WEBIM_CONNCTION_AJAX_ERROR: 17,
+	        WEBIM_CONNCTION_JOINROOM_ERROR: 18,
+	        WEBIM_CONNCTION_GETROOM_ERROR: 19,
+
+	        WEBIM_CONNCTION_GETROOMINFO_ERROR: 20,
+	        WEBIM_CONNCTION_GETROOMMEMBER_ERROR: 21,
+	        WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR: 22,
+	        WEBIM_CONNCTION_LOAD_CHATROOM_ERROR: 23,
+	        WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR: 24,
+	        WEBIM_CONNCTION_JOINCHATROOM_ERROR: 25,
+	        WEBIM_CONNCTION_QUITCHATROOM_ERROR: 26,
+	        WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR: 27,
+	        WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR: 28,
+	        WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: 29,
+
+	        WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: 30,
+	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,
+	        WEBIM_CONNCTION_CLIENT_OFFLINE: 32, //32: client offline
+	        WEBIM_CONNCTION_CLIENT_LOGOUT: 33, //33: client logout
+	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34, // Over amount of the tabs a user opened in the same browser
+	        WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP: 35,
+	        WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP: 36,
+	        WEBIM_CONNECTION_ACCEPT_JOIN_GROUP: 37,
+	        WEBIM_CONNECTION_DECLINE_JOIN_GROUP: 38,
+	        WEBIM_CONNECTION_CLOSED: 39,
+
+	        WEBIM_UPLOADFILE_BROWSER_ERROR: 100,
+	        WEBIM_UPLOADFILE_ERROR: 101,
+	        WEBIM_UPLOADFILE_NO_LOGIN: 102,
+	        WEBIM_UPLOADFILE_NO_FILE: 103,
+
+	        WEBIM_DOWNLOADFILE_ERROR: 200,
+	        WEBIM_DOWNLOADFILE_NO_LOGIN: 201,
+	        WEBIM_DOWNLOADFILE_BROWSER_ERROR: 202,
+
+	        WEBIM_MESSAGE_REC_TEXT: 300,
+	        WEBIM_MESSAGE_REC_TEXT_ERROR: 301,
+	        WEBIM_MESSAGE_REC_EMOTION: 302,
+	        WEBIM_MESSAGE_REC_PHOTO: 303,
+	        WEBIM_MESSAGE_REC_AUDIO: 304,
+	        WEBIM_MESSAGE_REC_AUDIO_FILE: 305,
+	        WEBIM_MESSAGE_REC_VEDIO: 306,
+	        WEBIM_MESSAGE_REC_VEDIO_FILE: 307,
+	        WEBIM_MESSAGE_REC_FILE: 308,
+	        WEBIM_MESSAGE_SED_TEXT: 309,
+	        WEBIM_MESSAGE_SED_EMOTION: 310,
+	        WEBIM_MESSAGE_SED_PHOTO: 311,
+	        WEBIM_MESSAGE_SED_AUDIO: 312,
+	        WEBIM_MESSAGE_SED_AUDIO_FILE: 313,
+	        WEBIM_MESSAGE_SED_VEDIO: 314,
+	        WEBIM_MESSAGE_SED_VEDIO_FILE: 315,
+	        WEBIM_MESSAGE_SED_FILE: 316,
+	        WEBIM_MESSAGE_SED_ERROR: 317,
+
+	        STATUS_INIT: 400,
+	        STATUS_DOLOGIN_USERGRID: 401,
+	        STATUS_DOLOGIN_IM: 402,
+	        STATUS_OPENED: 403,
+	        STATUS_CLOSING: 404,
+	        STATUS_CLOSED: 405,
+	        STATUS_ERROR: 406
+	    };
+	})();
+
+/***/ },
+
+/***/ 230:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(231);
+
+/***/ },
+
+/***/ 231:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
 	var _version = '1.4.2';
-	var _code = __webpack_require__(2).code;
-	var _utils = __webpack_require__(3).utils;
-	var _msg = __webpack_require__(4);
+	var _code = __webpack_require__(224).code;
+	var _utils = __webpack_require__(223).utils;
+	var _msg = __webpack_require__(232);
 	var _message = _msg._msg;
 	var _msgHash = {};
-	var Queue = __webpack_require__(5).Queue;
+	var Queue = __webpack_require__(233).Queue;
 
 	window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -95,8 +1082,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        setTimeout(function () {
 	            try {
 	                me.socket.close();
-	            } catch (e) {
-	            }
+	            } catch (e) {}
 	        }, 0);
 	    } else {
 	        this.socket = null;
@@ -161,9 +1147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    //handle unavailable presence stanza before disconnecting
-	    if (this._conn.disconnecting &&
-	        elem.firstChild.nodeName === "presence" &&
-	        elem.firstChild.getAttribute("type") === "unavailable") {
+	    if (this._conn.disconnecting && elem.firstChild.nodeName === "presence" && elem.firstChild.getAttribute("type") === "unavailable") {
 	        this._conn.xmlInput(elem);
 	        this._conn.rawInput(Strophe.serialize(elem));
 	        // if we are already disconnecting we will ignore the unavailable stanza and
@@ -173,13 +1157,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._conn._dataRecv(elem, message.data);
 	};
 
-
-	var _listenNetwork = function (onlineCallback, offlineCallback) {
+	var _listenNetwork = function _listenNetwork(onlineCallback, offlineCallback) {
 
 	    if (window.addEventListener) {
 	        window.addEventListener('online', onlineCallback);
 	        window.addEventListener('offline', offlineCallback);
-
 	    } else if (window.attachEvent) {
 	        if (document.body) {
 	            document.body.attachEvent('ononline', onlineCallback);
@@ -193,8 +1175,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	        /*var onlineTmp = window.ononline;
 	         var offlineTmp = window.onoffline;
-
-	         window.attachEvent('ononline', function () {
+	          window.attachEvent('ononline', function () {
 	         try {
 	         typeof onlineTmp === 'function' && onlineTmp();
 	         } catch ( e ) {}
@@ -209,7 +1190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 
-	var _parseRoom = function (result) {
+	var _parseRoom = function _parseRoom(result) {
 	    var rooms = [];
 	    var items = result.getElementsByTagName('item');
 	    if (items) {
@@ -228,7 +1209,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return rooms;
 	};
 
-	var _parseRoomOccupants = function (result) {
+	var _parseRoomOccupants = function _parseRoomOccupants(result) {
 	    var occupants = [];
 	    var items = result.getElementsByTagName('item');
 	    if (items) {
@@ -244,8 +1225,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return occupants;
 	};
 
-	var _parseResponseMessage = function (msginfo) {
-	    var parseMsgData = {errorMsg: true, data: []};
+	var _parseResponseMessage = function _parseResponseMessage(msginfo) {
+	    var parseMsgData = { errorMsg: true, data: [] };
 
 	    var msgBodies = msginfo.getElementsByTagName('body');
 	    if (msgBodies) {
@@ -261,8 +1242,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        var data = eval('(' + jsondata + ')');
 	                        parseMsgData.errorMsg = false;
 	                        parseMsgData.data = [data];
-	                    } catch (e) {
-	                    }
+	                    } catch (e) {}
 	                }
 	            }
 	        }
@@ -284,15 +1264,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    var data = eval('(' + child.nodeValue + ')');
 	                    parseMsgData.errorMsg = false;
 	                    parseMsgData.data = [data];
-	                } catch (e) {
-	                }
+	                } catch (e) {}
 	            }
 	        }
 	    }
 	    return parseMsgData;
 	};
 
-	var _parseNameFromJidFn = function (jid, domain) {
+	var _parseNameFromJidFn = function _parseNameFromJidFn(jid, domain) {
 	    domain = domain || '';
 	    var tempstr = jid;
 	    var findex = tempstr.indexOf('_');
@@ -307,7 +1286,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return tempstr;
 	};
 
-	var _parseFriend = function (queryTag, conn, from) {
+	var _parseFriend = function _parseFriend(queryTag, conn, from) {
 	    var rouster = [];
 	    var items = queryTag.getElementsByTagName('item');
 	    if (items) {
@@ -340,13 +1319,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            friend.groups = groups;
 	            rouster.push(friend);
 	            // B同意之后 -> B订阅A
-	            if (conn && (subscription == 'from')) {
+	            if (conn && subscription == 'from') {
 	                conn.subscribe({
 	                    toJid: jid
 	                });
 	            }
 
-	            if (conn && (subscription == 'to')) {
+	            if (conn && subscription == 'to') {
 	                conn.subscribed({
 	                    toJid: jid
 	                });
@@ -356,7 +1335,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return rouster;
 	};
 
-	var _login = function (options, conn) {
+	var _login = function _login(options, conn) {
 	    var accessToken = options.access_token || '';
 	    if (accessToken == '') {
 	        var loginfo = _utils.stringify(options);
@@ -377,7 +1356,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	        stropheConn = conn.getStrophe();
 	    }
-	    var callback = function (status, msg) {
+	    var callback = function callback(status, msg) {
 	        _loginCallback(status, msg, conn);
 	    };
 
@@ -389,7 +1368,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 
-	var _parseMessageType = function (msginfo) {
+	var _parseMessageType = function _parseMessageType(msginfo) {
 	    var msgtype = 'normal';
 	    var receiveinfo = msginfo.getElementsByTagName('received');
 	    if (receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
@@ -403,7 +1382,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return msgtype;
 	};
 
-	var _handleMessageQueue = function (conn) {
+	var _handleMessageQueue = function _handleMessageQueue(conn) {
 	    for (var i in _msgHash) {
 	        if (_msgHash.hasOwnProperty(i)) {
 	            _msgHash[i].send(conn);
@@ -411,7 +1390,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 
-	var _loginCallback = function (status, msg, conn) {
+	var _loginCallback = function _loginCallback(status, msg, conn) {
 	    var conflict, error;
 
 	    if (msg === 'conflict') {
@@ -434,7 +1413,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        conn.intervalId = setInterval(function () {
 	            conn.handelSendQueue();
 	        }, 200);
-	        var handleMessage = function (msginfo) {
+	        var handleMessage = function handleMessage(msginfo) {
 	            var type = _parseMessageType(msginfo);
 
 	            if ('received' === type) {
@@ -448,23 +1427,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return true;
 	            }
 	        };
-	        var handlePresence = function (msginfo) {
+	        var handlePresence = function handlePresence(msginfo) {
 	            conn.handlePresence(msginfo);
 	            return true;
 	        };
-	        var handlePing = function (msginfo) {
+	        var handlePing = function handlePing(msginfo) {
 	            conn.handlePing(msginfo);
 	            return true;
 	        };
-	        var handleIqRoster = function (msginfo) {
+	        var handleIqRoster = function handleIqRoster(msginfo) {
 	            conn.handleIqRoster(msginfo);
 	            return true;
 	        };
-	        var handleIqPrivacy = function (msginfo) {
+	        var handleIqPrivacy = function handleIqPrivacy(msginfo) {
 	            conn.handleIqPrivacy(msginfo);
 	            return true;
 	        };
-	        var handleIq = function (msginfo) {
+	        var handleIq = function handleIq(msginfo) {
 	            conn.handleIq(msginfo);
 	            return true;
 	        };
@@ -478,9 +1457,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        conn.context.status = _code.STATUS_OPENED;
 
-	        var supportRecMessage = [
-	            _code.WEBIM_MESSAGE_REC_TEXT,
-	            _code.WEBIM_MESSAGE_REC_EMOJI];
+	        var supportRecMessage = [_code.WEBIM_MESSAGE_REC_TEXT, _code.WEBIM_MESSAGE_REC_EMOJI];
 
 	        if (_utils.isCanDownLoadFile) {
 	            supportRecMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
@@ -549,7 +1526,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    conn.context.status_now = status;
 	};
 
-	var _getJid = function (options, conn) {
+	var _getJid = function _getJid(options, conn) {
 	    var jid = options.toJid || '';
 
 	    if (jid === '') {
@@ -564,14 +1541,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return jid;
 	};
 
-	var _getJidByName = function (name, conn) {
+	var _getJidByName = function _getJidByName(name, conn) {
 	    var options = {
 	        to: name
 	    };
 	    return _getJid(options, conn);
 	};
 
-	var _validCheck = function (options, conn) {
+	var _validCheck = function _validCheck(options, conn) {
 	    options = options || {};
 
 	    if (options.user == '') {
@@ -581,7 +1558,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return false;
 	    }
 
-	    var user = (options.user + '') || '';
+	    var user = options.user + '' || '';
 	    var appKey = options.appKey || '';
 	    var devInfos = appKey.split('#');
 
@@ -623,7 +1600,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return true;
 	};
 
-	var _getXmppUrl = function (baseUrl, https) {
+	var _getXmppUrl = function _getXmppUrl(baseUrl, https) {
 	    if (/^(ws|http)s?:\/\/?/.test(baseUrl)) {
 	        return baseUrl;
 	    }
@@ -649,9 +1626,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return url.prefix + url.base + url.suffix;
 	};
 
-
 	//class
-	var connection = function (options) {
+	var connection = function connection(options) {
 	    if (!this instanceof connection) {
 	        return new connection(options);
 	    }
@@ -676,33 +1652,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.autoReconnectNumMax = options.autoReconnectNumMax || 0;
 	    this.autoReconnectNumTotal = 0;
 	    this.autoReconnectInterval = options.autoReconnectInterval || 0;
-	    this.context = {status: _code.STATUS_INIT};
-	    this.sendQueue = new Queue();  //instead of sending message immediately,cache them in this queue
-	    this.intervalId = null;   //clearInterval return value
+	    this.context = { status: _code.STATUS_INIT };
+	    this.sendQueue = new Queue(); //instead of sending message immediately,cache them in this queue
+	    this.intervalId = null; //clearInterval return value
 	    this.apiUrl = options.apiUrl || '';
 	    this.isWindowSDK = options.isWindowSDK || false;
 
 	    this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
-	    this.dnsIndex = 0;   //the dns ip used in dnsArr currently
-	    this.dnsTotal = this.dnsArr.length;  //max number of getting dns retries
+	    this.dnsIndex = 0; //the dns ip used in dnsArr currently
+	    this.dnsTotal = this.dnsArr.length; //max number of getting dns retries
 	    this.restHosts = null; //rest server ips
-	    this.restIndex = 0;    //the rest ip used in restHosts currently
-	    this.restTotal = 0;    //max number of getting rest token retries
+	    this.restIndex = 0; //the rest ip used in restHosts currently
+	    this.restTotal = 0; //max number of getting rest token retries
 	    this.xmppHosts = null; //xmpp server ips
-	    this.xmppIndex = 0;    //the xmpp ip used in xmppHosts currently
-	    this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
+	    this.xmppIndex = 0; //the xmpp ip used in xmppHosts currently
+	    this.xmppTotal = 0; //max number of creating xmpp server connection(ws/bosh) retries
 
 	    this.groupOption = {};
 	};
 
-	connection.prototype.registerUser = function (options){
+	connection.prototype.registerUser = function (options) {
 	    if (location.protocol != 'https:' && this.isHttpDNS) {
 	        this.dnsIndex = 0;
 	        this.getHttpDNS(options, 'signup');
 	    } else {
 	        this.signup(options);
 	    }
-	}
+	};
 
 	connection.prototype.handelSendQueue = function () {
 	    var options = this.sendQueue.pop();
@@ -820,7 +1796,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return null;
 	    }
 	    return hosts[0].getElementsByTagName('host');
-
 	};
 	connection.prototype.getRestFromHttpDNS = function (options, type) {
 	    if (this.restIndex > this.restTotal) {
@@ -856,7 +1831,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	    }
 	    var self = this;
-	    var suc = function (data, xhr) {
+	    var suc = function suc(data, xhr) {
 	        data = new DOMParser().parseFromString(data, "text/xml").documentElement;
 	        //get rest ips
 	        var restHosts = self.getHostsByTag(data, 'rest');
@@ -878,14 +1853,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        self.getRestFromHttpDNS(options, type);
 	    };
-	    var error = function (res, xhr, msg) {
+	    var error = function error(res, xhr, msg) {
 
 	        console.log('getHttpDNS error', res, msg);
 	        self.dnsIndex++;
 	        if (self.dnsIndex < self.dnsTotal) {
 	            self.getHttpDNS(options, type);
 	        }
-
 	    };
 	    var options2 = {
 	        url: this.dnsArr[this.dnsIndex] + '/easemob/server.xml',
@@ -894,7 +1868,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // url: 'http://www.easemob.com/easemob/server.xml',
 	        // dataType: 'xml',
-	        data: {app_key: encodeURIComponent(options.appKey)},
+	        data: { app_key: encodeURIComponent(options.appKey) },
 	        success: suc || _utils.emptyfn,
 	        error: error || _utils.emptyfn
 	    };
@@ -923,9 +1897,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	    }
 
-	    var error = function (res, xhr, msg) {
+	    var error = function error(res, xhr, msg) {
 	        if (location.protocol != 'https:' && self.isHttpDNS) {
-	            if ((self.restIndex + 1) < self.restTotal) {
+	            if (self.restIndex + 1 < self.restTotal) {
 	                self.restIndex++;
 	                self.getRestFromHttpDNS(options, 'signup');
 	                return;
@@ -954,7 +1928,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    _utils.ajax(options2);
 	};
-
 
 	connection.prototype.open = function (options) {
 	    if (location.protocol != 'https:' && this.isHttpDNS) {
@@ -988,14 +1961,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var appName = this.context.appName;
 	        var orgName = this.context.orgName;
 
-	        var suc = function (data, xhr) {
+	        var suc = function suc(data, xhr) {
 	            conn.context.status = _code.STATUS_DOLOGIN_IM;
 	            conn.context.restTokenData = data;
 	            _login(data, conn);
 	        };
-	        var error = function (res, xhr, msg) {
+	        var error = function error(res, xhr, msg) {
 	            if (location.protocol != 'https:' && conn.isHttpDNS) {
-	                if ((conn.restIndex + 1) < conn.restTotal) {
+	                if (conn.restIndex + 1 < conn.restTotal) {
 	                    conn.restIndex++;
 	                    conn.getRestFromHttpDNS(options, 'login');
 	                    return;
@@ -1079,7 +2052,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.context.status = _code.STATUS_DOLOGIN_IM;
 
 	    var conn = this;
-	    var callback = function (status, msg) {
+	    var callback = function callback(status, msg) {
 	        _loginCallback(status, msg, conn);
 	    };
 
@@ -1113,26 +2086,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	connection.prototype.notifyVersion = function (suc, fail) {
 	    var jid = _getJid({}, this);
 	    var dom = $iq({
-	        from: this.context.jid || ''
-	        , to: this.domain
-	        , type: 'result'
-	    })
-	        .c('query', {xmlns: 'jabber:iq:version'})
-	        .c('name')
-	        .t('easemob')
-	        .up()
-	        .c('version')
-	        .t(_version)
-	        .up()
-	        .c('os')
-	        .t('webim');
+	        from: this.context.jid || '',
+	        to: this.domain,
+	        type: 'result'
+	    }).c('query', { xmlns: 'jabber:iq:version' }).c('name').t('easemob').up().c('version').t(_version).up().c('os').t('webim');
 
 	    var suc = suc || _utils.emptyfn;
 	    var error = fail || this.onError;
-	    var failFn = function (ele) {
+	    var failFn = function failFn(ele) {
 	        error({
-	            type: _code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR
-	            , data: ele
+	            type: _code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR,
+	            data: ele
 	        });
 	    };
 	    this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
@@ -1213,12 +2177,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        // Service Acknowledges Room Creation `createGroupACK`
 	        if (role == 'moderator' && info.code == '201') {
-	            if(affiliation === 'owner'){
+	            if (affiliation === 'owner') {
 	                info.type = 'createGroupACK';
 	                isCreate = true;
-	            }
-	            else
-	                info.type = 'joinPublicGroupSuccess';
+	            } else info.type = 'joinPublicGroupSuccess';
 	        }
 	    }
 
@@ -1239,7 +2201,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-
 	    if (info.chatroom) {
 	        // diff the
 	        info.presence_type = presence_type;
@@ -1250,11 +2211,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (info.type === '' && !info.code) {
 	                info.type = 'joinChatRoomSuccess';
 	            } else if (presence_type === 'unavailable' || info.type === 'unavailable') {
-	                if (!info.status) {// logout successfully.
+	                if (!info.status) {
+	                    // logout successfully.
 	                    info.type = 'leaveChatRoom';
-	                } else if (info.code == 110) {// logout or dismissied by admin.
+	                } else if (info.code == 110) {
+	                    // logout or dismissied by admin.
 	                    info.type = 'leaveChatRoom';
-	                } else if (info.error && info.error.code == 406) {// The chat room is full.
+	                } else if (info.error && info.error.code == 406) {
+	                    // The chat room is full.
 	                    info.type = 'reachChatRoomCapacity';
 	                }
 	            }
@@ -1267,15 +2231,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	            //subscribe | subscribed | unsubscribe | unsubscribed
 	        } else if (type == "" && !info.status && !info.error && !isCreate) {
 	            info.type = 'joinPublicGroupSuccess';
-	        } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
-	            if (info.destroy) {// Group or Chat room Deleted.
+	        } else if (presence_type === 'unavailable' || type === 'unavailable') {
+	            // There is no roomtype when a chat room is deleted.
+	            if (info.destroy) {
+	                // Group or Chat room Deleted.
 	                info.type = 'deleteGroupChat';
-	            } else if (info.code == 307 || info.code == 321) {// Dismissed by group.
+	            } else if (info.code == 307 || info.code == 321) {
+	                // Dismissed by group.
 	                info.type = 'leaveGroup';
 	            }
 	        }
 	    }
-	    console.log('msginfo: ', msginfo);
 	    this.onPresence(info, msginfo);
 	};
 
@@ -1287,10 +2253,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var from = e.getAttribute('from');
 	    var to = e.getAttribute('to');
 	    var dom = $iq({
-	        from: to
-	        , to: from
-	        , id: id
-	        , type: 'result'
+	        from: to,
+	        to: from,
+	        id: id,
+	        type: 'result'
 	    });
 	    this.sendCommand(dom.tree());
 	};
@@ -1314,7 +2280,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var curJid = this.context.jid;
 	    var curUser = this.context.userId;
 
-	    var iqresult = $iq({type: 'result', id: id, from: curJid});
+	    var iqresult = $iq({ type: 'result', id: id, from: curJid });
 	    this.sendCommand(iqresult.tree());
 
 	    var msgBodies = e.getElementsByTagName('query');
@@ -1391,13 +2357,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
 	                    if (emojibody.isemoji) {
 	                        var msg = {
-	                            id: id
-	                            , type: chattype
-	                            , from: from
-	                            , to: too
-	                            , delay: parseMsgData.delayTimeStamp
-	                            , data: emojibody.body
-	                            , ext: extmsg
+	                            id: id,
+	                            type: chattype,
+	                            from: from,
+	                            to: too,
+	                            delay: parseMsgData.delayTimeStamp,
+	                            data: emojibody.body,
+	                            ext: extmsg
 	                        };
 	                        !msg.delay && delete msg.delay;
 	                        msg.error = errorBool;
@@ -1406,13 +2372,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        this.onEmojiMessage(msg);
 	                    } else {
 	                        var msg = {
-	                            id: id
-	                            , type: chattype
-	                            , from: from
-	                            , to: too
-	                            , delay: parseMsgData.delayTimeStamp
-	                            , data: receiveMsg
-	                            , ext: extmsg
+	                            id: id,
+	                            type: chattype,
+	                            from: from,
+	                            to: too,
+	                            delay: parseMsgData.delayTimeStamp,
+	                            data: receiveMsg,
+	                            ext: extmsg
 	                        };
 	                        !msg.delay && delete msg.delay;
 	                        msg.error = errorBool;
@@ -1429,23 +2395,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        rheight = msgBody.size.height;
 	                    }
 	                    var msg = {
-	                        id: id
-	                        , type: chattype
-	                        , from: from
-	                        , to: too
-	                        ,
-	                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
-	                        , secret: msgBody.secret
-	                        , filename: msgBody.filename
-	                        , thumb: msgBody.thumb
-	                        , thumb_secret: msgBody.thumb_secret
-	                        , file_length: msgBody.file_length || ''
-	                        , width: rwidth
-	                        , height: rheight
-	                        , filetype: msgBody.filetype || ''
-	                        , accessToken: this.context.accessToken || ''
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
+	                        id: id,
+	                        type: chattype,
+	                        from: from,
+	                        to: too,
+
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        secret: msgBody.secret,
+	                        filename: msgBody.filename,
+	                        thumb: msgBody.thumb,
+	                        thumb_secret: msgBody.thumb_secret,
+	                        file_length: msgBody.file_length || '',
+	                        width: rwidth,
+	                        height: rheight,
+	                        filetype: msgBody.filetype || '',
+	                        accessToken: this.context.accessToken || '',
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
 	                    };
 	                    !msg.delay && delete msg.delay;
 	                    msg.error = errorBool;
@@ -1455,20 +2421,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    break;
 	                case 'audio':
 	                    var msg = {
-	                        id: id
-	                        , type: chattype
-	                        , from: from
-	                        , to: too
-	                        ,
-	                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
-	                        , secret: msgBody.secret
-	                        , filename: msgBody.filename
-	                        , length: msgBody.length || ''
-	                        , file_length: msgBody.file_length || ''
-	                        , filetype: msgBody.filetype || ''
-	                        , accessToken: this.context.accessToken || ''
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
+	                        id: id,
+	                        type: chattype,
+	                        from: from,
+	                        to: too,
+
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        secret: msgBody.secret,
+	                        filename: msgBody.filename,
+	                        length: msgBody.length || '',
+	                        file_length: msgBody.file_length || '',
+	                        filetype: msgBody.filetype || '',
+	                        accessToken: this.context.accessToken || '',
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
 	                    };
 	                    !msg.delay && delete msg.delay;
 	                    msg.error = errorBool;
@@ -1478,18 +2444,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    break;
 	                case 'file':
 	                    var msg = {
-	                        id: id
-	                        , type: chattype
-	                        , from: from
-	                        , to: too
-	                        ,
-	                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
-	                        , secret: msgBody.secret
-	                        , filename: msgBody.filename
-	                        , file_length: msgBody.file_length
-	                        , accessToken: this.context.accessToken || ''
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
+	                        id: id,
+	                        type: chattype,
+	                        from: from,
+	                        to: too,
+
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        secret: msgBody.secret,
+	                        filename: msgBody.filename,
+	                        file_length: msgBody.file_length,
+	                        accessToken: this.context.accessToken || '',
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
 	                    };
 	                    !msg.delay && delete msg.delay;
 	                    msg.error = errorBool;
@@ -1499,15 +2465,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    break;
 	                case 'loc':
 	                    var msg = {
-	                        id: id
-	                        , type: chattype
-	                        , from: from
-	                        , to: too
-	                        , addr: msgBody.addr
-	                        , lat: msgBody.lat
-	                        , lng: msgBody.lng
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
+	                        id: id,
+	                        type: chattype,
+	                        from: from,
+	                        to: too,
+	                        addr: msgBody.addr,
+	                        lat: msgBody.lat,
+	                        lng: msgBody.lng,
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
 	                    };
 	                    !msg.delay && delete msg.delay;
 	                    msg.error = errorBool;
@@ -1517,18 +2483,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    break;
 	                case 'video':
 	                    var msg = {
-	                        id: id
-	                        , type: chattype
-	                        , from: from
-	                        , to: too
-	                        ,
-	                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
-	                        , secret: msgBody.secret
-	                        , filename: msgBody.filename
-	                        , file_length: msgBody.file_length
-	                        , accessToken: this.context.accessToken || ''
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
+	                        id: id,
+	                        type: chattype,
+	                        from: from,
+	                        to: too,
+
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        secret: msgBody.secret,
+	                        filename: msgBody.filename,
+	                        file_length: msgBody.file_length,
+	                        accessToken: this.context.accessToken || '',
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
 	                    };
 	                    !msg.delay && delete msg.delay;
 	                    msg.error = errorBool;
@@ -1538,12 +2504,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    break;
 	                case 'cmd':
 	                    var msg = {
-	                        id: id
-	                        , from: from
-	                        , to: too
-	                        , action: msgBody.action
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
+	                        id: id,
+	                        from: from,
+	                        to: too,
+	                        action: msgBody.action,
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
 	                    };
 	                    !msg.delay && delete msg.delay;
 	                    msg.error = errorBool;
@@ -1555,8 +2521,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            ;
 	        } catch (e) {
 	            this.onError({
-	                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-	                , data: e
+	                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                data: e
 	            });
 	        }
 	    }
@@ -1567,8 +2533,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.onReceivedMessage(message);
 	    } catch (e) {
 	        this.onError({
-	            type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-	            , data: e
+	            type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	            data: e
 	        });
 	    }
 
@@ -1590,8 +2556,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _msgHash[id].msg.success instanceof Function && _msgHash[id].msg.success(id, mid);
 	        } catch (e) {
 	            this.onError({
-	                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-	                , data: e
+	                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                data: e
 	            });
 	        }
 	        delete _msgHash[id];
@@ -1657,18 +2623,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	connection.prototype.send = function (message) {
 	    var self = this;
 	    if (this.isWindowSDK) {
-	        WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
-	            function (response) {
-	            },
-	            function (code, msg) {
-	                var message = {
-	                    data: {
-	                        data: "send"
-	                    },
-	                    type: _code.WEBIM_MESSAGE_SED_ERROR
-	                };
-	                self.onError(message);
-	            });
+	        WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}', function (response) {}, function (code, msg) {
+	            var message = {
+	                data: {
+	                    data: "send"
+	                },
+	                type: _code.WEBIM_MESSAGE_SED_ERROR
+	            };
+	            self.onError(message);
+	        });
 	    } else {
 	        if (Object.prototype.toString.call(message) === '[object Object]') {
 	            var appKey = this.context.appKey || '';
@@ -1696,9 +2659,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var name = options.name || '';
 	    var groups = options.groups || '';
 
-	    var iq = $iq({type: 'set'});
-	    iq.c('query', {xmlns: 'jabber:iq:roster'});
-	    iq.c('item', {jid: jid, name: name});
+	    var iq = $iq({ type: 'set' });
+	    iq.c('query', { xmlns: 'jabber:iq:roster' });
+	    iq.c('item', { jid: jid, name: name });
 
 	    if (groups) {
 	        for (var i = 0; i < groups.length; i++) {
@@ -1712,7 +2675,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	connection.prototype.removeRoster = function (options) {
 	    var jid = _getJid(options, this);
-	    var iq = $iq({type: 'set'}).c('query', {xmlns: 'jabber:iq:roster'}).c('item', {
+	    var iq = $iq({ type: 'set' }).c('query', { xmlns: 'jabber:iq:roster' }).c('item', {
 	        jid: jid,
 	        subscription: 'remove'
 	    });
@@ -1726,11 +2689,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var conn = this;
 	    var dom = $iq({
 	        type: 'get'
-	    }).c('query', {xmlns: 'jabber:iq:roster'});
+	    }).c('query', { xmlns: 'jabber:iq:roster' });
 
 	    var options = options || {};
 	    var suc = options.success || this.onRoster;
-	    var completeFn = function (ele) {
+	    var completeFn = function completeFn(ele) {
 	        var rouster = [];
 	        var msgBodies = ele.getElementsByTagName('query');
 	        if (msgBodies && msgBodies.length > 0) {
@@ -1740,10 +2703,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        suc(rouster, ele);
 	    };
 	    var error = options.error || this.onError;
-	    var failFn = function (ele) {
+	    var failFn = function failFn(ele) {
 	        error({
-	            type: _code.WEBIM_CONNCTION_GETROSTER_ERROR
-	            , data: ele
+	            type: _code.WEBIM_CONNCTION_GETROSTER_ERROR,
+	            data: ele
 	        });
 	    };
 	    if (this.isOpened()) {
@@ -1757,19 +2720,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	connection.prototype.subscribe = function (options) {
 	    var jid = _getJid(options, this);
-	    var pres = $pres({to: jid, type: 'subscribe'});
+	    var pres = $pres({ to: jid, type: 'subscribe' });
 	    if (options.message) {
 	        pres.c('status').t(options.message).up();
 	    }
 	    if (options.nick) {
-	        pres.c('nick', {'xmlns': 'http://jabber.org/protocol/nick'}).t(options.nick);
+	        pres.c('nick', { 'xmlns': 'http://jabber.org/protocol/nick' }).t(options.nick);
 	    }
 	    this.sendCommand(pres.tree());
 	};
 
 	connection.prototype.subscribed = function (options) {
 	    var jid = _getJid(options, this);
-	    var pres = $pres({to: jid, type: 'subscribed'});
+	    var pres = $pres({ to: jid, type: 'subscribed' });
 
 	    if (options.message) {
 	        pres.c('status').t(options.message).up();
@@ -1779,7 +2742,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	connection.prototype.unsubscribe = function (options) {
 	    var jid = _getJid(options, this);
-	    var pres = $pres({to: jid, type: 'unsubscribe'});
+	    var pres = $pres({ to: jid, type: 'unsubscribe' });
 
 	    if (options.message) {
 	        pres.c('status').t(options.message);
@@ -1789,7 +2752,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	connection.prototype.unsubscribed = function (options) {
 	    var jid = _getJid(options, this);
-	    var pres = $pres({to: jid, type: 'unsubscribed'});
+	    var pres = $pres({ to: jid, type: 'unsubscribed' });
 
 	    if (options.message) {
 	        pres.c('status').t(options.message).up();
@@ -1797,13 +2760,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.sendCommand(pres.tree());
 	};
 
-
 	connection.prototype.joinPublicGroup = function (options) {
 	    var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
 	    var room_nick = roomJid + '/' + this.context.userId;
 	    var suc = options.success || _utils.emptyfn;
 	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
+	    var errorFn = function errorFn(ele) {
 	        err({
 	            type: _code.WEBIM_CONNCTION_JOINROOM_ERROR,
 	            data: ele
@@ -1812,8 +2774,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var iq = $pres({
 	        from: this.context.jid,
 	        to: room_nick
-	    })
-	        .c('x', {xmlns: Strophe.NS.MUC});
+	    }).c('x', { xmlns: Strophe.NS.MUC });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 	};
@@ -1823,12 +2784,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        to: options.server || 'conference.' + this.domain,
 	        from: this.context.jid,
 	        type: 'get'
-	    })
-	        .c('query', {xmlns: Strophe.NS.DISCO_ITEMS});
+	    }).c('query', { xmlns: Strophe.NS.DISCO_ITEMS });
 
 	    var suc = options.success || _utils.emptyfn;
 	    var error = options.error || this.onError;
-	    var completeFn = function (result) {
+	    var completeFn = function completeFn(result) {
 	        var rooms = [];
 	        rooms = _parseRoom(result);
 	        try {
@@ -1841,10 +2801,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
+	    var errorFn = function errorFn(ele) {
 	        err({
-	            type: _code.WEBIM_CONNCTION_GETROOM_ERROR
-	            , data: ele
+	            type: _code.WEBIM_CONNCTION_GETROOM_ERROR,
+	            data: ele
 	        });
 	    };
 	    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
@@ -1854,22 +2814,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var domain = this.domain;
 	    var members = [];
 	    var iq = $iq({
-	        to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain
-	        , type: 'get'
-	    })
-	        .c('query', {xmlns: Strophe.NS.MUC + '#admin'})
-	        .c('item', {affiliation: 'member'});
+	        to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain,
+	        type: 'get'
+	    }).c('query', { xmlns: Strophe.NS.MUC + '#admin' }).c('item', { affiliation: 'member' });
 
 	    var suc = options.success || _utils.emptyfn;
-	    var completeFn = function (result) {
+	    var completeFn = function completeFn(result) {
 	        var items = result.getElementsByTagName('item');
 
 	        if (items) {
 	            for (var i = 0; i < items.length; i++) {
 	                var item = items[i];
 	                var mem = {
-	                    jid: item.getAttribute('jid')
-	                    , affiliation: 'member'
+	                    jid: item.getAttribute('jid'),
+	                    affiliation: 'member'
 	                };
 	                members.push(mem);
 	            }
@@ -1877,10 +2835,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        suc(members);
 	    };
 	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
+	    var errorFn = function errorFn(ele) {
 	        err({
-	            type: _code.WEBIM_CONNCTION_GETROOMMEMBER_ERROR
-	            , data: ele
+	            type: _code.WEBIM_CONNCTION_GETROOMMEMBER_ERROR,
+	            data: ele
 	        });
 	    };
 	    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
@@ -1891,12 +2849,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var iq = $iq({
 	        to: this.context.appKey + '_' + options.roomId + '@conference.' + domain,
 	        type: 'get'
-	    }).c('query', {xmlns: Strophe.NS.DISCO_INFO});
+	    }).c('query', { xmlns: Strophe.NS.DISCO_INFO });
 
 	    var suc = options.success || _utils.emptyfn;
 	    var members = [];
 
-	    var completeFn = function (result) {
+	    var completeFn = function completeFn(result) {
 	        var settings = '';
 	        var features = result.getElementsByTagName('feature');
 	        if (features) {
@@ -1929,15 +2887,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    case 'muc#roominfo_maxusers':
 	                    case 'muc#roominfo_affiliations':
 	                    case 'muc#roominfo_description':
-	                        fieldValues[fieldSimplify] = (field.textContent || field.text || '');
+	                        fieldValues[fieldSimplify] = field.textContent || field.text || '';
 	                        break;
 	                    case 'muc#roominfo_owner':
 	                        var mem = {
-	                            jid: (field.textContent || field.text) + '@' + domain
-	                            , affiliation: 'owner'
+	                            jid: (field.textContent || field.text) + '@' + domain,
+	                            affiliation: 'owner'
 	                        };
 	                        members.push(mem);
-	                        fieldValues[fieldSimplify] = (field.textContent || field.text);
+	                        fieldValues[fieldSimplify] = field.textContent || field.text;
 	                        break;
 	                }
 
@@ -1950,16 +2908,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                //     break;
 	                // }
 	            }
-	            fieldValues['name'] = (result.getElementsByTagName('identity')[0]).getAttribute('name');
+	            fieldValues['name'] = result.getElementsByTagName('identity')[0].getAttribute('name');
 	        }
 	        log(settings, members, fieldValues);
 	        suc(settings, members, fieldValues);
 	    };
 	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
+	    var errorFn = function errorFn(ele) {
 	        err({
-	            type: _code.WEBIM_CONNCTION_GETROOMINFO_ERROR
-	            , data: ele
+	            type: _code.WEBIM_CONNCTION_GETROOMINFO_ERROR,
+	            data: ele
 	        });
 	    };
 	    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
@@ -1967,38 +2925,38 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	connection.prototype.queryRoomOccupants = function (options) {
 	    var suc = options.success || _utils.emptyfn;
-	    var completeFn = function (result) {
+	    var completeFn = function completeFn(result) {
 	        var occupants = [];
 	        occupants = _parseRoomOccupants(result);
 	        suc(occupants);
-	    }
+	    };
 	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
+	    var errorFn = function errorFn(ele) {
 	        err({
-	            type: _code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR
-	            , data: ele
+	            type: _code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR,
+	            data: ele
 	        });
 	    };
 	    var attrs = {
 	        xmlns: Strophe.NS.DISCO_ITEMS
 	    };
 	    var info = $iq({
-	        from: this.context.jid
-	        , to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain
-	        , type: 'get'
+	        from: this.context.jid,
+	        to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain,
+	        type: 'get'
 	    }).c('query', attrs);
 	    this.context.stropheConn.sendIQ(info.tree(), completeFn, errorFn);
 	};
 
 	connection.prototype.setUserSig = function (desc) {
-	    var dom = $pres({xmlns: 'jabber:client'});
+	    var dom = $pres({ xmlns: 'jabber:client' });
 	    desc = desc || '';
 	    dom.c('status').t(desc);
 	    this.sendCommand(dom.tree());
 	};
 
 	connection.prototype.setPresence = function (type, status) {
-	    var dom = $pres({xmlns: 'jabber:client'});
+	    var dom = $pres({ xmlns: 'jabber:client' });
 	    if (type) {
 	        if (status) {
 	            dom.c('show').t(type);
@@ -2011,7 +2969,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	connection.prototype.getPresence = function () {
-	    var dom = $pres({xmlns: 'jabber:client'});
+	    var dom = $pres({ xmlns: 'jabber:client' });
 	    var conn = this;
 	    this.sendCommand(dom.tree());
 	};
@@ -2021,17 +2979,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var jid = _getJid(options, this);
 
 	    var dom = $iq({
-	        from: this.context.jid || ''
-	        , to: jid
-	        , type: 'get'
-	    }).c('ping', {xmlns: 'urn:xmpp:ping'});
+	        from: this.context.jid || '',
+	        to: jid,
+	        type: 'get'
+	    }).c('ping', { xmlns: 'urn:xmpp:ping' });
 
 	    var suc = options.success || _utils.emptyfn;
 	    var error = options.error || this.onError;
-	    var failFn = function (ele) {
+	    var failFn = function failFn(ele) {
 	        error({
-	            type: _code.WEBIM_CONNCTION_PING_ERROR
-	            , data: ele
+	            type: _code.WEBIM_CONNCTION_PING_ERROR,
+	            data: ele
 	        });
 	    };
 	    if (this.isOpened()) {
@@ -2075,7 +3033,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.restIndex = 0;
 	    this.xmppIndex = 0;
 
-
 	    if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
 	        var message = {
 	            data: {
@@ -2111,11 +3068,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return;
 	        }
 
-	        var suc = function (data, xhr) {
+	        var suc = function suc(data, xhr) {
 	            typeof options.success === 'function' && options.success(data);
 	        };
 
-	        var error = function (res, xhr, msg) {
+	        var error = function error(res, xhr, msg) {
 	            if (res.error && res.error_description) {
 	                conn.onError({
 	                    type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,
@@ -2135,7 +3092,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            url: apiUrl + '/' + orgName + '/' + appName + '/chatrooms',
 	            dataType: 'json',
 	            type: 'GET',
-	            headers: {'Authorization': 'Bearer ' + token},
+	            headers: { 'Authorization': 'Bearer ' + token },
 	            data: pageInfo,
 	            success: suc || _utils.emptyfn,
 	            error: error || _utils.emptyfn
@@ -2146,7 +3103,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
 	        });
 	    }
-
 	};
 
 	connection.prototype.joinChatRoom = function (options) {
@@ -2154,21 +3110,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var room_nick = roomJid + '/' + this.context.userId;
 	    var suc = options.success || _utils.emptyfn;
 	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
+	    var errorFn = function errorFn(ele) {
 	        err({
-	            type: _code.WEBIM_CONNCTION_JOINCHATROOM_ERROR
-	            , data: ele
+	            type: _code.WEBIM_CONNCTION_JOINCHATROOM_ERROR,
+	            data: ele
 	        });
 	    };
 
 	    var iq = $pres({
 	        from: this.context.jid,
 	        to: room_nick
-	    })
-	        .c('x', {xmlns: Strophe.NS.MUC + '#user'})
-	        .c('item', {affiliation: 'member', role: 'participant'})
-	        .up().up()
-	        .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'member', role: 'participant' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 	};
@@ -2178,21 +3130,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var room_nick = roomJid + '/' + this.context.userId;
 	    var suc = options.success || _utils.emptyfn;
 	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
+	    var errorFn = function errorFn(ele) {
 	        err({
-	            type: _code.WEBIM_CONNCTION_QUITCHATROOM_ERROR
-	            , data: ele
+	            type: _code.WEBIM_CONNCTION_QUITCHATROOM_ERROR,
+	            data: ele
 	        });
 	    };
 	    var iq = $pres({
 	        from: this.context.jid,
 	        to: room_nick,
 	        type: 'unavailable'
-	    })
-	        .c('x', {xmlns: Strophe.NS.MUC + '#user'})
-	        .c('item', {affiliation: 'none', role: 'none'})
-	        .up().up()
-	        .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'none', role: 'none' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 	};
@@ -2204,8 +3152,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        title: "Group invitation",
 	        msg: info.user + " invites you to join into group:" + info.group_id,
 	        agree: function agree() {
-	            WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-	            }, function (code, msg) {
+	            WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
 	                var message = {
 	                    data: {
 	                        data: "acceptInvitationFromGroup error:" + msg
@@ -2216,8 +3163,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	        },
 	        reject: function reject() {
-	            WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-	            }, function (code, msg) {
+	            WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
 	                var message = {
 	                    data: {
 	                        data: "declineInvitationFromGroup error:" + msg
@@ -2236,8 +3182,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var options = {
 	        title: "Group invitation response",
 	        msg: info.user + " agreed to join into group:" + info.group_id,
-	        agree: function agree() {
-	        }
+	        agree: function agree() {}
 	    };
 	    this.onConfirmPop(options);
 	};
@@ -2246,8 +3191,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var options = {
 	        title: "Group invitation response",
 	        msg: info.user + " rejected to join into group:" + info.group_id,
-	        agree: function agree() {
-	        }
+	        agree: function agree() {}
 	    };
 	    this.onConfirmPop(options);
 	};
@@ -2256,8 +3200,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var options = {
 	        title: "Group invitation",
 	        msg: "You had joined into the group:" + info.group_name + " automatically.Inviter:" + info.user,
-	        agree: function agree() {
-	        }
+	        agree: function agree() {}
 	    };
 	    this.onConfirmPop(options);
 	};
@@ -2266,8 +3209,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var options = {
 	        title: "Group notification",
 	        msg: "You have been out of the group:" + info.group_id + ".Reason:" + info.msg,
-	        agree: function agree() {
-	        }
+	        agree: function agree() {}
 	    };
 	    this.onConfirmPop(options);
 	};
@@ -2278,8 +3220,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        title: "Group join application",
 	        msg: info.user + " applys to join into group:" + info.group_id,
 	        agree: function agree() {
-	            WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-	            }, function (code, msg) {
+	            WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
 	                var message = {
 	                    data: {
 	                        data: "acceptJoinGroupApplication error:" + msg
@@ -2290,8 +3231,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	        },
 	        reject: function reject() {
-	            WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-	            }, function (code, msg) {
+	            WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
 	                var message = {
 	                    data: {
 	                        data: "declineJoinGroupApplication error:" + msg
@@ -2309,8 +3249,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var options = {
 	        title: "Group notification",
 	        msg: "You had joined into the group:" + info.group_name + ".",
-	        agree: function agree() {
-	        }
+	        agree: function agree() {}
 	    };
 	    this.onConfirmPop(options);
 	};
@@ -2319,8 +3258,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var options = {
 	        title: "Group notification",
 	        msg: "You have been rejected to join into the group:" + info.group_name + ".",
-	        agree: function agree() {
-	        }
+	        agree: function agree() {}
 	    };
 	    this.onConfirmPop(options);
 	};
@@ -2376,14 +3314,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// used for blacklist
 	connection.prototype.getBlacklist = function (options) {
-	    options = (options || {});
-	    var iq = $iq({type: 'get'});
+	    options = options || {};
+	    var iq = $iq({ type: 'get' });
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
 	    var me = this;
 
-	    iq.c('query', {xmlns: 'jabber:iq:privacy'})
-	        .c('list', {name: 'special'});
+	    iq.c('query', { xmlns: 'jabber:iq:privacy' }).c('list', { name: 'special' });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), function (iq) {
 	        me.onBlacklistUpdate(_parsePrivacy(iq));
@@ -2396,13 +3333,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// used for blacklist
 	connection.prototype.addToBlackList = function (options) {
-	    var iq = $iq({type: 'set'});
+	    var iq = $iq({ type: 'set' });
 	    var blacklist = options.list || {};
 	    var type = options.type || 'jid';
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
-	    var piece = iq.c('query', {xmlns: 'jabber:iq:privacy'})
-	        .c('list', {name: 'special'});
+	    var piece = iq.c('query', { xmlns: 'jabber:iq:privacy' }).c('list', { name: 'special' });
 
 	    var keys = Object.keys(blacklist);
 	    var len = keys.length;
@@ -2413,8 +3349,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var type = item.type || 'jid';
 	        var jid = item.jid;
 
-	        piece = piece.c('item', {action: 'deny', order: order++, type: type, value: jid})
-	            .c('message');
+	        piece = piece.c('item', { action: 'deny', order: order++, type: type, value: jid }).c('message');
 	        if (i !== len - 1) {
 	            piece = piece.up().up();
 	        }
@@ -2427,12 +3362,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	// used for blacklist
 	connection.prototype.removeFromBlackList = function (options) {
 
-	    var iq = $iq({type: 'set'});
+	    var iq = $iq({ type: 'set' });
 	    var blacklist = options.list || {};
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
-	    var piece = iq.c('query', {xmlns: 'jabber:iq:privacy'})
-	        .c('list', {name: 'special'});
+	    var piece = iq.c('query', { xmlns: 'jabber:iq:privacy' }).c('list', { name: 'special' });
 
 	    var keys = Object.keys(blacklist);
 	    var len = keys.length;
@@ -2443,8 +3377,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var jid = item.jid;
 	        var order = item.order;
 
-	        piece = piece.c('item', {action: 'deny', order: order, type: type, value: jid})
-	            .c('message');
+	        piece = piece.c('item', { action: 'deny', order: order, type: type, value: jid }).c('message');
 	        if (i !== len - 1) {
 	            piece = piece.up().up();
 	        }
@@ -2464,15 +3397,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
 	    var jid = _getJid(options, this);
-	    var affiliation = 'admin';//options.affiliation || 'admin';
+	    var affiliation = 'admin'; //options.affiliation || 'admin';
 	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
+	    var iq = $iq({ type: 'set', to: to });
 
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('item', {
-	            affiliation: 'outcast',
-	            jid: jid
-	        });
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	        affiliation: 'outcast',
+	        jid: jid
+	    });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), sucFn, errFn);
 	};
@@ -2508,14 +3440,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var errFn = options.error || _utils.emptyfn;
 
 	    // var jid = _getJid(options, this);
-	    var affiliation = 'admin';//options.affiliation || 'admin';
+	    var affiliation = 'admin'; //options.affiliation || 'admin';
 	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'get', to: to});
+	    var iq = $iq({ type: 'get', to: to });
 
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('item', {
-	            affiliation: 'outcast',
-	        });
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	        affiliation: 'outcast'
+	    });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
 	        log('getGroupBlackList');
@@ -2531,15 +3462,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var errFn = options.error || _utils.emptyfn;
 
 	    var jid = _getJid(options, this);
-	    var affiliation = 'admin';//options.affiliation || 'admin';
+	    var affiliation = 'admin'; //options.affiliation || 'admin';
 	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
+	    var iq = $iq({ type: 'set', to: to });
 
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('item', {
-	            affiliation: 'none',
-	            jid: jid
-	        });
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	        affiliation: 'none',
+	        jid: jid
+	    });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
 	        sucFn();
@@ -2568,22 +3498,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // must be `owner`
 	    var affiliation = 'owner';
 	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
+	    var iq = $iq({ type: 'set', to: to });
 
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('x', {type: 'submit', xmlns: 'jabber:x:data'})
-	        .c('field', {'var': 'FORM_TYPE'})
-	        .c('value')
-	        .t('http://jabber.org/protocol/muc#roomconfig')
-	        .up().up()
-	        .c('field', {'var': 'muc#roomconfig_roomname'})
-	        .c('value')
-	        .t(options.subject)
-	        .up().up()
-	        .c('field', {'var': 'muc#roomconfig_roomdesc'})
-	        .c('value')
-	        .t(options.description);
-
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('x', { type: 'submit', xmlns: 'jabber:x:data' }).c('field', { 'var': 'FORM_TYPE' }).c('value').t('http://jabber.org/protocol/muc#roomconfig').up().up().c('field', { 'var': 'muc#roomconfig_roomname' }).c('value').t(options.subject).up().up().c('field', { 'var': 'muc#roomconfig_roomdesc' }).c('value').t(options.description);
 
 	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
 	        sucFn();
@@ -2611,11 +3528,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // must be `owner`
 	    var affiliation = 'owner';
 	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
+	    var iq = $iq({ type: 'set', to: to });
 
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('destroy')
-	        .c('reason').t(options.reason || '');
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('destroy').c('reason').t(options.reason || '');
 
 	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
 	        sucFn();
@@ -2642,13 +3557,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var jid = _getJid(options, this);
 	    var affiliation = 'admin';
 	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
+	    var iq = $iq({ type: 'set', to: to });
 
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('item', {
-	            affiliation: 'none',
-	            jid: jid
-	        });
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	        affiliation: 'none',
+	        jid: jid
+	    });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
 	        sucFn(msgInfo);
@@ -2676,8 +3590,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var list = options.list || [];
 	    var affiliation = 'admin';
 	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
-	    var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation});
+	    var iq = $iq({ type: 'set', to: to });
+	    var piece = iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation });
 	    var keys = Object.keys(list);
 	    var len = keys.length;
 
@@ -2690,7 +3604,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            jid: jid
 	        }).up().c('item', {
 	            role: 'none',
-	            jid: jid,
+	            jid: jid
 	        }).up();
 	    }
 
@@ -2729,8 +3643,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var list = options.list || [];
 	    var affiliation = 'admin';
 	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
-	    var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation});
+	    var iq = $iq({ type: 'set', to: to });
+	    var piece = iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation });
 	    var len = list.length;
 
 	    for (var i = 0; i < len; i++) {
@@ -2752,7 +3666,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }).c('reason').t(options.reason || '');
 
 	        this.sendCommand(dom.tree());
-
 	    }
 
 	    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
@@ -2807,7 +3720,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	connection.prototype.createGroupAsync = function (p) {
-	    var roomId = p.from
+	    var roomId = p.from;
 	    var me = this;
 	    var toRoom = this._getGroupJid(roomId);
 	    var to = toRoom + '/' + this.context.userId;
@@ -2815,8 +3728,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var suc = p.success || _utils.emptyfn;
 
 	    // Creating a Reserved Room
-	    var iq = $iq({type: 'get', to: toRoom})
-	        .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'});
+	    var iq = $iq({ type: 'get', to: toRoom }).c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' });
 
 	    // Strophe.info('step 1 ----------');
 	    // Strophe.info(options);
@@ -2847,7 +3759,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                case 'muc#roomconfig_roomdesc':
 	                    _setText(valueDom, options.description || '');
 	                    break;
-	                case 'muc#roomconfig_publicroom': // public 1
+	                case 'muc#roomconfig_publicroom':
+	                    // public 1
 	                    _setText(valueDom, +options.optionsPublic);
 	                    break;
 	                case 'muc#roomconfig_membersonly':
@@ -2879,9 +3792,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        });
 
-	        var iq = $iq({to: toRoom, type: 'set'})
-	            .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'})
-	            .cnode(x);
+	        var iq = $iq({ to: toRoom, type: 'set' }).c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' }).cnode(x);
 
 	        me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
 	            me.addGroupMembers({
@@ -2915,9 +3826,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var toRoom = this._getGroupJid(roomId);
 	    var to = toRoom + '/' + this.context.userId;
 
-	    var pres = $pres({to: to})
-	        .c('x', {xmlns: 'http://jabber.org/protocol/muc'}).up()
-	        .c('create', {xmlns: 'http://jabber.org/protocol/muc'}).up();
+	    var pres = $pres({ to: to }).c('x', { xmlns: 'http://jabber.org/protocol/muc' }).up().c('create', { xmlns: 'http://jabber.org/protocol/muc' }).up();
 
 	    // createGroupACK
 	    this.sendCommand(pres.tree());
@@ -2934,7 +3843,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 
-
 	var WebIM = window.WebIM || {};
 	WebIM.connection = connection;
 	WebIM.utils = _utils;
@@ -2945,12 +3853,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	    }
 	    window.cefQuery({
-	            request: str,
-	            persistent: false,
-	            onSuccess: suc,
-	            onFailure: fail
-	        }
-	    );
+	        request: str,
+	        persistent: false,
+	        onSuccess: suc,
+	        onFailure: fail
+	    });
 	};
 
 	module.exports = WebIM;
@@ -2960,1022 +3867,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ },
-/* 2 */
-/***/ function(module, exports) {
 
-	;
-	(function () {
-
-	    exports.code = {
-	        WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: 0,
-	        WEBIM_CONNCTION_OPEN_ERROR: 1,
-	        WEBIM_CONNCTION_AUTH_ERROR: 2,
-	        WEBIM_CONNCTION_OPEN_USERGRID_ERROR: 3,
-	        WEBIM_CONNCTION_ATTACH_ERROR: 4,
-	        WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: 5,
-	        WEBIM_CONNCTION_REOPEN_ERROR: 6,
-	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7,  //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
-	        WEBIM_CONNCTION_SERVER_ERROR: 8,        //8: offline by multi login
-	        WEBIM_CONNCTION_IQ_ERROR: 9,
-
-	        WEBIM_CONNCTION_PING_ERROR: 10,
-	        WEBIM_CONNCTION_NOTIFYVERSION_ERROR: 11,
-	        WEBIM_CONNCTION_GETROSTER_ERROR: 12,
-	        WEBIM_CONNCTION_CROSSDOMAIN_ERROR: 13,
-	        WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: 14,
-	        WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: 15,
-	        WEBIM_CONNCTION_DISCONNECTED: 16,    //16: server-side close the websocket connection
-	        WEBIM_CONNCTION_AJAX_ERROR: 17,
-	        WEBIM_CONNCTION_JOINROOM_ERROR: 18,
-	        WEBIM_CONNCTION_GETROOM_ERROR: 19,
-
-	        WEBIM_CONNCTION_GETROOMINFO_ERROR: 20,
-	        WEBIM_CONNCTION_GETROOMMEMBER_ERROR: 21,
-	        WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR: 22,
-	        WEBIM_CONNCTION_LOAD_CHATROOM_ERROR: 23,
-	        WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR: 24,
-	        WEBIM_CONNCTION_JOINCHATROOM_ERROR: 25,
-	        WEBIM_CONNCTION_QUITCHATROOM_ERROR: 26,
-	        WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR: 27,
-	        WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR: 28,
-	        WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: 29,
-
-	        WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: 30,
-	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,
-	        WEBIM_CONNCTION_CLIENT_OFFLINE: 32,        //32: client offline
-	        WEBIM_CONNCTION_CLIENT_LOGOUT: 33,        //33: client logout
-	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34, // Over amount of the tabs a user opened in the same browser
-	        WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP: 35,
-	        WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP: 36,
-	        WEBIM_CONNECTION_ACCEPT_JOIN_GROUP: 37,
-	        WEBIM_CONNECTION_DECLINE_JOIN_GROUP: 38,
-	        WEBIM_CONNECTION_CLOSED: 39,
-
-
-	        WEBIM_UPLOADFILE_BROWSER_ERROR: 100,
-	        WEBIM_UPLOADFILE_ERROR: 101,
-	        WEBIM_UPLOADFILE_NO_LOGIN: 102,
-	        WEBIM_UPLOADFILE_NO_FILE: 103,
-
-
-	        WEBIM_DOWNLOADFILE_ERROR: 200,
-	        WEBIM_DOWNLOADFILE_NO_LOGIN: 201,
-	        WEBIM_DOWNLOADFILE_BROWSER_ERROR: 202,
-
-
-	        WEBIM_MESSAGE_REC_TEXT: 300,
-	        WEBIM_MESSAGE_REC_TEXT_ERROR: 301,
-	        WEBIM_MESSAGE_REC_EMOTION: 302,
-	        WEBIM_MESSAGE_REC_PHOTO: 303,
-	        WEBIM_MESSAGE_REC_AUDIO: 304,
-	        WEBIM_MESSAGE_REC_AUDIO_FILE: 305,
-	        WEBIM_MESSAGE_REC_VEDIO: 306,
-	        WEBIM_MESSAGE_REC_VEDIO_FILE: 307,
-	        WEBIM_MESSAGE_REC_FILE: 308,
-	        WEBIM_MESSAGE_SED_TEXT: 309,
-	        WEBIM_MESSAGE_SED_EMOTION: 310,
-	        WEBIM_MESSAGE_SED_PHOTO: 311,
-	        WEBIM_MESSAGE_SED_AUDIO: 312,
-	        WEBIM_MESSAGE_SED_AUDIO_FILE: 313,
-	        WEBIM_MESSAGE_SED_VEDIO: 314,
-	        WEBIM_MESSAGE_SED_VEDIO_FILE: 315,
-	        WEBIM_MESSAGE_SED_FILE: 316,
-	        WEBIM_MESSAGE_SED_ERROR: 317,
-
-
-	        STATUS_INIT: 400,
-	        STATUS_DOLOGIN_USERGRID: 401,
-	        STATUS_DOLOGIN_IM: 402,
-	        STATUS_OPENED: 403,
-	        STATUS_CLOSING: 404,
-	        STATUS_CLOSED: 405,
-	        STATUS_ERROR: 406
-	    };
-	}());
-
-
-/***/ },
-/* 3 */
+/***/ 232:
 /***/ function(module, exports, __webpack_require__) {
 
-	;
-	(function () {
-
-	    var EMPTYFN = function () {
-	    };
-	    var _code = __webpack_require__(2).code;
-	    var WEBIM_FILESIZE_LIMIT = 10485760;
-
-	    var _createStandardXHR = function () {
-	        try {
-	            return new window.XMLHttpRequest();
-	        } catch (e) {
-	            return false;
-	        }
-	    };
-
-	    var _createActiveXHR = function () {
-	        try {
-	            return new window.ActiveXObject('Microsoft.XMLHTTP');
-	        } catch (e) {
-	            return false;
-	        }
-	    };
-
-	    var _xmlrequest = function (crossDomain) {
-	        crossDomain = crossDomain || true;
-	        var temp = _createStandardXHR() || _createActiveXHR();
-
-	        if ('withCredentials' in temp) {
-	            return temp;
-	        }
-	        if (!crossDomain) {
-	            return temp;
-	        }
-	        if (typeof window.XDomainRequest === 'undefined') {
-	            return temp;
-	        }
-	        var xhr = new XDomainRequest();
-	        xhr.readyState = 0;
-	        xhr.status = 100;
-	        xhr.onreadystatechange = EMPTYFN;
-	        xhr.onload = function () {
-	            xhr.readyState = 4;
-	            xhr.status = 200;
-
-	            var xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
-	            xmlDoc.async = 'false';
-	            xmlDoc.loadXML(xhr.responseText);
-	            xhr.responseXML = xmlDoc;
-	            xhr.response = xhr.responseText;
-	            xhr.onreadystatechange();
-	        };
-	        xhr.ontimeout = xhr.onerror = function () {
-	            xhr.readyState = 4;
-	            xhr.status = 500;
-	            xhr.onreadystatechange();
-	        };
-	        return xhr;
-	    };
-
-	    var _hasFlash = (function () {
-	        if ('ActiveXObject' in window) {
-	            try {
-	                return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-	            } catch (ex) {
-	                return 0;
-	            }
-	        } else {
-	            if (navigator.plugins && navigator.plugins.length > 0) {
-	                return navigator.plugins['Shockwave Flash'];
-	            }
-	        }
-	        return 0;
-	    }());
-
-	    var _tmpUtilXHR = _xmlrequest(),
-	        _hasFormData = typeof FormData !== 'undefined',
-	        _hasBlob = typeof Blob !== 'undefined',
-	        _isCanSetRequestHeader = _tmpUtilXHR.setRequestHeader || false,
-	        _hasOverrideMimeType = _tmpUtilXHR.overrideMimeType || false,
-	        _isCanUploadFileAsync = _isCanSetRequestHeader && _hasFormData,
-	        _isCanUploadFile = _isCanUploadFileAsync || _hasFlash,
-	        _isCanDownLoadFile = _isCanSetRequestHeader && (_hasBlob || _hasOverrideMimeType);
-
-	    if (!Object.keys) {
-	        Object.keys = (function () {
-	            'use strict';
-	            var hasOwnProperty = Object.prototype.hasOwnProperty,
-	                hasDontEnumBug = !({toString: null}).propertyIsEnumerable('toString'),
-	                dontEnums = [
-	                    'toString',
-	                    'toLocaleString',
-	                    'valueOf',
-	                    'hasOwnProperty',
-	                    'isPrototypeOf',
-	                    'propertyIsEnumerable',
-	                    'constructor'
-	                ],
-	                dontEnumsLength = dontEnums.length;
-
-	            return function (obj) {
-	                if (typeof obj !== 'object' && (typeof obj !== 'function' || obj === null)) {
-	                    throw new TypeError('Object.keys called on non-object');
-	                }
-
-	                var result = [], prop, i;
-
-	                for (prop in obj) {
-	                    if (hasOwnProperty.call(obj, prop)) {
-	                        result.push(prop);
-	                    }
-	                }
-
-	                if (hasDontEnumBug) {
-	                    for (i = 0; i < dontEnumsLength; i++) {
-	                        if (hasOwnProperty.call(obj, dontEnums[i])) {
-	                            result.push(dontEnums[i]);
-	                        }
-	                    }
-	                }
-	                return result;
-	            };
-	        }());
-	    }
-
-	    var utils = {
-	        hasFormData: _hasFormData,
-
-	        hasBlob: _hasBlob,
-
-	        emptyfn: EMPTYFN,
-
-	        isCanSetRequestHeader: _isCanSetRequestHeader,
-
-	        hasOverrideMimeType: _hasOverrideMimeType,
-
-	        isCanUploadFileAsync: _isCanUploadFileAsync,
-
-	        isCanUploadFile: _isCanUploadFile,
-
-	        isCanDownLoadFile: _isCanDownLoadFile,
-
-	        isSupportWss: (function () {
-	            var notSupportList = [
-	                //1: QQ browser X5 core
-	                /MQQBrowser[\/]5([.]\d+)?\sTBS/
-
-	                //2: etc.
-	                //...
-	            ];
-
-	            if (!window.WebSocket) {
-	                return false;
-	            }
-
-	            var ua = window.navigator.userAgent;
-	            for (var i = 0, l = notSupportList.length; i < l; i++) {
-	                if (notSupportList[i].test(ua)) {
-	                    return false;
-	                }
-	            }
-	            return true;
-	        }()),
-
-	        getIEVersion: (function () {
-	            var ua = navigator.userAgent, matches, tridentMap = {'4': 8, '5': 9, '6': 10, '7': 11};
-
-	            matches = ua.match(/MSIE (\d+)/i);
-
-	            if (matches && matches[1]) {
-	                return +matches[1];
-	            }
-	            matches = ua.match(/Trident\/(\d+)/i);
-	            if (matches && matches[1]) {
-	                return tridentMap[matches[1]] || null;
-	            }
-	            return null;
-	        }()),
-
-
-	        stringify: function (json) {
-	            if (typeof JSON !== 'undefined' && JSON.stringify) {
-	                return JSON.stringify(json);
-	            } else {
-	                var s = '',
-	                    arr = [];
-
-	                var iterate = function (json) {
-	                    var isArr = false;
-
-	                    if (Object.prototype.toString.call(json) === '[object Array]') {
-	                        arr.push(']', '[');
-	                        isArr = true;
-	                    } else if (Object.prototype.toString.call(json) === '[object Object]') {
-	                        arr.push('}', '{');
-	                    }
-
-	                    for (var o in json) {
-	                        if (Object.prototype.toString.call(json[o]) === '[object Null]') {
-	                            json[o] = 'null';
-	                        } else if (Object.prototype.toString.call(json[o]) === '[object Undefined]') {
-	                            json[o] = 'undefined';
-	                        }
-
-	                        if (json[o] && typeof json[o] === 'object') {
-	                            s += ',' + (isArr ? '' : '"' + o + '":' + (isArr ? '"' : '')) + iterate(json[o]) + '';
-	                        } else {
-	                            s += ',"' + (isArr ? '' : o + '":"') + json[o] + '"';
-	                        }
-	                    }
-
-	                    if (s != '') {
-	                        s = s.slice(1);
-	                    }
-
-	                    return arr.pop() + s + arr.pop();
-	                };
-	                return iterate(json);
-	            }
-	        },
-	        login: function (options) {
-	            var options = options || {};
-	            var suc = options.success || EMPTYFN;
-	            var err = options.error || EMPTYFN;
-
-	            var appKey = options.appKey || '';
-	            var devInfos = appKey.split('#');
-	            if (devInfos.length !== 2) {
-	                err({
-	                    type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
-	                });
-	                return false;
-	            }
-
-	            var orgName = devInfos[0];
-	            var appName = devInfos[1];
-	            var https = https || options.https;
-	            var user = options.user || '';
-	            var pwd = options.pwd || '';
-
-	            var apiUrl = options.apiUrl;
-
-	            var loginJson = {
-	                grant_type: 'password',
-	                username: user,
-	                password: pwd,
-	                timestamp: +new Date()
-	            };
-	            var loginfo = utils.stringify(loginJson);
-
-	            var options = {
-	                url: apiUrl + '/' + orgName + '/' + appName + '/token',
-	                dataType: 'json',
-	                data: loginfo,
-	                success: suc,
-	                error: err
-	            };
-	            return utils.ajax(options);
-	        },
-
-	        getFileUrl: function (fileInputId) {
-	            var uri = {
-	                url: '',
-	                filename: '',
-	                filetype: '',
-	                data: ''
-	            };
-
-	            var fileObj = typeof fileInputId === 'string' ? document.getElementById(fileInputId) : fileInputId;
-
-	            if (!utils.isCanUploadFileAsync || !fileObj) {
-	                return uri;
-	            }
-	            try {
-	                if (window.URL.createObjectURL) {
-	                    var fileItems = fileObj.files;
-	                    if (fileItems.length > 0) {
-	                        var u = fileItems.item(0);
-	                        uri.data = u;
-	                        uri.url = window.URL.createObjectURL(u);
-	                        uri.filename = u.name || '';
-	                    }
-	                } else { // IE
-	                    var u = document.getElementById(fileInputId).value;
-	                    uri.url = u;
-	                    var pos1 = u.lastIndexOf('/');
-	                    var pos2 = u.lastIndexOf('\\');
-	                    var pos = Math.max(pos1, pos2);
-	                    if (pos < 0)
-	                        uri.filename = u;
-	                    else
-	                        uri.filename = u.substring(pos + 1);
-	                }
-	                var index = uri.filename.lastIndexOf('.');
-	                if (index != -1) {
-	                    uri.filetype = uri.filename.substring(index + 1).toLowerCase();
-	                }
-	                return uri;
-
-	            } catch (e) {
-	                throw e;
-	            }
-	        },
-
-	        getFileSize: function (file) {
-	            var fileSize = 0;
-	            if (file) {
-	                if (file.files) {
-	                    if (file.files.length > 0) {
-	                        fileSize = file.files[0].size;
-	                    }
-	                } else if (file.select && 'ActiveXObject' in window) {
-	                    file.select();
-	                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
-	                    var file = fileobject.GetFile(file.value);
-	                    fileSize = file.Size;
-	                }
-	            }
-	            console.log('fileSize: ', fileSize);
-	            if(fileSize > 10000000){
-	                return false;
-	            }
-	            var kb = Math.round(fileSize / 1000);
-	            if(kb < 1000){
-	                fileSize = kb + ' KB';
-	            }else if(kb >= 1000){
-	                var mb = kb / 1000;
-	                if(mb < 1000) {
-	                    fileSize = mb.toFixed(1) + ' MB';
-	                }else{
-	                    var gb = mb / 1000;
-	                    fileSize = gb.toFixed(1) + ' GB';
-	                }
-	            }
-	            return fileSize;
-	        },
-
-	        hasFlash: _hasFlash,
-
-	        trim: function (str) {
-
-	            str = typeof str === 'string' ? str : '';
-
-	            return str.trim
-	                ? str.trim()
-	                : str.replace(/^\s|\s$/g, '');
-	        },
-
-	        parseEmoji: function (msg) {
-	            if (typeof WebIM.Emoji === 'undefined' || typeof WebIM.Emoji.map === 'undefined') {
-	                return msg;
-	            } else {
-	                var emoji = WebIM.Emoji,
-	                    reg = null;
-
-	                for (var face in emoji.map) {
-	                    if (emoji.map.hasOwnProperty(face)) {
-	                        while (msg.indexOf(face) > -1) {
-	                            msg = msg.replace(face, '<img class="emoji" src="' + emoji.path + emoji.map[face] + '" />');
-	                        }
-	                    }
-	                }
-	                return msg;
-	            }
-	        },
-
-	        parseLink: function (msg) {
-
-	            var reg = /(https?\:\/\/|www\.)([a-zA-Z0-9-]+(\.[a-zA-Z0-9]+)+)(\:[0-9]{2,4})?\/?((\.[:_0-9a-zA-Z-]+)|[:_0-9a-zA-Z-]*\/?)*\??[:_#@*&%0-9a-zA-Z-/=]*/gm;
-
-	            msg = msg.replace(reg, function (v) {
-
-	                var prefix = /^https?/gm.test(v);
-
-	                return "<a href='"
-	                    + (prefix ? v : '//' + v)
-	                    + "' target='_blank'>"
-	                    + v
-	                    + "</a>";
-
-	            });
-
-	            return msg;
-
-	        },
-
-	        parseJSON: function (data) {
-
-	            if (window.JSON && window.JSON.parse) {
-	                return window.JSON.parse(data + '');
-	            }
-
-	            var requireNonComma,
-	                depth = null,
-	                str = utils.trim(data + '');
-
-	            return str && !utils.trim(
-	                str.replace(/(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g
-	                    , function (token, comma, open, close) {
-
-	                        if (requireNonComma && comma) {
-	                            depth = 0;
-	                        }
-
-	                        if (depth === 0) {
-	                            return token;
-	                        }
-
-	                        requireNonComma = open || comma;
-	                        depth += !close - !open;
-	                        return '';
-	                    })
-	            )
-	                ? (Function('return ' + str))()
-	                : (Function('Invalid JSON: ' + data))();
-	        },
-
-	        parseUploadResponse: function (response) {
-	            return response.indexOf('callback') > -1 ? //lte ie9
-	                response.slice(9, -1) : response;
-	        },
-
-	        parseDownloadResponse: function (response) {
-	            return ((response && response.type && response.type === 'application/json')
-	            || 0 > Object.prototype.toString.call(response).indexOf('Blob'))
-	                ? this.url + '?token=' : window.URL.createObjectURL(response);
-	        },
-
-	        uploadFile: function (options) {
-	            var options = options || {};
-	            options.onFileUploadProgress = options.onFileUploadProgress || EMPTYFN;
-	            options.onFileUploadComplete = options.onFileUploadComplete || EMPTYFN;
-	            options.onFileUploadError = options.onFileUploadError || EMPTYFN;
-	            options.onFileUploadCanceled = options.onFileUploadCanceled || EMPTYFN;
-
-	            var acc = options.accessToken || this.context.accessToken;
-	            if (!acc) {
-	                options.onFileUploadError({
-	                    type: _code.WEBIM_UPLOADFILE_NO_LOGIN
-	                    , id: options.id
-	                });
-	                return;
-	            }
-
-	            var orgName, appName, devInfos;
-	            var appKey = options.appKey || this.context.appKey || '';
-
-	            if (appKey) {
-	                devInfos = appKey.split('#');
-	                orgName = devInfos[0];
-	                appName = devInfos[1];
-	            }
-
-	            if (!orgName && !appName) {
-	                options.onFileUploadError({
-	                    type: _code.WEBIM_UPLOADFILE_ERROR
-	                    , id: options.id
-	                });
-	                return;
-	            }
-
-	            var apiUrl = options.apiUrl;
-	            var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
-
-	            if (!utils.isCanUploadFileAsync) {
-	                if (utils.hasFlash && typeof options.flashUpload === 'function') {
-	                    options.flashUpload && options.flashUpload(uploadUrl, options);
-	                } else {
-	                    options.onFileUploadError({
-	                        type: _code.WEBIM_UPLOADFILE_BROWSER_ERROR
-	                        , id: options.id
-	                    });
-	                }
-	                return;
-	            }
-
-	            var fileSize = options.file.data ? options.file.data.size : undefined;
-	            if (fileSize > WEBIM_FILESIZE_LIMIT) {
-	                options.onFileUploadError({
-	                    type: _code.WEBIM_UPLOADFILE_ERROR
-	                    , id: options.id
-	                });
-	                return;
-	            } else if (fileSize <= 0) {
-	                options.onFileUploadError({
-	                    type: _code.WEBIM_UPLOADFILE_ERROR
-	                    , id: options.id
-	                });
-	                return;
-	            }
-
-	            var xhr = utils.xmlrequest();
-	            var onError = function (e) {
-	                options.onFileUploadError({
-	                    type: _code.WEBIM_UPLOADFILE_ERROR,
-	                    id: options.id,
-	                    xhr: xhr
-	                });
-	            };
-	            if (xhr.upload) {
-	                xhr.upload.addEventListener('progress', options.onFileUploadProgress, false);
-	            }
-	            if (xhr.addEventListener) {
-	                xhr.addEventListener('abort', options.onFileUploadCanceled, false);
-	                xhr.addEventListener('load', function (e) {
-	                    try {
-	                        var json = utils.parseJSON(xhr.responseText);
-	                        try {
-	                            options.onFileUploadComplete(json);
-	                        } catch (e) {
-	                            options.onFileUploadError({
-	                                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-	                                , data: e
-	                            });
-	                        }
-	                    } catch (e) {
-	                        options.onFileUploadError({
-	                            type: _code.WEBIM_UPLOADFILE_ERROR,
-	                            data: xhr.responseText,
-	                            id: options.id,
-	                            xhr: xhr
-	                        });
-	                    }
-	                }, false);
-	                xhr.addEventListener('error', onError, false);
-	            } else if (xhr.onreadystatechange) {
-	                xhr.onreadystatechange = function () {
-	                    if (xhr.readyState === 4) {
-	                        if (ajax.status === 200) {
-	                            try {
-	                                var json = utils.parseJSON(xhr.responseText);
-	                                options.onFileUploadComplete(json);
-	                            } catch (e) {
-	                                options.onFileUploadError({
-	                                    type: _code.WEBIM_UPLOADFILE_ERROR,
-	                                    data: xhr.responseText,
-	                                    id: options.id,
-	                                    xhr: xhr
-	                                });
-	                            }
-	                        } else {
-	                            options.onFileUploadError({
-	                                type: _code.WEBIM_UPLOADFILE_ERROR,
-	                                data: xhr.responseText,
-	                                id: options.id,
-	                                xhr: xhr
-	                            });
-	                        }
-	                    } else {
-	                        xhr.abort();
-	                        options.onFileUploadCanceled();
-	                    }
-	                }
-	            }
-
-	            xhr.open('POST', uploadUrl);
-
-	            xhr.setRequestHeader('restrict-access', 'true');
-	            xhr.setRequestHeader('Accept', '*/*');// Android QQ browser has some problem with this attribute.
-	            xhr.setRequestHeader('Authorization', 'Bearer ' + acc);
-
-	            var formData = new FormData();
-	            formData.append('file', options.file.data);
-	            xhr.send(formData);
-	        },
-
-
-	        download: function (options) {
-	            options.onFileDownloadComplete = options.onFileDownloadComplete || EMPTYFN;
-	            options.onFileDownloadError = options.onFileDownloadError || EMPTYFN;
-
-	            var accessToken = options.accessToken || this.context.accessToken;
-	            if (!accessToken) {
-	                options.onFileDownloadError({
-	                    type: _code.WEBIM_DOWNLOADFILE_NO_LOGIN,
-	                    id: options.id
-	                });
-	                return;
-	            }
-
-	            var onError = function (e) {
-	                options.onFileDownloadError({
-	                    type: _code.WEBIM_DOWNLOADFILE_ERROR,
-	                    id: options.id,
-	                    xhr: xhr
-	                });
-	            };
-
-	            if (!utils.isCanDownLoadFile) {
-	                options.onFileDownloadComplete();
-	                return;
-	            }
-	            var xhr = utils.xmlrequest();
-	            if ('addEventListener' in xhr) {
-	                xhr.addEventListener('load', function (e) {
-	                    options.onFileDownloadComplete(xhr.response, xhr);
-	                }, false);
-	                xhr.addEventListener('error', onError, false);
-	            } else if ('onreadystatechange' in xhr) {
-	                xhr.onreadystatechange = function () {
-	                    if (xhr.readyState === 4) {
-	                        if (ajax.status === 200) {
-	                            options.onFileDownloadComplete(xhr.response, xhr);
-	                        } else {
-	                            options.onFileDownloadError({
-	                                type: _code.WEBIM_DOWNLOADFILE_ERROR,
-	                                id: options.id,
-	                                xhr: xhr
-	                            });
-	                        }
-	                    } else {
-	                        xhr.abort();
-	                        options.onFileDownloadError({
-	                            type: _code.WEBIM_DOWNLOADFILE_ERROR,
-	                            id: options.id,
-	                            xhr: xhr
-	                        });
-	                    }
-	                }
-	            }
-
-	            var method = options.method || 'GET';
-	            var resType = options.responseType || 'blob';
-	            var mimeType = options.mimeType || 'text/plain; charset=x-user-defined';
-	            xhr.open(method, options.url);
-	            if (typeof Blob !== 'undefined') {
-	                xhr.responseType = resType;
-	            } else {
-	                xhr.overrideMimeType(mimeType);
-	            }
-
-	            var innerHeaer = {
-	                'X-Requested-With': 'XMLHttpRequest',
-	                'Accept': 'application/octet-stream',
-	                'share-secret': options.secret,
-	                'Authorization': 'Bearer ' + accessToken
-	            };
-	            var headers = options.headers || {};
-	            for (var key in headers) {
-	                innerHeaer[key] = headers[key];
-	            }
-	            for (var key in innerHeaer) {
-	                if (innerHeaer[key]) {
-	                    xhr.setRequestHeader(key, innerHeaer[key]);
-	                }
-	            }
-	            xhr.send(null);
-	        },
-
-	        parseTextMessage: function (message, faces) {
-	            if (typeof message !== 'string') {
-	                return;
-	            }
-
-	            if (Object.prototype.toString.call(faces) !== '[object Object]') {
-	                return {
-	                    isemoji: false,
-	                    body: [
-	                        {
-	                            type: 'txt',
-	                            data: message
-	                        }
-	                    ]
-	                };
-	            }
-
-	            var receiveMsg = message;
-	            var emessage = [];
-	            var expr = /\[[^[\]]{2,3}\]/mg;
-	            var emoji = receiveMsg.match(expr);
-
-	            if (!emoji || emoji.length < 1) {
-	                return {
-	                    isemoji: false,
-	                    body: [
-	                        {
-	                            type: 'txt',
-	                            data: message
-	                        }
-	                    ]
-	                };
-	            }
-	            var isemoji = false;
-	            for (var i = 0; i < emoji.length; i++) {
-	                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emoji[i])),
-	                    existEmoji = WebIM.Emoji.map[emoji[i]];
-
-	                if (tmsg) {
-	                    emessage.push({
-	                        type: 'txt',
-	                        data: tmsg
-	                    });
-	                }
-	                if (!existEmoji) {
-	                    emessage.push({
-	                        type: 'txt',
-	                        data: emoji[i]
-	                    });
-	                    continue;
-	                }
-	                var emojiStr = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
-
-	                if (emojiStr) {
-	                    isemoji = true;
-	                    emessage.push({
-	                        type: 'emoji',
-	                        data: emojiStr
-	                    });
-	                } else {
-	                    emessage.push({
-	                        type: 'txt',
-	                        data: emoji[i]
-	                    });
-	                }
-	                var restMsgIndex = receiveMsg.indexOf(emoji[i]) + emoji[i].length;
-	                receiveMsg = receiveMsg.substring(restMsgIndex);
-	            }
-	            if (receiveMsg) {
-	                emessage.push({
-	                    type: 'txt',
-	                    data: receiveMsg
-	                });
-	            }
-	            if (isemoji) {
-	                return {
-	                    isemoji: isemoji,
-	                    body: emessage
-	                };
-	            }
-	            return {
-	                isemoji: false,
-	                body: [
-	                    {
-	                        type: 'txt',
-	                        data: message
-	                    }
-	                ]
-	            };
-	        },
-
-	        xmlrequest: _xmlrequest,
-
-
-	        getXmlFirstChild: function (data, tagName) {
-	            var children = data.getElementsByTagName(tagName);
-	            if (children.length == 0) {
-	                return null;
-	            } else {
-	                return children[0];
-	            }
-	        },
-	        ajax: function (options) {
-	            var dataType = options.dataType || 'text';
-	            var suc = options.success || EMPTYFN;
-	            var error = options.error || EMPTYFN;
-	            var xhr = utils.xmlrequest();
-
-	            xhr.onreadystatechange = function () {
-	                if (xhr.readyState === 4) {
-	                    var status = xhr.status || 0;
-	                    if (status === 200) {
-	                        try {
-	                            switch (dataType) {
-	                                case 'text':
-	                                    suc(xhr.responseText);
-	                                    return;
-	                                case 'json':
-	                                    var json = utils.parseJSON(xhr.responseText);
-	                                    suc(json, xhr);
-	                                    return;
-	                                case 'xml':
-	                                    if (xhr.responseXML && xhr.responseXML.documentElement) {
-	                                        suc(xhr.responseXML.documentElement, xhr);
-	                                    } else {
-	                                        error({
-	                                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
-	                                            data: xhr.responseText
-	                                        });
-	                                    }
-	                                    return;
-	                            }
-	                            suc(xhr.response || xhr.responseText, xhr);
-	                        } catch (e) {
-	                            error({
-	                                type: _code.WEBIM_CONNCTION_AJAX_ERROR,
-	                                data: e
-	                            });
-	                        }
-	                        return;
-	                    } else {
-	                        error({
-	                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
-	                            data: xhr.responseText
-	                        });
-	                        return;
-	                    }
-	                }
-	                if (xhr.readyState === 0) {
-	                    error({
-	                        type: _code.WEBIM_CONNCTION_AJAX_ERROR,
-	                        data: xhr.responseText
-	                    });
-	                }
-	            };
-
-	            if (options.responseType) {
-	                if (xhr.responseType) {
-	                    xhr.responseType = options.responseType;
-	                }
-	            }
-	            if (options.mimeType) {
-	                if (utils.hasOverrideMimeType) {
-	                    xhr.overrideMimeType(options.mimeType);
-	                }
-	            }
-
-	            var type = options.type || 'POST',
-	                data = options.data || null,
-	                tempData = '';
-
-	            if (type.toLowerCase() === 'get' && data) {
-	                for (var o in data) {
-	                    if (data.hasOwnProperty(o)) {
-	                        tempData += o + '=' + data[o] + '&';
-	                    }
-	                }
-	                tempData = tempData ? tempData.slice(0, -1) : tempData;
-	                options.url += (options.url.indexOf('?') > 0 ? '&' : '?') + (tempData ? tempData + '&' : tempData) + '_v=' + new Date().getTime();
-	                data = null;
-	                tempData = null;
-	            }
-	            xhr.open(type, options.url);
-
-	            if (utils.isCanSetRequestHeader) {
-	                var headers = options.headers || {};
-	                for (var key in headers) {
-	                    if (headers.hasOwnProperty(key)) {
-	                        xhr.setRequestHeader(key, headers[key]);
-	                    }
-	                }
-	            }
-
-	            xhr.send(data);
-	            return xhr;
-	        },
-	        ts: function () {
-	            var d = new Date();
-	            var Hours = d.getHours(); //获取当前小时数(0-23)
-	            var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
-	            var Seconds = d.getSeconds(); //获取当前秒数(0-59)
-	            var Milliseconds = d.getMilliseconds(); //获取当前毫秒
-	            return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
-	        },
-
-	        getObjectKey: function (obj, val) {
-	            for (var key in obj) {
-	                if (obj[key] == val) {
-	                    return key;
-	                }
-	            }
-	            return '';
-	        },
-
-	        sprintf: function(){
-	            var arg = arguments,
-	            str = arg[0] || '',
-	            i, len;
-	            for(i = 1, len = arg.length ; i < len ; i++){
-	                str = str.replace(/%s/, arg[i]);
-	            }
-	            return str;
-	        },
-
-	        clone: function (obj) {
-	            var o;
-	            switch(typeof obj){
-	                case 'undefined': break;
-	                case 'string': o = obj + ''; break;
-	                case 'number': o = obj - 0; break;
-	                case 'boolean': o = obj;break;
-	                case 'object':
-	                    if(obj === null){
-	                        o = null;
-	                    }else{
-	                        if(obj instanceof Array){
-	                            o = [];
-	                            for(var i = 0, len = obj.length ; i < len ; i++){
-	                                o.push(this.clone(obj[i]));
-	                            }
-	                        }else{
-	                            o = {};
-	                            for(var k in obj){
-	                                o[k] = this.clone(obj[k]);
-	                            }
-	                        }
-	                    }
-	                    break;
-	                default:
-	                    o = obj;
-	                    break;
-	            }
-	            return o;
-	        }
-	    };
-
-
-	    exports.utils = utils;
-	}());
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
+	'use strict';
 
 	;(function () {
 	    'use strict';
 
-	    var _utils = __webpack_require__(3).utils;
-	    var Message = function (type, id) {
+	    var _utils = __webpack_require__(223).utils;
+	    var Message = function Message(type, id) {
 	        if (!this instanceof Message) {
 	            return new Message(type);
 	        }
@@ -3987,11 +3889,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._msg = new Message[type](id);
 	        }
 	        return this._msg;
-	    }
+	    };
 	    Message.prototype.setGroup = function (group) {
 	        this.body.group = group;
-	    }
-
+	    };
 
 	    /*
 	     * text message
@@ -4004,18 +3905,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Message.txt.prototype.set = function (opt) {
 	        this.value = opt.msg;
 	        this.body = {
-	            id: this.id
-	            , to: opt.to
-	            , msg: this.value
-	            , type: this.type
-	            , roomType: opt.roomType
-	            , ext: opt.ext || {}
-	            , success: opt.success
-	            , fail: opt.fail
+	            id: this.id,
+	            to: opt.to,
+	            msg: this.value,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            ext: opt.ext || {},
+	            success: opt.success,
+	            fail: opt.fail
 	        };
 
 	        !opt.roomType && delete this.body.roomType;
-
 	    };
 
 	    /*
@@ -4030,13 +3930,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.value = '';
 
 	        this.body = {
-	            to: opt.to
-	            , action: opt.action
-	            , msg: this.value
-	            , type: this.type
-	            , roomType: opt.roomType
-	            , ext: opt.ext || {}
-	            , success: opt.success
+	            to: opt.to,
+	            action: opt.action,
+	            msg: this.value,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            ext: opt.ext || {},
+	            success: opt.success
 	        };
 	        !opt.roomType && delete this.body.roomType;
 	    };
@@ -4051,13 +3951,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    Message.location.prototype.set = function (opt) {
 	        this.body = {
-	            to: opt.to
-	            , type: this.type
-	            , roomType: opt.roomType
-	            , addr: opt.addr
-	            , lat: opt.lat
-	            , lng: opt.lng
-	            , ext: opt.ext || {}
+	            to: opt.to,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            addr: opt.addr,
+	            lat: opt.lat,
+	            lng: opt.lng,
+	            ext: opt.ext || {}
 	        };
 	    };
 
@@ -4112,22 +4012,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.filename = opt.filename || this.value.filename;
 
 	        this.body = {
-	            id: this.id
-	            , file: this.value
-	            , filename: this.filename
-	            , apiUrl: opt.apiUrl
-	            , to: opt.to
-	            , type: this.type
-	            , ext: opt.ext || {}
-	            , length: opt.length || 0
-	            , roomType: opt.roomType
-	            , file_length: opt.file_length
-	            , onFileUploadError: opt.onFileUploadError
-	            , onFileUploadComplete: opt.onFileUploadComplete
-	            , success: opt.success
-	            , fail: opt.fail
-	            , flashUpload: opt.flashUpload
-	            , body: opt.body
+	            id: this.id,
+	            file: this.value,
+	            filename: this.filename,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            length: opt.length || 0,
+	            roomType: opt.roomType,
+	            file_length: opt.file_length,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            body: opt.body
 	        };
 	        !opt.roomType && delete this.body.roomType;
 	    };
@@ -4147,20 +4047,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.filename = opt.filename || this.value.filename;
 
 	        this.body = {
-	            id: this.id
-	            , file: this.value
-	            , filename: this.filename
-	            , apiUrl: opt.apiUrl
-	            , to: opt.to
-	            , type: this.type
-	            , ext: opt.ext || {}
-	            , roomType: opt.roomType
-	            , onFileUploadError: opt.onFileUploadError
-	            , onFileUploadComplete: opt.onFileUploadComplete
-	            , success: opt.success
-	            , fail: opt.fail
-	            , flashUpload: opt.flashUpload
-	            , body: opt.body
+	            id: this.id,
+	            file: this.value,
+	            filename: this.filename,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            roomType: opt.roomType,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            body: opt.body
 	        };
 	        !opt.roomType && delete this.body.roomType;
 	    };
@@ -4168,14 +4068,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /*
 	     * video message
 	     */
-	    Message.video = function (id) {
+	    Message.video = function (id) {};
+	    Message.video.prototype.set = function (opt) {};
 
-	    };
-	    Message.video.prototype.set = function (opt) {
-
-	    };
-
-	    var _Message = function (message) {
+	    var _Message = function _Message(message) {
 
 	        if (!this instanceof _Message) {
 	            return new _Message(message, conn);
@@ -4187,48 +4083,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _Message.prototype.send = function (conn) {
 	        var me = this;
 
-	        var _send = function (message) {
+	        var _send = function _send(message) {
 
 	            message.ext = message.ext || {};
 	            message.ext.weichat = message.ext.weichat || {};
 	            message.ext.weichat.originType = message.ext.weichat.originType || 'webim';
 
 	            var json = {
-	                from: conn.context.userId || ''
-	                , to: message.to
-	                , bodies: [message.body]
-	                , ext: message.ext || {}
+	                from: conn.context.userId || '',
+	                to: message.to,
+	                bodies: [message.body],
+	                ext: message.ext || {}
 	            };
 
 	            var jsonstr = _utils.stringify(json);
 	            var dom = $msg({
-	                type: message.group || 'chat'
-	                , to: message.toJid
-	                , id: message.id
-	                , xmlns: 'jabber:client'
+	                type: message.group || 'chat',
+	                to: message.toJid,
+	                id: message.id,
+	                xmlns: 'jabber:client'
 	            }).c('body').t(jsonstr);
 
 	            if (message.roomType) {
-	                dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+	                dom.up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
 	            }
 
 	            setTimeout(function () {
 	                if (typeof _msgHash !== 'undefined' && _msgHash[message.id]) {
-	                    _msgHash[message.id].msg.fail instanceof Function
-	                    && _msgHash[message.id].msg.fail(message.id);
+	                    _msgHash[message.id].msg.fail instanceof Function && _msgHash[message.id].msg.fail(message.id);
 	                }
 	            }, 60000);
 	            conn.sendCommand(dom.tree(), message.id);
 	        };
 
-
 	        if (me.msg.file) {
-	            if (me.msg.body && me.msg.body.url) {// Only send msg
+	            if (me.msg.body && me.msg.body.url) {
+	                // Only send msg
 	                _send(me.msg);
 	                return;
 	            }
 	            var _tmpComplete = me.msg.onFileUploadComplete;
-	            var _complete = function (data) {
+	            var _complete = function _complete(data) {
 
 	                if (data.entities[0]['file-metadata']) {
 	                    var file_len = data.entities[0]['file-metadata']['content-length'];
@@ -4240,19 +4135,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 
 	                me.msg.body = {
-	                    type: me.msg.type || 'file'
-	                    ,
-	                    url: ((location.protocol != 'https:' && conn.isHttpDNS) ? (conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0]['uuid']
-	                    , secret: data.entities[0]['share-secret']
-	                    , filename: me.msg.file.filename || me.msg.filename
-	                    , size: {
-	                        width: me.msg.width || 0
-	                        , height: me.msg.height || 0
-	                    }
-	                    , length: me.msg.length || 0
-	                    , file_length: me.msg.file_length || 0
-	                    , filetype: me.msg.filetype
-	                }
+	                    type: me.msg.type || 'file',
+
+	                    url: (location.protocol != 'https:' && conn.isHttpDNS ? conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0]['uuid'],
+	                    secret: data.entities[0]['share-secret'],
+	                    filename: me.msg.file.filename || me.msg.filename,
+	                    size: {
+	                        width: me.msg.width || 0,
+	                        height: me.msg.height || 0
+	                    },
+	                    length: me.msg.length || 0,
+	                    file_length: me.msg.file_length || 0,
+	                    filetype: me.msg.filetype
+	                };
 	                _send(me.msg);
 	                _tmpComplete instanceof Function && _tmpComplete(data, me.msg.id);
 	            };
@@ -4261,8 +4156,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _utils.uploadFile.call(conn, me.msg);
 	        } else {
 	            me.msg.body = {
-	                type: me.msg.type === 'chat' ? 'txt' : me.msg.type
-	                , msg: me.msg.msg
+	                type: me.msg.type === 'chat' ? 'txt' : me.msg.type,
+	                msg: me.msg.msg
 	            };
 	            if (me.msg.type === 'cmd') {
 	                me.msg.body.action = me.msg.action;
@@ -4278,12 +4173,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    exports._msg = _Message;
 	    exports.message = Message;
-	}());
-
+	})();
 
 /***/ },
-/* 5 */
+
+/***/ 233:
 /***/ function(module, exports) {
+
+	"use strict";
 
 	;(function () {
 	    function Array_h(length) {
@@ -4296,15 +4193,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Number} length [数组长度]
 	         */
-	        length: function () {
+	        length: function length() {
 	            return this.array.length;
 	        },
 
-	        at: function (index) {
+	        at: function at(index) {
 	            return this.array[index];
 	        },
 
-	        set: function (index, obj) {
+	        set: function set(index, obj) {
 	            this.array[index] = obj;
 	        },
 
@@ -4314,7 +4211,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param  {*} obj [description]
 	         * @return {Number} length [新数组的长度]
 	         */
-	        push: function (obj) {
+	        push: function push(obj) {
 	            return this.array.push(obj);
 	        },
 
@@ -4325,24 +4222,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param  {Number} end [结束索引值]
 	         * @return {Array} newArray  [新的数组]
 	         */
-	        slice: function (start, end) {
+	        slice: function slice(start, end) {
 	            return this.array = this.array.slice(start, end);
 	        },
 
-	        concat: function (array) {
+	        concat: function concat(array) {
 	            this.array = this.array.concat(array);
 	        },
 
-	        remove: function (index, count) {
+	        remove: function remove(index, count) {
 	            count = count === undefined ? 1 : count;
 	            this.array.splice(index, count);
 	        },
 
-	        join: function (separator) {
+	        join: function join(separator) {
 	            return this.array.join(separator);
 	        },
 
-	        clear: function () {
+	        clear: function clear() {
 	            this.array.length = 0;
 	        }
 	    };
@@ -4352,7 +4249,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * 一种先进先出的数据缓存器
 	     */
-	    var Queue = function () {
+	    var Queue = function Queue() {
 	        this._array_h = new Array_h();
 	    };
 
@@ -4365,7 +4262,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param  {Object} obj [description]
 	         * @return {[type]}     [description]
 	         */
-	        push: function (obj) {
+	        push: function push(obj) {
 	            this._array_h.push(obj);
 	        },
 
@@ -4374,7 +4271,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Object} [description]
 	         */
-	        pop: function () {
+	        pop: function pop() {
 	            var ret = null;
 	            if (this._array_h.length()) {
 	                ret = this._array_h.at(this._index);
@@ -4391,8 +4288,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Object} [description]
 	         */
-	        head: function () {
-	            var ret = null, len = this._array_h.length();
+	        head: function head() {
+	            var ret = null,
+	                len = this._array_h.length();
 	            if (len) {
 	                ret = this._array_h.at(len - 1);
 	            }
@@ -4404,8 +4302,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Object} [description]
 	         */
-	        tail: function () {
-	            var ret = null, len = this._array_h.length();
+	        tail: function tail() {
+	            var ret = null,
+	                len = this._array_h.length();
 	            if (len) {
 	                ret = this._array_h.at(this._index);
 	            }
@@ -4417,7 +4316,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Number} [description]
 	         */
-	        length: function () {
+	        length: function length() {
 	            return this._array_h.length() - this._index;
 	        },
 
@@ -4426,19 +4325,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Boolean} [description]
 	         */
-	        empty: function () {
-	            return (this._array_h.length() === 0);
+	        empty: function empty() {
+	            return this._array_h.length() === 0;
 	        },
 
-	        clear: function () {
+	        clear: function clear() {
 	            this._array_h.clear();
 	        }
 	    };
 	    exports.Queue = Queue;
-	}());
-
+	})();
 
 /***/ }
-/******/ ])
-});
-;
+
+/******/ });

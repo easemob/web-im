@@ -284,7 +284,69 @@ module.exports = {
         this.render(this.node);
     },
 
+    addToChatRecord: function (msg, type) {
+        console.log('addToChatRecord');
+        this.sentByMe = msg.from === Demo.user;
+        var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
+        if(!Demo.chatRecord[targetId]){
+            Demo.chatRecord[targetId] = [];
+        }else if(Demo.chatRecord[targetId].length >= Demo.maxChatRecordCount){
+            Demo.chatRecord[targetId].shift();
+        }
+        Demo.chatRecord[targetId].push({message: msg, type: type});
+    },
+
+    releaseChatRecord: function () {
+        console.log('release');
+        var targetId = Demo.selected;
+        if(targetId){
+            if(Demo.chatRecord[targetId]){
+                for(var i = 0 ; i < Demo.chatRecord[targetId].length ; i++){
+                    Demo.api.appendMsg(Demo.chatRecord[targetId][i].message, Demo.chatRecord[targetId][i].type);
+                }
+            }
+        }
+    },
+
+    getBrief: function(data, type){
+        var brief = '';
+        console.log('getBrief::data: ', data);
+        console.log('getBrief::type: ', type);
+        switch(type){
+            case 'txt':
+                brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
+                break;
+            case 'emoji':
+                for (var i = 0, l = data.length; i < l; i++) {
+                    brief += data[i].type === 'emoji'
+                        ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />'
+                        : this.encode(data[i].data);
+                }
+                break;
+            case 'img':
+                brief = '[' + Demo.lan.image + ']';
+                break;
+            case 'aud':
+                brief = '[' + Demo.lan.audio + ']';
+                break;
+            case 'cmd':
+                brief = '[' + Demo.lan.cmd + ']';
+                break;
+            case 'file':
+                brief = '[' + Demo.lan.file + ']';
+                break;
+            case 'loc':
+                brief = '[' + Demo.lan.location + ']';
+                break;
+            case 'video':
+                brief = '[' + Demo.lan.video + ']';
+                break;
+        }
+        return brief;
+    },
+
     appendMsg: function (msg, type) {
+        console.log('appendMsg');
         if (!msg) {
             return;
         }
@@ -297,68 +359,70 @@ module.exports = {
             data = msg.data || msg.msg || '',
             name = this.sendByMe ? Demo.user : msg.from,
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
-            targetNode = document.getElementById('wrapper' + targetId);
+            targetNode = document.getElementById('wrapper' + targetId),
+            isStranger = !document.getElementById(targetId);
 
         // TODO: ios/android client doesn't encodeURIComponent yet
         // if (typeof data === "string") {
         // data = decodeURIComponent(data);
         // }
 
-        if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
+        if (!this.sentByMe && msg.type === 'chat' && isStranger) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
-        } else if (!targetNode) {
+        } else if (isStranger) {
             return;
         }
-        switch (type) {
-            case 'txt':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'txt'});
-                } else {
-                    brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
-                    textMsg({
-                        wrapper: targetNode,
-                        name: name,
-                        value: brief,
-                        error: msg.error,
-                        errorText: msg.errorText
-                    }, this.sentByMe);
-                }
-                break;
-            case 'emoji':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'emoji'});
-                } else {
-                    for (var i = 0, l = data.length; i < l; i++) {
-                        brief += data[i].type === 'emoji'
-                            ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />'
-                            : this.encode(data[i].data);
-                    }
-                    textMsg({
-                        wrapper: targetNode,
-                        name: name,
-                        value: brief,
-                        error: msg.error,
-                        errorText: msg.errorText
-                    }, this.sentByMe);
-                }
-                break;
-            case 'img':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'img'});
-                } else {
-                    if (WebIM.config.isWindowSDK) {
-                        var cur = document.getElementById('file_' + msg.id);
-                        if (cur) {
-                            var listenerName = 'onUpdateFileUrl' + msg.id;
-                            if (Demo.api[listenerName]) {
-                                Demo.api[listenerName]({url: msg.url});
-                                Demo.api[listenerName] = null;
+
+        if (isStranger) {
+            Demo.strangers[targetId].push({msg: msg, type: type});
+            this.render(this.node, 'stranger');
+            return;
+        }else{
+            brief = this.getBrief(data, type);
+            if(targetNode){
+                switch (type) {
+                    case 'txt':
+                        textMsg({
+                            wrapper: targetNode,
+                            name: name,
+                            value: brief,
+                            error: msg.error,
+                            errorText: msg.errorText
+                        }, this.sentByMe);
+                        break;
+                    case 'emoji':
+                        textMsg({
+                            wrapper: targetNode,
+                            name: name,
+                            value: brief,
+                            error: msg.error,
+                            errorText: msg.errorText
+                        }, this.sentByMe);
+                        break;
+                    case 'img':
+                        if (WebIM.config.isWindowSDK) {
+                            var cur = document.getElementById('file_' + msg.id);
+                            if (cur) {
+                                var listenerName = 'onUpdateFileUrl' + msg.id;
+                                if (Demo.api[listenerName]) {
+                                    Demo.api[listenerName]({url: msg.url});
+                                    Demo.api[listenerName] = null;
+                                } else {
+                                    console.log('listenerName not exists:' + msg.id);
+                                }
+                                return;
                             } else {
-                                console.log('listenerName not exists:' + msg.id);
+                                brief = '[' + Demo.lan.image + ']';
+                                imgMsg({
+                                    id: msg.id,
+                                    wrapper: targetNode,
+                                    name: name,
+                                    value: data || msg.url,
+                                    error: msg.error,
+                                    errorText: msg.errorText
+                                }, this.sentByMe);
                             }
-                            return;
                         } else {
-                            brief = '[' + Demo.lan.image + ']';
                             imgMsg({
                                 id: msg.id,
                                 wrapper: targetNode,
@@ -368,37 +432,71 @@ module.exports = {
                                 errorText: msg.errorText
                             }, this.sentByMe);
                         }
-                    } else {
-                        brief = '[' + Demo.lan.image + ']';
-                        imgMsg({
-                            id: msg.id,
-                            wrapper: targetNode,
-                            name: name,
-                            value: data || msg.url,
-                            error: msg.error,
-                            errorText: msg.errorText
-                        }, this.sentByMe);
-                    }
-                }
-                break;
-            case 'aud':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: type});
-                } else {
-                    if (WebIM.config.isWindowSDK) {
-                        var cur = document.getElementById('file_' + msg.id);
-                        if (cur) {
-                            var listenerName = 'onUpdateFileUrl' + msg.id;
-                            if (Demo.api[listenerName]) {
-                                Demo.api[listenerName]({url: msg.url});
-                                Demo.api[listenerName] = null;
+                        break;
+                    case 'aud':
+                        if (WebIM.config.isWindowSDK) {
+                            var cur = document.getElementById('file_' + msg.id);
+                            if (cur) {
+                                var listenerName = 'onUpdateFileUrl' + msg.id;
+                                if (Demo.api[listenerName]) {
+                                    Demo.api[listenerName]({url: msg.url});
+                                    Demo.api[listenerName] = null;
+                                } else {
+                                    console.log('listenerName not exists:' + msg.id);
+                                }
+                                return;
                             } else {
-                                console.log('listenerName not exists:' + msg.id);
+                                brief = '[' + Demo.lan.file + ']';
+                                fileMsg({
+                                    id: msg.id,
+                                    wrapper: targetNode,
+                                    name: name,
+                                    value: data || msg.url,
+                                    filename: msg.filename,
+                                    error: msg.error,
+                                    errorText: msg.errorText
+                                }, this.sentByMe);
                             }
-                            return;
                         } else {
-                            brief = '[' + Demo.lan.file + ']';
-                            fileMsg({
+                            audioMsg({
+                                wrapper: targetNode,
+                                name: name,
+                                value: data || msg.url,
+                                length: msg.length,
+                                id: msg.id,
+                                error: msg.error,
+                                errorText: msg.errorText
+                            }, this.sentByMe);
+                        }
+                        break;
+                    case 'cmd':
+                        break;
+                    case 'file':
+                        if (WebIM.config.isWindowSDK) {
+                            var cur = document.getElementById('file_' + msg.id);
+                            if (cur) {
+                                var listenerName = 'onUpdateFileUrl' + msg.id;
+                                if (Demo.api[listenerName]) {
+                                    Demo.api[listenerName]({url: msg.url});
+                                    Demo.api[listenerName] = null;
+                                } else {
+                                    console.log('listenerName not exists:' + msg.id);
+                                }
+                                return;
+                            } else {
+                                brief = '[' + Demo.lan.file + ']';
+                                fileMsg({
+                                    id: msg.id,
+                                    wrapper: targetNode,
+                                    name: name,
+                                    value: data || msg.url,
+                                    filename: msg.filename,
+                                    error: msg.error,
+                                    errorText: msg.errorText
+                                }, this.sentByMe);
+                            }
+                        } else {
+                            var option = {
                                 id: msg.id,
                                 wrapper: targetNode,
                                 name: name,
@@ -406,139 +504,62 @@ module.exports = {
                                 filename: msg.filename,
                                 error: msg.error,
                                 errorText: msg.errorText
-                            }, this.sentByMe);
+                            };
+                            if(msg.ext){
+                                option.fileSize = msg.ext.fileSize;
+                            }
+                            fileMsg(option, this.sentByMe);
                         }
-                    } else {
-                        brief = '[' + Demo.lan.audio + ']';
-                        audioMsg({
+                        break;
+                    case 'loc':
+                        locMsg({
                             wrapper: targetNode,
                             name: name,
-                            value: data || msg.url,
-                            length: msg.length,
-                            id: msg.id,
+                            value: data || msg.addr,
                             error: msg.error,
                             errorText: msg.errorText
                         }, this.sentByMe);
-                    }
-                }
-                break;
-            case 'cmd':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'cmd'});
-                } else {
-                    brief = '[' + Demo.lan.cmd + ']';
-                }
-                break;
-            case 'file':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'file'});
-                } else {
-                    if (WebIM.config.isWindowSDK) {
-                        var cur = document.getElementById('file_' + msg.id);
-                        if (cur) {
-                            var listenerName = 'onUpdateFileUrl' + msg.id;
-                            if (Demo.api[listenerName]) {
-                                Demo.api[listenerName]({url: msg.url});
-                                Demo.api[listenerName] = null;
+                        break;
+                    case 'video':
+                        if (WebIM.config.isWindowSDK) {
+                            var cur = document.getElementById('file_' + msg.id);
+                            if (cur) {
+                                var listenerName = 'onUpdateFileUrl' + msg.id;
+                                if (Demo.api[listenerName]) {
+                                    Demo.api[listenerName]({url: msg.url});
+                                    Demo.api[listenerName] = null;
+                                } else {
+                                    console.log('listenerName not exists:' + msg.id);
+                                }
+                                return;
                             } else {
-                                console.log('listenerName not exists:' + msg.id);
+                                brief = '[' + Demo.lan.file + ']';
+                                fileMsg({
+                                    id: msg.id,
+                                    wrapper: targetNode,
+                                    name: name,
+                                    value: data || msg.url,
+                                    filename: msg.filename,
+                                    error: msg.error,
+                                    errorText: msg.errorText
+                                }, this.sentByMe);
                             }
-                            return;
                         } else {
-                            brief = '[' + Demo.lan.file + ']';
-                            fileMsg({
-                                id: msg.id,
+                            videoMsg({
                                 wrapper: targetNode,
                                 name: name,
                                 value: data || msg.url,
-                                filename: msg.filename,
+                                length: msg.length,
+                                id: msg.id,
                                 error: msg.error,
                                 errorText: msg.errorText
                             }, this.sentByMe);
                         }
-                    } else {
-                        brief = '[' + Demo.lan.file + ']';
-                        var option = {
-                            id: msg.id,
-                            wrapper: targetNode,
-                            name: name,
-                            value: data || msg.url,
-                            filename: msg.filename,
-                            error: msg.error,
-                            errorText: msg.errorText
-                        };
-                        if(msg.ext){
-                            option.fileSize = msg.ext.fileSize;
-                        }
-                        fileMsg(option, this.sentByMe);
-                    }
-
-
+                        break;
+                    default:
+                        break;
                 }
-                break;
-            case 'loc':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'loc'});
-                } else {
-                    brief = '[' + Demo.lan.location + ']';
-                    locMsg({
-                        wrapper: targetNode,
-                        name: name,
-                        value: data || msg.addr,
-                        error: msg.error,
-                        errorText: msg.errorText
-                    }, this.sentByMe);
-                }
-                break;
-            case 'video':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: type});
-                } else {
-                    if (WebIM.config.isWindowSDK) {
-                        var cur = document.getElementById('file_' + msg.id);
-                        if (cur) {
-                            var listenerName = 'onUpdateFileUrl' + msg.id;
-                            if (Demo.api[listenerName]) {
-                                Demo.api[listenerName]({url: msg.url});
-                                Demo.api[listenerName] = null;
-                            } else {
-                                console.log('listenerName not exists:' + msg.id);
-                            }
-                            return;
-                        } else {
-                            brief = '[' + Demo.lan.file + ']';
-                            fileMsg({
-                                id: msg.id,
-                                wrapper: targetNode,
-                                name: name,
-                                value: data || msg.url,
-                                filename: msg.filename,
-                                error: msg.error,
-                                errorText: msg.errorText
-                            }, this.sentByMe);
-                        }
-                    } else {
-                        brief = '[' + Demo.lan.video + ']';
-                        videoMsg({
-                            wrapper: targetNode,
-                            name: name,
-                            value: data || msg.url,
-                            length: msg.length,
-                            id: msg.id,
-                            error: msg.error,
-                            errorText: msg.errorText
-                        }, this.sentByMe);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-
-
-        if (!targetNode) {
-            this.render(this.node, 'stranger');
-            return;
+            }
         }
 
         // show brief
@@ -584,6 +605,7 @@ module.exports = {
             var cur = document.getElementById(id).getElementsByTagName('i')[0];
             var curCount = cur.getAttribute('count') / 1;
             curCount++;
+            curCount = curCount > Demo.maxChatRecordCount ? Demo.maxChatRecordCount : curCount;
             cur.setAttribute('count', curCount);
             cur.innerText = curCount > 999 ? '...' : curCount + '';
             cur.style.display = 'block';
@@ -592,6 +614,7 @@ module.exports = {
                 var cur = document.getElementById(id).getElementsByTagName('i')[0];
                 var curCount = cur.getAttribute('count') / 1;
                 curCount++;
+                curCount = curCount > Demo.maxChatRecordCount ? Demo.maxChatRecordCount : curCount;
                 cur.setAttribute('count', curCount);
                 cur.innerText = curCount > 999 ? '...' : curCount + '';
                 cur.style.display = 'block';
@@ -637,6 +660,7 @@ module.exports = {
         if (!str || str.length === 0) {
             return '';
         }
+        console.log(str);
         var s = '';
         s = str.replace(/&amp;/g, "&");
         s = s.replace(/<(?=[^o][^)])/g, "&lt;");

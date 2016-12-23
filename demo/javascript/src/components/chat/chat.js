@@ -10,6 +10,9 @@ var ConfirmGroupInfo = require('../group/confirmGroupInfo');
 
 module.exports = React.createClass({
 
+    // Switch the left bar doesn't release chat records
+    release: true,
+
     getInitialState: function () {
         var me = this;
 
@@ -38,54 +41,61 @@ module.exports = React.createClass({
             },
             onClosed: function (msg) {
                 // Demo.api.logout();
-
             },
             onTextMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'txt');
                 Demo.api.appendMsg(message, 'txt');
             },
             onEmojiMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'emoji');
                 Demo.api.appendMsg(message, 'emoji');
             },
             onPictureMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'img');
                 Demo.api.appendMsg(message, 'img');
             },
             onCmdMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'cmd');
                 Demo.api.appendMsg(message, 'cmd');
             },
             onAudioMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'aud');
                 Demo.api.appendMsg(message, 'aud');
             },
             onLocationMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'loc');
                 Demo.api.appendMsg(message, 'loc');
             },
             onFileMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'file');
                 Demo.api.appendMsg(message, 'file');
             },
             onVideoMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'video');
                 Demo.api.appendMsg(message, 'video');
             },
             onPresence: function (message) {
@@ -183,7 +193,8 @@ module.exports = React.createClass({
             strangers: [],
             blacklist: {},
             chatrooms_totalnum: Demo.api.pagesize,
-            contact_loading_show: false
+            contact_loading_show: false,
+            window: []
         };
     },
     confirmPop: function (options) {
@@ -224,9 +235,15 @@ module.exports = React.createClass({
 
 
                 while (msg = Demo.strangers[o].pop()) {
+                    Demo.api.addToChatRecord(msg.msg, msg.type);
                     Demo.api.appendMsg(msg.msg, msg.type);
                 }
             }
+        }
+        if(this.release){
+            Demo.api.releaseChatRecord();
+        }else{
+            this.release = true;
         }
     },
 
@@ -576,12 +593,74 @@ module.exports = React.createClass({
         });
     },
 
-    update: function (cur) {
+    update: function (cur, leftBar) {
+        if(leftBar)
+            this.release = false;
         this.setState({cur: cur, contact_loading_show: false});
     },
 
     updateNode: function (id) {
+        var windows = [], id, cate = '',
+            props = {
+                sendPicture: this.sendPicture,
+                sendAudio: this.sendAudio,
+                sendFile: this.sendFile,
+                name: ''
+            };
+        if(Demo.selected){
+            id = Demo.selected;
+            cate = Demo.selectedCate;
+            switch(cate){
+                case 'friends':
+                    props.name = id;
+                    windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
+                    updateNode={this.updateNode} className={''}/>);
+                break;
+
+                case 'groups':
+                    //createGroup is two step progresses.first send presence,second send iq.
+                    //on first recv group list, the newest created one's roomId=name,
+                    //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+                    for (var i = 0; i < this.state.groups.length; i++) {
+                        if(id == this.state.groups[i].roomId){
+                            props.name = this.state.groups[i].name;
+                            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+                                this.state.groups[i].name = Demo.createGroupName;
+                                Demo.createGroupName = '';
+                            }
+                            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
+                            className={''}/>);
+                            break;
+                        }
+                    }
+                    break;
+
+                case 'chatrooms':
+                    for (var i = 0; i < this.state.chatrooms.length; i++) {
+                        if(id == this.state.chatrooms[i].id){
+                            props.name = this.state.chatrooms[i].name;
+                            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='chatRoom'
+                            className={''}/>);
+                        }
+                    }
+                    console.log('windows: ', windows);
+                    break;
+
+                case 'strangers':
+                    props.name = id;
+                    windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
+                    className={''}/>);
+
+                    console.log('strangers');
+                    console.log('windows: ', windows);
+                    break;
+
+                default:
+                    console.log('Default: ', cate);
+                }
+        }
         this.setState({curNode: id});
+        this.setState({window: windows});
     },
 
     sendPicture: function (chatType) {
@@ -616,26 +695,34 @@ module.exports = React.createClass({
             file: file,
             to: Demo.selected,
             roomType: chatroom,
+            ext:{
+                fuck: 'fuck'
+            },
             onFileUploadError: function (error) {
                 log(error);
                 me.refs.picture.value = null;
 
-                Demo.api.appendMsg({
+                var option = {
                     data: Demo.lan.sendImageFailed,
                     from: Demo.user,
                     to: Demo.selected
-                }, 'txt');
+                };
+                Demo.api.addToChatRecord(option, 'txt');
+                Demo.api.appendMsg(option, 'txt');
             },
             onFileUploadComplete: function (data) {
                 url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.picture.value = null;
+                console.log('data: ', data);
             },
             success: function (id) {
-                Demo.api.appendMsg({
+                var option = {
                     data: url,
                     from: Demo.user,
                     to: Demo.selected
-                }, 'img');
+                };
+                Demo.api.addToChatRecord(option, 'img');
+                Demo.api.appendMsg(option, 'img');
             },
             flashUpload: WebIM.flashUpload
         });
@@ -673,24 +760,28 @@ module.exports = React.createClass({
                 log(error);
                 me.refs.audio.value = null;
 
-                Demo.api.appendMsg({
+                var option = {
                     data: Demo.lan.sendAudioFailed,
                     from: Demo.user,
                     to: Demo.selected
-                }, 'txt');
+                };
+                Demo.api.addToChatRecord(option, 'txt');
+                Demo.api.appendMsg(option, 'txt');
             },
             onFileUploadComplete: function (data) {
                 url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.audio.value = null;
             },
             success: function (id, sid) {
-                Demo.api.appendMsg({
+                var option = {
                     data: url,
                     from: Demo.user,
                     to: Demo.selected,
                     id: sid,
                     length: duration
-                }, 'aud');
+                };
+                Demo.api.addToChatRecord(option, 'aud');
+                Demo.api.appendMsg(option, 'aud');
             },
             flashUpload: WebIM.flashUpload
         });
@@ -793,23 +884,27 @@ module.exports = React.createClass({
             onFileUploadError: function (error) {
                 log(error);
                 me.refs.file.value = null;
-                Demo.api.appendMsg({
+                var option = {
                     data: Demo.lan.sendFileFailed,
                     from: Demo.user,
                     to: Demo.selected
-                }, 'txt');
+                };
+                Demo.api.addToChatRecord(option, 'txt');
+                Demo.api.appendMsg(option, 'txt');
             },
             onFileUploadComplete: function (data) {
                 url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
             },
             success: function (id) {
-                Demo.api.appendMsg({
+                var option = {
                     data: url,
                     filename: filename,
                     from: Demo.user,
                     to: Demo.selected
-                }, 'file');
+                };
+                Demo.api.addToChatRecord(option, 'file');
+                Demo.api.appendMsg(option, 'file');
             },
             flashUpload: WebIM.flashUpload
         });
@@ -824,6 +919,7 @@ module.exports = React.createClass({
 
     render: function () {
         // Demo.api.curLength = this.state[this.state.cur].length;
+/*
 
         var windows = [], id,
             props = {
@@ -871,6 +967,7 @@ module.exports = React.createClass({
             windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
                                      className={this.state.strangers[i].name === this.state.curNode ? '' : 'hide'}/>);
         }
+*/
 
         return (
             <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
@@ -886,7 +983,7 @@ module.exports = React.createClass({
                          strangers={this.state.strangers}
                          getChatroom={this.getChatroom}
                          loading={this.state.contact_loading_show}/>
-                {windows}
+                {this.state.window}
                 <input ref='picture' onChange={this.pictureChange} type='file' className='hide'/>
                 <input ref='audio' onChange={this.audioChange} type='file' className='hide'/>
                 <input ref='file' onChange={this.fileChange} type='file' className='hide'/>
