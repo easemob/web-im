@@ -31285,7 +31285,7 @@
 	                    React.createElement(
 	                        'div',
 	                        { className: 'webim-video-msg' },
-	                        React.createElement('video', { id: this.props.id, ref: 'video', controls: true })
+	                        React.createElement('video', { id: this.props.id, ref: 'video', controls: true, autoPlay: true })
 	                    )
 	                ),
 	                React.createElement(

@@ -38,7 +38,7 @@ var VideoMsg = React.createClass({
                     <div className='webim-msg-value'>
                         <span className='webim-msg-icon font'>{icon}</span>
                         <div className='webim-video-msg'>
-                            <video id={this.props.id} ref='video' controls/>
+                            <video id={this.props.id} ref='video' controls autoPlay/>
                         </div>
                     </div>
                     <div className={"webim-msg-error " + (this.props.error ? ' ' : 'hide')}>
