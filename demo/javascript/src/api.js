@@ -285,7 +285,6 @@ module.exports = {
     },
 
     addToChatRecord: function (msg, type) {
-        console.log('addToChatRecord');
         this.sentByMe = msg.from === Demo.user;
         var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
         if(!Demo.chatRecord[targetId]){
@@ -297,7 +296,6 @@ module.exports = {
     },
 
     releaseChatRecord: function () {
-        console.log('release');
         var targetId = Demo.selected;
         if(targetId){
             if(Demo.chatRecord[targetId]){
@@ -310,8 +308,6 @@ module.exports = {
 
     getBrief: function(data, type){
         var brief = '';
-        console.log('getBrief::data: ', data);
-        console.log('getBrief::type: ', type);
         switch(type){
             case 'txt':
                 brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
@@ -346,7 +342,6 @@ module.exports = {
     },
 
     appendMsg: function (msg, type) {
-        console.log('appendMsg');
         if (!msg) {
             return;
         }
@@ -660,7 +655,6 @@ module.exports = {
         if (!str || str.length === 0) {
             return '';
         }
-        console.log(str);
         var s = '';
         s = str.replace(/&amp;/g, "&");
         s = s.replace(/<(?=[^o][^)])/g, "&lt;");

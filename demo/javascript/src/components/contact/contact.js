@@ -12,13 +12,19 @@ module.exports = React.createClass({
         };
     },
 
+    componentDidUpdate: function () {
+        this.refs.contactContainer.scrollTop = Demo.chatState[Demo.selectedCate].scroll;
+    },
+
     update: function (id) {
         this.props.updateNode(id);
     },
 
     onscroll: function () {
         var scrollTop = this.refs.contactContainer.scrollTop;
-        var scollTopNum = scrollTop / 60;
+        // var scollTopNum = scrollTop / 60;
+        // Demo.scroll[Demo.selectedCate] = scrollTop;
+        Demo.chatState[Demo.selectedCate].scroll = scrollTop;
         if ((scrollTop / 60 + 10) == this.props[Demo.selectedCate].length) {
             this.props.getChatroom();
         }

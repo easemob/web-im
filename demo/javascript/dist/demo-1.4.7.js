@@ -100,7 +100,37 @@
 	    wmv: 1
 	};
 
-	Demo.selectedCate = ''; //friends|groups|chatrooms|strangers
+	Demo.chatingCate = ''; // friends|groups|chatrooms|strangers
+	Demo.selectedCate = ''; // friends|groups|chatrooms|strangers
+	Demo.scroll = {
+	    friends: 0,
+	    groups: 0,
+	    chatrooms: 0,
+	    strangers: 0
+	};
+
+	Demo.chatState = {
+	    friends: {
+	        selected: '',
+	        scroll: 0,
+	        chatWindow: []
+	    },
+	    groups: {
+	        selected: '',
+	        scroll: 0,
+	        chatWindow: []
+	    },
+	    chatrooms: {
+	        selected: '',
+	        scroll: 0,
+	        chatWindow: []
+	    },
+	    strangers: {
+	        selected: '',
+	        scroll: 0,
+	        chatWindow: []
+	    }
+	};
 
 	// initialize webIM connection
 	Demo.conn = new WebIM.connection({
@@ -775,7 +805,6 @@
 	    },
 
 	    addToChatRecord: function addToChatRecord(msg, type) {
-	        console.log('addToChatRecord');
 	        this.sentByMe = msg.from === Demo.user;
 	        var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
 	        if (!Demo.chatRecord[targetId]) {
@@ -787,7 +816,6 @@
 	    },
 
 	    releaseChatRecord: function releaseChatRecord() {
-	        console.log('release');
 	        var targetId = Demo.selected;
 	        if (targetId) {
 	            if (Demo.chatRecord[targetId]) {
@@ -800,8 +828,6 @@
 
 	    getBrief: function getBrief(data, type) {
 	        var brief = '';
-	        console.log('getBrief::data: ', data);
-	        console.log('getBrief::type: ', type);
 	        switch (type) {
 	            case 'txt':
 	                brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
@@ -834,7 +860,6 @@
 	    },
 
 	    appendMsg: function appendMsg(msg, type) {
-	        console.log('appendMsg');
 	        if (!msg) {
 	            return;
 	        }
@@ -1146,7 +1171,6 @@
 	        if (!str || str.length === 0) {
 	            return '';
 	        }
-	        console.log(str);
 	        var s = '';
 	        s = str.replace(/&amp;/g, "&");
 	        s = s.replace(/<(?=[^o][^)])/g, "&lt;");
@@ -23390,7 +23414,6 @@
 	        for (var o in Demo.strangers) {
 	            if (Demo.strangers.hasOwnProperty(o)) {
 	                var msg = null;
-
 	                while (msg = Demo.strangers[o].pop()) {
 	                    Demo.api.addToChatRecord(msg.msg, msg.type);
 	                    Demo.api.appendMsg(msg.msg, msg.type);
@@ -23751,13 +23774,24 @@
 	    },
 
 	    update: function update(cur, leftBar) {
-	        if (leftBar) this.release = false;
-	        this.setState({ cur: cur, contact_loading_show: false });
+	        var node = Demo.chatState[Demo.selectedCate].selected;
+	        Demo.selected = node;
+	        /*
+	        if(leftBar)
+	            this.release = false;
+	        */
+	        if (Demo.selectedCate == 'chatrooms' && node) {
+	            Demo.conn.joinChatRoom({
+	                roomId: node
+	            });
+	        }
+	        if (!node) this.release = false;
+	        this.setChatWindow(true);
+	        this.setState({ curNode: node, cur: cur, contact_loading_show: false });
 	    },
 
-	    updateNode: function updateNode(id) {
-	        var windows = [],
-	            id,
+	    storeChatWindow: function storeChatWindow() {
+	        var id,
 	            cate = '',
 	            props = {
 	            sendPicture: this.sendPicture,
@@ -23768,13 +23802,18 @@
 	        if (Demo.selected) {
 	            id = Demo.selected;
 	            cate = Demo.selectedCate;
+
+	            // clear this chat window
+	            while (Demo.chatState[cate].chatWindow.length) {
+	                Demo.chatState[cate].chatWindow.pop();
+	            }
+
 	            switch (cate) {
 	                case 'friends':
 	                    props.name = id;
-	                    windows.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, { chatType: 'singleChat',
+	                    Demo.chatState[cate].chatWindow.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, { chatType: 'singleChat',
 	                        updateNode: this.updateNode, className: '' })));
 	                    break;
-
 	                case 'groups':
 	                    //createGroup is two step progresses.first send presence,second send iq.
 	                    //on first recv group list, the newest created one's roomId=name,
@@ -23786,39 +23825,105 @@
 	                                this.state.groups[i].name = Demo.createGroupName;
 	                                Demo.createGroupName = '';
 	                            }
-	                            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'groupChat',
+	                            Demo.chatState[cate].chatWindow.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'groupChat',
 	                                className: '' })));
 	                            break;
 	                        }
 	                    }
 	                    break;
-
 	                case 'chatrooms':
 	                    for (var i = 0; i < this.state.chatrooms.length; i++) {
 	                        if (id == this.state.chatrooms[i].id) {
 	                            props.name = this.state.chatrooms[i].name;
-	                            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'chatRoom',
+	                            Demo.chatState[cate].chatWindow.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'chatRoom',
 	                                className: '' })));
 	                        }
 	                    }
-	                    console.log('windows: ', windows);
 	                    break;
-
 	                case 'strangers':
 	                    props.name = id;
-	                    windows.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, {
+	                    Demo.chatState[cate].chatWindow.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, {
 	                        className: '' })));
-
-	                    console.log('strangers');
-	                    console.log('windows: ', windows);
 	                    break;
-
 	                default:
 	                    console.log('Default: ', cate);
 	            }
 	        }
-	        this.setState({ curNode: id });
-	        this.setState({ window: windows });
+	    },
+
+	    setChatWindow: function setChatWindow(show) {
+	        var cate = Demo.selectedCate;
+	        if (!show) {
+	            this.setState({ window: [] });
+	        } else {
+	            this.setState({ window: Demo.chatState[cate].chatWindow });
+	        }
+	    },
+
+	    /*setChatWindow: function(show){
+	        var windows = [], id, cate = '',
+	            props = {
+	                sendPicture: this.sendPicture,
+	                sendAudio: this.sendAudio,
+	                sendFile: this.sendFile,
+	                name: ''
+	            };
+	        if(Demo.selected){
+	            id = Demo.selected;
+	            cate = Demo.selectedCate;
+	            switch(cate){
+	                    case 'friends':
+	                        props.name = id;
+	                        windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
+	                        updateNode={this.updateNode} className={show?'':'hide'}/>);
+	                    break;
+	                    case 'groups':
+	                        //createGroup is two step progresses.first send presence,second send iq.
+	                        //on first recv group list, the newest created one's roomId=name,
+	                        //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+	                        for (var i = 0; i < this.state.groups.length; i++) {
+	                            if(id == this.state.groups[i].roomId){
+	                                props.name = this.state.groups[i].name;
+	                                if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+	                                    this.state.groups[i].name = Demo.createGroupName;
+	                                    Demo.createGroupName = '';
+	                                }
+	                                windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
+	                                className={show?'':'hide'}/>);
+	                                break;
+	                            }
+	                        }
+	                        break;
+	                    case 'chatrooms':
+	                        for (var i = 0; i < this.state.chatrooms.length; i++) {
+	                            if(id == this.state.chatrooms[i].id){
+	                                props.name = this.state.chatrooms[i].name;
+	                                windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='chatRoom'
+	                                className={show?'':'hide'}/>);
+	                            }
+	                        }
+	                        console.log('windows: ', windows);
+	                        break;
+	                    case 'strangers':
+	                        props.name = id;
+	                        windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
+	                        className={show?'':'hide'}/>);
+	                        console.log('strangers');
+	                        console.log('windows: ', windows);
+	                        break;
+	                    default:
+	                        console.log('Default: ', cate);
+	            }
+	        }
+	        console.log('windows: ', windows);
+	        this.setState({window: windows});
+	    },*/
+
+	    updateNode: function updateNode(cid) {
+	        Demo.chatState[Demo.selectedCate].selected = cid;
+	        this.storeChatWindow();
+	        this.setChatWindow(true);
+	        this.setState({ curNode: cid });
 	    },
 
 	    sendPicture: function sendPicture(chatType) {
@@ -23853,9 +23958,6 @@
 	            file: file,
 	            to: Demo.selected,
 	            roomType: chatroom,
-	            ext: {
-	                fuck: 'fuck'
-	            },
 	            onFileUploadError: function onFileUploadError(error) {
 	                log(error);
 	                me.refs.picture.value = null;
@@ -27047,13 +27149,19 @@
 	        };
 	    },
 
+	    componentDidUpdate: function componentDidUpdate() {
+	        this.refs.contactContainer.scrollTop = Demo.chatState[Demo.selectedCate].scroll;
+	    },
+
 	    update: function update(id) {
 	        this.props.updateNode(id);
 	    },
 
 	    onscroll: function onscroll() {
 	        var scrollTop = this.refs.contactContainer.scrollTop;
-	        var scollTopNum = scrollTop / 60;
+	        // var scollTopNum = scrollTop / 60;
+	        // Demo.scroll[Demo.selectedCate] = scrollTop;
+	        Demo.chatState[Demo.selectedCate].scroll = scrollTop;
 	        if (scrollTop / 60 + 10 == this.props[Demo.selectedCate].length) {
 	            this.props.getChatroom();
 	        }
@@ -27161,6 +27269,8 @@
 	    },
 
 	    update: function update() {
+	        Demo.chatingCate = Demo.selectedCate;
+
 	        if (this.refs['i']) {
 	            var count = this.refs['i'].getAttribute('count') / 1;
 	            this.handleCurCateIconCount(count);
@@ -27182,8 +27292,8 @@
 
 	        // quit previous chatroom
 	        if (Demo.currentChatroom) {
-	            document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
-	            document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+	            // document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
+	            // document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
 	            if (WebIM.config.isWindowSDK) {
 	                WebIM.doQuery('{"type":"quitChatroom","id":"' + Demo.currentChatroom + '"}', function success(str) {
 	                    //do nothing

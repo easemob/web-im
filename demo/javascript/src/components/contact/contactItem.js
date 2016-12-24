@@ -32,6 +32,8 @@ module.exports = React.createClass({
 
 
     update: function () {
+        Demo.chatingCate = Demo.selectedCate;
+
         if (this.refs['i']) {
             var count = this.refs['i'].getAttribute('count') / 1;
             this.handleCurCateIconCount(count);
@@ -53,8 +55,8 @@ module.exports = React.createClass({
 
         // quit previous chatroom
         if (Demo.currentChatroom) {
-            document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
-            document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+            // document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
+            // document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"quitChatroom","id":"' + Demo.currentChatroom + '"}',
                     function success(str) {

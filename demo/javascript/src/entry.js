@@ -46,7 +46,37 @@ Demo.AUDIOTYPE = {
     wmv: 1
 };
 
-Demo.selectedCate = '';   //friends|groups|chatrooms|strangers
+Demo.chatingCate = '';    // friends|groups|chatrooms|strangers
+Demo.selectedCate = '';   // friends|groups|chatrooms|strangers
+Demo.scroll = {
+    friends: 0,
+    groups: 0,
+    chatrooms: 0,
+    strangers: 0
+};
+
+Demo.chatState = {
+    friends:{
+        selected: '',
+        scroll: 0,
+        chatWindow: []
+    },
+    groups:{
+        selected: '',
+        scroll: 0,
+        chatWindow: []
+    },
+    chatrooms:{
+        selected: '',
+        scroll: 0,
+        chatWindow: []
+    },
+    strangers:{
+        selected: '',
+        scroll: 0,
+        chatWindow: []
+    }
+}
 
 // initialize webIM connection
 Demo.conn = new WebIM.connection({
