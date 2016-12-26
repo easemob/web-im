@@ -128,7 +128,6 @@ module.exports = React.createClass({
                 }
             },
             onError: function (message) {
-
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -163,6 +162,11 @@ module.exports = React.createClass({
                         Demo.api.NotifySuccess(text);
                         return;
                     }else{
+                        if(text == 'clear' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8'){
+                            console.log('clear');
+                            window.history.pushState({}, 0, 'index.html');
+                        }
+                        console.log('text: ', text);
                         Demo.api.NotifyError('onError:' + text);
                     }
                 }

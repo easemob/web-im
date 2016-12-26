@@ -84,10 +84,12 @@ module.exports = React.createClass({
             pwd: auth,
             accessToken: auth,
             appKey: this.props.config.appkey,
-            success: function () {
+            success: function (token) {
                 var encryptUsername = WebIM.utils.encrypt(username);
                 var encryptAuth = WebIM.utils.encrypt(auth);
-                var url = 'index.html?username=' + encryptUsername + '&auth=' + encryptAuth + '&type=' + type;
+                var token = token.access_token;
+                var url = 'index.html?username=' + encryptUsername;
+                WebIM.utils.setCookie('webim_' + encryptUsername, token, 1);
                 window.history.pushState({}, 0, url);
             },
             error: function(){
@@ -137,18 +139,18 @@ module.exports = React.createClass({
 
     componentWillMount: function () {
         var pattern = /([^\?|&])\w+=([^&]+)/g;
+        var username, auth, type;
         if(window.location.search){
             var args = window.location.search.match(pattern);
-            if(args.length == 3 && args[0] && args[1] && args[2]) {
-                var username = args[0].substr(9);
-                var auth = args[1].substr(5);
-                var type = args[2].substr(5) == 'true' ? true : false;
+            if(args.length == 1 && args[0]) {
+                username = args[0].substr(9);
+                auth = WebIM.utils.getCookie()['webim_'+username];
+                type = true;
             }
 
             if(username && auth){
                 username = WebIM.utils.decrypt(username);
-                auth = WebIM.utils.decrypt(auth);
-                this.signin(username.trim(), auth.trim(), type);
+                this.signin(username, auth, type);
             }else{
                 window.history.pushState({}, 0, 'index.html');
             }

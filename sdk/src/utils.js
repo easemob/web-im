@@ -993,6 +993,32 @@
             decrypt = decrypt.replace(/%00/g, '');
             decrypt = unescape(decrypt);
             return decrypt;
+        },
+
+        setCookie: function(name, value, days){
+            var cookie = name + '=' + encodeURIComponent(value);
+            if(typeof days == 'number'){
+                cookie += '; max-age: ' + (days * 60 * 60 * 24);
+            }
+            document.cookie = cookie;
+        },
+
+        getCookie: function () {
+            var allCookie = {};
+            var all = document.cookie;
+            if(all === ""){
+                return allCookie;
+            }
+            var list = all.split("; ");
+            for(var i = 0 ; i < list.length ; i++){
+                var cookie = list[i];
+                var p = cookie.indexOf('=');
+                var name = cookie.substring(0, p);
+                var value = cookie.substring(p+1);
+                value = decodeURIComponent(value);
+                allCookie[name] = value;
+            }
+            return allCookie;
         }
     };
 

@@ -928,7 +928,7 @@ connection.prototype.login = function (options) {
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
-            options.success();
+            options.success(data);
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
@@ -2572,7 +2572,10 @@ connection.prototype.destroyGroup = function (options) {
 //         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
 //     </query>
 // </iq>
+// <presence to="easemob-demo#chatdemoui_1479811172349@conference.easemob.com/mt002" type="unavailable"/>
+
 connection.prototype.leaveGroupBySelf = function (options) {
+    var self = this;
     var sucFn = options.success || _utils.emptyfn;
     var errFn = options.error || _utils.emptyfn;
 
@@ -2590,6 +2593,8 @@ connection.prototype.leaveGroupBySelf = function (options) {
 
     this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
         sucFn(msgInfo);
+        var pres = $pres({type: 'unavailable', to: to + '/' + self.context.userId});
+        self.sendCommand(pres.tree());
     }, function (errInfo) {
         errFn(errInfo);
     });
