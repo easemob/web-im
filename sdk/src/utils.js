@@ -218,48 +218,6 @@
                 return iterate(json);
             }
         },
-        registerUser: function (options) {
-            var orgName = options.orgName || '';
-            var appName = options.appName || '';
-            var appKey = options.appKey || '';
-            var suc = options.success || EMPTYFN;
-            var err = options.error || EMPTYFN;
-
-            if (!orgName && !appName && appKey) {
-                var devInfos = appKey.split('#');
-                if (devInfos.length === 2) {
-                    orgName = devInfos[0];
-                    appName = devInfos[1];
-                }
-            }
-            if (!orgName && !appName) {
-                err({
-                    type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
-                });
-                return;
-            }
-
-
-            var https = options.https || https;
-            var apiUrl = options.apiUrl;
-            var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
-
-            var userjson = {
-                username: options.username,
-                password: options.password,
-                nickname: options.nickname || ''
-            };
-
-            var userinfo = utils.stringify(userjson);
-            var options = {
-                url: restUrl,
-                dataType: 'json',
-                data: userinfo,
-                success: suc,
-                error: err
-            };
-            return utils.ajax(options);
-        },
         login: function (options) {
             var options = options || {};
             var suc = options.success || EMPTYFN;
@@ -301,7 +259,6 @@
         },
 
         getFileUrl: function (fileInputId) {
-
             var uri = {
                 url: '',
                 filename: '',
@@ -345,8 +302,7 @@
             }
         },
 
-        getFileSize: function (fileInputId) {
-            var file = document.getElementById(fileInputId);
+        getFileSize: function (file) {
             var fileSize = 0;
             if (file) {
                 if (file.files) {
@@ -358,6 +314,22 @@
                     var fileobject = new ActiveXObject('Scripting.FileSystemObject');
                     var file = fileobject.GetFile(file.value);
                     fileSize = file.Size;
+                }
+            }
+            console.log('fileSize: ', fileSize);
+            if(fileSize > 10000000){
+                return false;
+            }
+            var kb = Math.round(fileSize / 1000);
+            if(kb < 1000){
+                fileSize = kb + ' KB';
+            }else if(kb >= 1000){
+                var mb = kb / 1000;
+                if(mb < 1000) {
+                    fileSize = mb.toFixed(1) + ' MB';
+                }else{
+                    var gb = mb / 1000;
+                    fileSize = gb.toFixed(1) + ' GB';
                 }
             }
             return fileSize;
@@ -887,8 +859,48 @@
                 }
             }
             return '';
-        }
+        },
 
+        sprintf: function(){
+            var arg = arguments,
+            str = arg[0] || '',
+            i, len;
+            for(i = 1, len = arg.length ; i < len ; i++){
+                str = str.replace(/%s/, arg[i]);
+            }
+            return str;
+        },
+
+        clone: function (obj) {
+            var o;
+            switch(typeof obj){
+                case 'undefined': break;
+                case 'string': o = obj + ''; break;
+                case 'number': o = obj - 0; break;
+                case 'boolean': o = obj;break;
+                case 'object':
+                    if(obj === null){
+                        o = null;
+                    }else{
+                        if(obj instanceof Array){
+                            o = [];
+                            for(var i = 0, len = obj.length ; i < len ; i++){
+                                o.push(this.clone(obj[i]));
+                            }
+                        }else{
+                            o = {};
+                            for(var k in obj){
+                                o[k] = this.clone(obj[k]);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    o = obj;
+                    break;
+            }
+            return o;
+        }
     };
 
 

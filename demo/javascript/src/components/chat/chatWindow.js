@@ -154,6 +154,7 @@ module.exports = React.createClass({
     send: function (msg) {
         msg.chatType = this.props.chatType;
         Demo.conn.send(msg);
+        Demo.api.addToChatRecord(msg, 'txt');
         Demo.api.appendMsg(msg, 'txt');
     },
 
@@ -208,7 +209,8 @@ module.exports = React.createClass({
                                                updateNode={this.props.updateNode}
             />);
         } else if (Demo.selectedCate == 'groups') {
-            operations.push(<OperationsGroups key='operation_div' ref='operation_div' roomId={this.props.roomId}
+            operations.push(<OperationsGroups key='operation_div' ref='operation_div' name={this.props.name}
+                                              roomId={this.props.roomId}
                                               admin={this.state.admin}
                                               owner={this.state.owner}
                                               settings={this.state.settings}

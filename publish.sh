@@ -1,27 +1,44 @@
 #! /bin/bash
+# todo
+#get version from sdk/package.json
+version=`grep version sdk/package.json|awk -F '"' '{printf("%s",$4)}'`
+echo version=$version
+#replace follows:
+#sdk/README.md
+#npm run build
+#package.json
+#CHANGELOG.md
+#index.html
+#webpack.config.js
+#build/webpack.dev.js
+#build/webpack.prod.js
 
+
+echo 'webpack begin...'
 webpack
 echo 'webpack done!'
 
+rm -rf web-im
+rm -f web-im-*.zip
 rm -rf publish
 mkdir -p publish/demo/javascript
 cp -r demo/images publish/demo
 cp -r demo/stylesheet publish/demo
 cp -r demo/javascript/dist publish/demo/javascript/
+rm publish/demo/javascript/dist/debug.js
 cp -r demo/javascript/src publish/demo/javascript/
 mkdir publish/sdk
 cp -r sdk/dist publish/sdk
 cp -r sdk/src publish/sdk
-mkdir publish/webrtc
-cp -r webrtc/dist publish/webrtc
-cp -r webrtc/src publish/webrtc
+cp sdk/*.* publish/sdk
+cp -r webrtc  publish
 cp favicon.ico publish/
 cp index.html publish/
 cp CHANGELOG.md publish/
 cp package.json publish/
+mv publish/demo/javascript/dist/webim.config.js.default publish/demo/javascript/dist/webim.config.js
 cp webpack.config.js publish/
 cp README.md publish/
-cp -r build publish/
 cp .babelrc publish/
 
 file_conf="./demo/javascript/dist/webim.config.js"
@@ -51,3 +68,8 @@ then
 fi
 
 echo 'publish done!'
+
+mv publish web-im
+zip -r web-im-${version}.zip web-im > /dev/null
+rm -rf web-im
+echo "web-im-${version}.zip created!"

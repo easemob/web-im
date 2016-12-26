@@ -20,22 +20,22 @@ module.exports = React.createClass({
 
     updateFriend: function () {
         Demo.selectedCate = 'friends';
-        this.props.update('friend');
+        this.props.update('friend', true);
     },
 
     updateGroup: function () {
         Demo.selectedCate = 'groups';
-        this.props.update('group');
+        this.props.update('group', true);
     },
 
     updateStranger: function () {
         Demo.selectedCate = 'strangers';
-        this.props.update('stranger');
+        this.props.update('stranger', true);
     },
 
     updateChatroom: function () {
         Demo.selectedCate = 'chatrooms';
-        this.props.update('chatroom');
+        this.props.update('chatroom', true);
     },
 
     render: function () {

@@ -33,7 +33,7 @@ module.exports = React.createClass({
     },
 
     adminGroupMembers: function () {
-        AdminGroupMembers.show(this.props.roomId, this.props.settings);
+        AdminGroupMembers.show(this.props.name, this.props.roomId, this.props.settings);
         this.update();
     },
 
@@ -48,7 +48,7 @@ module.exports = React.createClass({
     },
 
     destroyGroup: function () {
-        log('destroyGroup:' + this.props.roomId);
+        var roomId = this.props.roomId;
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"destroyGroup","id":"' + this.props.roomId + '"}',
                 function () {
@@ -60,6 +60,7 @@ module.exports = React.createClass({
         } else {
             // success update on chat.js async msg `deleteGroupChat`
             Demo.conn.destroyGroup({
+                reason: Demo.user + ' destory group ' + this.props.name,
                 roomId: this.props.roomId,
                 error: function (code, msg) {
                     Demo.api.NotifyError("destroyGroup:" + code + " " + msg);
@@ -104,35 +105,74 @@ module.exports = React.createClass({
             adminMemberLabel = Demo.lan.inviteGroupMembers;
         }
         return (
-            <div>
-                <i ref='switch' className='webim-operations-icon font xsmaller' onClick={this.update}>M</i>
-                <ul tabIndex="-1" ref="webim-operations"
-                    className={'webim-operations ' + (this.state.hide ? 'hide' : '')}
-                    onBlur={this.handleOnBlur}>
-                    {/*<li onClick={this.adminGroupMembers}*/}
-                    {/*className={(this.props.settings == "PRIVATE_MEMBER_INVITE") && !this.props.admin ? '' : 'hide'}>*/}
-                    {/*<i className='font smallest'>F</i>*/}
-                    {/*<span>{Demo.lan.memberInvite}</span>*/}
-                    {/*</li>*/}
-                    <li onClick={this.adminGroupMembers} className={this.props.admin ? '' : 'hide'}>
-                        <i className='font smallest'>F</i>
-                        <span>{adminMemberLabel}</span>
-                    </li>
-                    <li onClick={this.changeGroupInfo} className={this.props.admin ? '' : 'hide'}>
-                        <i className='font smallest'>B</i>
-                        <span>{Demo.lan.changeGroupInfo}</span>
-                    </li>
-                    <li onClick={this.showGroupBlacklist} className={this.props.admin ? '' : 'hide'}>
-                        <i className='font smallest'>n</i>
-                        <span>{Demo.lan.groupBlacklist}</span>
-                    </li>
-                    {/* destroy or leave group */}
-                    <li onClick={actionMethod}>
-                        <i className='font smallest'>Q</i>
-                        <span>{actionName}</span>
-                    </li>
-                </ul>
-            </div>
-        );
+            < div >
+            < i
+        ref = 'switch'
+        className = 'webim-operations-icon font xsmaller'
+        onClick = {this.update
+    }>
+        M < / i >
+        < ul
+        tabIndex = "-1"
+        ref = "webim-operations"
+        className = {'webim-operations ' +(this.state.hide ? 'hide' : '')}
+        onBlur = {this.handleOnBlur
+    }>
+        {/*<li onClick={this.adminGroupMembers}*/
+        }
+        {/*className={(this.props.settings == "PRIVATE_MEMBER_INVITE") && !this.props.admin ? '' : 'hide'}>*/
+        }
+        {/*<i className='font smallest'>F</i>*/
+        }
+        {/*<span>{Demo.lan.memberInvite}</span>*/
+        }
+        {/*</li>*/
+        }
+        <
+        li
+        onClick = {this.adminGroupMembers
+    }
+        className = {this.props.admin ? '' : 'hide'
+    }>
+        <
+        i
+        className = 'font smallest' > F < / i >
+            < span > {adminMemberLabel} < / span >
+            < / li >
+            < li
+        onClick = {this.changeGroupInfo
+    }
+        className = {this.props.admin ? '' : 'hide'
+    }>
+        <
+        i
+        className = 'font smallest' > B < / i >
+            < span > {Demo.lan.changeGroupInfo
+    }</
+        span >
+        < / li >
+        < li
+        onClick = {this.showGroupBlacklist
+    }
+        className = {this.props.admin ? '' : 'hide'
+    }>
+        <
+        i
+        className = 'font smallest' > n < / i >
+            < span > {Demo.lan.groupBlacklist
+    }</
+        span >
+        < / li >
+        {/* destroy or leave group */}
+        < li
+        onClick = {actionMethod} >
+            < i
+        className = 'font smallest' > Q < / i >
+            < span > {actionName} < / span >
+            < / li >
+            < / ul >
+            < / div >
+        )
+        ;
     }
 });

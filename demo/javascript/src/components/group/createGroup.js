@@ -60,7 +60,7 @@ var CreateGroup = React.createClass({
         var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
         var friendsValues = this.refs.friendList.refs.multiSelected.value();
         if (!value) {
-            Demo.api.NotifyError("群组名不能为空");
+            Demo.api.NotifyError(Demo.lan.groupNameNotEmpty);
             return;
         }
 
@@ -78,13 +78,13 @@ var CreateGroup = React.createClass({
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + JSON.stringify(friendsSelected) + '}',
                 function (response) {
-                    Demo.api.NotifyError('createGroup successfully');
+                    Demo.api.NotifySuccess('createGroup successfully');
                 },
                 function (code, msg) {
                     Demo.api.NotifyError("onSubmit:" + code);
                 });
         } else {
-
+            Demo.createGroupName = value;
             Demo.conn.createGroup({
                 subject: value,
                 description: info,

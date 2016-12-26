@@ -117,7 +117,7 @@ var AdminGroupMembers = React.createClass({
 
 
         if (this.props.value == "PRIVATE_MEMBER_INVITE" && value_del.length > 0) {
-            Demo.api.NotifyError("权限不够，不能删除私有群成员");
+            Demo.api.NotifyError(Demo.lan.deletePrivateGroupMember);
             return;
         }
         //TODO:@lhr  value_add 和 value_del 需要分成两个doQuery 处理
@@ -141,8 +141,14 @@ var AdminGroupMembers = React.createClass({
             if (value_add.length > 0) {
                 Demo.conn.addGroupMembers({
                     list: value_add,
-                    roomId: this.props.roomId
-                })
+                    roomId: this.props.roomId,
+                    reason: Demo.user + " invite you to join group '" + this.props.name + "'",
+                    success: function (msgInfo) {
+                        var members = value_add.join(', ');
+                        var str = WebIM.utils.sprintf(Demo.lan.inviteGroup, members);
+                        Demo.api.NotifySuccess(str);
+                    }
+                });
             }
             if (value_del.length > 0) {
                 Demo.conn.leaveGroup({
@@ -177,9 +183,9 @@ var AdminGroupMembers = React.createClass({
 });
 
 module.exports = {
-    show: function (roomId, settings) {
+    show: function (name, roomId, settings) {
         ReactDOM.render(
-            <AdminGroupMembers onClose={this.close} roomId={roomId} settings={settings}/>,
+            <AdminGroupMembers onClose={this.close} name={name} roomId={roomId} settings={settings}/>,
             dom
         );
     },

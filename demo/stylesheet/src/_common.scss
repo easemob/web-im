@@ -215,8 +215,19 @@ object {
     color: rgba(0, 0, 0, .2);
     cursor: pointer;
 
-    &:hover {
+    //&:hover {
+    //  color: #e90101;
+    //}
+
+    &.close {
       color: #e90101;
+    }
+
+    &.toggle {
+      color: #98e024;
+    }
+    &.accept {
+      color: #98e024;
     }
 
   }

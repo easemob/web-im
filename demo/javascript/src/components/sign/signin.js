@@ -7,6 +7,53 @@ var Button = UI.Button;
 var Checkbox = UI.Checkbox;
 
 module.exports = React.createClass({
+    getInitialState: function () {
+        return {
+            pageLimit: 8
+        };
+    },
+
+    validTabs: function () {
+        if (!WebIM.config.isMultiLoginSessions || !window.localStorage) {
+            return true;
+        } else {
+            Demo.userTimestamp = new Date().getTime();
+
+            var key = 'easemob_' + Demo.user;
+            var val = window.localStorage.getItem(key);
+            var count = 0;
+            var oneMinute = 60 * 1000;
+
+            if (val === undefined || val === '' || val === null) {
+                val = 'last';
+            }
+            val = Demo.userTimestamp + ',' + val;
+            var timestampArr = val.split(',');
+            var uniqueTimestampArr = [];
+            // Unique
+
+            for (var o in timestampArr) {
+                if (timestampArr[o] === 'last')
+                    continue;
+                uniqueTimestampArr[timestampArr[o]] = 1;
+            }
+
+            val = 'last';
+            for (var o in uniqueTimestampArr) {
+                // if more than one minute, cut it
+                if (parseInt(o) + oneMinute < Demo.userTimestamp) {
+                    continue;
+                }
+                count++;
+                if (count > this.state.pageLimit) {
+                    return false;
+                }
+                val = o + ',' + val;
+            }
+            window.localStorage.setItem(key, val);
+            return true;
+        }
+    },
 
     keyDown: function (e) {
         if (e && e.keyCode === 13) {
@@ -53,14 +100,16 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('open:' + code + " - " + msg);
                 });
         } else {
-            if (WebIM.config.isDNS) {
-                Demo.conn.getDNS(options);
-            } else {
+            if (this.validTabs() === true) {
                 Demo.conn.open(options);
             }
-
+            else {
+                Demo.conn.onError({
+                    type: "One account can't open more than " + this.state.pageLimit + ' pages in one minute on the same browser'
+                });
+                return;
+            }
         }
-
     },
 
     signup: function () {

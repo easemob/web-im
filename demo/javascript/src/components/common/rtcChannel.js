@@ -20,25 +20,16 @@ var Channel = React.createClass({
     },
 
     close: function () {
-        var local = this.props.localStream;
-        var remote = this.props.remoteStream;
-
-        if (remote) {
-            remote.getAudioTracks()[0].stop();
-            remote.getVideoTracks()[0].stop();
-        }
-
-        if (local) {
-            local.getAudioTracks()[0].stop();
-            local.getVideoTracks()[0].stop();
-        }
+        //close stream and camera first
+        this.props.close();
 
         try {
             Demo.call.endCall();
         } catch (e) {
+            console.log('endCall error1:', e);
         }
 
-        this.props.close();
+
     },
 
     accept: function () {
@@ -65,8 +56,6 @@ var Channel = React.createClass({
 
         this.refs.remoteVideo.srcObject = props.remoteStream;
         this.refs.localVideo.srcObject = props.localStream;
-
-
     },
 
 
@@ -75,90 +64,107 @@ var Channel = React.createClass({
         this.setStream(nextProps);
     },
 
-    componentDidUpdate: function () {
-        console.log('did update', this.props);
-
-        var me = this;
-        this.refs.localVideo.oncanplay = function () {
-            me.refs.localVideo.play();
-            console.log('localVideo', me.refs.localVideo.getBoundingClientRect());
-
-        };
-
-        this.refs.remoteVideo.oncanplay = function () {
-            me.refs.remoteVideo.play();
-            console.log('remoteVideo', me.refs.remoteVideo.getBoundingClientRect());
-            var rect = me.refs.remoteVideo.getBoundingClientRect();
-            me.setState({
-                toggle_display: 'block',
-                accept_display: 'none'
-            });
-        };
-
-    },
 
     componentDidMount: function () {
         console.log('did mount', this.props);
-        new Drag(this.refs.rtc);
+        new Drag(this.refs.onAcceptCallrtc);
         this.resetButtonPosition();
 
-        var me = this;
         var localVideo = this.refs.localVideo;
         var remoteVideo = this.refs.remoteVideo;
-        localVideo.addEventListener('loadedmetadata', function () {
-            // console.log('Local video videoWidth: ' + this.videoWidth +
-            //     'px,  videoHeight: ' + this.videoHeight + 'px');
-            me.local_width = this.videoWidth;
-            me.local_height = this.videoHeight;
-            me.setState({
-                full_width: this.videoWidth,
-                full_height: this.videoHeight,
-            });
-        });
 
-        remoteVideo.addEventListener('loadedmetadata', function () {
-            // console.log('Remote video videoWidth: ' + this.videoWidth +
-            //     'px,  videoHeight: ' + this.videoHeight + 'px');
-            me.remote_width = this.videoWidth;
-            me.remote_height = this.videoHeight;
-            me.setState({
-                full_width: this.videoWidth,
-                full_height: this.videoHeight,
-            });
-        });
 
-        localVideo.addEventListener('resize', function () {
-            // console.log('Local resize videoWidth: ' + this.videoWidth +
-            //     'px,  videoHeight: ' + this.videoHeight + 'px');
-            if (me.state.localFullRemoteCorner) {
-                me.local_width = this.videoWidth;
-                me.local_height = this.videoHeight;
-                me.setState({
-                    full_width: this.videoWidth,
-                    full_height: this.videoHeight,
-                });
-            }
+        remoteVideo.addEventListener('canplay', this.canplayRemoteHandler);
 
-        });
+        //caution: |this| differ between addEventListener + anonymous function and addEventListener + non-anonymous function
+        localVideo.addEventListener('loadedmetadata', this.loadedmetadataLocalHandler);
 
-        remoteVideo.addEventListener('resize', function () {
-            // console.log('Remote resize videoWidth: ' + this.videoWidth +
-            //     'px,  videoHeight: ' + this.videoHeight + 'px');
-            if (!me.state.localFullRemoteCorner) {
-                me.remote_width = this.videoWidth;
-                me.remote_height = this.videoHeight;
-                me.setState({
-                    full_width: this.videoWidth,
-                    full_height: this.videoHeight,
-                });
-            }
+        remoteVideo.addEventListener('loadedmetadata', this.loadedmetadataRemoteHandler);
 
-        });
+        localVideo.addEventListener('resize', this.resizeLocalHandler);
+
+        remoteVideo.addEventListener('resize', this.resizeRemoteHandler);
+
 
     },
 
+    componentWillUnmount: function () {
+        var localVideo = this.refs.localVideo;
+        var remoteVideo = this.refs.remoteVideo;
+
+
+        remoteVideo.removeEventListener('canplay', this.canplayRemoteHandler);
+
+        localVideo.removeEventListener('loadedmetadata', this.loadedmetadataLocalHandler);
+
+        remoteVideo.removeEventListener('loadedmetadata', this.loadedmetadataRemoteHandler);
+
+        localVideo.removeEventListener('resize', this.resizeLocalHandler);
+
+        remoteVideo.removeEventListener('resize', this.resizeRemoteHandler);
+    },
+
+    canplayRemoteHandler: function () {
+
+        this.setState({
+            toggle_display: 'block',
+            accept_display: 'none'
+        });
+    },
+
+
+    loadedmetadataLocalHandler: function () {
+        var video = this.refs.localVideo;
+
+        this.local_width = video.videoWidth;
+        this.local_height = video.videoHeight;
+        this.setState({
+            full_width: video.videoWidth,
+            full_height: video.videoHeight,
+        });
+    },
+
+
+    loadedmetadataRemoteHandler: function () {
+
+        var video = this.refs.remoteVideo;
+        this.remote_width = video.videoWidth;
+        this.remote_height = video.videoHeight;
+        this.setState({
+            full_width: video.videoWidth,
+            full_height: video.videoHeight,
+        });
+    },
+
+
+    resizeLocalHandler: function () {
+        var video = this.refs.localVideo;
+
+        if (this.state.localFullRemoteCorner) {
+            this.local_width = video.videoWidth;
+            this.local_height = video.videoHeight;
+            this.setState({
+                full_width: video.videoWidth,
+                full_height: video.videoHeight,
+            });
+        }
+    },
+
+    resizeRemoteHandler: function () {
+        var video = this.refs.remoteVideo;
+
+        if (!this.state.localFullRemoteCorner) {
+            this.remote_width = video.videoWidth;
+            this.remote_height = video.videoHeight;
+            this.setState({
+                full_width: video.videoWidth,
+                full_height: video.videoHeight,
+            });
+        }
+    },
+
+
     resetButtonPosition: function () {
-        var rect = this.refs.remoteVideo.getBoundingClientRect();
         this.setState({
             toggle_right: 6,
             toggle_top: 6,
@@ -172,20 +178,19 @@ var Channel = React.createClass({
     render: function () {
         var localClassName = this.state.localFullRemoteCorner ? 'full' : 'corner';
         var remoteClassName = this.state.localFullRemoteCorner ? 'corner' : 'full';
-
         return (
             <div ref='rtc' className='webim-rtc-video'
                  style={{width: this.state.full_width + 'px', height: this.state.full_height + 'px'}}>
-                <video ref='localVideo' className={localClassName}/>
-                <video ref='remoteVideo' className={remoteClassName}/>
+                <video ref='localVideo' className={localClassName} muted autoPlay/>
+                <video ref='remoteVideo' className={remoteClassName} autoPlay/>
                 <span>{this.props.title}</span>
-                <i ref='close' className='font small' style={{
+                <i ref='close' id='webrtc_close' className='font small close' style={{
                     left: 'auto',
                     right: this.state.close_right + 'px',
                     top: 'auto',
                     bottom: this.state.close_bottom + 'px'
                 }} onClick={this.close}>Q</i>
-                <i ref='accept' className='font small' style={{
+                <i ref='accept' className='font small accept' style={{
                     display: this.state.accept_display,
                     left: this.state.accept_left + 'px',
                     right: 'auto',
@@ -210,6 +215,7 @@ module.exports = function (dom) {
     var me = this;
     return {
         setLocal: function (stream) {
+            // console.log('channel setLocal', 'user=', Demo.user, 'caller=', Demo.call.caller, 'callee=', Demo.call.callee);
             this.localStream = stream;
             var title = '';
             var hideAccept = false;
@@ -219,7 +225,6 @@ module.exports = function (dom) {
                 hideAccept = true;
             } else {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
-                localFullRemoteCorner = true;
             }
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
@@ -228,14 +233,14 @@ module.exports = function (dom) {
             );
         },
         setRemote: function (stream) {
+            // console.log('channel setRemote', 'user=', Demo.user, 'caller=', Demo.call.caller, 'callee=', Demo.call.callee);
             this.remoteStream = stream;
             var title = '';
             var localFullRemoteCorner = false;
-            if (Demo.user == Demo.call.caller) {
+            if (Demo.call.caller != '' && Demo.call.caller == Demo.user) {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
             } else {
                 title = Demo.call.callee.split('@')[0].split('_')[1] + ' 请求视频通话...';
-                localFullRemoteCorner = true;
             }
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
@@ -244,7 +249,6 @@ module.exports = function (dom) {
             );
         },
         close: function () {
-            console.log('channel close');
             var local = this.localStream;
             var remote = this.remoteStream;
 

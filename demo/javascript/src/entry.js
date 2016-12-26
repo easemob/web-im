@@ -1,4 +1,5 @@
 require('../../stylesheet/demo.scss');
+// require('easemob-websdk');
 
 var Api = require('./api');
 var Emoji = require('./components/chat/emoji');
@@ -22,6 +23,11 @@ Demo.lan = Language.Chinese;
 // for webview in client
 Demo.api = Api;
 
+// The messages cache
+Demo.chatRecord = {};
+// The max messages count of a dialog
+Demo.maxChatRecordCount = 20;
+
 Demo.roster = {};
 Demo.friends = [];
 Demo.strangers = {};
@@ -34,34 +40,56 @@ Demo.IMGTYPE = {
     png: 1
 };
 
-Demo.FILETYPE = {
-    gif: 1,
-    bmp: 1,
-    jpg: 1,
-    png: 1,
-    zip: 1,
-    txt: 1,
-    doc: 1,
-    pdf: 1
-};
-
 Demo.AUDIOTYPE = {
     mp3: 1,
     amr: 1,
     wmv: 1
 };
 
-Demo.selectedCate = '';   //friends|groups|chatrooms|strangers
+Demo.chatingCate = '';    // friends|groups|chatrooms|strangers
+Demo.selectedCate = '';   // friends|groups|chatrooms|strangers
+Demo.scroll = {
+    friends: 0,
+    groups: 0,
+    chatrooms: 0,
+    strangers: 0
+};
+
+Demo.chatState = {
+    friends:{
+        selected: '',
+        scroll: 0,
+        chatWindow: []
+    },
+    groups:{
+        selected: '',
+        scroll: 0,
+        chatWindow: []
+    },
+    chatrooms:{
+        selected: '',
+        scroll: 0,
+        chatWindow: []
+    },
+    strangers:{
+        selected: '',
+        scroll: 0,
+        chatWindow: []
+    }
+}
 
 // initialize webIM connection
 Demo.conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
     https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
     url: WebIM.config.xmppURL,
-    isAutoLogin: false,
     heartBeatWait: WebIM.config.heartBeatWait,
     autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
-    autoReconnectInterval: WebIM.config.autoReconnectInterval
+    autoReconnectInterval: WebIM.config.autoReconnectInterval,
+    apiUrl: WebIM.config.apiURL,
+    isHttpDNS: WebIM.config.isHttpDNS,
+    isWindowSDK: WebIM.config.isWindowSDK,
+    isAutoLogin: false
 });
 
 Demo.api.render(document.getElementById('demo'));

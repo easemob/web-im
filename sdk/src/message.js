@@ -63,6 +63,7 @@
             , type: this.type
             , roomType: opt.roomType
             , ext: opt.ext || {}
+            , success: opt.success
         };
         !opt.roomType && delete this.body.roomType;
     };
@@ -115,7 +116,9 @@
             flashUpload: opt.flashUpload,
             width: opt.width,
             height: opt.height,
-            body: opt.body
+            body: opt.body,
+            uploadError: opt.uploadError,
+            uploadComplete: opt.uploadComplete
         };
 
         !opt.roomType && delete this.body.roomType;
@@ -206,7 +209,7 @@
         }
 
         this.msg = message;
-    }
+    };
 
     _Message.prototype.send = function (conn) {
         var me = this;
@@ -243,7 +246,7 @@
                 }
             }, 60000);
             conn.sendCommand(dom.tree(), message.id);
-        }
+        };
 
 
         if (me.msg.file) {
@@ -265,7 +268,8 @@
 
                 me.msg.body = {
                     type: me.msg.type || 'file'
-                    , url: data.uri + '/' + data.entities[0]['uuid']
+                    ,
+                    url: ((location.protocol != 'https:' && conn.isHttpDNS) ? (conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0]['uuid']
                     , secret: data.entities[0]['share-secret']
                     , filename: me.msg.file.filename || me.msg.filename
                     , size: {
@@ -276,7 +280,6 @@
                     , file_length: me.msg.file_length || 0
                     , filetype: me.msg.filetype
                 }
-
                 _send(me.msg);
                 _tmpComplete instanceof Function && _tmpComplete(data, me.msg.id);
             };

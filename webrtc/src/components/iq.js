@@ -4,7 +4,8 @@
 
 var _util = require('./utils');
 var _logger = _util.logger;
-
+var API = require('./api');
+var RouteTo = API.RouteTo;
 
 var CONFERENCE_XMLNS = "urn:xmpp:media-conference";
 
@@ -13,6 +14,9 @@ var _RtcHandler = {
     _apiCallbacks: {},
 
     imConnection: null,
+
+    _connectedSid: '',
+
 
     init: function () {
         var self = this;
@@ -51,6 +55,7 @@ var _RtcHandler = {
         // remove resource
         from.lastIndexOf("/") >= 0 && (from = from.substring(0, from.lastIndexOf("/")));
 
+
         var rtkey = msginfo.getElementsByTagName('rtkey')[0].innerHTML;
 
         var fromSessionId = msginfo.getElementsByTagName('sid')[0].innerHTML;
@@ -70,7 +75,56 @@ var _RtcHandler = {
 
         self.ctx = content.ctx;
 
-        _logger.debug("Recv [op = " + rtcOptions.op + "]\r\n json :", msginfo);
+        _logger.debug("Recv [op = " + rtcOptions.op + "] [tsxId=" + tsxId + "]\r\n json :", msginfo);
+
+
+        //if a->b already, c->a/b should be termiated with 'busy' reason
+        if (from.indexOf("@") >= 0) {
+            if (self._connectedSid == '' && rtcOptions.op == 102) {
+                self._connectedSid = fromSessionId;
+            } else {
+                if (self._connectedSid != fromSessionId) {
+                    //onInitC
+                    if (rtcOptions.op == 102) {
+                        var rt = new RouteTo({
+                            to: from,
+                            rtKey: rtkey,
+                            sid: fromSessionId,
+                            success: function (result) {
+                                _logger.debug("iq to server success", result);
+                            },
+                            fail: function (error) {
+                                _logger.debug("iq to server error", error);
+                                self.onError(error);
+                            }
+                        });
+
+                        var options = {
+                            data: {
+                                op: 107,
+                                sessId: rtcOptions.sessId,
+                                rtcId: rtcOptions.rtcId,
+                                reason: 'busy'
+
+                            },
+                            reason: 'busy'
+                        };
+                        self.sendRtcMessage(rt, options)
+                    }
+                    return;
+                }
+            }
+        }
+
+        //onTermC
+        if (rtcOptions.op == 107) {
+            self._connectedSid = '';
+            self._fromSessionID = {};
+
+            var reasonObj = msginfo.getElementsByTagName('reason');
+            //var endReason = msginfo.getElementsByTagName('reason')[0].innerHTML;
+            reasonObj && reasonObj.length > 0 && (rtcOptions.reason = reasonObj[0].innerHTML);
+        }
 
 
         if (rtcOptions.sdp) {
@@ -194,9 +248,15 @@ var _RtcHandler = {
         var to = rt.to || _conn.domain;
 
         var sid = rt.sid || self._fromSessionID && self._fromSessionID[to];
-        sid = sid || ((self._fromSessionID || (self._fromSessionID = {}))[to] = _conn.getUniqueId("CONFR_"));
+        //sid = sid || ((self._fromSessionID || (self._fromSessionID = {}))[to] = _conn.getUniqueId("CONFR_"));
+        sid = sid || _conn.getUniqueId("CONFR_");
+        (self._fromSessionID || (self._fromSessionID = {}))[to] = sid;
 
-
+        if (to.indexOf("@") >= 0) {
+            if (self._connectedSid == '' && options.data.op == 102) {
+                self._connectedSid = sid;
+            }
+        }
         var rtKey = rt.rtKey || rt.rtkey;
         // rtKey && delete rt.rtKey;
         rtKey || (rtKey = "");
@@ -228,7 +288,10 @@ var _RtcHandler = {
             .up().c('sid').t(sid)
             .up().c('content').t(_util.stringifyJSON(options.data));
 
-        _logger.debug("Send IQ [op = " + options.data.op + "] : \r\n", iq.tree());
+        if (options.data.op == 107 && options.reason) {
+            iq.up().c('reason').t(options.reason);
+        }
+        _logger.debug("Send [op = " + options.data.op + "] : \r\n", iq.tree());
 
 
         callback && (
@@ -241,7 +304,7 @@ var _RtcHandler = {
                 rt.success(result);
             } || function (result) {
                 _logger.debug("send result. op:" + options.data.op + ".", result);
-            }
+            };
 
         var errFn = function (ele) {
                 rt.fail(ele);
@@ -250,6 +313,14 @@ var _RtcHandler = {
             };
 
         _conn.context.stropheConn.sendIQ(iq.tree(), completeFn, errFn);
+
+        //onTermC
+        if (options.data.op == 107 && self._connectedSid) {
+            if (!rt.sid || self._connectedSid == rt.sid) {
+                self._connectedSid = '';
+                self._fromSessionID = {};
+            }
+        }
     }
 };
 

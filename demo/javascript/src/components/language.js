@@ -71,6 +71,13 @@ exports.English = {
     memberInvite: 'Invite',
     changeGroupInfo: 'Edit group info',
     groupNotification: 'Group Notification',
+    fileOverSize: 'Size of file can\'t over 10 MB',
+    deletePrivateGroupMember: "Permission denied, can\'t delete private members",
+    groupNameNotEmpty: 'Group name can\'t be empty',
+    refuse: 'You were refused by %s',
+    inviteToGroup: '%s invite you to the group',
+    inviteGroup: 'You invited %s to this group',
+    createGroupSuc: 'Group %s is successfully created',
     last: ''
 };
 
@@ -102,7 +109,7 @@ exports.Chinese = {
     notin: '您不在当前聊天室',
     sendImageFailed: '图片发送失败',
     sendAudioFailed: '发送音频失败',
-    sendFileFailed: '文件音频失败',
+    sendFileFailed: '文件发送失败',
     image: '图片',
     audio: '音频',
     file: '文件',
@@ -149,5 +156,12 @@ exports.Chinese = {
     memberInvite: '邀请好友',
     changeGroupInfo: '修改群信息',
     groupNotification: '群消息',
+    fileOverSize: '文件最大不能超过10MB',
+    deletePrivateGroupMember: '权限不够，不能删除私有群成员',
+    groupNameNotEmpty: '群组名不能为空',
+    refuse: '%s拒绝了你的请求',
+    inviteToGroup: '%s邀请您进群',
+    inviteGroup: '您邀请了%s进群',
+    createGroupSuc: '已成功创建群组%s',
     last: ''
 };

@@ -32,6 +32,8 @@ module.exports = React.createClass({
 
 
     update: function () {
+        Demo.chatingCate = Demo.selectedCate;
+
         if (this.refs['i']) {
             var count = this.refs['i'].getAttribute('count') / 1;
             this.handleCurCateIconCount(count);
@@ -41,9 +43,9 @@ module.exports = React.createClass({
             this.refs['i'].innerText = '';
         }
 
-        // if (this.props.id === Demo.selected) {
-        //     return;
-        // }
+        if (this.props.id === Demo.selected) {
+            return;
+        }
 
         if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
             Demo.selected = this.props.id;
@@ -53,8 +55,8 @@ module.exports = React.createClass({
 
         // quit previous chatroom
         if (Demo.currentChatroom) {
-            document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
-            document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+            // document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
+            // document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"quitChatroom","id":"' + Demo.currentChatroom + '"}',
                     function success(str) {
@@ -73,9 +75,11 @@ module.exports = React.createClass({
         }
 
         if (Demo.selectedCate === 'chatrooms') {
-
+/*
+            清空聊天室消息
             document.getElementById('wrapper' + this.props.id).innerHTML = '';
             document.getElementById(this.props.id).querySelector('em').innerHTML = '';
+*/
 
             // join chatroom
             if (WebIM.config.isWindowSDK) {
