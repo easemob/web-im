@@ -928,9 +928,11 @@ connection.prototype.login = function (options) {
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
+            options.success();
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
+            options.error();
             if (location.protocol != 'https:' && conn.isHttpDNS) {
                 if ((conn.restIndex + 1) < conn.restTotal) {
                     conn.restIndex++;

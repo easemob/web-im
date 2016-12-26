@@ -57,14 +57,21 @@ module.exports = React.createClass({
 
     keyDown: function (e) {
         if (e && e.keyCode === 13) {
-            this.signin();
+            this.login();
         }
     },
 
-    signin: function () {
+    login: function(){
         var username = this.refs.name.refs.input.value || (WebIM.config.autoSignIn ? WebIM.config.autoSignInName : '');
         var auth = this.refs.auth.refs.input.value || (WebIM.config.autoSignIn ? WebIM.config.autoSignInPwd : '');
         var type = this.refs.token.refs.input.checked;
+        this.signin(username, auth, type);
+    },
+
+    signin: function (username, auth, type) {
+        var username = username;
+        var auth = auth;
+        var type = type;
 
         if (!username || !auth) {
             Demo.api.NotifyError(Demo.lan.notEmpty);
@@ -76,7 +83,16 @@ module.exports = React.createClass({
             user: username.toLowerCase(),
             pwd: auth,
             accessToken: auth,
-            appKey: this.props.config.appkey
+            appKey: this.props.config.appkey,
+            success: function () {
+                var encryptUsername = WebIM.utils.encrypt(username);
+                var encryptAuth = WebIM.utils.encrypt(auth);
+                var url = 'index.html?username=' + encryptUsername + '&auth=' + encryptAuth + '&type=' + type;
+                window.history.pushState({}, 0, url);
+            },
+            error: function(){
+                window.history.pushState({}, 0, 'index.html');
+            }
         };
 
         if (!type) {
@@ -85,7 +101,6 @@ module.exports = React.createClass({
         Demo.user = username;
 
         this.props.loading('show');
-
 
         Demo.conn.autoReconnectNumTotal = 0;
 
@@ -120,6 +135,26 @@ module.exports = React.createClass({
         });
     },
 
+    componentWillMount: function () {
+        var pattern = /([^\?|&])\w+=([^&]+)/g;
+        if(window.location.search){
+            var args = window.location.search.match(pattern);
+            if(args.length == 3 && args[0] && args[1] && args[2]) {
+                var username = args[0].substr(9);
+                var auth = args[1].substr(5);
+                var type = args[2].substr(5) == 'true' ? true : false;
+            }
+
+            if(username && auth){
+                username = WebIM.utils.decrypt(username);
+                auth = WebIM.utils.decrypt(auth);
+                this.signin(username.trim(), auth.trim(), type);
+            }else{
+                window.history.pushState({}, 0, 'index.html');
+            }
+        }
+    },
+
     componentDidMount: function () {
         if (WebIM.config.autoSignIn) {
             this.refs.button.refs.button.click();
@@ -136,7 +171,7 @@ module.exports = React.createClass({
                 <div className={WebIM.config.isWindowSDK ? 'hide' : ''}>
                     <Checkbox text={Demo.lan.tokenSignin} ref='token'/>
                 </div>
-                <Button ref='button' text={Demo.lan.signIn} onClick={this.signin}/>
+                <Button ref='button' text={Demo.lan.signIn} onClick={this.login}/>
                 <p>{Demo.lan.noaccount},
                     <i onClick={this.signup}>{Demo.lan.signupnow}</i>
                 </p>
