@@ -250,6 +250,7 @@ module.exports = React.createClass({
     },
 
     componentDidMount: function () {
+        console.log('ScareCrow');
         if (WebIM.config.isWebRTC && WebIM.WebRTC) {
             this.initWebRTC();
             this.channel = new RTCChannel(this.refs.rtcWrapper);
@@ -283,7 +284,6 @@ module.exports = React.createClass({
                     me.channel.setRemote(stream);
                 },
                 onGotLocalStream: function (stream) {
-                    // console.log('onGotLocalStream');
                     me.channel.setLocal(stream);
                 },
                 onRinging: function (caller) {
