@@ -128,7 +128,6 @@ module.exports = React.createClass({
                 }
             },
             onError: function (message) {
-
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -163,6 +162,11 @@ module.exports = React.createClass({
                         Demo.api.NotifySuccess(text);
                         return;
                     }else{
+                        if(text == 'clear' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8'){
+                            console.log('clear');
+                            window.history.pushState({}, 0, 'index.html');
+                        }
+                        console.log('text: ', text);
                         Demo.api.NotifyError('onError:' + text);
                     }
                 }
@@ -279,7 +283,6 @@ module.exports = React.createClass({
                     me.channel.setRemote(stream);
                 },
                 onGotLocalStream: function (stream) {
-                    // console.log('onGotLocalStream');
                     me.channel.setLocal(stream);
                 },
                 onRinging: function (caller) {
@@ -386,6 +389,7 @@ module.exports = React.createClass({
             case 'leaveGroup':// dismissed by admin
                 Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
+                me.delContactItem();
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
                 if (!Demo.roster[msg.from]) {
@@ -591,13 +595,9 @@ module.exports = React.createClass({
         });
     },
 
-    update: function (cur, leftBar) {
+    update: function (cur) {
         var node = Demo.chatState[Demo.selectedCate].selected;
         Demo.selected = node;
-        /*
-        if(leftBar)
-            this.release = false;
-        */
         if(Demo.selectedCate == 'chatrooms' && node){
             Demo.conn.joinChatRoom({
                 roomId: node
@@ -629,6 +629,7 @@ module.exports = React.createClass({
             switch(cate){
                 case 'friends':
                     props.name = id;
+                    props.delFriend = this.delContactItem;
                     Demo.chatState[cate].chatWindow.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
                     updateNode={this.updateNode} className={''}/>);
             break;
@@ -639,6 +640,8 @@ module.exports = React.createClass({
                 for (var i = 0; i < this.state.groups.length; i++) {
                     if(id == this.state.groups[i].roomId){
                         props.name = this.state.groups[i].name;
+                        props.leaveGroup = this.delContactItem;
+                        props.destroyGroup = this.delContactItem;
                         if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
                             this.state.groups[i].name = Demo.createGroupName;
                             Demo.createGroupName = '';
@@ -676,6 +679,12 @@ module.exports = React.createClass({
         }else{
             this.setState({window: Demo.chatState[cate].chatWindow});
         }
+    },
+
+    delContactItem: function(){
+        var cate = Demo.selectedCate;
+        Demo.chatState[cate].chatWindow = [];
+        this.setChatWindow(true);
     },
 
     /*setChatWindow: function(show){

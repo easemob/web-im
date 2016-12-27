@@ -67,6 +67,7 @@ module.exports = React.createClass({
                 }
             })
         }
+        this.props.destroyGroup();
         this.update();
     },
 
@@ -92,6 +93,7 @@ module.exports = React.createClass({
                 }
             })
         }
+        this.props.leaveGroup();
         this.update();
     },
 
