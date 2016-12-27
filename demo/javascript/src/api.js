@@ -296,6 +296,7 @@ module.exports = {
     },
 
     releaseChatRecord: function () {
+        console.log('release');
         var targetId = Demo.selected;
         if(targetId){
             if(Demo.chatRecord[targetId]){

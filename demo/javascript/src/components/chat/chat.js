@@ -390,6 +390,7 @@ module.exports = React.createClass({
             case 'leaveGroup':// dismissed by admin
                 Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
+                me.delContactItem();
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
                 if (!Demo.roster[msg.from]) {
@@ -595,13 +596,9 @@ module.exports = React.createClass({
         });
     },
 
-    update: function (cur, leftBar) {
+    update: function (cur) {
         var node = Demo.chatState[Demo.selectedCate].selected;
         Demo.selected = node;
-        /*
-        if(leftBar)
-            this.release = false;
-        */
         if(Demo.selectedCate == 'chatrooms' && node){
             Demo.conn.joinChatRoom({
                 roomId: node
@@ -633,6 +630,7 @@ module.exports = React.createClass({
             switch(cate){
                 case 'friends':
                     props.name = id;
+                    props.delFriend = this.delContactItem;
                     Demo.chatState[cate].chatWindow.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
                     updateNode={this.updateNode} className={''}/>);
             break;
@@ -643,6 +641,8 @@ module.exports = React.createClass({
                 for (var i = 0; i < this.state.groups.length; i++) {
                     if(id == this.state.groups[i].roomId){
                         props.name = this.state.groups[i].name;
+                        props.leaveGroup = this.delContactItem;
+                        props.destroyGroup = this.delContactItem;
                         if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
                             this.state.groups[i].name = Demo.createGroupName;
                             Demo.createGroupName = '';
@@ -680,6 +680,12 @@ module.exports = React.createClass({
         }else{
             this.setState({window: Demo.chatState[cate].chatWindow});
         }
+    },
+
+    delContactItem: function(){
+        var cate = Demo.selectedCate;
+        Demo.chatState[cate].chatWindow = [];
+        this.setChatWindow(true);
     },
 
     /*setChatWindow: function(show){

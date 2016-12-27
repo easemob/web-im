@@ -61,6 +61,7 @@ module.exports = React.createClass({
                 }
             });
         }
+        this.props.delFriend();
         this.update();
     },
 
