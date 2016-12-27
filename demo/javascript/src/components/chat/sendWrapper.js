@@ -120,6 +120,7 @@ module.exports = React.createClass({
     },
 
     call: function () {
+        console.log('sendWrapper::call');
         Demo.call.caller = Demo.user;
         Demo.call.makeVideoCall(Demo.selected);
     },

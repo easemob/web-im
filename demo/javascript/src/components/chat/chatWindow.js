@@ -207,6 +207,7 @@ module.exports = React.createClass({
                                                onBlur={this.handleOnBlur}
                                                name={this.props.name}
                                                updateNode={this.props.updateNode}
+                                               delFriend={this.props.delFriend}
             />);
         } else if (Demo.selectedCate == 'groups') {
             operations.push(<OperationsGroups key='operation_div' ref='operation_div' name={this.props.name}
@@ -217,6 +218,8 @@ module.exports = React.createClass({
                                               fields={this.state.fields}
                                               getGroupInfo={this.getGroupInfo}
                                               onBlur={this.handleOnBlur}
+                                              leaveGroup={this.props.leaveGroup}
+                                              destroyGroup = {this.props.destroyGroup}
             />);
         }
 

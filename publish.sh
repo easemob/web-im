@@ -36,13 +36,16 @@ cp favicon.ico publish/
 cp index.html publish/
 cp CHANGELOG.md publish/
 cp package.json publish/
-mv publish/demo/javascript/dist/webim.config.js.default publish/demo/javascript/dist/webim.config.js
+
 cp webpack.config.js publish/
 cp README.md publish/
 cp .babelrc publish/
 
 file_conf="./demo/javascript/dist/webim.config.js"
 
+if [ ! -f "$file_conf" ]; then
+    mv publish/demo/javascript/dist/webim.config.js.default publish/demo/javascript/dist/webim.config.js
+fi
 
 # windowSDK: delete webRTC associated files
 isWindowSDK=`grep 'isWindowSDK' ./demo/javascript/dist/webim.config.js |awk -F ':' '{printf("%s",$2)}' |awk -F ',' '{printf("%s",$1)}'`
@@ -50,6 +53,8 @@ echo isWindowSDK=${isWindowSDK##* }
 if [ ${isWindowSDK##* } == 'true' ]
 then
     rm -rf publish/webrtc
+    rm -rf publish/demo/javascript/src
+    rm -rf publish/sdk/src
     sed -i '32,38d' publish/index.html
 fi
 

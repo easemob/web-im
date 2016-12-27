@@ -15,7 +15,10 @@ var Channel = React.createClass({
             close_bottom: 0,
             accept_left: 0,
             accept_bottom: 0,
-            accept_display: this.props.hideAccept ? 'none' : 'block'
+            accept_display: this.props.hideAccept ? 'none' : 'block',
+            mute_left: 0,
+            mute_bottom: 6,
+            mute_display: 'none'
         };
     },
 
@@ -50,6 +53,17 @@ var Channel = React.createClass({
             full_width: this.state.full_width,
             full_height: this.state.full_height
         });
+    },
+
+    mute: function () {
+        // var mute = this.refs.remoteVideo.mute;
+        this.refs.remoteVideo.muted = !this.refs.remoteVideo.muted;
+        var muted = this.refs.remoteVideo.muted;
+        if(muted){
+            this.refs.mute.style.color = '#4eb1f4';
+        }else{
+            this.refs.mute.style.color = '#eeeeee';
+        }
     },
 
     setStream: function (props) {
@@ -108,6 +122,7 @@ var Channel = React.createClass({
 
         this.setState({
             toggle_display: 'block',
+            mute_display: 'block',
             accept_display: 'none'
         });
     },
@@ -205,6 +220,15 @@ var Channel = React.createClass({
                        top: this.state.toggle_top + 'px',
                        bottom: 'auto'
                    }} onClick={this.toggle}>d</i>
+                <i ref='mute' className='font small mute'
+                style={{
+                    display: this.state.mute_display,
+                        left: this.state.toggle_right + 'px',
+                        right: 'auto',
+                        top: 'auto',
+                        bottom: this.state.mute_bottom + 'px'
+                }} onClick={this.mute}>m</i>
+
             </div>
         );
     }
