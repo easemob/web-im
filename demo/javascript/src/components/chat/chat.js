@@ -389,7 +389,9 @@ module.exports = React.createClass({
             case 'leaveGroup':// dismissed by admin
                 Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
-                me.delContactItem();
+                if(!msg.kicked){
+                    me.delContactItem();
+                }
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
                 if (!Demo.roster[msg.from]) {
