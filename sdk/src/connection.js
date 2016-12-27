@@ -1210,7 +1210,11 @@ connection.prototype.handlePresence = function (msginfo) {
             if (info.destroy) {// Group or Chat room Deleted.
                 info.type = 'deleteGroupChat';
             } else if (info.code == 307 || info.code == 321) {// Dismissed by group.
-                info.type = 'leaveGroup';
+                var nick = msginfo.getAttribute('nick');
+                if(!nick)
+                    info.type = 'leaveGroup';
+                else
+                    info.type = 'removedFromGroup';
             }
         }
     }
