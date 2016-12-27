@@ -250,7 +250,6 @@ module.exports = React.createClass({
     },
 
     componentDidMount: function () {
-        console.log('ScareCrow');
         if (WebIM.config.isWebRTC && WebIM.WebRTC) {
             this.initWebRTC();
             this.channel = new RTCChannel(this.refs.rtcWrapper);
