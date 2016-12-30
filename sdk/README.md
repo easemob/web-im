@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.4.8 @ 2016-12-27
+
+###Feature
+
+* [demo] Add a mute button to the video chat window
+* [demo] Create a chat window automaticly
+* [demo] Hide the chat window when switch a cate in leftbar
+* [demo] Not back to the login page when refresh the webpage if login succeed
+
+###BugFix
+
+* [sdk] Remove all of the log methods
+* [sdk] Send an unavailable presence stanza when leave a group
+
+## v1.4.7 @ 2016-12-21
+
+###Feature
+
+* [demo] Add video chat and send video file functions into the demo.html
+
+###BugFix
+
+* [sdk] Fix the bug when the browser runs in back end that WebIM can't reconnect on phones
+* [demo] Refresh the group list on the front end after create a group succeed on back end
+* [demo] The master of a group and the members will be added will receive a notification when add members to group
+* [demo] A member will leave group when the master of the group remove this member from group black list
+
 ## v1.4.6
 
 ###Feature
