@@ -40,23 +40,23 @@ module.exports = React.createClass({
             if (this.props.friends[i].name in this.props.blacklist) {
                 continue;
             }
-            f.push(<Item id={this.props.friends[i].name} cate='friends' key={i} username={this.props.friends[i].name}
+            f.push(<Item id={this.props.friends[i].name} cate='friends' key={this.props.friends[i].name} username={this.props.friends[i].name}
                          update={this.update} cur={this.props.curNode}/>);
         }
 
         for (var i = 0; i < this.props.groups.length; i++) {
-            g.push(<Item id={this.props.groups[i].roomId} cate='groups' key={i} username={this.props.groups[i].name}
+            g.push(<Item id={this.props.groups[i].roomId} cate='groups' key={this.props.groups[i].roomId} username={this.props.groups[i].name}
                          update={this.update} cur={this.props.curNode} src={this.state.src}/>);
         }
 
         for (var i = 0; i < this.props.chatrooms.length; i++) {
-            c.push(<Item id={this.props.chatrooms[i].id} cate='chatrooms' key={i}
+            c.push(<Item id={this.props.chatrooms[i].id} cate='chatrooms' key={this.props.chatrooms[i].id}
                          username={this.props.chatrooms[i].name} update={this.update} cur={this.props.curNode}
                          src={this.state.src}/>);
         }
 
         for (var i = 0; i < this.props.strangers.length; i++) {
-            s.push(<Item id={this.props.strangers[i].name} cate='strangers' key={i}
+            s.push(<Item id={this.props.strangers[i].name} cate='strangers' key={this.props.strangers[i].name}
                          username={this.props.strangers[i].name} update={this.update} cur={this.props.curNode}/>);
         }
 

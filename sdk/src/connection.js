@@ -2017,11 +2017,10 @@ connection.prototype.clear = function () {
     this.restIndex = 0;
     this.xmppIndex = 0;
 
-
     if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
         var message = {
             data: {
-                data: "clear"
+                data: "logout"
             },
             type: _code.WEBIM_CONNCTION_CLIENT_LOGOUT
         };

@@ -150,7 +150,7 @@ module.exports = React.createClass({
                               onClick={this.sendAudio}>R</span>);
         roomMember.push(<span key={keyValue++} className='webim-file-icon font smaller'
                               onClick={this.sendFile}>S</span>);
-        if (WebIM.config.isWebRTC) {
+        if (WebIM.config.isWebRTC && Demo.selectedCate == 'friends') {
             roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
                                   onClick={this.call}>a</span>);
         }

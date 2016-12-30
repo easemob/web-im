@@ -75,12 +75,6 @@ module.exports = React.createClass({
         }
 
         if (Demo.selectedCate === 'chatrooms') {
-/*
-            清空聊天室消息
-            document.getElementById('wrapper' + this.props.id).innerHTML = '';
-            document.getElementById(this.props.id).querySelector('em').innerHTML = '';
-*/
-
             // join chatroom
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"joinChatroom","id":"' + this.props.id + '"}',

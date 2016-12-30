@@ -25,7 +25,6 @@ module.exports = React.createClass({
     },
 
     delFriend: function () {
-
         var value = this.props.name;
 
         if (!value) {
@@ -61,6 +60,7 @@ module.exports = React.createClass({
                 }
             });
         }
+        Demo.selected = '';
         this.props.delFriend();
         this.update();
     },

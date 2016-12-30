@@ -162,12 +162,13 @@ module.exports = React.createClass({
                         Demo.api.NotifySuccess(text);
                         return;
                     }else{
-                        if(text == 'clear' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8'){
-                            console.log('clear');
+                        if(text == 'logout' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8'){
+                            text = Demo.lan.logoutSuc;
                             window.history.pushState({}, 0, 'index.html');
+                            Demo.api.NotifySuccess(text);
+                        }else{
+                            Demo.api.NotifyError('onError:' + text);
                         }
-                        console.log('text: ', text);
-                        Demo.api.NotifyError('onError:' + text);
                     }
                 }
 
@@ -220,7 +221,6 @@ module.exports = React.createClass({
         this.setState({friends: friends});
     },
     updateMyGroupList: function (options) {
-        console.log('updateMygroupList');
         var rooms = eval('(' + options + ')');
         this.setState({groups: rooms});
     },
@@ -386,11 +386,12 @@ module.exports = React.createClass({
                     }
                 });
                 break;
-            case 'leaveGroup':// dismissed by admin
+            case 'leaveGroup':// dismi`ssed by admin
                 Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
-                if(!msg.kicked){
+                if(msg.from == Demo.selected && !msg.kicked){
                     me.delContactItem();
+                    Demo.selected = '';
                 }
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
@@ -409,7 +410,11 @@ module.exports = React.createClass({
                 if('code' in msg){
                     Demo.api.NotifySuccess(WebIM.utils.sprintf(Demo.lan.refuse, msg.from));
                 }else{
-                    console.log('Deleted');
+                    // 被删除
+                    if(msg.from == Demo.selected && !msg.kicked){
+                        me.delContactItem();
+                        Demo.selected = '';
+                    }
                 }
                 if (Demo.roster[msg.from]) {
                     delete Demo.roster[msg.from];
@@ -689,65 +694,6 @@ module.exports = React.createClass({
         this.setChatWindow(true);
     },
 
-    /*setChatWindow: function(show){
-        var windows = [], id, cate = '',
-            props = {
-                sendPicture: this.sendPicture,
-                sendAudio: this.sendAudio,
-                sendFile: this.sendFile,
-                name: ''
-            };
-        if(Demo.selected){
-            id = Demo.selected;
-            cate = Demo.selectedCate;
-            switch(cate){
-                    case 'friends':
-                        props.name = id;
-                        windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
-                        updateNode={this.updateNode} className={show?'':'hide'}/>);
-                    break;
-                    case 'groups':
-                        //createGroup is two step progresses.first send presence,second send iq.
-                        //on first recv group list, the newest created one's roomId=name,
-                        //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
-                        for (var i = 0; i < this.state.groups.length; i++) {
-                            if(id == this.state.groups[i].roomId){
-                                props.name = this.state.groups[i].name;
-                                if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
-                                    this.state.groups[i].name = Demo.createGroupName;
-                                    Demo.createGroupName = '';
-                                }
-                                windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
-                                className={show?'':'hide'}/>);
-                                break;
-                            }
-                        }
-                        break;
-                    case 'chatrooms':
-                        for (var i = 0; i < this.state.chatrooms.length; i++) {
-                            if(id == this.state.chatrooms[i].id){
-                                props.name = this.state.chatrooms[i].name;
-                                windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='chatRoom'
-                                className={show?'':'hide'}/>);
-                            }
-                        }
-                        console.log('windows: ', windows);
-                        break;
-                    case 'strangers':
-                        props.name = id;
-                        windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
-                        className={show?'':'hide'}/>);
-                        console.log('strangers');
-                        console.log('windows: ', windows);
-                        break;
-                    default:
-                        console.log('Default: ', cate);
-            }
-        }
-        console.log('windows: ', windows);
-        this.setState({window: windows});
-    },*/
-
     updateNode: function (cid) {
         Demo.chatState[Demo.selectedCate].selected = cid;
         this.storeChatWindow();
@@ -1007,57 +953,6 @@ module.exports = React.createClass({
     },
 
     render: function () {
-        // Demo.api.curLength = this.state[this.state.cur].length;
-/*
-
-        var windows = [], id,
-            props = {
-                sendPicture: this.sendPicture,
-                sendAudio: this.sendAudio,
-                sendFile: this.sendFile,
-                name: ''
-            };
-
-        for (var i = 0; i < this.state.friends.length; i++) {
-            id = this.state.friends[i].name;
-            props.name = id;
-            windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
-                                     updateNode={this.updateNode}
-                                     className={this.state.friends[i].name === this.state.curNode ? '' : 'hide'}/>);
-        }
-
-        for (var i = 0; i < this.state.groups.length; i++) {
-            id = this.state.groups[i].roomId;
-            props.name = this.state.groups[i].name;
-            //createGroup is two step progresses.first send presence,second send iq.
-            //on first recv group list, the newest created one's roomId=name,
-            //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
-            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
-                this.state.groups[i].name = Demo.createGroupName;
-                Demo.createGroupName = '';
-            }
-
-            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
-                                     className={id === this.state.curNode ? '' : 'hide'}/>);
-        }
-
-        for (var i = 0; i < this.state.chatrooms.length; i++) {
-            id = this.state.chatrooms[i].id;
-            props.name = this.state.chatrooms[i].name;
-
-            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='chatRoom'
-                                     className={id === this.state.curNode ? '' : 'hide'}/>);
-        }
-
-        for (var i = 0; i < this.state.strangers.length; i++) {
-            id = this.state.strangers[i].name;
-            props.name = id;
-
-            windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
-                                     className={this.state.strangers[i].name === this.state.curNode ? '' : 'hide'}/>);
-        }
-*/
-
         return (
             <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
                 <LeftBar cur={this.state.cur} update={this.update}/>

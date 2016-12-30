@@ -299,6 +299,8 @@ module.exports = {
         var targetId = Demo.selected;
         if(targetId){
             if(Demo.chatRecord[targetId]){
+                if(document.getElementById('wrapper' + targetId))
+                    document.getElementById('wrapper' + targetId).innerHTML = '';
                 for(var i = 0 ; i < Demo.chatRecord[targetId].length ; i++){
                     Demo.api.appendMsg(Demo.chatRecord[targetId][i].message, Demo.chatRecord[targetId][i].type);
                 }
@@ -585,6 +587,8 @@ module.exports = {
 
     appendBrief: function (id, value) {
         var cur = document.getElementById(id);
+        if(!cur)
+            return;
         cur.querySelector('em').innerHTML = value;
     },
 
