@@ -189,9 +189,19 @@ module.exports = React.createClass({
             }
         });
 
+        var ini_cur = '';
+        console.log('chat::selectedCate: ', Demo.selectedCate);
+        if(Demo.selectedCate){
+            ini_cur = Demo.selectedCate.substring(0, Demo.selectedCate.length-1);
+        }else{
+            ini_cur = 'friend';
+        }
+        var ini_curNode = Demo.selected || '';
+        var ini_window = Demo.chatState[ini_cur + 's'].chatWindow || [];
+
         return {
-            cur: 'friend',
-            curNode: '',
+            cur: ini_cur,
+            curNode: ini_curNode,
             friends: [],
             groups: [],
             chatrooms: [],
@@ -199,7 +209,7 @@ module.exports = React.createClass({
             blacklist: {},
             chatrooms_totalnum: Demo.api.pagesize,
             contact_loading_show: false,
-            window: []
+            window: ini_window
         };
     },
     confirmPop: function (options) {

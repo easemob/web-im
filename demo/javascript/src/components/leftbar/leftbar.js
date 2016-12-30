@@ -10,7 +10,6 @@ module.exports = React.createClass({
     getInitialState: function () {
         var me = this;
 
-        Demo.selectedCate = 'friends';
         return null;
     },
 

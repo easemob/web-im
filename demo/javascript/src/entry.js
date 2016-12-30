@@ -47,7 +47,7 @@ Demo.AUDIOTYPE = {
 };
 
 Demo.chatingCate = '';    // friends|groups|chatrooms|strangers
-Demo.selectedCate = '';   // friends|groups|chatrooms|strangers
+Demo.selectedCate = 'friends';   // friends|groups|chatrooms|strangers
 Demo.scroll = {
     friends: 0,
     groups: 0,

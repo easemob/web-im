@@ -269,11 +269,10 @@ module.exports = {
                 Demo.conn.errorType = type;
             }
         }
-
     },
 
     init: function () {
-        Demo.selected = null;
+        Demo.selected = Demo.selected || null;
         Demo.user = null;
         Demo.call = null;
         Demo.roster = {};
