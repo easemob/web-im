@@ -57,6 +57,8 @@ module.exports = React.createClass({
         if (Demo.currentChatroom) {
             // document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
             // document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+            // clear this chat room chat record
+            delete Demo.chatRecord[Demo.currentChatroom];
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"quitChatroom","id":"' + Demo.currentChatroom + '"}',
                     function success(str) {
