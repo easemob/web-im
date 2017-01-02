@@ -189,19 +189,9 @@ module.exports = React.createClass({
             }
         });
 
-        var ini_cur = '';
-        console.log('chat::selectedCate: ', Demo.selectedCate);
-        if(Demo.selectedCate){
-            ini_cur = Demo.selectedCate.substring(0, Demo.selectedCate.length-1);
-        }else{
-            ini_cur = 'friend';
-        }
-        var ini_curNode = Demo.selected || '';
-        var ini_window = Demo.chatState[ini_cur + 's'].chatWindow || [];
-
         return {
-            cur: ini_cur,
-            curNode: ini_curNode,
+            cur: 'friend',
+            curNode: '',
             friends: [],
             groups: [],
             chatrooms: [],
@@ -209,7 +199,7 @@ module.exports = React.createClass({
             blacklist: {},
             chatrooms_totalnum: Demo.api.pagesize,
             contact_loading_show: false,
-            window: ini_window
+            window: []
         };
     },
     confirmPop: function (options) {
@@ -243,20 +233,20 @@ module.exports = React.createClass({
     },
 
     componentDidUpdate: function (prevProps, prevState) {
-        for (var o in Demo.strangers) {
-            if (Demo.strangers.hasOwnProperty(o)) {
-                var msg = null;
-                while (msg = Demo.strangers[o].pop()) {
-                    Demo.api.addToChatRecord(msg.msg, msg.type);
-                    Demo.api.appendMsg(msg.msg, msg.type);
-                }
-            }
-        }
-        if(this.release){
-            Demo.api.releaseChatRecord();
-        }else{
-            this.release = true;
-        }
+        // for (var o in Demo.strangers) {
+        //     if (Demo.strangers.hasOwnProperty(o)) {
+        //         var msg = null;
+        //         while (msg = Demo.strangers[o].pop()) {
+        //             Demo.api.addToChatRecord(msg.msg, msg.type);
+        //             Demo.api.appendMsg(msg.msg, msg.type);
+        //         }
+        //     }
+        // }
+        // if(this.release){
+        //     Demo.api.releaseChatRecord();
+        // }else{
+        //     this.release = true;
+        // }
     },
 
     componentDidMount: function () {
@@ -396,7 +386,7 @@ module.exports = React.createClass({
                     }
                 });
                 break;
-            case 'leaveGroup':// dismi`ssed by admin
+            case 'leaveGroup':// dismissed by admin
                 Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
                 if(msg.from == Demo.selected && !msg.kicked){
@@ -425,10 +415,13 @@ module.exports = React.createClass({
                         me.delContactItem();
                         Demo.selected = '';
                     }
+
+                    delete Demo.chatRecord[msg.from];
                 }
                 if (Demo.roster[msg.from]) {
                     delete Demo.roster[msg.from];
                 }
+                me.delContactItem();
                 break;
             case 'joinPublicGroupSuccess':
                 // Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
@@ -451,6 +444,8 @@ module.exports = React.createClass({
                     return;
                 }
                 var target = document.getElementById(msg.from);
+
+                delete Demo.chatRecord[target];
                 var options = {
                     title: "Group notification",
                     msg: "You have been out of the group",
@@ -616,12 +611,12 @@ module.exports = React.createClass({
         var node = Demo.chatState[Demo.selectedCate].selected;
         Demo.selected = node;
         if(Demo.selectedCate == 'chatrooms' && node){
+            // clear the chatrooms chating records
+            delete Demo.chatRecord[node];
             Demo.conn.joinChatRoom({
                 roomId: node
             });
         }
-        if(!node)
-            this.release = false;
         this.setChatWindow(true);
         this.setState({curNode: node, cur: cur, contact_loading_show: false});
     },
@@ -700,7 +695,9 @@ module.exports = React.createClass({
 
     delContactItem: function(){
         var cate = Demo.selectedCate;
-        Demo.chatState[cate].chatWindow = [];
+        Demo.selected = '';
+        Demo.chatState.clear(cate);
+        this.setState({curNode: ''});
         this.setChatWindow(true);
     },
 

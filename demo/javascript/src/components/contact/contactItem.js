@@ -42,10 +42,10 @@ module.exports = React.createClass({
             this.refs['i'].setAttribute('count', 0);
             this.refs['i'].innerText = '';
         }
-
-        if (this.props.id === Demo.selected) {
-            return;
-        }
+        //
+        // if (this.props.id === Demo.selected) {
+        //     return;
+        // }
 
         if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
             Demo.selected = this.props.id;
@@ -121,7 +121,7 @@ module.exports = React.createClass({
                 <div className="webim-contact-info">
                     <span className="webim-contact-username">{this.props.username}</span>
                 </div>
-                <em></em>
+                <em dangerouslySetInnerHTML={{__html: this.props.brief}}></em>
                 <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>
             </div>
         );

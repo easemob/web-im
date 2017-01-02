@@ -30,6 +30,7 @@ module.exports = React.createClass({
         if (!value) {
             return;
         }
+        delete Demo.chatRecord[value];
 
         if (value == Demo.user || !Demo.roster[value]) {
             Demo.api.NotifyError(value + ' ' + Demo.lan.delFriendSelfInvalid);

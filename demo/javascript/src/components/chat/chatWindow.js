@@ -163,6 +163,10 @@ module.exports = React.createClass({
         // this.state.memberShowStatus && ReactDOM.findDOMNode(this.refs['member']).focus();
     },
 
+    componentDidMount: function () {
+        Demo.api.releaseChatRecord();
+    },
+
     // hide when blur close
     handleOnBlur: function () {
         // this.setState({memberShowStatus: false});
