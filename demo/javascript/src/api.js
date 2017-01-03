@@ -279,6 +279,7 @@ module.exports = {
         Demo.strangers = {};
         Demo.blacklist = {};
         Demo.selectedCate = 'friends';
+        Demo.chatState.clear();
 
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);

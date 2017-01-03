@@ -13,6 +13,8 @@ module.exports = React.createClass({
             count = Demo.chatRecord[id].count;
             count = Math.max(0, count);
         }
+        if(this.props.cate == 'chatrooms')
+            count = 0;
         var display = count == 0 ? 'none' : 'block';
 
         return {
@@ -37,6 +39,7 @@ module.exports = React.createClass({
             curCate.style.display = 'none';
         }
         curCate.setAttribute('data-count', curCateCount);
+        Demo.chatState[this.props.cate].count = curCateCount;
     },
 
 
@@ -49,6 +52,8 @@ module.exports = React.createClass({
 
             this.refs['i'].style.display = 'none';
             this.refs['i'].setAttribute('data-count', 0);
+            if(Demo.chatRecord[this.props.id])
+                Demo.chatRecord[this.props.id].count = 0;
             this.refs['i'].innerText = '';
         }
         //
@@ -99,6 +104,7 @@ module.exports = React.createClass({
                 Demo.conn.joinChatRoom({
                     roomId: this.props.id
                 });
+                Demo.currentChatroom = this.props.id;
             }
         } else {
             //get the last 10 messages

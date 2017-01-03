@@ -92,9 +92,27 @@ Demo.chatState = {
         count: 0
     },
     clear: function (cate) {
-        this[cate].selected = '';
-        this[cate].scroll = 0;
-        this[cate].chatWindow = [];
+        if(cate) {
+            this[cate].selected = '';
+            this[cate].scroll = 0;
+            this[cate].chatWindow = [];
+        }else{
+            this['friends'].selected = '';
+            this['friends'].scroll = 0;
+            this['friends'].chatWindow = [];
+
+            this['groups'].selected = '';
+            this['groups'].scroll = 0;
+            this['groups'].chatWindow = [];
+
+            this['chatrooms'].selected = '';
+            this['chatrooms'].scroll = 0;
+            this['chatrooms'].chatWindow = [];
+
+            this['strangers'].selected = '';
+            this['strangers'].scroll = 0;
+            this['strangers'].chatWindow = [];
+        }
     }
 }
 

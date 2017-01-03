@@ -16,7 +16,7 @@ module.exports = React.createClass({
 
     update: function () {
         var dom = this.refs.icon;
-        var count = dom.getAttribute('count');
+        var count = dom.getAttribute('data-count');
         if(count == 0){
             dom.style.display = 'none';
         }
