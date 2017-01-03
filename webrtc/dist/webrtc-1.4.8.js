@@ -577,7 +577,6 @@
 	    },
 
 	    makeVideoCall: function makeVideoCall(callee, accessSid) {
-
 	        var mediaStreamConstaints = {};
 	        Util.extend(mediaStreamConstaints, this.mediaStreamConstaints);
 

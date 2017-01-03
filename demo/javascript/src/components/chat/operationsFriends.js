@@ -25,12 +25,12 @@ module.exports = React.createClass({
     },
 
     delFriend: function () {
-
         var value = this.props.name;
 
         if (!value) {
             return;
         }
+        delete Demo.chatRecord[value];
 
         if (value == Demo.user || !Demo.roster[value]) {
             Demo.api.NotifyError(value + ' ' + Demo.lan.delFriendSelfInvalid);
@@ -61,6 +61,8 @@ module.exports = React.createClass({
                 }
             });
         }
+        Demo.selected = '';
+        this.props.delFriend();
         this.update();
     },
 

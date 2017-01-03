@@ -166,7 +166,8 @@ var CreateGroup = React.createClass({
                     <div>
                         <FridendList ref="friendList" optionData={Demo.roster}/>
                     </div>
-                    <Button text={Demo.lan.add} onClick={this.onSubmit} className='webim-dialog-button'/>
+                    <Button text={Demo.lan.add} onClick={this.onSubmit} className='webim-dialog-button-left'/>
+                    <Button text={Demo.lan.cancel} onClick={this.close} className='webim-dialog-button'/>
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>

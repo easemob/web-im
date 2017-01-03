@@ -1,5 +1,19 @@
 #版本更新说明:
 
+## v1.4.8 @ 2016-12-27
+
+###Feature
+
+* [demo] 增加webrtc视频聊天的声音开关
+* [demo] 动态创建chatWindow，提高网页性能
+* [demo] 切换leftbar时会给chatWindow添加遮罩，返回之前的leftbar时会直接跳到之前选中的cate和chatWindow
+* [demo] 登录成功后，刷新页面不会再回到登录页
+
+###BugFix
+
+* [sdk] 移除sdk中所有log方法
+* [sdk] 退出muc group room 时，追加发送一条unavailable的presence stanza
+
 ## v1.4.7 @ 2016-12-21
 
 ###Feature
@@ -109,6 +123,20 @@
    
 ---
 #ChangeLog:
+
+## v1.4.8 @ 2016-12-27
+
+###Feature
+
+* [demo] Add a mute button to the video chat window
+* [demo] Create a chat window automaticly
+* [demo] Hide the chat window when switch a cate in leftbar
+* [demo] Not back to the login page when refresh the webpage if login succeed
+
+###BugFix
+
+* [sdk] Remove all of the log methods
+* [sdk] Send an unavailable presence stanza when leave a group
 
 ## v1.4.7 @ 2016-12-21
 

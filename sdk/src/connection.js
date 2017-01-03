@@ -928,9 +928,11 @@ connection.prototype.login = function (options) {
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
+            options.success(data);
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
+            options.error();
             if (location.protocol != 'https:' && conn.isHttpDNS) {
                 if ((conn.restIndex + 1) < conn.restTotal) {
                     conn.restIndex++;
@@ -1208,11 +1210,14 @@ connection.prototype.handlePresence = function (msginfo) {
             if (info.destroy) {// Group or Chat room Deleted.
                 info.type = 'deleteGroupChat';
             } else if (info.code == 307 || info.code == 321) {// Dismissed by group.
-                info.type = 'leaveGroup';
+                var nick = msginfo.getAttribute('nick');
+                if(!nick)
+                    info.type = 'leaveGroup';
+                else
+                    info.type = 'removedFromGroup';
             }
         }
     }
-    console.log('msginfo: ', msginfo);
     this.onPresence(info, msginfo);
 };
 
@@ -2012,11 +2017,10 @@ connection.prototype.clear = function () {
     this.restIndex = 0;
     this.xmppIndex = 0;
 
-
     if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
         var message = {
             data: {
-                data: "clear"
+                data: "logout"
             },
             type: _code.WEBIM_CONNCTION_CLIENT_LOGOUT
         };
@@ -2571,7 +2575,10 @@ connection.prototype.destroyGroup = function (options) {
 //         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
 //     </query>
 // </iq>
+// <presence to="easemob-demo#chatdemoui_1479811172349@conference.easemob.com/mt002" type="unavailable"/>
+
 connection.prototype.leaveGroupBySelf = function (options) {
+    var self = this;
     var sucFn = options.success || _utils.emptyfn;
     var errFn = options.error || _utils.emptyfn;
 
@@ -2589,6 +2596,8 @@ connection.prototype.leaveGroupBySelf = function (options) {
 
     this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
         sucFn(msgInfo);
+        var pres = $pres({type: 'unavailable', to: to + '/' + self.context.userId});
+        self.sendCommand(pres.tree());
     }, function (errInfo) {
         errFn(errInfo);
     });

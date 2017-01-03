@@ -67,10 +67,12 @@ module.exports = function (options) {
                     if (code != SWFUpload.UPLOAD_ERROR.FILE_CANCELLED
                         && code != SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED
                         && code != SWFUpload.UPLOAD_ERROR.FILE_VALIDATION_FAILED) {
-                        Demo.api.appendMsg({
+                        var option = {
                             data: Demo.lan.uploadFileFailed,
                             to: Demo.selected
-                        }, 'txt');
+                        };
+                        Demo.api.addToChatRecord(option, 'txt');
+                        Demo.api.appendMsg(option, 'txt');
                     }
                 }
                 , upload_success_handler: function (file, response) {
@@ -100,11 +102,13 @@ module.exports = function (options) {
                             to: Demo.selected,
                             roomType: Demo.selectedCate === 'chatrooms',
                             success: function (id) {
-                                Demo.api.appendMsg({
+                                var option = {
                                     data: file.url,
                                     from: Demo.user,
                                     to: Demo.selected
-                                }, me.filetype);
+                                };
+                                Demo.api.addToChatRecord(option, me.filetype);
+                                Demo.api.appendMsg(option, me.filetype);
                             }
                         };
 

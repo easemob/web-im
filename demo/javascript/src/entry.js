@@ -23,6 +23,28 @@ Demo.lan = Language.Chinese;
 // for webview in client
 Demo.api = Api;
 
+// The messages cache
+/*
+
+Demo.chatRecord = {
+   targetId: {
+        messages: [{
+           msg: 'msg',
+           type: 'type'
+       },
+         {
+         msg: 'msg',
+         type: 'type'
+         }],
+       brief: 'brief'
+   }
+}
+*/
+
+Demo.chatRecord = {};
+// The max messages count of a dialog
+Demo.maxChatRecordCount = 20;
+
 Demo.roster = {};
 Demo.friends = [];
 Demo.strangers = {};
@@ -35,24 +57,64 @@ Demo.IMGTYPE = {
     png: 1
 };
 
-Demo.FILETYPE = {
-    gif: 1,
-    bmp: 1,
-    jpg: 1,
-    png: 1,
-    zip: 1,
-    txt: 1,
-    doc: 1,
-    pdf: 1
-};
-
 Demo.AUDIOTYPE = {
     mp3: 1,
     amr: 1,
     wmv: 1
 };
 
-Demo.selectedCate = '';   //friends|groups|chatrooms|strangers
+Demo.chatingCate = '';    // friends|groups|chatrooms|strangers
+Demo.selectedCate = 'friends';   // friends|groups|chatrooms|strangers
+
+Demo.chatState = {
+    friends:{
+        selected: '',
+        scroll: 0,
+        chatWindow: [],
+        count: 0
+    },
+    groups:{
+        selected: '',
+        scroll: 0,
+        chatWindow: [],
+        count: 0
+    },
+    chatrooms:{
+        selected: '',
+        scroll: 0,
+        chatWindow: [],
+        count: 0
+    },
+    strangers:{
+        selected: '',
+        scroll: 0,
+        chatWindow: [],
+        count: 0
+    },
+    clear: function (cate) {
+        if(cate) {
+            this[cate].selected = '';
+            this[cate].scroll = 0;
+            this[cate].chatWindow = [];
+        }else{
+            this['friends'].selected = '';
+            this['friends'].scroll = 0;
+            this['friends'].chatWindow = [];
+
+            this['groups'].selected = '';
+            this['groups'].scroll = 0;
+            this['groups'].chatWindow = [];
+
+            this['chatrooms'].selected = '';
+            this['chatrooms'].scroll = 0;
+            this['chatrooms'].chatWindow = [];
+
+            this['strangers'].selected = '';
+            this['strangers'].scroll = 0;
+            this['strangers'].chatWindow = [];
+        }
+    }
+}
 
 // initialize webIM connection
 Demo.conn = new WebIM.connection({

@@ -78,6 +78,7 @@ exports.English = {
     inviteToGroup: '%s invite you to the group',
     inviteGroup: 'You invited %s to this group',
     createGroupSuc: 'Group %s is successfully created',
+    logoutSuc: 'You are off line!',
     last: ''
 };
 
@@ -163,5 +164,6 @@ exports.Chinese = {
     inviteToGroup: '%s邀请您进群',
     inviteGroup: '您邀请了%s进群',
     createGroupSuc: '已成功创建群组%s',
+    logoutSuc: '您已下线',
     last: ''
 };

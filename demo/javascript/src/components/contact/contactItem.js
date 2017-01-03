@@ -7,17 +7,32 @@ module.exports = React.createClass({
 
     getInitialState: function () {
         var me = this;
+        // var id = this.props.id;
+        // var count = 0;
+        // if(Demo.chatRecord[id]){
+        //     count = Demo.chatRecord[id].count;
+        //     if(count == undefined || !isNaN(count)){
+        //         // Demo.chatRecord[id].count = 0;
+        //         count = 0;
+        //     }
+        //     else
+        //         count = Math.max(0, count);
+        // }
+        //
+        // var display = count == 0 ? 'none' : 'block';
 
         return {
             msg: '',
             avatar: '',
             countShow: false,
+            // count: count,
+            // display: display
         };
     },
 
     handleCurCateIconCount: function (count) {
         var curCate = document.getElementById(this.props.cate).getElementsByTagName('i')[1];
-        var curCateCount = curCate.getAttribute('count') / 1;
+        var curCateCount = curCate.getAttribute('data-count') / 1;
         curCateCount -= count;
         curCateCount = Math.max(0, curCateCount);
 
@@ -27,23 +42,24 @@ module.exports = React.createClass({
             curCateCount = 0;
             curCate.style.display = 'none';
         }
-        curCate.setAttribute('count', curCateCount);
+        curCate.setAttribute('data-count', curCateCount);
+        Demo.chatState[this.props.cate].count = curCateCount;
     },
 
 
     update: function () {
+        Demo.chatingCate = Demo.selectedCate;
+
         if (this.refs['i']) {
-            var count = this.refs['i'].getAttribute('count') / 1;
+            var count = this.refs['i'].getAttribute('data-count') / 1;
             this.handleCurCateIconCount(count);
 
             this.refs['i'].style.display = 'none';
-            this.refs['i'].setAttribute('count', 0);
+            this.refs['i'].setAttribute('data-count', 0);
+            if(Demo.chatRecord[this.props.id])
+                Demo.chatRecord[this.props.id].count = 0;
             this.refs['i'].innerText = '';
         }
-
-        // if (this.props.id === Demo.selected) {
-        //     return;
-        // }
 
         if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
             Demo.selected = this.props.id;
@@ -53,8 +69,10 @@ module.exports = React.createClass({
 
         // quit previous chatroom
         if (Demo.currentChatroom) {
-            document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
-            document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+            // document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
+            // document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+            // clear this chat room chat record
+            delete Demo.chatRecord[Demo.currentChatroom];
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"quitChatroom","id":"' + Demo.currentChatroom + '"}',
                     function success(str) {
@@ -73,10 +91,6 @@ module.exports = React.createClass({
         }
 
         if (Demo.selectedCate === 'chatrooms') {
-
-            document.getElementById('wrapper' + this.props.id).innerHTML = '';
-            document.getElementById(this.props.id).querySelector('em').innerHTML = '';
-
             // join chatroom
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"joinChatroom","id":"' + this.props.id + '"}',
@@ -90,6 +104,7 @@ module.exports = React.createClass({
                 Demo.conn.joinChatRoom({
                     roomId: this.props.id
                 });
+                Demo.currentChatroom = this.props.id;
             }
         } else {
             //get the last 10 messages
@@ -121,8 +136,11 @@ module.exports = React.createClass({
                 <div className="webim-contact-info">
                     <span className="webim-contact-username">{this.props.username}</span>
                 </div>
-                <em></em>
-                <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>
+                <em dangerouslySetInnerHTML={{__html: this.props.brief}}></em>
+                <i ref='i' className='webim-msg-prompt'
+                    data-count='0'
+                    style={{display: 'none'}}
+                    dangerouslySetInnerHTML={{__html: '0'}}></i>
             </div>
         );
     }

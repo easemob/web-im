@@ -154,12 +154,17 @@ module.exports = React.createClass({
     send: function (msg) {
         msg.chatType = this.props.chatType;
         Demo.conn.send(msg);
+        Demo.api.addToChatRecord(msg, 'txt');
         Demo.api.appendMsg(msg, 'txt');
     },
 
     // hide when blur | bind focus event
     componentDidUpdate: function () {
         // this.state.memberShowStatus && ReactDOM.findDOMNode(this.refs['member']).focus();
+    },
+
+    componentDidMount: function () {
+        Demo.api.releaseChatRecord();
     },
 
     // hide when blur close
@@ -206,6 +211,7 @@ module.exports = React.createClass({
                                                onBlur={this.handleOnBlur}
                                                name={this.props.name}
                                                updateNode={this.props.updateNode}
+                                               delFriend={this.props.delFriend}
             />);
         } else if (Demo.selectedCate == 'groups') {
             operations.push(<OperationsGroups key='operation_div' ref='operation_div' name={this.props.name}
@@ -216,6 +222,8 @@ module.exports = React.createClass({
                                               fields={this.state.fields}
                                               getGroupInfo={this.getGroupInfo}
                                               onBlur={this.handleOnBlur}
+                                              leaveGroup={this.props.leaveGroup}
+                                              destroyGroup = {this.props.destroyGroup}
             />);
         }
 

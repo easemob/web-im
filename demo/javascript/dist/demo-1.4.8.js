@@ -77,6 +77,28 @@
 	// for webview in client
 	Demo.api = Api;
 
+	// The messages cache
+	/*
+
+	Demo.chatRecord = {
+	   targetId: {
+	        messages: [{
+	           msg: 'msg',
+	           type: 'type'
+	       },
+	         {
+	         msg: 'msg',
+	         type: 'type'
+	         }],
+	       brief: 'brief'
+	   }
+	}
+	*/
+
+	Demo.chatRecord = {};
+	// The max messages count of a dialog
+	Demo.maxChatRecordCount = 20;
+
 	Demo.roster = {};
 	Demo.friends = [];
 	Demo.strangers = {};
@@ -89,24 +111,64 @@
 	    png: 1
 	};
 
-	Demo.FILETYPE = {
-	    gif: 1,
-	    bmp: 1,
-	    jpg: 1,
-	    png: 1,
-	    zip: 1,
-	    txt: 1,
-	    doc: 1,
-	    pdf: 1
-	};
-
 	Demo.AUDIOTYPE = {
 	    mp3: 1,
 	    amr: 1,
 	    wmv: 1
 	};
 
-	Demo.selectedCate = ''; //friends|groups|chatrooms|strangers
+	Demo.chatingCate = ''; // friends|groups|chatrooms|strangers
+	Demo.selectedCate = 'friends'; // friends|groups|chatrooms|strangers
+
+	Demo.chatState = {
+	    friends: {
+	        selected: '',
+	        scroll: 0,
+	        chatWindow: [],
+	        count: 0
+	    },
+	    groups: {
+	        selected: '',
+	        scroll: 0,
+	        chatWindow: [],
+	        count: 0
+	    },
+	    chatrooms: {
+	        selected: '',
+	        scroll: 0,
+	        chatWindow: [],
+	        count: 0
+	    },
+	    strangers: {
+	        selected: '',
+	        scroll: 0,
+	        chatWindow: [],
+	        count: 0
+	    },
+	    clear: function clear(cate) {
+	        if (cate) {
+	            this[cate].selected = '';
+	            this[cate].scroll = 0;
+	            this[cate].chatWindow = [];
+	        } else {
+	            this['friends'].selected = '';
+	            this['friends'].scroll = 0;
+	            this['friends'].chatWindow = [];
+
+	            this['groups'].selected = '';
+	            this['groups'].scroll = 0;
+	            this['groups'].chatWindow = [];
+
+	            this['chatrooms'].selected = '';
+	            this['chatrooms'].scroll = 0;
+	            this['chatrooms'].chatWindow = [];
+
+	            this['strangers'].selected = '';
+	            this['strangers'].scroll = 0;
+	            this['strangers'].chatWindow = [];
+	        }
+	    }
+	};
 
 	// initialize webIM connection
 	Demo.conn = new WebIM.connection({
@@ -163,7 +225,7 @@
 
 
 	// module
-	exports.push([module.id, "@charset \"UTF-8\";\nhtml, body, section, article, h1, h2, h3, h4, h5, h6, p, div, i, em, span, ul, li, ol {\n  font-family: Arial, Helvetica, sans-serif;\n  margin: 0;\n  padding: 0; }\n\nhtml, body {\n  width: 100%;\n  height: 100%;\n  font-size: 13px;\n  overflow-y: hidden;\n  overflow-x: hidden;\n  background-color: #fafafa;\n  border: 1px solid rgba(250, 250, 250, 0);\n  -webkit-font-smoothing: antialiased; }\n\ninput, button {\n  outline: none; }\n  input:focus, button:focus {\n    border: 1px solid #4eb1f4;\n    box-shadow: rgba(25, 161, 219, 0.247059) 0px 0px 5px 0px; }\n\ntextarea {\n  outline: none;\n  resize: none; }\n\nul, ol, li {\n  list-style: none; }\n\n.pointer {\n  cursor: pointer; }\n\n.left {\n  float: left; }\n\n.right {\n  float: right; }\n\n.w100 {\n  width: 100%;\n  height: 100%; }\n\n.pad0 {\n  padding: 0; }\n\n.top50 {\n  margin-top: 50px; }\n\n.rel {\n  position: relative; }\n\n.dib {\n  display: inline-block; }\n\nobject {\n  z-index: 3;\n  position: absolute;\n  left: 340px;\n  bottom: 118px;\n  width: 84px; }\n\n@font-face {\n  font-family: 'webim';\n  src: url(" + __webpack_require__(5) + ");\n  src: url(" + __webpack_require__(6) + ") format(\"woff\"), url(" + __webpack_require__(7) + ") format(\"truetype\"), url(" + __webpack_require__(8) + "#iconfont) format(\"svg\"); }\n\n.font {\n  width: 40px;\n  height: 40px;\n  font-family: 'webim' !important;\n  font-size: 40px;\n  font-style: normal;\n  -webkit-font-smoothing: antialiased;\n  -webkit-text-stroke-width: 0.2px;\n  -moz-osx-font-smoothing: grayscale; }\n  .font.small {\n    width: 30px;\n    height: 30px;\n    font-size: 30px; }\n  .font.xsmaller {\n    width: 26px;\n    height: 26px;\n    font-size: 26px; }\n  .font.smaller {\n    width: 24px;\n    height: 24px;\n    font-size: 24px; }\n  .font.smallest {\n    width: 16px;\n    height: 16px;\n    font-size: 16px; }\n\n.hide {\n  display: none; }\n\n.bg-color {\n  color: #fff;\n  border: 1px solid #4eb1f4;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #4eb1f4; }\n\n.color {\n  color: #4eb1f4; }\n\n.hover-color:hover {\n  color: #4eb1f4; }\n\n.webim-logo {\n  width: 200px;\n  margin: 0 auto; }\n\n.webim {\n  position: absolute;\n  right: 0;\n  left: 0;\n  margin: auto;\n  top: 10%;\n  bottom: 10%; }\n\n.copyright {\n  z-index: 3;\n  position: absolute;\n  width: 100%;\n  bottom: 10px;\n  text-align: center;\n  color: #cccccc; }\n\n.webim-rtc-video {\n  z-index: 3;\n  cursor: pointer;\n  position: fixed;\n  margin: auto;\n  right: 0;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  overflow: hidden;\n  border-radius: 4px;\n  background-color: #cccccc; }\n  .webim-rtc-video video {\n    position: absolute; }\n    .webim-rtc-video video.full {\n      z-index: 1;\n      width: 100%;\n      height: 100%;\n      object-fit: contain; }\n    .webim-rtc-video video.corner {\n      z-index: 2;\n      top: 40px;\n      left: auto;\n      right: 10px;\n      bottom: auto;\n      max-height: 17%;\n      max-width: 17%;\n      object-fit: contain; }\n  .webim-rtc-video span {\n    z-index: 2;\n    position: absolute;\n    margin: 0 auto;\n    left: 0;\n    right: 0;\n    top: 6px;\n    bottom: 0;\n    width: 200px;\n    height: 80px;\n    text-align: center;\n    color: #fff; }\n  .webim-rtc-video i {\n    z-index: 2;\n    position: absolute;\n    background-color: rgba(255, 255, 255, 0.2);\n    font-style: normal;\n    border-radius: 50%;\n    text-align: center;\n    color: rgba(0, 0, 0, 0.2);\n    cursor: pointer; }\n    .webim-rtc-video i.close {\n      color: #e90101; }\n    .webim-rtc-video i.toggle {\n      color: #98e024; }\n    .webim-rtc-video i.accept {\n      color: #98e024; }\n\n/*\n * loading\n */\n.webim-loading {\n  position: fixed;\n  z-index: 3;\n  background-color: #FAFAFA;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0; }\n  .webim-loading img {\n    position: absolute;\n    margin: auto;\n    left: 0;\n    right: 0;\n    top: 0;\n    bottom: 0;\n    width: 24px; }\n\n/*\n * button\n */\n.webim-button {\n  font-size: 16px;\n  box-sizing: border-box;\n  display: inline-block;\n  margin: 10px auto;\n  width: 300px;\n  height: 36px;\n  cursor: pointer;\n  border-radius: 2px; }\n  .webim-button.error {\n    background-color: #ff3a00;\n    border: 1px solid #ff3a00; }\n  .webim-button:hover {\n    background-color: #1aa1e4; }\n\n/*\n * input\n */\n.webim-input {\n  box-sizing: border-box;\n  font-size: 14px;\n  padding: 0 4px;\n  display: inline-block;\n  margin: 10px auto 0;\n  width: 300px;\n  height: 36px;\n  line-height: 36px;\n  cursor: pointer;\n  border-radius: 2px;\n  border: 1px solid #e5e5e5;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n/*\n * checkbox\n */\n.webim-checkbox {\n  text-align: left;\n  margin: 10px 0 10px 5px;\n  padding-left: 50px;\n  box-sizing: border-box; }\n  .webim-checkbox span {\n    height: 30px;\n    line-height: 30px; }\n  .webim-checkbox > i {\n    position: relative;\n    margin-right: 6px;\n    width: 14px;\n    height: 14px;\n    border-radius: 2px;\n    display: inline-block;\n    vertical-align: middle;\n    border: 1px solid #cccccc;\n    cursor: pointer; }\n    .webim-checkbox > i:hover {\n      background-color: #fff; }\n      .webim-checkbox > i:hover em {\n        display: inline-block;\n        color: #cccccc; }\n    .webim-checkbox > i.checked {\n      background-color: #afd7e8; }\n      .webim-checkbox > i.checked em {\n        display: inline-block;\n        color: #000; }\n    .webim-checkbox > i em {\n      display: none;\n      position: absolute;\n      left: -6px;\n      top: -10px;\n      color: #000; }\n\n/*\n * left bar\n */\n.webim-leftbar {\n  position: relative;\n  float: left;\n  width: 50px;\n  height: 100%;\n  text-align: center;\n  border-radius: 2px 0px 0px 2px;\n  border: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #fcfdfb; }\n\n/*\n * contact list\n */\n.webim-contact-wrapper {\n  float: left;\n  height: 100%;\n  width: 250px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  border-right: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n.webim-contact-item {\n  cursor: pointer;\n  position: relative;\n  width: 100%;\n  overflow: hidden;\n  height: 60px; }\n  .webim-contact-item .webim-avatar-icon {\n    float: left;\n    margin: 10px; }\n  .webim-contact-item .webim-contact-info {\n    position: relative; }\n  .webim-contact-item .webim-contact-handlers {\n    text-align: right;\n    position: absolute;\n    right: 2px;\n    top: 0; }\n    .webim-contact-item .webim-contact-handlers i {\n      font-size: 16px;\n      line-height: 36px; }\n  .webim-contact-item > span, .webim-contact-item .webim-contact-username {\n    color: #1a1a1a;\n    font-size: 14px;\n    margin: 10px 0;\n    display: inline-block;\n    width: calc(100% - 70px);\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis; }\n  .webim-contact-item > i {\n    display: inline-block;\n    right: 2px;\n    bottom: 10px;\n    top: auto; }\n  .webim-contact-item > em {\n    display: block;\n    height: 20px;\n    line-height: 20px;\n    width: calc(100% - 100px);\n    position: absolute;\n    margin: auto;\n    left: 30px;\n    top: 30px;\n    right: 10px;\n    color: #999999;\n    font-style: normal;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden; }\n    .webim-contact-item > em img {\n      width: 20px;\n      vertical-align: middle; }\n  .webim-contact-item.selected {\n    background-color: #f3f6f6; }\n\n.webim-profile-avatar {\n  display: inline-block;\n  margin: 10px auto; }\n\n.webim-avatar-icon {\n  width: 40px;\n  height: 40px;\n  border-radius: 50%;\n  overflow: hidden;\n  -webkit-filter: contrast(1.2);\n  -webkit-tap-highlight-color: transparent; }\n  .webim-avatar-icon.small {\n    width: 30px;\n    height: 30px; }\n\n.webim-operations-icon,\n.webim-leftbar-icon {\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  margin-bottom: 10px;\n  color: #cccccc; }\n\n.webim-operations-icon:hover,\n.webim-leftbar-icon:hover,\n.webim-operations-icon.selected,\n.webim-leftbar-icon.selected {\n  color: #4eb1f4; }\n\n.webim-operations-icon {\n  color: #cccccc;\n  position: absolute;\n  margin-bottom: 0;\n  bottom: 10px;\n  left: 10px; }\n  .webim-operations-icon:hover {\n    color: #4eb1f4; }\n\n/*\n * operations\n */\n.webim-operations {\n  z-index: 1;\n  position: absolute;\n  text-align: left;\n  left: 40px;\n  bottom: 10px;\n  width: 160px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  background-color: #fff; }\n  .webim-operations i {\n    margin: 0 10px;\n    color: #cccccc; }\n  .webim-operations span {\n    vertical-align: top;\n    word-break: keep-all;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis; }\n  .webim-operations li {\n    height: 30px;\n    line-height: 30px;\n    cursor: pointer;\n    overflow: hidden; }\n    .webim-operations li:hover {\n      color: #4eb1f4;\n      background-color: #f2f2f2; }\n      .webim-operations li:hover i {\n        color: #4eb1f4; }\n    .webim-operations li:nth-child(2) i {\n      display: inline-block;\n      margin-top: -4px;\n      vertical-align: top; }\n    .webim-operations li:last-child:hover {\n      color: #e90101; }\n      .webim-operations li:last-child:hover i {\n        color: #e90101; }\n\n.webim-msg-prompt {\n  position: absolute;\n  top: -4px;\n  right: 0;\n  line-height: 16px;\n  font-style: normal;\n  width: 16px;\n  height: 16px;\n  font-size: 12px;\n  text-align: center;\n  color: #fff;\n  border-radius: 50%;\n  border: 2px solid #fcfdfb;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #ff3a00; }\n\n.webim-msg-icon-prompt {\n  width: 10px;\n  height: 10px;\n  top: 0px;\n  right: 8px; }\n\n.webim-blacklist-wrapper {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  overflow-x: hidden;\n  overflow-y: auto;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white;\n  margin-bottom: 30px; }\n\n.webim-blacklist-item {\n  position: relative;\n  cursor: pointer;\n  display: block;\n  width: 100%;\n  overflow: hidden;\n  height: 30px;\n  font-size: 20px;\n  line-height: 30px; }\n  .webim-blacklist-item i.font {\n    line-height: 30px;\n    float: right;\n    position: static; }\n\n.webim-operation-icon {\n  width: 100px;\n  float: right;\n  margin-right: 10px;\n  text-align: right; }\n\n* :focus {\n  outline: 0; }\n\n/*\n * notify\n */\n.webim-notify {\n  z-index: 3;\n  position: fixed;\n  top: 10px;\n  word-wrap: break-word;\n  padding: 4px;\n  width: 50%;\n  color: #fff;\n  left: 0;\n  right: 0;\n  margin: 0 auto;\n  max-width: 90%;\n  min-height: 30px;\n  border-radius: 2px;\n  line-height: 30px;\n  text-align: center;\n  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 6px 0px;\n  -webkit-tap-highlight-color: transparent;\n  border: 0px none black; }\n  .webim-notify.success {\n    background-color: #aeda3e; }\n  .webim-notify.error {\n    background-color: #ff3a00; }\n  .webim-notify i {\n    position: absolute;\n    right: 10px;\n    top: 9px; }\n\n/*\n * signin & signup\n */\n.webim-sign {\n  overflow: hidden;\n  width: 400px;\n  margin: 40px auto;\n  text-align: center;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n  .webim-sign h2 {\n    font-size: 24px;\n    color: #1a1a1a;\n    width: 100%;\n    line-height: 84px;\n    height: 64px; }\n  .webim-sign p {\n    margin: 0px auto 40px;\n    width: 300px;\n    text-align: left; }\n    .webim-sign p i {\n      font-style: normal;\n      color: #4eb1f4;\n      cursor: pointer; }\n  .webim-sign.webim-signup button {\n    margin-top: 30px; }\n\n.webim-chat {\n  position: relative;\n  max-width: 1024px;\n  min-width: 960px;\n  max-height: 600px;\n  height: 100%;\n  margin: auto;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white;\n  border-radius: 2px;\n  overflow: hidden; }\n\n.webim-chatwindow {\n  position: relative;\n  float: left;\n  height: 100%;\n  width: calc(100% - 303px); }\n  .webim-chatwindow textarea {\n    position: absolute;\n    bottom: 40px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: none;\n    width: 100%;\n    padding: 10px 15px; }\n  .webim-chatwindow .webim-group-memeber {\n    position: absolute;\n    left: 0;\n    right: 0;\n    top: 40px;\n    margin: auto;\n    padding: 10px 7px;\n    border-radius: 2px;\n    width: 200px;\n    overflow: auto;\n    box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n    z-index: 2;\n    background: #fff;\n    max-height: 300px; }\n    .webim-chatwindow .webim-group-memeber li {\n      height: 30px;\n      line-height: 30px;\n      padding: 0 4px;\n      box-sizing: border-box;\n      text-align: left; }\n      .webim-chatwindow .webim-group-memeber li > div {\n        display: inline-block;\n        vertical-align: middle;\n        margin: 0 6px;\n        width: 20px;\n        height: 20px; }\n\n.webim-chatwindow-title {\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  font-size: 14px; }\n  .webim-chatwindow-title i {\n    color: #cccccc;\n    vertical-align: middle;\n    cursor: pointer;\n    margin-left: 10px;\n    padding-bottom: 22px; }\n    .webim-chatwindow-title i.webim-up-icon {\n      transform: rotate(180deg); }\n    .webim-chatwindow-title i.webim-call-icon {\n      position: absolute;\n      left: 0;\n      top: 0; }\n    .webim-chatwindow-title i.webim-accept-icon {\n      position: absolute;\n      left: 40px;\n      top: 0; }\n\n.webim-chatwindow-options {\n  border-top: 1px solid #f2f2f2;\n  width: 100%;\n  z-index: 1;\n  position: absolute;\n  bottom: 120px;\n  left: 0;\n  height: 30px;\n  line-height: 30px; }\n  .webim-chatwindow-options > span {\n    margin-left: 6px;\n    color: #cccccc;\n    cursor: pointer; }\n  .webim-chatwindow-options > span:hover {\n    color: #4eb1f4; }\n\n.webim-send-btn {\n  position: absolute;\n  bottom: 0;\n  right: 10px;\n  width: 80px;\n  height: 24px;\n  font-size: 12px; }\n\n.webim-chatwindow-msg {\n  z-index: 1;\n  position: absolute;\n  top: 40px;\n  bottom: 150px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  box-sizing: border-box;\n  padding: 20px 10px;\n  width: 100%; }\n\n.webim-send-wrapper > ul {\n  z-index: 1;\n  position: absolute;\n  width: 280px;\n  height: 194px;\n  bottom: 150px;\n  left: -140px;\n  border-radius: 2px;\n  background: #fff;\n  box-sizing: border-box;\n  padding: 4px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 4px 12px 0px; }\n  .webim-send-wrapper > ul li {\n    cursor: pointer;\n    display: inline-block;\n    margin: 2px 3px 0 3px; }\n\n#test {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  z-index: 2222; }\n\n.webim-msg-container {\n  overflow: hidden;\n  margin: 24px 0; }\n  .webim-msg-container > div {\n    max-width: 60%;\n    overflow: hidden; }\n  .webim-msg-container .right > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-right: 10px; }\n  .webim-msg-container .right .webim-msg-icon {\n    color: #b4e4fc;\n    right: -40px; }\n  .webim-msg-container .right .webim-msg-value {\n    float: right;\n    margin: 6px 10px 0 0;\n    background-color: #b4e4fc; }\n  .webim-msg-container .right .webim-msg-error {\n    float: right;\n    margin: 6px 10px 0 0; }\n  .webim-msg-container .right .webim-msg-header {\n    text-align: right; }\n  .webim-msg-container .left > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-left: 10px; }\n  .webim-msg-container .left .webim-msg-icon {\n    color: #f1f2ec;\n    left: -10px; }\n  .webim-msg-container .left .webim-msg-value {\n    background-color: #f1f2ec;\n    float: left;\n    margin: 6px 0 0 10px; }\n  .webim-msg-container .left .webim-msg-header {\n    text-align: left; }\n\n.webim-msg-icon {\n  position: absolute;\n  top: 4px;\n  font-size: 10px; }\n\n.webim-msg-value {\n  position: relative;\n  min-height: 30px;\n  max-width: calc(100% - 80px);\n  border-radius: 4px;\n  padding: 6px;\n  box-sizing: border-box;\n  min-width: 60%; }\n  .webim-msg-value video {\n    width: 100%; }\n  .webim-msg-value.webim-img-msg-wrapper {\n    padding: 1px; }\n  .webim-msg-value > div,\n  .webim-msg-value > pre {\n    white-space: pre-wrap;\n    word-break: break-all;\n    color: #1a1a1a;\n    font-size: 14px;\n    line-height: 20px;\n    margin: 0; }\n  .webim-msg-value .emoji {\n    width: 32px;\n    vertical-align: bottom; }\n  .webim-msg-value i {\n    display: block;\n    font-style: normal;\n    margin-left: 40px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25); }\n  .webim-msg-value a {\n    display: block;\n    margin-left: 30px;\n    margin-top: -28px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25);\n    text-decoration: none; }\n\n.webim-msg-img {\n  max-width: 100%;\n  vertical-align: middle;\n  cursor: pointer;\n  border-radius: 4px; }\n\n.webim-msg-header {\n  line-height: 30px;\n  margin-bottom: 4px;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.15); }\n\n.webim-msg-header-icon {\n  vertical-align: middle;\n  display: inline-block;\n  margin: -46px 4px 0 -4px;\n  line-height: 40px;\n  color: #868683; }\n\n.webim-msg-name {\n  width: calc(100% - 80px);\n  display: inline-block;\n  height: 40px;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden; }\n\n.webim-msg-fileSize {\n  display: inline-block;\n  float: right;\n  width: 47px;\n  overflow: hidden; }\n\n.webim-img-expand {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.3);\n  z-index: 3; }\n  .webim-img-expand img {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    max-width: 90%;\n    max-height: 90%;\n    margin: auto; }\n\n.webim-audio-slash {\n  background-color: transparent;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  border-radius: 4px; }\n\n.slash {\n  animation: slash 1s infinite;\n  -moz-animation: slash 1s infinite;\n  -webkit-animation: slash 1s infinite; }\n\n@keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-moz-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-webkit-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n.clearfix:after {\n  content: ' ';\n  display: table;\n  clear: both; }\n\n/*\n * dialog\n */\n.webim-dialog {\n  z-index: 3;\n  position: absolute;\n  width: 400px;\n  min-height: 168px;\n  top: 20%;\n  left: 0;\n  right: 0;\n  margin: auto;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 8px 0px;\n  background-color: white; }\n  .webim-dialog h3 {\n    line-height: 40px;\n    box-sizing: border-box;\n    padding-left: 10px;\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    font-weight: normal; }\n  .webim-dialog .font {\n    font-size: 20px;\n    position: absolute;\n    right: 6px;\n    top: 6px;\n    width: 20px;\n    height: 20px;\n    color: rgba(0, 0, 0, 0.1);\n    cursor: pointer; }\n  .webim-dialog > div {\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    padding: 10px 10px 20px; }\n  .webim-dialog .webim-dialog-button {\n    position: absolute;\n    right: 8px;\n    bottom: 2px;\n    width: 80px;\n    height: 26px; }\n  .webim-dialog .webim-subscribe-button {\n    width: 60px;\n    height: 30px;\n    margin-left: 10px; }\n  .webim-dialog input {\n    height: 30px;\n    width: 220px; }\n  .webim-dialog textarea {\n    margin-top: 20px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: 1px solid rgba(0, 0, 0, 0.1);\n    width: 220px; }\n  .webim-dialog-body {\n    min-height: 100px; }\n  .webim-dialog .webim-dialog-footer {\n    padding: 10px;\n    position: relative;\n    min-height: 20px;\n    text-align: right; }\n    .webim-dialog .webim-dialog-footer .webim-button {\n      position: static;\n      margin-right: 10px; }\n\n.webim-dialog-2 {\n  height: 450px; }\n\n.webim-friend-requests {\n  height: auto; }\n  .webim-friend-requests span {\n    width: 60%;\n    display: inline-block;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap; }\n  .webim-friend-requests > div {\n    overflow: auto;\n    max-height: 400px; }\n\n/*\n * layer\n */\n.webim-layer {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n  background-color: rgba(0, 0, 0, 0.25); }\n\n/*\n  说明:\n  下面的css都是为了快速实现功能，覆盖旧有属性的各种trick\n  后期需要找专门的css人员整理一遍，合并入正常的文件，然后删除本文件!\n*/\n/******************* multiple select box ********************/\n.react-multi-select-box-container {\n  position: relative;\n  width: 240px;\n  display: inline-block;\n  background-color: #fff;\n  border-radius: 4px;\n  text-align: left;\n  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); }\n\n.react-multi-select-box {\n  padding: 10px 0;\n  display: inline-block;\n  cursor: pointer;\n  border: none;\n  width: 100%;\n  text-align: left;\n  background-color: transparent; }\n  .react-multi-select-box::before {\n    content: ' ';\n    position: absolute;\n    z-index: 1;\n    height: 20px;\n    top: -7px;\n    right: 13px;\n    border-left: 3px solid transparent;\n    border-right: 3px solid transparent;\n    border-bottom: 4px solid #a7a8aa; }\n  .react-multi-select-box::after {\n    content: ' ';\n    position: absolute;\n    z-index: 1;\n    top: 20px;\n    right: 13px;\n    border-top: 4px solid #a7a8aa;\n    border-left: 3px solid transparent;\n    border-right: 3px solid transparent; }\n\n.react-multi-select-box-label {\n  padding: 0 40px 0 10px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #333;\n  line-height: 16px; }\n\n.react-multi-select-box-empty .react-multi-select-box-label {\n  color: #c5c5c5; }\n\n.react-multi-select-area {\n  position: absolute;\n  margin-top: 4px;\n  padding: 0 10px;\n  height: 225px;\n  min-width: 260px;\n  border-radius: 4px;\n  background-color: #fff;\n  z-index: 4;\n  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); }\n\n.react-multi-select-box-hidden {\n  display: none; }\n\n.react-multi-select-hide {\n  display: none; }\n\n.react-multi-select-panel {\n  display: flex;\n  height: 185px; }\n\n.react-multi-select-col {\n  min-width: 110px;\n  overflow-y: auto; }\n  .react-multi-select-col .selected-option-row {\n    padding: 5px 0;\n    cursor: pointer; }\n\n.react-multi-select-sign {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  width: 15px; }\n  .react-multi-select-sign i {\n    width: 6px;\n    height: 6px;\n    border-top: 2px solid #a9a9a9;\n    border-right: 2px solid #a9a9a9;\n    -webkit-transform: rotate(45deg);\n    -moz-transform: rotate(45deg);\n    -o-transform: rotate(45deg);\n    transform: rotate(45deg); }\n\n.react-multi-select-area-btn {\n  padding: 5px 0;\n  height: 40px;\n  border-top: 1px solid #eee;\n  text-align: center; }\n  .react-multi-select-area-btn .eg-btn {\n    padding: 4px 20px;\n    margin-right: 10px; }\n    .react-multi-select-area-btn .eg-btn:last-child {\n      margin-right: 0; }\n\n.classification {\n  padding: 5px 0;\n  cursor: pointer; }\n\n.react-multi-select-list-arrow {\n  position: relative;\n  display: inline-block;\n  vertical-align: middle;\n  width: 8px;\n  height: 8px; }\n  .react-multi-select-list-arrow::before {\n    content: ' ';\n    position: absolute;\n    border-top: 3px solid transparent;\n    border-bottom: 3px solid transparent;\n    border-left: 4px solid #87c2e5; }\n\n.react-multi-select-list-arrow.expand::before {\n  content: ' ';\n  position: absolute;\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  border-top: 4px solid #87c2e5; }\n\n.react-multi-select-sub-options {\n  padding-left: 16px; }\n\n.react-multi-select-list-option:last-child {\n  padding-bottom: 0; }\n\n.react-multi-select-list-option .eg-input.checkbox .input-icon {\n  margin-right: 2px; }\n\n.react-multi-select-list-option .eg-input.checkbox.active .input-icon {\n  fill: #87c2e5; }\n\n.react-multi-select-list-option .react-multi-select-box-option {\n  position: relative;\n  padding: 5px 0 5px 20px;\n  margin: 0;\n  cursor: pointer;\n  display: block;\n  text-decoration: none; }\n  .react-multi-select-list-option .react-multi-select-box-option:before {\n    content: ' ';\n    position: absolute;\n    text-align: center;\n    line-height: 1.1;\n    left: 2px;\n    top: 8px;\n    height: 12px;\n    width: 12px;\n    margin-right: 10px;\n    border: 1px solid #7B8E9B;\n    background: #f9f9f9;\n    vertical-align: middle; }\n\n.react-multi-select-list-option .react-multi-select-box-option-selected:before {\n  content: '\\2713';\n  color: #87c2e5; }\n\n.react-multiple-select-type-name {\n  padding: 5px 0 4px 0;\n  border-bottom: 1px solid #eee;\n  color: #c5c5c5; }\n\n.react-multi-select-btn {\n  padding: 4px 20px;\n  border-radius: 6px;\n  background-color: #307fc8;\n  display: inline-block;\n  margin-right: 10px;\n  margin-bottom: 0;\n  text-align: center;\n  vertical-align: middle;\n  touch-action: manipulation;\n  cursor: pointer;\n  background-image: none;\n  border: 1px solid transparent;\n  white-space: nowrap;\n  outline: 0;\n  text-decoration: none;\n  font-weight: normal;\n  font-size: 14px;\n  line-height: 1.42857143;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  color: #fff;\n  border-color: transparent; }\n  .react-multi-select-btn:last-child {\n    margin-right: 0; }\n\n.react-multi-select-btn-white {\n  background-color: #fff;\n  color: #333;\n  border-color: #d5d5d5; }\n\n/******************* multiple select box ********************/\n.webim-chatwindow .webim-operations-icon {\n  top: 5px;\n  left: auto;\n  right: 10px;\n  bottom: 0px; }\n\n.webim-chatwindow .webim-operations {\n  left: inherit;\n  right: 40px;\n  top: 10px;\n  bottom: auto;\n  z-index: 2; }\n\n.webim-friend-options span.radio_span {\n  width: 80px;\n  display: inline-block; }\n\n.webim-friend-options input.radio {\n  height: 10px;\n  width: 20px; }\n\n.webim_isWindowSDK {\n  top: 0;\n  bottom: 0; }\n\n.webim_isWindowSDK .webim-chat {\n  max-width: 100%;\n  min-width: 100%;\n  max-height: 100%;\n  width: 100%; }\n\n.webim-friend-requests-windowSDK {\n  width: 500px; }\n\n.webim-friend-requests-windowSDK span {\n  width: 100%; }\n\n.webim-msg-value a.dir {\n  margin-left: 130px;\n  margin-top: -20px; }\n\n.webim-leftbar .username {\n  width: 100%;\n  overflow: hidden; }\n\n.webim-loading span {\n  position: absolute;\n  margin: auto;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  width: 200px;\n  height: 80px;\n  text-align: center; }\n\nspan.red {\n  color: #ff2a00; }\n\n.webim-contact-loading {\n  width: 24px;\n  margin: 0 auto; }\n\n.webim-contact-loading img {\n  width: 24px; }\n", ""]);
+	exports.push([module.id, "@charset \"UTF-8\";\nhtml, body, section, article, h1, h2, h3, h4, h5, h6, p, div, i, em, span, ul, li, ol {\n  font-family: Arial, Helvetica, sans-serif;\n  margin: 0;\n  padding: 0; }\n\nhtml, body {\n  width: 100%;\n  height: 100%;\n  font-size: 13px;\n  overflow-y: hidden;\n  overflow-x: hidden;\n  background-color: #fafafa;\n  border: 1px solid rgba(250, 250, 250, 0);\n  -webkit-font-smoothing: antialiased; }\n\ninput, button {\n  outline: none; }\n  input:focus, button:focus {\n    border: 1px solid #4eb1f4;\n    box-shadow: rgba(25, 161, 219, 0.247059) 0px 0px 5px 0px; }\n\ntextarea {\n  outline: none;\n  resize: none; }\n\nul, ol, li {\n  list-style: none; }\n\n.pointer {\n  cursor: pointer; }\n\n.left {\n  float: left; }\n\n.right {\n  float: right; }\n\n.w100 {\n  width: 100%;\n  height: 100%; }\n\n.pad0 {\n  padding: 0; }\n\n.top50 {\n  margin-top: 50px; }\n\n.rel {\n  position: relative; }\n\n.dib {\n  display: inline-block; }\n\nobject {\n  z-index: 3;\n  position: absolute;\n  left: 340px;\n  bottom: 118px;\n  width: 84px; }\n\n@font-face {\n  font-family: 'webim';\n  src: url(" + __webpack_require__(5) + ");\n  src: url(" + __webpack_require__(6) + ") format(\"woff\"), url(" + __webpack_require__(7) + ") format(\"truetype\"), url(" + __webpack_require__(8) + "#iconfont) format(\"svg\"); }\n\n.font {\n  width: 40px;\n  height: 40px;\n  font-family: 'webim' !important;\n  font-size: 40px;\n  font-style: normal;\n  -webkit-font-smoothing: antialiased;\n  -webkit-text-stroke-width: 0.2px;\n  -moz-osx-font-smoothing: grayscale; }\n  .font.small {\n    width: 30px;\n    height: 30px;\n    font-size: 30px; }\n  .font.xsmaller {\n    width: 26px;\n    height: 26px;\n    font-size: 26px; }\n  .font.smaller {\n    width: 24px;\n    height: 24px;\n    font-size: 24px; }\n  .font.smallest {\n    width: 16px;\n    height: 16px;\n    font-size: 16px; }\n\n.hide {\n  display: none; }\n\n.bg-color {\n  color: #fff;\n  border: 1px solid #4eb1f4;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #4eb1f4; }\n\n.color {\n  color: #4eb1f4; }\n\n.hover-color:hover {\n  color: #4eb1f4; }\n\n.webim-logo {\n  width: 200px;\n  margin: 0 auto; }\n\n.webim {\n  position: absolute;\n  right: 0;\n  left: 0;\n  margin: auto;\n  top: 10%;\n  bottom: 10%; }\n\n.copyright {\n  z-index: 3;\n  position: absolute;\n  width: 100%;\n  bottom: 10px;\n  text-align: center;\n  color: #cccccc; }\n\n.webim-rtc-video {\n  z-index: 3;\n  cursor: pointer;\n  position: fixed;\n  margin: auto;\n  right: 0;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  overflow: hidden;\n  border-radius: 4px;\n  background-color: #cccccc; }\n  .webim-rtc-video video {\n    position: absolute; }\n    .webim-rtc-video video.full {\n      z-index: 1;\n      width: 100%;\n      height: 100%;\n      object-fit: contain; }\n    .webim-rtc-video video.corner {\n      z-index: 2;\n      top: 40px;\n      left: auto;\n      right: 10px;\n      bottom: auto;\n      max-height: 17%;\n      max-width: 17%;\n      object-fit: contain; }\n  .webim-rtc-video span {\n    z-index: 2;\n    position: absolute;\n    margin: 0 auto;\n    left: 0;\n    right: 0;\n    top: 6px;\n    bottom: 0;\n    width: 200px;\n    height: 80px;\n    text-align: center;\n    color: #fff; }\n  .webim-rtc-video i {\n    z-index: 2;\n    position: absolute;\n    background-color: rgba(255, 255, 255, 0.2);\n    font-style: normal;\n    border-radius: 50%;\n    text-align: center;\n    color: rgba(0, 0, 0, 0.2);\n    cursor: pointer; }\n    .webim-rtc-video i.close {\n      color: #e90101; }\n    .webim-rtc-video i.toggle {\n      color: #98e024; }\n    .webim-rtc-video i.accept {\n      color: #98e024; }\n    .webim-rtc-video i.mute {\n      color: #eeeeee; }\n\n/*\n * loading\n */\n.webim-loading {\n  position: fixed;\n  z-index: 3;\n  background-color: #FAFAFA;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0; }\n  .webim-loading img {\n    position: absolute;\n    margin: auto;\n    left: 0;\n    right: 0;\n    top: 0;\n    bottom: 0;\n    width: 24px; }\n\n/*\n * button\n */\n.webim-button {\n  font-size: 16px;\n  box-sizing: border-box;\n  display: inline-block;\n  margin: 10px auto;\n  width: 300px;\n  height: 36px;\n  cursor: pointer;\n  border-radius: 2px; }\n  .webim-button.error {\n    background-color: #ff3a00;\n    border: 1px solid #ff3a00; }\n  .webim-button:hover {\n    background-color: #1aa1e4; }\n\n/*\n * input\n */\n.webim-input {\n  box-sizing: border-box;\n  font-size: 14px;\n  padding: 0 4px;\n  display: inline-block;\n  margin: 10px auto 0;\n  width: 300px;\n  height: 36px;\n  line-height: 36px;\n  cursor: pointer;\n  border-radius: 2px;\n  border: 1px solid #e5e5e5;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n/*\n * checkbox\n */\n.webim-checkbox {\n  text-align: left;\n  margin: 10px 0 10px 5px;\n  padding-left: 50px;\n  box-sizing: border-box; }\n  .webim-checkbox span {\n    height: 30px;\n    line-height: 30px; }\n  .webim-checkbox > i {\n    position: relative;\n    margin-right: 6px;\n    width: 14px;\n    height: 14px;\n    border-radius: 2px;\n    display: inline-block;\n    vertical-align: middle;\n    border: 1px solid #cccccc;\n    cursor: pointer; }\n    .webim-checkbox > i:hover {\n      background-color: #fff; }\n      .webim-checkbox > i:hover em {\n        display: inline-block;\n        color: #cccccc; }\n    .webim-checkbox > i.checked {\n      background-color: #afd7e8; }\n      .webim-checkbox > i.checked em {\n        display: inline-block;\n        color: #000; }\n    .webim-checkbox > i em {\n      display: none;\n      position: absolute;\n      left: -6px;\n      top: -10px;\n      color: #000; }\n\n/*\n * left bar\n */\n.webim-leftbar {\n  position: relative;\n  float: left;\n  width: 50px;\n  height: 100%;\n  text-align: center;\n  border-radius: 2px 0px 0px 2px;\n  border: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #fcfdfb; }\n\n/*\n * contact list\n */\n.webim-contact-wrapper {\n  float: left;\n  height: 100%;\n  width: 250px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  border-right: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n.webim-contact-item {\n  cursor: pointer;\n  position: relative;\n  width: 100%;\n  overflow: hidden;\n  height: 60px; }\n  .webim-contact-item .webim-avatar-icon {\n    float: left;\n    margin: 10px; }\n  .webim-contact-item .webim-contact-info {\n    position: relative; }\n  .webim-contact-item .webim-contact-handlers {\n    text-align: right;\n    position: absolute;\n    right: 2px;\n    top: 0; }\n    .webim-contact-item .webim-contact-handlers i {\n      font-size: 16px;\n      line-height: 36px; }\n  .webim-contact-item > span, .webim-contact-item .webim-contact-username {\n    color: #1a1a1a;\n    font-size: 14px;\n    margin: 10px 0;\n    display: inline-block;\n    width: calc(100% - 70px);\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis; }\n  .webim-contact-item > i {\n    display: inline-block;\n    right: 2px;\n    bottom: 10px;\n    top: auto; }\n  .webim-contact-item > em {\n    display: block;\n    height: 20px;\n    line-height: 20px;\n    width: calc(100% - 100px);\n    position: absolute;\n    margin: auto;\n    left: 30px;\n    top: 30px;\n    right: 10px;\n    color: #999999;\n    font-style: normal;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden; }\n    .webim-contact-item > em img {\n      width: 20px;\n      vertical-align: middle; }\n  .webim-contact-item.selected {\n    background-color: #f3f6f6; }\n\n.webim-profile-avatar {\n  display: inline-block;\n  margin: 10px auto; }\n\n.webim-avatar-icon {\n  width: 40px;\n  height: 40px;\n  border-radius: 50%;\n  overflow: hidden;\n  -webkit-filter: contrast(1.2);\n  -webkit-tap-highlight-color: transparent; }\n  .webim-avatar-icon.small {\n    width: 30px;\n    height: 30px; }\n\n.webim-operations-icon,\n.webim-leftbar-icon {\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  margin-bottom: 10px;\n  color: #cccccc; }\n\n.webim-operations-icon:hover,\n.webim-leftbar-icon:hover,\n.webim-operations-icon.selected,\n.webim-leftbar-icon.selected {\n  color: #4eb1f4; }\n\n.webim-operations-icon {\n  color: #cccccc;\n  position: absolute;\n  margin-bottom: 0;\n  bottom: 10px;\n  left: 10px; }\n  .webim-operations-icon:hover {\n    color: #4eb1f4; }\n\n/*\n * operations\n */\n.webim-operations {\n  z-index: 1;\n  position: absolute;\n  text-align: left;\n  left: 40px;\n  bottom: 10px;\n  width: 160px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  background-color: #fff; }\n  .webim-operations i {\n    margin: 0 10px;\n    color: #cccccc; }\n  .webim-operations span {\n    vertical-align: top;\n    word-break: keep-all;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis; }\n  .webim-operations li {\n    height: 30px;\n    line-height: 30px;\n    cursor: pointer;\n    overflow: hidden; }\n    .webim-operations li:hover {\n      color: #4eb1f4;\n      background-color: #f2f2f2; }\n      .webim-operations li:hover i {\n        color: #4eb1f4; }\n    .webim-operations li:nth-child(2) i {\n      display: inline-block;\n      margin-top: -4px;\n      vertical-align: top; }\n    .webim-operations li:last-child:hover {\n      color: #e90101; }\n      .webim-operations li:last-child:hover i {\n        color: #e90101; }\n\n.webim-msg-prompt {\n  position: absolute;\n  top: -4px;\n  right: 0;\n  line-height: 16px;\n  font-style: normal;\n  width: 16px;\n  height: 16px;\n  font-size: 12px;\n  text-align: center;\n  color: #fff;\n  border-radius: 50%;\n  border: 2px solid #fcfdfb;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #ff3a00; }\n\n.webim-msg-icon-prompt {\n  width: 10px;\n  height: 10px;\n  top: 0px;\n  right: 8px; }\n\n.webim-blacklist-wrapper {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  overflow-x: hidden;\n  overflow-y: auto;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white;\n  margin-bottom: 30px; }\n\n.webim-blacklist-item {\n  position: relative;\n  cursor: pointer;\n  display: block;\n  width: 100%;\n  overflow: hidden;\n  height: 30px;\n  font-size: 20px;\n  line-height: 30px; }\n  .webim-blacklist-item i.font {\n    line-height: 30px;\n    float: right;\n    position: static; }\n\n.webim-operation-icon {\n  width: 100px;\n  float: right;\n  margin-right: 10px;\n  text-align: right; }\n\n* :focus {\n  outline: 0; }\n\n/*\n * notify\n */\n.webim-notify {\n  z-index: 3;\n  position: fixed;\n  top: 10px;\n  word-wrap: break-word;\n  padding: 4px;\n  width: 50%;\n  color: #fff;\n  left: 0;\n  right: 0;\n  margin: 0 auto;\n  max-width: 90%;\n  min-height: 30px;\n  border-radius: 2px;\n  line-height: 30px;\n  text-align: center;\n  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 6px 0px;\n  -webkit-tap-highlight-color: transparent;\n  border: 0px none black; }\n  .webim-notify.success {\n    background-color: #aeda3e; }\n  .webim-notify.error {\n    background-color: #ff3a00; }\n  .webim-notify i {\n    position: absolute;\n    right: 10px;\n    top: 9px; }\n\n/*\n * signin & signup\n */\n.webim-sign {\n  overflow: hidden;\n  width: 400px;\n  margin: 40px auto;\n  text-align: center;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n  .webim-sign h2 {\n    font-size: 24px;\n    color: #1a1a1a;\n    width: 100%;\n    line-height: 84px;\n    height: 64px; }\n  .webim-sign p {\n    margin: 0px auto 40px;\n    width: 300px;\n    text-align: left; }\n    .webim-sign p i {\n      font-style: normal;\n      color: #4eb1f4;\n      cursor: pointer; }\n  .webim-sign.webim-signup button {\n    margin-top: 30px; }\n\n.webim-chat {\n  position: relative;\n  max-width: 1024px;\n  min-width: 960px;\n  max-height: 600px;\n  height: 100%;\n  margin: auto;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white;\n  border-radius: 2px;\n  overflow: hidden; }\n\n.webim-chatwindow {\n  position: relative;\n  float: left;\n  height: 100%;\n  width: calc(100% - 303px); }\n  .webim-chatwindow textarea {\n    position: absolute;\n    bottom: 40px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: none;\n    width: 100%;\n    padding: 10px 15px; }\n  .webim-chatwindow .webim-group-memeber {\n    position: absolute;\n    left: 0;\n    right: 0;\n    top: 40px;\n    margin: auto;\n    padding: 10px 7px;\n    border-radius: 2px;\n    width: 200px;\n    overflow: auto;\n    box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n    z-index: 2;\n    background: #fff;\n    max-height: 300px; }\n    .webim-chatwindow .webim-group-memeber li {\n      height: 30px;\n      line-height: 30px;\n      padding: 0 4px;\n      box-sizing: border-box;\n      text-align: left; }\n      .webim-chatwindow .webim-group-memeber li > div {\n        display: inline-block;\n        vertical-align: middle;\n        margin: 0 6px;\n        width: 20px;\n        height: 20px; }\n\n.webim-chatwindow-title {\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  font-size: 14px; }\n  .webim-chatwindow-title i {\n    color: #cccccc;\n    vertical-align: middle;\n    cursor: pointer;\n    margin-left: 10px;\n    padding-bottom: 22px; }\n    .webim-chatwindow-title i.webim-up-icon {\n      transform: rotate(180deg); }\n    .webim-chatwindow-title i.webim-call-icon {\n      position: absolute;\n      left: 0;\n      top: 0; }\n    .webim-chatwindow-title i.webim-accept-icon {\n      position: absolute;\n      left: 40px;\n      top: 0; }\n\n.webim-chatwindow-options {\n  border-top: 1px solid #f2f2f2;\n  width: 100%;\n  z-index: 1;\n  position: absolute;\n  bottom: 120px;\n  left: 0;\n  height: 30px;\n  line-height: 30px; }\n  .webim-chatwindow-options > span {\n    margin-left: 6px;\n    color: #cccccc;\n    cursor: pointer; }\n  .webim-chatwindow-options > span:hover {\n    color: #4eb1f4; }\n\n.webim-send-btn {\n  position: absolute;\n  bottom: 0;\n  right: 10px;\n  width: 80px;\n  height: 24px;\n  font-size: 12px; }\n\n.webim-chatwindow-msg {\n  z-index: 1;\n  position: absolute;\n  top: 40px;\n  bottom: 150px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  box-sizing: border-box;\n  padding: 20px 10px;\n  width: 100%; }\n\n.webim-send-wrapper > ul {\n  z-index: 1;\n  position: absolute;\n  width: 280px;\n  height: 194px;\n  bottom: 150px;\n  left: -140px;\n  border-radius: 2px;\n  background: #fff;\n  box-sizing: border-box;\n  padding: 4px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 4px 12px 0px; }\n  .webim-send-wrapper > ul li {\n    cursor: pointer;\n    display: inline-block;\n    margin: 2px 3px 0 3px; }\n\n#test {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  z-index: 2222; }\n\n.webim-msg-container {\n  overflow: hidden;\n  margin: 24px 0; }\n  .webim-msg-container > div {\n    max-width: 60%;\n    overflow: hidden; }\n  .webim-msg-container .right > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-right: 10px; }\n  .webim-msg-container .right .webim-msg-icon {\n    color: #b4e4fc;\n    right: -40px; }\n  .webim-msg-container .right .webim-msg-value {\n    float: right;\n    margin: 6px 10px 0 0;\n    background-color: #b4e4fc; }\n  .webim-msg-container .right .webim-msg-error {\n    float: right;\n    margin: 6px 10px 0 0; }\n  .webim-msg-container .right .webim-msg-header {\n    text-align: right; }\n  .webim-msg-container .left > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-left: 10px; }\n  .webim-msg-container .left .webim-msg-icon {\n    color: #f1f2ec;\n    left: -10px; }\n  .webim-msg-container .left .webim-msg-value {\n    background-color: #f1f2ec;\n    float: left;\n    margin: 6px 0 0 10px; }\n  .webim-msg-container .left .webim-msg-header {\n    text-align: left; }\n\n.webim-msg-icon {\n  position: absolute;\n  top: 4px;\n  font-size: 10px; }\n\n.webim-msg-value {\n  position: relative;\n  min-height: 30px;\n  max-width: calc(100% - 80px);\n  border-radius: 4px;\n  padding: 6px;\n  box-sizing: border-box;\n  min-width: 60%; }\n  .webim-msg-value video {\n    width: 100%; }\n  .webim-msg-value.webim-img-msg-wrapper {\n    padding: 1px; }\n  .webim-msg-value > div,\n  .webim-msg-value > pre {\n    white-space: pre-wrap;\n    word-break: break-all;\n    color: #1a1a1a;\n    font-size: 14px;\n    line-height: 20px;\n    margin: 0; }\n  .webim-msg-value .emoji {\n    width: 32px;\n    vertical-align: bottom; }\n  .webim-msg-value i {\n    display: block;\n    font-style: normal;\n    margin-left: 40px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25); }\n  .webim-msg-value a {\n    display: block;\n    margin-left: 30px;\n    margin-top: -28px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25);\n    text-decoration: none; }\n\n.webim-msg-img {\n  max-width: 100%;\n  vertical-align: middle;\n  cursor: pointer;\n  border-radius: 4px; }\n\n.webim-msg-header {\n  line-height: 30px;\n  margin-bottom: 4px;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.15); }\n\n.webim-msg-header-icon {\n  vertical-align: middle;\n  display: inline-block;\n  margin: -46px 4px 0 -4px;\n  line-height: 40px;\n  color: #868683; }\n\n.webim-msg-name {\n  width: calc(100% - 80px);\n  display: inline-block;\n  height: 40px;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden; }\n\n.webim-msg-fileSize {\n  display: inline-block;\n  float: right;\n  width: 47px;\n  overflow: hidden; }\n\n.webim-img-expand {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.3);\n  z-index: 3; }\n  .webim-img-expand img {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    max-width: 90%;\n    max-height: 90%;\n    margin: auto; }\n\n.webim-audio-slash {\n  background-color: transparent;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  border-radius: 4px; }\n\n.slash {\n  animation: slash 1s infinite;\n  -moz-animation: slash 1s infinite;\n  -webkit-animation: slash 1s infinite; }\n\n@keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-moz-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-webkit-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n.clearfix:after {\n  content: ' ';\n  display: table;\n  clear: both; }\n\n/*\n * dialog\n */\n.webim-dialog {\n  z-index: 3;\n  position: absolute;\n  width: 400px;\n  min-height: 168px;\n  top: 20%;\n  left: 0;\n  right: 0;\n  margin: auto;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 8px 0px;\n  background-color: white; }\n  .webim-dialog h3 {\n    line-height: 40px;\n    box-sizing: border-box;\n    padding-left: 10px;\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    font-weight: normal; }\n  .webim-dialog .font {\n    font-size: 20px;\n    position: absolute;\n    right: 6px;\n    top: 6px;\n    width: 20px;\n    height: 20px;\n    color: rgba(0, 0, 0, 0.1);\n    cursor: pointer; }\n  .webim-dialog > div {\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    padding: 10px 10px 20px; }\n  .webim-dialog .webim-dialog-button {\n    position: absolute;\n    right: 8px;\n    bottom: 2px;\n    width: 80px;\n    height: 26px; }\n  .webim-dialog .webim-dialog-button-left {\n    position: absolute;\n    right: 100px;\n    bottom: 2px;\n    width: 80px;\n    height: 26px; }\n  .webim-dialog .webim-subscribe-button {\n    width: 60px;\n    height: 30px;\n    margin-left: 10px; }\n  .webim-dialog input {\n    height: 30px;\n    width: 220px; }\n  .webim-dialog textarea {\n    margin-top: 20px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: 1px solid rgba(0, 0, 0, 0.1);\n    width: 220px; }\n  .webim-dialog-body {\n    min-height: 100px; }\n  .webim-dialog .webim-dialog-footer {\n    padding: 10px;\n    position: relative;\n    min-height: 20px;\n    text-align: right; }\n    .webim-dialog .webim-dialog-footer .webim-button {\n      position: static;\n      margin-right: 10px; }\n\n.webim-dialog-2 {\n  height: 450px; }\n\n.webim-friend-requests {\n  height: auto; }\n  .webim-friend-requests span {\n    width: 60%;\n    display: inline-block;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap; }\n  .webim-friend-requests > div {\n    overflow: auto;\n    max-height: 400px; }\n\n/*\n * layer\n */\n.webim-layer {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n  background-color: rgba(0, 0, 0, 0.25); }\n\n/*\n  说明:\n  下面的css都是为了快速实现功能，覆盖旧有属性的各种trick\n  后期需要找专门的css人员整理一遍，合并入正常的文件，然后删除本文件!\n*/\n/******************* multiple select box ********************/\n.react-multi-select-box-container {\n  position: relative;\n  width: 240px;\n  display: inline-block;\n  background-color: #fff;\n  border-radius: 4px;\n  text-align: left;\n  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); }\n\n.react-multi-select-box {\n  padding: 10px 0;\n  display: inline-block;\n  cursor: pointer;\n  border: none;\n  width: 100%;\n  text-align: left;\n  background-color: transparent; }\n  .react-multi-select-box::before {\n    content: ' ';\n    position: absolute;\n    z-index: 1;\n    height: 20px;\n    top: -7px;\n    right: 13px;\n    border-left: 3px solid transparent;\n    border-right: 3px solid transparent;\n    border-bottom: 4px solid #a7a8aa; }\n  .react-multi-select-box::after {\n    content: ' ';\n    position: absolute;\n    z-index: 1;\n    top: 20px;\n    right: 13px;\n    border-top: 4px solid #a7a8aa;\n    border-left: 3px solid transparent;\n    border-right: 3px solid transparent; }\n\n.react-multi-select-box-label {\n  padding: 0 40px 0 10px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #333;\n  line-height: 16px; }\n\n.react-multi-select-box-empty .react-multi-select-box-label {\n  color: #c5c5c5; }\n\n.react-multi-select-area {\n  position: absolute;\n  margin-top: 4px;\n  padding: 0 10px;\n  height: 225px;\n  min-width: 260px;\n  border-radius: 4px;\n  background-color: #fff;\n  z-index: 4;\n  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); }\n\n.react-multi-select-box-hidden {\n  display: none; }\n\n.react-multi-select-hide {\n  display: none; }\n\n.react-multi-select-panel {\n  display: flex;\n  height: 185px; }\n\n.react-multi-select-col {\n  min-width: 110px;\n  overflow-y: auto; }\n  .react-multi-select-col .selected-option-row {\n    padding: 5px 0;\n    cursor: pointer; }\n\n.react-multi-select-sign {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  width: 15px; }\n  .react-multi-select-sign i {\n    width: 6px;\n    height: 6px;\n    border-top: 2px solid #a9a9a9;\n    border-right: 2px solid #a9a9a9;\n    -webkit-transform: rotate(45deg);\n    -moz-transform: rotate(45deg);\n    -o-transform: rotate(45deg);\n    transform: rotate(45deg); }\n\n.react-multi-select-area-btn {\n  padding: 5px 0;\n  height: 40px;\n  border-top: 1px solid #eee;\n  text-align: center; }\n  .react-multi-select-area-btn .eg-btn {\n    padding: 4px 20px;\n    margin-right: 10px; }\n    .react-multi-select-area-btn .eg-btn:last-child {\n      margin-right: 0; }\n\n.classification {\n  padding: 5px 0;\n  cursor: pointer; }\n\n.react-multi-select-list-arrow {\n  position: relative;\n  display: inline-block;\n  vertical-align: middle;\n  width: 8px;\n  height: 8px; }\n  .react-multi-select-list-arrow::before {\n    content: ' ';\n    position: absolute;\n    border-top: 3px solid transparent;\n    border-bottom: 3px solid transparent;\n    border-left: 4px solid #87c2e5; }\n\n.react-multi-select-list-arrow.expand::before {\n  content: ' ';\n  position: absolute;\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  border-top: 4px solid #87c2e5; }\n\n.react-multi-select-sub-options {\n  padding-left: 16px; }\n\n.react-multi-select-list-option:last-child {\n  padding-bottom: 0; }\n\n.react-multi-select-list-option .eg-input.checkbox .input-icon {\n  margin-right: 2px; }\n\n.react-multi-select-list-option .eg-input.checkbox.active .input-icon {\n  fill: #87c2e5; }\n\n.react-multi-select-list-option .react-multi-select-box-option {\n  position: relative;\n  padding: 5px 0 5px 20px;\n  margin: 0;\n  cursor: pointer;\n  display: block;\n  text-decoration: none; }\n  .react-multi-select-list-option .react-multi-select-box-option:before {\n    content: ' ';\n    position: absolute;\n    text-align: center;\n    line-height: 1.1;\n    left: 2px;\n    top: 8px;\n    height: 12px;\n    width: 12px;\n    margin-right: 10px;\n    border: 1px solid #7B8E9B;\n    background: #f9f9f9;\n    vertical-align: middle; }\n\n.react-multi-select-list-option .react-multi-select-box-option-selected:before {\n  content: '\\2713';\n  color: #87c2e5; }\n\n.react-multiple-select-type-name {\n  padding: 5px 0 4px 0;\n  border-bottom: 1px solid #eee;\n  color: #c5c5c5; }\n\n.react-multi-select-btn {\n  padding: 4px 20px;\n  border-radius: 6px;\n  background-color: #307fc8;\n  display: inline-block;\n  margin-right: 10px;\n  margin-bottom: 0;\n  text-align: center;\n  vertical-align: middle;\n  touch-action: manipulation;\n  cursor: pointer;\n  background-image: none;\n  border: 1px solid transparent;\n  white-space: nowrap;\n  outline: 0;\n  text-decoration: none;\n  font-weight: normal;\n  font-size: 14px;\n  line-height: 1.42857143;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  color: #fff;\n  border-color: transparent; }\n  .react-multi-select-btn:last-child {\n    margin-right: 0; }\n\n.react-multi-select-btn-white {\n  background-color: #fff;\n  color: #333;\n  border-color: #d5d5d5; }\n\n/******************* multiple select box ********************/\n.webim-chatwindow .webim-operations-icon {\n  top: 5px;\n  left: auto;\n  right: 10px;\n  bottom: 0px; }\n\n.webim-chatwindow .webim-operations {\n  left: inherit;\n  right: 40px;\n  top: 10px;\n  bottom: auto;\n  z-index: 2; }\n\n.webim-friend-options span.radio_span {\n  width: 80px;\n  display: inline-block; }\n\n.webim-friend-options input.radio {\n  height: 10px;\n  width: 20px; }\n\n.webim_isWindowSDK {\n  top: 0;\n  bottom: 0; }\n\n.webim_isWindowSDK .webim-chat {\n  max-width: 100%;\n  min-width: 100%;\n  max-height: 100%;\n  width: 100%; }\n\n.webim-friend-requests-windowSDK {\n  width: 500px; }\n\n.webim-friend-requests-windowSDK span {\n  width: 100%; }\n\n.webim-msg-value a.dir {\n  margin-left: 130px;\n  margin-top: -20px; }\n\n.webim-leftbar .username {\n  width: 100%;\n  overflow: hidden; }\n\n.webim-loading span {\n  position: absolute;\n  margin: auto;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  width: 200px;\n  height: 80px;\n  text-align: center; }\n\nspan.red {\n  color: #ff2a00; }\n\n.webim-contact-loading {\n  width: 24px;\n  margin: 0 auto; }\n\n.webim-contact-loading img {\n  width: 24px; }\n", ""]);
 
 	// exports
 
@@ -770,14 +832,83 @@
 
 	    init: function init() {
 	        Demo.selected = null;
-	        Demo.user = null;
+	        // Demo.user = null;
 	        Demo.call = null;
 	        Demo.roster = {};
 	        Demo.strangers = {};
 	        Demo.blacklist = {};
-
+	        Demo.selectedCate = 'friends';
+	        Demo.chatState.clear();
+	        if (Demo.currentChatroom) {
+	            delete Demo.chatRecord[Demo.currentChatroom];
+	        }
 	        ReactDOM.unmountComponentAtNode(this.node);
 	        this.render(this.node);
+	    },
+
+	    addToChatRecord: function addToChatRecord(msg, type) {
+	        var data = msg.data || msg.msg || '';
+	        var brief = this.getBrief(data, type);
+	        this.sentByMe = msg.from === Demo.user;
+	        var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
+
+	        if (!Demo.chatRecord[targetId] || !Demo.chatRecord[targetId].messages) {
+	            Demo.chatRecord[targetId] = {};
+
+	            Demo.chatRecord[targetId].messages = [];
+	        } else if (Demo.chatRecord[targetId].messages.length >= Demo.maxChatRecordCount) {
+
+	            Demo.chatRecord[targetId].messages.shift();
+	        }
+	        Demo.chatRecord[targetId].brief = brief;
+	        Demo.chatRecord[targetId].briefType = type;
+
+	        Demo.chatRecord[targetId].messages.push({ message: msg, type: type });
+	    },
+
+	    releaseChatRecord: function releaseChatRecord(targetId) {
+	        var targetId = targetId || Demo.selected;
+	        if (targetId) {
+	            if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
+	                if (document.getElementById('wrapper' + targetId)) document.getElementById('wrapper' + targetId).innerHTML = '';
+	                for (var i = 0; i < Demo.chatRecord[targetId].messages.length; i++) {
+	                    Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message, Demo.chatRecord[targetId].messages[i].type);
+	                }
+	            }
+	        }
+	    },
+
+	    getBrief: function getBrief(data, type) {
+	        var brief = '';
+	        switch (type) {
+	            case 'txt':
+	                brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
+	                break;
+	            case 'emoji':
+	                for (var i = 0, l = data.length; i < l; i++) {
+	                    brief += data[i].type === 'emoji' ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />' : this.encode(data[i].data);
+	                }
+	                break;
+	            case 'img':
+	                brief = '[' + Demo.lan.image + ']';
+	                break;
+	            case 'aud':
+	                brief = '[' + Demo.lan.audio + ']';
+	                break;
+	            case 'cmd':
+	                brief = '[' + Demo.lan.cmd + ']';
+	                break;
+	            case 'file':
+	                brief = '[' + Demo.lan.file + ']';
+	                break;
+	            case 'loc':
+	                brief = '[' + Demo.lan.location + ']';
+	                break;
+	            case 'video':
+	                brief = '[' + Demo.lan.video + ']';
+	                break;
+	        }
+	        return brief;
 	    },
 
 	    appendMsg: function appendMsg(msg, type) {
@@ -793,66 +924,67 @@
 	            data = msg.data || msg.msg || '',
 	            name = this.sendByMe ? Demo.user : msg.from,
 	            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
-	            targetNode = document.getElementById('wrapper' + targetId);
+	            targetNode = document.getElementById('wrapper' + targetId),
+	            isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
 	        // TODO: ios/android client doesn't encodeURIComponent yet
-	        // if (typeof data === "string") {
-	        // data = decodeURIComponent(data);
-	        // }
 
-	        if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
+	        if (!this.sentByMe && msg.type === 'chat' && isStranger) {
 	            Demo.strangers[targetId] = Demo.strangers[targetId] || [];
-	        } else if (!targetNode) {
+	        } else if (isStranger) {
 	            return;
 	        }
-	        switch (type) {
-	            case 'txt':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'txt' });
-	                } else {
-	                    brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
-	                    textMsg({
-	                        wrapper: targetNode,
-	                        name: name,
-	                        value: brief,
-	                        error: msg.error,
-	                        errorText: msg.errorText
-	                    }, this.sentByMe);
-	                }
-	                break;
-	            case 'emoji':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'emoji' });
-	                } else {
-	                    for (var i = 0, l = data.length; i < l; i++) {
-	                        brief += data[i].type === 'emoji' ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />' : this.encode(data[i].data);
-	                    }
-	                    textMsg({
-	                        wrapper: targetNode,
-	                        name: name,
-	                        value: brief,
-	                        error: msg.error,
-	                        errorText: msg.errorText
-	                    }, this.sentByMe);
-	                }
-	                break;
-	            case 'img':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'img' });
-	                } else {
-	                    if (WebIM.config.isWindowSDK) {
-	                        var cur = document.getElementById('file_' + msg.id);
-	                        if (cur) {
-	                            var listenerName = 'onUpdateFileUrl' + msg.id;
-	                            if (Demo.api[listenerName]) {
-	                                Demo.api[listenerName]({ url: msg.url });
-	                                Demo.api[listenerName] = null;
+
+	        if (isStranger) {
+	            Demo.strangers[targetId].push({ msg: msg, type: type });
+	            this.render(this.node, 'stranger');
+	            return;
+	        } else {
+	            brief = this.getBrief(data, type);
+	            if (targetNode) {
+	                switch (type) {
+	                    case 'txt':
+	                        textMsg({
+	                            wrapper: targetNode,
+	                            name: name,
+	                            value: brief,
+	                            error: msg.error,
+	                            errorText: msg.errorText
+	                        }, this.sentByMe);
+	                        break;
+	                    case 'emoji':
+	                        textMsg({
+	                            wrapper: targetNode,
+	                            name: name,
+	                            value: brief,
+	                            error: msg.error,
+	                            errorText: msg.errorText
+	                        }, this.sentByMe);
+	                        break;
+	                    case 'img':
+	                        if (WebIM.config.isWindowSDK) {
+	                            var cur = document.getElementById('file_' + msg.id);
+	                            if (cur) {
+	                                var listenerName = 'onUpdateFileUrl' + msg.id;
+	                                if (Demo.api[listenerName]) {
+	                                    Demo.api[listenerName]({ url: msg.url });
+	                                    Demo.api[listenerName] = null;
+	                                } else {
+	                                    console.log('listenerName not exists:' + msg.id);
+	                                }
+	                                return;
 	                            } else {
-	                                console.log('listenerName not exists:' + msg.id);
+	                                brief = '[' + Demo.lan.image + ']';
+	                                imgMsg({
+	                                    id: msg.id,
+	                                    wrapper: targetNode,
+	                                    name: name,
+	                                    value: data || msg.url,
+	                                    error: msg.error,
+	                                    errorText: msg.errorText
+	                                }, this.sentByMe);
 	                            }
-	                            return;
 	                        } else {
-	                            brief = '[' + Demo.lan.image + ']';
 	                            imgMsg({
 	                                id: msg.id,
 	                                wrapper: targetNode,
@@ -862,37 +994,71 @@
 	                                errorText: msg.errorText
 	                            }, this.sentByMe);
 	                        }
-	                    } else {
-	                        brief = '[' + Demo.lan.image + ']';
-	                        imgMsg({
-	                            id: msg.id,
-	                            wrapper: targetNode,
-	                            name: name,
-	                            value: data || msg.url,
-	                            error: msg.error,
-	                            errorText: msg.errorText
-	                        }, this.sentByMe);
-	                    }
-	                }
-	                break;
-	            case 'aud':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: type });
-	                } else {
-	                    if (WebIM.config.isWindowSDK) {
-	                        var cur = document.getElementById('file_' + msg.id);
-	                        if (cur) {
-	                            var listenerName = 'onUpdateFileUrl' + msg.id;
-	                            if (Demo.api[listenerName]) {
-	                                Demo.api[listenerName]({ url: msg.url });
-	                                Demo.api[listenerName] = null;
+	                        break;
+	                    case 'aud':
+	                        if (WebIM.config.isWindowSDK) {
+	                            var cur = document.getElementById('file_' + msg.id);
+	                            if (cur) {
+	                                var listenerName = 'onUpdateFileUrl' + msg.id;
+	                                if (Demo.api[listenerName]) {
+	                                    Demo.api[listenerName]({ url: msg.url });
+	                                    Demo.api[listenerName] = null;
+	                                } else {
+	                                    console.log('listenerName not exists:' + msg.id);
+	                                }
+	                                return;
 	                            } else {
-	                                console.log('listenerName not exists:' + msg.id);
+	                                brief = '[' + Demo.lan.file + ']';
+	                                fileMsg({
+	                                    id: msg.id,
+	                                    wrapper: targetNode,
+	                                    name: name,
+	                                    value: data || msg.url,
+	                                    filename: msg.filename,
+	                                    error: msg.error,
+	                                    errorText: msg.errorText
+	                                }, this.sentByMe);
 	                            }
-	                            return;
 	                        } else {
-	                            brief = '[' + Demo.lan.file + ']';
-	                            fileMsg({
+	                            audioMsg({
+	                                wrapper: targetNode,
+	                                name: name,
+	                                value: data || msg.url,
+	                                length: msg.length,
+	                                id: msg.id,
+	                                error: msg.error,
+	                                errorText: msg.errorText
+	                            }, this.sentByMe);
+	                        }
+	                        break;
+	                    case 'cmd':
+	                        break;
+	                    case 'file':
+	                        if (WebIM.config.isWindowSDK) {
+	                            var cur = document.getElementById('file_' + msg.id);
+	                            if (cur) {
+	                                var listenerName = 'onUpdateFileUrl' + msg.id;
+	                                if (Demo.api[listenerName]) {
+	                                    Demo.api[listenerName]({ url: msg.url });
+	                                    Demo.api[listenerName] = null;
+	                                } else {
+	                                    console.log('listenerName not exists:' + msg.id);
+	                                }
+	                                return;
+	                            } else {
+	                                brief = '[' + Demo.lan.file + ']';
+	                                fileMsg({
+	                                    id: msg.id,
+	                                    wrapper: targetNode,
+	                                    name: name,
+	                                    value: data || msg.url,
+	                                    filename: msg.filename,
+	                                    error: msg.error,
+	                                    errorText: msg.errorText
+	                                }, this.sentByMe);
+	                            }
+	                        } else {
+	                            var option = {
 	                                id: msg.id,
 	                                wrapper: targetNode,
 	                                name: name,
@@ -900,136 +1066,62 @@
 	                                filename: msg.filename,
 	                                error: msg.error,
 	                                errorText: msg.errorText
-	                            }, this.sentByMe);
+	                            };
+	                            if (msg.ext) {
+	                                option.fileSize = msg.ext.fileSize;
+	                            }
+	                            fileMsg(option, this.sentByMe);
 	                        }
-	                    } else {
-	                        brief = '[' + Demo.lan.audio + ']';
-	                        audioMsg({
+	                        break;
+	                    case 'loc':
+	                        locMsg({
 	                            wrapper: targetNode,
 	                            name: name,
-	                            value: data || msg.url,
-	                            length: msg.length,
-	                            id: msg.id,
+	                            value: data || msg.addr,
 	                            error: msg.error,
 	                            errorText: msg.errorText
 	                        }, this.sentByMe);
-	                    }
-	                }
-	                break;
-	            case 'cmd':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'cmd' });
-	                } else {
-	                    brief = '[' + Demo.lan.cmd + ']';
-	                }
-	                break;
-	            case 'file':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'file' });
-	                } else {
-	                    if (WebIM.config.isWindowSDK) {
-	                        var cur = document.getElementById('file_' + msg.id);
-	                        if (cur) {
-	                            var listenerName = 'onUpdateFileUrl' + msg.id;
-	                            if (Demo.api[listenerName]) {
-	                                Demo.api[listenerName]({ url: msg.url });
-	                                Demo.api[listenerName] = null;
+	                        break;
+	                    case 'video':
+	                        if (WebIM.config.isWindowSDK) {
+	                            var cur = document.getElementById('file_' + msg.id);
+	                            if (cur) {
+	                                var listenerName = 'onUpdateFileUrl' + msg.id;
+	                                if (Demo.api[listenerName]) {
+	                                    Demo.api[listenerName]({ url: msg.url });
+	                                    Demo.api[listenerName] = null;
+	                                } else {
+	                                    console.log('listenerName not exists:' + msg.id);
+	                                }
+	                                return;
 	                            } else {
-	                                console.log('listenerName not exists:' + msg.id);
+	                                brief = '[' + Demo.lan.file + ']';
+	                                fileMsg({
+	                                    id: msg.id,
+	                                    wrapper: targetNode,
+	                                    name: name,
+	                                    value: data || msg.url,
+	                                    filename: msg.filename,
+	                                    error: msg.error,
+	                                    errorText: msg.errorText
+	                                }, this.sentByMe);
 	                            }
-	                            return;
 	                        } else {
-	                            brief = '[' + Demo.lan.file + ']';
-	                            fileMsg({
-	                                id: msg.id,
+	                            videoMsg({
 	                                wrapper: targetNode,
 	                                name: name,
 	                                value: data || msg.url,
-	                                filename: msg.filename,
+	                                length: msg.length,
+	                                id: msg.id,
 	                                error: msg.error,
 	                                errorText: msg.errorText
 	                            }, this.sentByMe);
 	                        }
-	                    } else {
-	                        brief = '[' + Demo.lan.file + ']';
-	                        var option = {
-	                            id: msg.id,
-	                            wrapper: targetNode,
-	                            name: name,
-	                            value: data || msg.url,
-	                            filename: msg.filename,
-	                            error: msg.error,
-	                            errorText: msg.errorText
-	                        };
-	                        if (msg.ext) {
-	                            option.fileSize = msg.ext.fileSize;
-	                        }
-	                        fileMsg(option, this.sentByMe);
-	                    }
+	                        break;
+	                    default:
+	                        break;
 	                }
-	                break;
-	            case 'loc':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: 'loc' });
-	                } else {
-	                    brief = '[' + Demo.lan.location + ']';
-	                    locMsg({
-	                        wrapper: targetNode,
-	                        name: name,
-	                        value: data || msg.addr,
-	                        error: msg.error,
-	                        errorText: msg.errorText
-	                    }, this.sentByMe);
-	                }
-	                break;
-	            case 'video':
-	                if (!targetNode) {
-	                    Demo.strangers[targetId].push({ msg: msg, type: type });
-	                } else {
-	                    if (WebIM.config.isWindowSDK) {
-	                        var cur = document.getElementById('file_' + msg.id);
-	                        if (cur) {
-	                            var listenerName = 'onUpdateFileUrl' + msg.id;
-	                            if (Demo.api[listenerName]) {
-	                                Demo.api[listenerName]({ url: msg.url });
-	                                Demo.api[listenerName] = null;
-	                            } else {
-	                                console.log('listenerName not exists:' + msg.id);
-	                            }
-	                            return;
-	                        } else {
-	                            brief = '[' + Demo.lan.file + ']';
-	                            fileMsg({
-	                                id: msg.id,
-	                                wrapper: targetNode,
-	                                name: name,
-	                                value: data || msg.url,
-	                                filename: msg.filename,
-	                                error: msg.error,
-	                                errorText: msg.errorText
-	                            }, this.sentByMe);
-	                        }
-	                    } else {
-	                        brief = '[' + Demo.lan.video + ']';
-	                        videoMsg({
-	                            wrapper: targetNode,
-	                            name: name,
-	                            value: data || msg.url,
-	                            length: msg.length,
-	                            id: msg.id,
-	                            error: msg.error,
-	                            errorText: msg.errorText
-	                        }, this.sentByMe);
-	                    }
-	                }
-	                break;
-	            default:
-	                break;
-	        }
-
-	        if (!targetNode) {
-	            this.render(this.node, 'stranger');
-	            return;
+	            }
 	        }
 
 	        // show brief
@@ -1038,20 +1130,20 @@
 	        if (msg.type === 'cmd') {
 	            return;
 	        }
-
 	        // show count
+	        var cate = '';
 	        switch (msg.type) {
 	            case 'chat':
 	                if (this.sentByMe) {
 	                    return;
 	                }
-	                var contact = document.getElementById(msg.from),
-	                    cate = Demo.roster[msg.from] ? 'friends' : 'strangers';
+	                var contact = document.getElementById(msg.from);
+	                cate = Demo.roster[msg.from] ? 'friends' : 'strangers';
 
 	                this.addCount(msg.from, cate);
 	                break;
 	            case 'groupchat':
-	                var cate = msg.roomtype ? msg.roomtype : 'groups';
+	                cate = msg.roomtype ? msg.roomtype : 'groups';
 
 	                this.addCount(msg.to, cate);
 	                break;
@@ -1060,30 +1152,52 @@
 
 	    appendBrief: function appendBrief(id, value) {
 	        var cur = document.getElementById(id);
+	        if (!cur) return;
 	        cur.querySelector('em').innerHTML = value;
 	    },
 
 	    addCount: function addCount(id, cate) {
+
+	        // Do not add a count to an opened chat window
 	        // TODO: don't handle dom directly,use react way.
 	        if (Demo.selectedCate !== cate) {
+	            // This is red dot on the cate
 	            var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
 	            curCate.style.display = 'block';
-	            var curCateCount = curCate.getAttribute('count') / 1;
-	            curCateCount++;
-	            curCate.setAttribute('count', curCateCount);
+	            var curCateCount = curCate.getAttribute('data-count') / 1;
 
-	            var cur = document.getElementById(id).getElementsByTagName('i')[0];
-	            var curCount = cur.getAttribute('count') / 1;
-	            curCount++;
-	            cur.setAttribute('count', curCount);
-	            cur.innerText = curCount > 999 ? '...' : curCount + '';
-	            cur.style.display = 'block';
+	            // Don't increase the count of the cate if an opened item got messages
+	            if (Demo.chatState[cate].selected != id) {
+
+	                curCateCount++;
+
+	                // This is the red dot on the items
+	                var cur = document.getElementById(id).getElementsByTagName('i')[0];
+	                var curCount = cur.getAttribute('data-count') / 1;
+	                curCount++;
+	                cur.setAttribute('data-count', curCount);
+	                Demo.chatRecord[id].count = curCount;
+	                cur.innerText = curCount > 999 ? '...' : curCount + '';
+	                cur.style.display = 'block';
+	            }
+
+	            curCate.setAttribute('data-count', curCateCount);
+	            Demo.chatState[cate].count = curCateCount;
 	        } else {
+	            if (Demo.selected !== id) {
+	                var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
+	                curCate.style.display = 'block';
+	                var curCateCount = curCate.getAttribute('data-count') / 1;
+	                curCateCount++;
+	                curCate.setAttribute('data-count', curCateCount);
+	                Demo.chatState[cate].count = curCateCount;
+	            }
 	            if (!this.sentByMe && id !== Demo.selected) {
 	                var cur = document.getElementById(id).getElementsByTagName('i')[0];
-	                var curCount = cur.getAttribute('count') / 1;
+	                var curCount = cur.getAttribute('data-count') / 1;
 	                curCount++;
-	                cur.setAttribute('count', curCount);
+	                cur.setAttribute('data-count', curCount);
+	                Demo.chatRecord[id].count = curCount;
 	                cur.innerText = curCount > 999 ? '...' : curCount + '';
 	                cur.style.display = 'block';
 	            }
@@ -22715,14 +22829,21 @@
 
 	    keyDown: function keyDown(e) {
 	        if (e && e.keyCode === 13) {
-	            this.signin();
+	            this.login();
 	        }
 	    },
 
-	    signin: function signin() {
+	    login: function login() {
 	        var username = this.refs.name.refs.input.value || (WebIM.config.autoSignIn ? WebIM.config.autoSignInName : '');
 	        var auth = this.refs.auth.refs.input.value || (WebIM.config.autoSignIn ? WebIM.config.autoSignInPwd : '');
 	        var type = this.refs.token.refs.input.checked;
+	        this.signin(username, auth, type);
+	    },
+
+	    signin: function signin(username, auth, type) {
+	        var username = username;
+	        var auth = auth;
+	        var type = type;
 
 	        if (!username || !auth) {
 	            Demo.api.NotifyError(Demo.lan.notEmpty);
@@ -22734,12 +22855,31 @@
 	            user: username.toLowerCase(),
 	            pwd: auth,
 	            accessToken: auth,
-	            appKey: this.props.config.appkey
+	            appKey: this.props.config.appkey,
+	            success: function success(token) {
+	                var encryptUsername = WebIM.utils.encrypt(username);
+	                var encryptAuth = WebIM.utils.encrypt(auth);
+	                var token = token.access_token;
+	                var url = 'index.html?username=' + encryptUsername;
+	                WebIM.utils.setCookie('webim_' + encryptUsername, token, 1);
+	                window.history.pushState({}, 0, url);
+	            },
+	            error: function error() {
+	                window.history.pushState({}, 0, 'index.html');
+	            }
 	        };
 
 	        if (!type) {
 	            delete options.accessToken;
 	        }
+	        console.log('Record:: ', Demo.chatRecord);
+	        if (Demo.user) {
+	            if (Demo.user != username) {
+	                Demo.chatRecord = {};
+	                console.log('clearclear');
+	            }
+	        }
+
 	        Demo.user = username;
 
 	        this.props.loading('show');
@@ -22774,6 +22914,26 @@
 	        });
 	    },
 
+	    componentWillMount: function componentWillMount() {
+	        var pattern = /([^\?|&])\w+=([^&]+)/g;
+	        var username, auth, type;
+	        if (window.location.search) {
+	            var args = window.location.search.match(pattern);
+	            if (args.length == 1 && args[0]) {
+	                username = args[0].substr(9);
+	                auth = WebIM.utils.getCookie()['webim_' + username];
+	                type = true;
+	            }
+
+	            if (username && auth) {
+	                username = WebIM.utils.decrypt(username);
+	                this.signin(username, auth, type);
+	            } else {
+	                window.history.pushState({}, 0, 'index.html');
+	            }
+	        }
+	    },
+
 	    componentDidMount: function componentDidMount() {
 	        if (WebIM.config.autoSignIn) {
 	            this.refs.button.refs.button.click();
@@ -22797,7 +22957,7 @@
 	                { className: WebIM.config.isWindowSDK ? 'hide' : '' },
 	                React.createElement(Checkbox, { text: Demo.lan.tokenSignin, ref: 'token' })
 	            ),
-	            React.createElement(Button, { ref: 'button', text: Demo.lan.signIn, onClick: this.signin }),
+	            React.createElement(Button, { ref: 'button', text: Demo.lan.signIn, onClick: this.login }),
 	            React.createElement(
 	                'p',
 	                null,
@@ -23155,6 +23315,9 @@
 	    displayName: 'exports',
 
 
+	    // Switch the left bar doesn't release chat records
+	    release: true,
+
 	    getInitialState: function getInitialState() {
 	        var me = this;
 
@@ -23183,54 +23346,61 @@
 	            },
 	            onClosed: function onClosed(msg) {
 	                // Demo.api.logout();
-
 	            },
 	            onTextMessage: function onTextMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'txt');
 	                Demo.api.appendMsg(message, 'txt');
 	            },
 	            onEmojiMessage: function onEmojiMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'emoji');
 	                Demo.api.appendMsg(message, 'emoji');
 	            },
 	            onPictureMessage: function onPictureMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'img');
 	                Demo.api.appendMsg(message, 'img');
 	            },
 	            onCmdMessage: function onCmdMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'cmd');
 	                Demo.api.appendMsg(message, 'cmd');
 	            },
 	            onAudioMessage: function onAudioMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'aud');
 	                Demo.api.appendMsg(message, 'aud');
 	            },
 	            onLocationMessage: function onLocationMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'loc');
 	                Demo.api.appendMsg(message, 'loc');
 	            },
 	            onFileMessage: function onFileMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'file');
 	                Demo.api.appendMsg(message, 'file');
 	            },
 	            onVideoMessage: function onVideoMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'video');
 	                Demo.api.appendMsg(message, 'video');
 	            },
 	            onPresence: function onPresence(message) {
@@ -23263,7 +23433,6 @@
 	                }
 	            },
 	            onError: function onError(message) {
-
 	                var text = '';
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
@@ -23290,7 +23459,13 @@
 	                        Demo.api.NotifySuccess(text);
 	                        return;
 	                    } else {
-	                        Demo.api.NotifyError('onError:' + text);
+	                        if (text == 'logout' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8') {
+	                            text = Demo.lan.logoutSuc;
+	                            window.history.pushState({}, 0, 'index.html');
+	                            Demo.api.NotifySuccess(text);
+	                        } else {
+	                            Demo.api.NotifyError('onError:' + text);
+	                        }
 	                    }
 	                }
 
@@ -23320,7 +23495,8 @@
 	            strangers: [],
 	            blacklist: {},
 	            chatrooms_totalnum: Demo.api.pagesize,
-	            contact_loading_show: false
+	            contact_loading_show: false,
+	            window: []
 	        };
 	    },
 	    confirmPop: function confirmPop(options) {
@@ -23342,7 +23518,6 @@
 	        this.setState({ friends: friends });
 	    },
 	    updateMyGroupList: function updateMyGroupList(options) {
-	        console.log('updateMygroupList');
 	        var rooms = eval('(' + options + ')');
 	        this.setState({ groups: rooms });
 	    },
@@ -23355,15 +23530,20 @@
 	    },
 
 	    componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-	        for (var o in Demo.strangers) {
-	            if (Demo.strangers.hasOwnProperty(o)) {
-	                var msg = null;
-
-	                while (msg = Demo.strangers[o].pop()) {
-	                    Demo.api.appendMsg(msg.msg, msg.type);
-	                }
-	            }
-	        }
+	        // for (var o in Demo.strangers) {
+	        //     if (Demo.strangers.hasOwnProperty(o)) {
+	        //         var msg = null;
+	        //         while (msg = Demo.strangers[o].pop()) {
+	        //             Demo.api.addToChatRecord(msg.msg, msg.type);
+	        //             Demo.api.appendMsg(msg.msg, msg.type);
+	        //         }
+	        //     }
+	        // }
+	        // if(this.release){
+	        //     Demo.api.releaseChatRecord();
+	        // }else{
+	        //     this.release = true;
+	        // }
 	    },
 
 	    componentDidMount: function componentDidMount() {
@@ -23400,7 +23580,6 @@
 	                    me.channel.setRemote(stream);
 	                },
 	                onGotLocalStream: function onGotLocalStream(stream) {
-	                    // console.log('onGotLocalStream');
 	                    me.channel.setLocal(stream);
 	                },
 	                onRinging: function onRinging(caller) {
@@ -23507,6 +23686,10 @@
 	                // dismissed by admin
 	                Demo.api.NotifySuccess((msg.kicked || 'You') + ' have been dismissed by ' + (msg.actor || 'admin') + ' .');
 	                Demo.api.updateGroup();
+	                if (msg.from == Demo.selected && !msg.kicked) {
+	                    me.delContactItem();
+	                    Demo.selected = '';
+	                }
 	                break;
 	            case 'subscribe':
 	                // The sender asks the receiver to be a friend.
@@ -23527,11 +23710,18 @@
 	                if ('code' in msg) {
 	                    Demo.api.NotifySuccess(WebIM.utils.sprintf(Demo.lan.refuse, msg.from));
 	                } else {
-	                    console.log('Deleted');
+	                    // 被删除
+	                    if (msg.from == Demo.selected && !msg.kicked) {
+	                        me.delContactItem();
+	                        Demo.selected = '';
+	                    }
+
+	                    delete Demo.chatRecord[msg.from];
 	                }
 	                if (Demo.roster[msg.from]) {
 	                    delete Demo.roster[msg.from];
 	                }
+	                me.delContactItem();
 	                break;
 	            case 'joinPublicGroupSuccess':
 	                // Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
@@ -23558,6 +23748,8 @@
 	                    return;
 	                }
 	                var target = document.getElementById(msg.from);
+
+	                delete Demo.chatRecord[target];
 	                var options = {
 	                    title: "Group notification",
 	                    msg: "You have been out of the group"
@@ -23713,11 +23905,105 @@
 	    },
 
 	    update: function update(cur) {
-	        this.setState({ cur: cur, contact_loading_show: false });
+	        var node = Demo.chatState[Demo.selectedCate].selected;
+	        Demo.selected = node;
+	        if (Demo.selectedCate == 'chatrooms' && node) {
+	            // clear the chatrooms chating records
+	            delete Demo.chatRecord[node];
+	            Demo.conn.joinChatRoom({
+	                roomId: node
+	            });
+	        }
+	        this.setChatWindow(true);
+	        this.setState({ curNode: node, cur: cur, contact_loading_show: false });
 	    },
 
-	    updateNode: function updateNode(id) {
-	        this.setState({ curNode: id });
+	    storeChatWindow: function storeChatWindow() {
+	        var id,
+	            cate = '',
+	            props = {
+	            sendPicture: this.sendPicture,
+	            sendAudio: this.sendAudio,
+	            sendFile: this.sendFile,
+	            name: ''
+	        };
+	        if (Demo.selected) {
+	            id = Demo.selected;
+	            cate = Demo.selectedCate;
+
+	            // clear this chat window
+	            while (Demo.chatState[cate].chatWindow.length) {
+	                Demo.chatState[cate].chatWindow.pop();
+	            }
+
+	            switch (cate) {
+	                case 'friends':
+	                    props.name = id;
+	                    props.delFriend = this.delContactItem;
+	                    Demo.chatState[cate].chatWindow.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, { chatType: 'singleChat',
+	                        updateNode: this.updateNode, className: '' })));
+	                    break;
+	                case 'groups':
+	                    //createGroup is two step progresses.first send presence,second send iq.
+	                    //on first recv group list, the newest created one's roomId=name,
+	                    //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+	                    for (var i = 0; i < this.state.groups.length; i++) {
+	                        if (id == this.state.groups[i].roomId) {
+	                            props.name = this.state.groups[i].name;
+	                            props.leaveGroup = this.delContactItem;
+	                            props.destroyGroup = this.delContactItem;
+	                            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+	                                this.state.groups[i].name = Demo.createGroupName;
+	                                Demo.createGroupName = '';
+	                            }
+	                            Demo.chatState[cate].chatWindow.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'groupChat',
+	                                className: '' })));
+	                            break;
+	                        }
+	                    }
+	                    break;
+	                case 'chatrooms':
+	                    for (var i = 0; i < this.state.chatrooms.length; i++) {
+	                        if (id == this.state.chatrooms[i].id) {
+	                            props.name = this.state.chatrooms[i].name;
+	                            Demo.chatState[cate].chatWindow.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'chatRoom',
+	                                className: '' })));
+	                        }
+	                    }
+	                    break;
+	                case 'strangers':
+	                    props.name = id;
+	                    Demo.chatState[cate].chatWindow.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, {
+	                        className: '' })));
+	                    break;
+	                default:
+	                    console.log('Default: ', cate);
+	            }
+	        }
+	    },
+
+	    setChatWindow: function setChatWindow(show) {
+	        var cate = Demo.selectedCate;
+	        if (!show) {
+	            this.setState({ window: [] });
+	        } else {
+	            this.setState({ window: Demo.chatState[cate].chatWindow });
+	        }
+	    },
+
+	    delContactItem: function delContactItem() {
+	        var cate = Demo.selectedCate;
+	        Demo.selected = '';
+	        Demo.chatState.clear(cate);
+	        this.setState({ curNode: '' });
+	        this.setChatWindow(true);
+	    },
+
+	    updateNode: function updateNode(cid) {
+	        Demo.chatState[Demo.selectedCate].selected = cid;
+	        this.storeChatWindow();
+	        this.setChatWindow(true);
+	        this.setState({ curNode: cid });
 	    },
 
 	    sendPicture: function sendPicture(chatType) {
@@ -23756,22 +24042,27 @@
 	                log(error);
 	                me.refs.picture.value = null;
 
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: Demo.lan.sendImageFailed,
 	                    from: Demo.user,
 	                    to: Demo.selected
-	                }, 'txt');
+	                };
+	                Demo.api.addToChatRecord(option, 'txt');
+	                Demo.api.appendMsg(option, 'txt');
 	            },
 	            onFileUploadComplete: function onFileUploadComplete(data) {
 	                url = (location.protocol != 'https:' && WebIM.config.isHttpDNS ? Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0].uuid;
 	                me.refs.picture.value = null;
+	                console.log('data: ', data);
 	            },
 	            success: function success(id) {
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: url,
 	                    from: Demo.user,
 	                    to: Demo.selected
-	                }, 'img');
+	                };
+	                Demo.api.addToChatRecord(option, 'img');
+	                Demo.api.appendMsg(option, 'img');
 	            },
 	            flashUpload: WebIM.flashUpload
 	        });
@@ -23809,24 +24100,28 @@
 	                log(error);
 	                me.refs.audio.value = null;
 
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: Demo.lan.sendAudioFailed,
 	                    from: Demo.user,
 	                    to: Demo.selected
-	                }, 'txt');
+	                };
+	                Demo.api.addToChatRecord(option, 'txt');
+	                Demo.api.appendMsg(option, 'txt');
 	            },
 	            onFileUploadComplete: function onFileUploadComplete(data) {
 	                url = (location.protocol != 'https:' && WebIM.config.isHttpDNS ? Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0].uuid;
 	                me.refs.audio.value = null;
 	            },
 	            success: function success(id, sid) {
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: url,
 	                    from: Demo.user,
 	                    to: Demo.selected,
 	                    id: sid,
 	                    length: duration
-	                }, 'aud');
+	                };
+	                Demo.api.addToChatRecord(option, 'aud');
+	                Demo.api.appendMsg(option, 'aud');
 	            },
 	            flashUpload: WebIM.flashUpload
 	        });
@@ -23928,23 +24223,27 @@
 	            onFileUploadError: function onFileUploadError(error) {
 	                log(error);
 	                me.refs.file.value = null;
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: Demo.lan.sendFileFailed,
 	                    from: Demo.user,
 	                    to: Demo.selected
-	                }, 'txt');
+	                };
+	                Demo.api.addToChatRecord(option, 'txt');
+	                Demo.api.appendMsg(option, 'txt');
 	            },
 	            onFileUploadComplete: function onFileUploadComplete(data) {
 	                url = (location.protocol != 'https:' && WebIM.config.isHttpDNS ? Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0].uuid;
 	                me.refs.file.value = null;
 	            },
 	            success: function success(id) {
-	                Demo.api.appendMsg({
+	                var option = {
 	                    data: url,
 	                    filename: filename,
 	                    from: Demo.user,
 	                    to: Demo.selected
-	                }, 'file');
+	                };
+	                Demo.api.addToChatRecord(option, 'file');
+	                Demo.api.appendMsg(option, 'file');
 	            },
 	            flashUpload: WebIM.flashUpload
 	        });
@@ -23958,56 +24257,6 @@
 	    },
 
 	    render: function render() {
-	        // Demo.api.curLength = this.state[this.state.cur].length;
-
-	        var windows = [],
-	            id,
-	            props = {
-	            sendPicture: this.sendPicture,
-	            sendAudio: this.sendAudio,
-	            sendFile: this.sendFile,
-	            name: ''
-	        };
-
-	        for (var i = 0; i < this.state.friends.length; i++) {
-	            id = this.state.friends[i].name;
-	            props.name = id;
-	            windows.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, { chatType: 'singleChat',
-	                updateNode: this.updateNode,
-	                className: this.state.friends[i].name === this.state.curNode ? '' : 'hide' })));
-	        }
-
-	        for (var i = 0; i < this.state.groups.length; i++) {
-	            id = this.state.groups[i].roomId;
-	            props.name = this.state.groups[i].name;
-	            //createGroup is two step progresses.first send presence,second send iq.
-	            //on first recv group list, the newest created one's roomId=name,
-	            //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
-	            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
-	                this.state.groups[i].name = Demo.createGroupName;
-	                Demo.createGroupName = '';
-	            }
-
-	            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'groupChat',
-	                className: id === this.state.curNode ? '' : 'hide' })));
-	        }
-
-	        for (var i = 0; i < this.state.chatrooms.length; i++) {
-	            id = this.state.chatrooms[i].id;
-	            props.name = this.state.chatrooms[i].name;
-
-	            windows.push(React.createElement(ChatWindow, _extends({ roomId: id, id: 'wrapper' + id, key: id }, props, { chatType: 'chatRoom',
-	                className: id === this.state.curNode ? '' : 'hide' })));
-	        }
-
-	        for (var i = 0; i < this.state.strangers.length; i++) {
-	            id = this.state.strangers[i].name;
-	            props.name = id;
-
-	            windows.push(React.createElement(ChatWindow, _extends({ id: 'wrapper' + id, key: id }, props, {
-	                className: this.state.strangers[i].name === this.state.curNode ? '' : 'hide' })));
-	        }
-
 	        return React.createElement(
 	            'div',
 	            { className: this.props.show ? 'webim-chat' : 'webim-chat hide' },
@@ -24023,7 +24272,7 @@
 	                strangers: this.state.strangers,
 	                getChatroom: this.getChatroom,
 	                loading: this.state.contact_loading_show }),
-	            windows,
+	            this.state.window,
 	            React.createElement('input', { ref: 'picture', onChange: this.pictureChange, type: 'file', className: 'hide' }),
 	            React.createElement('input', { ref: 'audio', onChange: this.audioChange, type: 'file', className: 'hide' }),
 	            React.createElement('input', { ref: 'file', onChange: this.fileChange, type: 'file', className: 'hide' }),
@@ -24052,7 +24301,6 @@
 	    getInitialState: function getInitialState() {
 	        var me = this;
 
-	        Demo.selectedCate = 'friends';
 	        return null;
 	    },
 
@@ -24062,22 +24310,22 @@
 
 	    updateFriend: function updateFriend() {
 	        Demo.selectedCate = 'friends';
-	        this.props.update('friend');
+	        this.props.update('friend', true);
 	    },
 
 	    updateGroup: function updateGroup() {
 	        Demo.selectedCate = 'groups';
-	        this.props.update('group');
+	        this.props.update('group', true);
 	    },
 
 	    updateStranger: function updateStranger() {
 	        Demo.selectedCate = 'strangers';
-	        this.props.update('stranger');
+	        this.props.update('stranger', true);
 	    },
 
 	    updateChatroom: function updateChatroom() {
 	        Demo.selectedCate = 'chatrooms';
-	        this.props.update('chatroom');
+	        this.props.update('chatroom', true);
 	    },
 
 	    render: function render() {
@@ -24141,6 +24389,26 @@
 	    displayName: 'exports',
 
 
+	    // getInitialState: function () {
+	    //     var name = this.props.name + 's';
+	    //     var count = Demo.chatState[name].count;
+	    //     count = Math.max(0, count);
+	    //     var display = count == 0 ? 'none' : 'block';
+	    //     return {
+	    //         count: count,
+	    //         display: display
+	    //     };
+	    // },
+
+	    update: function update() {
+	        var dom = this.refs.icon;
+	        var count = dom.getAttribute('data-count');
+	        if (count == 0) {
+	            dom.style.display = 'none';
+	        }
+	        this.props.update();
+	    },
+
 	    render: function render() {
 	        var cur = this.props.cur === this.props.name ? ' selected' : '';
 	        var topClass = '';
@@ -24170,13 +24438,15 @@
 
 	        return React.createElement(
 	            'div',
-	            { id: this.props.name + 's', className: 'rel' + topClass, onClick: this.props.update },
+	            { id: this.props.name + 's', className: 'rel' + topClass, onClick: this.update },
 	            React.createElement(
 	                'i',
 	                { title: describe, className: 'webim-leftbar-icon font small' + cur },
 	                icon
 	            ),
-	            React.createElement('i', { className: 'webim-msg-prompt webim-msg-icon-prompt', style: { display: 'none' } })
+	            React.createElement('i', { ref: 'icon', className: 'webim-msg-prompt webim-msg-icon-prompt',
+	                'data-count': '0',
+	                style: { display: 'none' } })
 	        );
 	    }
 	});
@@ -24633,7 +24903,8 @@
 	                    null,
 	                    React.createElement(FridendList, { ref: 'friendList', optionData: Demo.roster })
 	                ),
-	                React.createElement(Button, { text: Demo.lan.add, onClick: this.onSubmit, className: 'webim-dialog-button' }),
+	                React.createElement(Button, { text: Demo.lan.add, onClick: this.onSubmit, className: 'webim-dialog-button-left' }),
+	                React.createElement(Button, { text: Demo.lan.cancel, onClick: this.close, className: 'webim-dialog-button' }),
 	                React.createElement(
 	                    'span',
 	                    { className: 'font', onClick: this.close },
@@ -26929,15 +27200,27 @@
 	        };
 	    },
 
+	    componentDidUpdate: function componentDidUpdate() {
+	        this.refs.contactContainer.scrollTop = Demo.chatState[Demo.selectedCate].scroll;
+	    },
+
 	    update: function update(id) {
 	        this.props.updateNode(id);
 	    },
 
 	    onscroll: function onscroll() {
 	        var scrollTop = this.refs.contactContainer.scrollTop;
-	        var scollTopNum = scrollTop / 60;
+	        // var scollTopNum = scrollTop / 60;
+	        // Demo.scroll[Demo.selectedCate] = scrollTop;
+	        Demo.chatState[Demo.selectedCate].scroll = scrollTop;
 	        if (scrollTop / 60 + 10 == this.props[Demo.selectedCate].length) {
 	            this.props.getChatroom();
+	        }
+	    },
+
+	    getBrief: function getBrief(id) {
+	        if (Demo.chatRecord[id] && Demo.chatRecord[id].brief) {
+	            return Demo.chatRecord[id].brief;
 	        }
 	    },
 
@@ -26951,24 +27234,25 @@
 	            if (this.props.friends[i].name in this.props.blacklist) {
 	                continue;
 	            }
-	            f.push(React.createElement(Item, { id: this.props.friends[i].name, cate: 'friends', key: i, username: this.props.friends[i].name,
-	                update: this.update, cur: this.props.curNode }));
+	            f.push(React.createElement(Item, { id: this.props.friends[i].name, cate: 'friends', key: this.props.friends[i].name, username: this.props.friends[i].name,
+	                update: this.update, cur: this.props.curNode, brief: this.getBrief(this.props.friends[i].name) }));
 	        }
 
 	        for (var i = 0; i < this.props.groups.length; i++) {
-	            g.push(React.createElement(Item, { id: this.props.groups[i].roomId, cate: 'groups', key: i, username: this.props.groups[i].name,
-	                update: this.update, cur: this.props.curNode, src: this.state.src }));
+	            g.push(React.createElement(Item, { id: this.props.groups[i].roomId, cate: 'groups', key: this.props.groups[i].roomId, username: this.props.groups[i].name,
+	                update: this.update, cur: this.props.curNode, src: this.state.src, brief: this.getBrief(this.props.groups[i].roomId) }));
 	        }
 
 	        for (var i = 0; i < this.props.chatrooms.length; i++) {
-	            c.push(React.createElement(Item, { id: this.props.chatrooms[i].id, cate: 'chatrooms', key: i,
+	            c.push(React.createElement(Item, { id: this.props.chatrooms[i].id, cate: 'chatrooms', key: this.props.chatrooms[i].id,
 	                username: this.props.chatrooms[i].name, update: this.update, cur: this.props.curNode,
-	                src: this.state.src }));
+	                src: this.state.src, brief: this.getBrief(this.props.chatrooms[i].id) }));
 	        }
 
 	        for (var i = 0; i < this.props.strangers.length; i++) {
-	            s.push(React.createElement(Item, { id: this.props.strangers[i].name, cate: 'strangers', key: i,
-	                username: this.props.strangers[i].name, update: this.update, cur: this.props.curNode }));
+	            s.push(React.createElement(Item, { id: this.props.strangers[i].name, cate: 'strangers', key: this.props.strangers[i].name,
+	                username: this.props.strangers[i].name, update: this.update, cur: this.props.curNode,
+	                brief: this.getBrief(this.props.strangers[i].name) }));
 	        }
 
 	        return React.createElement(
@@ -27019,6 +27303,19 @@
 
 	    getInitialState: function getInitialState() {
 	        var me = this;
+	        // var id = this.props.id;
+	        // var count = 0;
+	        // if(Demo.chatRecord[id]){
+	        //     count = Demo.chatRecord[id].count;
+	        //     if(count == undefined || !isNaN(count)){
+	        //         // Demo.chatRecord[id].count = 0;
+	        //         count = 0;
+	        //     }
+	        //     else
+	        //         count = Math.max(0, count);
+	        // }
+	        //
+	        // var display = count == 0 ? 'none' : 'block';
 
 	        return {
 	            msg: '',
@@ -27029,7 +27326,7 @@
 
 	    handleCurCateIconCount: function handleCurCateIconCount(count) {
 	        var curCate = document.getElementById(this.props.cate).getElementsByTagName('i')[1];
-	        var curCateCount = curCate.getAttribute('count') / 1;
+	        var curCateCount = curCate.getAttribute('data-count') / 1;
 	        curCateCount -= count;
 	        curCateCount = Math.max(0, curCateCount);
 
@@ -27039,22 +27336,22 @@
 	            curCateCount = 0;
 	            curCate.style.display = 'none';
 	        }
-	        curCate.setAttribute('count', curCateCount);
+	        curCate.setAttribute('data-count', curCateCount);
+	        Demo.chatState[this.props.cate].count = curCateCount;
 	    },
 
 	    update: function update() {
+	        Demo.chatingCate = Demo.selectedCate;
+
 	        if (this.refs['i']) {
-	            var count = this.refs['i'].getAttribute('count') / 1;
+	            var count = this.refs['i'].getAttribute('data-count') / 1;
 	            this.handleCurCateIconCount(count);
 
 	            this.refs['i'].style.display = 'none';
-	            this.refs['i'].setAttribute('count', 0);
+	            this.refs['i'].setAttribute('data-count', 0);
+	            if (Demo.chatRecord[this.props.id]) Demo.chatRecord[this.props.id].count = 0;
 	            this.refs['i'].innerText = '';
 	        }
-
-	        // if (this.props.id === Demo.selected) {
-	        //     return;
-	        // }
 
 	        if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
 	            Demo.selected = this.props.id;
@@ -27064,8 +27361,10 @@
 
 	        // quit previous chatroom
 	        if (Demo.currentChatroom) {
-	            document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
-	            document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+	            // document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
+	            // document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+	            // clear this chat room chat record
+	            delete Demo.chatRecord[Demo.currentChatroom];
 	            if (WebIM.config.isWindowSDK) {
 	                WebIM.doQuery('{"type":"quitChatroom","id":"' + Demo.currentChatroom + '"}', function success(str) {
 	                    //do nothing
@@ -27082,10 +27381,6 @@
 	        }
 
 	        if (Demo.selectedCate === 'chatrooms') {
-
-	            document.getElementById('wrapper' + this.props.id).innerHTML = '';
-	            document.getElementById(this.props.id).querySelector('em').innerHTML = '';
-
 	            // join chatroom
 	            if (WebIM.config.isWindowSDK) {
 	                WebIM.doQuery('{"type":"joinChatroom","id":"' + this.props.id + '"}', function success(str) {
@@ -27097,6 +27392,7 @@
 	                Demo.conn.joinChatRoom({
 	                    roomId: this.props.id
 	                });
+	                Demo.currentChatroom = this.props.id;
 	            }
 	        } else {
 	            //get the last 10 messages
@@ -27132,8 +27428,11 @@
 	                    this.props.username
 	                )
 	            ),
-	            React.createElement('em', null),
-	            React.createElement('i', { ref: 'i', className: 'webim-msg-prompt', style: { display: 'none' } })
+	            React.createElement('em', { dangerouslySetInnerHTML: { __html: this.props.brief } }),
+	            React.createElement('i', { ref: 'i', className: 'webim-msg-prompt',
+	                'data-count': '0',
+	                style: { display: 'none' },
+	                dangerouslySetInnerHTML: { __html: '0' } })
 	        );
 	    }
 	});
@@ -27295,12 +27594,17 @@
 	    send: function send(msg) {
 	        msg.chatType = this.props.chatType;
 	        Demo.conn.send(msg);
+	        Demo.api.addToChatRecord(msg, 'txt');
 	        Demo.api.appendMsg(msg, 'txt');
 	    },
 
 	    // hide when blur | bind focus event
 	    componentDidUpdate: function componentDidUpdate() {
 	        // this.state.memberShowStatus && ReactDOM.findDOMNode(this.refs['member']).focus();
+	    },
+
+	    componentDidMount: function componentDidMount() {
+	        Demo.api.releaseChatRecord();
 	    },
 
 	    // hide when blur close
@@ -27356,7 +27660,8 @@
 	                getGroupInfo: this.getGroupInfo,
 	                onBlur: this.handleOnBlur,
 	                name: this.props.name,
-	                updateNode: this.props.updateNode
+	                updateNode: this.props.updateNode,
+	                delFriend: this.props.delFriend
 	            }));
 	        } else if (Demo.selectedCate == 'groups') {
 	            operations.push(React.createElement(OperationsGroups, { key: 'operation_div', ref: 'operation_div', name: this.props.name,
@@ -27366,7 +27671,9 @@
 	                settings: this.state.settings,
 	                fields: this.state.fields,
 	                getGroupInfo: this.getGroupInfo,
-	                onBlur: this.handleOnBlur
+	                onBlur: this.handleOnBlur,
+	                leaveGroup: this.props.leaveGroup,
+	                destroyGroup: this.props.destroyGroup
 	            }));
 	        }
 
@@ -27530,6 +27837,7 @@
 	    },
 
 	    call: function call() {
+	        console.log('sendWrapper::call');
 	        Demo.call.caller = Demo.user;
 	        Demo.call.makeVideoCall(Demo.selected);
 	    },
@@ -27574,7 +27882,7 @@
 	                onClick: this.sendFile },
 	            'S'
 	        ));
-	        if (WebIM.config.isWebRTC) {
+	        if (WebIM.config.isWebRTC && Demo.selectedCate == 'friends') {
 	            roomMember.push(React.createElement(
 	                'span',
 	                { key: keyValue++, className: 'webim-audio-icon font smaller',
@@ -27668,10 +27976,12 @@
 	                },
 	                upload_error_handler: function upload_error_handler(file, code, msg) {
 	                    if (code != SWFUpload.UPLOAD_ERROR.FILE_CANCELLED && code != SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED && code != SWFUpload.UPLOAD_ERROR.FILE_VALIDATION_FAILED) {
-	                        Demo.api.appendMsg({
+	                        var option = {
 	                            data: Demo.lan.uploadFileFailed,
 	                            to: Demo.selected
-	                        }, 'txt');
+	                        };
+	                        Demo.api.addToChatRecord(option, 'txt');
+	                        Demo.api.appendMsg(option, 'txt');
 	                    }
 	                },
 	                upload_success_handler: function upload_success_handler(file, response) {
@@ -27700,11 +28010,13 @@
 	                            to: Demo.selected,
 	                            roomType: Demo.selectedCate === 'chatrooms',
 	                            success: function success(id) {
-	                                Demo.api.appendMsg({
+	                                var option = {
 	                                    data: file.url,
 	                                    from: Demo.user,
 	                                    to: Demo.selected
-	                                }, me.filetype);
+	                                };
+	                                Demo.api.addToChatRecord(option, me.filetype);
+	                                Demo.api.appendMsg(option, me.filetype);
 	                            }
 	                        };
 
@@ -27807,6 +28119,7 @@
 	                }
 	            });
 	        }
+	        this.props.destroyGroup();
 	        this.update();
 	    },
 
@@ -27823,6 +28136,7 @@
 	                to: Demo.user,
 	                roomId: this.props.roomId,
 	                success: function success() {
+	                    Demo.selected = '';
 	                    Demo.api.updateGroup();
 	                },
 	                error: function error(code, msg) {
@@ -27830,6 +28144,7 @@
 	                }
 	            });
 	        }
+	        this.props.leaveGroup();
 	        this.update();
 	    },
 
@@ -27847,11 +28162,10 @@
 	            null,
 	            React.createElement(
 	                "i",
-	                {
-	                    ref: "switch",
+	                { ref: "switch",
 	                    className: "webim-operations-icon font xsmaller",
 	                    onClick: this.update },
-	                "M "
+	                "M"
 	            ),
 	            React.createElement(
 	                "ul",
@@ -27862,56 +28176,46 @@
 	                    onBlur: this.handleOnBlur },
 	                React.createElement(
 	                    "li",
-	                    {
-	                        onClick: this.adminGroupMembers,
+	                    { onClick: this.adminGroupMembers,
 	                        className: this.props.admin ? '' : 'hide' },
 	                    React.createElement(
 	                        "i",
-	                        {
-	                            className: "font smallest" },
-	                        " F "
+	                        { className: "font smallest" },
+	                        "F"
 	                    ),
 	                    React.createElement(
 	                        "span",
 	                        null,
-	                        " ",
-	                        adminMemberLabel,
-	                        " "
+	                        adminMemberLabel
 	                    )
 	                ),
 	                React.createElement(
 	                    "li",
-	                    {
-	                        onClick: this.changeGroupInfo,
+	                    { onClick: this.changeGroupInfo,
 	                        className: this.props.admin ? '' : 'hide' },
 	                    React.createElement(
 	                        "i",
-	                        {
-	                            className: "font smallest" },
-	                        " B "
+	                        { className: "font smallest" },
+	                        "B"
 	                    ),
 	                    React.createElement(
 	                        "span",
 	                        null,
-	                        " ",
 	                        Demo.lan.changeGroupInfo
 	                    )
 	                ),
 	                React.createElement(
 	                    "li",
-	                    {
-	                        onClick: this.showGroupBlacklist,
+	                    { onClick: this.showGroupBlacklist,
 	                        className: this.props.admin ? '' : 'hide' },
 	                    React.createElement(
 	                        "i",
-	                        {
-	                            className: "font smallest" },
-	                        " n "
+	                        { className: "font smallest" },
+	                        "n"
 	                    ),
 	                    React.createElement(
 	                        "span",
 	                        null,
-	                        " ",
 	                        Demo.lan.groupBlacklist
 	                    )
 	                ),
@@ -27921,16 +28225,14 @@
 	                        onClick: actionMethod },
 	                    React.createElement(
 	                        "i",
-	                        {
-	                            className: "font smallest" },
-	                        " Q "
+	                        { className: "font smallest" },
+	                        "Q"
 	                    ),
 	                    React.createElement(
 	                        "span",
 	                        null,
 	                        " ",
-	                        actionName,
-	                        " "
+	                        actionName
 	                    )
 	                )
 	            )
@@ -28431,12 +28733,12 @@
 	    },
 
 	    delFriend: function delFriend() {
-
 	        var value = this.props.name;
 
 	        if (!value) {
 	            return;
 	        }
+	        delete Demo.chatRecord[value];
 
 	        if (value == Demo.user || !Demo.roster[value]) {
 	            Demo.api.NotifyError(value + ' ' + Demo.lan.delFriendSelfInvalid);
@@ -28464,6 +28766,8 @@
 	                error: function error() {}
 	            });
 	        }
+	        Demo.selected = '';
+	        this.props.delFriend();
 	        this.update();
 	    },
 
@@ -28573,7 +28877,10 @@
 	            close_bottom: 0,
 	            accept_left: 0,
 	            accept_bottom: 0,
-	            accept_display: this.props.hideAccept ? 'none' : 'block'
+	            accept_display: this.props.hideAccept ? 'none' : 'block',
+	            mute_left: 0,
+	            mute_bottom: 6,
+	            mute_display: 'none'
 	        };
 	    },
 
@@ -28606,6 +28913,17 @@
 	            full_width: this.state.full_width,
 	            full_height: this.state.full_height
 	        });
+	    },
+
+	    mute: function mute() {
+	        // var mute = this.refs.remoteVideo.mute;
+	        this.refs.remoteVideo.muted = !this.refs.remoteVideo.muted;
+	        var muted = this.refs.remoteVideo.muted;
+	        if (muted) {
+	            this.refs.mute.style.color = '#4eb1f4';
+	        } else {
+	            this.refs.mute.style.color = '#eeeeee';
+	        }
 	    },
 
 	    setStream: function setStream(props) {
@@ -28658,6 +28976,7 @@
 
 	        this.setState({
 	            toggle_display: 'block',
+	            mute_display: 'block',
 	            accept_display: 'none'
 	        });
 	    },
@@ -28767,6 +29086,18 @@
 	                        bottom: 'auto'
 	                    }, onClick: this.toggle },
 	                'd'
+	            ),
+	            React.createElement(
+	                'i',
+	                { ref: 'mute', className: 'font small mute',
+	                    style: {
+	                        display: this.state.mute_display,
+	                        left: this.state.toggle_right + 'px',
+	                        right: 'auto',
+	                        top: 'auto',
+	                        bottom: this.state.mute_bottom + 'px'
+	                    }, onClick: this.mute },
+	                'm'
 	            )
 	        );
 	    }
@@ -29849,6 +30180,112 @@
 	        return 0;
 	    }();
 
+	    var _base64 = function _base64() {
+
+	        var self = this;
+
+	        // private property
+	        var _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+	        // public method for encoding
+	        this.encode = function (input) {
+	            var output = "";
+	            var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+	            var i = 0;
+	            input = self._utf8_encode(input);
+	            while (i < input.length) {
+	                chr1 = input.charCodeAt(i++);
+	                chr2 = input.charCodeAt(i++);
+	                chr3 = input.charCodeAt(i++);
+	                enc1 = chr1 >> 2;
+	                enc2 = (chr1 & 3) << 4 | chr2 >> 4;
+	                enc3 = (chr2 & 15) << 2 | chr3 >> 6;
+	                enc4 = chr3 & 63;
+	                if (isNaN(chr2)) {
+	                    enc3 = enc4 = 64;
+	                } else if (isNaN(chr3)) {
+	                    enc4 = 64;
+	                }
+	                output = output + _keyStr.charAt(enc1) + _keyStr.charAt(enc2) + _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
+	            }
+	            return output;
+	        };
+
+	        // public method for decoding
+	        this.decode = function (input) {
+	            var output = "";
+	            var chr1, chr2, chr3;
+	            var enc1, enc2, enc3, enc4;
+	            var i = 0;
+	            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+	            while (i < input.length) {
+	                enc1 = _keyStr.indexOf(input.charAt(i++));
+	                enc2 = _keyStr.indexOf(input.charAt(i++));
+	                enc3 = _keyStr.indexOf(input.charAt(i++));
+	                enc4 = _keyStr.indexOf(input.charAt(i++));
+	                chr1 = enc1 << 2 | enc2 >> 4;
+	                chr2 = (enc2 & 15) << 4 | enc3 >> 2;
+	                chr3 = (enc3 & 3) << 6 | enc4;
+	                output = output + String.fromCharCode(chr1);
+	                if (enc3 != 64) {
+	                    output = output + String.fromCharCode(chr2);
+	                }
+	                if (enc4 != 64) {
+	                    output = output + String.fromCharCode(chr3);
+	                }
+	            }
+	            output = self._utf8_decode(output);
+	            return output;
+	        };
+
+	        // private method for UTF-8 encoding
+	        this._utf8_encode = function (string) {
+	            string = string.replace(/\r\n/g, "\n");
+	            var utftext = "";
+	            for (var n = 0; n < string.length; n++) {
+	                var c = string.charCodeAt(n);
+	                if (c < 128) {
+	                    utftext += String.fromCharCode(c);
+	                } else if (c > 127 && c < 2048) {
+	                    utftext += String.fromCharCode(c >> 6 | 192);
+	                    utftext += String.fromCharCode(c & 63 | 128);
+	                } else {
+	                    utftext += String.fromCharCode(c >> 12 | 224);
+	                    utftext += String.fromCharCode(c >> 6 & 63 | 128);
+	                    utftext += String.fromCharCode(c & 63 | 128);
+	                }
+	            }
+	            return utftext;
+	        };
+
+	        // private method for UTF-8 decoding
+	        this._utf8_decode = function (utftext) {
+	            var string = "";
+	            var i = 0;
+	            var c = 0;
+	            var c1 = 0;
+	            var c2 = 0;
+	            var c3 = 0;
+	            while (i < utftext.length) {
+	                c = utftext.charCodeAt(i);
+	                if (c < 128) {
+	                    string += String.fromCharCode(c);
+	                    i++;
+	                } else if (c > 191 && c < 224) {
+	                    c2 = utftext.charCodeAt(i + 1);
+	                    string += String.fromCharCode((c & 31) << 6 | c2 & 63);
+	                    i += 2;
+	                } else {
+	                    c2 = utftext.charCodeAt(i + 1);
+	                    c3 = utftext.charCodeAt(i + 2);
+	                    string += String.fromCharCode((c & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+	                    i += 3;
+	                }
+	            }
+	            return string;
+	        };
+	    };
+
 	    var _tmpUtilXHR = _xmlrequest(),
 	        _hasFormData = typeof FormData !== 'undefined',
 	        _hasBlob = typeof Blob !== 'undefined',
@@ -30618,39 +31055,45 @@
 	            return str;
 	        },
 
-	        clone: function clone(obj) {
-	            var o;
-	            switch (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) {
-	                case 'undefined':
-	                    break;
-	                case 'string':
-	                    o = obj + '';break;
-	                case 'number':
-	                    o = obj - 0;break;
-	                case 'boolean':
-	                    o = obj;break;
-	                case 'object':
-	                    if (obj === null) {
-	                        o = null;
-	                    } else {
-	                        if (obj instanceof Array) {
-	                            o = [];
-	                            for (var i = 0, len = obj.length; i < len; i++) {
-	                                o.push(this.clone(obj[i]));
-	                            }
-	                        } else {
-	                            o = {};
-	                            for (var k in obj) {
-	                                o[k] = this.clone(obj[k]);
-	                            }
-	                        }
-	                    }
-	                    break;
-	                default:
-	                    o = obj;
-	                    break;
+	        encrypt: function encrypt(str) {
+	            var base64 = new _base64();
+	            var encrypt = base64.encode(str);
+	            return encrypt;
+	        },
+
+	        decrypt: function decrypt(str) {
+	            var base64 = new _base64();
+	            var decrypt = base64.decode(str);
+	            decrypt = escape(decrypt);
+	            decrypt = decrypt.replace(/%00/g, '');
+	            decrypt = unescape(decrypt);
+	            return decrypt;
+	        },
+
+	        setCookie: function setCookie(name, value, days) {
+	            var cookie = name + '=' + encodeURIComponent(value);
+	            if (typeof days == 'number') {
+	                cookie += '; max-age: ' + days * 60 * 60 * 24;
 	            }
-	            return o;
+	            document.cookie = cookie;
+	        },
+
+	        getCookie: function getCookie() {
+	            var allCookie = {};
+	            var all = document.cookie;
+	            if (all === "") {
+	                return allCookie;
+	            }
+	            var list = all.split("; ");
+	            for (var i = 0; i < list.length; i++) {
+	                var cookie = list[i];
+	                var p = cookie.indexOf('=');
+	                var name = cookie.substring(0, p);
+	                var value = cookie.substring(p + 1);
+	                value = decodeURIComponent(value);
+	                allCookie[name] = value;
+	            }
+	            return allCookie;
 	        }
 	    };
 
@@ -31050,7 +31493,7 @@
 	                    React.createElement(
 	                        'div',
 	                        { className: 'webim-video-msg' },
-	                        React.createElement('video', { id: this.props.id, ref: 'video', controls: true })
+	                        React.createElement('video', { id: this.props.id, ref: 'video', controls: true, autoPlay: true })
 	                    )
 	                ),
 	                React.createElement(
@@ -31221,6 +31664,7 @@
 	    inviteToGroup: '%s invite you to the group',
 	    inviteGroup: 'You invited %s to this group',
 	    createGroupSuc: 'Group %s is successfully created',
+	    logoutSuc: 'You are off line!',
 	    last: ''
 	};
 
@@ -31306,6 +31750,7 @@
 	    inviteToGroup: '%s邀请您进群',
 	    inviteGroup: '您邀请了%s进群',
 	    createGroupSuc: '已成功创建群组%s',
+	    logoutSuc: '您已下线',
 	    last: ''
 	};
 

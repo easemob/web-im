@@ -269,19 +269,93 @@ module.exports = {
                 Demo.conn.errorType = type;
             }
         }
-
     },
 
     init: function () {
         Demo.selected = null;
-        Demo.user = null;
+        // Demo.user = null;
         Demo.call = null;
         Demo.roster = {};
         Demo.strangers = {};
         Demo.blacklist = {};
-
+        Demo.selectedCate = 'friends';
+        Demo.chatState.clear();
+        if(Demo.currentChatroom){
+            delete Demo.chatRecord[Demo.currentChatroom];
+        }
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
+    },
+
+    addToChatRecord: function (msg, type) {
+        var data = msg.data || msg.msg || '';
+        var brief = this.getBrief(data, type);
+        this.sentByMe = msg.from === Demo.user;
+        var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
+
+        if(!Demo.chatRecord[targetId] || !Demo.chatRecord[targetId].messages){
+            Demo.chatRecord[targetId] = {};
+
+            Demo.chatRecord[targetId].messages = [];
+
+        }else if(Demo.chatRecord[targetId].messages.length >= Demo.maxChatRecordCount){
+
+            Demo.chatRecord[targetId].messages.shift();
+
+        }
+        Demo.chatRecord[targetId].brief = brief;
+        Demo.chatRecord[targetId].briefType = type;
+
+        Demo.chatRecord[targetId].messages.push({message: msg, type: type});
+
+    },
+
+    releaseChatRecord: function (targetId) {
+        var targetId = targetId || Demo.selected;
+        if(targetId){
+            if(Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages){
+                if(document.getElementById('wrapper' + targetId))
+                    document.getElementById('wrapper' + targetId).innerHTML = '';
+                for(var i = 0 ; i < Demo.chatRecord[targetId].messages.length ; i++){
+                    Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message, Demo.chatRecord[targetId].messages[i].type);
+                }
+            }
+        }
+    },
+
+    getBrief: function(data, type){
+        var brief = '';
+        switch(type){
+            case 'txt':
+                brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
+                break;
+            case 'emoji':
+                for (var i = 0, l = data.length; i < l; i++) {
+                    brief += data[i].type === 'emoji'
+                        ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />'
+                        : this.encode(data[i].data);
+                }
+                break;
+            case 'img':
+                brief = '[' + Demo.lan.image + ']';
+                break;
+            case 'aud':
+                brief = '[' + Demo.lan.audio + ']';
+                break;
+            case 'cmd':
+                brief = '[' + Demo.lan.cmd + ']';
+                break;
+            case 'file':
+                brief = '[' + Demo.lan.file + ']';
+                break;
+            case 'loc':
+                brief = '[' + Demo.lan.location + ']';
+                break;
+            case 'video':
+                brief = '[' + Demo.lan.video + ']';
+                break;
+        }
+        return brief;
     },
 
     appendMsg: function (msg, type) {
@@ -297,68 +371,67 @@ module.exports = {
             data = msg.data || msg.msg || '',
             name = this.sendByMe ? Demo.user : msg.from,
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
-            targetNode = document.getElementById('wrapper' + targetId);
+            targetNode = document.getElementById('wrapper' + targetId),
+            isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
         // TODO: ios/android client doesn't encodeURIComponent yet
-        // if (typeof data === "string") {
-        // data = decodeURIComponent(data);
-        // }
 
-        if (!this.sentByMe && msg.type === 'chat' && !targetNode) {
+        if (!this.sentByMe && msg.type === 'chat' && isStranger) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
-        } else if (!targetNode) {
+        } else if (isStranger) {
             return;
         }
-        switch (type) {
-            case 'txt':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'txt'});
-                } else {
-                    brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
-                    textMsg({
-                        wrapper: targetNode,
-                        name: name,
-                        value: brief,
-                        error: msg.error,
-                        errorText: msg.errorText
-                    }, this.sentByMe);
-                }
-                break;
-            case 'emoji':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'emoji'});
-                } else {
-                    for (var i = 0, l = data.length; i < l; i++) {
-                        brief += data[i].type === 'emoji'
-                            ? '<img src="' + WebIM.utils.parseEmoji(this.encode(data[i].data)) + '" />'
-                            : this.encode(data[i].data);
-                    }
-                    textMsg({
-                        wrapper: targetNode,
-                        name: name,
-                        value: brief,
-                        error: msg.error,
-                        errorText: msg.errorText
-                    }, this.sentByMe);
-                }
-                break;
-            case 'img':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'img'});
-                } else {
-                    if (WebIM.config.isWindowSDK) {
-                        var cur = document.getElementById('file_' + msg.id);
-                        if (cur) {
-                            var listenerName = 'onUpdateFileUrl' + msg.id;
-                            if (Demo.api[listenerName]) {
-                                Demo.api[listenerName]({url: msg.url});
-                                Demo.api[listenerName] = null;
+
+        if (isStranger) {
+            Demo.strangers[targetId].push({msg: msg, type: type});
+            this.render(this.node, 'stranger');
+            return;
+        }else{
+            brief = this.getBrief(data, type);
+            if(targetNode){
+                switch (type) {
+                    case 'txt':
+                        textMsg({
+                            wrapper: targetNode,
+                            name: name,
+                            value: brief,
+                            error: msg.error,
+                            errorText: msg.errorText
+                        }, this.sentByMe);
+                        break;
+                    case 'emoji':
+                        textMsg({
+                            wrapper: targetNode,
+                            name: name,
+                            value: brief,
+                            error: msg.error,
+                            errorText: msg.errorText
+                        }, this.sentByMe);
+                        break;
+                    case 'img':
+                        if (WebIM.config.isWindowSDK) {
+                            var cur = document.getElementById('file_' + msg.id);
+                            if (cur) {
+                                var listenerName = 'onUpdateFileUrl' + msg.id;
+                                if (Demo.api[listenerName]) {
+                                    Demo.api[listenerName]({url: msg.url});
+                                    Demo.api[listenerName] = null;
+                                } else {
+                                    console.log('listenerName not exists:' + msg.id);
+                                }
+                                return;
                             } else {
-                                console.log('listenerName not exists:' + msg.id);
+                                brief = '[' + Demo.lan.image + ']';
+                                imgMsg({
+                                    id: msg.id,
+                                    wrapper: targetNode,
+                                    name: name,
+                                    value: data || msg.url,
+                                    error: msg.error,
+                                    errorText: msg.errorText
+                                }, this.sentByMe);
                             }
-                            return;
                         } else {
-                            brief = '[' + Demo.lan.image + ']';
                             imgMsg({
                                 id: msg.id,
                                 wrapper: targetNode,
@@ -368,37 +441,71 @@ module.exports = {
                                 errorText: msg.errorText
                             }, this.sentByMe);
                         }
-                    } else {
-                        brief = '[' + Demo.lan.image + ']';
-                        imgMsg({
-                            id: msg.id,
-                            wrapper: targetNode,
-                            name: name,
-                            value: data || msg.url,
-                            error: msg.error,
-                            errorText: msg.errorText
-                        }, this.sentByMe);
-                    }
-                }
-                break;
-            case 'aud':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: type});
-                } else {
-                    if (WebIM.config.isWindowSDK) {
-                        var cur = document.getElementById('file_' + msg.id);
-                        if (cur) {
-                            var listenerName = 'onUpdateFileUrl' + msg.id;
-                            if (Demo.api[listenerName]) {
-                                Demo.api[listenerName]({url: msg.url});
-                                Demo.api[listenerName] = null;
+                        break;
+                    case 'aud':
+                        if (WebIM.config.isWindowSDK) {
+                            var cur = document.getElementById('file_' + msg.id);
+                            if (cur) {
+                                var listenerName = 'onUpdateFileUrl' + msg.id;
+                                if (Demo.api[listenerName]) {
+                                    Demo.api[listenerName]({url: msg.url});
+                                    Demo.api[listenerName] = null;
+                                } else {
+                                    console.log('listenerName not exists:' + msg.id);
+                                }
+                                return;
                             } else {
-                                console.log('listenerName not exists:' + msg.id);
+                                brief = '[' + Demo.lan.file + ']';
+                                fileMsg({
+                                    id: msg.id,
+                                    wrapper: targetNode,
+                                    name: name,
+                                    value: data || msg.url,
+                                    filename: msg.filename,
+                                    error: msg.error,
+                                    errorText: msg.errorText
+                                }, this.sentByMe);
                             }
-                            return;
                         } else {
-                            brief = '[' + Demo.lan.file + ']';
-                            fileMsg({
+                            audioMsg({
+                                wrapper: targetNode,
+                                name: name,
+                                value: data || msg.url,
+                                length: msg.length,
+                                id: msg.id,
+                                error: msg.error,
+                                errorText: msg.errorText
+                            }, this.sentByMe);
+                        }
+                        break;
+                    case 'cmd':
+                        break;
+                    case 'file':
+                        if (WebIM.config.isWindowSDK) {
+                            var cur = document.getElementById('file_' + msg.id);
+                            if (cur) {
+                                var listenerName = 'onUpdateFileUrl' + msg.id;
+                                if (Demo.api[listenerName]) {
+                                    Demo.api[listenerName]({url: msg.url});
+                                    Demo.api[listenerName] = null;
+                                } else {
+                                    console.log('listenerName not exists:' + msg.id);
+                                }
+                                return;
+                            } else {
+                                brief = '[' + Demo.lan.file + ']';
+                                fileMsg({
+                                    id: msg.id,
+                                    wrapper: targetNode,
+                                    name: name,
+                                    value: data || msg.url,
+                                    filename: msg.filename,
+                                    error: msg.error,
+                                    errorText: msg.errorText
+                                }, this.sentByMe);
+                            }
+                        } else {
+                            var option = {
                                 id: msg.id,
                                 wrapper: targetNode,
                                 name: name,
@@ -406,140 +513,64 @@ module.exports = {
                                 filename: msg.filename,
                                 error: msg.error,
                                 errorText: msg.errorText
-                            }, this.sentByMe);
+                            };
+                            if(msg.ext){
+                                option.fileSize = msg.ext.fileSize;
+                            }
+                            fileMsg(option, this.sentByMe);
                         }
-                    } else {
-                        brief = '[' + Demo.lan.audio + ']';
-                        audioMsg({
+                        break;
+                    case 'loc':
+                        locMsg({
                             wrapper: targetNode,
                             name: name,
-                            value: data || msg.url,
-                            length: msg.length,
-                            id: msg.id,
+                            value: data || msg.addr,
                             error: msg.error,
                             errorText: msg.errorText
                         }, this.sentByMe);
-                    }
-                }
-                break;
-            case 'cmd':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'cmd'});
-                } else {
-                    brief = '[' + Demo.lan.cmd + ']';
-                }
-                break;
-            case 'file':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'file'});
-                } else {
-                    if (WebIM.config.isWindowSDK) {
-                        var cur = document.getElementById('file_' + msg.id);
-                        if (cur) {
-                            var listenerName = 'onUpdateFileUrl' + msg.id;
-                            if (Demo.api[listenerName]) {
-                                Demo.api[listenerName]({url: msg.url});
-                                Demo.api[listenerName] = null;
+                        break;
+                    case 'video':
+                        if (WebIM.config.isWindowSDK) {
+                            var cur = document.getElementById('file_' + msg.id);
+                            if (cur) {
+                                var listenerName = 'onUpdateFileUrl' + msg.id;
+                                if (Demo.api[listenerName]) {
+                                    Demo.api[listenerName]({url: msg.url});
+                                    Demo.api[listenerName] = null;
+                                } else {
+                                    console.log('listenerName not exists:' + msg.id);
+                                }
+                                return;
                             } else {
-                                console.log('listenerName not exists:' + msg.id);
+                                brief = '[' + Demo.lan.file + ']';
+                                fileMsg({
+                                    id: msg.id,
+                                    wrapper: targetNode,
+                                    name: name,
+                                    value: data || msg.url,
+                                    filename: msg.filename,
+                                    error: msg.error,
+                                    errorText: msg.errorText
+                                }, this.sentByMe);
                             }
-                            return;
                         } else {
-                            brief = '[' + Demo.lan.file + ']';
-                            fileMsg({
-                                id: msg.id,
+                            videoMsg({
                                 wrapper: targetNode,
                                 name: name,
                                 value: data || msg.url,
-                                filename: msg.filename,
+                                length: msg.length,
+                                id: msg.id,
                                 error: msg.error,
                                 errorText: msg.errorText
                             }, this.sentByMe);
                         }
-                    } else {
-                        brief = '[' + Demo.lan.file + ']';
-                        var option = {
-                            id: msg.id,
-                            wrapper: targetNode,
-                            name: name,
-                            value: data || msg.url,
-                            filename: msg.filename,
-                            error: msg.error,
-                            errorText: msg.errorText
-                        };
-                        if(msg.ext){
-                            option.fileSize = msg.ext.fileSize;
-                        }
-                        fileMsg(option, this.sentByMe);
-                    }
-
-
+                        break;
+                    default:
+                        break;
                 }
-                break;
-            case 'loc':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: 'loc'});
-                } else {
-                    brief = '[' + Demo.lan.location + ']';
-                    locMsg({
-                        wrapper: targetNode,
-                        name: name,
-                        value: data || msg.addr,
-                        error: msg.error,
-                        errorText: msg.errorText
-                    }, this.sentByMe);
-                }
-                break;
-            case 'video':
-                if (!targetNode) {
-                    Demo.strangers[targetId].push({msg: msg, type: type});
-                } else {
-                    if (WebIM.config.isWindowSDK) {
-                        var cur = document.getElementById('file_' + msg.id);
-                        if (cur) {
-                            var listenerName = 'onUpdateFileUrl' + msg.id;
-                            if (Demo.api[listenerName]) {
-                                Demo.api[listenerName]({url: msg.url});
-                                Demo.api[listenerName] = null;
-                            } else {
-                                console.log('listenerName not exists:' + msg.id);
-                            }
-                            return;
-                        } else {
-                            brief = '[' + Demo.lan.file + ']';
-                            fileMsg({
-                                id: msg.id,
-                                wrapper: targetNode,
-                                name: name,
-                                value: data || msg.url,
-                                filename: msg.filename,
-                                error: msg.error,
-                                errorText: msg.errorText
-                            }, this.sentByMe);
-                        }
-                    } else {
-                        brief = '[' + Demo.lan.video + ']';
-                        videoMsg({
-                            wrapper: targetNode,
-                            name: name,
-                            value: data || msg.url,
-                            length: msg.length,
-                            id: msg.id,
-                            error: msg.error,
-                            errorText: msg.errorText
-                        }, this.sentByMe);
-                    }
-                }
-                break;
-            default:
-                break;
+            }
         }
 
-
-        if (!targetNode) {
-            this.render(this.node, 'stranger');
-            return;
-        }
 
         // show brief
         this.appendBrief(targetId, brief);
@@ -547,20 +578,20 @@ module.exports = {
         if (msg.type === 'cmd') {
             return;
         }
-
         // show count
+        var cate = '';
         switch (msg.type) {
             case 'chat':
                 if (this.sentByMe) {
                     return;
                 }
-                var contact = document.getElementById(msg.from),
+                var contact = document.getElementById(msg.from);
                     cate = Demo.roster[msg.from] ? 'friends' : 'strangers';
 
                 this.addCount(msg.from, cate);
                 break;
             case 'groupchat':
-                var cate = msg.roomtype ? msg.roomtype : 'groups';
+                cate = msg.roomtype ? msg.roomtype : 'groups';
 
                 this.addCount(msg.to, cate);
                 break;
@@ -569,30 +600,54 @@ module.exports = {
 
     appendBrief: function (id, value) {
         var cur = document.getElementById(id);
+        if(!cur)
+            return;
         cur.querySelector('em').innerHTML = value;
     },
 
     addCount: function (id, cate) {
+
+        // Do not add a count to an opened chat window
         // TODO: don't handle dom directly,use react way.
         if (Demo.selectedCate !== cate) {
+            // This is red dot on the cate
             var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
             curCate.style.display = 'block';
-            var curCateCount = curCate.getAttribute('count') / 1;
-            curCateCount++;
-            curCate.setAttribute('count', curCateCount);
+            var curCateCount = curCate.getAttribute('data-count') / 1;
 
-            var cur = document.getElementById(id).getElementsByTagName('i')[0];
-            var curCount = cur.getAttribute('count') / 1;
-            curCount++;
-            cur.setAttribute('count', curCount);
-            cur.innerText = curCount > 999 ? '...' : curCount + '';
-            cur.style.display = 'block';
+            // Don't increase the count of the cate if an opened item got messages
+            if(Demo.chatState[cate].selected != id){
+
+                curCateCount++;
+
+                // This is the red dot on the items
+                var cur = document.getElementById(id).getElementsByTagName('i')[0];
+                var curCount = cur.getAttribute('data-count') / 1;
+                curCount++;
+                cur.setAttribute('data-count', curCount);
+                Demo.chatRecord[id].count = curCount;
+                cur.innerText = curCount > 999 ? '...' : curCount + '';
+                cur.style.display = 'block';
+            }
+
+            curCate.setAttribute('data-count', curCateCount);
+            Demo.chatState[cate].count = curCateCount;
+
         } else {
+            if(Demo.selected !== id){
+                var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
+                curCate.style.display = 'block';
+                var curCateCount = curCate.getAttribute('data-count') / 1;
+                curCateCount++;
+                curCate.setAttribute('data-count', curCateCount);
+                Demo.chatState[cate].count = curCateCount;
+            }
             if (!this.sentByMe && id !== Demo.selected) {
                 var cur = document.getElementById(id).getElementsByTagName('i')[0];
-                var curCount = cur.getAttribute('count') / 1;
+                var curCount = cur.getAttribute('data-count') / 1;
                 curCount++;
-                cur.setAttribute('count', curCount);
+                cur.setAttribute('data-count', curCount);
+                Demo.chatRecord[id].count = curCount;
                 cur.innerText = curCount > 999 ? '...' : curCount + '';
                 cur.style.display = 'block';
             }
