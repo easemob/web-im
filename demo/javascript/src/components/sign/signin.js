@@ -100,6 +100,13 @@ module.exports = React.createClass({
         if (!type) {
             delete options.accessToken;
         }
+
+        if(Demo.user){
+            if(Demo.user != username){
+                Demo.chatRecord = {};
+            }
+        }
+
         Demo.user = username;
 
         this.props.loading('show');

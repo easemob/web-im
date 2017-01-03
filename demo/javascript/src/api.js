@@ -273,7 +273,7 @@ module.exports = {
 
     init: function () {
         Demo.selected = null;
-        Demo.user = null;
+        // Demo.user = null;
         Demo.call = null;
         Demo.roster = {};
         Demo.strangers = {};
