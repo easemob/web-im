@@ -11,10 +11,13 @@ module.exports = React.createClass({
         var count = 0;
         if(Demo.chatRecord[id]){
             count = Demo.chatRecord[id].count;
-            count = Math.max(0, count);
+            if(!isNaN(count))
+                count = Math.max(0, count);
+            else
+                count = 0;
         }
-        if(this.props.cate == 'chatrooms')
-            count = 0;
+        // if(this.props.cate == 'chatrooms')
+        //     count = 0;
         var display = count == 0 ? 'none' : 'block';
 
         return {
