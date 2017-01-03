@@ -303,17 +303,13 @@ module.exports = {
         Demo.chatRecord[targetId].brief = brief;
         Demo.chatRecord[targetId].briefType = type;
 
-
         Demo.chatRecord[targetId].messages.push({message: msg, type: type});
 
-        console.log('ChatRecord: ', Demo.chatRecord);
     },
 
     releaseChatRecord: function (targetId) {
         var targetId = targetId || Demo.selected;
-        console.log('targetId: ', targetId);
         if(targetId){
-            console.log('chatRecord: ', Demo.chatRecord);
             if(Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages){
                 if(document.getElementById('wrapper' + targetId))
                     document.getElementById('wrapper' + targetId).innerHTML = '';
@@ -624,9 +620,10 @@ module.exports = {
 
                 // This is the red dot on the items
                 var cur = document.getElementById(id).getElementsByTagName('i')[0];
-                var curCount = cur.getAttribute('count') / 1;
+                var curCount = cur.getAttribute('data-count') / 1;
                 curCount++;
-                cur.setAttribute('count', curCount);
+                cur.setAttribute('data-count', curCount);
+                Demo.chatRecord[id].count = curCount;
                 cur.innerText = curCount > 999 ? '...' : curCount + '';
                 cur.style.display = 'block';
             }
@@ -645,9 +642,10 @@ module.exports = {
             }
             if (!this.sentByMe && id !== Demo.selected) {
                 var cur = document.getElementById(id).getElementsByTagName('i')[0];
-                var curCount = cur.getAttribute('count') / 1;
+                var curCount = cur.getAttribute('data-count') / 1;
                 curCount++;
-                cur.setAttribute('count', curCount);
+                cur.setAttribute('data-count', curCount);
+                Demo.chatRecord[id].count = curCount;
                 cur.innerText = curCount > 999 ? '...' : curCount + '';
                 cur.style.display = 'block';
             }

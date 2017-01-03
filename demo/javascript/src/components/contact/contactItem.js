@@ -7,11 +7,20 @@ module.exports = React.createClass({
 
     getInitialState: function () {
         var me = this;
+        var id = this.props.id;
+        var count = 0;
+        if(Demo.chatRecord[id]){
+            count = Demo.chatRecord[id].count;
+            count = Math.max(0, count);
+        }
+        var display = count == 0 ? 'none' : 'block';
 
         return {
             msg: '',
             avatar: '',
             countShow: false,
+            count: count,
+            display: display
         };
     },
 
@@ -35,11 +44,11 @@ module.exports = React.createClass({
         Demo.chatingCate = Demo.selectedCate;
 
         if (this.refs['i']) {
-            var count = this.refs['i'].getAttribute('count') / 1;
+            var count = this.refs['i'].getAttribute('data-count') / 1;
             this.handleCurCateIconCount(count);
 
             this.refs['i'].style.display = 'none';
-            this.refs['i'].setAttribute('count', 0);
+            this.refs['i'].setAttribute('data-count', 0);
             this.refs['i'].innerText = '';
         }
         //
@@ -122,7 +131,10 @@ module.exports = React.createClass({
                     <span className="webim-contact-username">{this.props.username}</span>
                 </div>
                 <em dangerouslySetInnerHTML={{__html: this.props.brief}}></em>
-                <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>
+                <i ref='i' className='webim-msg-prompt'
+                    data-count={this.state.count}
+                    style={{display: this.state.display}}
+                    dangerouslySetInnerHTML={{__html: this.state.count}}></i>
             </div>
         );
     }
