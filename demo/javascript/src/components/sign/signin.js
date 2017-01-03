@@ -100,10 +100,11 @@ module.exports = React.createClass({
         if (!type) {
             delete options.accessToken;
         }
-
+        console.log('Record:: ', Demo.chatRecord);
         if(Demo.user){
             if(Demo.user != username){
                 Demo.chatRecord = {};
+                console.log('clearclear');
             }
         }
 

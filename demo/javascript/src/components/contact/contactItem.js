@@ -7,26 +7,26 @@ module.exports = React.createClass({
 
     getInitialState: function () {
         var me = this;
-        var id = this.props.id;
-        var count = 0;
-        if(Demo.chatRecord[id]){
-            count = Demo.chatRecord[id].count;
-            if(count == undefined || !isNaN(count)){
-                Demo.chatRecord[id].count = 0;
-                count = 0;
-            }
-            else
-                count = Math.max(0, count);
-        }
-
-        var display = count == 0 ? 'none' : 'block';
+        // var id = this.props.id;
+        // var count = 0;
+        // if(Demo.chatRecord[id]){
+        //     count = Demo.chatRecord[id].count;
+        //     if(count == undefined || !isNaN(count)){
+        //         // Demo.chatRecord[id].count = 0;
+        //         count = 0;
+        //     }
+        //     else
+        //         count = Math.max(0, count);
+        // }
+        //
+        // var display = count == 0 ? 'none' : 'block';
 
         return {
             msg: '',
             avatar: '',
             countShow: false,
-            count: count,
-            display: display
+            // count: count,
+            // display: display
         };
     },
 
@@ -60,10 +60,6 @@ module.exports = React.createClass({
                 Demo.chatRecord[this.props.id].count = 0;
             this.refs['i'].innerText = '';
         }
-        //
-        // if (this.props.id === Demo.selected) {
-        //     return;
-        // }
 
         if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
             Demo.selected = this.props.id;
@@ -142,9 +138,9 @@ module.exports = React.createClass({
                 </div>
                 <em dangerouslySetInnerHTML={{__html: this.props.brief}}></em>
                 <i ref='i' className='webim-msg-prompt'
-                    data-count={this.state.count}
-                    style={{display: this.state.display}}
-                    dangerouslySetInnerHTML={{__html: this.state.count}}></i>
+                    data-count='0'
+                    style={{display: 'none'}}
+                    dangerouslySetInnerHTML={{__html: '0'}}></i>
             </div>
         );
     }

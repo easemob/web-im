@@ -283,7 +283,6 @@ module.exports = {
         if(Demo.currentChatroom){
             delete Demo.chatRecord[Demo.currentChatroom];
         }
-
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
     },
@@ -609,7 +608,6 @@ module.exports = {
     addCount: function (id, cate) {
 
         // Do not add a count to an opened chat window
-
         // TODO: don't handle dom directly,use react way.
         if (Demo.selectedCate !== cate) {
             // This is red dot on the cate

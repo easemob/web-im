@@ -3,16 +3,16 @@ var React = require("react");
 
 module.exports = React.createClass({
 
-    getInitialState: function () {
-        var name = this.props.name + 's';
-        var count = Demo.chatState[name].count;
-        count = Math.max(0, count);
-        var display = count == 0 ? 'none' : 'block';
-        return {
-            count: count,
-            display: display
-        };
-    },
+    // getInitialState: function () {
+    //     var name = this.props.name + 's';
+    //     var count = Demo.chatState[name].count;
+    //     count = Math.max(0, count);
+    //     var display = count == 0 ? 'none' : 'block';
+    //     return {
+    //         count: count,
+    //         display: display
+    //     };
+    // },
 
     update: function () {
         var dom = this.refs.icon;
@@ -54,8 +54,8 @@ module.exports = React.createClass({
             <div id={this.props.name + 's'} className={'rel' + topClass} onClick={this.update}>
                 <i title={describe} className={'webim-leftbar-icon font small' + cur}>{icon}</i>
                 <i ref='icon' className='webim-msg-prompt webim-msg-icon-prompt'
-                    data-count={this.state.count}
-                    style={{display: this.state.display}}></i>
+                    data-count='0'
+                    style={{display: 'none'}}></i>
             </div>
         );
     }
