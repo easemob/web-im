@@ -615,7 +615,7 @@ module.exports = {
             // This is red dot on the cate
             var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
             curCate.style.display = 'block';
-            var curCateCount = curCate.getAttribute('count') / 1;
+            var curCateCount = curCate.getAttribute('data-count') / 1;
 
             // Don't increase the count of the cate if an opened item got messages
             if(Demo.chatState[cate].selected != id){
@@ -627,21 +627,21 @@ module.exports = {
                 var curCount = cur.getAttribute('count') / 1;
                 curCount++;
                 cur.setAttribute('count', curCount);
-                // Demo.chatState[cate].count = curCount;
                 cur.innerText = curCount > 999 ? '...' : curCount + '';
                 cur.style.display = 'block';
             }
 
-            curCate.setAttribute('count', curCateCount);
+            curCate.setAttribute('data-count', curCateCount);
+            Demo.chatState[cate].count = curCateCount;
 
         } else {
             if(Demo.selected !== id){
                 var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
                 curCate.style.display = 'block';
-                var curCateCount = curCate.getAttribute('count') / 1;
+                var curCateCount = curCate.getAttribute('data-count') / 1;
                 curCateCount++;
-                curCate.setAttribute('count', curCateCount);
-                // Demo.chatState[cate].count = curCount;
+                curCate.setAttribute('data-count', curCateCount);
+                Demo.chatState[cate].count = curCateCount;
             }
             if (!this.sentByMe && id !== Demo.selected) {
                 var cur = document.getElementById(id).getElementsByTagName('i')[0];

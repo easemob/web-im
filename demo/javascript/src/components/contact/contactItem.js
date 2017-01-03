@@ -17,7 +17,7 @@ module.exports = React.createClass({
 
     handleCurCateIconCount: function (count) {
         var curCate = document.getElementById(this.props.cate).getElementsByTagName('i')[1];
-        var curCateCount = curCate.getAttribute('count') / 1;
+        var curCateCount = curCate.getAttribute('data-count') / 1;
         curCateCount -= count;
         curCateCount = Math.max(0, curCateCount);
 
@@ -27,7 +27,7 @@ module.exports = React.createClass({
             curCateCount = 0;
             curCate.style.display = 'none';
         }
-        curCate.setAttribute('count', curCateCount);
+        curCate.setAttribute('data-count', curCateCount);
     },
 
 
