@@ -280,6 +280,9 @@ module.exports = {
         Demo.blacklist = {};
         Demo.selectedCate = 'friends';
         Demo.chatState.clear();
+        if(Demo.currentChatroom){
+            delete Demo.chatRecord[Demo.currentChatroom];
+        }
 
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
