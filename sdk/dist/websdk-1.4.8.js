@@ -2076,11 +2076,15 @@
 	        var suc = function suc(data, xhr) {
 	            conn.context.status = _code.STATUS_DOLOGIN_IM;
 	            conn.context.restTokenData = data;
-	            options.success(data);
+	            if (options.success) {
+	                options.success(data);
+	            }
 	            _login(data, conn);
 	        };
 	        var error = function error(res, xhr, msg) {
-	            options.error();
+	            if (options.error) {
+	                options.error();
+	            }
 	            if (location.protocol != 'https:' && conn.isHttpDNS) {
 	                if (conn.restIndex + 1 < conn.restTotal) {
 	                    conn.restIndex++;
