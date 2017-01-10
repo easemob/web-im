@@ -278,12 +278,12 @@ module.exports = React.createClass({
                 onAcceptCall: function (from, options) {
                     // console.log('onAcceptCall', from, options);
                 },
-                onGotRemoteStream: function (stream) {
+                onGotRemoteStream: function (stream, streamType) {
                     // console.log('onGotRemoteStream');
-                    me.channel.setRemote(stream);
+                    me.channel.setRemote(stream, streamType);
                 },
-                onGotLocalStream: function (stream) {
-                    me.channel.setLocal(stream);
+                onGotLocalStream: function (stream, streamType) {
+                    me.channel.setLocal(stream, streamType);
                 },
                 onRinging: function (caller) {
                     // console.log('onRinging', caller);
