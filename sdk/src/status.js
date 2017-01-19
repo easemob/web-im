@@ -36,10 +36,10 @@
         WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: 29,
 
         WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: 30,
-        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,
+        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,  //31: 处理下行消息出错 try/catch抛出异常
         WEBIM_CONNCTION_CLIENT_OFFLINE: 32,        //32: client offline
         WEBIM_CONNCTION_CLIENT_LOGOUT: 33,        //33: client logout
-        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34, // Over amount of the tabs a user opened in the same browser
+        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34, // 34: Over amount of the tabs a user opened in the same browser
         WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP: 35,
         WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP: 36,
         WEBIM_CONNECTION_ACCEPT_JOIN_GROUP: 37,
