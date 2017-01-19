@@ -64,13 +64,27 @@ var _RtcHandler = {
 
         var contentTags = msginfo.getElementsByTagName('content');
 
-        var streamType = msginfo.getElementsByTagName('stream_type')[0].innerHTML; //VOICE, VIDEO
+
 
         var contentString = contentTags[0].innerHTML;
 
         var content = _util.parseJSON(contentString);
 
         var rtcOptions = content;
+
+        var streamType = msginfo.getElementsByTagName('stream_type')[0].innerHTML; //VOICE, VIDEO
+
+        if(streamType == ""){
+            streamType = "VOICE";
+        }
+
+        rtcOptions.streamType = streamType;
+
+        if(rtcOptions.op == 102){
+            self.singalStreamType = streamType;
+        }
+
+
         var tsxId = content.tsxId;
 
         self.ctx = content.ctx;
@@ -125,7 +139,6 @@ var _RtcHandler = {
             //var endReason = msginfo.getElementsByTagName('reason')[0].innerHTML;
             reasonObj && reasonObj.length > 0 && (rtcOptions.reason = reasonObj[0].innerHTML);
         }
-
 
         if (rtcOptions.sdp) {
             if (typeof rtcOptions.sdp === 'string') {
@@ -271,7 +284,11 @@ var _RtcHandler = {
         self.ctx && (options.data.ctx = self.ctx);
         self.convertRtcOptions(options);
 
-        var streamType = "VIDEO"; //VOICE, VIDEO
+        var streamType = options.streamType || self.singalStreamType || "VIDEO"; // "VIDEO"; //VOICE, VIDEO
+        if (options.data.op == 102) {
+            self.singalStreamType = streamType;
+        }
+
 
         var id = rt.id || _conn.getUniqueId("CONFR_");
         var iq = $iq({

@@ -133,6 +133,16 @@ var Channel = React.createClass({
 
         this.local_width = video.videoWidth;
         this.local_height = video.videoHeight;
+
+        if(this.local_width == 0 && this.local_height == 0){
+            this.setState({
+                toggle_display: 'none',
+                localVideo_display: 'none'
+            });
+
+            return;
+        }
+
         this.setState({
             full_width: video.videoWidth,
             full_height: video.videoHeight,
@@ -143,12 +153,28 @@ var Channel = React.createClass({
     loadedmetadataRemoteHandler: function () {
 
         var video = this.refs.remoteVideo;
-        this.remote_width = video.videoWidth;
-        this.remote_height = video.videoHeight;
-        this.setState({
-            full_width: video.videoWidth,
-            full_height: video.videoHeight,
-        });
+
+        var hasVideo = this.props.remoteStream.getVideoTracks()[0] && this.props.remoteStream.getVideoTracks()[0].enabled;
+        var hasAudio = this.props.remoteStream.getAudioTracks()[0].enabled;
+
+        if(hasVideo) { //视频 + 音频
+            this.remote_width = video.videoWidth;
+            this.remote_height = video.videoHeight;
+            this.setState({
+                full_width: video.videoWidth,
+                full_height: video.videoHeight,
+            });
+        }
+        if(hasAudio && !hasVideo){ //仅有音频
+            this.setState({
+                full_width: 330,
+                full_height: 90,
+            });
+            this.setState({
+                toggle_display: 'none',
+                localVideo_display: 'none'
+            });
+        }
     },
 
 
@@ -169,12 +195,27 @@ var Channel = React.createClass({
         var video = this.refs.remoteVideo;
 
         if (!this.state.localFullRemoteCorner) {
-            this.remote_width = video.videoWidth;
-            this.remote_height = video.videoHeight;
-            this.setState({
-                full_width: video.videoWidth,
-                full_height: video.videoHeight,
-            });
+            var hasVideo = this.props.remoteStream.getVideoTracks()[0] && this.props.remoteStream.getVideoTracks()[0].enabled;
+            var hasAudio = this.props.remoteStream.getAudioTracks()[0].enabled;
+
+            if(hasVideo) { //视频 + 音频
+                this.remote_width = video.videoWidth;
+                this.remote_height = video.videoHeight;
+                this.setState({
+                    full_width: video.videoWidth,
+                    full_height: video.videoHeight,
+                });
+            }
+            if(hasAudio && !hasVideo){ //仅有音频
+                this.setState({
+                    full_width: 330,
+                    full_height: 90,
+                });
+                this.setState({
+                    toggle_display: 'none',
+                    localVideo_display: 'none'
+                });
+            }
         }
     },
 
@@ -238,14 +279,14 @@ module.exports = function (dom) {
     this.dom = dom;
     var me = this;
     return {
-        setLocal: function (stream) {
+        setLocal: function (stream, streamType) {
             // console.log('channel setLocal', 'user=', Demo.user, 'caller=', Demo.call.caller, 'callee=', Demo.call.callee);
             this.localStream = stream;
             var title = '';
             var hideAccept = false;
             var localFullRemoteCorner = false;
             if (Demo.user == Demo.call.caller) {
-                title = '等候 ' + Demo.call.callee.split('@')[0].split('_')[1] + ' 视频中...';
+                title = '等候 ' + Demo.call.callee.split('@')[0].split('_')[1] + (streamType == 'VOICE' ? ' 语音中...' : ' 视频中...');
                 hideAccept = true;
             } else {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
@@ -256,7 +297,7 @@ module.exports = function (dom) {
                 me.dom
             );
         },
-        setRemote: function (stream) {
+        setRemote: function (stream, streamType) {
             // console.log('channel setRemote', 'user=', Demo.user, 'caller=', Demo.call.caller, 'callee=', Demo.call.callee);
             this.remoteStream = stream;
             var title = '';
@@ -264,7 +305,7 @@ module.exports = function (dom) {
             if (Demo.call.caller != '' && Demo.call.caller == Demo.user) {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
             } else {
-                title = Demo.call.callee.split('@')[0].split('_')[1] + ' 请求视频通话...';
+                title = Demo.call.callee.split('@')[0].split('_')[1] + (streamType == 'VOICE' ? ' 请求语音通话...' : ' 请求视频通话...');
             }
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}

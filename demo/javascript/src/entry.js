@@ -24,6 +24,23 @@ Demo.lan = Language.Chinese;
 Demo.api = Api;
 
 // The messages cache
+/*
+
+Demo.chatRecord = {
+   targetId: {
+        messages: [{
+           msg: 'msg',
+           type: 'type'
+       },
+         {
+         msg: 'msg',
+         type: 'type'
+         }],
+       brief: 'brief'
+   }
+}
+*/
+
 Demo.chatRecord = {};
 // The max messages count of a dialog
 Demo.maxChatRecordCount = 20;
@@ -47,34 +64,55 @@ Demo.AUDIOTYPE = {
 };
 
 Demo.chatingCate = '';    // friends|groups|chatrooms|strangers
-Demo.selectedCate = '';   // friends|groups|chatrooms|strangers
-Demo.scroll = {
-    friends: 0,
-    groups: 0,
-    chatrooms: 0,
-    strangers: 0
-};
+Demo.selectedCate = 'friends';   // friends|groups|chatrooms|strangers
 
 Demo.chatState = {
     friends:{
         selected: '',
         scroll: 0,
-        chatWindow: []
+        chatWindow: [],
+        count: 0
     },
     groups:{
         selected: '',
         scroll: 0,
-        chatWindow: []
+        chatWindow: [],
+        count: 0
     },
     chatrooms:{
         selected: '',
         scroll: 0,
-        chatWindow: []
+        chatWindow: [],
+        count: 0
     },
     strangers:{
         selected: '',
         scroll: 0,
-        chatWindow: []
+        chatWindow: [],
+        count: 0
+    },
+    clear: function (cate) {
+        if(cate) {
+            this[cate].selected = '';
+            this[cate].scroll = 0;
+            this[cate].chatWindow = [];
+        }else{
+            this['friends'].selected = '';
+            this['friends'].scroll = 0;
+            this['friends'].chatWindow = [];
+
+            this['groups'].selected = '';
+            this['groups'].scroll = 0;
+            this['groups'].chatWindow = [];
+
+            this['chatrooms'].selected = '';
+            this['chatrooms'].scroll = 0;
+            this['chatrooms'].chatWindow = [];
+
+            this['strangers'].selected = '';
+            this['strangers'].scroll = 0;
+            this['strangers'].chatWindow = [];
+        }
     }
 }
 
