@@ -2080,7 +2080,6 @@
 	            _login(data, conn);
 	        };
 	        var error = function error(res, xhr, msg) {
-	            options.error();
 	            if (options.error) options.error();
 	            if (location.protocol != 'https:' && conn.isHttpDNS) {
 	                if (conn.restIndex + 1 < conn.restTotal) {

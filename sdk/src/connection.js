@@ -933,7 +933,6 @@ connection.prototype.login = function (options) {
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
-            options.error();
             if(options.error)
                 options.error();
             if (location.protocol != 'https:' && conn.isHttpDNS) {
