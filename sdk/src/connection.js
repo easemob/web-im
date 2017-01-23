@@ -413,6 +413,8 @@ var _loginCallback = function (status, msg, conn) {
         conn.addHandler(handleIqPrivacy, 'jabber:iq:privacy', 'iq', 'set', null, null);
         conn.addHandler(handleIq, null, 'iq', null, null, null);
 
+        conn.registerConfrIQHandler && (conn.registerConfrIQHandler());
+
         conn.context.status = _code.STATUS_OPENED;
 
         var supportRecMessage = [

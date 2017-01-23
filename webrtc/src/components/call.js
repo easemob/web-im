@@ -60,8 +60,11 @@ var _Call = {
     },
 
     makeVideoCall: function (callee, accessSid) {
+        var self = this;
+
         var mediaStreamConstaints = {};
-        Util.extend(mediaStreamConstaints, this.mediaStreamConstaints);
+        Util.extend(mediaStreamConstaints, self.mediaStreamConstaints);
+        self.mediaStreamConstaints.video = true;
 
         this.call(callee, mediaStreamConstaints, accessSid);
     },

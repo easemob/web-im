@@ -23,27 +23,23 @@ var _RtcHandler = {
 
         var _conn = self.imConnection;
 
-        var handleConferenceIQ;
+        _conn.registerConfrIQHandler = function(){
+            var handleConferenceIQ = function (msginfo) {
+                try {
+                    self.handleRtcMessage(msginfo);
+                } catch (error) {
+                    _logger.error(error.stack || error);
+                    throw error;
+                }
 
-        _conn.addHandler = function (handler, ns, name, type, id, from, options) {
-            if (typeof handleConferenceIQ !== 'function') {
+                return true;
+            };
 
-                handleConferenceIQ = function (msginfo) {
-                    try {
-                        self.handleRtcMessage(msginfo);
-                    } catch (error) {
-                        _logger.error(error.stack || error);
-                        throw error;
-                    }
+            _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "set");
+            _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "get");
 
-                    return true;
-                };
-                _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "set", null, null);
-                _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "get", null, null);
-            }
-
-            _conn.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
-        };
+            _logger.warn("Conference iq handler. registered.");
+        }
     },
 
     handleRtcMessage: function (msginfo) {

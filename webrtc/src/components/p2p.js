@@ -34,6 +34,7 @@ var CommonPattern = {
 
     isCaller: false,
     accepted: false,
+    hangup: false,
 
 
     init: function () {
@@ -89,6 +90,7 @@ var CommonPattern = {
 
         self.isCaller = true;
         self.accepted = false;
+        self.hangup = false;
 
         self.streamType = mediaStreamConstaints.audio && mediaStreamConstaints.video ? "VIDEO" : "VOICE";
 
@@ -178,6 +180,7 @@ var CommonPattern = {
 
         self.isCaller = false;
         self.accepted = false;
+        self.hangup = false;
 
         self.callee = from;
         self._rtcCfg2 = options.rtcCfg;

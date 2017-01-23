@@ -321,10 +321,14 @@ module.exports = React.createClass({
                     // console.log('onIceConnectionStateChange', iceState);
                     if (iceState == "disconnected") {
                         if (!me.rtcTimeoutID) {
+                            //console.warn("Warn. disconnect. notify offline");
+
                             me.rtcTimeoutID = setTimeout(function () {
-                                Demo.api.NotifySuccess('Target is offline');
-                                var closeButton = document.getElementById('webrtc_close');
-                                closeButton && closeButton.click();
+                                if(!(Demo.call.pattern && Demo.call.pattern.hangup)){
+                                    Demo.api.NotifySuccess('Target is offline');
+                                    var closeButton = document.getElementById('webrtc_close');
+                                    closeButton && closeButton.click();
+                                }
                             }, 10000);
                         }
                     } else if (iceState == "connected") {
@@ -355,6 +359,7 @@ module.exports = React.createClass({
                 }
             }
         });
+
     },
 
     componentWillReceiveProps: function (nextProps) {
