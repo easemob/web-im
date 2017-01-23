@@ -683,7 +683,7 @@ connection.prototype.heartBeat = function (forcing = false) {
     //IE8: strophe auto switch from ws to BOSH, need heartbeat
     var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
 
-    if (this.heartBeatID || forcing || !isNeed) {
+    if (this.heartBeatID || (!forcing && !isNeed)) {
         return;
     }
 
