@@ -329,6 +329,14 @@ module.exports = function (dom) {
                 });
             }
 
+            //video 标签 srcObject 不置为 null，firefox 会有点问题
+            var videoObjs = me.dom.getElementsByTagName("video");
+            if(videoObjs && videoObjs.length > 0){
+                for(var i = 0; i < videoObjs.length; i++){
+                    videoObjs[i].srcObject = null;
+                }
+            }
+
             ReactDOM.unmountComponentAtNode(me.dom);
         }
     };
