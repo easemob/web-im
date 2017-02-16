@@ -40,7 +40,7 @@ WebIM.config = {
      */
     isWindowSDK: false,
     /**
-     * isSandBox=true:  xmppURL: 'im-api.sandbox.easemob.com',  apiURL: '//a1.sdb.easemob.com',
+     * isSandBox=true:  xmppURL: 'im-api-sandbox.easemob.com',  apiURL: '//a1-sdb.easemob.com',
      * isSandBox=false: xmppURL: 'im-api.easemob.com',          apiURL: '//a1.easemob.com',
      * @parameter {Boolean} true or false
      */
@@ -67,7 +67,7 @@ WebIM.config = {
     /**
      * after login, send empty message to xmpp server like heartBeat every 45s, to keep the ws connection alive.
      */
-    heartBeatWait:4500,
+    heartBeatWait: 4500,
     /**
      * while http access,use ip directly,instead of ServerName,avoiding DNS problem.
      */
