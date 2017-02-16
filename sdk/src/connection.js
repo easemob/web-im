@@ -932,15 +932,13 @@ connection.prototype.login = function (options) {
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
-            if (options.success) {
+            if(options.success)
                 options.success(data);
-            }
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
-            if (options.error) {
+            if(options.error)
                 options.error();
-            }
             if (location.protocol != 'https:' && conn.isHttpDNS) {
                 if ((conn.restIndex + 1) < conn.restTotal) {
                     conn.restIndex++;
