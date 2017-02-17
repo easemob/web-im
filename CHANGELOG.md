@@ -1,6 +1,6 @@
 #版本更新说明:
 
-## v1.4.8.2 @ 2017-02-16
+## v1.4.10 @ 2017-02-16
 
 ###Feature
 
@@ -13,7 +13,7 @@
 * [sdk] webrtc:正常挂断不应该提醒offline
 * [sdk] webrtc:重连后无法处理音视频IQ消息
 
-## v1.4.8.1 @ 2017-01-20
+## v1.4.9 @ 2017-01-20
 
 ###BugFix
 
@@ -144,7 +144,7 @@
 ---
 #ChangeLog:
 
-## v1.4.8.2 @ 2017-02-16
+## v1.4.10 @ 2017-02-16
 
 ###Feature
 
@@ -157,7 +157,7 @@
 * [sdk] webrtc:shoud not warning offline after normal close
 * [sdk] webrtc:can't handle IQ message after reconnect
 
-## v1.4.8.1 @ 2017-01-20
+## v1.4.9 @ 2017-01-20
 
 ###BugFix
 

@@ -6,6 +6,7 @@ echo version=$version
 #replace follows manually first so far(will replaced by shell script automatically later):
 #sdk/package.json
 #sdk/README.md
+#sdk/demo.html
 #package.json
 #CHANGELOG.md
 #index.html

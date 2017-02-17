@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.4.8.2 @ 2017-02-16
+## v1.4.10 @ 2017-02-16
 
 ###Feature
 
@@ -13,7 +13,7 @@
 * [sdk] webrtc:shoud not warning offline after normal close
 * [sdk] webrtc:can't handle IQ message after reconnect
 
-## v1.4.8.1 @ 2017-01-20
+## v1.4.9 @ 2017-01-20
 
 ###BugFix
 
