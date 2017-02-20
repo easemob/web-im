@@ -80,7 +80,8 @@ module.exports = React.createClass({
             msg: value,
             to: Demo.selected,
             roomType: chatroom,
-            success: function (id) {
+            success: function (id, mid) {
+                // console.log(id, mid)
                 me.state.showEmoji && me.setState({showEmoji: false});
             }
         });
@@ -159,7 +160,7 @@ module.exports = React.createClass({
             roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
                                   onClick={this.callVideo}>a</span>);
             roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
-            onClick={this.callVoice}>z</span>);
+                                  onClick={this.callVoice}>z</span>);
         }
         return (
             <div className='webim-send-wrapper'>
