@@ -137,7 +137,6 @@ module.exports = React.createClass({
             roomId: this.props.roomId,
             affiliation: item.affiliation,
             success: function () {
-                log('memebers', members);
                 members.splice(index, 1);
                 me.setState({
                     members: members

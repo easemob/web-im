@@ -932,12 +932,12 @@ connection.prototype.login = function (options) {
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
-            if(options.success)
+            if (options.success)
                 options.success(data);
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
-            if(options.error)
+            if (options.error)
                 options.error();
             if (location.protocol != 'https:' && conn.isHttpDNS) {
                 if ((conn.restIndex + 1) < conn.restTotal) {
@@ -1301,7 +1301,6 @@ connection.prototype.handleMessage = function (msginfo) {
         errorCode = error[0].getAttribute('code');
         var textDOM = error[0].getElementsByTagName('text');
         errorText = textDOM[0].textContent || textDOM[0].text;
-        log('handle error', errorCode, errorText);
     }
 
     var msgDatas = parseMsgData.data;
@@ -1900,7 +1899,6 @@ connection.prototype.queryRoomInfo = function (options) {
             }
             fieldValues['name'] = (result.getElementsByTagName('identity')[0]).getAttribute('name');
         }
-        log(settings, members, fieldValues);
         suc(settings, members, fieldValues);
     };
     var err = options.error || _utils.emptyfn;
@@ -2367,7 +2365,7 @@ connection.prototype.addToBlackList = function (options) {
         }
     }
 
-    // log('addToBlackList', blacklist, piece.tree());
+    // console.log('addToBlackList', blacklist, piece.tree());
     this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
 };
 
@@ -2397,7 +2395,7 @@ connection.prototype.removeFromBlackList = function (options) {
         }
     }
 
-    // log('removeFromBlackList', blacklist, piece.tree());
+    // console.log('removeFromBlackList', blacklist, piece.tree());
     this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
 };
 
@@ -2465,7 +2463,6 @@ connection.prototype.getGroupBlacklist = function (options) {
         });
 
     this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
-        log('getGroupBlackList');
         sucFn(_parseGroupBlacklist(msginfo));
     }, function () {
         errFn();
@@ -2773,7 +2770,7 @@ connection.prototype.createGroupAsync = function (p) {
     // Strophe.info('step 1 ----------');
     // Strophe.info(options);
     me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-        // log(msgInfo);
+        // console.log(msgInfo);
 
         // for ie hack
         if ('setAttribute' in msgInfo) {
