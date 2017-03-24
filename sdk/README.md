@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.4.10 @ 2017-02-16
+
+###Feature
+
+* [sdk] webrtc add voice call
+
+###BugFix
+
+* [sdk] webrtc:Firefox error while close call
+* [sdk] webrtc:logical error after multitimes connection and close
+* [sdk] webrtc:shoud not warning offline after normal close
+* [sdk] webrtc:can't handle IQ message after reconnect
+
+## v1.4.9 @ 2017-01-20
+
+###BugFix
+
+* [sdk] fix a bug in success/error callback
+
 ## v1.4.8 @ 2016-12-27
 
 ###Feature

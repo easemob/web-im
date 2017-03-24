@@ -39,6 +39,136 @@
 var _util = require('./utils');
 var _logger = _util.logger;
 
+
+var _WebrtcStatistics = {
+    bytesPrev: null,
+    timestampPrev: null,
+    sentBytesPrev: null,
+    sentTimestampPrev: null,
+
+    printStats: function(rtcPeerConnection) {
+        var self = this;
+
+        rtcPeerConnection.getStats(null, function (results) {
+            self.parseRecvStatistics(results, function (name, value) {
+                _logger.info(new Date(), "RECV ", name, value);
+            }, function (name, value) {
+                _logger.info(new Date(), "SEND ", name, value);
+            });
+        });
+    },
+
+    stopIntervalPrintStats: function () {
+        var self = this;
+
+        self._printIntervalId &&  window.clearInterval(self._printIntervalId);
+        self._printIntervalId = null;
+    },
+
+    intervalPrintStats: function(rtcPeerConnection, seconds){
+
+    },
+
+    _intervalPrintStats: function(rtcPeerConnection, seconds){
+        var self = this;
+
+        self._printIntervalId &&  window.clearInterval(self._printIntervalId);
+        self._printIntervalId = window.setInterval(function () {
+            self.printStats(rtcPeerConnection);
+        }, seconds * 1000);
+    },
+
+    parseRecvStatistics: function (results, callback, callbackSent) {
+        var self = this;
+
+        // calculate video bitrate
+        var bitrate;
+        var remoteWidth;
+        var remoteHeight;
+
+        var activeCandidatePair = null;
+        var remoteCandidate = null;
+
+        Object.keys(results).forEach(function (result) {
+            var report = results[result];
+            var now = report.timestamp;
+
+
+            if (report.type === 'inboundrtp' && report.mediaType === 'audio') {
+                // firefox calculates the bitrate for us
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=951496
+                bitrate = Math.floor(report.bitrateMean / 1024);
+            } else if (report.type === 'ssrc' && report.bytesReceived ){
+                if(report.mediaType === 'video') {
+                    // remoteWidth = report.googFrameWidthReceived;
+                    // remoteHeight = report.googFrameHeightReceived;
+                    // // chrome does not so we need to do it ourselves
+                    // var bytes = report.bytesReceived;
+                    // if (self.timestampPrev) {
+                    //     bitrate = 8 * (bytes - self.bytesPrev) / (now - self.timestampPrev);
+                    //     bitrate = Math.floor(bitrate);
+                    // }
+                    // self.bytesPrev = bytes;
+                    // self.timestampPrev = now;
+                }else{
+                    // chrome does not so we need to do it ourselves
+                    var bytes = report.bytesReceived;
+                    if (self.timestampPrev) {
+                        bitrate = 8 * (bytes - self.bytesPrev) / (now - self.timestampPrev);
+                        bitrate = Math.floor(bitrate);
+                    }
+                    self.bytesPrev = bytes;
+                    self.timestampPrev = now;
+                }
+            }
+
+            if (report.type === 'candidatepair' && report.selected ||
+                report.type === 'googCandidatePair' &&
+                report.googActiveConnection === 'true') {
+                activeCandidatePair = report;
+            }
+
+            if (report.type === 'outboundrtp' && report.mediaType === 'audio') {
+                callbackSent('audio Bitrate', Math.floor(report.bitrateMean / 1024) + ' kbps');
+            } else if (report.type === 'ssrc' && report.bytesSent &&
+                report.googFrameHeightSent) {
+                // chrome does not so we need to do it ourselves
+                var bytes = report.bytesSent;
+                if (self.sentTimestampPrev) {
+                    var br = 8 * (bytes - self.sentBytesPrev) / (now - self.sentTimestampPrev);
+                    br = Math.floor(br);
+                    callbackSent('audio Bitrate', br + ' kbps');
+                    callbackSent('audio Size', report.googFrameWidthSent + 'x' + report.googFrameHeightSent);
+                }
+                self.sentBytesPrev = bytes;
+                self.sentTimestampPrev = now;
+            }
+
+
+        });
+
+        if (activeCandidatePair && activeCandidatePair.remoteCandidateId) {
+            remoteCandidate = results[activeCandidatePair.remoteCandidateId];
+        }
+        if (remoteCandidate && remoteCandidate.ipAddress &&
+            remoteCandidate.portNumber) {
+            callback('Peer', remoteCandidate.ipAddress + ':' + remoteCandidate.portNumber);
+        }
+
+        callback('audio Bitrate', bitrate + ' kbps');
+
+        if (remoteHeight) {
+            callback('audio Size', remoteWidth + 'x' + remoteHeight);
+        }
+    }
+}
+
+var WebrtcStatisticsHelper = function (cfg) {
+    _util.extend(this, _WebrtcStatistics, cfg || {});
+};
+
+var webrtcStatisticsHelper = new WebrtcStatisticsHelper();
+
 var _SDPSection = {
     headerSection: null,
 
@@ -233,6 +363,8 @@ var SDPSection = function (sdp) {
  * Abstract
  */
 var _WebRTC = {
+    streamType: "VIDEO", // VIDEO or VOICE
+
     mediaStreamConstaints: {
         audio: true,
         video: true
@@ -272,7 +404,7 @@ var _WebRTC = {
                 _logger.debug('[WebRTC-API] Using audio device: ' + audioTracks[0].label);
             }
 
-            onGotStream ? onGotStream(self, stream) : self.onGotStream(stream);
+            onGotStream ? onGotStream(self, stream, self.streamType) : self.onGotStream(stream, self.streamType);
         }
 
         return navigator.mediaDevices.getUserMedia(constaints || self.mediaStreamConstaints)
@@ -285,7 +417,7 @@ var _WebRTC = {
     },
 
     setLocalVideoSrcObject: function (stream) {
-        this.onGotLocalStream(stream);
+        this.onGotLocalStream(stream, this.streamType);
         _logger.debug('[WebRTC-API] you can see yourself !');
     },
 
@@ -334,6 +466,14 @@ var _WebRTC = {
 
         rtcPeerConnection.oniceconnectionstatechange = function (event) {
             self.onIceStateChange(event);
+
+            if("connected" == event.target.iceConnectionState){
+                webrtcStatisticsHelper.intervalPrintStats(rtcPeerConnection, 1);
+            }
+
+            if("closed" == event.target.iceConnectionState) {
+                webrtcStatisticsHelper.stopIntervalPrintStats();
+            }
         };
 
         rtcPeerConnection.onaddstream = function (event) {
@@ -433,7 +573,10 @@ var _WebRTC = {
                 var videoSSRC = sdpSection.parseSSRC(sdpSection.videoSection);
 
                 sdpSection.updateAudioSSRCSection(1000, "CHROME0000", ms.WMS, audioSSRC.label);
-                sdpSection.updateVideoSSRCSection(2000, "CHROME0000", ms.WMS, videoSSRC.label);
+
+                if(videoSSRC){
+                    sdpSection.updateVideoSSRCSection(2000, "CHROME0000", ms.WMS, videoSSRC.label);
+                }
                 // mslabel cname
 
 
@@ -467,6 +610,8 @@ var _WebRTC = {
     close: function () {
         var self = this;
         try {
+            webrtcStatisticsHelper.stopIntervalPrintStats();
+
             self.rtcPeerConnection && self.rtcPeerConnection.close();
         } catch (e) {
         }
@@ -531,12 +676,15 @@ var _WebRTC = {
     _onGotRemoteStream: function (event) {
         _logger.debug('[WebRTC-API] onGotRemoteStream.', event);
 
-        this.onGotRemoteStream(event.stream);
+        event.stream.getAudioTracks()[0].enabled = true;
+        event.stream.getVideoTracks()[0] && (event.stream.getVideoTracks()[0].enabled = (this.streamType == "VIDEO"));
+
+        this.onGotRemoteStream(event.stream, this.streamType);
         _logger.debug('[WebRTC-API] received remote stream, you will see the other.');
     },
 
-    onGotStream: function (stream) {
-        _logger.debug('[WebRTC-API] on got a local stream');
+    onGotStream: function (stream, streamType) {
+        _logger.debug('[WebRTC-API] on got a local stream : ' + streamType);
     },
 
     onSetRemoteSuccess: function () {

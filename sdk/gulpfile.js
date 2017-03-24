@@ -15,7 +15,7 @@ var uglify = require('gulp-uglify')
 var rename = require('gulp-rename')
 var sourcemaps = require('gulp-sourcemaps')
 var gutil = require('gulp-util')
-
+var es2015 = require('babel-preset-es2015');
 
 // websdk-{version}.js
 gulp.task('sdk:umd', function () {
@@ -35,6 +35,9 @@ gulp.task('sdk:umd', function () {
 // websdk-{version}.min.js.map
 gulp.task('sdk:umd:min', ['sdk:umd'], function () {
     return gulp.src('./dist/websdk-' + version + '.js')
+        .pipe(babel({
+            presets: [es2015]
+        }))
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(uglify())
         .pipe(rename('websdk-' + version + '.min.js'))

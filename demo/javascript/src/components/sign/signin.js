@@ -61,7 +61,7 @@ module.exports = React.createClass({
         }
     },
 
-    login: function(){
+    login: function () {
         var username = this.refs.name.refs.input.value || (WebIM.config.autoSignIn ? WebIM.config.autoSignInName : '');
         var auth = this.refs.auth.refs.input.value || (WebIM.config.autoSignIn ? WebIM.config.autoSignInPwd : '');
         var type = this.refs.token.refs.input.checked;
@@ -92,7 +92,7 @@ module.exports = React.createClass({
                 WebIM.utils.setCookie('webim_' + encryptUsername, token, 1);
                 window.history.pushState({}, 0, url);
             },
-            error: function(){
+            error: function () {
                 window.history.pushState({}, 0, 'index.html');
             }
         };
@@ -100,6 +100,13 @@ module.exports = React.createClass({
         if (!type) {
             delete options.accessToken;
         }
+        if (Demo.user) {
+            if (Demo.user != username) {
+                Demo.chatRecord = {};
+                console.log('clearclear');
+            }
+        }
+
         Demo.user = username;
 
         this.props.loading('show');
@@ -140,18 +147,18 @@ module.exports = React.createClass({
     componentWillMount: function () {
         var pattern = /([^\?|&])\w+=([^&]+)/g;
         var username, auth, type;
-        if(window.location.search){
+        if (window.location.search) {
             var args = window.location.search.match(pattern);
-            if(args.length == 1 && args[0]) {
+            if (args.length == 1 && args[0]) {
                 username = args[0].substr(9);
-                auth = WebIM.utils.getCookie()['webim_'+username];
+                auth = WebIM.utils.getCookie()['webim_' + username];
                 type = true;
             }
 
-            if(username && auth){
+            if (username && auth) {
                 username = WebIM.utils.decrypt(username);
                 this.signin(username, auth, type);
-            }else{
+            } else {
                 window.history.pushState({}, 0, 'index.html');
             }
         }

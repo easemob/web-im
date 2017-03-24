@@ -287,7 +287,7 @@ var _clazz = {
      * @param cands [ ]
      *
      */
-    initC: function (rt, WebRTCId, tkt, sessId, rtcId, pubS, subS, sdp, cands, rtcCfg, WebRTC, callback) {
+    initC: function (rt, streamType, WebRTCId, tkt, sessId, rtcId, pubS, subS, sdp, cands, rtcCfg, WebRTC, callback) {
         _logger.debug("initC ...");
 
 
@@ -296,6 +296,8 @@ var _clazz = {
                 op: 102
             }
         };
+
+        rtcOptions.streamType = streamType || "VIDEO";
 
         WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
         tkt && (rtcOptions.data.tkt = tkt);

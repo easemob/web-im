@@ -80,7 +80,8 @@ module.exports = React.createClass({
             msg: value,
             to: Demo.selected,
             roomType: chatroom,
-            success: function (id) {
+            success: function (id, mid) {
+                // console.log(id, mid)
                 me.state.showEmoji && me.setState({showEmoji: false});
             }
         });
@@ -119,12 +120,17 @@ module.exports = React.createClass({
         }
     },
 
-    call: function () {
-        console.log('sendWrapper::call');
+    callVideo: function () {
+        console.log('sendWrapper::callVideo');
         Demo.call.caller = Demo.user;
         Demo.call.makeVideoCall(Demo.selected);
     },
 
+    callVoice: function () {
+        console.log('sendWrapper::callVoice');
+        Demo.call.caller = Demo.user;
+        Demo.call.makeVoiceCall(Demo.selected);
+    },
 
     sendPicture: function () {
         this.props.sendPicture(this.props.chatType);
@@ -150,9 +156,11 @@ module.exports = React.createClass({
                               onClick={this.sendAudio}>R</span>);
         roomMember.push(<span key={keyValue++} className='webim-file-icon font smaller'
                               onClick={this.sendFile}>S</span>);
-        if (WebIM.config.isWebRTC) {
+        if (WebIM.config.isWebRTC && Demo.selectedCate == 'friends') {
             roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
-                                  onClick={this.call}>a</span>);
+                                  onClick={this.callVideo}>a</span>);
+            roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
+                                  onClick={this.callVoice}>z</span>);
         }
         return (
             <div className='webim-send-wrapper'>

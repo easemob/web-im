@@ -34,6 +34,7 @@ var CommonPattern = {
 
     isCaller: false,
     accepted: false,
+    hangup: false,
 
 
     init: function () {
@@ -89,6 +90,9 @@ var CommonPattern = {
 
         self.isCaller = true;
         self.accepted = false;
+        self.hangup = false;
+
+        self.streamType = mediaStreamConstaints.audio && mediaStreamConstaints.video ? "VIDEO" : "VOICE";
 
         self.createLocalMedia(mediaStreamConstaints);
     },
@@ -120,7 +124,7 @@ var CommonPattern = {
             rtKey: self._rtKey
         });
 
-        self.api.initC(rt, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
+        self.api.initC(rt, self.streamType, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
             _logger.debug("initc result", rtcOptions);
         });
 
@@ -176,6 +180,7 @@ var CommonPattern = {
 
         self.isCaller = false;
         self.accepted = false;
+        self.hangup = false;
 
         self.callee = from;
         self._rtcCfg2 = options.rtcCfg;
@@ -185,6 +190,8 @@ var CommonPattern = {
 
         self._rtcId = options.rtcId;
         self._sessId = options.sessId;
+
+        self.streamType = options.streamType;
 
         self.webRtc.createRtcPeerConnection(self._rtcCfg2);
 
@@ -262,7 +269,14 @@ var CommonPattern = {
             });
         }
 
-        self.webRtc.createMedia(function (webrtc, stream) {
+        var constaints = {
+            audio: true
+        };
+        if(self.streamType == "VIDEO"){
+            constaints.video = true;
+        }
+
+        self.webRtc.createMedia(constaints, function (webrtc, stream) {
             webrtc.setLocalVideoSrcObject(stream);
 
             createAndSendAnswer();

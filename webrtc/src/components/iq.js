@@ -23,27 +23,23 @@ var _RtcHandler = {
 
         var _conn = self.imConnection;
 
-        var handleConferenceIQ;
+        _conn.registerConfrIQHandler = function(){
+            var handleConferenceIQ = function (msginfo) {
+                try {
+                    self.handleRtcMessage(msginfo);
+                } catch (error) {
+                    _logger.error(error.stack || error);
+                    throw error;
+                }
 
-        _conn.addHandler = function (handler, ns, name, type, id, from, options) {
-            if (typeof handleConferenceIQ !== 'function') {
+                return true;
+            };
 
-                handleConferenceIQ = function (msginfo) {
-                    try {
-                        self.handleRtcMessage(msginfo);
-                    } catch (error) {
-                        _logger.error(error.stack || error);
-                        throw error;
-                    }
+            _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "set");
+            _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "get");
 
-                    return true;
-                };
-                _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "set", null, null);
-                _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "get", null, null);
-            }
-
-            _conn.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
-        };
+            _logger.warn("Conference iq handler. registered.");
+        }
     },
 
     handleRtcMessage: function (msginfo) {
@@ -64,13 +60,27 @@ var _RtcHandler = {
 
         var contentTags = msginfo.getElementsByTagName('content');
 
-        var streamType = msginfo.getElementsByTagName('stream_type')[0].innerHTML; //VOICE, VIDEO
+
 
         var contentString = contentTags[0].innerHTML;
 
         var content = _util.parseJSON(contentString);
 
         var rtcOptions = content;
+
+        var streamType = msginfo.getElementsByTagName('stream_type')[0].innerHTML; //VOICE, VIDEO
+
+        if(streamType == ""){
+            streamType = "VOICE";
+        }
+
+        rtcOptions.streamType = streamType;
+
+        if(rtcOptions.op == 102){
+            self.singalStreamType = streamType;
+        }
+
+
         var tsxId = content.tsxId;
 
         self.ctx = content.ctx;
@@ -125,7 +135,6 @@ var _RtcHandler = {
             //var endReason = msginfo.getElementsByTagName('reason')[0].innerHTML;
             reasonObj && reasonObj.length > 0 && (rtcOptions.reason = reasonObj[0].innerHTML);
         }
-
 
         if (rtcOptions.sdp) {
             if (typeof rtcOptions.sdp === 'string') {
@@ -271,7 +280,11 @@ var _RtcHandler = {
         self.ctx && (options.data.ctx = self.ctx);
         self.convertRtcOptions(options);
 
-        var streamType = "VIDEO"; //VOICE, VIDEO
+        var streamType = options.streamType || self.singalStreamType || "VIDEO"; // "VIDEO"; //VOICE, VIDEO
+        if (options.data.op == 102) {
+            self.singalStreamType = streamType;
+        }
+
 
         var id = rt.id || _conn.getUniqueId("CONFR_");
         var iq = $iq({

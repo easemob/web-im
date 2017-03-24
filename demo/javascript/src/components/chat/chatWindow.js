@@ -137,7 +137,6 @@ module.exports = React.createClass({
             roomId: this.props.roomId,
             affiliation: item.affiliation,
             success: function () {
-                log('memebers', members);
                 members.splice(index, 1);
                 me.setState({
                     members: members
@@ -161,6 +160,10 @@ module.exports = React.createClass({
     // hide when blur | bind focus event
     componentDidUpdate: function () {
         // this.state.memberShowStatus && ReactDOM.findDOMNode(this.refs['member']).focus();
+    },
+
+    componentDidMount: function () {
+        Demo.api.releaseChatRecord();
     },
 
     // hide when blur close

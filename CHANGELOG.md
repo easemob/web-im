@@ -1,5 +1,25 @@
 #版本更新说明:
 
+## v1.4.10 @ 2017-02-16
+
+###Feature
+
+* [sdk] webrtc新增语音呼叫
+
+###BugFix
+
+* [sdk] webrtc:Firefox在结束通话后的问题
+* [sdk] webrtc:多次接通挂断之后,逻辑功能混乱
+* [sdk] webrtc:正常挂断不应该提醒offline
+* [sdk] webrtc:重连后无法处理音视频IQ消息
+
+## v1.4.9 @ 2017-01-20
+
+###BugFix
+
+* [sdk] 成功/失败的回调函数如果没有定义会报错
+
+
 ## v1.4.8 @ 2016-12-27
 
 ###Feature
@@ -123,6 +143,25 @@
    
 ---
 #ChangeLog:
+
+## v1.4.10 @ 2017-02-16
+
+###Feature
+
+* [sdk] webrtc add voice call
+
+###BugFix
+
+* [sdk] webrtc:Firefox error while close call
+* [sdk] webrtc:logical error after multitimes connection and close
+* [sdk] webrtc:shoud not warning offline after normal close
+* [sdk] webrtc:can't handle IQ message after reconnect
+
+## v1.4.9 @ 2017-01-20
+
+###BugFix
+
+* [sdk] fix a bug in success/error callback
 
 ## v1.4.8 @ 2016-12-27
 

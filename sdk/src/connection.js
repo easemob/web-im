@@ -413,6 +413,8 @@ var _loginCallback = function (status, msg, conn) {
         conn.addHandler(handleIqPrivacy, 'jabber:iq:privacy', 'iq', 'set', null, null);
         conn.addHandler(handleIq, null, 'iq', null, null, null);
 
+        conn.registerConfrIQHandler && (conn.registerConfrIQHandler());
+
         conn.context.status = _code.STATUS_OPENED;
 
         var supportRecMessage = [
@@ -632,7 +634,7 @@ var connection = function (options) {
     this.groupOption = {};
 };
 
-connection.prototype.registerUser = function (options){
+connection.prototype.registerUser = function (options) {
     if (location.protocol != 'https:' && this.isHttpDNS) {
         this.dnsIndex = 0;
         this.getHttpDNS(options, 'signup');
@@ -675,12 +677,13 @@ connection.prototype.listen = function (options) {
     _listenNetwork(this.onOnline, this.onOffline);
 };
 
-connection.prototype.heartBeat = function () {
+//webrtc需要强制心跳，加个默认为false的参数 向下兼容
+connection.prototype.heartBeat = function (forcing = false) {
     var me = this;
     //IE8: strophe auto switch from ws to BOSH, need heartbeat
     var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
 
-    if (this.heartBeatID || !isNeed) {
+    if (this.heartBeatID || (!forcing && !isNeed)) {
         return;
     }
 
@@ -917,6 +920,7 @@ connection.prototype.login = function (options) {
 
     if (options.accessToken) {
         options.access_token = options.accessToken;
+        conn.context.restTokenData = options;
         _login(options, conn);
     } else {
         var apiUrl = options.apiUrl;
@@ -928,11 +932,13 @@ connection.prototype.login = function (options) {
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
-            options.success(data);
+            if (options.success)
+                options.success(data);
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
-            options.error();
+            if (options.error)
+                options.error();
             if (location.protocol != 'https:' && conn.isHttpDNS) {
                 if ((conn.restIndex + 1) < conn.restTotal) {
                     conn.restIndex++;
@@ -1152,7 +1158,7 @@ connection.prototype.handlePresence = function (msginfo) {
         }
         // Service Acknowledges Room Creation `createGroupACK`
         if (role == 'moderator' && info.code == '201') {
-            if(affiliation === 'owner'){
+            if (affiliation === 'owner') {
                 info.type = 'createGroupACK';
                 isCreate = true;
             }
@@ -1211,7 +1217,7 @@ connection.prototype.handlePresence = function (msginfo) {
                 info.type = 'deleteGroupChat';
             } else if (info.code == 307 || info.code == 321) {// Dismissed by group.
                 var nick = msginfo.getAttribute('nick');
-                if(!nick)
+                if (!nick)
                     info.type = 'leaveGroup';
                 else
                     info.type = 'removedFromGroup';
@@ -1295,7 +1301,6 @@ connection.prototype.handleMessage = function (msginfo) {
         errorCode = error[0].getAttribute('code');
         var textDOM = error[0].getElementsByTagName('text');
         errorText = textDOM[0].textContent || textDOM[0].text;
-        log('handle error', errorCode, errorText);
     }
 
     var msgDatas = parseMsgData.data;
@@ -1894,7 +1899,6 @@ connection.prototype.queryRoomInfo = function (options) {
             }
             fieldValues['name'] = (result.getElementsByTagName('identity')[0]).getAttribute('name');
         }
-        log(settings, members, fieldValues);
         suc(settings, members, fieldValues);
     };
     var err = options.error || _utils.emptyfn;
@@ -2017,11 +2021,10 @@ connection.prototype.clear = function () {
     this.restIndex = 0;
     this.xmppIndex = 0;
 
-
     if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
         var message = {
             data: {
-                data: "clear"
+                data: "logout"
             },
             type: _code.WEBIM_CONNCTION_CLIENT_LOGOUT
         };
@@ -2362,7 +2365,7 @@ connection.prototype.addToBlackList = function (options) {
         }
     }
 
-    // log('addToBlackList', blacklist, piece.tree());
+    // console.log('addToBlackList', blacklist, piece.tree());
     this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
 };
 
@@ -2392,7 +2395,7 @@ connection.prototype.removeFromBlackList = function (options) {
         }
     }
 
-    // log('removeFromBlackList', blacklist, piece.tree());
+    // console.log('removeFromBlackList', blacklist, piece.tree());
     this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
 };
 
@@ -2460,7 +2463,6 @@ connection.prototype.getGroupBlacklist = function (options) {
         });
 
     this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
-        log('getGroupBlackList');
         sucFn(_parseGroupBlacklist(msginfo));
     }, function () {
         errFn();
@@ -2768,7 +2770,7 @@ connection.prototype.createGroupAsync = function (p) {
     // Strophe.info('step 1 ----------');
     // Strophe.info(options);
     me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-        // log(msgInfo);
+        // console.log(msgInfo);
 
         // for ie hack
         if ('setAttribute' in msgInfo) {

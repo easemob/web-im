@@ -3,9 +3,10 @@
 #get version from sdk/package.json
 version=`grep version sdk/package.json|awk -F '"' '{printf("%s",$4)}'`
 echo version=$version
-#replace follows:
+#replace follows manually first so far(will replaced by shell script automatically later):
+#sdk/package.json
 #sdk/README.md
-#npm run build
+#sdk/demo.html
 #package.json
 #CHANGELOG.md
 #index.html

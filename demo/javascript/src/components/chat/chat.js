@@ -150,7 +150,7 @@ module.exports = React.createClass({
                     }
                 }
                 if (Demo.conn.errorType != WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
-                    if(message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
+                    if (message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
                         ||
                         message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
                         ||
@@ -158,16 +158,17 @@ module.exports = React.createClass({
                         ||
                         message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
                         ||
-                        message.type === WebIM.statusCode.WEBIM_CONNECTION_CLOSED){
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_CLOSED) {
                         Demo.api.NotifySuccess(text);
                         return;
-                    }else{
-                        if(text == 'clear' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8'){
-                            console.log('clear');
+                    } else {
+                        if (text == 'logout' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8') {
+                            text = Demo.lan.logoutSuc;
                             window.history.pushState({}, 0, 'index.html');
+                            Demo.api.NotifySuccess(text);
+                        } else {
+                            Demo.api.NotifyError('onError:' + text);
                         }
-                        console.log('text: ', text);
-                        Demo.api.NotifyError('onError:' + text);
                     }
                 }
 
@@ -220,7 +221,6 @@ module.exports = React.createClass({
         this.setState({friends: friends});
     },
     updateMyGroupList: function (options) {
-        console.log('updateMygroupList');
         var rooms = eval('(' + options + ')');
         this.setState({groups: rooms});
     },
@@ -233,20 +233,20 @@ module.exports = React.createClass({
     },
 
     componentDidUpdate: function (prevProps, prevState) {
-        for (var o in Demo.strangers) {
-            if (Demo.strangers.hasOwnProperty(o)) {
-                var msg = null;
-                while (msg = Demo.strangers[o].pop()) {
-                    Demo.api.addToChatRecord(msg.msg, msg.type);
-                    Demo.api.appendMsg(msg.msg, msg.type);
-                }
-            }
-        }
-        if(this.release){
-            Demo.api.releaseChatRecord();
-        }else{
-            this.release = true;
-        }
+        // for (var o in Demo.strangers) {
+        //     if (Demo.strangers.hasOwnProperty(o)) {
+        //         var msg = null;
+        //         while (msg = Demo.strangers[o].pop()) {
+        //             Demo.api.addToChatRecord(msg.msg, msg.type);
+        //             Demo.api.appendMsg(msg.msg, msg.type);
+        //         }
+        //     }
+        // }
+        // if(this.release){
+        //     Demo.api.releaseChatRecord();
+        // }else{
+        //     this.release = true;
+        // }
     },
 
     componentDidMount: function () {
@@ -278,12 +278,12 @@ module.exports = React.createClass({
                 onAcceptCall: function (from, options) {
                     // console.log('onAcceptCall', from, options);
                 },
-                onGotRemoteStream: function (stream) {
+                onGotRemoteStream: function (stream, streamType) {
                     // console.log('onGotRemoteStream');
-                    me.channel.setRemote(stream);
+                    me.channel.setRemote(stream, streamType);
                 },
-                onGotLocalStream: function (stream) {
-                    me.channel.setLocal(stream);
+                onGotLocalStream: function (stream, streamType) {
+                    me.channel.setLocal(stream, streamType);
                 },
                 onRinging: function (caller) {
                     // console.log('onRinging', caller);
@@ -321,10 +321,14 @@ module.exports = React.createClass({
                     // console.log('onIceConnectionStateChange', iceState);
                     if (iceState == "disconnected") {
                         if (!me.rtcTimeoutID) {
+                            //console.warn("Warn. disconnect. notify offline");
+
                             me.rtcTimeoutID = setTimeout(function () {
-                                Demo.api.NotifySuccess('Target is offline');
-                                var closeButton = document.getElementById('webrtc_close');
-                                closeButton && closeButton.click();
+                                if (!(Demo.call.pattern && Demo.call.pattern.hangup)) {
+                                    Demo.api.NotifySuccess('Target is offline');
+                                    var closeButton = document.getElementById('webrtc_close');
+                                    closeButton && closeButton.click();
+                                }
                             }, 10000);
                         }
                     } else if (iceState == "connected") {
@@ -355,6 +359,7 @@ module.exports = React.createClass({
                 }
             }
         });
+
     },
 
     componentWillReceiveProps: function (nextProps) {
@@ -379,7 +384,7 @@ module.exports = React.createClass({
             case 'createGroupACK':
                 Demo.conn.createGroupAsync({
                     from: msg.from,
-                    success: function(option) {
+                    success: function (option) {
                         Demo.api.updateGroup();
                         var str = WebIM.utils.sprintf(Demo.lan.createGroupSuc, option.subject);
                         Demo.api.NotifySuccess(str);
@@ -389,8 +394,9 @@ module.exports = React.createClass({
             case 'leaveGroup':// dismissed by admin
                 Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
-                if(!msg.kicked){
+                if (msg.from == Demo.selected && !msg.kicked) {
                     me.delContactItem();
+                    Demo.selected = '';
                 }
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
@@ -406,14 +412,21 @@ module.exports = React.createClass({
                 break;
             case 'unsubscribe':// The sender deletes a friend.
             case 'unsubscribed':// The other party has removed you from the friend list.
-                if('code' in msg){
+                if ('code' in msg) {
                     Demo.api.NotifySuccess(WebIM.utils.sprintf(Demo.lan.refuse, msg.from));
-                }else{
-                    console.log('Deleted');
+                } else {
+                    // 被删除
+                    if (msg.from == Demo.selected && !msg.kicked) {
+                        me.delContactItem();
+                        Demo.selected = '';
+                    }
+
+                    delete Demo.chatRecord[msg.from];
                 }
                 if (Demo.roster[msg.from]) {
                     delete Demo.roster[msg.from];
                 }
+                me.delContactItem();
                 break;
             case 'joinPublicGroupSuccess':
                 // Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
@@ -431,11 +444,13 @@ module.exports = React.createClass({
             case 'deleteGroupChat':// The chat room or group is deleted.
                 // ignore the sync `recv` request
                 // only handle on async request
-                if (msg.original_type == 'unavailable'){
+                if (msg.original_type == 'unavailable') {
                     Demo.api.updateGroup();
                     return;
                 }
                 var target = document.getElementById(msg.from);
+
+                delete Demo.chatRecord[target];
                 var options = {
                     title: "Group notification",
                     msg: "You have been out of the group",
@@ -600,18 +615,18 @@ module.exports = React.createClass({
     update: function (cur) {
         var node = Demo.chatState[Demo.selectedCate].selected;
         Demo.selected = node;
-        if(Demo.selectedCate == 'chatrooms' && node){
+        if (Demo.selectedCate == 'chatrooms' && node) {
+            // clear the chatrooms chating records
+            delete Demo.chatRecord[node];
             Demo.conn.joinChatRoom({
                 roomId: node
             });
         }
-        if(!node)
-            this.release = false;
         this.setChatWindow(true);
         this.setState({curNode: node, cur: cur, contact_loading_show: false});
     },
 
-    storeChatWindow: function(){
+    storeChatWindow: function () {
         var id, cate = '',
             props = {
                 sendPicture: this.sendPicture,
@@ -619,134 +634,80 @@ module.exports = React.createClass({
                 sendFile: this.sendFile,
                 name: ''
             };
-        if(Demo.selected){
+        if (Demo.selected) {
             id = Demo.selected;
             cate = Demo.selectedCate;
 
             // clear this chat window
-            while(Demo.chatState[cate].chatWindow.length){
+            while (Demo.chatState[cate].chatWindow.length) {
                 Demo.chatState[cate].chatWindow.pop();
             }
 
-            switch(cate){
+            switch (cate) {
                 case 'friends':
                     props.name = id;
                     props.delFriend = this.delContactItem;
-                    Demo.chatState[cate].chatWindow.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
-                    updateNode={this.updateNode} className={''}/>);
-            break;
-            case 'groups':
-                //createGroup is two step progresses.first send presence,second send iq.
-                //on first recv group list, the newest created one's roomId=name,
-                //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
-                for (var i = 0; i < this.state.groups.length; i++) {
-                    if(id == this.state.groups[i].roomId){
-                        props.name = this.state.groups[i].name;
-                        props.leaveGroup = this.delContactItem;
-                        props.destroyGroup = this.delContactItem;
-                        if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
-                            this.state.groups[i].name = Demo.createGroupName;
-                            Demo.createGroupName = '';
+                    Demo.chatState[cate].chatWindow.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
+                                                                     chatType='singleChat'
+                                                                     updateNode={this.updateNode} className={''}/>);
+                    break;
+                case 'groups':
+                    //createGroup is two step progresses.first send presence,second send iq.
+                    //on first recv group list, the newest created one's roomId=name,
+                    //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+                    for (var i = 0; i < this.state.groups.length; i++) {
+                        if (id == this.state.groups[i].roomId) {
+                            props.name = this.state.groups[i].name;
+                            props.leaveGroup = this.delContactItem;
+                            props.destroyGroup = this.delContactItem;
+                            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+                                this.state.groups[i].name = Demo.createGroupName;
+                                Demo.createGroupName = '';
+                            }
+                            Demo.chatState[cate].chatWindow.push(<ChatWindow roomId={id} id={'wrapper' + id}
+                                                                             key={id} {...props} chatType='groupChat'
+                                                                             className={''}/>);
+                            break;
                         }
-                        Demo.chatState[cate].chatWindow.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
-                        className={''}/>);
-                        break;
                     }
-                }
-                break;
-            case 'chatrooms':
-                for (var i = 0; i < this.state.chatrooms.length; i++) {
-                    if(id == this.state.chatrooms[i].id){
-                        props.name = this.state.chatrooms[i].name;
-                        Demo.chatState[cate].chatWindow.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='chatRoom'
-                        className={''}/>);
+                    break;
+                case 'chatrooms':
+                    for (var i = 0; i < this.state.chatrooms.length; i++) {
+                        if (id == this.state.chatrooms[i].id) {
+                            props.name = this.state.chatrooms[i].name;
+                            Demo.chatState[cate].chatWindow.push(<ChatWindow roomId={id} id={'wrapper' + id}
+                                                                             key={id} {...props} chatType='chatRoom'
+                                                                             className={''}/>);
+                        }
                     }
-                }
-                break;
-            case 'strangers':
-                props.name = id;
-                Demo.chatState[cate].chatWindow.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
-                className={''}/>);
-                break;
-            default:
-                console.log('Default: ', cate);
+                    break;
+                case 'strangers':
+                    props.name = id;
+                    Demo.chatState[cate].chatWindow.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
+                                                                     className={''}/>);
+                    break;
+                default:
+                    console.log('Default: ', cate);
             }
         }
     },
 
-    setChatWindow: function(show){
+    setChatWindow: function (show) {
         var cate = Demo.selectedCate;
-        if(!show){
+        if (!show) {
             this.setState({window: []});
-        }else{
+        } else {
             this.setState({window: Demo.chatState[cate].chatWindow});
         }
     },
 
-    delContactItem: function(){
+    delContactItem: function () {
         var cate = Demo.selectedCate;
-        Demo.chatState[cate].chatWindow = [];
+        Demo.selected = '';
+        Demo.chatState.clear(cate);
+        this.setState({curNode: ''});
         this.setChatWindow(true);
     },
-
-    /*setChatWindow: function(show){
-        var windows = [], id, cate = '',
-            props = {
-                sendPicture: this.sendPicture,
-                sendAudio: this.sendAudio,
-                sendFile: this.sendFile,
-                name: ''
-            };
-        if(Demo.selected){
-            id = Demo.selected;
-            cate = Demo.selectedCate;
-            switch(cate){
-                    case 'friends':
-                        props.name = id;
-                        windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
-                        updateNode={this.updateNode} className={show?'':'hide'}/>);
-                    break;
-                    case 'groups':
-                        //createGroup is two step progresses.first send presence,second send iq.
-                        //on first recv group list, the newest created one's roomId=name,
-                        //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
-                        for (var i = 0; i < this.state.groups.length; i++) {
-                            if(id == this.state.groups[i].roomId){
-                                props.name = this.state.groups[i].name;
-                                if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
-                                    this.state.groups[i].name = Demo.createGroupName;
-                                    Demo.createGroupName = '';
-                                }
-                                windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
-                                className={show?'':'hide'}/>);
-                                break;
-                            }
-                        }
-                        break;
-                    case 'chatrooms':
-                        for (var i = 0; i < this.state.chatrooms.length; i++) {
-                            if(id == this.state.chatrooms[i].id){
-                                props.name = this.state.chatrooms[i].name;
-                                windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='chatRoom'
-                                className={show?'':'hide'}/>);
-                            }
-                        }
-                        console.log('windows: ', windows);
-                        break;
-                    case 'strangers':
-                        props.name = id;
-                        windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
-                        className={show?'':'hide'}/>);
-                        console.log('strangers');
-                        console.log('windows: ', windows);
-                        break;
-                    default:
-                        console.log('Default: ', cate);
-            }
-        }
-        console.log('windows: ', windows);
-        this.setState({window: windows});
-    },*/
 
     updateNode: function (cid) {
         Demo.chatState[Demo.selectedCate].selected = cid;
@@ -788,7 +749,6 @@ module.exports = React.createClass({
             to: Demo.selected,
             roomType: chatroom,
             onFileUploadError: function (error) {
-                log(error);
                 me.refs.picture.value = null;
 
                 var option = {
@@ -846,7 +806,6 @@ module.exports = React.createClass({
             roomType: chatroom,
             length: duration || 0,
             onFileUploadError: function (error) {
-                log(error);
                 me.refs.audio.value = null;
 
                 var option = {
@@ -908,7 +867,6 @@ module.exports = React.createClass({
                 audio = null;
             }
             audio.src = file.url;
-            log('audio loading...');
         }
     },
 
@@ -952,7 +910,7 @@ module.exports = React.createClass({
             fileSize = WebIM.utils.getFileSize(me.refs.file),
             filename = file.filename;
 
-        if(!fileSize){
+        if (!fileSize) {
             Demo.api.NotifyError(Demo.lan.fileOverSize);
             return false;
         }
@@ -967,11 +925,10 @@ module.exports = React.createClass({
             filename: filename,
             to: Demo.selected,
             roomType: chatroom,
-            ext:{
+            ext: {
                 fileSize: fileSize
             },
             onFileUploadError: function (error) {
-                log(error);
                 me.refs.file.value = null;
                 var option = {
                     data: Demo.lan.sendFileFailed,
@@ -1007,57 +964,6 @@ module.exports = React.createClass({
     },
 
     render: function () {
-        // Demo.api.curLength = this.state[this.state.cur].length;
-/*
-
-        var windows = [], id,
-            props = {
-                sendPicture: this.sendPicture,
-                sendAudio: this.sendAudio,
-                sendFile: this.sendFile,
-                name: ''
-            };
-
-        for (var i = 0; i < this.state.friends.length; i++) {
-            id = this.state.friends[i].name;
-            props.name = id;
-            windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
-                                     updateNode={this.updateNode}
-                                     className={this.state.friends[i].name === this.state.curNode ? '' : 'hide'}/>);
-        }
-
-        for (var i = 0; i < this.state.groups.length; i++) {
-            id = this.state.groups[i].roomId;
-            props.name = this.state.groups[i].name;
-            //createGroup is two step progresses.first send presence,second send iq.
-            //on first recv group list, the newest created one's roomId=name,
-            //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
-            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
-                this.state.groups[i].name = Demo.createGroupName;
-                Demo.createGroupName = '';
-            }
-
-            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
-                                     className={id === this.state.curNode ? '' : 'hide'}/>);
-        }
-
-        for (var i = 0; i < this.state.chatrooms.length; i++) {
-            id = this.state.chatrooms[i].id;
-            props.name = this.state.chatrooms[i].name;
-
-            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='chatRoom'
-                                     className={id === this.state.curNode ? '' : 'hide'}/>);
-        }
-
-        for (var i = 0; i < this.state.strangers.length; i++) {
-            id = this.state.strangers[i].name;
-            props.name = id;
-
-            windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
-                                     className={this.state.strangers[i].name === this.state.curNode ? '' : 'hide'}/>);
-        }
-*/
-
         return (
             <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
                 <LeftBar cur={this.state.cur} update={this.update}/>

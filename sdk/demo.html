@@ -4,9 +4,9 @@
     <title>Clock</title>
     <script src="../demo/javascript/dist/webim.config.js"></script>
     <script src="./dist/strophe-1.2.8.min.js"></script>
-    <script src="./dist/websdk-1.4.8.js"></script>
+    <script src="./dist/websdk-1.4.10.js"></script>
     <script src="../webrtc/dist/adapter.js"></script>
-    <script src="../webrtc/dist/webrtc-1.4.8.js"></script>
+    <script src="../webrtc/dist/webrtc-1.4.10.js"></script>
 </head>
 <body>
 
@@ -150,7 +150,7 @@
             var option = {
                 url: message.url,
                 headers: {
-                  'Accept': 'audio/mp4'
+                    'Accept': 'audio/mp4'
                 },
                 onFileDownloadComplete: function (response) {
                     var objectURL = WebIM.utils.parseDownloadResponse.call(conn, response);
