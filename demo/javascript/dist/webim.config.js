@@ -19,6 +19,12 @@ WebIM.config = {
      * Application AppKey
      */
     appkey: 'easemob-demo#chatdemoui',
+
+    //appDir: 'EasemobDemo_sandbox',
+    //imIP: '120.26.12.158',
+    //imPort: '6717',
+    //restIPandPort: '121.41.120.89:8080',
+
     /*
      * Whether to use wss
      * @parameter {Boolean} true or false
