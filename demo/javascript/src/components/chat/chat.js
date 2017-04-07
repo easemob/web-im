@@ -571,9 +571,10 @@ module.exports = React.createClass({
             WebIM.doQuery('{"type":"getChatroom"}',
                 function success(str) {
                     var rooms = eval('(' + str + ')');
-                    me.setState({chatrooms: rooms});
+                    me.setState({chatrooms: rooms, contact_loading_show: false});
                 },
                 function failure(errCode, errMessage) {
+                    me.setState({contact_loading_show: false});
                     Demo.api.NotifyError('getChatroom:' + errCode + ' ' + errMessage);
                 });
         } else {
@@ -596,6 +597,7 @@ module.exports = React.createClass({
                     me.setState(states);
                 },
                 error: function (e) {
+                    me.setState({contact_loading_show: false});
                     Demo.api.NotifyError('getChatroom:' + e);
                 }
             });
