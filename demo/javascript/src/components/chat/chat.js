@@ -620,9 +620,17 @@ module.exports = React.createClass({
         if (Demo.selectedCate == 'chatrooms' && node) {
             // clear the chatrooms chating records
             delete Demo.chatRecord[node];
-            Demo.conn.joinChatRoom({
-                roomId: node
-            });
+            if (WebIM.config.isWindowSDK) {
+                WebIM.doQuery('{"type":"joinChatroom","id":"' + node + '"}', function success(str) {
+                    Demo.currentChatroom = str;
+                }, function failure(errCode, errMessage) {
+                    Demo.api.NotifyError('update chatrooms:' + errCode + ' ' + errMessage);
+                });
+            } else {
+                Demo.conn.joinChatRoom({
+                    roomId: node
+                });
+            }
         }
         this.setChatWindow(true);
         this.setState({curNode: node, cur: cur, contact_loading_show: false});
