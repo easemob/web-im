@@ -508,7 +508,7 @@ module.exports = React.createClass({
                     doNotUpdateGroup || me.getGroup();
                 },
                 function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('getRoster:' + errCode);
+                    Demo.api.NotifyError('getRoster:' + errCode + ' ' + errMessage);
                 });
         } else {
             conn.getRoster({
@@ -542,7 +542,7 @@ module.exports = React.createClass({
                     me.setState({groups: rooms});
                 },
                 function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('getGroup:' + errCode);
+                    Demo.api.NotifyError('getGroup:' + errCode + ' ' + errMessage);
                 });
         } else {
             Demo.conn.listRooms({
@@ -571,10 +571,11 @@ module.exports = React.createClass({
             WebIM.doQuery('{"type":"getChatroom"}',
                 function success(str) {
                     var rooms = eval('(' + str + ')');
-                    me.setState({chatrooms: rooms});
+                    me.setState({chatrooms: rooms, contact_loading_show: false});
                 },
                 function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('getChatroom:' + errCode);
+                    me.setState({contact_loading_show: false});
+                    Demo.api.NotifyError('getChatroom:' + errCode + ' ' + errMessage);
                 });
         } else {
             Demo.conn.getChatRooms({
@@ -596,6 +597,7 @@ module.exports = React.createClass({
                     me.setState(states);
                 },
                 error: function (e) {
+                    me.setState({contact_loading_show: false});
                     Demo.api.NotifyError('getChatroom:' + e);
                 }
             });
@@ -618,9 +620,17 @@ module.exports = React.createClass({
         if (Demo.selectedCate == 'chatrooms' && node) {
             // clear the chatrooms chating records
             delete Demo.chatRecord[node];
-            Demo.conn.joinChatRoom({
-                roomId: node
-            });
+            if (WebIM.config.isWindowSDK) {
+                WebIM.doQuery('{"type":"joinChatroom","id":"' + node + '"}', function success(str) {
+                    Demo.currentChatroom = str;
+                }, function failure(errCode, errMessage) {
+                    Demo.api.NotifyError('update chatrooms:' + errCode + ' ' + errMessage);
+                });
+            } else {
+                Demo.conn.joinChatRoom({
+                    roomId: node
+                });
+            }
         }
         this.setChatWindow(true);
         this.setState({curNode: node, cur: cur, contact_loading_show: false});

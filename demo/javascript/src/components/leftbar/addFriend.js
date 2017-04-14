@@ -37,7 +37,7 @@ var AddMember = React.createClass({
                     alert(Demo.lan.contact_added);
                 },
                 function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('addMember:' + errCode);
+                    Demo.api.NotifyError('addMember:' + errCode + ' ' + errMessage);
                 });
         } else {
             Demo.conn.subscribe({

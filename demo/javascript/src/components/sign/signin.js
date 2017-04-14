@@ -115,8 +115,20 @@ module.exports = React.createClass({
 
         if (WebIM.config.isWindowSDK) {
             var me = this;
-            WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}',
-                function (response) {
+                if(!WebIM.config.appDir){
+                    WebIM.config.appDir = "";
+                }
+                if(!WebIM.config.imIP){
+                    WebIM.config.imIP = "";
+                }
+                if(!WebIM.config.imPort){
+                    WebIM.config.imPort = "";
+                }
+                if(!WebIM.config.restIPandPort){
+                    WebIM.config.restIPandPort = "";
+                }
+                WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd 
+                + '","appDir":"' + WebIM.config.appDir + '","appKey":"' + WebIM.config.appkey + '","imIP":"' + WebIM.config.imIP + '","imPort":"' + WebIM.config.imPort + '","restIPandPort":"' + WebIM.config.restIPandPort + '"}', function (response) {
                     Demo.conn.onOpened();
                 },
                 function (code, msg) {
