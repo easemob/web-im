@@ -897,6 +897,9 @@ connection.prototype.signup = function (options) {
 
 
 connection.prototype.open = function (options) {
+    if (options.xmppURL) {
+        this.url = _getXmppUrl(options.xmppURL, this.https);
+    }
     if (location.protocol != 'https:' && this.isHttpDNS) {
         this.dnsIndex = 0;
         this.getHttpDNS(options, 'login');

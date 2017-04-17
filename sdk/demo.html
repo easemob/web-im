@@ -20,6 +20,8 @@
     <button id="register">Register</button>
     <button id="privateText">PrivateText</button>
     <button id="privateCmd">PrivateCmd</button>
+    <button id="logout">logout</button>
+    <button id="reConn">reConn</button>
     <div>
         <br>
         image: <input type="file" id="image">
@@ -217,6 +219,7 @@
         },                 //本机网络掉线
         onError: function (message) {
             console.log('Error');
+            console.log(message);
         },           //失败回调
         onBlacklistUpdate: function (list) {
             // 查询黑名单，将好友拉黑，将好友从黑名单移除都会回调这个函数，list则是黑名单现有的所有好友信息
@@ -266,14 +269,14 @@
     /**
      * Created by clock on 16-11-30.
      */
-// open，登录
+        // open，登录
     var options = {
-        apiUrl: WebIM.config.apiURL,
-        user: "mengyuanyuan",
-        pwd: "123456",
-        appKey: WebIM.config.appkey
-    };
-    conn.open(options);
+            apiUrl: WebIM.config.apiURL,
+            user: "mengyuanyuan",
+            pwd: "123456",
+            appKey: WebIM.config.appkey
+        };
+
 
     var register = function () {
         var option = {
@@ -298,7 +301,7 @@
         var msg = new WebIM.message('txt', id);
         msg.set({
             msg: 'scarecrow',                       // 消息内容
-            to: 'asdfghj',                          // 接收消息对象
+            to: 'wk17',                          // 接收消息对象
             roomType: false,
             success: function (id, serverMsgId) {
                 console.log("send private text Success");
@@ -728,6 +731,31 @@
     var acceptCall = function () {
         rtcCall.acceptCall();
     }
+
+    //
+    var logout = function () {
+//        conn.clear();
+        conn.close('logout');
+        conn.errorType = WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT;
+
+
+    }
+
+    var reConn = function () {
+        //appkey： easemob-demo#vip5
+        //xmppURL: 'im-api-vip5.easemob.com',
+        //apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1-vip5.easemob.com',
+        //账号：10vip5/123456 ,11vip5/123456
+        options = {
+            xmppURL: 'im-api-vip5.easemob.com',
+            apiUrl: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1-vip5.easemob.com',
+            appKey: "easemob-demo#vip5",
+            user: "10vip5",
+            pwd: "123456"
+        };
+        conn.open(options)
+
+    }
 </script>
 <script>
     /**
@@ -768,40 +796,52 @@
         document.getElementById('rtEndCall').onclick = endCall;
         document.getElementById('rtAcceptCall').onclick = acceptCall;
 
-    };
-</script>
-<script>
-    // 贴图发送（放到消息模块里）
-    document.addEventListener('paste', function (e) {
-        if (e.clipboardData && e.clipboardData.types) {
-            if (e.clipboardData.items.length > 0) {
-                if (/^image\/\w+$/.test(e.clipboardData.items[0].type)) {
-                    var blob = e.clipboardData.items[0].getAsFile();
-                    var url = window.URL.createObjectURL(blob);
-                    var id = conn.getUniqueId();//生成本地消息id
+        document.getElementById('logout').onclick = logout;
+        document.getElementById('reConn').onclick = reConn;
 
-                    var msg = new WebIM.message('img', id);
-                    msg.set({
-                        apiUrl: WebIM.config.apiURL,
-                        file: {data: blob, url: url},
-                        to: 'asdfghj',
-                        roomType: false,
-                        chatType: 'singleChat',
-                        onFileUploadError: function (error) {
-                            console.log("Error");
-                        },
-                        onFileUploadComplete: function (data) {
-                            console.log("Complete");
-                        },
-                        success: function (id) {
-                            console.log("Success");
-                        }
-                    });
-                    conn.send(msg.body);
+        // 贴图发送（放到消息模块里）
+        document.addEventListener('paste', function (e) {
+            if (e.clipboardData && e.clipboardData.types) {
+                if (e.clipboardData.items.length > 0) {
+                    if (/^image\/\w+$/.test(e.clipboardData.items[0].type)) {
+                        var blob = e.clipboardData.items[0].getAsFile();
+                        var url = window.URL.createObjectURL(blob);
+                        var id = conn.getUniqueId();//生成本地消息id
+
+                        var msg = new WebIM.message('img', id);
+                        msg.set({
+                            apiUrl: WebIM.config.apiURL,
+                            file: {data: blob, url: url},
+                            to: 'asdfghj',
+                            roomType: false,
+                            chatType: 'singleChat',
+                            onFileUploadError: function (error) {
+                                console.log("Error");
+                            },
+                            onFileUploadComplete: function (data) {
+                                console.log("Complete");
+                            },
+                            success: function (id) {
+                                console.log("Success");
+                            }
+                        });
+                        conn.send(msg.body);
+                    }
                 }
             }
-        }
-    });
+        });
+
+        options = {
+            apiUrl: WebIM.config.apiURL,
+            user: "wenke",
+            pwd: "123456",
+            appKey: WebIM.config.appkey
+        };
+
+        conn.open(options);
+
+
+    };
 </script>
 </body>
 </html>
