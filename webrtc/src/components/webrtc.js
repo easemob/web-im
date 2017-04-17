@@ -225,6 +225,26 @@ var _SDPSection = {
         return arr.join('\n');
     },
 
+    removeField_msid: function (section) {
+        var arr = [];
+
+        var _arr = section.split(/a=msid:[^\n]+/g);
+        for (var i = 0; i < _arr.length; i++) {
+            _arr[i] != '\n' && arr.push(_arr[i]);
+        }
+        // arr.push('');
+
+        section = arr.join('\n');
+        arr = [];
+
+        _arr = section.split(/[\n]+/g);
+        for (var i = 0; i < _arr.length; i++) {
+            (_arr[i] != '\n') && arr.push(_arr[i]);
+        }
+
+        return arr.join('\n');
+    },
+
     updateHeaderMsidSemantic: function (wms) {
 
         var self = this;
@@ -257,14 +277,18 @@ var _SDPSection = {
     updateAudioSSRCSection: function (ssrc, cname, msid, label) {
         var self = this;
 
-        self.audioSection && (self.audioSection = self.removeSSRC(self.audioSection) + self.ssrcSection(ssrc, cname, msid, label))
+        self.audioSection && (self.audioSection = self.removeSSRC(self.audioSection));
+        self.audioSection && (self.audioSection = self.removeField_msid(self.audioSection));
+        self.audioSection && (self.audioSection = self.audioSection + self.ssrcSection(ssrc, cname, msid, label));
     },
 
 
     updateVideoSSRCSection: function (ssrc, cname, msid, label) {
         var self = this;
 
-        self.videoSection && (self.videoSection = self.removeSSRC(self.videoSection) + self.ssrcSection(ssrc, cname, msid, label))
+        self.videoSection && (self.videoSection = self.removeSSRC(self.videoSection));
+        self.videoSection && (self.videoSection = self.removeField_msid(self.videoSection));
+        self.videoSection && (self.videoSection = self.videoSection + self.ssrcSection(ssrc, cname, msid, label))
     },
 
     getUpdatedSDP: function () {
@@ -282,7 +306,7 @@ var _SDPSection = {
     parseMsidSemantic: function (header) {
         var self = this;
 
-        var regexp = /a=msid\-semantic: WMS (\S+)/ig;
+        var regexp = /a=msid\-semantic:\s*WMS (\S+)/ig;
         var arr = self._parseLine(header, regexp);
 
         arr && arr.length == 2 && (self.msidSemantic = {
@@ -520,7 +544,7 @@ var _WebRTC = {
         // accept the incoming offer of audio and video.
         return self.rtcPeerConnection.createAnswer().then(
             function (desc) {
-                _logger.debug('[WebRTC-API] _____________PRAnswer ');//_logger.debug('from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] _____________PRAnswer ', desc.sdp);//_logger.debug('from :\n' + desc.sdp);
 
                 desc.type = "pranswer";
                 desc.sdp = desc.sdp.replace(/a=recvonly/g, 'a=inactive');
@@ -528,7 +552,7 @@ var _WebRTC = {
 
                 self.prAnswerDescription = desc;
 
-                _logger.debug('[WebRTC-API] inactive PRAnswer ');//_logger.debug('from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] inactive PRAnswer ', desc.sdp);//_logger.debug('from :\n' + desc.sdp);
                 _logger.debug('[WebRTC-API] setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
@@ -542,7 +566,7 @@ var _WebRTC = {
 
                     desc.sdp = sdpSection.getUpdatedSDP();
 
-                    _logger.debug('[WebRTC-API] Send PRAnswer ');//_logger.debug('from :\n' + desc.sdp);
+                    _logger.debug('[WebRTC-API] Send PRAnswer ', desc.sdp);//_logger.debug('from :\n' + desc.sdp);
 
                     (onCreatePRAnswerSuccess || self.onCreatePRAnswerSuccess)(desc);
                 });
@@ -562,43 +586,49 @@ var _WebRTC = {
         // accept the incoming offer of audio and video.
         return self.rtcPeerConnection.createAnswer().then(
             function (desc) {
-                _logger.debug('[WebRTC-API] _____________________Answer ');//_logger.debug('from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] _____________________Answer ', desc.sdp);//_logger.debug('from :\n' + desc.sdp);
 
                 desc.type = 'answer';
 
-                var sdpSection = new SDPSection(desc.sdp);
-                var ms = sdpSection.parseMsidSemantic(sdpSection.headerSection);
+                if(WebIM.WebRTC.supportPRAnswer){
+                    var sdpSection = new SDPSection(desc.sdp);
+                    var ms = sdpSection.parseMsidSemantic(sdpSection.headerSection);
+                    if(ms.WMS == '*') {
+                        sdpSection.updateHeaderMsidSemantic(ms.WMS = "MS_0000");
+                    }
+                    var audioSSRC = sdpSection.parseSSRC(sdpSection.audioSection);
+                    var videoSSRC = sdpSection.parseSSRC(sdpSection.videoSection);
 
-                var audioSSRC = sdpSection.parseSSRC(sdpSection.audioSection);
-                var videoSSRC = sdpSection.parseSSRC(sdpSection.videoSection);
+                    sdpSection.updateAudioSSRCSection(1000, "CHROME0000", ms.WMS, audioSSRC.label || "LABEL_AUDIO_1000");
+                    if(videoSSRC){
+                        sdpSection.updateVideoSSRCSection(2000, "CHROME0000", ms.WMS, videoSSRC.label || "LABEL_VIDEO_2000");
+                    }
+                    // mslabel cname
 
-                sdpSection.updateAudioSSRCSection(1000, "CHROME0000", ms.WMS, audioSSRC.label);
-
-                if(videoSSRC){
-                    sdpSection.updateVideoSSRCSection(2000, "CHROME0000", ms.WMS, videoSSRC.label);
+                    desc.sdp = sdpSection.getUpdatedSDP();
                 }
-                // mslabel cname
 
-
-                desc.sdp = sdpSection.getUpdatedSDP();
 
                 self.answerDescription = desc;
 
-                _logger.debug('[WebRTC-API] Answer ');//_logger.debug('from :\n' + desc.sdp);
+                _logger.debug('[WebRTC-API] Answer ', desc.sdp);//_logger.debug('from :\n' + desc.sdp);
                 _logger.debug('[WebRTC-API] setLocalDescription start');
 
                 self.rtcPeerConnection.setLocalDescription(desc).then(
                     self.onSetLocalSuccess,
                     self.onSetSessionDescriptionError
                 ).then(function () {
-                    var sdpSection = new SDPSection(desc.sdp);
-                    sdpSection.updateHeaderMsidSemantic("MS_0000");
-                    sdpSection.updateAudioSSRCSection(1000, "CHROME0000", "MS_0000", "LABEL_AUDIO_1000");
-                    sdpSection.updateVideoSSRCSection(2000, "CHROME0000", "MS_0000", "LABEL_VIDEO_2000");
+                    if(WebIM.WebRTC.supportPRAnswer){
+                        var sdpSection = new SDPSection(desc.sdp);
 
-                    desc.sdp = sdpSection.getUpdatedSDP();
+                        sdpSection.updateHeaderMsidSemantic("MS_0000");
+                        sdpSection.updateAudioSSRCSection(1000, "CHROME0000", "MS_0000", "LABEL_AUDIO_1000");
+                        sdpSection.updateVideoSSRCSection(2000, "CHROME0000", "MS_0000", "LABEL_VIDEO_2000");
 
-                    _logger.debug('[WebRTC-API] Send Answer ');//_logger.debug('from :\n' + desc.sdp);
+                        desc.sdp = sdpSection.getUpdatedSDP();
+                    }
+
+                    _logger.debug('[WebRTC-API] Send Answer ', desc.sdp);//_logger.debug('from :\n' + desc.sdp);
 
                     (onCreateAnswerSuccess || self.onCreateAnswerSuccess)(desc);
                 });

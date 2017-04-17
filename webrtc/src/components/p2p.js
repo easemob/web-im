@@ -197,9 +197,6 @@ var CommonPattern = {
 
         options.cands && self._onTcklC(from, options);
         options.sdp && (self.webRtc.setRemoteDescription(options.sdp).then(function () {
-            self._onHandShake(from, options);
-
-
             /*
              * chrome 版本 大于 50时，可以使用pranswer。
              * 小于50 不支持pranswer，此时处理逻辑是，直接进入振铃状态
@@ -214,6 +211,8 @@ var CommonPattern = {
                         self.onRinging(self.callee);
                     }, 500);
                 });
+
+                self._onHandShake(from, options);
             } else {
                 setTimeout(function () {
                     _logger.info("[WebRTC-API] onRinging : After iniC, cause by: not supported pranswer. ", self.callee);
@@ -267,6 +266,10 @@ var CommonPattern = {
 
                 self.accepted = true;
             });
+
+            if (!WebIM.WebRTC.supportPRAnswer){
+                self._onHandShake(self.callee, null);
+            }
         }
 
         var constaints = {
