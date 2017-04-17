@@ -293,7 +293,7 @@ var CommonPattern = {
         _logger.info("hand shake over. may switch cands.");
 
 
-        options && setTimeout(function () {
+        setTimeout(function () {
             self._onTcklC(from, options);
         }, 100);
 
