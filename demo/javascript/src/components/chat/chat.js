@@ -285,8 +285,9 @@ module.exports = React.createClass({
                 onGotLocalStream: function (stream, streamType) {
                     me.channel.setLocal(stream, streamType);
                 },
-                onRinging: function (caller) {
-                    // console.log('onRinging', caller);
+                onRinging: function (caller, streamType) {
+                    console.log('onRinging', caller);
+                    me.channel.ringing(caller, streamType)
                 },
                 onTermCall: function (reason) {
                     //"ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'

@@ -69,7 +69,7 @@ WebIM.config = {
     /**
      * webrtc supports WebKit and https only
      */
-    isWebRTC: /WebKit/.test(navigator.userAgent) && /^https\:$/.test(window.location.protocol),
+    isWebRTC: (/Firefox/.test(navigator.userAgent) || /WebKit/.test(navigator.userAgent)) && /^https\:$/.test(window.location.protocol),
     /**
      * after login, send empty message to xmpp server like heartBeat every 45s, to keep the ws connection alive.
      */

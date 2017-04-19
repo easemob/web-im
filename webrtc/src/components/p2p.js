@@ -200,6 +200,8 @@ var CommonPattern = {
 
         self.webRtc.createRtcPeerConnection(self._rtcCfg2);
 
+        options.sdp && _logger.debug(options.sdp.sdp);
+
         options.sdp && (self.webRtc.setRemoteDescription(options.sdp).then(function () {
 
             self.setRemoteSDP = true;
@@ -216,13 +218,13 @@ var CommonPattern = {
 
                     setTimeout(function () { //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
                         _logger.info("[WebRTC-API] onRinging : after send pranswer. ", self.callee);
-                        self.onRinging(self.callee);
+                        self.onRinging(self.callee, self.streamType);
                     }, 500);
                 });
             } else {
                 setTimeout(function () {
                     _logger.info("[WebRTC-API] onRinging : After iniC, cause by: not supported pranswer. ", self.callee);
-                    self.onRinging(self.callee);
+                    self.onRinging(self.callee, self.streamType);
                 }, 500)
                 self._ping();
             }
@@ -248,7 +250,7 @@ var CommonPattern = {
         self._ping();
     },
 
-    onRinging: function (caller) {
+    onRinging: function (caller, streamType) {
     },
 
     accept: function () {
