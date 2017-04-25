@@ -43,7 +43,7 @@ Demo.chatRecord = {
 
 Demo.chatRecord = {};
 // The max messages count of a dialog
-Demo.maxChatRecordCount = 20;
+Demo.maxChatRecordCount = 20000;
 
 Demo.roster = {};
 Demo.friends = [];
