@@ -373,6 +373,10 @@ module.exports = {
             isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
         // TODO: ios/android client doesn't encodeURIComponent yet
+        if (typeof data === "string" && WebIM.config.isWindowSDK) {
+            data = decodeURIComponent(data);
+        }
+
 
         if (!this.sentByMe && msg.type === 'chat' && isStranger) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
