@@ -908,6 +908,7 @@ module.exports = React.createClass({
             chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.file),
             fileSize = WebIM.utils.getFileSize(me.refs.file),
+            fileLength = WebIM.utils.getFileLength(me.refs.file),
             filename = file.filename;
 
         if(!fileSize){
@@ -926,7 +927,8 @@ module.exports = React.createClass({
             to: Demo.selected,
             roomType: chatroom,
             ext:{
-                fileSize: fileSize
+                fileSize: fileSize,
+                file_length: fileLength
             },
             onFileUploadError: function (error) {
                 log(error);

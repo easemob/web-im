@@ -277,7 +277,7 @@
                         , height: me.msg.height || 0
                     }
                     , length: me.msg.length || 0
-                    , file_length: me.msg.file_length || 0
+                    , file_length: me.msg.ext.file_length || 0
                     , filetype: me.msg.filetype
                 }
                 _send(me.msg);
