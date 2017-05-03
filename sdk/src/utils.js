@@ -73,7 +73,7 @@
         return 0;
     }());
 
-    var _base64 = function(){
+    var _base64 = function () {
 
         var self = this;
 
@@ -135,13 +135,13 @@
 
         // private method for UTF-8 encoding
         this._utf8_encode = function (string) {
-            string = string.replace(/\r\n/g,"\n");
+            string = string.replace(/\r\n/g, "\n");
             var utftext = "";
             for (var n = 0; n < string.length; n++) {
                 var c = string.charCodeAt(n);
                 if (c < 128) {
                     utftext += String.fromCharCode(c);
-                } else if((c > 127) && (c < 2048)) {
+                } else if ((c > 127) && (c < 2048)) {
                     utftext += String.fromCharCode((c >> 6) | 192);
                     utftext += String.fromCharCode((c & 63) | 128);
                 } else {
@@ -162,18 +162,18 @@
             var c1 = 0;
             var c2 = 0;
             var c3 = 0;
-            while ( i < utftext.length ) {
+            while (i < utftext.length) {
                 c = utftext.charCodeAt(i);
                 if (c < 128) {
                     string += String.fromCharCode(c);
                     i++;
-                } else if((c > 191) && (c < 224)) {
-                    c2 = utftext.charCodeAt(i+1);
+                } else if ((c > 191) && (c < 224)) {
+                    c2 = utftext.charCodeAt(i + 1);
                     string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
                     i += 2;
                 } else {
-                    c2 = utftext.charCodeAt(i+1);
-                    c3 = utftext.charCodeAt(i+2);
+                    c2 = utftext.charCodeAt(i + 1);
+                    c3 = utftext.charCodeAt(i + 2);
                     string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
                     i += 3;
                 }
@@ -412,20 +412,7 @@
         },
 
         getFileSize: function (file) {
-            var fileSize = 0;
-            if (file) {
-                if (file.files) {
-                    if (file.files.length > 0) {
-                        fileSize = file.files[0].size;
-                    }
-                } else if (file.select && 'ActiveXObject' in window) {
-                    file.select();
-                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
-                    var file = fileobject.GetFile(file.value);
-                    fileSize = file.Size;
-                }
-            }
-            console.log('fileSize: ', fileSize);
+            var fileSize = this.getFileLength(file);
             if (fileSize > 10000000) {
                 return false;
             }
@@ -442,6 +429,23 @@
                 }
             }
             return fileSize;
+        },
+
+        getFileLength: function (file) {
+            var fileLength = 0;
+            if (file) {
+                if (file.files) {
+                    if (file.files.length > 0) {
+                        fileLength = file.files[0].size;
+                    }
+                } else if (file.select && 'ActiveXObject' in window) {
+                    file.select();
+                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
+                    var file = fileobject.GetFile(file.value);
+                    fileLength = file.Size;
+                }
+            }
+            return fileLength;
         },
 
         hasFlash: _hasFlash,
@@ -985,7 +989,7 @@
             var encrypt = base64.encode(str);
             return encrypt;
         },
-        
+
         decrypt: function (str) {
             var base64 = new _base64();
             var decrypt = base64.decode(str);
@@ -995,9 +999,9 @@
             return decrypt;
         },
 
-        setCookie: function(name, value, days){
+        setCookie: function (name, value, days) {
             var cookie = name + '=' + encodeURIComponent(value);
-            if(typeof days == 'number'){
+            if (typeof days == 'number') {
                 cookie += '; max-age: ' + (days * 60 * 60 * 24);
             }
             document.cookie = cookie;
@@ -1006,15 +1010,15 @@
         getCookie: function () {
             var allCookie = {};
             var all = document.cookie;
-            if(all === ""){
+            if (all === "") {
                 return allCookie;
             }
             var list = all.split("; ");
-            for(var i = 0 ; i < list.length ; i++){
+            for (var i = 0; i < list.length; i++) {
                 var cookie = list[i];
                 var p = cookie.indexOf('=');
                 var name = cookie.substring(0, p);
-                var value = cookie.substring(p+1);
+                var value = cookie.substring(p + 1);
                 value = decodeURIComponent(value);
                 allCookie[name] = value;
             }
