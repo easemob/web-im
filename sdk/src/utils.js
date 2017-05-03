@@ -1,36 +1,39 @@
 ;(function () {
 
-    var EMPTYFN = function() {},
+    var EMPTYFN = function () {
+        },
         _code = require('./status').code,
-        WEBIM_FILESIZE_LIMIT: 10485760;
+        WEBIM_FILESIZE_LIMIT
+    :
+    10485760;
 
     var _createStandardXHR = function () {
         try {
             return new window.XMLHttpRequest();
-        } catch ( e ) {
+        } catch (e) {
             return false;
         }
     };
-    
+
     var _createActiveXHR = function () {
         try {
             return new window.ActiveXObject('Microsoft.XMLHTTP');
-        } catch ( e ) {
+        } catch (e) {
             return false;
         }
     };
 
-    var _xmlrequest = function ( crossDomain ) {
+    var _xmlrequest = function (crossDomain) {
         crossDomain = crossDomain || true;
-        var temp = _createStandardXHR () || _createActiveXHR();
+        var temp = _createStandardXHR() || _createActiveXHR();
 
-        if ( 'withCredentials' in temp ) {
+        if ('withCredentials' in temp) {
             return temp;
         }
-        if ( !crossDomain ) {
+        if (!crossDomain) {
             return temp;
         }
-        if ( typeof window.XDomainRequest === 'undefined' ) {
+        if (typeof window.XDomainRequest === 'undefined') {
             return temp;
         }
         var xhr = new XDomainRequest();
@@ -57,21 +60,21 @@
     };
 
     var _hasFlash = (function () {
-        if ( 'ActiveXObject' in window ) {
+        if ('ActiveXObject' in window) {
             try {
                 return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
-            } catch ( ex ) {
+            } catch (ex) {
                 return 0;
             }
         } else {
-            if ( navigator.plugins && navigator.plugins.length > 0 ) {
+            if (navigator.plugins && navigator.plugins.length > 0) {
                 return navigator.plugins['Shockwave Flash'];
             }
         }
         return 0;
     }());
 
-    var _tmpUtilXHR  = _xmlrequest(),
+    var _tmpUtilXHR = _xmlrequest(),
         _hasFormData = typeof FormData !== 'undefined',
         _hasBlob = typeof Blob !== 'undefined',
         _isCanSetRequestHeader = _tmpUtilXHR.setRequestHeader || false,
@@ -106,66 +109,66 @@
                 //...
             ];
 
-            if ( !window.WebSocket ) {
+            if (!window.WebSocket) {
                 return false;
             }
 
             var ua = window.navigator.userAgent;
-            for ( var i = 0, l = notSupportList.length; i < l; i++ ) {
-                if ( notSupportList[i].test(ua) ) {
+            for (var i = 0, l = notSupportList.length; i < l; i++) {
+                if (notSupportList[i].test(ua)) {
                     return false;
                 }
             }
-            return true; 
+            return true;
         }())
 
         , getIEVersion: (function () {
-            var ua = navigator.userAgent, matches, tridentMap = { '4': 8, '5': 9, '6': 10, '7': 11 };
+            var ua = navigator.userAgent, matches, tridentMap = {'4': 8, '5': 9, '6': 10, '7': 11};
 
             matches = ua.match(/MSIE (\d+)/i);
 
-            if ( matches && matches[1] ) {
+            if (matches && matches[1]) {
                 return +matches[1];
             }
             matches = ua.match(/Trident\/(\d+)/i);
-            if ( matches && matches[1] ) {
+            if (matches && matches[1]) {
                 return tridentMap[matches[1]] || null;
             }
             return null;
         }())
 
-        , stringify: function ( json ) {
-            if ( typeof JSON !== 'undefined' && JSON.stringify ) {
+        , stringify: function (json) {
+            if (typeof JSON !== 'undefined' && JSON.stringify) {
                 return JSON.stringify(json);
             } else {
                 var s = '',
                     arr = [];
 
-                var iterate = function ( json ) {
+                var iterate = function (json) {
                     var isArr = false;
 
-                    if ( Object.prototype.toString.call(json) === '[object Array]' ) {
+                    if (Object.prototype.toString.call(json) === '[object Array]') {
                         arr.push(']', '[');
                         isArr = true;
-                    } else if ( Object.prototype.toString.call(json) === '[object Object]' ) {
+                    } else if (Object.prototype.toString.call(json) === '[object Object]') {
                         arr.push('}', '{');
                     }
 
-                    for ( var o in json ) {
-                        if ( Object.prototype.toString.call(json[o]) === '[object Null]' ) {
+                    for (var o in json) {
+                        if (Object.prototype.toString.call(json[o]) === '[object Null]') {
                             json[o] = 'null';
-                        } else if ( Object.prototype.toString.call(json[o]) === '[object Undefined]' ) {
+                        } else if (Object.prototype.toString.call(json[o]) === '[object Undefined]') {
                             json[o] = 'undefined';
                         }
 
-                        if ( json[o] && typeof json[o] === 'object' ) {
+                        if (json[o] && typeof json[o] === 'object') {
                             s += ',' + (isArr ? '' : '"' + o + '":' + (isArr ? '"' : '')) + iterate(json[o]) + '';
                         } else {
                             s += ',"' + (isArr ? '' : o + '":"') + json[o] + '"';
                         }
                     }
-            
-                    if ( s != '' ) {
+
+                    if (s != '') {
                         s = s.slice(1);
                     }
 
@@ -175,21 +178,21 @@
             }
         }
 
-        , registerUser: function ( options ) {
+        , registerUser: function (options) {
             var orgName = options.orgName || '';
             var appName = options.appName || '';
             var appKey = options.appKey || '';
             var suc = options.success || EMPTYFN;
             var err = options.error || EMPTYFN;
 
-            if ( !orgName && !appName && appKey ) {
+            if (!orgName && !appName && appKey) {
                 var devInfos = appKey.split('#');
-                if ( devInfos.length === 2 ) {
+                if (devInfos.length === 2) {
                     orgName = devInfos[0];
                     appName = devInfos[1];
                 }
             }
-            if ( !orgName && !appName ) {
+            if (!orgName && !appName) {
                 err({
                     type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
                 });
@@ -217,14 +220,14 @@
             return utils.ajax(options);
         }
 
-        , login: function ( options ) {
+        , login: function (options) {
             var options = options || {};
             var suc = options.success || EMPTYFN;
             var err = options.error || EMPTYFN;
 
             var appKey = options.appKey || '';
             var devInfos = appKey.split('#');
-            if ( devInfos.length !== 2 ) {
+            if (devInfos.length !== 2) {
                 err({
                     type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
                 });
@@ -255,7 +258,7 @@
             };
             return utils.ajax(options);
         }
-        , getFileUrl: function ( fileInputId ) {
+        , getFileUrl: function (fileInputId) {
 
             var uri = {
                 url: ''
@@ -266,13 +269,13 @@
 
             var fileObj = typeof fileInputId === 'string' ? document.getElementById(fileInputId) : fileInputId;
 
-            if ( !utils.isCanUploadFileAsync || !fileObj ) {
+            if (!utils.isCanUploadFileAsync || !fileObj) {
                 return uri;
             }
             try {
-                if ( window.URL.createObjectURL ) {
+                if (window.URL.createObjectURL) {
                     var fileItems = fileObj.files;
-                    if ( fileItems.length > 0 ) {
+                    if (fileItems.length > 0) {
                         var u = fileItems.item(0);
                         uri.data = u;
                         uri.url = window.URL.createObjectURL(u);
@@ -284,35 +287,49 @@
                     var pos1 = u.lastIndexOf('/');
                     var pos2 = u.lastIndexOf('\\');
                     var pos = Math.max(pos1, pos2)
-                    if ( pos < 0 )
+                    if (pos < 0)
                         uri.filename = u;
                     else
                         uri.filename = u.substring(pos + 1);
                 }
                 var index = uri.filename.lastIndexOf('.');
-                if ( index != -1 ) {
-                    uri.filetype = uri.filename.substring(index+1).toLowerCase();
+                if (index != -1) {
+                    uri.filetype = uri.filename.substring(index + 1).toLowerCase();
                 }
                 return uri;
 
-            } catch ( e ) {
+            } catch (e) {
                 throw e;
             }
         }
 
-        , getFileSize: function ( file ) {
+        , getFileSize: function (file) {
             var fileSize = this.getFileLength(file);
-            if(fileSize > 10000000)
-                return false;
 
             var kb = Math.round(fileSize / 1000);
-            if(kb < 1000){
+            if (kb < 1000) {
                 fileSize = kb + ' KB';
-            }else if(kb >= 1000){
+            } else if (kb >= 1000) {
                 var mb = kb / 1000;
-                if(mb < 1000){
+                if (mb < 1000) {
                     fileSize = mb.toFixed(1) + ' MB';
-                }else{
+                } else {
+                    var gb = mb / 1000;
+                    fileSize = gb.toFixed(1) + ' GB';
+                }
+            }
+            return fileSize;
+        }
+
+        , addUnit: function (fileSize) {
+            var kb = Math.round(fileSize / 1000);
+            if (kb < 1000) {
+                fileSize = kb + ' KB';
+            } else if (kb >= 1000) {
+                var mb = kb / 1000;
+                if (mb < 1000) {
+                    fileSize = mb.toFixed(1) + ' MB';
+                } else {
                     var gb = mb / 1000;
                     fileSize = gb.toFixed(1) + ' GB';
                 }
@@ -322,15 +339,15 @@
 
         , getFileLength: function (file) {
             var fileLength = 0;
-            if ( file ) {
-                if ( file.files ) {
-                    if ( file.files.length > 0 ) {
+            if (file) {
+                if (file.files) {
+                    if (file.files.length > 0) {
                         fileLength = file.files[0].size;
                     }
-                } else if ( file.select && 'ActiveXObject' in window ) {
+                } else if (file.select && 'ActiveXObject' in window) {
                     file.select();
-                    var fileobject = new ActiveXObject ('Scripting.FileSystemObject');
-                    var file = fileobject.GetFile (file.value);
+                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
+                    var file = fileobject.GetFile(file.value);
                     fileLength = file.Size;
                 }
             }
@@ -339,7 +356,7 @@
 
         , hasFlash: _hasFlash
 
-        , trim: function ( str ) {
+        , trim: function (str) {
 
             str = typeof str === 'string' ? str : '';
 
@@ -348,16 +365,16 @@
                 : str.replace(/^\s|\s$/g, '');
         }
 
-        , parseEmoji: function ( msg ) {
-            if ( typeof WebIM.Emoji === 'undefined' || typeof WebIM.Emoji.map === 'undefined' ) {
+        , parseEmoji: function (msg) {
+            if (typeof WebIM.Emoji === 'undefined' || typeof WebIM.Emoji.map === 'undefined') {
                 return msg;
             } else {
                 var emoji = WebIM.Emoji,
                     reg = null;
 
-                for ( var face in emoji.map ) {
-                    if ( emoji.map.hasOwnProperty(face) ) {
-                        while ( msg.indexOf(face) > -1 ) {
+                for (var face in emoji.map) {
+                    if (emoji.map.hasOwnProperty(face)) {
+                        while (msg.indexOf(face) > -1) {
                             msg = msg.replace(face, '<img class="emoji" src="' + emoji.path + emoji.map[face] + '" />');
                         }
                     }
@@ -366,27 +383,27 @@
             }
         }
 
-        , parseLink: function ( msg ) {
+        , parseLink: function (msg) {
             var reg = /(https?\:\/\/|www\.)([a-zA-Z0-9-]+(\.[a-zA-Z0-9]+)+)(\:[0-9]{2,4})?\/?((\.[:_0-9a-zA-Z-]+)|[:_0-9a-zA-Z-]*\/?)*\??[:_#@*&%0-9a-zA-Z-/=]*/gm;
             var res = msg.match(reg);
-            var src = res && res[0] ? res[0] : ''; 
-            if ( res && res.length ) {
+            var src = res && res[0] ? res[0] : '';
+            if (res && res.length) {
                 var prefix = /^https?:\/\//.test(src);
                 msg = msg.replace(reg
-                    , "<a href='" 
-                        + (prefix 
-                            ? src 
-                            : '\/\/' + src) 
-                        + "' target='_blank'>" 
-                        + src 
-                        + "</a>");
+                    , "<a href='"
+                    + (prefix
+                        ? src
+                        : '\/\/' + src)
+                    + "' target='_blank'>"
+                    + src
+                    + "</a>");
             }
             return msg;
         }
 
-        , parseJSON: function ( data ) {
+        , parseJSON: function (data) {
 
-            if ( window.JSON && window.JSON.parse ) {
+            if (window.JSON && window.JSON.parse) {
                 return window.JSON.parse(data + '');
             }
 
@@ -396,36 +413,36 @@
 
             return str && !utils.trim(
                 str.replace(/(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g
-                , function ( token, comma, open, close ) {
+                    , function (token, comma, open, close) {
 
-                    if ( requireNonComma && comma ) {
-                        depth = 0;
-                    }
+                        if (requireNonComma && comma) {
+                            depth = 0;
+                        }
 
-                    if ( depth === 0 ) {
-                        return token;
-                    }
+                        if (depth === 0) {
+                            return token;
+                        }
 
-                    requireNonComma = open || comma;
-                    depth += !close - !open;
-                    return '';
-                })
+                        requireNonComma = open || comma;
+                        depth += !close - !open;
+                        return '';
+                    })
             )
-            ? (Function('return ' + str))()
-            : (Function('Invalid JSON: ' + data))();
+                ? (Function('return ' + str))()
+                : (Function('Invalid JSON: ' + data))();
         }
-        
-        , parseUploadResponse: function ( response ) {
+
+        , parseUploadResponse: function (response) {
             return response.indexOf('callback') > -1 ? //lte ie9
                 response.slice(9, -1) : response;
         }
-        
-        , parseDownloadResponse: function ( response ) {
-            return ((response && response.type && response.type === 'application/json') 
-                || 0 > Object.prototype.toString.call(response).indexOf('Blob')) 
+
+        , parseDownloadResponse: function (response) {
+            return ((response && response.type && response.type === 'application/json')
+            || 0 > Object.prototype.toString.call(response).indexOf('Blob'))
                 ? this.url + '?token=' : window.URL.createObjectURL(response);
         }
-        , uploadFile: function ( options ) {
+        , uploadFile: function (options) {
             var options = options || {};
             options.onFileUploadProgress = options.onFileUploadProgress || EMPTYFN;
             options.onFileUploadComplete = options.onFileUploadComplete || EMPTYFN;
@@ -433,7 +450,7 @@
             options.onFileUploadCanceled = options.onFileUploadCanceled || EMPTYFN;
 
             var acc = options.accessToken || this.context.accessToken;
-            if ( !acc ) {
+            if (!acc) {
                 options.onFileUploadError({
                     type: _code.WEBIM_UPLOADFILE_NO_LOGIN
                     , id: options.id
@@ -444,13 +461,13 @@
             var orgName, appName, devInfos;
             var appKey = options.appKey || this.context.appKey || '';
 
-            if ( appKey ) {
+            if (appKey) {
                 devInfos = appKey.split('#');
                 orgName = devInfos[0];
                 appName = devInfos[1];
             }
 
-            if ( !orgName && !appName ) {
+            if (!orgName && !appName) {
                 options.onFileUploadError({
                     type: _code.WEBIM_UPLOADFILE_ERROR
                     , id: options.id
@@ -461,12 +478,12 @@
             var apiUrl = options.apiUrl;
             var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
 
-            if ( !utils.isCanUploadFileAsync ) {
-                if ( utils.hasFlash && typeof options.flashUpload === 'function' ) {
-                    options.flashUpload && options.flashUpload(uploadUrl, options); 
+            if (!utils.isCanUploadFileAsync) {
+                if (utils.hasFlash && typeof options.flashUpload === 'function') {
+                    options.flashUpload && options.flashUpload(uploadUrl, options);
                 } else {
                     options.onFileUploadError({
-                        type : _code.WEBIM_UPLOADFILE_BROWSER_ERROR
+                        type: _code.WEBIM_UPLOADFILE_BROWSER_ERROR
                         , id: options.id
                     });
                 }
@@ -474,13 +491,13 @@
             }
 
             var fileSize = options.file.data ? options.file.data.size : undefined;
-            if ( fileSize > WEBIM_FILESIZE_LIMIT ) {
+            if (fileSize > WEBIM_FILESIZE_LIMIT) {
                 options.onFileUploadError({
                     type: _code.WEBIM_UPLOADFILE_ERROR
                     , id: options.id
                 });
-                return ;
-            } else if ( fileSize <= 0 ) {
+                return;
+            } else if (fileSize <= 0) {
                 options.onFileUploadError({
                     type: _code.WEBIM_UPLOADFILE_ERROR
                     , id: options.id
@@ -489,30 +506,30 @@
             }
 
             var xhr = utils.xmlrequest();
-            var onError = function ( e ) {
+            var onError = function (e) {
                 options.onFileUploadError({
                     type: _code.WEBIM_UPLOADFILE_ERROR
                     , id: options.id
                     , xhr: xhr
                 });
             };
-            if ( xhr.upload ) {
+            if (xhr.upload) {
                 xhr.upload.addEventListener('progress', options.onFileUploadProgress, false);
             }
-            if ( xhr.addEventListener ) {
+            if (xhr.addEventListener) {
                 xhr.addEventListener('abort', options.onFileUploadCanceled, false);
-                xhr.addEventListener('load', function ( e ) {
+                xhr.addEventListener('load', function (e) {
                     try {
                         var json = utils.parseJSON(xhr.responseText);
                         try {
                             options.onFileUploadComplete(json);
-                        } catch ( e ) {
+                        } catch (e) {
                             options.onFileUploadError({
                                 type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
                                 , data: e
                             });
                         }
-                    } catch ( e ) {
+                    } catch (e) {
                         options.onFileUploadError({
                             type: _code.WEBIM_UPLOADFILE_ERROR
                             , data: xhr.responseText
@@ -522,14 +539,14 @@
                     }
                 }, false);
                 xhr.addEventListener('error', onError, false);
-            } else if ( xhr.onreadystatechange ) {
+            } else if (xhr.onreadystatechange) {
                 xhr.onreadystatechange = function () {
-                    if ( xhr.readyState === 4 ) {
-                        if ( ajax.status === 200 ) {
+                    if (xhr.readyState === 4) {
+                        if (ajax.status === 200) {
                             try {
                                 var json = utils.parseJSON(xhr.responseText);
                                 options.onFileUploadComplete(json);
-                            } catch ( e ) {
+                            } catch (e) {
                                 options.onFileUploadError({
                                     type: _code.WEBIM_UPLOADFILE_ERROR
                                     , data: xhr.responseText
@@ -564,12 +581,12 @@
             xhr.send(formData);
         }
 
-        , download: function ( options ) {
+        , download: function (options) {
             options.onFileDownloadComplete = options.onFileDownloadComplete || EMPTYFN;
             options.onFileDownloadError = options.onFileDownloadError || EMPTYFN;
-            
+
             var accessToken = options.accessToken || this.context.accessToken;
-            if ( !accessToken ) {
+            if (!accessToken) {
                 options.onFileDownloadError({
                     type: _code.WEBIM_DOWNLOADFILE_NO_LOGIN
                     , id: options.id
@@ -577,28 +594,28 @@
                 return;
             }
 
-            var onError = function ( e ) {
+            var onError = function (e) {
                 options.onFileDownloadError({
                     type: _code.WEBIM_DOWNLOADFILE_ERROR
                     , id: options.id
                     , xhr: xhr
                 });
             }
-            if ( !utils.isCanDownLoadFile ) {
+            if (!utils.isCanDownLoadFile) {
                 options.onFileDownloadComplete();
                 return;
             }
             var xhr = utils.xmlrequest();
-            if ( 'addEventListener' in xhr ) {
-                xhr.addEventListener('load', function ( e ) {
-                    options.onFileDownloadComplete(xhr.response,xhr);
+            if ('addEventListener' in xhr) {
+                xhr.addEventListener('load', function (e) {
+                    options.onFileDownloadComplete(xhr.response, xhr);
                 }, false);
                 xhr.addEventListener('error', onError, false);
-            } else if ( 'onreadystatechange' in xhr ) {
+            } else if ('onreadystatechange' in xhr) {
                 xhr.onreadystatechange = function () {
-                    if ( xhr.readyState === 4 ) {
-                        if ( ajax.status === 200 ) {
-                            options.onFileDownloadComplete(xhr.response,xhr);
+                    if (xhr.readyState === 4) {
+                        if (ajax.status === 200) {
+                            options.onFileDownloadComplete(xhr.response, xhr);
                         } else {
                             options.onFileDownloadError({
                                 type: _code.WEBIM_DOWNLOADFILE_ERROR
@@ -621,7 +638,7 @@
             var resType = options.responseType || 'blob';
             var mimeType = options.mimeType || 'text/plain; charset=x-user-defined';
             xhr.open(method, options.url);
-            if ( typeof Blob !== 'undefined' ) {
+            if (typeof Blob !== 'undefined') {
                 xhr.responseType = resType;
             } else {
                 xhr.overrideMimeType(mimeType);
@@ -634,22 +651,22 @@
                 , 'Authorization': 'Bearer ' + accessToken
             };
             var headers = options.headers || {};
-            for ( var key in headers ) {
+            for (var key in headers) {
                 innerHeaer[key] = headers[key];
             }
-            for ( var key in innerHeaer ) {
-                if ( innerHeaer[key] ) {
+            for (var key in innerHeaer) {
+                if (innerHeaer[key]) {
                     xhr.setRequestHeader(key, innerHeaer[key]);
                 }
             }
             xhr.send(null);
         }
 
-        , parseTextMessage: function ( message, faces ) {
-            if ( typeof message !== 'string' || typeof faces === 'undefined' ) {
+        , parseTextMessage: function (message, faces) {
+            if (typeof message !== 'string' || typeof faces === 'undefined') {
                 return;
             }
-            if ( Object.prototype.toString.call(faces) !== '[object Object]' ) {
+            if (Object.prototype.toString.call(faces) !== '[object Object]') {
                 return {
                     isemoji: false
                     , body: [
@@ -666,7 +683,7 @@
             var expr = /\[[^[\]]{2,3}\]/mg;
             var emoji = receiveMsg.match(expr);
 
-            if ( !emoji || emoji.length < 1 ){
+            if (!emoji || emoji.length < 1) {
                 return {
                     isemoji: false
                     , body: [
@@ -678,17 +695,17 @@
                 };
             }
             var isemoji = false;
-            for ( var i = 0; i < emoji.length; i++ ) {
+            for (var i = 0; i < emoji.length; i++) {
                 var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emoji[i])),
                     existEmoji = WebIM.Emoji.map[emoji[i]];
 
-                if ( tmsg ) {
+                if (tmsg) {
                     emessage.push({
                         type: 'txt'
                         , data: tmsg
                     });
                 }
-                if ( !existEmoji ) {
+                if (!existEmoji) {
                     emessage.push({
                         type: 'txt'
                         , data: emoji[i]
@@ -697,7 +714,7 @@
                 }
                 var emojiStr = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
 
-                if ( emojiStr ) {
+                if (emojiStr) {
                     isemoji = true;
                     emessage.push({
                         type: 'emoji'
@@ -712,13 +729,13 @@
                 var restMsgIndex = receiveMsg.indexOf(emoji[i]) + emoji[i].length;
                 receiveMsg = receiveMsg.substring(restMsgIndex);
             }
-            if ( receiveMsg ) {
+            if (receiveMsg) {
                 emessage.push({
                     type: 'txt'
                     , data: receiveMsg
                 });
             }
-            if ( isemoji ) {
+            if (isemoji) {
                 return {
                     isemoji: isemoji
                     , body: emessage
@@ -737,28 +754,28 @@
 
         , xmlrequest: _xmlrequest
 
-        , ajax: function ( options ) {
+        , ajax: function (options) {
             var dataType = options.dataType || 'text';
             var suc = options.success || EMPTYFN;
             var error = options.error || EMPTYFN;
             var xhr = utils.xmlrequest();
 
             xhr.onreadystatechange = function () {
-                if ( xhr.readyState === 4 ) {
+                if (xhr.readyState === 4) {
                     var status = xhr.status || 0;
-                    if ( status === 200 ) {
+                    if (status === 200) {
                         try {
-                            switch ( dataType ) {
+                            switch (dataType) {
                                 case 'text':
                                     suc(xhr.responseText);
                                     return;
                                 case 'json':
                                     var json = utils.parseJSON(xhr.responseText);
-                                    suc(json,xhr);
+                                    suc(json, xhr);
                                     return;
                                 case 'xml':
-                                    if ( xhr.responseXML && xhr.responseXML.documentElement ) {
-                                        suc(xhr.responseXML.documentElement,xhr);
+                                    if (xhr.responseXML && xhr.responseXML.documentElement) {
+                                        suc(xhr.responseXML.documentElement, xhr);
                                     } else {
                                         error({
                                             type: _code.WEBIM_CONNCTION_AJAX_ERROR,
@@ -766,9 +783,10 @@
                                         });
                                     }
                                     return;
-                            };
-                            suc(xhr.response || xhr.responseText,xhr);
-                        } catch ( e ) {
+                            }
+                            ;
+                            suc(xhr.response || xhr.responseText, xhr);
+                        } catch (e) {
                             error({
                                 type: _code.WEBIM_CONNCTION_AJAX_ERROR,
                                 data: e
@@ -783,7 +801,7 @@
                         return;
                     }
                 }
-                if ( xhr.readyState === 0 ) {
+                if (xhr.readyState === 0) {
                     error({
                         type: _code.WEBIM_CONNCTION_AJAX_ERROR,
                         data: xhr.responseText
@@ -791,13 +809,13 @@
                 }
             };
 
-            if ( options.responseType ) {
-                if ( xhr.responseType ) {
+            if (options.responseType) {
+                if (xhr.responseType) {
                     xhr.responseType = options.responseType;
                 }
             }
-            if ( options.mimeType ) {
-                if ( utils.hasOverrideMimeType ) {
+            if (options.mimeType) {
+                if (utils.hasOverrideMimeType) {
                     xhr.overrideMimeType(options.mimeType);
                 }
             }
@@ -806,9 +824,9 @@
                 data = options.data || null,
                 tempData = '';
 
-            if ( type.toLowerCase() === 'get' && data ) {
-                for ( var o in data ) {
-                    if ( data.hasOwnProperty(o) ) {
+            if (type.toLowerCase() === 'get' && data) {
+                for (var o in data) {
+                    if (data.hasOwnProperty(o)) {
                         tempData += o + '=' + data[o] + '&';
                     }
                 }
@@ -818,10 +836,10 @@
             }
             xhr.open(type, options.url);
 
-            if ( utils.isCanSetRequestHeader ) {
+            if (utils.isCanSetRequestHeader) {
                 var headers = options.headers || {};
-                for ( var key in headers ) {
-                    if ( headers.hasOwnProperty(key) ) {
+                for (var key in headers) {
+                    if (headers.hasOwnProperty(key)) {
                         xhr.setRequestHeader(key, headers[key]);
                     }
                 }

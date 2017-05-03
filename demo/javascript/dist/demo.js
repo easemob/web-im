@@ -2816,6 +2816,9 @@
 	                    if (msg.ext) {
 	                        option.fileSize = msg.ext.fileSize;
 	                    }
+	                    if (msg.file_length) {
+	                        option.fileSize = WebIM.utils.addUnit(msg.file_length);
+	                    }
 	                    fileMsg(option, this.sentByMe);
 	                }
 	                break;

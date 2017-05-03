@@ -2016,8 +2016,23 @@
 
 	        getFileSize: function getFileSize(file) {
 	            var fileSize = this.getFileLength(file);
-	            if (fileSize > 10000000) return false;
 
+	            var kb = Math.round(fileSize / 1000);
+	            if (kb < 1000) {
+	                fileSize = kb + ' KB';
+	            } else if (kb >= 1000) {
+	                var mb = kb / 1000;
+	                if (mb < 1000) {
+	                    fileSize = mb.toFixed(1) + ' MB';
+	                } else {
+	                    var gb = mb / 1000;
+	                    fileSize = gb.toFixed(1) + ' GB';
+	                }
+	            }
+	            return fileSize;
+	        },
+
+	        addUnit: function addUnit(fileSize) {
 	            var kb = Math.round(fileSize / 1000);
 	            if (kb < 1000) {
 	                fileSize = kb + ' KB';
@@ -2457,7 +2472,8 @@
 	                                        });
 	                                    }
 	                                    return;
-	                            };
+	                            }
+	                            ;
 	                            suc(xhr.response || xhr.responseText, xhr);
 	                        } catch (e) {
 	                            error({
