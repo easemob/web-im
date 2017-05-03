@@ -58,6 +58,9 @@ var CommonPattern = {
         self.api.onTermC = function () {
             self._onTermC.apply(self, arguments);
         };
+        self.api.onEvJoin = function() {
+            self._onEvJoin.apply(self, arguments);
+        };
         self.webRtc.onIceCandidate = function () {
             self._onIceCandidate.apply(self, arguments);
         };
@@ -158,6 +161,13 @@ var CommonPattern = {
                 self.onAcceptCall(from, options);
             }
         }
+    },
+
+    _onEvJoin: function (from, options, rtkey, tsxId, fromSid) {
+        var self = this;
+
+        _logger.debug('_onEvJoin from', fromSid, from);
+        self.onAcceptCall(from, options);
     },
 
     onAcceptCall: function (from, options) {

@@ -72,6 +72,7 @@ var _clazz = {
         '303': 'onEvUnpub',
         '304': 'onEvMems',
         '204': 'onEvClose',
+        '401': 'onEvJoin',
 
         'onServerError': 'onServerError'
     },
