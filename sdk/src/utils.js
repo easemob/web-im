@@ -301,19 +301,7 @@
         }
 
         , getFileSize: function ( file ) {
-            var fileSize = 0;
-            if ( file ) {
-                if ( file.files ) {
-                    if ( file.files.length > 0 ) {
-                        fileSize = file.files[0].size;
-                    }
-                } else if ( file.select && 'ActiveXObject' in window ) {
-                    file.select();
-                    var fileobject = new ActiveXObject ('Scripting.FileSystemObject');
-                    var file = fileobject.GetFile (file.value);
-                    fileSize = file.Size;
-                }
-            }
+            var fileSize = this.getFileLength(file);
             if(fileSize > 10000000)
                 return false;
 
@@ -330,6 +318,23 @@
                 }
             }
             return fileSize;
+        }
+
+        , getFileLength: function (file) {
+            var fileLength = 0;
+            if ( file ) {
+                if ( file.files ) {
+                    if ( file.files.length > 0 ) {
+                        fileLength = file.files[0].size;
+                    }
+                } else if ( file.select && 'ActiveXObject' in window ) {
+                    file.select();
+                    var fileobject = new ActiveXObject ('Scripting.FileSystemObject');
+                    var file = fileobject.GetFile (file.value);
+                    fileLength = file.Size;
+                }
+            }
+            return fileLength;
         }
 
         , hasFlash: _hasFlash

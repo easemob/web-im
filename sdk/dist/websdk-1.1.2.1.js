@@ -50,9 +50,9 @@
 	;(function (window, undefined) {
 
 	    var _version = '1.1.2';
-	    var _code = __webpack_require__(213).code;
-	    var _utils = __webpack_require__(214).utils;
-	    var _msg = __webpack_require__(215);
+	    var _code = __webpack_require__(222).code;
+	    var _utils = __webpack_require__(223).utils;
+	    var _msg = __webpack_require__(224);
 	    var _message = _msg._msg;
 	    var _msgHash = {};
 
@@ -1619,7 +1619,7 @@
 
 /***/ },
 
-/***/ 213:
+/***/ 222:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1706,7 +1706,7 @@
 
 /***/ },
 
-/***/ 214:
+/***/ 223:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1716,7 +1716,7 @@
 	;(function () {
 
 	    var EMPTYFN = function EMPTYFN() {},
-	        _code = __webpack_require__(213).code,
+	        _code = __webpack_require__(222).code,
 	        WEBIM_FILESIZE_LIMIT;
 
 	    var _createStandardXHR = function _createStandardXHR() {
@@ -2015,19 +2015,7 @@
 	        },
 
 	        getFileSize: function getFileSize(file) {
-	            var fileSize = 0;
-	            if (file) {
-	                if (file.files) {
-	                    if (file.files.length > 0) {
-	                        fileSize = file.files[0].size;
-	                    }
-	                } else if (file.select && 'ActiveXObject' in window) {
-	                    file.select();
-	                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
-	                    var file = fileobject.GetFile(file.value);
-	                    fileSize = file.Size;
-	                }
-	            }
+	            var fileSize = this.getFileLength(file);
 	            if (fileSize > 10000000) return false;
 
 	            var kb = Math.round(fileSize / 1000);
@@ -2043,6 +2031,23 @@
 	                }
 	            }
 	            return fileSize;
+	        },
+
+	        getFileLength: function getFileLength(file) {
+	            var fileLength = 0;
+	            if (file) {
+	                if (file.files) {
+	                    if (file.files.length > 0) {
+	                        fileLength = file.files[0].size;
+	                    }
+	                } else if (file.select && 'ActiveXObject' in window) {
+	                    file.select();
+	                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
+	                    var file = fileobject.GetFile(file.value);
+	                    fileLength = file.Size;
+	                }
+	            }
+	            return fileLength;
 	        },
 
 	        hasFlash: _hasFlash,
@@ -2523,7 +2528,7 @@
 
 /***/ },
 
-/***/ 215:
+/***/ 224:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2531,7 +2536,7 @@
 	;(function () {
 	    'use strict';
 
-	    var _utils = __webpack_require__(214).utils;
+	    var _utils = __webpack_require__(223).utils;
 	    var Message = function Message(type, id) {
 	        if (!this instanceof Message) {
 	            return new Message(type);
@@ -2785,8 +2790,8 @@
 	            var _complete = function _complete(data) {
 
 	                if (data.entities[0]['file-metadata']) {
-	                    var file_len = data.entities[0]['file-metadata']['content-length'];
-	                    me.msg.file_length = file_len;
+	                    // var file_len = data.entities[0]['file-metadata']['content-length'];
+	                    // me.msg.file_length = file_len;
 	                    me.msg.filetype = data.entities[0]['file-metadata']['content-type'];
 	                    if (file_len > 204800) {
 	                        me.msg.thumbnail = true;
@@ -2803,7 +2808,7 @@
 	                        height: me.msg.height || 0
 	                    },
 	                    length: me.msg.length || 0,
-	                    file_length: me.msg.file_length || 0,
+	                    file_length: me.msg.ext.file_length || 0,
 	                    filetype: me.msg.filetype
 	                };
 
