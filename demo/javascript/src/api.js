@@ -112,6 +112,12 @@ module.exports = {
                 if ( !targetNode ) {
                     Demo.strangers[targetId].push({ msg: msg, type: 'img' });
                 } else {
+                    if(msg.ext){
+                        console.log('From WebIM, FileSize: ', msg.ext.fileSize);
+                    }
+                    if(msg.file_length){
+                        console.log("From SDK, FileSize: ", msg.file_length);
+                    }
                     brief = '[' + Demo.lan.image + ']';
                     imgMsg({
                         wrapper: targetNode,

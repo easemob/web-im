@@ -35,6 +35,7 @@ module.exports = React.createClass({
                 Demo.api.appendMsg(message, 'emoji');
             },
             onPictureMessage: function (message) {
+                console.log(message);
                 Demo.api.appendMsg(message, 'img');
             },
             onCmdMessage: function (message) {
@@ -244,6 +245,8 @@ module.exports = React.createClass({
         var me = this,
             chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.picture),
+            fileSize = WebIM.utils.getFileSize(me.refs.picture),
+            fileLength = WebIM.utils.getFileLength(me.refs.picture),
             url;
 
         if (!file.filename) {
@@ -264,6 +267,10 @@ module.exports = React.createClass({
             file: file,
             to: Demo.selected,
             roomType: chatroom,
+            ext: {
+                fileSize: fileSize,
+                file_length: fileLength
+            },
             onFileUploadError: function (error) {
                 log(error);
                 me.refs.picture.value = null;

@@ -2772,6 +2772,12 @@
 	                if (!targetNode) {
 	                    Demo.strangers[targetId].push({ msg: msg, type: 'img' });
 	                } else {
+	                    if (msg.ext) {
+	                        console.log('From WebIM, FileSize: ', msg.ext.fileSize);
+	                    }
+	                    if (msg.file_length) {
+	                        console.log("From SDK, FileSize: ", msg.file_length);
+	                    }
 	                    brief = '[' + Demo.lan.image + ']';
 	                    imgMsg({
 	                        wrapper: targetNode,
@@ -25196,6 +25202,7 @@
 	                Demo.api.appendMsg(message, 'emoji');
 	            },
 	            onPictureMessage: function onPictureMessage(message) {
+	                console.log(message);
 	                Demo.api.appendMsg(message, 'img');
 	            },
 	            onCmdMessage: function onCmdMessage(message) {
@@ -25412,6 +25419,8 @@
 	        var me = this,
 	            chatroom = Demo.selectedCate === 'chatrooms',
 	            file = WebIM.utils.getFileUrl(me.refs.picture),
+	            fileSize = WebIM.utils.getFileSize(me.refs.picture),
+	            fileLength = WebIM.utils.getFileLength(me.refs.picture),
 	            url;
 
 	        if (!file.filename) {
@@ -25432,6 +25441,10 @@
 	            file: file,
 	            to: Demo.selected,
 	            roomType: chatroom,
+	            ext: {
+	                fileSize: fileSize,
+	                file_length: fileLength
+	            },
 	            onFileUploadError: function onFileUploadError(error) {
 	                log(error);
 	                me.refs.picture.value = null;
