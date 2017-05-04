@@ -285,8 +285,9 @@ module.exports = React.createClass({
                 onGotLocalStream: function (stream, streamType) {
                     me.channel.setLocal(stream, streamType);
                 },
-                onRinging: function (caller) {
-                    // console.log('onRinging', caller);
+                onRinging: function (caller, streamType) {
+                    console.log('onRinging', caller);
+                    me.channel.ringing(caller, streamType)
                 },
                 onTermCall: function (reason) {
                     //"ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
@@ -918,6 +919,7 @@ module.exports = React.createClass({
             chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.file),
             fileSize = WebIM.utils.getFileSize(me.refs.file),
+            fileLength = WebIM.utils.getFileLength(me.refs.file),
             filename = file.filename;
 
         if (!fileSize) {
@@ -934,9 +936,11 @@ module.exports = React.createClass({
             file: file,
             filename: filename,
             to: Demo.selected,
+            file_length: 3424134,
             roomType: chatroom,
             ext: {
-                fileSize: fileSize
+                fileSize: fileSize,
+                file_length: fileLength
             },
             onFileUploadError: function (error) {
                 me.refs.file.value = null;
@@ -969,7 +973,6 @@ module.exports = React.createClass({
         } else if (chatroom) {
             msg.setGroup(Demo.groupType);
         }
-
         Demo.conn.send(msg.body);
     },
 

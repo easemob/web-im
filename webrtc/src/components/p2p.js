@@ -30,10 +30,13 @@ var CommonPattern = {
 
     callee: null,
 
-    consult: false,
 
     isCaller: false,
     accepted: false,
+
+    setLocalSDP: false,
+    setRemoteSDP: false,
+
     hangup: false,
 
 
@@ -54,6 +57,9 @@ var CommonPattern = {
         };
         self.api.onTermC = function () {
             self._onTermC.apply(self, arguments);
+        };
+        self.api.onEvJoin = function() {
+            self._onEvJoin.apply(self, arguments);
         };
         self.webRtc.onIceCandidate = function () {
             self._onIceCandidate.apply(self, arguments);
@@ -90,6 +96,8 @@ var CommonPattern = {
 
         self.isCaller = true;
         self.accepted = false;
+        self.setLocalSDP = false;
+        self.setRemoteSDP = false;
         self.hangup = false;
 
         self.streamType = mediaStreamConstaints.audio && mediaStreamConstaints.video ? "VIDEO" : "VOICE";
@@ -100,8 +108,6 @@ var CommonPattern = {
     createLocalMedia: function (mediaStreamConstaints) {
         var self = this;
 
-        self.consult = false;
-
         this.webRtc.createMedia(mediaStreamConstaints, function (webrtc, stream) {
             webrtc.setLocalVideoSrcObject(stream);
 
@@ -109,8 +115,6 @@ var CommonPattern = {
 
             self.webRtc.createOffer(function (offer) {
                 self._onGotWebRtcOffer(offer);
-
-                self._onHandShake();
             });
         });
     },
@@ -127,6 +131,8 @@ var CommonPattern = {
         self.api.initC(rt, self.streamType, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
             _logger.debug("initc result", rtcOptions);
         });
+
+        self.setLocalSDP = true;
 
         self._ping();
     },
@@ -148,13 +154,20 @@ var CommonPattern = {
             if (options.sdp || options.cands) {
                 // options.sdp && (options.sdp.type = "pranswer");
                 options.sdp && self.webRtc.setRemoteDescription(options.sdp);
-                options.cands && self._onTcklC(from, options);
 
-                //self._onHandShake(from, options);
+                self.setRemoteSDP = true;
+                self._handRecvCandsOrSend(from, options);
 
                 self.onAcceptCall(from, options);
             }
         }
+    },
+
+    _onEvJoin: function (from, options, rtkey, tsxId, fromSid) {
+        var self = this;
+
+        _logger.debug('_onEvJoin from', fromSid, from);
+        self.onAcceptCall(from, options);
     },
 
     onAcceptCall: function (from, options) {
@@ -169,17 +182,19 @@ var CommonPattern = {
         self.accepted = true;
 
         options.sdp && self.webRtc.setRemoteDescription(options.sdp);
-        options.cands && self._onTcklC(from, options);
+
+        self.setRemoteSDP = true;
+        self._handRecvCandsOrSend(from, options);
     },
 
 
     _onInitC: function (from, options, rtkey, tsxId, fromSid) {
         var self = this;
 
-        self.consult = false;
-
         self.isCaller = false;
         self.accepted = false;
+        self.setLocalSDP = false;
+        self.setRemoteSDP = false;
         self.hangup = false;
 
         self.callee = from;
@@ -195,8 +210,13 @@ var CommonPattern = {
 
         self.webRtc.createRtcPeerConnection(self._rtcCfg2);
 
-        options.cands && self._onTcklC(from, options);
+        options.sdp && _logger.debug(options.sdp.sdp);
+
         options.sdp && (self.webRtc.setRemoteDescription(options.sdp).then(function () {
+
+            self.setRemoteSDP = true;
+            self._handRecvCandsOrSend(from, options);
+
             /*
              * chrome 版本 大于 50时，可以使用pranswer。
              * 小于50 不支持pranswer，此时处理逻辑是，直接进入振铃状态
@@ -208,15 +228,13 @@ var CommonPattern = {
 
                     setTimeout(function () { //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
                         _logger.info("[WebRTC-API] onRinging : after send pranswer. ", self.callee);
-                        self.onRinging(self.callee);
+                        self.onRinging(self.callee, self.streamType);
                     }, 500);
                 });
-
-                self._onHandShake(from, options);
             } else {
                 setTimeout(function () {
                     _logger.info("[WebRTC-API] onRinging : After iniC, cause by: not supported pranswer. ", self.callee);
-                    self.onRinging(self.callee);
+                    self.onRinging(self.callee, self.streamType);
                 }, 500)
                 self._ping();
             }
@@ -233,16 +251,16 @@ var CommonPattern = {
             rtKey: self._rtKey
         });
 
-
-        //self._onHandShake();
-
         //self.api.acptC(rt, self._sessId, self._rtcId, prAnswer, null, 1);
         self.api.acptC(rt, self._sessId, self._rtcId, prAnswer);
+
+        self.setLocalSDP = true;
+        self._handRecvCandsOrSend();
 
         self._ping();
     },
 
-    onRinging: function (caller) {
+    onRinging: function (caller, streamType) {
     },
 
     accept: function () {
@@ -264,12 +282,13 @@ var CommonPattern = {
                     self.api.acptC(rt, self._sessId, self._rtcId, answer, null, 1);
                 }
 
+                if (!WebIM.WebRTC.supportPRAnswer) {
+                    self.setLocalSDP = true;
+                }
+                self._handRecvCandsOrSend();
+
                 self.accepted = true;
             });
-
-            if (!WebIM.WebRTC.supportPRAnswer){
-                self._onHandShake(self.callee, null);
-            }
         }
 
         var constaints = {
@@ -286,37 +305,34 @@ var CommonPattern = {
         });
     },
 
-    _onHandShake: function (from, options) {
+    _handRecvCandsOrSend: function (from, options) {
         var self = this;
 
-        self.consult = true;
-        _logger.info("hand shake over. may switch cands.");
-
-
-        options && setTimeout(function () {
+        setTimeout(function () {
             self._onTcklC(from, options);
-        }, 100);
+        }, 50);
 
         setTimeout(function () {
             self._onIceCandidate();
-        }, 100);
+        }, 50);
     },
 
-    _onTcklC: function (from, options) { // offer
+    _onTcklC: function (from, options) { // setRemoteSDP，才可以添加 添加 对方 cands
         var self = this;
 
         // options.sdp && self.webRtc.setRemoteDescription(options.sdp);
 
-        if (self.consult) {
+        if (self.setRemoteSDP) {
             _logger.info("[WebRTC-API] recv and add cands.");
 
             self._recvCands && self._recvCands.length > 0 && self.webRtc.addIceCandidate(self._recvCands);
+            self._recvCands && self._recvCands.length > 0 && (self._recvCands = []);
             options && options.cands && self.webRtc.addIceCandidate(options.cands);
         } else if (options && options.cands && options.cands.length > 0) {
             for (var i = 0; i < options.cands.length; i++) {
                 (self._recvCands || (self._recvCands = [])).push(options.cands[i]);
             }
-            _logger.debug("[_onTcklC] temporary memory[recv] ice candidate. util consult = true");
+            _logger.debug("[_onTcklC] temporary memory[recv] ice candidate. util setRemoteSDP = true");
         }
     },
 
@@ -326,10 +342,10 @@ var CommonPattern = {
         self.api.onIceConnectionStateChange(self.webRtc.iceConnectionState());
     },
 
-    _onIceCandidate: function (event) {
+    _onIceCandidate: function (event) { //在本地sdp set 发送完成后，发送 cands
         var self = this;
 
-        if (self.consult) {
+        if (self.setLocalSDP) {
             function sendIceCandidate(candidate) {
                 _logger.debug("send ice candidate...");
 
@@ -352,7 +368,7 @@ var CommonPattern = {
             event && event.candidate && sendIceCandidate(event.candidate);
         } else {
             event && event.candidate && (self._cands || (self._cands = [])).push(event.candidate);
-            _logger.debug("[_onIceCandidate] temporary memory[send] ice candidate. util consult = true");
+            _logger.debug("[_onIceCandidate] temporary memory[send] ice candidate. util setLocalSDP = true");
         }
     },
 
