@@ -256,10 +256,9 @@
             }
             var _tmpComplete = me.msg.onFileUploadComplete;
             var _complete = function (data) {
-
                 if (data.entities[0]['file-metadata']) {
                     var file_len = data.entities[0]['file-metadata']['content-length'];
-                    me.msg.file_length = file_len;
+                    // me.msg.file_length = file_len;
                     me.msg.filetype = data.entities[0]['file-metadata']['content-type'];
                     if (file_len > 204800) {
                         me.msg.thumbnail = true;
@@ -277,7 +276,7 @@
                         , height: me.msg.height || 0
                     }
                     , length: me.msg.length || 0
-                    , file_length: me.msg.file_length || 0
+                    , file_length: me.msg.ext.file_length || 0
                     , filetype: me.msg.filetype
                 }
                 _send(me.msg);
