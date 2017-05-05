@@ -339,6 +339,13 @@ var CommonPattern = {
     _onIceStateChange: function (event) {
         var self = this;
         event && _logger.debug("[WebRTC-API] " + self.webRtc.iceConnectionState() + " |||| ice state is " + event.target.iceConnectionState);
+
+
+        if(event && event.target.iceConnectionState == "closed"){
+            self.setLocalSDP = false;
+            self.setRemoteSDP = false;
+        }
+
         self.api.onIceConnectionStateChange(self.webRtc.iceConnectionState());
     },
 
@@ -392,6 +399,9 @@ var CommonPattern = {
 
         self.hangup = true;
 
+        self.setLocalSDP = false;
+        self.setRemoteSDP = false;
+
         self.onTermCall(reason);
     },
 
@@ -410,6 +420,10 @@ var CommonPattern = {
         var self = this;
 
         self.hangup = true;
+
+        self.setLocalSDP = false;
+        self.setRemoteSDP = false;
+
         self.termCall(options.reason);
 
     },
