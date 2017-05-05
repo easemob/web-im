@@ -147,6 +147,10 @@ var CommonPattern = {
         }
         if (!WebIM.WebRTC.supportPRAnswer) {
             _logger.info("[WebRTC-API] _onAcptC : not supported pranswer. drop it. will onAcceptCall");
+
+            self.setRemoteSDP = false;
+            self._handRecvCandsOrSend(from, options);
+
             self.onAcceptCall(from, options);
         } else {
             _logger.info("[WebRTC-API] _onAcptC : recv pranswer. ");
