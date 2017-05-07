@@ -1,0 +1,25 @@
+gzip on;
+gzip_disable "MSIE [1-6]\.";
+
+gzip_vary on;
+gzip_proxied any;
+gzip_comp_level 2;
+gzip_buffers 16 8k;
+gzip_http_version 1.1;
+gzip_min_length 256;
+gzip_types text/plain application/javascript application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+
+
+server {
+   listen 8089;
+   listen [::]:8089;
+   server_name webim;
+
+   include /etc/nginx/default.d/*.conf;
+
+
+   location / {
+       index index.html index.htm;
+       root /data/apps/opt/webim;
+   }
+}

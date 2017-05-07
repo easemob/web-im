@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: webim
+  name: webim
+spec:
+  type: NodePort
+  ports:
+    - port: 8089
+      targetPort: 8089
+      nodePort: 31089
+      protocol: TCP
+  selector:
+    app: webim
+    tier: frontend
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: webim
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: webim
+        tier: frontend
+    spec:
+      imagePullSecrets:
+      - name: cn-registry
+      containers:
+      - image: docker-registry-cn.easemob.com/kubernetes/im/webim:1.4.10
+        name: webim
+        env:
+        - name: IM_SERVER
+          value: im-api.easemob.com
+        - name: REST_SERVER
+          value: a1.easemob.com
+        - name: APPKEY
+          value: easemob-demo#chatdemoui
+        ports:
+          - containerPort: 8089
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: "0.1"
+            memory: 0.5Gi

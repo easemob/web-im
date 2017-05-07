@@ -147,6 +147,10 @@ var CommonPattern = {
         }
         if (!WebIM.WebRTC.supportPRAnswer) {
             _logger.info("[WebRTC-API] _onAcptC : not supported pranswer. drop it. will onAcceptCall");
+
+            self.setRemoteSDP = false;
+            self._handRecvCandsOrSend(from, options);
+
             self.onAcceptCall(from, options);
         } else {
             _logger.info("[WebRTC-API] _onAcptC : recv pranswer. ");
@@ -339,6 +343,13 @@ var CommonPattern = {
     _onIceStateChange: function (event) {
         var self = this;
         event && _logger.debug("[WebRTC-API] " + self.webRtc.iceConnectionState() + " |||| ice state is " + event.target.iceConnectionState);
+
+
+        if(event && event.target.iceConnectionState == "closed"){
+            self.setLocalSDP = false;
+            self.setRemoteSDP = false;
+        }
+
         self.api.onIceConnectionStateChange(self.webRtc.iceConnectionState());
     },
 
@@ -392,6 +403,9 @@ var CommonPattern = {
 
         self.hangup = true;
 
+        self.setLocalSDP = false;
+        self.setRemoteSDP = false;
+
         self.onTermCall(reason);
     },
 
@@ -410,6 +424,10 @@ var CommonPattern = {
         var self = this;
 
         self.hangup = true;
+
+        self.setLocalSDP = false;
+        self.setRemoteSDP = false;
+
         self.termCall(options.reason);
 
     },
