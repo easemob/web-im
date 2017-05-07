@@ -46,6 +46,8 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                me.sendDelivery(message);
+
                 Demo.api.addToChatRecord(message, 'txt');
                 Demo.api.appendMsg(message, 'txt');
             },
@@ -186,6 +188,9 @@ module.exports = React.createClass({
                 me.setState({blacklist: list});
                 // TODO 增量更新
                 Demo.api.updateRoster();
+            },
+            onReceivedMessage: function(message){
+                console.log('onReceivedMessage: ', message);
             }
         });
 
@@ -202,6 +207,19 @@ module.exports = React.createClass({
             window: []
         };
     },
+
+    sendDelivery: function(message){
+        // 收到消息时反馈一个已收到
+        var msgId = Demo.conn.getUniqueId();
+        var bodyId = message.id;
+        var msg = new WebIM.message('delivery', msgId);
+        msg.set({
+            id: bodyId
+            , to: message.from
+        });
+        Demo.conn.send(msg.body);
+    },
+
     confirmPop: function (options) {
         ConfirmPop.show(options);
     },

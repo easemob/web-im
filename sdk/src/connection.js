@@ -1514,7 +1514,15 @@ connection.prototype.handleMessage = function (msginfo) {
 
 connection.prototype.handleReceivedMessage = function (message) {
     try {
-        this.onReceivedMessage(message);
+        var received = message.getElementsByTagName("received");
+        var mid = received[0].getAttribute('mid');
+        var body = message.getElementsByTagName("body");
+        var id = body[0].innerHTML;
+        var msg = {
+            mid: mid,
+            id: id
+        };
+        this.onReceivedMessage(msg);
     } catch (e) {
         this.onError({
             type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
