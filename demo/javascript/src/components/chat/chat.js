@@ -190,7 +190,23 @@ module.exports = React.createClass({
                 Demo.api.updateRoster();
             },
             onReceivedMessage: function(message){
+                // msg.innerHTML = '已送达'
+                var msg = document.getElementById(message.id);
+                if(msg){
+                    console.log(msg);
+                    msg.setAttribute('name', message.mid);
+                }
                 console.log('onReceivedMessage: ', message);
+            },
+            onDeliveredMessage: function(message){
+                var msg = document.getElementsByName(message.mid);
+                if(msg){
+                    console.log(msg[0]);
+                    // msg[0].innerHTML = '已送达';
+                    if(msg[0])
+                        msg[0].innerHTML = '已送达';
+                }
+                console.log('onDeliveredMessage: ', message);
             }
         });
 
@@ -209,6 +225,8 @@ module.exports = React.createClass({
     },
 
     sendDelivery: function(message){
+        if(!WebIM.config.delivery)
+            return;
         // 收到消息时反馈一个已收到
         var msgId = Demo.conn.getUniqueId();
         var bodyId = message.id;

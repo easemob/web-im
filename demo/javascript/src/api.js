@@ -398,7 +398,8 @@ module.exports = {
                             name: name,
                             value: brief,
                             error: msg.error,
-                            errorText: msg.errorText
+                            errorText: msg.errorText,
+                            id: msg.id
                         }, this.sentByMe);
                         break;
                     case 'emoji':

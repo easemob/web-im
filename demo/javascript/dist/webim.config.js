@@ -77,5 +77,12 @@ WebIM.config = {
     /**
      * while http access,use ip directly,instead of ServerName,avoiding DNS problem.
      */
-    isHttpDNS: false
+    isHttpDNS: false,
+
+    /**
+     * When a message arrived, the receiver send an ack message to the
+     * sender, in order to tell the sender the message has delivered.
+     * See call back function onReceivedMessage
+     */
+    delivery: true
 };

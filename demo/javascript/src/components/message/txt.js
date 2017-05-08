@@ -7,12 +7,17 @@ var TextMsg = React.createClass({
 
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
+        var status = this.props.className == 'left' ? 'hide' : '';
+        var id = this.props.id;
 
         return (
             <div className={'rel ' + this.props.className}>
                 <Avatar src={this.props.src} className={this.props.className + ' small'}/>
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
                 <div className="clearfix">
+                    <div className={"webim-msg-delivered " + status} id={id}>
+                        未送达
+                    </div>
                     <div className='webim-msg-value'>
                         <span className='webim-msg-icon font'>{icon}</span>
                         <pre dangerouslySetInnerHTML={{__html: this.props.value}}></pre>
@@ -33,7 +38,8 @@ module.exports = function (options, sentByMe) {
         value: options.value || '',
         name: options.name,
         error: options.error,
-        errorText: options.errorText
+        errorText: options.errorText,
+        id: options.id || ''
     };
 
     var node = document.createElement('div');

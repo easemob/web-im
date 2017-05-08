@@ -372,8 +372,12 @@ var _loginCallback = function (status, msg, conn) {
             conn.handelSendQueue();
         }, 200);
         var handleMessage = function (msginfo) {
+            var delivery = msginfo.getElementsByTagName('delivery');
+            if(delivery.length){
+                conn.handleDeliveredMessage(msginfo);
+                return true;
+            }
             var type = _parseMessageType(msginfo);
-
             if ('received' === type) {
                 conn.handleReceivedMessage(msginfo);
                 return true;
@@ -665,6 +669,7 @@ connection.prototype.listen = function (options) {
     this.onError = options.onError || _utils.emptyfn;
     this.onReceivedMessage = options.onReceivedMessage || _utils.emptyfn;
     this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
+    this.onDeliverdMessage = options.onDeliveredMessage  || _utils.emptyfn;
     this.onOffline = options.onOffline || _utils.emptyfn;
     this.onOnline = options.onOnline || _utils.emptyfn;
     this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
@@ -1285,6 +1290,8 @@ connection.prototype.handleMessage = function (msginfo) {
 
     var id = msginfo.getAttribute('id') || '';
 
+
+
     // cache ack into sendQueue first , handelSendQueue will do the send thing with the speed of  5/s
     this.cacheReceiptsMessage({
         id: id
@@ -1510,6 +1517,15 @@ connection.prototype.handleMessage = function (msginfo) {
             });
         }
     }
+};
+
+connection.prototype.handleDeliveredMessage = function(message){
+    var body = message.getElementsByTagName('body');
+    var mid = body[1].innerHTML;
+    var msg = {
+        mid: mid
+    };
+    this.onDeliverdMessage(msg);
 };
 
 connection.prototype.handleReceivedMessage = function (message) {

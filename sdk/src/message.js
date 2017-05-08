@@ -235,36 +235,31 @@
             message.ext.weichat.originType = message.ext.weichat.originType || 'webim';
 
             var dom;
+            var json = {
+                from: conn.context.userId || ''
+                , to: message.to
+                , bodies: [message.body]
+                , ext: message.ext || {}
+            };
+            var jsonstr = _utils.stringify(json);
+            dom = $msg({
+                type: message.group || 'chat'
+                , to: message.toJid
+                , id: message.id
+                , xmlns: 'jabber:client'
+            }).c('body').t(jsonstr);
+
+            if (message.roomType) {
+                dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+            }
             if(message.bodyId){
-                dom = $msg({
-                    id: message.id
-                    , to: message.toJid
-                    , from: conn.context.jid || ''
-                });
-                dom.c('body').t(message.bodyId);
+                dom.up().c('body').t(message.bodyId);
                 var delivery = {
                     xmlns: 'urn:xmpp:receipts'
                     , id: message.bodyId
                 };
                 dom.up().c('delivery').t(_utils.stringify(delivery));
-            }else{
-                var json = {
-                    from: conn.context.userId || ''
-                    , to: message.to
-                    , bodies: [message.body]
-                    , ext: message.ext || {}
-                };
-                var jsonstr = _utils.stringify(json);
-                dom = $msg({
-                    type: message.group || 'chat'
-                    , to: message.toJid
-                    , id: message.id
-                    , xmlns: 'jabber:client'
-                }).c('body').t(jsonstr);
-            }
-
-            if (message.roomType) {
-                dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+                console.log("Tree: ", dom.tree());
             }
 
             setTimeout(function () {
