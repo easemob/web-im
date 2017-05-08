@@ -316,12 +316,9 @@ module.exports = {
             if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
                 if (document.getElementById('wrapper' + targetId))
                     document.getElementById('wrapper' + targetId).innerHTML = '';
-                // for (var i = 0; i < Demo.chatRecord[targetId].messages.length; i++) {
-                //     Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
-                //                         Demo.chatRecord[targetId].messages[i].type,
-                //                         Demo.chatRecord[targetId].messages[i].status);
-                // }
                 for(var i in Demo.chatRecord[targetId].messages){
+                    if(Demo.chatRecord[targetId].messages[i] == undefined)
+                        continue;
                     Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
                         Demo.chatRecord[targetId].messages[i].type,
                         Demo.chatRecord[targetId].messages[i].status);
