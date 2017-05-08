@@ -285,12 +285,13 @@ module.exports = {
         this.render(this.node);
     },
 
-    addToChatRecord: function (msg, type) {
+    addToChatRecord: function (msg, type, status) {
         var data = msg.data || msg.msg || '';
         var brief = this.getBrief(data, type);
+        var id = msg.id;
         this.sentByMe = msg.from === Demo.user;
         var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
-
+        console.log('targetId: ', targetId);
         if (!Demo.chatRecord[targetId] || !Demo.chatRecord[targetId].messages) {
             Demo.chatRecord[targetId] = {};
 
@@ -304,7 +305,8 @@ module.exports = {
         Demo.chatRecord[targetId].brief = brief;
         Demo.chatRecord[targetId].briefType = type;
 
-        Demo.chatRecord[targetId].messages.push({message: msg, type: type});
+        // Demo.chatRecord[targetId].messages.push({message: msg, type: type, status: status});
+        Demo.chatRecord[targetId].messages[id] = {message: msg, type: type, status: status};
 
     },
 
@@ -314,8 +316,15 @@ module.exports = {
             if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
                 if (document.getElementById('wrapper' + targetId))
                     document.getElementById('wrapper' + targetId).innerHTML = '';
-                for (var i = 0; i < Demo.chatRecord[targetId].messages.length; i++) {
-                    Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message, Demo.chatRecord[targetId].messages[i].type);
+                // for (var i = 0; i < Demo.chatRecord[targetId].messages.length; i++) {
+                //     Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
+                //                         Demo.chatRecord[targetId].messages[i].type,
+                //                         Demo.chatRecord[targetId].messages[i].status);
+                // }
+                for(var i in Demo.chatRecord[targetId].messages){
+                    Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
+                        Demo.chatRecord[targetId].messages[i].type,
+                        Demo.chatRecord[targetId].messages[i].status);
                 }
             }
         }
@@ -356,7 +365,7 @@ module.exports = {
         return brief;
     },
 
-    appendMsg: function (msg, type) {
+    appendMsg: function (msg, type, status) {
         if (!msg) {
             return;
         }
@@ -399,7 +408,8 @@ module.exports = {
                             value: brief,
                             error: msg.error,
                             errorText: msg.errorText,
-                            id: msg.id
+                            id: msg.id,
+                            status: status
                         }, this.sentByMe);
                         break;
                     case 'emoji':

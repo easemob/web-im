@@ -193,18 +193,27 @@ module.exports = React.createClass({
                 // msg.innerHTML = '已送达'
                 var msg = document.getElementById(message.id);
                 if(msg){
-                    console.log(msg);
                     msg.setAttribute('name', message.mid);
                 }
+                for(var targetId in Demo.chatRecord){
+                    var msg = Demo.chatRecord[targetId].messages[message.id];
+                    Demo.chatRecord[targetId].messages[message.mid] = msg;
+                    delete Demo.chatRecord[targetId].messages[message.id];
+                }
+                console.log('chatRecord: ', Demo.chatRecord);
                 console.log('onReceivedMessage: ', message);
             },
             onDeliveredMessage: function(message){
                 var msg = document.getElementsByName(message.mid);
                 if(msg){
-                    console.log(msg[0]);
-                    // msg[0].innerHTML = '已送达';
                     if(msg[0])
                         msg[0].innerHTML = '已送达';
+                }
+                // 记录消息的状态
+                for(var targetId in Demo.chatRecord){
+                    if(Demo.chatRecord[targetId].messages[message.mid]){
+                        Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
+                    }
                 }
                 console.log('onDeliveredMessage: ', message);
             }

@@ -152,9 +152,9 @@ module.exports = React.createClass({
 
     send: function (msg) {
         msg.chatType = this.props.chatType;
+        console.log('SendMSG: ', msg);
         Demo.conn.send(msg);
-        Demo.api.addToChatRecord(msg, 'txt');
-        console.log(msg);
+        Demo.api.addToChatRecord(msg, 'txt', 'Undelivered');
         Demo.api.appendMsg(msg, 'txt');
     },
 

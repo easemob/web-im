@@ -7,19 +7,6 @@ module.exports = React.createClass({
 
     getInitialState: function () {
         var me = this;
-        // var id = this.props.id;
-        // var count = 0;
-        // if(Demo.chatRecord[id]){
-        //     count = Demo.chatRecord[id].count;
-        //     if(count == undefined || !isNaN(count)){
-        //         // Demo.chatRecord[id].count = 0;
-        //         count = 0;
-        //     }
-        //     else
-        //         count = Math.max(0, count);
-        // }
-        //
-        // var display = count == 0 ? 'none' : 'block';
 
         return {
             msg: '',

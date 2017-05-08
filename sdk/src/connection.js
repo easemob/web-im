@@ -1530,6 +1530,7 @@ connection.prototype.handleDeliveredMessage = function(message){
 
 connection.prototype.handleReceivedMessage = function (message) {
     try {
+        console.log("handleReceivedMessage: ", message);
         var received = message.getElementsByTagName("received");
         var mid = received[0].getAttribute('mid');
         var body = message.getElementsByTagName("body");
