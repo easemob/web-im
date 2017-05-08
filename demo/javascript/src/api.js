@@ -415,7 +415,9 @@ module.exports = {
                             name: name,
                             value: brief,
                             error: msg.error,
-                            errorText: msg.errorText
+                            errorText: msg.errorText,
+                            id: msg.id,
+                            status: status
                         }, this.sentByMe);
                         break;
                     case 'img':
@@ -438,7 +440,9 @@ module.exports = {
                                     name: name,
                                     value: data || msg.url,
                                     error: msg.error,
-                                    errorText: msg.errorText
+                                    errorText: msg.errorText,
+                                    id: msg.id,
+                                    status: status
                                 }, this.sentByMe);
                             }
                         } else {

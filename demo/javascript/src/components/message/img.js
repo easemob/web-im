@@ -32,6 +32,19 @@ var ImgMsg = React.createClass({
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
         var imgs = [];
+        var statusClass = this.props.className == 'left' ? 'hide' : '';
+        var id = this.props.id;
+        var status = this.props.status;
+        switch(status){
+            case 'Undelivered':
+                status = '未送达';
+                break;
+            case 'Delivered':
+                status = '已送达';
+                break;
+            default:
+
+        }
         if (WebIM.config.isWindowSDK) {
             if (this.state.value == "") {
                 imgs.push(<span key='0'>{Demo.lan.image}{Demo.lan.FileLoading}</span>);
@@ -48,6 +61,9 @@ var ImgMsg = React.createClass({
                 <Avatar src={this.props.src} className={this.props.className + ' small'}/>
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
                 <div className="clearfix">
+                    <div className={"webim-msg-delivered " + statusClass} id={id}>
+                        {status}
+                    </div>
                     <div className='webim-msg-value webim-img-msg-wrapper'>
                         <span className='webim-msg-icon font'>{icon}</span>
                         <div id={'file_' + this.props.id}>{imgs}</div>
@@ -69,7 +85,9 @@ module.exports = function (options, sentByMe) {
         value: options.value || '',
         name: options.name,
         error: options.error,
-        errorText: options.errorText
+        errorText: options.errorText,
+        id: options.id || '',
+        status: options.status || 'Undelivered'
     };
 
     var node = document.createElement('div');

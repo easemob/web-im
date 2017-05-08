@@ -1520,12 +1520,17 @@ connection.prototype.handleMessage = function (msginfo) {
 };
 
 connection.prototype.handleDeliveredMessage = function(message){
+    var id =  message.id;
+    console.log('id: ', message.id);
     var body = message.getElementsByTagName('body');
     var mid = body[1].innerHTML;
     var msg = {
         mid: mid
     };
     this.onDeliverdMessage(msg);
+    this.sendReceiptsMessage({
+        id: id
+    });
 };
 
 connection.prototype.handleReceivedMessage = function (message) {

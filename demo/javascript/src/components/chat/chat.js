@@ -47,7 +47,6 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 me.sendDelivery(message);
-
                 Demo.api.addToChatRecord(message, 'txt');
                 Demo.api.appendMsg(message, 'txt');
             },
@@ -55,6 +54,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                me.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'emoji');
                 Demo.api.appendMsg(message, 'emoji');
             },
@@ -62,6 +62,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                me.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'img');
                 Demo.api.appendMsg(message, 'img');
             },
@@ -76,6 +77,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                me.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'aud');
                 Demo.api.appendMsg(message, 'aud');
             },
@@ -83,6 +85,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                me.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'loc');
                 Demo.api.appendMsg(message, 'loc');
             },
@@ -90,6 +93,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                me.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'file');
                 Demo.api.appendMsg(message, 'file');
             },
@@ -97,6 +101,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                me.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'video');
                 Demo.api.appendMsg(message, 'video');
             },
@@ -216,6 +221,7 @@ module.exports = React.createClass({
                     }
                 }
                 console.log('onDeliveredMessage: ', message);
+                console.log('ChatRecord: ', Demo.chatRecord);
             }
         });
 
