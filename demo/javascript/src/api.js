@@ -291,7 +291,6 @@ module.exports = {
         var id = msg.id;
         this.sentByMe = msg.from === Demo.user;
         var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
-        console.log('targetId: ', targetId);
         if (!Demo.chatRecord[targetId] || !Demo.chatRecord[targetId].messages) {
             Demo.chatRecord[targetId] = {};
 
@@ -305,14 +304,10 @@ module.exports = {
         Demo.chatRecord[targetId].brief = brief;
         Demo.chatRecord[targetId].briefType = type;
 
-        // Demo.chatRecord[targetId].messages.push({message: msg, type: type, status: status});
         Demo.chatRecord[targetId].messages[id] = {message: msg, type: type, status: status};
-        console.log('File Record: ', Demo.chatRecord[targetId].messages[id]);
-
     },
 
     releaseChatRecord: function (targetId) {
-        console.log('Release chatrecord: ', Demo.chatRecord);
         var targetId = targetId || Demo.selected;
         if (targetId) {
             if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
@@ -432,7 +427,6 @@ module.exports = {
             if (targetNode) {
                 switch (type) {
                     case 'txt':
-                        console.log('nid: ', nid);
                         textMsg({
                             wrapper: targetNode,
                             name: name,

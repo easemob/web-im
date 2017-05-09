@@ -7,7 +7,8 @@ var TextMsg = React.createClass({
 
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
-        var statusClass = this.props.className == 'left' ? 'hide' : '';
+        var statusClass = this.props.className == 'left'
+            || Demo.selectedCate !== 'friends' ? 'hide' : '';
         var id = this.props.id;
         var status = this.props.status;
         var nid = this.props.nid;
@@ -46,7 +47,6 @@ var TextMsg = React.createClass({
 });
 
 module.exports = function (options, sentByMe) {
-    console.log("Text options: ", options);
     var props = {
         src: options.avatar || 'demo/images/default.png',
         time: options.time || new Date().toLocaleString(),

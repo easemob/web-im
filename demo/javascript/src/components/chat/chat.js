@@ -46,7 +46,6 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                console.log('onTextMessage: ', message);
                 // 发送已送达回执
                 Demo.api.sendDelivery(message);
                 if(Demo.selected == message.from){
@@ -62,6 +61,10 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 Demo.api.sendDelivery(message);
+                if(Demo.selected == message.from){
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
                 Demo.api.addToChatRecord(message, 'emoji');
                 Demo.api.appendMsg(message, 'emoji');
             },
@@ -70,6 +73,10 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 Demo.api.sendDelivery(message);
+                if(Demo.selected == message.from){
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
                 Demo.api.addToChatRecord(message, 'img');
                 Demo.api.appendMsg(message, 'img');
             },
@@ -101,6 +108,10 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 Demo.api.sendDelivery(message);
+                if(Demo.selected == message.from){
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
                 Demo.api.addToChatRecord(message, 'file');
                 Demo.api.appendMsg(message, 'file');
             },
@@ -224,11 +235,8 @@ module.exports = React.createClass({
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
                     }
                 }
-                console.log('onDeliveredMessage: ', message);
-                console.log('ChatRecord: ', Demo.chatRecord);
             },
             onReadMessage: function(message){
-                console.log("onReadMessage: ", message);
                 var msg = document.getElementsByName(message.mid);
                 if(msg){
                     if(msg[0])

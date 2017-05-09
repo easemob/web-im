@@ -244,7 +244,6 @@
         var me = this;
 
         var _send = function (message) {
-            console.log('ScareCrow: ', message);
 
             message.ext = message.ext || {};
             message.ext.weichat = message.ext.weichat || {};
@@ -275,7 +274,6 @@
                     , id: message.bodyId
                 };
                 dom.up().c('delivery').t(_utils.stringify(delivery));
-                console.log("Tree: ", dom.tree());
             }
             if(message.ackId){
                 dom.up().c('body').t(message.ackId);
@@ -284,7 +282,6 @@
                     , id: message.ackId
                 };
                 dom.up().c('acked').t(_utils.stringify(read));
-                console.log('Read Tree: ', dom.tree());
             }
 
             setTimeout(function () {

@@ -51,6 +51,8 @@ var FileMsg = React.createClass({
             case 'Delivered':
                 status = '已送达';
                 break;
+            case 'Read':
+                status = '已读';
             default:
         }
         if (WebIM.config.isWindowSDK) {
