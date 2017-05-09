@@ -43,6 +43,7 @@ var FileMsg = React.createClass({
         var statusClass = this.props.className == 'left' ? 'hide' : '';
         var id = this.props.id;
         var status = this.props.status;
+        var nid = this.props.nid;
         switch(status){
             case 'Undelivered':
                 status = '未送达';
@@ -70,7 +71,7 @@ var FileMsg = React.createClass({
                 <Avatar src={this.props.src} className={this.props.className + ' small'}/>
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
                 <div className="clearfix" style={{minWidth: '280px'}}>
-                    <div className={"webim-msg-delivered " + statusClass} id={id}>
+                    <div className={"webim-msg-delivered " + statusClass} id={id} name={nid}>
                         {status}
                     </div>
                     <div className='webim-msg-value' style={{minWidth: '200px'}}>
@@ -104,7 +105,8 @@ module.exports = function (options, sentByMe) {
         filename: options.filename || '',
         error: options.error,
         errorText: options.errorText,
-        status: options.status || 'Undelivered'
+        status: options.status || 'Undelivered',
+        nid: options.nid || ''
     };
 
     if(options.fileSize){

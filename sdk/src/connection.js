@@ -373,8 +373,13 @@ var _loginCallback = function (status, msg, conn) {
         }, 200);
         var handleMessage = function (msginfo) {
             var delivery = msginfo.getElementsByTagName('delivery');
+            var acked = msginfo.getElementsByTagName('acked');
             if(delivery.length){
                 conn.handleDeliveredMessage(msginfo);
+                return true;
+            }
+            if(acked.length){
+                conn.handleAckedMessage(msginfo);
                 return true;
             }
             var type = _parseMessageType(msginfo);
@@ -670,6 +675,7 @@ connection.prototype.listen = function (options) {
     this.onReceivedMessage = options.onReceivedMessage || _utils.emptyfn;
     this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
     this.onDeliverdMessage = options.onDeliveredMessage  || _utils.emptyfn;
+    this.onReadMessage = options.onReadMessage || _utils.emptyfn;
     this.onOffline = options.onOffline || _utils.emptyfn;
     this.onOnline = options.onOnline || _utils.emptyfn;
     this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
@@ -1522,11 +1528,32 @@ connection.prototype.handleMessage = function (msginfo) {
 connection.prototype.handleDeliveredMessage = function(message){
     var id =  message.id;
     var body = message.getElementsByTagName('body');
-    var mid = body[1].innerHTML;
+    var mid = 0;
+    if(isNaN(body[0].innerHTML))
+        mid = body[1].innerHTML;
+    else
+        mid = body[0].innerHTML;
     var msg = {
         mid: mid
     };
     this.onDeliverdMessage(msg);
+    this.sendReceiptsMessage({
+        id: id
+    });
+};
+
+connection.prototype.handleAckedMessage = function(message){
+    var id =  message.id;
+    var body = message.getElementsByTagName('body');
+    var mid = 0;
+    if(isNaN(body[0].innerHTML))
+        mid = body[1].innerHTML;
+    else
+        mid = body[0].innerHTML;
+    var msg = {
+        mid: mid
+    };
+    this.onReadMessage(msg);
     this.sendReceiptsMessage({
         id: id
     });

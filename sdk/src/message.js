@@ -20,19 +20,34 @@
     }
 
     /*
+     * Read Message
+     */
+    Message.read = function(id){
+        this.id = id;
+        this.type = 'read';
+    };
+
+    Message.read.prototype.set = function(opt){
+        this.body = {
+            ackId: opt.id
+            , to: opt.to
+        }
+    };
+
+    /*
      * deliver message
      */
     Message.delivery = function (id) {
         this.id = id;
         this.type = 'delivery';
-    },
+    };
 
     Message.delivery.prototype.set = function (opt) {
         this.body = {
             bodyId: opt.id
             , to: opt.to
         }
-    }
+    };
 
     /*
      * text message
@@ -229,6 +244,7 @@
         var me = this;
 
         var _send = function (message) {
+            console.log('ScareCrow: ', message);
 
             message.ext = message.ext || {};
             message.ext.weichat = message.ext.weichat || {};
@@ -260,6 +276,15 @@
                 };
                 dom.up().c('delivery').t(_utils.stringify(delivery));
                 console.log("Tree: ", dom.tree());
+            }
+            if(message.ackId){
+                dom.up().c('body').t(message.ackId);
+                var read = {
+                    xmlns: 'urn:xmpp:receipts'
+                    , id: message.ackId
+                };
+                dom.up().c('acked').t(_utils.stringify(read));
+                console.log('Read Tree: ', dom.tree());
             }
 
             setTimeout(function () {

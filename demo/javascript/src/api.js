@@ -321,12 +321,43 @@ module.exports = {
                 for(var i in Demo.chatRecord[targetId].messages){
                     if(Demo.chatRecord[targetId].messages[i] == undefined)
                         continue;
+                    Demo.api.sendRead(Demo.chatRecord[targetId].messages[i].message);
                     Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
                         Demo.chatRecord[targetId].messages[i].type,
-                        Demo.chatRecord[targetId].messages[i].status);
+                        Demo.chatRecord[targetId].messages[i].status,
+                        i);
                 }
             }
         }
+    },
+
+    sendDelivery: function(message){
+        if(!WebIM.config.delivery)
+            return;
+        // 收到消息时反馈一个已收到
+        var msgId = Demo.conn.getUniqueId();
+        var bodyId = message.id;
+        var msg = new WebIM.message('delivery', msgId);
+        msg.set({
+            id: bodyId
+            , to: message.from
+        });
+        Demo.conn.send(msg.body);
+    },
+
+    sendRead: function(message){
+        if(!WebIM.config.read)
+            return;
+        // 阅读消息时反馈一个已阅读
+        var msgId = Demo.conn.getUniqueId();
+        var bodyId = message.id;
+        var msg = new WebIM.message('read', msgId);
+        msg.set({
+            id: bodyId
+            , to: message.from
+        });
+        Demo.conn.send(msg.body);
+
     },
 
     getBrief: function (data, type) {
@@ -364,7 +395,7 @@ module.exports = {
         return brief;
     },
 
-    appendMsg: function (msg, type, status) {
+    appendMsg: function (msg, type, status, nid) {
         if (!msg) {
             return;
         }
@@ -401,6 +432,7 @@ module.exports = {
             if (targetNode) {
                 switch (type) {
                     case 'txt':
+                        console.log('nid: ', nid);
                         textMsg({
                             wrapper: targetNode,
                             name: name,
@@ -408,7 +440,8 @@ module.exports = {
                             error: msg.error,
                             errorText: msg.errorText,
                             id: msg.id,
-                            status: status
+                            status: status,
+                            nid: nid
                         }, this.sentByMe);
                         break;
                     case 'emoji':
@@ -419,7 +452,8 @@ module.exports = {
                             error: msg.error,
                             errorText: msg.errorText,
                             id: msg.id,
-                            status: status
+                            status: status,
+                            nid: nid
                         }, this.sentByMe);
                         break;
                     case 'img':
@@ -454,7 +488,8 @@ module.exports = {
                                 value: data || msg.url,
                                 error: msg.error,
                                 errorText: msg.errorText,
-                                status: status
+                                status: status,
+                                nid: nid
                             }, this.sentByMe);
                         }
                         break;
@@ -529,7 +564,8 @@ module.exports = {
                                 filename: msg.filename,
                                 error: msg.error,
                                 errorText: msg.errorText,
-                                status: status
+                                status: status,
+                                nid: nid
                             };
                             if (msg.ext) {
                                 option.fileSize = msg.ext.fileSize;

@@ -84,5 +84,12 @@ WebIM.config = {
      * sender, in order to tell the sender the message has delivered.
      * See call back function onReceivedMessage
      */
-    delivery: true
+    delivery: true,
+
+    /**
+     * When a message read, the receiver send an ack message to the
+     * sender, in order to tell the sender the message has been read.
+     * See call back function onReadMessage
+     */
+    read: true
 };

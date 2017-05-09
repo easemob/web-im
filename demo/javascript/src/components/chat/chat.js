@@ -46,7 +46,14 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                me.sendDelivery(message);
+                console.log('onTextMessage: ', message);
+                // 发送已送达回执
+                Demo.api.sendDelivery(message);
+                if(Demo.selected == message.from){
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
+
                 Demo.api.addToChatRecord(message, 'txt');
                 Demo.api.appendMsg(message, 'txt');
             },
@@ -54,7 +61,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                me.sendDelivery(message);
+                Demo.api.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'emoji');
                 Demo.api.appendMsg(message, 'emoji');
             },
@@ -62,7 +69,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                me.sendDelivery(message);
+                Demo.api.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'img');
                 Demo.api.appendMsg(message, 'img');
             },
@@ -77,7 +84,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                me.sendDelivery(message);
+                Demo.api.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'aud');
                 Demo.api.appendMsg(message, 'aud');
             },
@@ -85,7 +92,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                me.sendDelivery(message);
+                Demo.api.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'loc');
                 Demo.api.appendMsg(message, 'loc');
             },
@@ -93,7 +100,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                me.sendDelivery(message);
+                Demo.api.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'file');
                 Demo.api.appendMsg(message, 'file');
             },
@@ -101,7 +108,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                me.sendDelivery(message);
+                Demo.api.sendDelivery(message);
                 Demo.api.addToChatRecord(message, 'video');
                 Demo.api.appendMsg(message, 'video');
             },
@@ -219,6 +226,20 @@ module.exports = React.createClass({
                 }
                 console.log('onDeliveredMessage: ', message);
                 console.log('ChatRecord: ', Demo.chatRecord);
+            },
+            onReadMessage: function(message){
+                console.log("onReadMessage: ", message);
+                var msg = document.getElementsByName(message.mid);
+                if(msg){
+                    if(msg[0])
+                        msg[0].innerHTML = '已读';
+                }
+                // 记录消息的状态
+                for(var targetId in Demo.chatRecord){
+                    if(Demo.chatRecord[targetId].messages[message.mid]){
+                        Demo.chatRecord[targetId].messages[message.mid].status = 'Read';
+                    }
+                }
             }
         });
 
@@ -234,20 +255,6 @@ module.exports = React.createClass({
             contact_loading_show: false,
             window: []
         };
-    },
-
-    sendDelivery: function(message){
-        if(!WebIM.config.delivery)
-            return;
-        // 收到消息时反馈一个已收到
-        var msgId = Demo.conn.getUniqueId();
-        var bodyId = message.id;
-        var msg = new WebIM.message('delivery', msgId);
-        msg.set({
-            id: bodyId
-            , to: message.from
-        });
-        Demo.conn.send(msg.body);
     },
 
     confirmPop: function (options) {
@@ -1018,14 +1025,6 @@ module.exports = React.createClass({
                 Demo.api.appendMsg(option, 'file');
             },
             success: function (id) {
-                // var option = {
-                //     data: url,
-                //     filename: filename,
-                //     from: Demo.user,
-                //     to: Demo.selected
-                // };
-                // Demo.api.addToChatRecord(option, 'file');
-                // Demo.api.appendMsg(option, 'file');
             },
             flashUpload: WebIM.flashUpload
         });
