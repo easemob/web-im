@@ -1521,7 +1521,6 @@ connection.prototype.handleMessage = function (msginfo) {
 
 connection.prototype.handleDeliveredMessage = function(message){
     var id =  message.id;
-    console.log('id: ', message.id);
     var body = message.getElementsByTagName('body');
     var mid = body[1].innerHTML;
     var msg = {
@@ -1535,7 +1534,6 @@ connection.prototype.handleDeliveredMessage = function(message){
 
 connection.prototype.handleReceivedMessage = function (message) {
     try {
-        console.log("handleReceivedMessage: ", message);
         var received = message.getElementsByTagName("received");
         var mid = received[0].getAttribute('mid');
         var body = message.getElementsByTagName("body");

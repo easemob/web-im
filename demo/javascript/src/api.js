@@ -311,6 +311,7 @@ module.exports = {
     },
 
     releaseChatRecord: function (targetId) {
+        console.log('Release chatrecord: ', Demo.chatRecord);
         var targetId = targetId || Demo.selected;
         if (targetId) {
             if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
@@ -441,7 +442,6 @@ module.exports = {
                                     value: data || msg.url,
                                     error: msg.error,
                                     errorText: msg.errorText,
-                                    id: msg.id,
                                     status: status
                                 }, this.sentByMe);
                             }
@@ -452,7 +452,8 @@ module.exports = {
                                 name: name,
                                 value: data || msg.url,
                                 error: msg.error,
-                                errorText: msg.errorText
+                                errorText: msg.errorText,
+                                status: status
                             }, this.sentByMe);
                         }
                         break;

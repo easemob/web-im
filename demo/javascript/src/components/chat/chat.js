@@ -195,7 +195,6 @@ module.exports = React.createClass({
                 Demo.api.updateRoster();
             },
             onReceivedMessage: function(message){
-                // msg.innerHTML = '已送达'
                 var msg = document.getElementById(message.id);
                 if(msg){
                     msg.setAttribute('name', message.mid);
@@ -205,8 +204,6 @@ module.exports = React.createClass({
                     Demo.chatRecord[targetId].messages[message.mid] = msg;
                     delete Demo.chatRecord[targetId].messages[message.id];
                 }
-                console.log('chatRecord: ', Demo.chatRecord);
-                console.log('onReceivedMessage: ', message);
             },
             onDeliveredMessage: function(message){
                 var msg = document.getElementsByName(message.mid);
@@ -803,7 +800,9 @@ module.exports = React.createClass({
             return;
         }
 
-        var msg = new WebIM.message('img', Demo.conn.getUniqueId());
+
+        var uid = Demo.conn.getUniqueId();
+        var msg = new WebIM.message('img', uid);
 
         msg.set({
             apiUrl: Demo.conn.apiUrl,
@@ -824,16 +823,24 @@ module.exports = React.createClass({
             onFileUploadComplete: function (data) {
                 url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.picture.value = null;
-                console.log('data: ', data);
-            },
-            success: function (id) {
                 var option = {
                     data: url,
                     from: Demo.user,
-                    to: Demo.selected
+                    to: Demo.selected,
+                    id: uid
                 };
                 Demo.api.addToChatRecord(option, 'img');
                 Demo.api.appendMsg(option, 'img');
+            },
+            success: function (id) {
+                // var option = {
+                //     data: url,
+                //     from: Demo.user,
+                //     to: Demo.selected,
+                //     id: uid
+                // };
+                // Demo.api.addToChatRecord(option, 'img');
+                // Demo.api.appendMsg(option, 'img');
             },
             flashUpload: WebIM.flashUpload
         });
