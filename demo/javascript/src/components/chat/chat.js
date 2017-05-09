@@ -833,14 +833,6 @@ module.exports = React.createClass({
                 Demo.api.appendMsg(option, 'img');
             },
             success: function (id) {
-                // var option = {
-                //     data: url,
-                //     from: Demo.user,
-                //     to: Demo.selected,
-                //     id: uid
-                // };
-                // Demo.api.addToChatRecord(option, 'img');
-                // Demo.api.appendMsg(option, 'img');
             },
             flashUpload: WebIM.flashUpload
         });
@@ -972,8 +964,9 @@ module.exports = React.createClass({
             });
     },
     fileChange: function () {
-        var me = this, url,
-            msg = new WebIM.message('file', Demo.conn.getUniqueId()),
+        var me = this,
+            uid = Demo.conn.getUniqueId(),
+            msg = new WebIM.message('file', uid),
             chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.file),
             fileSize = WebIM.utils.getFileSize(me.refs.file),
@@ -1011,18 +1004,28 @@ module.exports = React.createClass({
                 Demo.api.appendMsg(option, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                var url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
-            },
-            success: function (id) {
                 var option = {
                     data: url,
                     filename: filename,
                     from: Demo.user,
-                    to: Demo.selected
+                    to: Demo.selected,
+                    id: uid
                 };
+                console.log('FileChange upload completed: ', option);
                 Demo.api.addToChatRecord(option, 'file');
                 Demo.api.appendMsg(option, 'file');
+            },
+            success: function (id) {
+                // var option = {
+                //     data: url,
+                //     filename: filename,
+                //     from: Demo.user,
+                //     to: Demo.selected
+                // };
+                // Demo.api.addToChatRecord(option, 'file');
+                // Demo.api.appendMsg(option, 'file');
             },
             flashUpload: WebIM.flashUpload
         });

@@ -307,6 +307,7 @@ module.exports = {
 
         // Demo.chatRecord[targetId].messages.push({message: msg, type: type, status: status});
         Demo.chatRecord[targetId].messages[id] = {message: msg, type: type, status: status};
+        console.log('File Record: ', Demo.chatRecord[targetId].messages[id]);
 
     },
 
@@ -527,7 +528,8 @@ module.exports = {
                                 value: data || msg.url,
                                 filename: msg.filename,
                                 error: msg.error,
-                                errorText: msg.errorText
+                                errorText: msg.errorText,
+                                status: status
                             };
                             if (msg.ext) {
                                 option.fileSize = msg.ext.fileSize;
