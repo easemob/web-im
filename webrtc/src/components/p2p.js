@@ -61,6 +61,9 @@ var CommonPattern = {
         self.api.onEvJoin = function() {
             self._onEvJoin.apply(self, arguments);
         };
+        self.api.onStreamControl = function() {
+            self._onStreamControl.apply(self, arguments);
+        };
         self.webRtc.onIceCandidate = function () {
             self._onIceCandidate.apply(self, arguments);
         };
@@ -72,6 +75,8 @@ var CommonPattern = {
     _ping: function () {
         var self = this;
 
+        var index = 0;
+
         function ping() {
             var rt = new P2PRouteTo({
                 to: self.callee,
@@ -80,10 +85,15 @@ var CommonPattern = {
 
             self.api.ping(rt, self._sessId, function (from, rtcOptions) {
                 _logger.debug("ping result", rtcOptions);
+
             });
+            // self.api.streamControl(rt, self._sessId, "rtcId", (index++) % 4, function (from, rtcOptions) {
+            //     _logger.debug("streamControl result", rtcOptions);
+            //
+            // });
         }
 
-        self._pingIntervalId = window.setInterval(ping, 59000);
+        self._pingIntervalId = window.setInterval(ping, 50000);
     },
 
     _onPing: function (from, options, rtkey, tsxId, fromSid) {
@@ -142,16 +152,15 @@ var CommonPattern = {
 
         if (options.ans && options.ans == 1) {
             _logger.info("[WebRTC-API] _onAcptC : 104, ans = 1, it is a answer. will onAcceptCall");
-            self.onAcceptCall(from, options);
+            self.onAcceptCall(from, options, options.enableVoice !== false, options.enableVideo !== false);
             self._onAnsC(from, options);
-        }
-        if (!WebIM.WebRTC.supportPRAnswer) {
+        } else if (!WebIM.WebRTC.supportPRAnswer) {
             _logger.info("[WebRTC-API] _onAcptC : not supported pranswer. drop it. will onAcceptCall");
 
             self.setRemoteSDP = false;
             self._handRecvCandsOrSend(from, options);
 
-            self.onAcceptCall(from, options);
+            self.onAcceptCall(from, options, options.enableVoice !== false, options.enableVideo !== false);
         } else {
             _logger.info("[WebRTC-API] _onAcptC : recv pranswer. ");
 
@@ -162,7 +171,7 @@ var CommonPattern = {
                 self.setRemoteSDP = true;
                 self._handRecvCandsOrSend(from, options);
 
-                self.onAcceptCall(from, options);
+                self.onAcceptCall(from, options, options.enableVoice !== false, options.enableVideo !== false);
             }
         }
     },
@@ -171,12 +180,48 @@ var CommonPattern = {
         var self = this;
 
         _logger.debug('_onEvJoin from', fromSid, from);
-        self.onAcceptCall(from, options);
+
+        self.onAcceptCall(from, options, options.enableVoice !== false, options.enableVideo !== false);
     },
 
-    onAcceptCall: function (from, options) {
+    onAcceptCall: function (from, options, enableVoice, enableVideo) {
 
     },
+
+    __onVoiceOrVideo: function(from, options, fromSid){
+        var self = this;
+
+        options.enableVoice === false ? (self.onOtherUserOpenVoice(from, false)) : (self.onOtherUserOpenVoice(from, true));
+        options.enableVideo === false ? (self.onOtherUserOpenVideo(from, false)) : (self.onOtherUserOpenVideo(from, true));
+    },
+
+    /*
+     * { verison : MSYNC_V1, compress_algorimth : 0, command : SYNC, payload : { meta : { id : 2326, to : easemob-demo#chatdemoui_xyj002@easemob.com, ns : CONFERENCE, payload : { session_id : xyj0011494320598055, operation : MEDIA_REQUEST, peer_name : xyj001, route_flag : 1, route_key : --X--, content : {"op":400,"callVersion":"2.0.0","sessId":"128542826909667328","rtcId":"Channel1494320598056","tsxId":"1494320622866-6","controlType":0}, control_type : PAUSE_VOICE } } } }
+     * PAUSE_VOICE(0, 0), RESUME_VOICE(1, 1), PAUSE_VIDEO(2, 2), RESUME_VIDEO(3, 3)
+     *
+     */
+    _onStreamControl: function (from, options, rtkey, tsxId, fromSid){
+        var self = this;
+        var controlType = options.controlType;
+
+        controlType === 0 && (self.onOtherUserOpenVoice(from, false));
+        controlType === 1 && (self.onOtherUserOpenVoice(from, true));
+        controlType === 2 && (self.onOtherUserOpenVideo(from, false));
+        controlType === 3 && (self.onOtherUserOpenVideo(from, true));
+
+        self.onStreamControl(from, options, rtkey, tsxId, fromSid);
+    },
+    onStreamControl: function (from, options, rtkey, tsxId, fromSid){
+
+    },
+
+    onOtherUserOpenVoice: function (from, opened){
+        _logger.debug("from open:", opened, " voice .", from)
+    },
+    onOtherUserOpenVideo: function (from, opened){
+        _logger.debug("from open:", opened, " voideo .", from)
+    },
+
 
     _onAnsC: function (from, options) { // answer
         var self = this;
@@ -189,6 +234,9 @@ var CommonPattern = {
 
         self.setRemoteSDP = true;
         self._handRecvCandsOrSend(from, options);
+
+
+        self.__onVoiceOrVideo(from, options);
     },
 
 

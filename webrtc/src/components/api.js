@@ -72,6 +72,7 @@ var _clazz = {
         '303': 'onEvUnpub',
         '304': 'onEvMems',
         '204': 'onEvClose',
+        '400': 'onStreamControl',
         '401': 'onEvJoin',
 
         'onServerError': 'onServerError'
@@ -237,6 +238,36 @@ var _clazz = {
     },
 
     /**
+     * 通知对方 我已经关闭/打开 麦卡，摄像头
+     *
+     * PAUSE_VOICE(0, 0), RESUME_VOICE(1, 1), PAUSE_VIDEO(2, 2), RESUME_VIDEO(3, 3)
+     *
+     *
+     * @param rt
+     * @param sessId
+     * @param rtcId
+     * @param controlType
+     * @param callback
+     */
+    streamControl: function (rt, sessId, rtcId, controlType, callback) {
+        _logger.debug("streamControl ...");
+
+        var self = this;
+
+        var rtcOptions = {
+            data: {
+                op: 400
+            }
+        };
+
+        sessId && (rtcOptions.data.sessId = sessId);
+        rtcId && (rtcOptions.data.rtcId = rtcId);
+        (typeof controlType !== 'undefined' &&  controlType != null ) && (rtcOptions.data.controlType = controlType);
+
+        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+    },
+
+    /**
      * ReqTkt 3
      *
      * @param rt
@@ -364,7 +395,7 @@ var _clazz = {
      * @param cands
      *
      */
-    ansC: function (rt, sessId, rtcId, sdp, cands, callback) {
+    ansC: function (rt, sessId, rtcId, sdp, cands, callback, enableVoice, enableVideo) {
         _logger.debug("ansC ...");
 
         var self = this;
@@ -379,6 +410,14 @@ var _clazz = {
         rtcId && (rtcOptions.data.rtcId = rtcId);
         sdp && (rtcOptions.data.sdp = sdp);
         cands && (rtcOptions.data.cands = cands);
+
+        enableVoice === false && (rtcOptions.data.enableVoice = enableVoice);
+        enableVideo === false && (rtcOptions.data.enableVideo = enableVideo);
+
+
+
+        // rtcOptions.data.enableVoice = false;
+        // rtcOptions.data.enableVideo = false;
 
         self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
     },
@@ -399,7 +438,7 @@ var _clazz = {
      *            1
      *
      */
-    acptC: function (rt, sessId, rtcId, sdp, cands, ans, callback) {
+    acptC: function (rt, sessId, rtcId, sdp, cands, ans, callback, enableVoice, enableVideo) {
         _logger.debug("acptC ...");
 
         var self = this;
@@ -415,6 +454,12 @@ var _clazz = {
         sdp && (rtcOptions.data.sdp = sdp);
         cands && (rtcOptions.data.cands = cands);
         ans && (rtcOptions.data.ans = ans);
+
+        enableVoice === false && (rtcOptions.data.enableVoice = enableVoice);
+        enableVideo === false && (rtcOptions.data.enableVideo = enableVideo);
+
+        // rtcOptions.data.enableVoice = false;
+        // rtcOptions.data.enableVideo = false;
 
         self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
     },
