@@ -7,9 +7,11 @@ var TextMsg = React.createClass({
 
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
-        var statusClass = this.props.className == 'left' ? 'hide' : '';
+        var statusClass = this.props.className == 'left'
+            || Demo.selectedCate !== 'friends' ? 'hide' : '';
         var id = this.props.id;
         var status = this.props.status;
+        var nid = this.props.nid;
         switch(status){
             case 'Undelivered':
                 status = '未送达';
@@ -17,6 +19,8 @@ var TextMsg = React.createClass({
             case 'Delivered':
                 status = '已送达';
                 break;
+            case 'Read':
+                status = '已读';
             default:
 
         }
@@ -26,7 +30,7 @@ var TextMsg = React.createClass({
                 <Avatar src={this.props.src} className={this.props.className + ' small'}/>
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
                 <div className="clearfix">
-                    <div className={"webim-msg-delivered " + statusClass} id={id}>
+                    <div className={"webim-msg-delivered " + statusClass} id={id} name={nid}>
                         {status}
                     </div>
                     <div className='webim-msg-value'>
@@ -51,7 +55,8 @@ module.exports = function (options, sentByMe) {
         error: options.error,
         errorText: options.errorText,
         id: options.id || '',
-        status: options.status || 'Undelivered'
+        status: options.status || 'Undelivered',
+        nid: options.nid || ''
     };
 
     var node = document.createElement('div');
