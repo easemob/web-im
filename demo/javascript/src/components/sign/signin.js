@@ -86,7 +86,6 @@ module.exports = React.createClass({
             appKey: this.props.config.appkey,
             success: function (token) {
                 var encryptUsername = WebIM.utils.encrypt(username);
-                var encryptAuth = WebIM.utils.encrypt(auth);
                 var token = token.access_token;
                 var url = 'index.html?username=' + encryptUsername;
                 WebIM.utils.setCookie('webim_' + encryptUsername, token, 1);
@@ -157,22 +156,14 @@ module.exports = React.createClass({
     },
 
     componentWillMount: function () {
-        var pattern = /([^\?|&])\w+=([^&]+)/g;
-        var username, auth, type;
-        if (window.location.search) {
-            var args = window.location.search.match(pattern);
-            if (args.length == 1 && args[0]) {
-                username = args[0].substr(9);
-                auth = WebIM.utils.getCookie()['webim_' + username];
-                type = true;
-            }
-
-            if (username && auth) {
-                username = WebIM.utils.decrypt(username);
-                this.signin(username, auth, type);
-            } else {
-                window.history.pushState({}, 0, 'index.html');
-            }
+        var uri = WebIM.utils.parseUri();
+        var username = uri.username;
+        var auth = WebIM.utils.getCookie()['webim_' + username];
+        if(username && auth){
+            username = WebIM.utils.decrypt(username);
+            this.signin(username, auth, true);
+        }else{
+            window.history.pushState({}, 0, 'index.html');
         }
     },
 

@@ -88,6 +88,9 @@ module.exports = React.createClass({
                         Demo.api.NotifyError('update chatrooms:' + errCode + ' ' + errMessage);
                     });
             } else {
+                var wrapper = document.getElementById('wrapper' + this.props.id);
+                if(wrapper)
+                    wrapper.innerHTML = '';
                 Demo.conn.joinChatRoom({
                     roomId: this.props.id
                 });

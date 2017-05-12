@@ -851,6 +851,22 @@
             };
         },
 
+        parseUri: function(){
+            var pattern = /([^\?|&])\w+=([^&]+)/g;
+            var uri = {};
+            if(window.location.search){
+                var args = window.location.search.match(pattern);
+                for(var i in args){
+                    var str = args[i];
+                    var eq = str.indexOf('=');
+                    var key = str.substr(0, eq);
+                    var value = str.substr(eq+1);
+                    uri[key] = value;
+                }
+            }
+            return uri;
+        },
+
         xmlrequest: _xmlrequest,
 
 

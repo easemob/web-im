@@ -113,7 +113,6 @@ module.exports = function (options, sentByMe) {
 
     if(options.fileSize){
         props.fileSize = options.fileSize;
-        console.log('props.fileSize: ', options.fileSize);
     }
 
     var node = document.createElement('div');

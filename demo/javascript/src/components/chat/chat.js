@@ -16,6 +16,30 @@ module.exports = React.createClass({
     getInitialState: function () {
         var me = this;
 
+        var uri = WebIM.utils.parseUri();
+        var curNode = uri.curNode;
+        var window = [];
+        if(curNode){
+            Demo.selected = curNode;
+            if(Demo.chatState['friends']){
+                while (Demo.chatState['friends'].chatWindow.length) {
+                    Demo.chatState['friends'].chatWindow.pop();
+                }
+            }
+            var props = {
+                sendPicture: this.sendPicture,
+                sendAudio: this.sendAudio,
+                sendFile: this.sendFile,
+                name: curNode,
+                delFriend: me.delContactItem
+            };
+            Demo.chatState['friends'].chatWindow.push(<ChatWindow id={'wrapper' + curNode} key={curNode} {...props}
+                                                    chatType='singleChat'
+                                                    updateNode={this.updateNode} className={''}/>);
+            window = Demo.chatState['friends'].chatWindow;
+        }
+
+
         Demo.conn.listen({
             onUpdateMyRoster: function (options) {
                 me.updateMyRoster(options);
@@ -52,7 +76,6 @@ module.exports = React.createClass({
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
-
                 Demo.api.addToChatRecord(message, 'txt');
                 Demo.api.appendMsg(message, 'txt');
             },
@@ -130,6 +153,7 @@ module.exports = React.createClass({
                 me.handlePresence(message);
             },
             onRoster: function (message) {
+                console.log('ScareCrow update group');
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
@@ -248,12 +272,20 @@ module.exports = React.createClass({
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Read';
                     }
                 }
+            },
+            onCreateGroup: function(respData){
+                Demo.api.NotifySuccess('Group Created, Group id: '+ respData.data.groupid);
+                me.getGroup();
             }
         });
 
+        // if(window.location.search){
+        //     console.log('Search: ', window.location.search);
+        // }
+
         return {
             cur: 'friend',
-            curNode: '',
+            curNode: curNode || '',
             friends: [],
             groups: [],
             chatrooms: [],
@@ -261,7 +293,7 @@ module.exports = React.createClass({
             blacklist: {},
             chatrooms_totalnum: Demo.api.pagesize,
             contact_loading_show: false,
-            window: []
+            window: window
         };
     },
 
@@ -287,6 +319,11 @@ module.exports = React.createClass({
         var rooms = eval('(' + options + ')');
         this.setState({groups: rooms});
     },
+
+    restUpdateGroutList: function () {
+
+    },
+
     friendRequest: function (msg) {
         if (msg && msg.status === '[resp:true]') {
             return;
@@ -551,8 +588,7 @@ module.exports = React.createClass({
     getRoster: function (doNotUpdateGroup) {
         var me = this,
             conn = Demo.conn,
-            friends = [],
-            groups = [];
+            friends = [];
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getRoster"}',
                 function success(str) {
@@ -577,7 +613,7 @@ module.exports = React.createClass({
         } else {
             conn.getRoster({
                 success: function (roster) {
-                    var curroster;
+                    var flag = false;
                     for (var i in roster) {
                         var ros = roster[i];
                         if (ros.subscription === 'both' || ros.subscription === 'from' || ros.subscription === 'to') {
@@ -585,8 +621,15 @@ module.exports = React.createClass({
                             Demo.roster[ros.name] = 1;
                         }
                     }
-                    me.setState({friends: friends});
-
+                    for(var i in friends){
+                        var name = friends[i].name;
+                        if(name == me.state.curNode)
+                            flag = true;
+                    }
+                    if(flag)
+                        me.setState({friends: friends});
+                    else
+                        me.setState({friends: friends, window: []});
                     doNotUpdateGroup || me.getGroup();
                 }
             });
@@ -784,6 +827,9 @@ module.exports = React.createClass({
     },
 
     updateNode: function (cid) {
+        var uri = WebIM.utils.parseUri();
+        var username = uri.username;
+        window.history.pushState({}, 0, 'index.html?username=' + username + '&curNode=' + cid);
         Demo.chatState[Demo.selectedCate].selected = cid;
         this.storeChatWindow();
         this.setChatWindow(true);

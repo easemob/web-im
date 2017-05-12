@@ -262,6 +262,7 @@ module.exports = {
                     Demo.api.NotifyError("logout:" + msg);
                 });
         } else {
+            window.history.pushState({}, 0, 'index.html');
             Demo.conn.close('logout');
             if (type == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
                 Demo.conn.errorType = type;

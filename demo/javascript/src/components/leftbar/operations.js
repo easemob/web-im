@@ -42,6 +42,10 @@ module.exports = React.createClass({
         Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT);
     },
 
+    restUpdateGroups: function(rooms){
+        this.props.restUpdateGroups(rooms);
+    },
+
     render: function () {
         var className = this.state.hide ? ' ' + this.state.hide : '';
         return (

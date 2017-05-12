@@ -679,6 +679,7 @@ connection.prototype.listen = function (options) {
     this.onOffline = options.onOffline || _utils.emptyfn;
     this.onOnline = options.onOnline || _utils.emptyfn;
     this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
+    this.onCreateGroup = options.onCreateGroup || _utils.emptyfn;
     //for WindowSDK start
     this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
     this.onUpdateMyRoster = options.onUpdateMyRoster || _utils.emptyfn;
@@ -2928,6 +2929,23 @@ connection.prototype.createGroup = function (options) {
 
     // createGroupACK
     this.sendCommand(pres.tree());
+};
+// 通过Rest接口创建群组
+connection.prototype.createGroupNew = function (options) {
+    options.success = function(respData){
+        this.onCreateGroup(respData);
+    }.bind(this);
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * shieldGroup 屏蔽群组
+ * @param valueDom
+ * @param v
+ * @private
+ */
+connection.prototype.shieldGroup = function(options){
+    WebIM.utils.ajax(options);
 };
 
 function _setText(valueDom, v) {

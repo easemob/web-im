@@ -98,6 +98,39 @@ module.exports = React.createClass({
         this.update();
     },
 
+    shield: function(){
+        var groupId = this.props.roomId;
+        var appKey = WebIM.config.appkey;
+        var ht = appKey.indexOf('#');
+        var orgName = appKey.substring(0, ht);
+        var appName = appKey.substring(ht+1);
+        groupId = 'notification_ignore_' + groupId;
+        var data = {
+            entities: []
+        };
+        data.entities[0] = {};
+        data.entities[0][groupId] = true;
+        var uri = WebIM.utils.parseUri();
+        var username = uri.username;
+        var token = WebIM.utils.getCookie()['webim_' + username];
+        var options = {
+            type: 'PUT',
+            url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/' + 'users' + '/' + Demo.user,
+            data: JSON.stringify(data),
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            success: function(){
+                console.log('Shield Success!');
+            },
+            error: function(){
+                console.log('Shield Faild!');
+            }
+        };
+        Demo.conn.shieldGroup(options);
+    },
+
     render: function () {
         var actionName = (this.props.admin == 1) ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
         var actionMethod = (this.props.admin == 1) ? this.destroyGroup : this.leaveGroupBySelf;
@@ -132,7 +165,6 @@ module.exports = React.createClass({
                             <i className = 'font smallest'>n</i>
                             <span>{Demo.lan.groupBlacklist}</span>
                         </li>
-                        {/* destroy or leave group */}
                         <li
                             onClick = {actionMethod} >
                             <i className = 'font smallest'>Q</i>
