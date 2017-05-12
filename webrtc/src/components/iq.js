@@ -94,6 +94,9 @@ var _RtcHandler = {
                 self._connectedSid = fromSessionId;
             } else {
                 if (self._connectedSid != fromSessionId) {
+                    _logger.debug("Error recv [op = " + rtcOptions.op + "] [tsxId=" + tsxId + "]. caused by _connectedSid != fromSessionId :",
+                        self._connectedSid, fromSessionId);
+
                     //onInitC
                     if (rtcOptions.op == 102) {
                         var rt = new RouteTo({

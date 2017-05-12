@@ -375,8 +375,14 @@ module.exports = React.createClass({
             },
 
             listener: {
-                onAcceptCall: function (from, options) {
-                    // console.log('onAcceptCall', from, options);
+                onOtherUserOpenVoice: function (from, opened){
+                    console.log("from open:", opened, " voice .", from)
+                },
+                onOtherUserOpenVideo: function (from, opened){
+                    console.log("from open:", opened, " voideo .", from)
+                },
+                onAcceptCall: function (from, options, enableVoice, enableVideo) {
+                    console.log('onAcceptCall', from, options, enableVoice, enableVideo);
                 },
                 onGotRemoteStream: function (stream, streamType) {
                     // console.log('onGotRemoteStream');
