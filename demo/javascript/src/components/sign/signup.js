@@ -63,16 +63,32 @@ module.exports = React.createClass({
             }
         };
         if (WebIM.config.isWindowSDK) {
-            WebIM.doQuery('{"type":"createAccount","id":"' + options.username + '","password":"' + options.password + '"}',
-                function (response) {
-                    options.success();
-                },
-                function (code, msg) {
-                    me.submiting = false;
-                    alert("registerUser:" + code + " - " + msg);
-                });
+            var appDir = "";
+            if(WebIM.config.appDir){
+                appDir = WebIM.config.appDir;
+            }
+            var imIP = "";
+            if(WebIM.config.imIP){
+                imIP = WebIM.config.imIP;
+            }
+            var imPort = "";
+            if(WebIM.config.imPort){
+                imPort = WebIM.config.imPort;
+            }
+            var restIPandPort = "";
+            if(WebIM.config.restIPandPort){
+                restIPandPort = WebIM.config.restIPandPort;
+            }
+            WebIM.doQuery('{"type":"createAccount","id":"' + options.username + '","password":"' + options.password 
+                + '","appDir":"' + appDir + '","appKey":"' + WebIM.config.appkey + '","imIP":"' + imIP + '","imPort":"' + imPort + '","restIPandPort":"' + restIPandPort + '"}', function (response) {
+                options.success();
+            },
+            function (code, msg) {
+                me.submiting = false;
+                alert("registerUser:" + code + " - " + msg);
+            });
         } else {
-            WebIM.utils.registerUser(options);
+            Demo.conn.registerUser(options);
         }
     },
 

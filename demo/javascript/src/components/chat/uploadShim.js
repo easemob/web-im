@@ -67,10 +67,12 @@ module.exports = function (options) {
                     if (code != SWFUpload.UPLOAD_ERROR.FILE_CANCELLED
                         && code != SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED
                         && code != SWFUpload.UPLOAD_ERROR.FILE_VALIDATION_FAILED) {
-                        Demo.api.appendMsg({
+                        var option = {
                             data: Demo.lan.uploadFileFailed,
                             to: Demo.selected
-                        }, 'txt');
+                        };
+                        Demo.api.addToChatRecord(option, 'txt');
+                        Demo.api.appendMsg(option, 'txt');
                     }
                 }
                 , upload_success_handler: function (file, response) {
@@ -84,7 +86,7 @@ module.exports = function (options) {
                         var res = WebIM.utils.parseUploadResponse(response);
                         res = JSON.parse(res);
                         if (file && !file.url && res.entities && res.entities.length > 0) {
-                            file.url = res.uri + '/' + res.entities[0].uuid;
+                            file.url = ( (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? Demo.conn.apiUrl : res.uri) + '/' + res.entities[0].uuid;
                         }
 
                         var msg = new WebIM.message(this.filetype, Demo.conn.getUniqueId());
@@ -100,11 +102,13 @@ module.exports = function (options) {
                             to: Demo.selected,
                             roomType: Demo.selectedCate === 'chatrooms',
                             success: function (id) {
-                                Demo.api.appendMsg({
+                                var option = {
                                     data: file.url,
                                     from: Demo.user,
                                     to: Demo.selected
-                                }, me.filetype);
+                                };
+                                Demo.api.addToChatRecord(option, me.filetype);
+                                Demo.api.appendMsg(option, me.filetype);
                             }
                         };
 

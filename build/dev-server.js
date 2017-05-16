@@ -6,7 +6,7 @@ new WebpackDevServer(webpack(config), {
     publicPath: config.output.publicPath,
     // contentBase: ['./demo', './sdk'],
     hot: true,
-    inline: true,
+    inline: false,
     progress: true,
     compress: true,
     historyApiFallback: true,

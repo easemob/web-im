@@ -1,5 +1,6 @@
 var React = require("react");
 var ReactDOM = require('react-dom');
+var _ = require('underscore');
 
 var componentsNode = document.getElementById('components');
 var dom = document.createElement('div');
@@ -53,38 +54,81 @@ var CreateGroup = React.createClass({
     onSubmit: function () {
         var value = this.refs.input.refs.input.value;
         var info = this.refs.textarea.value;
+        // log('onSubmit', value, info);
         var permission_group = this.state.selectedOption;
         var permission_member = this.state.selectedOption2;
-        var friendsSelected = this.refs.friendList.refs.multiSelected.label();
-        log(value, info, permission_group, permission_member, friendsSelected);
+        var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
+        var friendsValues = this.refs.friendList.refs.multiSelected.value();
+        var self = this;
         if (!value) {
-            Demo.api.NotifyError("群组名不能为空");
+            Demo.api.NotifyError(Demo.lan.groupNameNotEmpty);
             return;
         }
+
+        _.each(friendsValues, function (v, k) {
+            friendsSelected.push(v.text)
+        });
+
+        var styles = ["PUBLIC_JOIN_APPROVAL", "PUBLIC_JOIN_OPEN", "PRIVATE_OWNER_INVITE", "PRIVATE_MEMBER_INVITE"];
+        var option1 = permission_group == "option1" ? 0 : 1;
+        var option2 = permission_member == "option3" ? 0 : 1;
+        var style = styles[option1 * 2 + option2];
+
+        // friendsSelected = '["' + friendsSelected.replace(/, /g, '","') + '"]';
+        // log(style)
         if (WebIM.config.isWindowSDK) {
-            var styles = ["PUBLIC_JOIN_APPROVAL", "PUBLIC_JOIN_OPEN", "PRIVATE_OWNER_INVITE", "PRIVATE_MEMBER_INVITE"];
-            var option1 = permission_group == "option1" ? 0 : 1;
-            var option2 = permission_member == "option3" ? 0 : 1;
-            var style = styles[option1 * 2 + option2];
-
-            friendsSelected = '["' + friendsSelected.replace(/, /g, '","') + '"]';
-
-            WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + friendsSelected + '}',
+            WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + JSON.stringify(friendsSelected) + '}',
                 function (response) {
-                    Demo.api.NotifyError('createGroup successfully');
+                    Demo.api.NotifySuccess('createGroup successfully');
                 },
                 function (code, msg) {
                     Demo.api.NotifyError("onSubmit:" + code);
                 });
         } else {
-
+            Demo.createGroupName = value;
+            var appKey = WebIM.config.appkey;
+            var ht = appKey.indexOf('#');
+            var orgName = appKey.substring(0, ht);
+            var appName = appKey.substring(ht+1);
+            var uri = WebIM.utils.parseUri();
+            var username = uri.username;
+            var token = WebIM.utils.getCookie()['webim_' + username];
+            var pub = false;
+            if(style == 'PUBLIC_JOIN_OPEN'
+                || style == 'PUBLIC_JOIN_APPROVAL')
+                pub = true;
+            var requestData = {
+                groupname: value,
+                desc: info,
+                owner: Demo.user,
+                members: friendsSelected,
+                public: pub
+            };
+            var options = {
+                url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/chatgroups',
+                dataType: 'json',
+                type: 'POST',
+                data: JSON.stringify(requestData),
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                error: function () {
+                    console.log('Create Group Failed!');
+                }
+            };
+            Demo.conn.createGroupNew(options);
             // Demo.conn.createGroup({
-            //     to: value,
-            //     message: Demo.user + Demo.lan.request
+            //     subject: value,
+            //     description: info,
+            //     members: friendsSelected,
+            //     optionsPublic: style == 'PUBLIC_JOIN_OPEN' || style == 'PUBLIC_JOIN_APPROVAL',
+            //     optionsModerate: style != 'PUBLIC_JOIN_OPEN',
+            //     // 是否只允许 会员进入 ??
+            //     optionsMembersOnly: style != 'PUBLIC_JOIN_OPEN',
+            //     optionsAllowInvites: style == 'PRIVATE_MEMBER_INVITE',
             // });
         }
-
-
         this.close();
     },
 
@@ -153,7 +197,8 @@ var CreateGroup = React.createClass({
                     <div>
                         <FridendList ref="friendList" optionData={Demo.roster}/>
                     </div>
-                    <Button text={Demo.lan.add} onClick={this.onSubmit} className='webim-dialog-button'/>
+                    <Button text={Demo.lan.add} onClick={this.onSubmit} className='webim-dialog-button-left'/>
+                    <Button text={Demo.lan.cancel} onClick={this.close} className='webim-dialog-button'/>
                     <span className='font' onClick={this.close}>A</span>
                 </div>
             </div>

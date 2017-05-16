@@ -5,7 +5,7 @@
   z-index: 3;
   position: absolute;
   width: 400px;
-  height: 168px;
+  min-height: 168px;
   top: 20%;
   left: 0;
   right: 0;
@@ -46,6 +46,14 @@
     height: 26px;
   }
 
+  .webim-dialog-button-left {
+    position: absolute;
+    right: 100px;
+    bottom: 2px;
+    width: 80px;
+    height: 26px;
+  }
+
   .webim-subscribe-button {
     width: 60px;
     height: 30px;
@@ -70,9 +78,16 @@
     min-height: 100px;
   }
 
-  &-footer {
+  .webim-dialog-footer {
+    padding: 10px;
     position: relative;
     min-height: 20px;
+    text-align: right;
+
+    .webim-button {
+      position: static;
+      margin-right: 10px;
+    }
   }
 }
 

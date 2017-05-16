@@ -1,5 +1,6 @@
 var React = require("react");
 var ReactDOM = require('react-dom');
+var _ = require('underscore');
 
 var componentsNode = document.getElementById('components');
 var dom = document.createElement('div');
@@ -32,7 +33,7 @@ var FridendList = React.createClass({
                     }
                 },
                 function failure(errCode, errMessage) {
-                    Demo.api.NotifyError("FridendList queryRoomMember:" + errCode);
+                    Demo.api.NotifyError("FridendList queryRoomMember:" + errCode + ' ' + errMessage);
                 });
         } else {
             Demo.conn.queryRoomMember({
@@ -49,7 +50,6 @@ var FridendList = React.createClass({
                         }
 
                         me.setState({value: values, value_old: values_old});
-                        console.log(me.state.value_old);
                     }
                 },
                 error: function (e) {
@@ -92,14 +92,16 @@ var AdminGroupMembers = React.createClass({
 
     onSubmit: function () {
 
-        var value = this.refs.friendList.refs.multiSelected.label();
+        var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
+        var friendsValues = this.refs.friendList.refs.multiSelected.value();
 
-        if (!value) {
-            return;
-        }
-        log("AdminGroupMembers:", value, this.props.roomId);
+        _.each(friendsValues, function (v, k) {
+            friendsSelected.push(v.text)
+        });
+
+        // log("AdminGroupMembers:", value, this.props.roomId);
         var value_old = this.refs.friendList.getValueOld();
-        var value_new = value.split(", ");
+        var value_new = friendsSelected;
         var value_add = [];
         var value_del = [];
         for (var i = 0, l = value_new.length; i < l; i++) {
@@ -112,10 +114,10 @@ var AdminGroupMembers = React.createClass({
                 value_del.push(value_old[i]);
             }
         }
-        console.log('add', value_add);
-        console.log('del', value_del);
+
+
         if (this.props.value == "PRIVATE_MEMBER_INVITE" && value_del.length > 0) {
-            Demo.api.NotifyError("权限不够，不能删除私有群成员");
+            Demo.api.NotifyError(Demo.lan.deletePrivateGroupMember);
             return;
         }
         //TODO:@lhr  value_add 和 value_del 需要分成两个doQuery 处理
@@ -136,6 +138,24 @@ var AdminGroupMembers = React.createClass({
             }
 
         } else {
+            if (value_add.length > 0) {
+                Demo.conn.addGroupMembers({
+                    list: value_add,
+                    roomId: this.props.roomId,
+                    reason: Demo.user + " invite you to join group '" + this.props.name + "'",
+                    success: function (msgInfo) {
+                        var members = value_add.join(', ');
+                        var str = WebIM.utils.sprintf(Demo.lan.inviteGroup, members);
+                        Demo.api.NotifySuccess(str);
+                    }
+                });
+            }
+            if (value_del.length > 0) {
+                Demo.conn.leaveGroup({
+                    list: value_del,
+                    roomId: this.props.roomId
+                })
+            }
         }
         this.close();
     },
@@ -163,9 +183,9 @@ var AdminGroupMembers = React.createClass({
 });
 
 module.exports = {
-    show: function (roomId, settings) {
+    show: function (name, roomId, settings) {
         ReactDOM.render(
-            <AdminGroupMembers onClose={this.close} roomId={roomId} settings={settings}/>,
+            <AdminGroupMembers onClose={this.close} name={name} roomId={roomId} settings={settings}/>,
             dom
         );
     },

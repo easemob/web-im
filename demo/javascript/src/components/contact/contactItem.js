@@ -4,6 +4,7 @@ var _ = require('underscore');
 
 module.exports = React.createClass({
 
+
     getInitialState: function () {
         var me = this;
 
@@ -11,16 +12,16 @@ module.exports = React.createClass({
             msg: '',
             avatar: '',
             countShow: false,
+            // count: count,
+            // display: display
         };
     },
 
-    handleIconCount: function (count) {
-        // TODO
-        var curCate = this.refs['i'];
-        if (!curCate) return;
-        var curCateCount = curCate.getAttribute('count') / 1;
+    handleCurCateIconCount: function (count) {
+        var curCate = document.getElementById(this.props.cate).getElementsByTagName('i')[1];
+        var curCateCount = curCate.getAttribute('data-count') / 1;
         curCateCount -= count;
-        // curCateCount = Math.max(0, curCateCount);
+        curCateCount = Math.max(0, curCateCount);
 
         if (curCateCount > 0) {
             curCate.style.display = 'block';
@@ -28,56 +29,23 @@ module.exports = React.createClass({
             curCateCount = 0;
             curCate.style.display = 'none';
         }
-        // this.setState({
-        //     countShow: curCateCount > 0
-        // })
+        curCate.setAttribute('data-count', curCateCount);
+        Demo.chatState[this.props.cate].count = curCateCount;
     },
 
-    // blacklist
-    addToBlackList: function (e) {
-        event.preventDefault();
-        event.stopPropagation();
 
-        var value = this.props.id;
-        var me = this;
+    update: function () {
+        Demo.chatingCate = Demo.selectedCate;
 
-        //TODO by lwz 重构
-        if (WebIM.config.isWindowSDK) {
-            WebIM.doQuery('{"type":"addToBlackList", "username": "' + value + '"}',
-                function success(str) {
-                    var list = Demo.api.blacklist.add(value);
-                    me.setState({blacklist: list});
-                    Demo.api.updateRoster();
-                },
-                function failure(errCode, errMessage) {
-                    Demo.api.NotifyError('getRoster:' + errCode);
-                });
-        } else {
-            var list = Demo.api.blacklist.add(value);
-            Demo.conn.addToBlackList({
-                list: list,
-                type: 'jid',
-                success: function () {
-                    me.update(me, true);
-                },
-                error: function () {
-                }
-            });
-        }
-    },
-
-    update: function (e, selected) {
         if (this.refs['i']) {
-            var count = this.refs['i'].getAttribute('count') / 1;
-            this.handleIconCount(count);
+            var count = this.refs['i'].getAttribute('data-count') / 1;
+            this.handleCurCateIconCount(count);
 
             this.refs['i'].style.display = 'none';
-            this.refs['i'].setAttribute('count', 0);
+            this.refs['i'].setAttribute('data-count', 0);
+            if(Demo.chatRecord[this.props.id])
+                Demo.chatRecord[this.props.id].count = 0;
             this.refs['i'].innerText = '';
-        }
-
-        if (this.props.id === Demo.selected) {
-            return;
         }
 
         if (Demo.selectedCate !== 'friends' && Demo.selectedCate !== 'strangers') {
@@ -88,15 +56,17 @@ module.exports = React.createClass({
 
         // quit previous chatroom
         if (Demo.currentChatroom) {
-            document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
-            document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+            // document.getElementById('wrapper' + Demo.currentChatroom).innerHTML = '';
+            // document.getElementById(Demo.currentChatroom).querySelector('em').innerHTML = '';
+            // clear this chat room chat record
+            delete Demo.chatRecord[Demo.currentChatroom];
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"quitChatroom","id":"' + Demo.currentChatroom + '"}',
                     function success(str) {
                         //do nothing
                     },
                     function failure(errCode, errMessage) {
-                        Demo.api.NotifyError('update currentChatroom:' + errCode);
+                        Demo.api.NotifyError('update currentChatroom:' + errCode + ' ' + errMessage);
                     });
             } else {
                 Demo.conn.quitChatRoom({
@@ -108,10 +78,6 @@ module.exports = React.createClass({
         }
 
         if (Demo.selectedCate === 'chatrooms') {
-
-            document.getElementById('wrapper' + this.props.id).innerHTML = '';
-            document.getElementById(this.props.id).querySelector('em').innerHTML = '';
-
             // join chatroom
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"joinChatroom","id":"' + this.props.id + '"}',
@@ -119,21 +85,37 @@ module.exports = React.createClass({
                         Demo.currentChatroom = str;
                     },
                     function failure(errCode, errMessage) {
-                        Demo.api.NotifyError('update chatrooms:' + errCode);
+                        Demo.api.NotifyError('update chatrooms:' + errCode + ' ' + errMessage);
                     });
             } else {
+                var wrapper = document.getElementById('wrapper' + this.props.id);
+                if(wrapper)
+                    wrapper.innerHTML = '';
                 Demo.conn.joinChatRoom({
                     roomId: this.props.id
                 });
+                Demo.currentChatroom = this.props.id;
+            }
+        } else {
+            //get the last 10 messages
+            if (WebIM.config.isWindowSDK) {
+                console.log(document.getElementById(this.props.id).querySelector('em').innerHTML);
+                if (document.getElementById(this.props.id).querySelector('em').innerHTML == '') {
+                    WebIM.doQuery('{"type":"loadMoreMessages","id":"' + this.props.id + '","chatType":"singlechat"}', function success(str) {
+                        //Add seperator
+                    }, function failure(errCode, errMessage) {
+                        Demo.api.NotifyError('getRoster:' + errCode);
+                        errFn();
+                    });
+                }
+
+            } else {
+
             }
         }
 
-        if (selected) {
-            Demo.selected = null;
-        }
         this.props.update(Demo.selected);
-    }
-    ,
+    },
 
     render: function () {
         var className = this.props.cur === this.props.id ? ' selected' : '';
@@ -143,14 +125,12 @@ module.exports = React.createClass({
                 <Avatar src={this.props.src}/>
                 <div className="webim-contact-info">
                     <span className="webim-contact-username">{this.props.username}</span>
-                    <div className="webim-contact-handlers">
-                        <i ref="i2" title="Add to blacklist" className="webim-leftbar-icon font smaller"
-                           style={{display: Demo.selectedCate != 'friends' ? 'none' : ''}}
-                           onClick={this.addToBlackList}>A</i>
-                    </div>
                 </div>
-                <em></em>
-                <i ref='i' className='webim-msg-prompt' style={{display: 'none'}}></i>
+                <em dangerouslySetInnerHTML={{__html: this.props.brief}}></em>
+                <i ref='i' className='webim-msg-prompt'
+                    data-count='0'
+                    style={{display: 'none'}}
+                    dangerouslySetInnerHTML={{__html: '0'}}></i>
             </div>
         );
     }

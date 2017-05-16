@@ -39,7 +39,7 @@
             uuid[14] = '4';
 
             // Fill in random data. At i==19 set the high bits of clock sequence
-			// as
+            // as
             // per rfc4122, sec. 4.1.5
             for (i = 0; i < 36; i++) {
                 if (!uuid[i]) {
@@ -53,7 +53,7 @@
     };
 
     // A more performant, but slightly bulkier, RFC4122v4 solution. We boost
-	// performance
+    // performance
     // by minimizing calls to random()
     Math.uuidFast = function () {
         var chars = CHARS, uuid = new Array(36), rnd = 0, r;
@@ -84,14 +84,15 @@
 
 /**
  * Util
- * 
+ *
  * @constructor
  */
-function Util() {}
+function Util() {
+}
 
 /**
  * Function Logger
- * 
+ *
  * @constructor
  */
 var Logger = function () {
@@ -122,7 +123,10 @@ var Logger = function () {
 
         var text = arguments[1];
 
-        console.log.apply(console, arguments);
+        if (WebIM && WebIM.config && WebIM.config.isDebug) {
+            console.log.apply(console, arguments);
+        }
+
     };
 
     function callLog(level, args) {
@@ -166,7 +170,7 @@ Util.prototype.logger = new Logger();
 
 /**
  * parse json
- * 
+ *
  * @param jsonString
  */
 Util.prototype.parseJSON = function (jsonString) {
@@ -175,7 +179,7 @@ Util.prototype.parseJSON = function (jsonString) {
 
 /**
  * json to string
- * 
+ *
  * @type {Util.stringifyJSON}
  */
 var stringifyJSON = Util.prototype.stringifyJSON = function (jsonObj) {
@@ -195,7 +199,7 @@ var ObjectFunctionString = fnToString.call(Object);
 
 /**
  * check object type
- * 
+ *
  * @type {Util.isPlainObject}
  */
 var isPlainObject = Util.prototype.isPlainObject = function (obj) {
@@ -224,7 +228,7 @@ Util.prototype.isArray = Array.isArray;
 
 /**
  * check empty object
- * 
+ *
  * @param obj
  * @returns {boolean}
  */
@@ -245,7 +249,7 @@ Util.prototype.type = function (obj) {
 
 /**
  * Function extend
- * 
+ *
  * @returns {*|{}}
  */
 Util.prototype.extend = function () {
@@ -321,7 +325,7 @@ Util.prototype.extend = function () {
 
 /**
  * get local cache
- * 
+ *
  * @memberOf tool
  * @name hasLocalData
  * @param key{string}
@@ -348,13 +352,13 @@ Util.prototype.toggleClass = function (node, className) {
 
 /**
  * set cookie
- * 
+ *
  * @param name{String}
- * 
+ *
  * @param value{String}
- * 
+ *
  * @param hour{Number}
- * 
+ *
  * @return void
  */
 Util.prototype.setCookie = function (name, value, hour) {
@@ -365,7 +369,7 @@ Util.prototype.setCookie = function (name, value, hour) {
 
 /**
  * read cookie
- * 
+ *
  * @param name(String)
  *            cookie key
  * @return cookie value
@@ -382,11 +386,11 @@ Util.prototype.getCookie = function (name) {
 
 /**
  * query parameter from url
- * 
+ *
  * @name parseURL
  * @memberof C.Tools
  * @param {string}
- * 
+ *
  * @return {string}
  * @type function
  * @public

@@ -1,3 +1,4 @@
+[TOC]
 #4 disconnect cases
 ##1.client logout
 this is a user active behavior,should not NotifyError.

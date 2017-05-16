@@ -1,6 +1,6 @@
 {
   "name": "webim",
-  "version": "1.2.0",
+  "version": "1.4.10",
   "description": "",
   "main": "index.js",
   "devDependencies": {
@@ -33,14 +33,14 @@
     "react-transform-hmr": "^1.0.4",
     "sass-loader": "*",
     "style-loader": "*",
-    "webpack": "*",
+    "webpack": "1.13.2",
     "webpack-dev-server": "^1.16.2"
   },
   "scripts": {
     "test": "gulp test",
     "start": "node server.js",
-    "dev": "cross-env NODE_ENV=development node build/dev-server.js",
-    "prod": "webpack --config build/webpack.prod.js"
+    "dev": "cross-env NODE_ENV=develop node build/dev-server.js",
+    "prod": "cross-env NODE_ENV=production webpack --config build/webpack.prod.js"
   },
   "repository": {
     "type": "git",
@@ -50,6 +50,7 @@
   "license": "ISC",
   "dependencies": {
     "antd": "^2.1.0",
+    "easemob-websdk": "^1.4.6",
     "underscore": "^1.8.3"
   }
 }

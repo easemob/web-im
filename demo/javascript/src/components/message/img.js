@@ -32,23 +32,48 @@ var ImgMsg = React.createClass({
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
         var imgs = [];
+        var statusClass = this.props.className == 'left' ? 'hide' : '';
+        var id = this.props.id;
+        var status = this.props.status;
+        var nid = this.props.nid;
+        switch(status){
+            case 'Undelivered':
+                status = '未送达';
+                break;
+            case 'Delivered':
+                status = '已送达';
+                break;
+            case 'Read':
+                status = '已读';
+            default:
+
+        }
         if (WebIM.config.isWindowSDK) {
             if (this.state.value == "") {
-                imgs.push(<span>{Demo.lan.image}{Demo.lan.FileLoading}</span>);
+                imgs.push(<span key='0'>{Demo.lan.image}{Demo.lan.FileLoading}</span>);
             } else {
-                imgs.push(<img ref='img' className='webim-msg-img' src={this.state.value} onClick={this.show}/>);
+                imgs.push(<img key='0' ref='img' className='webim-msg-img' src={this.state.value}
+                               onClick={this.show}/>);
             }
 
         } else {
-            imgs.push(<img ref='img' className='webim-msg-img' src={this.props.value} onClick={this.show}/>);
+            imgs.push(<img key='0' ref='img' className='webim-msg-img' src={this.props.value} onClick={this.show}/>);
         }
         return (
             <div className={'rel ' + this.props.className}>
                 <Avatar src={this.props.src} className={this.props.className + ' small'}/>
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
-                <div className='webim-msg-value webim-img-msg-wrapper'>
-                    <span className='webim-msg-icon font'>{icon}</span>
-                    <div id={'file_' + this.props.id}>{imgs}</div>
+                <div className="clearfix">
+                    <div className={"webim-msg-delivered " + statusClass} id={id} name={nid}>
+                        {status}
+                    </div>
+                    <div className='webim-msg-value webim-img-msg-wrapper'>
+                        <span className='webim-msg-icon font'>{icon}</span>
+                        <div id={'file_' + this.props.id}>{imgs}</div>
+                    </div>
+                    <div className={"webim-msg-error " + (this.props.error ? ' ' : 'hide')}>
+                        <span className='webim-file-icon font smaller red' title={this.props.errorText}>k</span>
+                    </div>
                 </div>
             </div>
         );
@@ -61,7 +86,12 @@ module.exports = function (options, sentByMe) {
         src: options.avatar || 'demo/images/default.png',
         time: options.time || new Date().toLocaleString(),
         value: options.value || '',
-        name: options.name
+        name: options.name,
+        error: options.error,
+        errorText: options.errorText,
+        id: options.id || '',
+        status: options.status || 'Undelivered',
+        nid: options.nid || ''
     };
 
     var node = document.createElement('div');

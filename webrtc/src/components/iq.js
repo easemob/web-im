@@ -4,7 +4,8 @@
 
 var _util = require('./utils');
 var _logger = _util.logger;
-
+var API = require('./api');
+var RouteTo = API.RouteTo;
 
 var CONFERENCE_XMLNS = "urn:xmpp:media-conference";
 
@@ -14,32 +15,31 @@ var _RtcHandler = {
 
     imConnection: null,
 
+    _connectedSid: '',
+
+
     init: function () {
         var self = this;
 
         var _conn = self.imConnection;
 
-        var handleConferenceIQ;
+        _conn.registerConfrIQHandler = function(){
+            var handleConferenceIQ = function (msginfo) {
+                try {
+                    self.handleRtcMessage(msginfo);
+                } catch (error) {
+                    _logger.error(error.stack || error);
+                    throw error;
+                }
 
-        _conn.addHandler = function (handler, ns, name, type, id, from, options) {
-            if (typeof handleConferenceIQ !== 'function') {
+                return true;
+            };
 
-                handleConferenceIQ = function (msginfo) {
-                    try {
-                        self.handleRtcMessage(msginfo);
-                    } catch (error) {
-                        _logger.error(error.stack || error);
-                        throw error;
-                    }
+            _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "set");
+            _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "get");
 
-                    return true;
-                };
-                _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "set", null, null);
-                _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "get", null, null);
-            }
-
-            _conn.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
-        };
+            _logger.warn("Conference iq handler. registered.");
+        }
     },
 
     handleRtcMessage: function (msginfo) {
@@ -51,6 +51,7 @@ var _RtcHandler = {
         // remove resource
         from.lastIndexOf("/") >= 0 && (from = from.substring(0, from.lastIndexOf("/")));
 
+
         var rtkey = msginfo.getElementsByTagName('rtkey')[0].innerHTML;
 
         var fromSessionId = msginfo.getElementsByTagName('sid')[0].innerHTML;
@@ -59,15 +60,84 @@ var _RtcHandler = {
 
         var contentTags = msginfo.getElementsByTagName('content');
 
+
+
         var contentString = contentTags[0].innerHTML;
 
         var content = _util.parseJSON(contentString);
 
         var rtcOptions = content;
+
+        var streamType = msginfo.getElementsByTagName('stream_type')[0].innerHTML; //VOICE, VIDEO
+
+        if(streamType == ""){
+            streamType = "VOICE";
+        }
+
+        rtcOptions.streamType = streamType;
+
+        if(rtcOptions.op == 102){
+            self.singalStreamType = streamType;
+        }
+
+
         var tsxId = content.tsxId;
 
-        _logger.debug("Recv [op = " + rtcOptions.op + "]\r\n json :", msginfo);
+        self.ctx = content.ctx;
 
+        _logger.debug("Recv [op = " + rtcOptions.op + "] [tsxId=" + tsxId + "]\r\n json :", msginfo);
+
+
+        //if a->b already, c->a/b should be termiated with 'busy' reason
+        if (from.indexOf("@") >= 0) {
+            if (self._connectedSid == '' && rtcOptions.op == 102) {
+                self._connectedSid = fromSessionId;
+            } else {
+                if (self._connectedSid != fromSessionId) {
+                    _logger.debug("Error recv [op = " + rtcOptions.op + "] [tsxId=" + tsxId + "]. caused by _connectedSid != fromSessionId :",
+                        self._connectedSid, fromSessionId);
+
+                    //onInitC
+                    if (rtcOptions.op == 102) {
+                        var rt = new RouteTo({
+                            to: from,
+                            rtKey: rtkey,
+                            sid: fromSessionId,
+                            success: function (result) {
+                                _logger.debug("iq to server success", result);
+                            },
+                            fail: function (error) {
+                                _logger.debug("iq to server error", error);
+                                self.onError(error);
+                            }
+                        });
+
+                        var options = {
+                            data: {
+                                op: 107,
+                                sessId: rtcOptions.sessId,
+                                rtcId: rtcOptions.rtcId,
+                                reason: 'busy'
+
+                            },
+                            reason: 'busy'
+                        };
+                        self.sendRtcMessage(rt, options)
+                    }
+                    return;
+                }
+            }
+        }
+
+        //onTermC
+        if (rtcOptions.op == 107) {
+            self._connectedSid = '';
+            self._fromSessionID = {};
+
+            var reasonObj = msginfo.getElementsByTagName('reason');
+            //var endReason = msginfo.getElementsByTagName('reason')[0].innerHTML;
+            reasonObj && reasonObj.length > 0 && (rtcOptions.reason = reasonObj[0].innerHTML);
+        }
 
         if (rtcOptions.sdp) {
             if (typeof rtcOptions.sdp === 'string') {
@@ -175,10 +245,10 @@ var _RtcHandler = {
 
     /**
      * rt: { id: , to: , rtKey: , rtflag: , sid: , tsxId: , type: , }
-     * 
+     *
      * rtcOptions: { data : { op : 'reqP2P', video : 1, audio : 1, peer :
      * curChatUserId, //appKey + "_" + curChatUserId + "@" + this.domain, } }
-     * 
+     *
      */
     sendRtcMessage: function (rt, options, callback) {
         var self = this;
@@ -189,8 +259,16 @@ var _RtcHandler = {
 
         var to = rt.to || _conn.domain;
 
-        var sid = rt.sid || (self._fromSessionID && self._fromSessionID[to]) || _conn.getUniqueId("CONFR_");
+        var sid = rt.sid || self._fromSessionID && self._fromSessionID[to];
+        //sid = sid || ((self._fromSessionID || (self._fromSessionID = {}))[to] = _conn.getUniqueId("CONFR_"));
+        sid = sid || _conn.getUniqueId("CONFR_");
+        (self._fromSessionID || (self._fromSessionID = {}))[to] = sid;
 
+        if (to.indexOf("@") >= 0) {
+            if (self._connectedSid == '' && options.data.op == 102) {
+                self._connectedSid = sid;
+            }
+        }
         var rtKey = rt.rtKey || rt.rtkey;
         // rtKey && delete rt.rtKey;
         rtKey || (rtKey = "");
@@ -202,7 +280,14 @@ var _RtcHandler = {
         options.data || (options.data = {});
         options.data.tsxId = tsxId;
 
+        self.ctx && (options.data.ctx = self.ctx);
         self.convertRtcOptions(options);
+
+        var streamType = options.streamType || self.singalStreamType || "VIDEO"; // "VIDEO"; //VOICE, VIDEO
+        if (options.data.op == 102) {
+            self.singalStreamType = streamType;
+        }
+
 
         var id = rt.id || _conn.getUniqueId("CONFR_");
         var iq = $iq({
@@ -215,10 +300,14 @@ var _RtcHandler = {
             xmlns: CONFERENCE_XMLNS
         }).c("MediaReqExt").c('rtkey').t(rtKey)
             .up().c('rtflag').t(rtflag)
+            .up().c('stream_type').t(streamType)
             .up().c('sid').t(sid)
             .up().c('content').t(_util.stringifyJSON(options.data));
 
-        _logger.debug("Send IQ [op = " + options.data.op + "] : \r\n", iq.tree());
+        if (options.data.op == 107 && options.reason) {
+            iq.up().c('reason').t(options.reason);
+        }
+        _logger.debug("Send [op = " + options.data.op + "] : \r\n", iq.tree());
 
 
         callback && (
@@ -231,7 +320,7 @@ var _RtcHandler = {
                 rt.success(result);
             } || function (result) {
                 _logger.debug("send result. op:" + options.data.op + ".", result);
-            }
+            };
 
         var errFn = function (ele) {
                 rt.fail(ele);
@@ -240,10 +329,16 @@ var _RtcHandler = {
             };
 
         _conn.context.stropheConn.sendIQ(iq.tree(), completeFn, errFn);
+
+        //onTermC
+        if (options.data.op == 107 && self._connectedSid) {
+            if (!rt.sid || self._connectedSid == rt.sid) {
+                self._connectedSid = '';
+                self._fromSessionID = {};
+            }
+        }
     }
 };
-
-
 
 
 var RTCIQHandler = function (initConfigs) {
