@@ -67,6 +67,7 @@ module.exports = React.createClass({
                 // Demo.api.logout();
             },
             onTextMessage: function (message) {
+                console.log('Message: ', message);
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
@@ -385,10 +386,11 @@ module.exports = React.createClass({
                     console.log('onAcceptCall', from, options, enableVoice, enableVideo);
                 },
                 onGotRemoteStream: function (stream, streamType) {
-                    // console.log('onGotRemoteStream');
+                    console.log('onGotRemoteStream');
                     me.channel.setRemote(stream, streamType);
                 },
                 onGotLocalStream: function (stream, streamType) {
+                    console.log('onGotLocalStream ', 'Stream Type: ', streamType);
                     me.channel.setLocal(stream, streamType);
                 },
                 onRinging: function (caller, streamType) {
@@ -399,6 +401,7 @@ module.exports = React.createClass({
                     //"ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
                     //"decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
                     // TODO reason undefine if reason is busy
+                    console.log('onTermCall');
                     if (reason && (reason == 'busy' || reason == 'BUSY')) {
                         Demo.api.NotifyError('Target is busy. Try it later.');
                     }
@@ -421,6 +424,7 @@ module.exports = React.createClass({
                     me.channel.close();
                 },
                 onIceConnectionStateChange: function (iceState) {
+                    console.log('onIceConnectionStateChange');
                     // checking
                     // connected completed
                     // disconnected failed
@@ -1072,6 +1076,7 @@ module.exports = React.createClass({
             },
             onFileUploadComplete: function (data) {
                 var url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                // var uir = (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
                 var option = {
                     data: url,
@@ -1081,6 +1086,7 @@ module.exports = React.createClass({
                     id: uid
                 };
                 console.log('FileChange upload completed: ', option);
+                console.log('Data: ', data);
                 Demo.api.addToChatRecord(option, 'file');
                 Demo.api.appendMsg(option, 'file');
             },

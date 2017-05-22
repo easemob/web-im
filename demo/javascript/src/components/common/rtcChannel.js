@@ -67,7 +67,6 @@ var Channel = React.createClass({
     },
 
     setStream: function (props) {
-
         this.refs.remoteVideo.srcObject = props.remoteStream;
         this.refs.localVideo.srcObject = props.localStream;
     },

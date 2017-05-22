@@ -9,12 +9,10 @@
     <script src="../webrtc/dist/webrtc-1.4.10.js"></script>
 </head>
 <body>
-
 <h2>Text Box</h2>
 <div>
     <input type="text" id="text">
 </div>
-
 <h2>Private</h2>
 <div>
     <button id="register">Register</button>
@@ -72,6 +70,7 @@
     <button id="rtCall">Call</button>
     <button id="rtAcceptCall">AcceptCall</button>
     <button id="rtEndCall">EndCall</button>
+    <button id="rtAudioCall">AudioCall</button>
     <div>
         <video id="video" style="border: 1px solid red" autoplay>
 
@@ -239,15 +238,15 @@
             onAcceptCall: function (from, options) {
                 console.log('onAcceptCall::', 'from: ', from, 'options: ', options);
             },
-            onGotRemoteStream: function (stream) {
-                console.log('onGotRemoteStream::', 'stream: ', stream);
+            onGotRemoteStream: function (stream, streamType) {
+                console.log('onGotRemoteStream::', 'stream: ', stream, 'streamType: ', streamType);
                 var video = document.getElementById('video');
-                video.src = window.URL.createObjectURL(stream);
+                video.srcObject = stream;
             },
-            onGotLocalStream: function (stream) {
-                console.log('onGotLocalStream::', 'stream:', stream);
+            onGotLocalStream: function (stream, streamType) {
+                console.log('onGotLocalStream::', 'stream:', stream, 'streamType: ', streamType);
                 var video = document.getElementById('localVideo');
-                video.src = window.URL.createObjectURL(stream);
+                video.srcObject = stream;
             },
             onRinging: function (caller) {
                 console.log('onRinging::', 'caller:', caller);
@@ -301,7 +300,7 @@
         var msg = new WebIM.message('txt', id);
         msg.set({
             msg: 'scarecrow',                       // 消息内容
-            to: 'wk17',                          // 接收消息对象
+            to: 'zzf2',                          // 接收消息对象
             roomType: false,
             success: function (id, serverMsgId) {
                 console.log("send private text Success");
@@ -720,7 +719,7 @@
      */
     // 视频呼叫对方
     var call = function () {
-        rtcCall.caller = 'mengyuanyuan';
+        rtcCall.caller = 'wenke123';
         rtcCall.makeVideoCall('asdfghj');
     };
     // 关掉/拒绝视频
@@ -731,6 +730,13 @@
     var acceptCall = function () {
         rtcCall.acceptCall();
     }
+
+    // 语音呼叫对方
+    var audioCall = function(){
+        console.log('Audio Call');
+        rtcCall.caller = 'wenke123';
+        rtcCall.makeVoiceCall('asdfghj');
+    };
 
     //
     var logout = function () {
@@ -795,6 +801,7 @@
         document.getElementById('rtCall').onclick = call;
         document.getElementById('rtEndCall').onclick = endCall;
         document.getElementById('rtAcceptCall').onclick = acceptCall;
+        document.getElementById('rtAudioCall').onclick = audioCall;
 
         document.getElementById('logout').onclick = logout;
         document.getElementById('reConn').onclick = reConn;
@@ -819,7 +826,7 @@
                                 console.log("Error");
                             },
                             onFileUploadComplete: function (data) {
-                                console.log("Complete");
+                                console.log("Complete", data);
                             },
                             success: function (id) {
                                 console.log("Success");
@@ -833,15 +840,13 @@
 
         options = {
             apiUrl: WebIM.config.apiURL,
-            user: "wenke",
-            pwd: "123456",
+            user: "zzf3",
+            pwd: "z",
             appKey: WebIM.config.appkey
         };
-
         conn.open(options);
-
-
     };
 </script>
 </body>
 </html>
+

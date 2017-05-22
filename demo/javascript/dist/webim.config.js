@@ -11,14 +11,17 @@ WebIM.config = {
      * XMPP server
      */
     xmppURL: 'im-api.easemob.com',
+    // xmppURL: 'im-api-vip6.easemob.com',
     /*
      * Backend REST API URL
      */
+    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1-vip6.easemob.com',
     apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
     /*
      * Application AppKey
      */
     appkey: 'easemob-demo#chatdemoui',
+    // appkey: '1144170504178734#lrfq',
 
     //appDir: 'EasemobDemo_sandbox',
     //imIP: '120.26.12.158',
@@ -62,7 +65,7 @@ WebIM.config = {
      */
     autoReconnectNumMax: 2,
     /**
-     * the interval secons between each atuo reconnectting.
+     * the interval seconds between each auto reconnectting.
      * works only if autoReconnectMaxNum >= 2.
      */
     autoReconnectInterval: 2,

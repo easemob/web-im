@@ -140,6 +140,15 @@ module.exports = React.createClass({
     sendFile: function () {
         this.props.sendFile(this.props.chatType);
     },
+    clear: function(){
+          var user = Demo.selected;
+          var chatDom = document.getElementById('wrapper' + user);
+          chatDom.innerHTML = "";
+          var itemDom = document.getElementById(user);
+          itemDom.querySelector('em').innerHTML = '';
+          if(Demo.chatRecord[user])
+            delete Demo.chatRecord[user];
+    },
     render: function () {
 
         var showEmoji = this.state.showEmoji ? '' : ' hide',
@@ -161,6 +170,8 @@ module.exports = React.createClass({
             roomMember.push(<span key={keyValue++} className='webim-audio-icon font smaller'
                                   onClick={this.callVoice}>z</span>);
         }
+        roomMember.push(<span key={keyValue++} className='webim-file-icon font smaller'
+                              onClick={this.clear}>T</span>);
         return (
             <div className='webim-send-wrapper'>
                 <div className='webim-chatwindow-options'>
