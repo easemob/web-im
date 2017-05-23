@@ -20,7 +20,8 @@ module.exports = React.createClass({
 
     getGroupInfo: function (cb_type) {
         //only group window
-        if (this.props.chatType == 'groupChat') {
+        if (this.props.chatType == 'groupChat'
+            || this.props.chatType == 'chatRoom') {
             var me = this;
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"groupSpecification","id":"' + me.props.roomId + '"}',
@@ -49,6 +50,7 @@ module.exports = React.createClass({
                 Demo.conn.queryRoomInfo({
                     roomId: me.props.roomId,
                     success: function (settings, members, fields) {
+                        console.log(settings, members, fields);
                         if (members && members.length > 0) {
                             var jid = members[0].jid;
                             var username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
@@ -168,7 +170,7 @@ module.exports = React.createClass({
 
     // hide when blur close
     handleOnBlur: function () {
-        // this.setState({memberShowStatus: false});
+        this.setState({memberShowStatus: false});
     },
 
     render: function () {
