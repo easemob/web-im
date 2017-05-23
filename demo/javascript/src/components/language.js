@@ -81,6 +81,7 @@ exports.English = {
     inviteGroup: 'You invited %s to this group',
     createGroupSuc: 'Group %s is successfully created',
     logoutSuc: 'You are off line!',
+    onMuted: 'You were muted in this group',
     last: ''
 };
 
@@ -169,5 +170,6 @@ exports.Chinese = {
     inviteGroup: '您邀请了%s进群',
     createGroupSuc: '已成功创建群组%s',
     logoutSuc: '您已下线',
+    onMuted: '您已被禁言',
     last: ''
 };

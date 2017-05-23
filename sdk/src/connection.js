@@ -327,15 +327,41 @@ var _login = function (options, conn) {
 };
 
 var _parseMessageType = function (msginfo) {
-    var msgtype = 'normal';
-    var receiveinfo = msginfo.getElementsByTagName('received');
-    if (receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
+    var receiveinfo = msginfo.getElementsByTagName('received'),
+        inviteinfo = msginfo.getElementsByTagName('invite'),
+        deliveryinfo = msginfo.getElementsByTagName('delivery'),
+        acked = msginfo.getElementsByTagName('acked'),
+        error = msginfo.getElementsByTagName('error'),
+        msgtype = 'normal';
+    if(receiveinfo && receiveinfo.length > 0
+        &&
+        receiveinfo[0].namespaceURI === 'urn:xmpp:receipts'){
+
         msgtype = 'received';
-    } else {
-        var inviteinfo = msginfo.getElementsByTagName('invite');
-        if (inviteinfo && inviteinfo.length > 0) {
-            msgtype = 'invite';
+
+    }else if(inviteinfo && inviteinfo.length > 0){
+
+        msgtype = 'invite';
+
+    }else if(deliveryinfo && deliveryinfo.length > 0){
+
+        msgtype = 'delivery';           // 消息送达
+
+    }else if(acked && acked.length){
+
+        msgtype = 'acked';              // 消息已读
+
+    }else if(error && error.length){
+
+        var errorItem = error[0],
+            userMuted = errorItem.getElementsByTagName('user-muted');
+
+        if(userMuted && userMuted.length){
+
+            msgtype = 'userMuted';
+
         }
+
     }
     return msgtype;
 };
@@ -372,26 +398,26 @@ var _loginCallback = function (status, msg, conn) {
             conn.handelSendQueue();
         }, 200);
         var handleMessage = function (msginfo) {
-            var delivery = msginfo.getElementsByTagName('delivery');
-            var acked = msginfo.getElementsByTagName('acked');
-            if(delivery.length){
-                conn.handleDeliveredMessage(msginfo);
-                return true;
-            }
-            if(acked.length){
-                conn.handleAckedMessage(msginfo);
-                return true;
-            }
             var type = _parseMessageType(msginfo);
-            if ('received' === type) {
-                conn.handleReceivedMessage(msginfo);
-                return true;
-            } else if ('invite' === type) {
-                conn.handleInviteMessage(msginfo);
-                return true;
-            } else {
-                conn.handleMessage(msginfo);
-                return true;
+            switch (type){
+                case "received":
+                    conn.handleReceivedMessage(msginfo);
+                    return true;
+                case "invite":
+                    conn.handleInviteMessage(msginfo);
+                    return true;
+                case "delivery":
+                    conn.handleDeliveredMessage(msginfo);
+                    return true;
+                case "acked":
+                    conn.handleAckedMessage(msginfo);
+                    return true;
+                case "userMuted":
+                    conn.handleMutedMessage(msginfo);
+                    return true;
+                default:
+                    conn.handleMessage(msginfo);
+                    return true;
             }
         };
         var handlePresence = function (msginfo) {
@@ -676,6 +702,7 @@ connection.prototype.listen = function (options) {
     this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
     this.onDeliverdMessage = options.onDeliveredMessage  || _utils.emptyfn;
     this.onReadMessage = options.onReadMessage || _utils.emptyfn;
+    this.onMutedMessage = options.onMutedMessage || _utils.emptyfn;
     this.onOffline = options.onOffline || _utils.emptyfn;
     this.onOnline = options.onOnline || _utils.emptyfn;
     this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
@@ -1633,6 +1660,13 @@ connection.prototype.handleInviteMessage = function (message) {
         from: form,
         roomid: roomid,
         reason: reasonMsg
+    });
+};
+
+connection.prototype.handleMutedMessage = function (message) {
+    var id = message.id;
+    this.onMutedMessage({
+        mid: id
     });
 };
 

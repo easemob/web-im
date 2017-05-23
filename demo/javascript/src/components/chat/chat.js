@@ -231,7 +231,6 @@ module.exports = React.createClass({
             },
             // used for blacklist
             onBlacklistUpdate: function (list) {
-                // log('onBlacklistUpdate', list);
                 Demo.api.blacklist.parse(list);
                 me.setState({blacklist: list});
                 // TODO 增量更新
@@ -274,15 +273,24 @@ module.exports = React.createClass({
                     }
                 }
             },
-            onCreateGroup: function(respData){
-                Demo.api.NotifySuccess('Group Created, Group id: '+ respData.data.groupid);
+            onCreateGroup: function(message){
+                Demo.api.NotifySuccess('Group Created, Group id: '+ message.data.groupid);
                 me.getGroup();
+            },
+            onMutedMessage: function(message){
+                // 如果被禁言，删除本条消息并弹出提示
+                var msg = document.getElementsByName(message.mid);
+                if(msg){
+                    delete Demo.chatRecord[Demo.selected].messages[message.mid];
+                    var _parentElement = document.getElementById('wrapper' + Demo.selected),
+                        msgItem = msg[0].parentNode.parentNode.parentNode;
+                    if(_parentElement){
+                        _parentElement.removeChild(msgItem);
+                    }
+                }
+                Demo.api.NotifySuccess(Demo.lan.onMuted);
             }
         });
-
-        // if(window.location.search){
-        //     console.log('Search: ', window.location.search);
-        // }
 
         return {
             cur: 'friend',
