@@ -231,51 +231,51 @@ module.exports = React.createClass({
             },
             // used for blacklist
             onBlacklistUpdate: function (list) {
-                log('onBlacklistUpdate', list);
+                // log('onBlacklistUpdate', list);
                 Demo.api.blacklist.parse(list);
                 me.setState({blacklist: list});
                 // TODO 增量更新
                 Demo.api.updateRoster();
             },
-            onReceivedMessage: function (message) {
+            onReceivedMessage: function(message){
                 var msg = document.getElementById(message.id);
-                if (msg) {
+                if(msg){
                     msg.setAttribute('name', message.mid);
                 }
-                for (var targetId in Demo.chatRecord) {
+                for(var targetId in Demo.chatRecord){
                     var msg = Demo.chatRecord[targetId].messages[message.id];
                     Demo.chatRecord[targetId].messages[message.mid] = msg;
                     delete Demo.chatRecord[targetId].messages[message.id];
                 }
             },
-            onDeliveredMessage: function (message) {
+            onDeliveredMessage: function(message){
                 var msg = document.getElementsByName(message.mid);
-                if (msg) {
-                    if (msg[0])
+                if(msg){
+                    if(msg[0])
                         msg[0].innerHTML = '已送达';
                 }
                 // 记录消息的状态
-                for (var targetId in Demo.chatRecord) {
-                    if (Demo.chatRecord[targetId].messages[message.mid]) {
+                for(var targetId in Demo.chatRecord){
+                    if(Demo.chatRecord[targetId].messages[message.mid]){
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
                     }
                 }
             },
-            onReadMessage: function (message) {
+            onReadMessage: function(message){
                 var msg = document.getElementsByName(message.mid);
-                if (msg) {
-                    if (msg[0])
+                if(msg){
+                    if(msg[0])
                         msg[0].innerHTML = '已读';
                 }
                 // 记录消息的状态
-                for (var targetId in Demo.chatRecord) {
-                    if (Demo.chatRecord[targetId].messages[message.mid]) {
+                for(var targetId in Demo.chatRecord){
+                    if(Demo.chatRecord[targetId].messages[message.mid]){
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Read';
                     }
                 }
             },
-            onCreateGroup: function (respData) {
-                Demo.api.NotifySuccess('Group Created, Group id: ' + respData.data.groupid);
+            onCreateGroup: function(respData){
+                Demo.api.NotifySuccess('Group Created, Group id: '+ respData.data.groupid);
                 me.getGroup();
             }
         });
@@ -596,7 +596,6 @@ module.exports = React.createClass({
         var me = this,
             conn = Demo.conn,
             friends = [];
-        console.log(WebIM.config)
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getRoster"}',
                 function success(str) {
@@ -619,10 +618,8 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('getRoster:' + errCode + ' ' + errMessage);
                 });
         } else {
-            console.log('getroster')
             conn.getRoster({
                 success: function (roster) {
-                    console.log(roster)
                     var flag = false;
                     for (var i in roster) {
                         var ros = roster[i];
@@ -711,7 +708,6 @@ module.exports = React.createClass({
                         }
                     }
                     states.contact_loading_show = false;
-                    // debugger
                     me.setState(states);
                 },
                 error: function (e) {

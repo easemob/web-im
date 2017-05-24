@@ -4,6 +4,11 @@ import {shallow, render, mount} from 'enzyme'
 import jasmineEnzyme from 'jasmine-enzyme';
 
 // test
+window.history.rawpushState = window.history.pushState;
+window.history.pushState = function (a, b, url) {
+    url = url.replace('index.', 'debug.');
+    window.history.rawpushState(a, b, url);
+};
 
 let log = console.log.bind(console)
 

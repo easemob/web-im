@@ -1,6 +1,7 @@
 var path = require('path')
 var webpack = require('karma-webpack');
 var webpackConfig = require('./build/webpack.dev.js');
+var FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 
 // Webpack/Karma:  webpack依赖，karma不依赖 reason?
 // delete webpackConfig.resolve.alias['react/lib']
@@ -31,7 +32,9 @@ webpackConfig.externals = {
 }
 
 //  Karma : 不支持 CommonsChunkPlugin
-webpackConfig.plugins = []
+webpackConfig.plugins = [
+    new FriendlyErrorsWebpackPlugin(),
+]
 
 // webpackConfig.devtool = 'inline-sourcemap'
 webpackConfig.devtool = 'cheap-module-source-map'
@@ -162,6 +165,6 @@ module.exports = function (config) {
 
         //  webpack 相关支持
         webpack: webpackConfig,
-        webpackMiddleware: {noInfo: true}
+        webpackMiddleware: {noInfo: true, quiet: true}
     });
 }

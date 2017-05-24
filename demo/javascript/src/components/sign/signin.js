@@ -87,16 +87,12 @@ module.exports = React.createClass({
             success: function (token) {
                 var encryptUsername = WebIM.utils.encrypt(username);
                 var token = token.access_token;
-                // var url = 'index.html?username=' + encryptUsername;
-                // console.log(location.pathname)
-                var url = 'debug.html?username=' + encryptUsername;
+                var url = 'index.html?username=' + encryptUsername;
                 WebIM.utils.setCookie('webim_' + encryptUsername, token, 1);
                 window.history.pushState({}, 0, url);
-                // window.location.reload()
-                // window.location.href = url
             },
             error: function () {
-                // window.history.pushState({}, 0, 'index.html');
+                window.history.pushState({}, 0, 'index.html');
             }
         };
 
@@ -118,19 +114,19 @@ module.exports = React.createClass({
 
         if (WebIM.config.isWindowSDK) {
             var me = this;
-            if (!WebIM.config.appDir) {
-                WebIM.config.appDir = "";
-            }
-            if (!WebIM.config.imIP) {
-                WebIM.config.imIP = "";
-            }
-            if (!WebIM.config.imPort) {
-                WebIM.config.imPort = "";
-            }
-            if (!WebIM.config.restIPandPort) {
-                WebIM.config.restIPandPort = "";
-            }
-            WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd
+                if(!WebIM.config.appDir){
+                    WebIM.config.appDir = "";
+                }
+                if(!WebIM.config.imIP){
+                    WebIM.config.imIP = "";
+                }
+                if(!WebIM.config.imPort){
+                    WebIM.config.imPort = "";
+                }
+                if(!WebIM.config.restIPandPort){
+                    WebIM.config.restIPandPort = "";
+                }
+                WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd 
                 + '","appDir":"' + WebIM.config.appDir + '","appKey":"' + WebIM.config.appkey + '","imIP":"' + WebIM.config.imIP + '","imPort":"' + WebIM.config.imPort + '","restIPandPort":"' + WebIM.config.restIPandPort + '"}', function (response) {
                     Demo.conn.onOpened();
                 },

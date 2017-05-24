@@ -18,7 +18,6 @@ module.exports = React.createClass({
     },
 
     update: function (state) {
-        console.log('update', state)
         this.setState({
             signIn: state.signIn,
             signUp: state.signUp,

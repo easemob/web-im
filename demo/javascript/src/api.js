@@ -245,7 +245,6 @@ module.exports = {
                 props = null;
                 break;
         }
-        console.log('render', node, props)
         if (props) {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout} {...props} />, this.node);
         } else {
