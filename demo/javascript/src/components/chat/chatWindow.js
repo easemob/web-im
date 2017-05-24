@@ -53,7 +53,7 @@ module.exports = React.createClass({
                         console.log(settings, members, fields);
                         if (members && members.length > 0) {
                             var jid = members[0].jid;
-                            var username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+                            var username = jid.substr(0, jid.lastIndexOf("@"));
                             var admin = 0;
                             if (members[0].affiliation == 'owner' && username == Demo.user) {
                                 admin = 1;
