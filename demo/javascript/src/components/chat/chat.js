@@ -19,9 +19,9 @@ module.exports = React.createClass({
         var uri = WebIM.utils.parseUri();
         var curNode = uri.curNode;
         var window = [];
-        if(curNode){
+        if (curNode) {
             Demo.selected = curNode;
-            if(Demo.chatState['friends']){
+            if (Demo.chatState['friends']) {
                 while (Demo.chatState['friends'].chatWindow.length) {
                     Demo.chatState['friends'].chatWindow.pop();
                 }
@@ -34,8 +34,8 @@ module.exports = React.createClass({
                 delFriend: me.delContactItem
             };
             Demo.chatState['friends'].chatWindow.push(<ChatWindow id={'wrapper' + curNode} key={curNode} {...props}
-                                                    chatType='singleChat'
-                                                    updateNode={this.updateNode} className={''}/>);
+                                                                  chatType='singleChat'
+                                                                  updateNode={this.updateNode} className={''}/>);
             window = Demo.chatState['friends'].chatWindow;
         }
 
@@ -57,6 +57,7 @@ module.exports = React.createClass({
                     chat: true,
                     loadingStatus: 'hide'
                 });
+
                 // blacklist and it's callback call updateRoster
                 me.getBlacklist();
                 me.getGroup();
@@ -72,7 +73,7 @@ module.exports = React.createClass({
                 }
                 // 发送已送达回执
                 Demo.api.sendDelivery(message);
-                if(Demo.selected == message.from){
+                if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
@@ -84,7 +85,7 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 Demo.api.sendDelivery(message);
-                if(Demo.selected == message.from){
+                if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
@@ -96,7 +97,7 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 Demo.api.sendDelivery(message);
-                if(Demo.selected == message.from){
+                if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
@@ -131,7 +132,7 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 Demo.api.sendDelivery(message);
-                if(Demo.selected == message.from){
+                if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
@@ -230,51 +231,51 @@ module.exports = React.createClass({
             },
             // used for blacklist
             onBlacklistUpdate: function (list) {
-                // log('onBlacklistUpdate', list);
+                log('onBlacklistUpdate', list);
                 Demo.api.blacklist.parse(list);
                 me.setState({blacklist: list});
                 // TODO 增量更新
                 Demo.api.updateRoster();
             },
-            onReceivedMessage: function(message){
+            onReceivedMessage: function (message) {
                 var msg = document.getElementById(message.id);
-                if(msg){
+                if (msg) {
                     msg.setAttribute('name', message.mid);
                 }
-                for(var targetId in Demo.chatRecord){
+                for (var targetId in Demo.chatRecord) {
                     var msg = Demo.chatRecord[targetId].messages[message.id];
                     Demo.chatRecord[targetId].messages[message.mid] = msg;
                     delete Demo.chatRecord[targetId].messages[message.id];
                 }
             },
-            onDeliveredMessage: function(message){
+            onDeliveredMessage: function (message) {
                 var msg = document.getElementsByName(message.mid);
-                if(msg){
-                    if(msg[0])
+                if (msg) {
+                    if (msg[0])
                         msg[0].innerHTML = '已送达';
                 }
                 // 记录消息的状态
-                for(var targetId in Demo.chatRecord){
-                    if(Demo.chatRecord[targetId].messages[message.mid]){
+                for (var targetId in Demo.chatRecord) {
+                    if (Demo.chatRecord[targetId].messages[message.mid]) {
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
                     }
                 }
             },
-            onReadMessage: function(message){
+            onReadMessage: function (message) {
                 var msg = document.getElementsByName(message.mid);
-                if(msg){
-                    if(msg[0])
+                if (msg) {
+                    if (msg[0])
                         msg[0].innerHTML = '已读';
                 }
                 // 记录消息的状态
-                for(var targetId in Demo.chatRecord){
-                    if(Demo.chatRecord[targetId].messages[message.mid]){
+                for (var targetId in Demo.chatRecord) {
+                    if (Demo.chatRecord[targetId].messages[message.mid]) {
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Read';
                     }
                 }
             },
-            onCreateGroup: function(respData){
-                Demo.api.NotifySuccess('Group Created, Group id: '+ respData.data.groupid);
+            onCreateGroup: function (respData) {
+                Demo.api.NotifySuccess('Group Created, Group id: ' + respData.data.groupid);
                 me.getGroup();
             }
         });
@@ -375,10 +376,10 @@ module.exports = React.createClass({
             },
 
             listener: {
-                onOtherUserOpenVoice: function (from, opened){
+                onOtherUserOpenVoice: function (from, opened) {
                     console.log("from open:", opened, " voice .", from)
                 },
-                onOtherUserOpenVideo: function (from, opened){
+                onOtherUserOpenVideo: function (from, opened) {
                     console.log("from open:", opened, " voideo .", from)
                 },
                 onAcceptCall: function (from, options, enableVoice, enableVideo) {
@@ -595,6 +596,7 @@ module.exports = React.createClass({
         var me = this,
             conn = Demo.conn,
             friends = [];
+        console.log(WebIM.config)
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"getRoster"}',
                 function success(str) {
@@ -617,8 +619,10 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('getRoster:' + errCode + ' ' + errMessage);
                 });
         } else {
+            console.log('getroster')
             conn.getRoster({
                 success: function (roster) {
+                    console.log(roster)
                     var flag = false;
                     for (var i in roster) {
                         var ros = roster[i];
@@ -627,12 +631,12 @@ module.exports = React.createClass({
                             Demo.roster[ros.name] = 1;
                         }
                     }
-                    for(var i in friends){
+                    for (var i in friends) {
                         var name = friends[i].name;
-                        if(name == me.state.curNode)
+                        if (name == me.state.curNode)
                             flag = true;
                     }
-                    if(flag)
+                    if (flag)
                         me.setState({friends: friends});
                     else
                         me.setState({friends: friends, window: []});
@@ -707,6 +711,7 @@ module.exports = React.createClass({
                         }
                     }
                     states.contact_loading_show = false;
+                    // debugger
                     me.setState(states);
                 },
                 error: function (e) {
