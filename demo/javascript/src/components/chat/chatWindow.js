@@ -50,7 +50,6 @@ module.exports = React.createClass({
                 Demo.conn.queryRoomInfo({
                     roomId: me.props.roomId,
                     success: function (settings, members, fields) {
-                        console.log(settings, members, fields);
                         if (members && members.length > 0) {
                             var jid = members[0].jid;
                             var username = jid.substr(0, jid.lastIndexOf("@"));
@@ -187,7 +186,7 @@ module.exports = React.createClass({
 
         for (var i = 0, l = this.state.members.length; i < l; i++) {
             var jid = this.state.members[i].jid,
-                username = jid.substring(jid.indexOf('_') + 1).split('@')[0],
+                username = jid.substr(0, jid.lastIndexOf("@")),
                 affiliation = this.state.members[i].affiliation;
 
 
