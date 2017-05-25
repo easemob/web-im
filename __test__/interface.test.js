@@ -22,11 +22,12 @@ require('../demo/javascript/dist/webim.config.js');
 
 describe('webim-test', () => {
 
-    it('test1: restAPI', done => {
+    it('test1: apiURL-rest', done => {
 
+        let username = 'liuwz'
+        let password = '1'
 
-        log(WebIM.config)
-        log(WebIM.config.apiURL)
+        log('WebIM.config:', WebIM.config)
 
         var devInfos = WebIM.config.appkey.split('#');
 
@@ -34,13 +35,11 @@ describe('webim-test', () => {
         var orgName = devInfos[0];
         var appName = devInfos[1];
 
-        let username = 'wenke'
-        let pass = '123456'
 
         var loginJson = {
             grant_type: 'password',
-            username: 'wenke',
-            password: '123456',
+            username: username,
+            password: password,
             timestamp: new Date()
         }
 
@@ -66,4 +65,10 @@ describe('webim-test', () => {
         });
 
     })
+
+    it('test1: xmppURL-IM 2.0', done => {
+        expect(1).toBe(1)
+        done()
+    })
+
 });
