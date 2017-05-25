@@ -69,8 +69,8 @@
     "easemob-websdk": "^1.4.6",
     "es6-promise": "^4.1.0",
     "react": "0.14",
-    "react-addons-test-utils": "0.14.6",
-    "react-dom": "0.14",
+    "react-addons-test-utils": "0.14.8",
+    "react-dom": "0.14.9",
     "underscore": "^1.8.3"
   }
 }

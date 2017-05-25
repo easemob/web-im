@@ -83,7 +83,7 @@ module.exports = function (config) {
             // './demo/javascript/dist/swfupload/swfupload.min.js',
             // './demo/javascript/dist/demo-1.4.10.js',
             '__test__/setup.js',
-            '__test__/*.test.js'
+            '__test__/interface.test.js'
         ],
         proxies: {
             "/demo/": "/base/demo/",
@@ -100,8 +100,8 @@ module.exports = function (config) {
             'karma-coverage-istanbul-reporter'
         ],
         // 测试使用的浏览器 Chrome
-        browsers: ['Chrome'],
-        // browsers: ['PhantomJS'],
+        // browsers: ['Chrome'],
+        browsers: ['PhantomJS'],
         // 预编译操作，类似webpack的entry
         preprocessors: {
             '__test__/setup.js': ['webpack'],
@@ -112,56 +112,66 @@ module.exports = function (config) {
         // reporters: ['spec', 'coverage-istanbul'],
         reporters: ['spec'],
 
-        coverageReporter: {
-            dir: 'build/reports/coverage',
-            reporters: [
-                {type: 'html', subdir: 'report-html'},
-                {type: 'lcov', subdir: 'report-lcov'},
-                {type: 'cobertura', subdir: '.', file: 'cobertura.txt'}
-            ],
-        },
+        // specReporter: {
+        //     maxLogLines: 5,             // limit number of lines logged per test
+        //     suppressErrorSummary: true, // do not print error summary
+        //     suppressFailed: false,      // do not print information about failed tests
+        //     suppressPassed: false,      // do not print information about passed tests
+        //     suppressSkipped: true,      // do not print information about skipped tests
+        //     showSpecTiming: false,      // print the time elapsed for each spec
+        //     failFast: false              // test would finish with error when a first fail occurs.
+        // },
 
-        coverageIstanbulReporter: {
-            // reports can be any that are listed here: https://github.com/istanbuljs/istanbul-reports/tree/590e6b0089f67b723a1fdf57bc7ccc080ff189d7/lib
-            reports: ['html', 'lcovonly', 'text-summary'],
-
-            // base output directory. If you include %browser% in the path it will be replaced with the karma browser name
-            dir: path.join(__dirname, 'coverage'),
-
-            // if using webpack and pre-loaders, work around webpack breaking the source path
-            fixWebpackSourcePaths: true,
-
-            // stop istanbul outputting messages like `File [${filename}] ignored, nothing could be mapped`
-            skipFilesWithNoCoverage: true,
-
-            // Most reporters accept additional config options. You can pass these through the `report-config` option
-            'report-config': {
-
-                // all options available at: https://github.com/istanbuljs/istanbul-reports/blob/590e6b0089f67b723a1fdf57bc7ccc080ff189d7/lib/html/index.js#L135-L137
-                html: {
-                    // outputs the report in ./coverage/html
-                    subdir: 'html'
-                }
-
-            },
-
-            // enforce percentage thresholds
-            // anything under these percentages will cause karma to fail with an exit code of 1 if not running in watch mode
-            thresholds: {
-                global: { // thresholds for all files
-                    statements: 70,
-                    lines: 70,
-                    branches: 70,
-                    functions: 70
-                },
-                // each: { // thresholds per file
-                //     statements: 10,
-                //     lines: 10,
-                //     branches: 10,
-                //     functions: 10
-                // }
-            }
-        },
+        // coverageReporter: {
+        //     dir: 'build/reports/coverage',
+        //     reporters: [
+        //         {type: 'html', subdir: 'report-html'},
+        //         {type: 'lcov', subdir: 'report-lcov'},
+        //         {type: 'cobertura', subdir: '.', file: 'cobertura.txt'}
+        //     ],
+        // },
+        //
+        // coverageIstanbulReporter: {
+        //     // reports can be any that are listed here: https://github.com/istanbuljs/istanbul-reports/tree/590e6b0089f67b723a1fdf57bc7ccc080ff189d7/lib
+        //     reports: ['html', 'lcovonly', 'text-summary'],
+        //
+        //     // base output directory. If you include %browser% in the path it will be replaced with the karma browser name
+        //     dir: path.join(__dirname, 'coverage'),
+        //
+        //     // if using webpack and pre-loaders, work around webpack breaking the source path
+        //     fixWebpackSourcePaths: true,
+        //
+        //     // stop istanbul outputting messages like `File [${filename}] ignored, nothing could be mapped`
+        //     skipFilesWithNoCoverage: true,
+        //
+        //     // Most reporters accept additional config options. You can pass these through the `report-config` option
+        //     'report-config': {
+        //
+        //         // all options available at: https://github.com/istanbuljs/istanbul-reports/blob/590e6b0089f67b723a1fdf57bc7ccc080ff189d7/lib/html/index.js#L135-L137
+        //         html: {
+        //             // outputs the report in ./coverage/html
+        //             subdir: 'html'
+        //         }
+        //
+        //     },
+        //
+        //     // enforce percentage thresholds
+        //     // anything under these percentages will cause karma to fail with an exit code of 1 if not running in watch mode
+        //     thresholds: {
+        //         global: { // thresholds for all files
+        //             statements: 70,
+        //             lines: 70,
+        //             branches: 70,
+        //             functions: 70
+        //         },
+        //         // each: { // thresholds per file
+        //         //     statements: 10,
+        //         //     lines: 10,
+        //         //     branches: 10,
+        //         //     functions: 10
+        //         // }
+        //     }
+        // },
 
         //  webpack 相关支持
         webpack: webpackConfig,
