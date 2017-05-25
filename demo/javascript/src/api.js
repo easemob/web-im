@@ -314,8 +314,8 @@ module.exports = {
             if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
                 if (document.getElementById('wrapper' + targetId))
                     document.getElementById('wrapper' + targetId).innerHTML = '';
-                for(var i in Demo.chatRecord[targetId].messages){
-                    if(Demo.chatRecord[targetId].messages[i] == undefined)
+                for (var i in Demo.chatRecord[targetId].messages) {
+                    if (Demo.chatRecord[targetId].messages[i] == undefined)
                         continue;
                     Demo.api.sendRead(Demo.chatRecord[targetId].messages[i].message);
                     Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
@@ -327,8 +327,8 @@ module.exports = {
         }
     },
 
-    sendDelivery: function(message){
-        if(!WebIM.config.delivery)
+    sendDelivery: function (message) {
+        if (!WebIM.config.delivery)
             return;
         // 收到消息时反馈一个已收到
         var msgId = Demo.conn.getUniqueId();
@@ -341,8 +341,8 @@ module.exports = {
         Demo.conn.send(msg.body);
     },
 
-    sendRead: function(message){
-        if(!WebIM.config.read)
+    sendRead: function (message) {
+        if (!WebIM.config.read)
             return;
         // 阅读消息时反馈一个已阅读
         var msgId = Demo.conn.getUniqueId();

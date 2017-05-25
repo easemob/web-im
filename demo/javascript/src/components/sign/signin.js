@@ -159,11 +159,11 @@ module.exports = React.createClass({
         var uri = WebIM.utils.parseUri();
         var username = uri.username;
         var auth = WebIM.utils.getCookie()['webim_' + username];
-        if(username && auth){
+        if (username && auth) {
             username = WebIM.utils.decrypt(username);
             this.signin(username, auth, true);
-        }else{
-            window.history.pushState({}, 0, 'index.html');
+        } else {
+            window.history.pushState({}, 0, 'debug.html');
         }
     },
 

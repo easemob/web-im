@@ -26,20 +26,20 @@ Demo.api = Api;
 // The messages cache
 /*
 
-Demo.chatRecord = {
-   targetId: {
-        messages: [{
-           msg: 'msg',
-           type: 'type'
-       },
-         {
-         msg: 'msg',
-         type: 'type'
-         }],
-       brief: 'brief'
-   }
-}
-*/
+ Demo.chatRecord = {
+ targetId: {
+ messages: [{
+ msg: 'msg',
+ type: 'type'
+ },
+ {
+ msg: 'msg',
+ type: 'type'
+ }],
+ brief: 'brief'
+ }
+ }
+ */
 
 Demo.chatRecord = {};
 // The max messages count of a dialog
@@ -67,36 +67,36 @@ Demo.chatingCate = '';    // friends|groups|chatrooms|strangers
 Demo.selectedCate = 'friends';   // friends|groups|chatrooms|strangers
 
 Demo.chatState = {
-    friends:{
+    friends: {
         selected: '',
         scroll: 0,
         chatWindow: [],
         count: 0
     },
-    groups:{
+    groups: {
         selected: '',
         scroll: 0,
         chatWindow: [],
         count: 0
     },
-    chatrooms:{
+    chatrooms: {
         selected: '',
         scroll: 0,
         chatWindow: [],
         count: 0
     },
-    strangers:{
+    strangers: {
         selected: '',
         scroll: 0,
         chatWindow: [],
         count: 0
     },
     clear: function (cate) {
-        if(cate) {
+        if (cate) {
             this[cate].selected = '';
             this[cate].scroll = 0;
             this[cate].chatWindow = [];
-        }else{
+        } else {
             this['friends'].selected = '';
             this['friends'].scroll = 0;
             this['friends'].chatWindow = [];

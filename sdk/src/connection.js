@@ -2898,6 +2898,9 @@ connection.prototype.createGroupAsync = function (p) {
             var valueDom = field.getElementsByTagName('value')[0];
             Strophe.info(fieldVar);
             switch (fieldVar) {
+                case 'muc#roomconfig_maxusers':
+                    _setText(valueDom, options.optionsMaxUsers || 200);
+                    break;
                 case 'muc#roomconfig_roomname':
                     _setText(valueDom, options.subject || '');
                     break;
