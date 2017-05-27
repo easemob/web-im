@@ -185,6 +185,7 @@ module.exports = React.createClass({
         };
         */
         // 取消管理员
+        
         /*
         var options = {
             url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/'+ 'chatgroups'
