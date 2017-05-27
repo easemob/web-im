@@ -19,9 +19,9 @@ module.exports = React.createClass({
         var uri = WebIM.utils.parseUri();
         var curNode = uri.curNode;
         var window = [];
-        if(curNode){
+        if (curNode) {
             Demo.selected = curNode;
-            if(Demo.chatState['friends']){
+            if (Demo.chatState['friends']) {
                 while (Demo.chatState['friends'].chatWindow.length) {
                     Demo.chatState['friends'].chatWindow.pop();
                 }
@@ -34,8 +34,8 @@ module.exports = React.createClass({
                 delFriend: me.delContactItem
             };
             Demo.chatState['friends'].chatWindow.push(<ChatWindow id={'wrapper' + curNode} key={curNode} {...props}
-                                                    chatType='singleChat'
-                                                    updateNode={this.updateNode} className={''}/>);
+                                                                  chatType='singleChat'
+                                                                  updateNode={this.updateNode} className={''}/>);
             window = Demo.chatState['friends'].chatWindow;
         }
 
@@ -57,6 +57,7 @@ module.exports = React.createClass({
                     chat: true,
                     loadingStatus: 'hide'
                 });
+
                 // blacklist and it's callback call updateRoster
                 me.getBlacklist();
                 me.getGroup();
@@ -73,7 +74,7 @@ module.exports = React.createClass({
                 }
                 // 发送已送达回执
                 Demo.api.sendDelivery(message);
-                if(Demo.selected == message.from){
+                if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
@@ -85,7 +86,7 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 Demo.api.sendDelivery(message);
-                if(Demo.selected == message.from){
+                if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
@@ -97,7 +98,7 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 Demo.api.sendDelivery(message);
-                if(Demo.selected == message.from){
+                if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
@@ -132,7 +133,7 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 Demo.api.sendDelivery(message);
-                if(Demo.selected == message.from){
+                if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
@@ -384,10 +385,10 @@ module.exports = React.createClass({
             },
 
             listener: {
-                onOtherUserOpenVoice: function (from, opened){
+                onOtherUserOpenVoice: function (from, opened) {
                     console.log("from open:", opened, " voice .", from)
                 },
-                onOtherUserOpenVideo: function (from, opened){
+                onOtherUserOpenVideo: function (from, opened) {
                     console.log("from open:", opened, " voideo .", from)
                 },
                 onAcceptCall: function (from, options, enableVoice, enableVideo) {
@@ -645,12 +646,12 @@ module.exports = React.createClass({
                             Demo.roster[ros.name] = 1;
                         }
                     }
-                    for(var i in friends){
+                    for (var i in friends) {
                         var name = friends[i].name;
-                        if(name == me.state.curNode)
+                        if (name == me.state.curNode)
                             flag = true;
                     }
-                    if(flag)
+                    if (flag)
                         me.setState({friends: friends});
                     else
                         me.setState({friends: friends, window: []});

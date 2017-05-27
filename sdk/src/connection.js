@@ -398,6 +398,16 @@ var _loginCallback = function (status, msg, conn) {
             conn.handelSendQueue();
         }, 200);
         var handleMessage = function (msginfo) {
+            var delivery = msginfo.getElementsByTagName('delivery');
+            var acked = msginfo.getElementsByTagName('acked');
+            if (delivery.length) {
+                conn.handleDeliveredMessage(msginfo);
+                return true;
+            }
+            if (acked.length) {
+                conn.handleAckedMessage(msginfo);
+                return true;
+            }
             var type = _parseMessageType(msginfo);
             switch (type){
                 case "received":
@@ -700,7 +710,7 @@ connection.prototype.listen = function (options) {
     this.onError = options.onError || _utils.emptyfn;
     this.onReceivedMessage = options.onReceivedMessage || _utils.emptyfn;
     this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
-    this.onDeliverdMessage = options.onDeliveredMessage  || _utils.emptyfn;
+    this.onDeliverdMessage = options.onDeliveredMessage || _utils.emptyfn;
     this.onReadMessage = options.onReadMessage || _utils.emptyfn;
     this.onMutedMessage = options.onMutedMessage || _utils.emptyfn;
     this.onOffline = options.onOffline || _utils.emptyfn;
@@ -1367,7 +1377,6 @@ connection.prototype.handleMessage = function (msginfo) {
     var id = msginfo.getAttribute('id') || '';
 
 
-
     // cache ack into sendQueue first , handelSendQueue will do the send thing with the speed of  5/s
     this.cacheReceiptsMessage({
         id: id
@@ -1595,11 +1604,11 @@ connection.prototype.handleMessage = function (msginfo) {
     }
 };
 
-connection.prototype.handleDeliveredMessage = function(message){
-    var id =  message.id;
+connection.prototype.handleDeliveredMessage = function (message) {
+    var id = message.id;
     var body = message.getElementsByTagName('body');
     var mid = 0;
-    if(isNaN(body[0].innerHTML))
+    if (isNaN(body[0].innerHTML))
         mid = body[1].innerHTML;
     else
         mid = body[0].innerHTML;
@@ -1612,11 +1621,11 @@ connection.prototype.handleDeliveredMessage = function(message){
     });
 };
 
-connection.prototype.handleAckedMessage = function(message){
-    var id =  message.id;
+connection.prototype.handleAckedMessage = function (message) {
+    var id = message.id;
     var body = message.getElementsByTagName('body');
     var mid = 0;
-    if(isNaN(body[0].innerHTML))
+    if (isNaN(body[0].innerHTML))
         mid = body[1].innerHTML;
     else
         mid = body[0].innerHTML;
@@ -1724,10 +1733,16 @@ connection.prototype.sendCommand = function (dom, id) {
 };
 
 connection.prototype.getUniqueId = function (prefix) {
+    // fix: too frequently msg sending will make same id
+    if (this.autoIncrement) {
+        this.autoIncrement++
+    } else {
+        this.autoIncrement = 1
+    }
     var cdate = new Date();
     var offdate = new Date(2010, 1, 1);
     var offset = cdate.getTime() - offdate.getTime();
-    var hexd = parseInt(offset).toString(16);
+    var hexd = parseFloat(offset).toString(16) + this.autoIncrement;
 
     if (typeof prefix === 'string' || typeof prefix === 'number') {
         return prefix + '_' + hexd;
@@ -2925,6 +2940,9 @@ connection.prototype.createGroupAsync = function (p) {
             var valueDom = field.getElementsByTagName('value')[0];
             Strophe.info(fieldVar);
             switch (fieldVar) {
+                case 'muc#roomconfig_maxusers':
+                    _setText(valueDom, options.optionsMaxUsers || 200);
+                    break;
                 case 'muc#roomconfig_roomname':
                     _setText(valueDom, options.subject || '');
                     break;
@@ -3008,7 +3026,7 @@ connection.prototype.createGroup = function (options) {
 };
 // 通过Rest接口创建群组
 connection.prototype.createGroupNew = function (options) {
-    options.success = function(respData){
+    options.success = function (respData) {
         this.onCreateGroup(respData);
     }.bind(this);
     WebIM.utils.ajax(options);
@@ -3020,7 +3038,7 @@ connection.prototype.createGroupNew = function (options) {
  * @param v
  * @private
  */
-connection.prototype.shieldGroup = function(options){
+connection.prototype.shieldGroup = function (options) {
     WebIM.utils.ajax(options);
 };
 
