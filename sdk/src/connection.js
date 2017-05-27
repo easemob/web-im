@@ -1138,6 +1138,9 @@ connection.prototype.handlePresence = function (msginfo) {
     var fromUser = _parseNameFromJidFn(from);
     var toUser = _parseNameFromJidFn(to);
     var isCreate = false;
+    var isMemberJoin = false;
+    var isDecline = false;
+    var isApply = false;
     var info = {
         from: fromUser,
         to: toUser,
@@ -1204,25 +1207,51 @@ connection.prototype.handlePresence = function (msginfo) {
                 info.type = 'createGroupACK';
                 isCreate = true;
             }
-            else
-                info.type = 'joinPublicGroupSuccess';
+            // else
+            //     info.type = 'joinPublicGroupSuccess';
         }
     }
 
-    var apply = msginfo.getElementsByTagName('apply');
-    if (apply && apply.length > 0) {
-        apply = apply[0];
-        var toNick = apply.getAttribute('toNick');
-        var groupJid = apply.getAttribute('to');
-        var userJid = apply.getAttribute('from');
-        var groupName = _parseNameFromJidFn(groupJid);
-        var userName = _parseNameFromJidFn(userJid);
-        info.toNick = toNick;
-        info.groupName = groupName;
-        info.type = 'joinGroupNotifications';
-        var reason = apply.getElementsByTagName('reason');
-        if (reason && reason.length > 0) {
-            info.reason = Strophe.getText(reason[0]);
+    var x = msginfo.getElementsByTagName('x');
+    if(x && x.length > 0){
+        // 加群申请
+        var apply = x[0].getElementsByTagName('apply');
+        // 加群成功
+        var accept = x[0].getElementsByTagName('accept');
+        // 同意加群后用户进群通知
+        var item = x[0].getElementsByTagName('item');
+        // 加群被拒绝
+        var decline = x[0].getElementsByTagName('decline');
+        console.log('ScareCrow: ', decline, decline.length);
+
+        if(apply && apply.length > 0){
+            isApply = true;
+            info.toNick = apply[0].getAttribute('toNick');
+            info.type = 'joinGroupNotifications';
+            var groupJid = apply[0].getAttribute('to');
+            var gid = groupJid.split('@')[0].split('_');
+            gid = gid[gid.length-1];
+            info.gid = gid;
+        }else if(accept && accept.length > 0){
+            info.type = 'joinPublicGroupSuccess';
+        }else if(item && item.length > 0){
+            var affiliation = item[0].getAttribute('affiliation'),
+                role = item[0].getAttribute('role');
+            if(affiliation == 'member'
+                ||
+                role == 'participant'){
+                isMemberJoin = true;
+                info.mid = info.fromJid.split('/');
+                info.mid = info.mid[info.mid.length-1];
+                info.type = 'memberJoinPublicGroupSuccess';
+            }
+        }else if(decline && decline.length){
+            isDecline = true;
+            var gid = decline[0].getAttribute("fromNick");
+            var owner = _parseNameFromJidFn(decline[0].getAttribute("from"));
+            info.type = "joinPublicGroupDeclined";
+            info.owner = owner;
+            info.gid = gid;
         }
     }
 
@@ -1252,7 +1281,20 @@ connection.prototype.handlePresence = function (msginfo) {
 
         if (/subscribe/.test(info.type)) {
             //subscribe | subscribed | unsubscribe | unsubscribed
-        } else if (type == "" && !info.status && !info.error && !isCreate) {
+        } else if (type == ""
+                    &&
+                    !info.status
+                    &&
+                    !info.error
+                    &&
+                    !isCreate
+                    &&
+                    !isApply
+                    &&
+                    !isMemberJoin
+                    &&
+                    !isDecline) {
+            console.log(2222222, msginfo, info, isApply);
             info.type = 'joinPublicGroupSuccess';
         } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
             if (info.destroy) {// Group or Chat room Deleted.

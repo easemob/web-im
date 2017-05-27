@@ -11,17 +11,17 @@ WebIM.config = {
      * XMPP server
      */
     xmppURL: 'im-api.easemob.com',
-    // xmppURL: 'im-api-vip6.easemob.com',
+    // xmppURL: 'im-api.hyphenate.io',
     /*
      * Backend REST API URL
      */
-    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1-vip6.easemob.com',
     apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
+    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
     /*
      * Application AppKey
      */
     appkey: 'easemob-demo#chatdemoui',
-    // appkey: '1144170504178734#lrfq',
+    // appkey: 'zhiyunzhiyuan#ip3rynovgmmzgv',
 
     //appDir: 'EasemobDemo_sandbox',
     //imIP: '120.26.12.158',
@@ -58,7 +58,7 @@ WebIM.config = {
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
      */
-    isDebug: false,
+    isDebug: true,
     /**
      * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
      * won't auto connect if autoReconnectNumMax=0.

@@ -82,6 +82,11 @@ exports.English = {
     createGroupSuc: 'Group %s is successfully created',
     logoutSuc: 'You are off line!',
     onMuted: 'You were muted in this group',
+    search: 'Search',
+    join: 'Join',
+    addToGroupBlackList: 'Add to group black list',
+    ban: 'Ban this member',
+    administrator: 'Set as administrator',
     last: ''
 };
 
@@ -171,5 +176,10 @@ exports.Chinese = {
     createGroupSuc: '已成功创建群组%s',
     logoutSuc: '您已下线',
     onMuted: '您已被禁言',
+    search: '搜索',
+    join: '加入群组',
+    addToGroupBlackList: '加入群黑名单',
+    ban: '禁言',
+    administrator: '设为管理员',
     last: ''
 };

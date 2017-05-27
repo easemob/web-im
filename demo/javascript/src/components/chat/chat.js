@@ -548,7 +548,7 @@ module.exports = React.createClass({
                 me.delContactItem();
                 break;
             case 'joinPublicGroupSuccess':
-                // Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
+                Demo.api.NotifySuccess('加入群组' + msg.from + '成功！');
                 Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
@@ -557,6 +557,12 @@ module.exports = React.createClass({
             case 'reachChatRoomCapacity':// Failed to join the chat room
                 Demo.currentChatroom = null;
                 Demo.api.NotifySuccess('Fail to Join the group');
+                break;
+            case 'memberJoinPublicGroupSuccess':
+                Demo.api.NotifySuccess(msg.mid + '已成功加入' + msg.from);
+                break;
+            case 'joinPublicGroupDeclined':
+                Demo.api.NotifyError(msg.owner + '拒绝了您加入' + msg.gid + '的请求');
                 break;
             case 'leaveChatRoom':// Leave the chat room
                 break;

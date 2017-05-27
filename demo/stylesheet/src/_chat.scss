@@ -61,6 +61,13 @@
         }
 
     }
+
+    .webim-group-name {
+        max-width: 64px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        display: inline-block;
+    }
 }
 .webim-chatwindow-title {
     position: absolute;
