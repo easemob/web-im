@@ -104,8 +104,8 @@ module.exports = function (config) {
             'karma-coverage-istanbul-reporter'
         ],
         // 测试使用的浏览器 Chrome
-        // browsers: ['Chrome'],
-        browsers: ['PhantomJS'],
+        browsers: ['Chrome'],
+        // browsers: ['PhantomJS'],
         // 预编译操作，类似webpack的entry
         preprocessors: {
             '__test__/setup.js': ['webpack'],

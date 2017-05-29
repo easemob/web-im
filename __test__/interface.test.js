@@ -1,6 +1,7 @@
 import React from 'react'
 import jasmineEnzyme from 'jasmine-enzyme';
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 
 let log = console.log.bind(console)
 
@@ -45,6 +46,8 @@ let xmppURL = WebIM.config.xmppURL + '/ws'
 
 let Demo = {}
 
+let accessToken
+
 Demo.conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
     https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
@@ -78,37 +81,38 @@ describe('webim-interface test', () => {
             success: function (respData, textStatus, jqXHR) {
                 expect(1).toBe(1)
                 if (respData) {
-                    log('test1 success:', respData)
+                    accessToken = respData.access_token
+                    log('test1 success:', accessToken)
                 }
                 done()
             }
         });
 
     })
-
-    it('test2: apiURL-https://' + apiURL, done => {
-
-        $.ajax({
-            url: 'https://' + apiURL,
-            type: 'GET',
-            data: loginJson,
-            error: function (jqXHR, textStatus, errorThrown) {
-                expect(1).toBe(0)
-                if (jqXHR) {
-                    log('test2 error:', jqXHR)
-                }
-                done()
-            },
-            success: function (respData, textStatus, jqXHR) {
-                expect(1).toBe(1)
-                // if (respData) {
-                //     log('test2 success:', respData)
-                // }
-                done()
-            }
-        });
-
-    })
+    //
+    // it('test2: apiURL-https://' + apiURL, done => {
+    //
+    //     $.ajax({
+    //         url: 'https://' + apiURL,
+    //         type: 'GET',
+    //         data: loginJson,
+    //         error: function (jqXHR, textStatus, errorThrown) {
+    //             expect(1).toBe(0)
+    //             if (jqXHR) {
+    //                 log('test2 error:', jqXHR)
+    //             }
+    //             done()
+    //         },
+    //         success: function (respData, textStatus, jqXHR) {
+    //             expect(1).toBe(1)
+    //             // if (respData) {
+    //             //     log('test2 success:', respData)
+    //             // }
+    //             done()
+    //         }
+    //     });
+    //
+    // })
 
     it('test3: xmppURL-ws://' + xmppURL, done => {
         var options = {
@@ -119,7 +123,7 @@ describe('webim-interface test', () => {
             appKey: WebIM.config.appkey,
             success: function (resp) {
                 expect(1).toBe(1)
-                // log('test3 success:', resp)
+                log('test3 success:', resp)
                 done()
             },
             error: function (resp) {
@@ -129,12 +133,27 @@ describe('webim-interface test', () => {
             }
         };
         Demo.conn.open(options);
+        // done()
+        // var url = 'ws://' + xmppURL
+        //
+        // var stropheConn = new Strophe.Connection(
+        //     url,
+        //     {
+        //         inactivity: Demo.conn.inactivity,
+        //         maxRetries: Demo.conn.maxRetries,
+        //         pollingTime: Demo.conn.pollingTime
+        //     });
+        //
+        // var callback = function () {
+        //     console.log('fail')
+        // }
+        // stropheConn.connect(Demo.conn.context.jid, '$t$' + accessToken, callback, Demo.conn.wait, Demo.conn.hold);
 
     })
 
-    it('test4: xmppURL-wss://' + xmppURL, done => {
-        expect(1).toBe(1)
-        done()
-    })
+    // it('test4: xmppURL-wss://' + xmppURL, done => {
+    //     expect(1).toBe(1)
+    //     done()
+    // })
 
 });
