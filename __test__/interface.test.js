@@ -42,7 +42,7 @@ let loginJson = {
     timestamp: new Date()
 }
 
-let xmppURL = WebIM.config.xmppURL + '/ws'
+let xmppURL = WebIM.config.xmppURL + '/ws/'
 
 let Demo = {}
 
@@ -89,71 +89,94 @@ describe('webim-interface test', () => {
         });
 
     })
-    //
-    // it('test2: apiURL-https://' + apiURL, done => {
-    //
-    //     $.ajax({
-    //         url: 'https://' + apiURL,
-    //         type: 'GET',
-    //         data: loginJson,
-    //         error: function (jqXHR, textStatus, errorThrown) {
-    //             expect(1).toBe(0)
-    //             if (jqXHR) {
-    //                 log('test2 error:', jqXHR)
-    //             }
-    //             done()
-    //         },
-    //         success: function (respData, textStatus, jqXHR) {
-    //             expect(1).toBe(1)
-    //             // if (respData) {
-    //             //     log('test2 success:', respData)
-    //             // }
-    //             done()
-    //         }
-    //     });
-    //
-    // })
 
-    it('test3: xmppURL-ws://' + xmppURL, done => {
-        var options = {
-            apiUrl: WebIM.config.apiURL,
-            user: username,
-            pwd: password,
-            accessToken: '',
-            appKey: WebIM.config.appkey,
-            success: function (resp) {
-                expect(1).toBe(1)
-                log('test3 success:', resp)
+    it('test2: apiURL-https://' + apiURL, done => {
+
+        $.ajax({
+            url: 'https://' + apiURL,
+            type: 'GET',
+            data: loginJson,
+            error: function (jqXHR, textStatus, errorThrown) {
+                expect(1).toBe(0)
+                if (jqXHR) {
+                    log('test2 error:', jqXHR)
+                }
                 done()
             },
-            error: function (resp) {
-                expect(1).toBe(0)
-                log('test3 error:', resp)
+            success: function (respData, textStatus, jqXHR) {
+                expect(1).toBe(1)
+                // if (respData) {
+                //     log('test2 success:', respData)
+                // }
                 done()
             }
-        };
-        Demo.conn.open(options);
-        // done()
-        // var url = 'ws://' + xmppURL
-        //
-        // var stropheConn = new Strophe.Connection(
-        //     url,
-        //     {
-        //         inactivity: Demo.conn.inactivity,
-        //         maxRetries: Demo.conn.maxRetries,
-        //         pollingTime: Demo.conn.pollingTime
-        //     });
-        //
-        // var callback = function () {
-        //     console.log('fail')
-        // }
-        // stropheConn.connect(Demo.conn.context.jid, '$t$' + accessToken, callback, Demo.conn.wait, Demo.conn.hold);
+        });
 
     })
 
-    // it('test4: xmppURL-wss://' + xmppURL, done => {
-    //     expect(1).toBe(1)
-    //     done()
-    // })
+    it('test3: xmppURL-ws://' + xmppURL, done => {
+
+
+        var url = 'ws://' + xmppURL
+
+        var stropheConn = new Strophe.Connection(
+            url,
+            {
+                inactivity: Demo.conn.inactivity,
+                maxRetries: Demo.conn.maxRetries,
+                pollingTime: Demo.conn.pollingTime
+            });
+
+
+        var callback = function (status, msg) {
+            // console.log('stropheConn status=', status)
+            switch (status) {
+                case 1:
+                    console.log('stropheConn status=' + status, 'CONNECTING')
+                    break;
+                case 5:
+                    console.log('stropheConn status=' + status, 'CONNECTED')
+                    done()
+                    break;
+            }
+
+        };
+
+        var jid = WebIM.config.appkey + '_' + username + '@easemob.com/webim'
+        stropheConn.connect(jid, '$t$' + accessToken, callback, Demo.conn.wait, Demo.conn.hold);
+
+    })
+
+    it('test4: xmppURL-wss://' + xmppURL, done => {
+        var url = 'wss://' + xmppURL
+
+        var stropheConn = new Strophe.Connection(
+            url,
+            {
+                inactivity: Demo.conn.inactivity,
+                maxRetries: Demo.conn.maxRetries,
+                pollingTime: Demo.conn.pollingTime
+            });
+
+
+        var callback = function (status, msg) {
+            // console.log('stropheConn status=', status)
+            switch (status) {
+                case 1:
+                    console.log('stropheConn status=' + status, 'CONNECTING')
+                    break;
+                case 5:
+                    console.log('stropheConn status=' + status, 'CONNECTED')
+                    done()
+                    break;
+            }
+
+        };
+
+        var jid = WebIM.config.appkey + '_' + username + '@easemob.com/webim'
+        stropheConn.connect(jid, '$t$' + accessToken, callback, Demo.conn.wait, Demo.conn.hold);
+
+    })
+
 
 });

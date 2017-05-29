@@ -318,6 +318,7 @@ var _login = function (options, conn) {
         _loginCallback(status, msg, conn);
     };
 
+    console.log('jid=', conn.context.jid)
     conn.context.stropheConn = stropheConn;
     if (conn.route) {
         stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold, conn.route);
@@ -333,30 +334,30 @@ var _parseMessageType = function (msginfo) {
         acked = msginfo.getElementsByTagName('acked'),
         error = msginfo.getElementsByTagName('error'),
         msgtype = 'normal';
-    if(receiveinfo && receiveinfo.length > 0
+    if (receiveinfo && receiveinfo.length > 0
         &&
-        receiveinfo[0].namespaceURI === 'urn:xmpp:receipts'){
+        receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
 
         msgtype = 'received';
 
-    }else if(inviteinfo && inviteinfo.length > 0){
+    } else if (inviteinfo && inviteinfo.length > 0) {
 
         msgtype = 'invite';
 
-    }else if(deliveryinfo && deliveryinfo.length > 0){
+    } else if (deliveryinfo && deliveryinfo.length > 0) {
 
         msgtype = 'delivery';           // 消息送达
 
-    }else if(acked && acked.length){
+    } else if (acked && acked.length) {
 
         msgtype = 'acked';              // 消息已读
 
-    }else if(error && error.length){
+    } else if (error && error.length) {
 
         var errorItem = error[0],
             userMuted = errorItem.getElementsByTagName('user-muted');
 
-        if(userMuted && userMuted.length){
+        if (userMuted && userMuted.length) {
 
             msgtype = 'userMuted';
 
@@ -375,6 +376,7 @@ var _handleMessageQueue = function (conn) {
 };
 
 var _loginCallback = function (status, msg, conn) {
+    console.log('stropheConn.connected status=', status, msg)
     var conflict, error;
 
     if (msg === 'conflict') {
@@ -409,7 +411,7 @@ var _loginCallback = function (status, msg, conn) {
                 return true;
             }
             var type = _parseMessageType(msginfo);
-            switch (type){
+            switch (type) {
                 case "received":
                     conn.handleReceivedMessage(msginfo);
                     return true;
