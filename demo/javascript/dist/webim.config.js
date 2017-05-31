@@ -21,7 +21,6 @@ WebIM.config = {
      * Application AppKey
      */
     appkey: 'easemob-demo#chatdemoui',
-    // appkey: 'zhiyunzhiyuan#ip3rynovgmmzgv',
 
     //appDir: 'EasemobDemo_sandbox',
     //imIP: '120.26.12.158',
@@ -96,3 +95,7 @@ WebIM.config = {
      */
     read: true
 };
+
+function logSuccess(msg) {
+    console.log("%c " + msg, "color: green")
+}

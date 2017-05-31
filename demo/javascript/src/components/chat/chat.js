@@ -237,55 +237,55 @@ module.exports = React.createClass({
                 // TODO 增量更新
                 Demo.api.updateRoster();
             },
-            onReceivedMessage: function(message){
+            onReceivedMessage: function (message) {
                 var msg = document.getElementById(message.id);
-                if(msg){
+                if (msg) {
                     msg.setAttribute('name', message.mid);
                 }
-                for(var targetId in Demo.chatRecord){
+                for (var targetId in Demo.chatRecord) {
                     var msg = Demo.chatRecord[targetId].messages[message.id];
                     Demo.chatRecord[targetId].messages[message.mid] = msg;
                     delete Demo.chatRecord[targetId].messages[message.id];
                 }
             },
-            onDeliveredMessage: function(message){
+            onDeliveredMessage: function (message) {
                 var msg = document.getElementsByName(message.mid);
-                if(msg){
-                    if(msg[0])
+                if (msg) {
+                    if (msg[0])
                         msg[0].innerHTML = '已送达';
                 }
                 // 记录消息的状态
-                for(var targetId in Demo.chatRecord){
-                    if(Demo.chatRecord[targetId].messages[message.mid]){
+                for (var targetId in Demo.chatRecord) {
+                    if (Demo.chatRecord[targetId].messages[message.mid]) {
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
                     }
                 }
             },
-            onReadMessage: function(message){
+            onReadMessage: function (message) {
                 var msg = document.getElementsByName(message.mid);
-                if(msg){
-                    if(msg[0])
+                if (msg) {
+                    if (msg[0])
                         msg[0].innerHTML = '已读';
                 }
                 // 记录消息的状态
-                for(var targetId in Demo.chatRecord){
-                    if(Demo.chatRecord[targetId].messages[message.mid]){
+                for (var targetId in Demo.chatRecord) {
+                    if (Demo.chatRecord[targetId].messages[message.mid]) {
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Read';
                     }
                 }
             },
-            onCreateGroup: function(message){
-                Demo.api.NotifySuccess('Group Created, Group id: '+ message.data.groupid);
+            onCreateGroup: function (message) {
+                Demo.api.NotifySuccess('Group Created, Group id: ' + message.data.groupid);
                 me.getGroup();
             },
-            onMutedMessage: function(message){
+            onMutedMessage: function (message) {
                 // 如果被禁言，删除本条消息并弹出提示
                 var msg = document.getElementsByName(message.mid);
-                if(msg){
+                if (msg) {
                     delete Demo.chatRecord[Demo.selected].messages[message.mid];
                     var _parentElement = document.getElementById('wrapper' + Demo.selected),
                         msgItem = msg[0].parentNode.parentNode.parentNode;
-                    if(_parentElement){
+                    if (_parentElement) {
                         _parentElement.removeChild(msgItem);
                     }
                 }
