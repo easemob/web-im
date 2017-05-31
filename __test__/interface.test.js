@@ -66,51 +66,14 @@ log(Demo.conn)
 describe('webim-interface test', () => {
 
     it('test1: apiURL-http://' + apiURL, done => {
-
-        $.ajax({
-            url: 'http://' + apiURL,
-            type: 'GET',
-            data: loginJson,
-            error: function (jqXHR, textStatus, errorThrown) {
-                expect(1).toBe(0)
-                if (jqXHR) {
-                    log('test1 error:', jqXHR)
-                }
-                done()
-            },
-            success: function (respData, textStatus, jqXHR) {
-                expect(1).toBe(1)
-                if (respData) {
-                    accessToken = respData.access_token
-                    log('test1 success:', accessToken)
-                }
-                done()
-            }
-        });
+        let url = 'http://' + apiURL
+        apiURLTest(url, done, 'test1')
 
     })
 
     it('test2: apiURL-https://' + apiURL, done => {
-
-        $.ajax({
-            url: 'https://' + apiURL,
-            type: 'GET',
-            data: loginJson,
-            error: function (jqXHR, textStatus, errorThrown) {
-                expect(1).toBe(0)
-                if (jqXHR) {
-                    log('test2 error:', jqXHR)
-                }
-                done()
-            },
-            success: function (respData, textStatus, jqXHR) {
-                expect(1).toBe(1)
-                // if (respData) {
-                //     log('test2 success:', respData)
-                // }
-                done()
-            }
-        });
+        let url = 'https://' + apiURL
+        apiURLTest(url, done, 'test2')
 
     })
 
@@ -119,64 +82,68 @@ describe('webim-interface test', () => {
 
         var url = 'ws://' + xmppURL
 
-        var stropheConn = new Strophe.Connection(
-            url,
-            {
-                inactivity: Demo.conn.inactivity,
-                maxRetries: Demo.conn.maxRetries,
-                pollingTime: Demo.conn.pollingTime
-            });
-
-
-        var callback = function (status, msg) {
-            // console.log('stropheConn status=', status)
-            switch (status) {
-                case 1:
-                    console.log('stropheConn status=' + status, 'CONNECTING')
-                    break;
-                case 5:
-                    console.log('stropheConn status=' + status, 'CONNECTED')
-                    done()
-                    break;
-            }
-
-        };
-
-        var jid = WebIM.config.appkey + '_' + username + '@easemob.com/webim'
-        stropheConn.connect(jid, '$t$' + accessToken, callback, Demo.conn.wait, Demo.conn.hold);
-
+        xmppURLTest(url, done, 'test3')
     })
 
     it('test4: xmppURL-wss://' + xmppURL, done => {
         var url = 'wss://' + xmppURL
 
-        var stropheConn = new Strophe.Connection(
-            url,
-            {
-                inactivity: Demo.conn.inactivity,
-                maxRetries: Demo.conn.maxRetries,
-                pollingTime: Demo.conn.pollingTime
-            });
-
-
-        var callback = function (status, msg) {
-            // console.log('stropheConn status=', status)
-            switch (status) {
-                case 1:
-                    console.log('stropheConn status=' + status, 'CONNECTING')
-                    break;
-                case 5:
-                    console.log('stropheConn status=' + status, 'CONNECTED')
-                    done()
-                    break;
-            }
-
-        };
-
-        var jid = WebIM.config.appkey + '_' + username + '@easemob.com/webim'
-        stropheConn.connect(jid, '$t$' + accessToken, callback, Demo.conn.wait, Demo.conn.hold);
-
+        xmppURLTest(url, done, 'test4')
     })
 
 
 });
+
+
+function apiURLTest(url, done, testName) {
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        data: loginJson,
+        error: function (jqXHR, textStatus, errorThrown) {
+            expect(1).toBe(0)
+            if (jqXHR) {
+                log(testName + ' error:', jqXHR)
+            }
+            done()
+        },
+        success: function (respData, textStatus, jqXHR) {
+            expect(1).toBe(1)
+            if (respData) {
+                accessToken = respData.access_token
+                log(testName + ' success:', respData)
+            }
+            done()
+        }
+    });
+}
+
+function xmppURLTest(url, done, testName) {
+    var stropheConn = new Strophe.Connection(
+        url,
+        {
+            inactivity: Demo.conn.inactivity,
+            maxRetries: Demo.conn.maxRetries,
+            pollingTime: Demo.conn.pollingTime
+        });
+
+
+    var callback = function (status, msg) {
+        // console.log('stropheConn status=', status)
+        switch (status) {
+            case 1:
+                console.log('stropheConn status=' + status, 'CONNECTING')
+                break;
+            case 5:
+                console.log('stropheConn status=' + status, 'CONNECTED')
+                done()
+                break;
+        }
+
+    };
+
+    var jid = WebIM.config.appkey + '_' + username + '@easemob.com/webim'
+    stropheConn.connect(jid, '$t$' + accessToken, callback, Demo.conn.wait, Demo.conn.hold);
+
+}
