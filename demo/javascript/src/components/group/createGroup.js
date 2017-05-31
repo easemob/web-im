@@ -118,16 +118,18 @@ var CreateGroup = React.createClass({
                 }
             };
             Demo.conn.createGroupNew(options);
-            // Demo.conn.createGroup({
-            //     subject: value,
-            //     description: info,
-            //     members: friendsSelected,
-            //     optionsPublic: style == 'PUBLIC_JOIN_OPEN' || style == 'PUBLIC_JOIN_APPROVAL',
-            //     optionsModerate: style != 'PUBLIC_JOIN_OPEN',
-            //     // 是否只允许 会员进入 ??
-            //     optionsMembersOnly: style != 'PUBLIC_JOIN_OPEN',
-            //     optionsAllowInvites: style == 'PRIVATE_MEMBER_INVITE',
-            // });
+            /*
+            Demo.conn.createGroup({
+                subject: value,
+                description: info,
+                members: friendsSelected,
+                optionsPublic: style == 'PUBLIC_JOIN_OPEN' || style == 'PUBLIC_JOIN_APPROVAL',
+                optionsModerate: style != 'PUBLIC_JOIN_OPEN',
+                // 是否只允许 会员进入 ??
+                optionsMembersOnly: style != 'PUBLIC_JOIN_OPEN',
+                optionsAllowInvites: style == 'PRIVATE_MEMBER_INVITE',
+            });
+            */
         }
         this.close();
     },

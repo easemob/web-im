@@ -116,6 +116,9 @@ Demo.chatState = {
     }
 }
 
+Demo.orgName = WebIM.config.appkey.split('#')[0];
+Demo.appName = WebIM.config.appkey.split('#')[1];
+
 // initialize webIM connection
 Demo.conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,

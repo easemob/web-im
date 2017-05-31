@@ -46,7 +46,13 @@ exports.Button = React.createClass({
 
     render: function () {
         var className = this.props.className ? ' ' + this.props.className : '';
-        return <button className={'webim-button bg-color' + className} ref='button'
+        var cls = '';
+        if(className.indexOf('hide') >= 0){
+            cls = 'hide';
+        }else{
+            cls = 'webim-button bg-color' + className;
+        }
+        return <button className={cls} ref='button'
                        onClick={this.props.onClick}>{this.props.text}</button>;
     }
 });

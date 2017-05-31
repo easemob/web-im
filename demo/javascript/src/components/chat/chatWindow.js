@@ -54,7 +54,7 @@ module.exports = React.createClass({
                             var jid = members[0].jid;
                             var username = jid.substr(0, jid.lastIndexOf("@"));
                             var admin = 0;
-                            if (members[0].affiliation == 'owner' && username == Demo.user) {
+                            if (members[0].affiliation == 'owner' && username.toLowerCase() == Demo.user) {
                                 admin = 1;
                             }
                             me.setState({settings: settings, admin: admin, owner: members, fields: fields});
@@ -146,6 +146,68 @@ module.exports = React.createClass({
         });
     },
 
+    ban: function(username){
+        var appName = Demo.appName,
+            orgName = Demo.orgName,
+            token = Demo.token;
+        console.log('UserName: ', username);
+    },
+
+    setAdmin: function(username){
+        var appName = Demo.appName,
+            orgName = Demo.orgName,
+            token = Demo.token;
+        console.log('Username: ', username, 'GroupId: ', Demo.selected);
+
+        var requestData = {
+            newadmin: username
+        };
+
+        // 设置管理员
+        /*
+        var options = {
+            url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/'+ 'chatgroups'
+                + '/' + Demo.selected + '/' + 'admin',
+            type: "POST",
+            dataType: 'json',
+            data: JSON.stringify(requestData),
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            success: function(resp){
+                console.log("Set as admin succeed");
+                console.log(resp);
+            }.bind(this),
+            error: function(e){
+                console.log(e)
+            }.bind(this)
+        };
+        */
+        // 取消管理员
+        
+        /*
+        var options = {
+            url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/'+ 'chatgroups'
+            + '/' + Demo.selected + '/' + 'admin' + '/' + username,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            success: function(resp){
+                console.log('Response: ', resp);
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        };
+        */
+
+        WebIM.utils.ajax(options);
+    },
+
     refreshMemberList: function (members) {
         // this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
         this.setState({members: this.state.owner.concat(members), memberShowStatus: true});
@@ -186,17 +248,32 @@ module.exports = React.createClass({
 
         for (var i = 0, l = this.state.members.length; i < l; i++) {
             var jid = this.state.members[i].jid,
-                username = jid.substr(0, jid.lastIndexOf("@")),
-                affiliation = this.state.members[i].affiliation;
-
-
+                username = '',
+                affiliation = this.state.members[i].affiliation,
+                domain = '';
+            domain = '@' + WebIM.config.xmppURL.split('.')[1] + '.' + WebIM.config.xmppURL.split('.')[2];
+            username = jid.replace(domain, '');
+            username = username.replace(WebIM.config.appkey + '_', '');
             roomMember.push(<li key={i}>
                 <Avatar src='demo/images/default.png'/>
-                <span>{username}</span>
+                <span className="webim-group-name">{username}</span>
                 <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
                     <i className={"webim-leftbar-icon font smaller " + className}
-                       style={{display: this.state.admin != 1 ? 'none' : ''}}
-                       onClick={this.addToGroupBlackList.bind(this, username, i)}>n</i>
+                        style={{display: this.state.admin != 1 ? 'none' : ''}}
+                        onClick={this.addToGroupBlackList.bind(this, username, i)}
+                        title={Demo.lan.addToGroupBlackList}>n</i>
+                </div>
+                <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
+                    <i className={"webim-leftbar-icon font smaller " + className}
+                        style={{display: this.state.admin != 1 ? 'none' : ''}}
+                        onClick={this.ban.bind(this, username)}
+                        title={Demo.lan.ban}>f</i>
+                </div>
+                <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
+                    <i className={"webim-leftbar-icon font smaller " + className}
+                        style={{display: this.state.admin != 1 ? 'none' : ''}}
+                        onClick={this.setAdmin.bind(this, username, i)}
+                        title={Demo.lan.administrator}>&uarr;</i>
                 </div>
             </li>);
         }
@@ -223,7 +300,7 @@ module.exports = React.createClass({
                                               getGroupInfo={this.getGroupInfo}
                                               onBlur={this.handleOnBlur}
                                               leaveGroup={this.props.leaveGroup}
-                                              destroyGroup = {this.props.destroyGroup}
+                                              destroyGroup={this.props.destroyGroup}
             />);
         }
 

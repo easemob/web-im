@@ -35,7 +35,7 @@
 
   > div {
     border-bottom: 1px solid rgba(0, 0, 0, .1);
-    padding: 10px 10px 20px;
+    padding: 10px 10px 10px;
   }
 
   .webim-dialog-button {
@@ -45,7 +45,12 @@
     width: 80px;
     height: 26px;
   }
-
+  .webim-dialog-button-search{
+    bottom: 2px;
+    width: 80px;
+    height: 30px;
+    margin-left: 70px;
+  }
   .webim-dialog-button-left {
     position: absolute;
     right: 100px;
@@ -76,6 +81,25 @@
 
   &-body {
     min-height: 100px;
+    max-height: 126px;
+    overflow: scroll;
+
+    &-detail{
+      width: 100%;
+      //border: 1px solid red;
+
+      span.title{
+        font-size: 14px;
+        display: block;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      
+      span.content{
+        font-size: 12px;
+        color: #6a737c;
+      }
+    }
   }
 
   .webim-dialog-footer {
@@ -87,6 +111,24 @@
     .webim-button {
       position: static;
       margin-right: 10px;
+    }
+
+    .webim-group-back{
+      position: absolute;
+      left: 0;
+      height: 67px;
+      width: 50px;
+      background-color: #f2f2f2;
+      top: 0;
+      border-radius: 0 2px 2px 0;
+      text-align: center;
+      cursor: pointer;
+      span{
+        line-height: 67px;
+        font-size: 30px;
+        font-weight: 700;
+        color: #868683;
+      }
     }
   }
 }
@@ -109,5 +151,23 @@
   > div {
     overflow: auto;
     max-height: 400px;
+  }
+}
+
+.webim-body-loading{
+  height: 86px;
+  width: 400px;
+  position: absolute;
+  opacity: 0.5;
+  z-index: 999;
+  margin-top: -10px;
+  margin-left: -10px;
+  padding-top: 61px;
+
+  img{
+    margin: auto;
+    display: block;
+    width: 30px;
+    line-height: inherit;
   }
 }
