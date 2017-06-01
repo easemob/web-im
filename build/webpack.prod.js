@@ -4,7 +4,7 @@ module.exports = {
     entry: {
         './sdk/dist/websdk-1.4.11': ['./sdk/index'],
         './demo/javascript/dist/demo-1.4.11': ['./demo/javascript/src/entry'],
-        './webrtc/dist/webrtc-1.4.10': ['./webrtc/src/entry']
+        './webrtc/dist/webrtc-1.4.11': ['./webrtc/src/entry']
     },
     output: {
         path: './',
