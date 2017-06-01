@@ -95,7 +95,3 @@ WebIM.config = {
      */
     read: true
 };
-
-function logSuccess(msg) {
-    console.log("%c " + msg, "color: green")
-}

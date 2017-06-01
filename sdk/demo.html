@@ -5,9 +5,9 @@
     <title>环信测试demo</title>
     <script src="../demo/javascript/dist/webim.config.js"></script>
     <script src="./dist/strophe-1.2.8.min.js"></script>
-    <script src="./dist/websdk-1.4.10.js"></script>
+    <script src="./dist/websdk-1.4.11.js"></script>
     <script src="../webrtc/dist/adapter.js"></script>
-    <script src="../webrtc/dist/webrtc-1.4.10.js"></script>
+    <script src="../webrtc/dist/webrtc-1.4.11.js"></script>
 </head>
 <body>
 <h2>Text Box</h2>
@@ -103,7 +103,7 @@
             //如果isAutoLogin设置为false，那么必须手动设置上线，否则无法收消息
             // 手动上线指的是调用conn.setPresence(); 在本例中，conn初始化时已将isAutoLogin设置为true
             // 所以无需调用conn.setPresence();
-            logSuccess('[opened] 连接已成功建立')
+            console.log("%c [opened] 连接已成功建立", "color: green")
         },
         onTextMessage: function (message) {
             // 在此接收和处理消息，根据message.type区分消息来源，私聊或群组或聊天室
