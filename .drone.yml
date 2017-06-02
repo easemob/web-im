@@ -12,7 +12,7 @@ pipeline:
       - node_modules
       - tag
     volumes:
-      - /data/apps/opt/web-im/${DRONE_BRANCH}:/cache
+      - /data/apps/opt/web-im:/cache
 
   build:
     image: node:7.8
@@ -39,7 +39,7 @@ pipeline:
       - cp -rf publish image/docker/webim/webim
       - echo 'build success'
     when:
-      branch: [ dev, online ]
+      branch: [ dev, release ]
 
 
   dockerize-latest:
@@ -79,7 +79,7 @@ pipeline:
     dockerfile: image/docker/webim/Dockerfile
     context: image/docker/webim/
     when:
-      branch: online
+      branch: release
 
   deploy-online:
     image: docker-registry-cn.easemob.com/kubernetes/im/webim-online:latest
@@ -90,7 +90,7 @@ pipeline:
     secrets: [ ssh_key, jumpserver_host, jumpserver_port, online_host ]
     debug: true
     when:
-      branch: online
+      branch: release
 
   rollback-online:
     image: docker-registry-cn.easemob.com/kubernetes/im/webim-rollback:latest
@@ -109,7 +109,7 @@ pipeline:
         - node_modules
         - tag
       volumes:
-        - /data/apps/opt/web-im/${DRONE_BRANCH}:/cache
+        - /data/apps/opt/web-im:/cache
 
   notify:
     image: drillster/drone-email
