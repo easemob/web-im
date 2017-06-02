@@ -12,7 +12,7 @@ pipeline:
       - node_modules
       - tag
     volumes:
-      - /data/apps/opt/web-im/${DRONE_BRANCH}:/cache
+      - /data/apps/opt/web-im:/cache
 
   build:
     image: node:7.8
@@ -109,14 +109,15 @@ pipeline:
         - node_modules
         - tag
       volumes:
-        - /data/apps/opt/web-im/${DRONE_BRANCH}:/cache
+        - /data/apps/opt/web-im:/cache
 
   notify:
     image: drillster/drone-email
-    from: acolyte@easemob.com
-    host: smtp.exmail.qq.com
-    port: 25
-    username: acolyte@easemob.com
-    password: 'Easemob536^@#'
+    from: ${NOTIFY_USERNAME}
+    host: ${NOTIFY_HOST}
+    port: ${NOTIFY_PORT}
+    username: ${NOTIFY_USERNAME}
+    password: ${NOTIFY_PASSWORD}
+    secrets: [ notify_host, notify_port, notify_username, notify_password ]
     when:
       status:  [ failure, success ]
