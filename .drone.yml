@@ -115,7 +115,7 @@ pipeline:
     image: drillster/drone-email
     from: "${NOTIFY_USERNAME}"
     host: "${NOTIFY_HOST}"
-    port: "${NOTIFY_PORT}"
+    port: 25
     username: "${NOTIFY_USERNAME}"
     password: "${NOTIFY_PASSWORD}"
     secrets: [ notify_host, notify_port, notify_username, notify_password ]
