@@ -1,3 +1,1949 @@
-!function(e){function t(n){if(o[n])return o[n].exports;var i=o[n]={exports:{},id:n,loaded:!1};return e[n].call(i.exports,i,i.exports,t),i.loaded=!0,i.exports}var o={};return t.m=e,t.c=o,t.p="./",t(0)}({0:function(e,t,o){e.exports=o(211)},204:function(e,t,o){"use strict";var n="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e};!function(){var e=function(){},i=o(205).code,r=10485760,s=function(){try{return new window.XMLHttpRequest}catch(e){return!1}},a=function(){try{return new window.ActiveXObject("Microsoft.XMLHTTP")}catch(e){return!1}},c=function(t){t=t||!0;var o=s()||a();if("withCredentials"in o)return o;if(!t)return o;if("undefined"==typeof window.XDomainRequest)return o;var n=new XDomainRequest;return n.readyState=0,n.status=100,n.onreadystatechange=e,n.onload=function(){n.readyState=4,n.status=200;var e=new ActiveXObject("Microsoft.XMLDOM");e.async="false",e.loadXML(n.responseText),n.responseXML=e,n.response=n.responseText,n.onreadystatechange()},n.ontimeout=n.onerror=function(){n.readyState=4,n.status=500,n.onreadystatechange()},n},p=function(){if("ActiveXObject"in window)try{return new ActiveXObject("ShockwaveFlash.ShockwaveFlash")}catch(e){return 0}else if(navigator.plugins&&navigator.plugins.length>0)return navigator.plugins["Shockwave Flash"];return 0}(),l=function(){var e=this,t="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";this.encode=function(o){var n,i,r,s,a,c,p,l="",u=0;for(o=e._utf8_encode(o);u<o.length;)n=o.charCodeAt(u++),i=o.charCodeAt(u++),r=o.charCodeAt(u++),s=n>>2,a=(3&n)<<4|i>>4,c=(15&i)<<2|r>>6,p=63&r,isNaN(i)?c=p=64:isNaN(r)&&(p=64),l=l+t.charAt(s)+t.charAt(a)+t.charAt(c)+t.charAt(p);return l},this.decode=function(o){var n,i,r,s,a,c,p,l="",u=0;for(o=o.replace(/[^A-Za-z0-9\+\/\=]/g,"");u<o.length;)s=t.indexOf(o.charAt(u++)),a=t.indexOf(o.charAt(u++)),c=t.indexOf(o.charAt(u++)),p=t.indexOf(o.charAt(u++)),n=s<<2|a>>4,i=(15&a)<<4|c>>2,r=(3&c)<<6|p,l+=String.fromCharCode(n),64!=c&&(l+=String.fromCharCode(i)),64!=p&&(l+=String.fromCharCode(r));return l=e._utf8_decode(l)},this._utf8_encode=function(e){e=e.replace(/\r\n/g,"\n");for(var t="",o=0;o<e.length;o++){var n=e.charCodeAt(o);n<128?t+=String.fromCharCode(n):n>127&&n<2048?(t+=String.fromCharCode(n>>6|192),t+=String.fromCharCode(63&n|128)):(t+=String.fromCharCode(n>>12|224),t+=String.fromCharCode(n>>6&63|128),t+=String.fromCharCode(63&n|128))}return t},this._utf8_decode=function(e){for(var t="",o=0,n=0,i=0,r=0;o<e.length;)n=e.charCodeAt(o),n<128?(t+=String.fromCharCode(n),o++):n>191&&n<224?(i=e.charCodeAt(o+1),t+=String.fromCharCode((31&n)<<6|63&i),o+=2):(i=e.charCodeAt(o+1),r=e.charCodeAt(o+2),t+=String.fromCharCode((15&n)<<12|(63&i)<<6|63&r),o+=3);return t}},u=c(),d="undefined"!=typeof FormData,m="undefined"!=typeof Blob,h=u.setRequestHeader||!1,f=u.overrideMimeType||!1,_=h&&d,y=_||p,g=h&&(m||f);Object.keys||(Object.keys=function(){var e=Object.prototype.hasOwnProperty,t=!{toString:null}.propertyIsEnumerable("toString"),o=["toString","toLocaleString","valueOf","hasOwnProperty","isPrototypeOf","propertyIsEnumerable","constructor"],i=o.length;return function(r){if("object"!==("undefined"==typeof r?"undefined":n(r))&&("function"!=typeof r||null===r))throw new TypeError("Object.keys called on non-object");var s,a,c=[];for(s in r)e.call(r,s)&&c.push(s);if(t)for(a=0;a<i;a++)e.call(r,o[a])&&c.push(o[a]);return c}}());var E={hasFormData:d,hasBlob:m,emptyfn:e,isCanSetRequestHeader:h,hasOverrideMimeType:f,isCanUploadFileAsync:_,isCanUploadFile:y,isCanDownLoadFile:g,isSupportWss:function(){var e=[/MQQBrowser[\/]5([.]\d+)?\sTBS/];if(!window.WebSocket)return!1;for(var t=window.navigator.userAgent,o=0,n=e.length;o<n;o++)if(e[o].test(t))return!1;return!0}(),getIEVersion:function(){var e,t=navigator.userAgent,o={4:8,5:9,6:10,7:11};return e=t.match(/MSIE (\d+)/i),e&&e[1]?+e[1]:(e=t.match(/Trident\/(\d+)/i),e&&e[1]?o[e[1]]||null:null)}(),stringify:function(e){if("undefined"!=typeof JSON&&JSON.stringify)return JSON.stringify(e);var t="",o=[],i=function r(e){var i=!1;"[object Array]"===Object.prototype.toString.call(e)?(o.push("]","["),i=!0):"[object Object]"===Object.prototype.toString.call(e)&&o.push("}","{");for(var s in e)"[object Null]"===Object.prototype.toString.call(e[s])?e[s]="null":"[object Undefined]"===Object.prototype.toString.call(e[s])&&(e[s]="undefined"),t+=e[s]&&"object"===n(e[s])?","+(i?"":'"'+s+'":'+(i?'"':""))+r(e[s]):',"'+(i?"":s+'":"')+e[s]+'"';return""!=t&&(t=t.slice(1)),o.pop()+t+o.pop()};return i(e)},login:function(t){var t=t||{},o=t.success||e,n=t.error||e,r=t.appKey||"",s=r.split("#");if(2!==s.length)return n({type:i.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR}),!1;var a=s[0],c=s[1],p=p||t.https,l=t.user||"",u=t.pwd||"",d=t.apiUrl,m={grant_type:"password",username:l,password:u,timestamp:+new Date},h=E.stringify(m),t={url:d+"/"+a+"/"+c+"/token",dataType:"json",data:h,success:o,error:n};return E.ajax(t)},getFileUrl:function(e){var t={url:"",filename:"",filetype:"",data:""},o="string"==typeof e?document.getElementById(e):e;if(!E.isCanUploadFileAsync||!o)return t;try{if(window.URL.createObjectURL){var n=o.files;if(n.length>0){var i=n.item(0);t.data=i,t.url=window.URL.createObjectURL(i),t.filename=i.name||""}}else{var i=document.getElementById(e).value;t.url=i;var r=i.lastIndexOf("/"),s=i.lastIndexOf("\\"),a=Math.max(r,s);a<0?t.filename=i:t.filename=i.substring(a+1)}var c=t.filename.lastIndexOf(".");return c!=-1&&(t.filetype=t.filename.substring(c+1).toLowerCase()),t}catch(p){throw p}},getFileSize:function(e){var t=this.getFileLength(e);if(t>1e7)return!1;var o=Math.round(t/1e3);if(o<1e3)t=o+" KB";else if(o>=1e3){var n=o/1e3;if(n<1e3)t=n.toFixed(1)+" MB";else{var i=n/1e3;t=i.toFixed(1)+" GB"}}return t},getFileLength:function(e){var t=0;if(e)if(e.files)e.files.length>0&&(t=e.files[0].size);else if(e.select&&"ActiveXObject"in window){e.select();var o=new ActiveXObject("Scripting.FileSystemObject"),e=o.GetFile(e.value);t=e.Size}return t},hasFlash:p,trim:function(e){return e="string"==typeof e?e:"",e.trim?e.trim():e.replace(/^\s|\s$/g,"")},parseEmoji:function(e){if("undefined"==typeof WebIM.Emoji||"undefined"==typeof WebIM.Emoji.map)return e;var t=WebIM.Emoji;for(var o in t.map)if(t.map.hasOwnProperty(o))for(;e.indexOf(o)>-1;)e=e.replace(o,'<img class="emoji" src="'+t.path+t.map[o]+'" />');return e},parseLink:function(e){var t=/(https?\:\/\/|www\.)([a-zA-Z0-9-]+(\.[a-zA-Z0-9]+)+)(\:[0-9]{2,4})?\/?((\.[:_0-9a-zA-Z-]+)|[:_0-9a-zA-Z-]*\/?)*\??[:_#@*&%0-9a-zA-Z-\/=]*/gm;return e=e.replace(t,function(e){var t=/^https?/gm.test(e);return"<a href='"+(t?e:"//"+e)+"' target='_blank'>"+e+"</a>"})},parseJSON:function(e){if(window.JSON&&window.JSON.parse)return window.JSON.parse(e+"");var t,o=null,n=E.trim(e+"");return n&&!E.trim(n.replace(/(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g,function(e,n,i,r){return t&&n&&(o=0),0===o?e:(t=i||n,o+=!r-!i,"")}))?Function("return "+n)():Function("Invalid JSON: "+e)()},parseUploadResponse:function(e){return e.indexOf("callback")>-1?e.slice(9,-1):e},parseDownloadResponse:function(e){return e&&e.type&&"application/json"===e.type||0>Object.prototype.toString.call(e).indexOf("Blob")?this.url+"?token=":window.URL.createObjectURL(e)},uploadFile:function(t){var t=t||{};t.onFileUploadProgress=t.onFileUploadProgress||e,t.onFileUploadComplete=t.onFileUploadComplete||e,t.onFileUploadError=t.onFileUploadError||e,t.onFileUploadCanceled=t.onFileUploadCanceled||e;var o=t.accessToken||this.context.accessToken;if(!o)return void t.onFileUploadError({type:i.WEBIM_UPLOADFILE_NO_LOGIN,id:t.id});var n,s,a,c=t.appKey||this.context.appKey||"";if(c&&(a=c.split("#"),n=a[0],s=a[1]),!n&&!s)return void t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,id:t.id});var p=t.apiUrl,l=p+"/"+n+"/"+s+"/chatfiles";if(!E.isCanUploadFileAsync)return void(E.hasFlash&&"function"==typeof t.flashUpload?t.flashUpload&&t.flashUpload(l,t):t.onFileUploadError({type:i.WEBIM_UPLOADFILE_BROWSER_ERROR,id:t.id}));var u=t.file.data?t.file.data.size:void 0;if(u>r)return void t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,id:t.id});if(u<=0)return void t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,id:t.id});var d=E.xmlrequest(),m=function(e){t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,id:t.id,xhr:d})};d.upload&&d.upload.addEventListener("progress",t.onFileUploadProgress,!1),d.addEventListener?(d.addEventListener("abort",t.onFileUploadCanceled,!1),d.addEventListener("load",function(e){try{var o=E.parseJSON(d.responseText);try{t.onFileUploadComplete(o)}catch(e){t.onFileUploadError({type:i.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:e})}}catch(e){t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,data:d.responseText,id:t.id,xhr:d})}},!1),d.addEventListener("error",m,!1)):d.onreadystatechange&&(d.onreadystatechange=function(){if(4===d.readyState)if(200===ajax.status)try{var e=E.parseJSON(d.responseText);t.onFileUploadComplete(e)}catch(o){t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,data:d.responseText,id:t.id,xhr:d})}else t.onFileUploadError({type:i.WEBIM_UPLOADFILE_ERROR,data:d.responseText,id:t.id,xhr:d});else d.abort(),t.onFileUploadCanceled()}),d.open("POST",l),d.setRequestHeader("restrict-access","true"),d.setRequestHeader("Accept","*/*"),d.setRequestHeader("Authorization","Bearer "+o);var h=new FormData;h.append("file",t.file.data),d.send(h)},download:function(t){t.onFileDownloadComplete=t.onFileDownloadComplete||e,t.onFileDownloadError=t.onFileDownloadError||e;var o=t.accessToken||this.context.accessToken;if(!o)return void t.onFileDownloadError({type:i.WEBIM_DOWNLOADFILE_NO_LOGIN,id:t.id});var n=function(e){t.onFileDownloadError({type:i.WEBIM_DOWNLOADFILE_ERROR,id:t.id,xhr:r})};if(!E.isCanDownLoadFile)return void t.onFileDownloadComplete();var r=E.xmlrequest();"addEventListener"in r?(r.addEventListener("load",function(e){t.onFileDownloadComplete(r.response,r)},!1),r.addEventListener("error",n,!1)):"onreadystatechange"in r&&(r.onreadystatechange=function(){4===r.readyState?200===ajax.status?t.onFileDownloadComplete(r.response,r):t.onFileDownloadError({type:i.WEBIM_DOWNLOADFILE_ERROR,id:t.id,xhr:r}):(r.abort(),t.onFileDownloadError({type:i.WEBIM_DOWNLOADFILE_ERROR,id:t.id,xhr:r}))});var s=t.method||"GET",a=t.responseType||"blob",c=t.mimeType||"text/plain; charset=x-user-defined";r.open(s,t.url),"undefined"!=typeof Blob?r.responseType=a:r.overrideMimeType(c);var p={"X-Requested-With":"XMLHttpRequest",Accept:"application/octet-stream","share-secret":t.secret,Authorization:"Bearer "+o},l=t.headers||{};for(var u in l)p[u]=l[u];for(var u in p)p[u]&&r.setRequestHeader(u,p[u]);r.send(null)},parseTextMessage:function(e,t){if("string"==typeof e){if("[object Object]"!==Object.prototype.toString.call(t))return{isemoji:!1,body:[{type:"txt",data:e}]};var o=e,n=[],i=/\[[^[\]]{2,3}\]/gm,r=o.match(i);if(!r||r.length<1)return{isemoji:!1,body:[{type:"txt",data:e}]};for(var s=!1,a=0;a<r.length;a++){var c=o.substring(0,o.indexOf(r[a])),p=WebIM.Emoji.map[r[a]];if(c&&n.push({type:"txt",data:c}),p){var l=WebIM.Emoji.map?WebIM.Emoji.path+p:null;l?(s=!0,n.push({type:"emoji",data:l})):n.push({type:"txt",data:r[a]});var u=o.indexOf(r[a])+r[a].length;o=o.substring(u)}else n.push({type:"txt",data:r[a]})}return o&&n.push({type:"txt",data:o}),s?{isemoji:s,body:n}:{isemoji:!1,body:[{type:"txt",data:e}]}}},parseUri:function(){var e=/([^\?|&])\w+=([^&]+)/g,t={};if(window.location.search){var o=window.location.search.match(e);for(var n in o){var i=o[n],r=i.indexOf("="),s=i.substr(0,r),a=i.substr(r+1);t[s]=a}}return t},xmlrequest:c,getXmlFirstChild:function(e,t){var o=e.getElementsByTagName(t);return 0==o.length?null:o[0]},ajax:function(t){var o=t.dataType||"text",n=t.success||e,r=t.error||e,s=E.xmlrequest();s.onreadystatechange=function(){if(4===s.readyState){var e=s.status||0;if(200===e){try{switch(o){case"text":return void n(s.responseText);case"json":var t=E.parseJSON(s.responseText);return void n(t,s);case"xml":return void(s.responseXML&&s.responseXML.documentElement?n(s.responseXML.documentElement,s):r({type:i.WEBIM_CONNCTION_AJAX_ERROR,data:s.responseText}))}n(s.response||s.responseText,s)}catch(a){r({type:i.WEBIM_CONNCTION_AJAX_ERROR,data:a})}return}return void r({type:i.WEBIM_CONNCTION_AJAX_ERROR,data:s.responseText})}0===s.readyState&&r({type:i.WEBIM_CONNCTION_AJAX_ERROR,data:s.responseText})},t.responseType&&s.responseType&&(s.responseType=t.responseType),t.mimeType&&E.hasOverrideMimeType&&s.overrideMimeType(t.mimeType);var a=t.type||"POST",c=t.data||null,p="";if("get"===a.toLowerCase()&&c){for(var l in c)c.hasOwnProperty(l)&&(p+=l+"="+c[l]+"&");p=p?p.slice(0,-1):p,t.url+=(t.url.indexOf("?")>0?"&":"?")+(p?p+"&":p)+"_v="+(new Date).getTime(),c=null,p=null}if(s.open(a,t.url),E.isCanSetRequestHeader){var u=t.headers||{};for(var d in u)u.hasOwnProperty(d)&&s.setRequestHeader(d,u[d])}return s.send(c),s},ts:function(){var e=new Date,t=e.getHours(),o=e.getMinutes(),n=e.getSeconds(),i=e.getMilliseconds();return(t<10?"0"+t:t)+":"+(o<10?"0"+o:o)+":"+(n<10?"0"+n:n)+":"+i+" "},getObjectKey:function(e,t){for(var o in e)if(e[o]==t)return o;return""},sprintf:function(){var e,t,o=arguments,n=o[0]||"";for(e=1,t=o.length;e<t;e++)n=n.replace(/%s/,o[e]);return n},encrypt:function O(e){var t=new l,O=t.encode(e);return O},decrypt:function I(e){var t=new l,I=t.decode(e);return I=escape(I),I=I.replace(/%00/g,""),I=unescape(I)},setCookie:function(e,t,o){var n=e+"="+encodeURIComponent(t);"number"==typeof o&&(n+="; max-age: "+60*o*60*24),document.cookie=n},getCookie:function(){var e={},t=document.cookie;if(""===t)return e;for(var o=t.split("; "),n=0;n<o.length;n++){var i=o[n],r=i.indexOf("="),s=i.substring(0,r),a=i.substring(r+1);a=decodeURIComponent(a),e[s]=a}return e}};t.utils=E}()},205:function(e,t){"use strict";!function(){t.code={WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR:0,WEBIM_CONNCTION_OPEN_ERROR:1,WEBIM_CONNCTION_AUTH_ERROR:2,WEBIM_CONNCTION_OPEN_USERGRID_ERROR:3,WEBIM_CONNCTION_ATTACH_ERROR:4,WEBIM_CONNCTION_ATTACH_USERGRID_ERROR:5,WEBIM_CONNCTION_REOPEN_ERROR:6,WEBIM_CONNCTION_SERVER_CLOSE_ERROR:7,WEBIM_CONNCTION_SERVER_ERROR:8,WEBIM_CONNCTION_IQ_ERROR:9,WEBIM_CONNCTION_PING_ERROR:10,WEBIM_CONNCTION_NOTIFYVERSION_ERROR:11,WEBIM_CONNCTION_GETROSTER_ERROR:12,WEBIM_CONNCTION_CROSSDOMAIN_ERROR:13,WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES:14,WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR:15,WEBIM_CONNCTION_DISCONNECTED:16,WEBIM_CONNCTION_AJAX_ERROR:17,WEBIM_CONNCTION_JOINROOM_ERROR:18,WEBIM_CONNCTION_GETROOM_ERROR:19,WEBIM_CONNCTION_GETROOMINFO_ERROR:20,WEBIM_CONNCTION_GETROOMMEMBER_ERROR:21,WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR:22,WEBIM_CONNCTION_LOAD_CHATROOM_ERROR:23,WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR:24,WEBIM_CONNCTION_JOINCHATROOM_ERROR:25,WEBIM_CONNCTION_QUITCHATROOM_ERROR:26,WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR:27,WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR:28,WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR:29,WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR:30,WEBIM_CONNCTION_CALLBACK_INNER_ERROR:31,WEBIM_CONNCTION_CLIENT_OFFLINE:32,WEBIM_CONNCTION_CLIENT_LOGOUT:33,WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR:34,WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP:35,WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP:36,WEBIM_CONNECTION_ACCEPT_JOIN_GROUP:37,WEBIM_CONNECTION_DECLINE_JOIN_GROUP:38,WEBIM_CONNECTION_CLOSED:39,WEBIM_UPLOADFILE_BROWSER_ERROR:100,WEBIM_UPLOADFILE_ERROR:101,WEBIM_UPLOADFILE_NO_LOGIN:102,WEBIM_UPLOADFILE_NO_FILE:103,WEBIM_DOWNLOADFILE_ERROR:200,WEBIM_DOWNLOADFILE_NO_LOGIN:201,WEBIM_DOWNLOADFILE_BROWSER_ERROR:202,WEBIM_MESSAGE_REC_TEXT:300,WEBIM_MESSAGE_REC_TEXT_ERROR:301,WEBIM_MESSAGE_REC_EMOTION:302,WEBIM_MESSAGE_REC_PHOTO:303,WEBIM_MESSAGE_REC_AUDIO:304,WEBIM_MESSAGE_REC_AUDIO_FILE:305,WEBIM_MESSAGE_REC_VEDIO:306,WEBIM_MESSAGE_REC_VEDIO_FILE:307,WEBIM_MESSAGE_REC_FILE:308,WEBIM_MESSAGE_SED_TEXT:309,WEBIM_MESSAGE_SED_EMOTION:310,WEBIM_MESSAGE_SED_PHOTO:311,WEBIM_MESSAGE_SED_AUDIO:312,WEBIM_MESSAGE_SED_AUDIO_FILE:313,WEBIM_MESSAGE_SED_VEDIO:314,WEBIM_MESSAGE_SED_VEDIO_FILE:315,WEBIM_MESSAGE_SED_FILE:316,WEBIM_MESSAGE_SED_ERROR:317,STATUS_INIT:400,STATUS_DOLOGIN_USERGRID:401,STATUS_DOLOGIN_IM:402,STATUS_OPENED:403,STATUS_CLOSING:404,STATUS_CLOSED:405,STATUS_ERROR:406}}()},211:function(e,t,o){"use strict";e.exports=o(212)},212:function(module,exports,__webpack_require__){"use strict";function _parsePrivacy(e){var t=[],o=e.getElementsByTagName("item");if(o)for(var n=0;n<o.length;n++){var i=o[n],r=i.getAttribute("value"),s=i.getAttribute("order"),a=i.getAttribute("type");if(r){var c=_parseNameFromJidFn(r);t[c]={type:a,order:s,jid:r,name:c}}}return t}function _parseGroupBlacklist(e){var t={},o=e.getElementsByTagName("item");if(o)for(var n=0;n<o.length;n++){var i=o[n],r=i.getAttribute("jid"),s=i.getAttribute("affiliation"),a=i.getAttribute("nick");if(r){var c=_parseNameFromJidFn(r);t[c]={jid:r,affiliation:s,nick:a,name:c}}}return t}function _setText(e,t){"textContent"in e?e.textContent=t:"text"in e&&(e.text=t)}function logMessage(e){WebIM&&WebIM.config.isDebug&&console.log(WebIM.utils.ts()+"[recv] ",e.data)}var _version="1.4.2",_code=__webpack_require__(205).code,_utils=__webpack_require__(204).utils,_msg=__webpack_require__(213),_message=_msg._msg,_msgHash={},Queue=__webpack_require__(214).Queue;window.URL=window.URL||window.webkitURL||window.mozURL||window.msURL,window.XDomainRequest&&(XDomainRequest.prototype.oldsend=XDomainRequest.prototype.send,XDomainRequest.prototype.send=function(){XDomainRequest.prototype.oldsend.apply(this,arguments),this.readyState=2}),Strophe.Request.prototype._newXHR=function(){var e=_utils.xmlrequest(!0);return e.overrideMimeType&&e.overrideMimeType("text/xml"),e.onreadystatechange=this.func.bind(null,this),e},Strophe.Websocket.prototype._closeSocket=function(){if(this.socket){var e=this;setTimeout(function(){try{e.socket.close()}catch(t){}},0)}else this.socket=null},Strophe.Websocket.prototype._onMessage=function(e){logMessage(e);var t,o;if(0===e.data.indexOf("<close ")){t=(new DOMParser).parseFromString(e.data,"text/xml").documentElement;var n=t.getAttribute("see-other-uri");return void(n?(this._conn._changeConnectStatus(Strophe.Status.REDIRECT,"Received see-other-uri, resetting connection"),this._conn.reset(),this._conn.service=n,this._connect()):this._conn._doDisconnect("receive <close> from server"))}if(0===e.data.search("<open ")){if(t=(new DOMParser).parseFromString(e.data,"text/xml").documentElement,!this._handleStreamStart(t))return}else o=this._streamWrap(e.data),t=(new DOMParser).parseFromString(o,"text/xml").documentElement;if(!this._check_streamerror(t,Strophe.Status.ERROR))return this._conn.disconnecting&&"presence"===t.firstChild.nodeName&&"unavailable"===t.firstChild.getAttribute("type")?(this._conn.xmlInput(t),void this._conn.rawInput(Strophe.serialize(t))):void this._conn._dataRecv(t,e.data)};var _listenNetwork=function(e,t){window.addEventListener?(window.addEventListener("online",e),window.addEventListener("offline",t)):window.attachEvent&&(document.body?(document.body.attachEvent("ononline",e),document.body.attachEvent("onoffline",t)):window.attachEvent("load",function(){document.body.attachEvent("ononline",e),document.body.attachEvent("onoffline",t)}))},_parseRoom=function(e){var t=[],o=e.getElementsByTagName("item");if(o)for(var n=0;n<o.length;n++){var i=o[n],r=i.getAttribute("jid"),s=r.split("@")[0],a={jid:r,name:i.getAttribute("name"),roomId:s.split("_")[1]};t.push(a)}return t},_parseRoomOccupants=function(e){var t=[],o=e.getElementsByTagName("item");if(o)for(var n=0;n<o.length;n++){var i=o[n],r={jid:i.getAttribute("jid"),name:i.getAttribute("name")};t.push(r)}return t},_parseResponseMessage=function _parseResponseMessage(msginfo){var parseMsgData={errorMsg:!0,data:[]},msgBodies=msginfo.getElementsByTagName("body");if(msgBodies){for(var i=0;i<msgBodies.length;i++){var msgBody=msgBodies[i],childNodes=msgBody.childNodes;if(childNodes&&childNodes.length>0){var childNode=msgBody.childNodes[0];if(childNode.nodeType==Strophe.ElementType.TEXT){var jsondata=childNode.wholeText||childNode.nodeValue;jsondata=jsondata.replace("\n","<br>");try{var data=eval("("+jsondata+")");parseMsgData.errorMsg=!1,parseMsgData.data=[data]}catch(e){}}}}var delayTags=msginfo.getElementsByTagName("delay");if(delayTags&&delayTags.length>0){var delayTag=delayTags[0],delayMsgTime=delayTag.getAttribute("stamp");delayMsgTime&&(parseMsgData.delayTimeStamp=delayMsgTime)}}else{var childrens=msginfo.childNodes;if(childrens&&childrens.length>0){var child=msginfo.childNodes[0];if(child.nodeType==Strophe.ElementType.TEXT)try{var data=eval("("+child.nodeValue+")");parseMsgData.errorMsg=!1,parseMsgData.data=[data]}catch(e){}}}return parseMsgData},_parseNameFromJidFn=function(e,t){t=t||"";var o=e,n=o.indexOf("_");n!==-1&&(o=o.substring(n+1));var i=o.indexOf("@"+t);return i!==-1&&(o=o.substring(0,i)),o},_parseFriend=function(e,t,o){var n=[],i=e.getElementsByTagName("item");if(i)for(var r=0;r<i.length;r++){var s=i[r],a=s.getAttribute("jid");if(a){var c=s.getAttribute("subscription"),p={subscription:c,jid:a},l=s.getAttribute("ask");l&&(p.ask=l);var u=s.getAttribute("name");if(u)p.name=u;else{var d=_parseNameFromJidFn(a);p.name=d}var m=[];Strophe.forEachChild(s,"group",function(e){m.push(Strophe.getText(e))}),p.groups=m,n.push(p),t&&"from"==c&&!l&&t.subscribe({toJid:a}),t&&"to"==c&&t.subscribed({toJid:a})}}return n},_login=function(e,t){var o=e.access_token||"";if(""==o){_utils.stringify(e);return void t.onError({type:_code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,data:e})}t.context.accessToken=e.access_token,t.context.accessTokenExpires=e.expires_in;var n=null;n=t.isOpening()&&t.context.stropheConn?t.context.stropheConn:t.isOpened()&&t.context.stropheConn?t.getStrophe():t.getStrophe();var i=function(e,o){_loginCallback(e,o,t)};t.context.stropheConn=n,t.route?n.connect(t.context.jid,"$t$"+o,i,t.wait,t.hold,t.route):n.connect(t.context.jid,"$t$"+o,i,t.wait,t.hold)},_parseMessageType=function(e){var t=e.getElementsByTagName("received"),o=e.getElementsByTagName("invite"),n=e.getElementsByTagName("delivery"),i=e.getElementsByTagName("acked"),r=e.getElementsByTagName("error"),s="normal";if(t&&t.length>0&&"urn:xmpp:receipts"===t[0].namespaceURI)s="received";else if(o&&o.length>0)s="invite";else if(n&&n.length>0)s="delivery";else if(i&&i.length)s="acked";else if(r&&r.length){var a=r[0],c=a.getElementsByTagName("user-muted");c&&c.length&&(s="userMuted")}return s},_handleMessageQueue=function(e){for(var t in _msgHash)_msgHash.hasOwnProperty(t)&&_msgHash[t].send(e)},_loginCallback=function(e,t,o){var n,i;if("conflict"===t&&(n=!0),e==Strophe.Status.CONNFAIL)i={type:_code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,msg:t,reconnect:!0},n&&(i.conflict=!0),o.onError(i);else if(e==Strophe.Status.ATTACHED||e==Strophe.Status.CONNECTED){o.autoReconnectNumTotal=0,o.intervalId=setInterval(function(){o.handelSendQueue()},200);var r=function(e){var t=e.getElementsByTagName("delivery"),n=e.getElementsByTagName("acked");if(t.length)return o.handleDeliveredMessage(e),!0;if(n.length)return o.handleAckedMessage(e),!0;var i=_parseMessageType(e);switch(i){case"received":return o.handleReceivedMessage(e),!0;case"invite":return o.handleInviteMessage(e),!0;case"delivery":return o.handleDeliveredMessage(e),!0;case"acked":return o.handleAckedMessage(e),!0;case"userMuted":return o.handleMutedMessage(e),!0;default:return o.handleMessage(e),!0}},s=function(e){return o.handlePresence(e),!0},a=function(e){return o.handlePing(e),!0},c=function(e){return o.handleIqRoster(e),!0},p=function(e){return o.handleIqPrivacy(e),!0},l=function(e){return o.handleIq(e),!0};o.addHandler(r,null,"message",null,null,null),o.addHandler(s,null,"presence",null,null,null),o.addHandler(a,"urn:xmpp:ping","iq","get",null,null),o.addHandler(c,"jabber:iq:roster","iq","set",null,null),o.addHandler(p,"jabber:iq:privacy","iq","set",null,null),o.addHandler(l,null,"iq",null,null,null),o.registerConfrIQHandler&&o.registerConfrIQHandler(),o.context.status=_code.STATUS_OPENED;var u=[_code.WEBIM_MESSAGE_REC_TEXT,_code.WEBIM_MESSAGE_REC_EMOJI];_utils.isCanDownLoadFile&&(u.push(_code.WEBIM_MESSAGE_REC_PHOTO),u.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE));var d=[_code.WEBIM_MESSAGE_SED_TEXT];_utils.isCanUploadFile&&(d.push(_code.WEBIM_MESSAGE_REC_PHOTO),d.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE)),o.notifyVersion(),o.retry&&_handleMessageQueue(o),o.heartBeat(),o.isAutoLogin&&o.setPresence(),o.onOpened({canReceive:u,canSend:d,accessToken:o.context.accessToken})}else if(e==Strophe.Status.DISCONNECTING)o.isOpened()&&(o.stopHeartBeat(),o.context.status=_code.STATUS_CLOSING,i={type:_code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,msg:t,reconnect:!0},n&&(i.conflict=!0),o.onError(i));else if(e==Strophe.Status.DISCONNECTED){if(o.isOpened()){if(o.autoReconnectNumTotal<o.autoReconnectNumMax)return void o.reconnect();i={type:_code.WEBIM_CONNCTION_DISCONNECTED},o.onError(i)}o.context.status=_code.STATUS_CLOSED,o.clear(),o.onClosed()}else e==Strophe.Status.AUTHFAIL?(i={type:_code.WEBIM_CONNCTION_AUTH_ERROR},n&&(i.conflict=!0),o.onError(i),o.clear()):e==Strophe.Status.ERROR&&(o.context.status=_code.STATUS_ERROR,i={type:_code.WEBIM_CONNCTION_SERVER_ERROR},n&&(i.conflict=!0),o.onError(i));o.context.status_now=e},_getJid=function(e,t){var o=e.toJid||"";if(""===o){var n=t.context.appKey||"",i=n+"_"+e.to+"@"+t.domain;e.resource&&(i=i+"/"+e.resource),o=i}return o},_getJidByName=function(e,t){var o={to:e};return _getJid(o,t)},_validCheck=function(e,t){if(e=e||{},""==e.user)return t.onError({type:_code.WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR}),!1;var o=e.user+""||"",n=e.appKey||"",i=n.split("#");if(2!==i.length)return t.onError({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR}),!1;var r=i[0],s=i[1];if(!r)return t.onError({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR}),!1;if(!s)return t.onError({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR}),!1;var a=n+"_"+o.toLowerCase()+"@"+t.domain,c=e.resource||"webim";return t.isMultiLoginSessions&&(c+=o+(new Date).getTime()+Math.floor(1e6*Math.random().toFixed(6))),t.context.jid=a+"/"+c,t.context.userId=o,t.context.appKey=n,t.context.appName=s,t.context.orgName=r,!0},_getXmppUrl=function(e,t){if(/^(ws|http)s?:\/\/?/.test(e))return e;var o={prefix:"http",base:"://"+e,suffix:"/http-bind/"};return t&&_utils.isSupportWss?(o.prefix="wss",o.suffix="/ws/"):t?o.prefix="https":window.WebSocket&&(o.prefix="ws",o.suffix="/ws/"),o.prefix+o.base+o.suffix},connection=function e(t){if(!this instanceof e)return new e(t);var t=t||{};this.isHttpDNS=t.isHttpDNS||!1,this.isMultiLoginSessions=t.isMultiLoginSessions||!1,this.wait=t.wait||30,this.retry=t.retry||!1,this.https=t.https||"https:"===location.protocol,this.url=_getXmppUrl(t.url,this.https),this.hold=t.hold||1,this.route=t.route||null,this.domain=t.domain||"easemob.com",this.inactivity=t.inactivity||30,this.heartBeatWait=t.heartBeatWait||4500,this.maxRetries=t.maxRetries||5,this.isAutoLogin=t.isAutoLogin!==!1,this.pollingTime=t.pollingTime||800,this.stropheConn=!1,this.autoReconnectNumMax=t.autoReconnectNumMax||0,this.autoReconnectNumTotal=0,this.autoReconnectInterval=t.autoReconnectInterval||0,this.context={status:_code.STATUS_INIT},this.sendQueue=new Queue,this.intervalId=null,this.apiUrl=t.apiUrl||"",this.isWindowSDK=t.isWindowSDK||!1,this.dnsArr=["https://rs.easemob.com","https://rsbak.easemob.com","http://182.92.174.78","http://112.126.66.111"],this.dnsIndex=0,this.dnsTotal=this.dnsArr.length,this.restHosts=null,this.restIndex=0,this.restTotal=0,this.xmppHosts=null,this.xmppIndex=0,this.xmppTotal=0,this.groupOption={}};connection.prototype.registerUser=function(e){"https:"!=location.protocol&&this.isHttpDNS?(this.dnsIndex=0,this.getHttpDNS(e,"signup")):this.signup(e)},connection.prototype.handelSendQueue=function(){var e=this.sendQueue.pop();null!==e&&this.sendReceiptsMessage(e)},connection.prototype.listen=function(e){this.onOpened=e.onOpened||_utils.emptyfn,this.onClosed=e.onClosed||_utils.emptyfn,this.onTextMessage=e.onTextMessage||_utils.emptyfn,this.onEmojiMessage=e.onEmojiMessage||_utils.emptyfn,this.onPictureMessage=e.onPictureMessage||_utils.emptyfn,this.onAudioMessage=e.onAudioMessage||_utils.emptyfn,this.onVideoMessage=e.onVideoMessage||_utils.emptyfn,this.onFileMessage=e.onFileMessage||_utils.emptyfn,this.onLocationMessage=e.onLocationMessage||_utils.emptyfn,this.onCmdMessage=e.onCmdMessage||_utils.emptyfn,this.onPresence=e.onPresence||_utils.emptyfn,this.onRoster=e.onRoster||_utils.emptyfn,this.onError=e.onError||_utils.emptyfn,this.onReceivedMessage=e.onReceivedMessage||_utils.emptyfn,this.onInviteMessage=e.onInviteMessage||_utils.emptyfn,this.onDeliverdMessage=e.onDeliveredMessage||_utils.emptyfn,this.onReadMessage=e.onReadMessage||_utils.emptyfn,this.onMutedMessage=e.onMutedMessage||_utils.emptyfn,this.onOffline=e.onOffline||_utils.emptyfn,this.onOnline=e.onOnline||_utils.emptyfn,this.onConfirmPop=e.onConfirmPop||_utils.emptyfn,this.onCreateGroup=e.onCreateGroup||_utils.emptyfn,this.onUpdateMyGroupList=e.onUpdateMyGroupList||_utils.emptyfn,this.onUpdateMyRoster=e.onUpdateMyRoster||_utils.emptyfn,this.onBlacklistUpdate=e.onBlacklistUpdate||_utils.emptyfn,_listenNetwork(this.onOnline,this.onOffline)},connection.prototype.heartBeat=function(){var e=arguments.length>0&&void 0!==arguments[0]&&arguments[0],t=this,o=!/^ws|wss/.test(t.url)||/mobile/.test(navigator.userAgent);if(!this.heartBeatID&&(e||o)){var n={toJid:this.domain,type:"normal"};this.heartBeatID=setInterval(function(){t.ping(n)},this.heartBeatWait)}},connection.prototype.stopHeartBeat=function(){"number"==typeof this.heartBeatID&&(this.heartBeatID=clearInterval(this.heartBeatID))},connection.prototype.sendReceiptsMessage=function(e){var t=$msg({from:this.context.jid||"",to:this.domain,id:e.id||""}).c("received",{xmlns:"urn:xmpp:receipts",id:e.id||""});this.sendCommand(t.tree())},connection.prototype.cacheReceiptsMessage=function(e){this.sendQueue.push(e)},connection.prototype.getStrophe=function(){if("https:"!=location.protocol&&this.isHttpDNS){var e="",t=this.xmppHosts[this.xmppIndex],o=_utils.getXmlFirstChild(t,"domain"),n=_utils.getXmlFirstChild(t,"ip");if(n){e=n.textContent;var i=_utils.getXmlFirstChild(t,"port");"80"!=i.textContent&&(e+=":"+i.textContent)}else e=o.textContent;if(""!=e){var r=/(.+\/\/).+(\/.+)/;this.url=this.url.replace(r,"$1"+e+"$2")}}var s=new Strophe.Connection(this.url,{inactivity:this.inactivity,maxRetries:this.maxRetries,pollingTime:this.pollingTime});return s},connection.prototype.getHostsByTag=function(e,t){var o=_utils.getXmlFirstChild(e,t);if(!o)return console.log(t+" hosts error"),null;var n=o.getElementsByTagName("hosts");return 0==n.length?(console.log(t+" hosts error2"),null):n[0].getElementsByTagName("host")},connection.prototype.getRestFromHttpDNS=function(e,t){if(this.restIndex>this.restTotal)return void console.log("rest hosts all tried,quit");var o="",n=this.restHosts[this.restIndex],i=_utils.getXmlFirstChild(n,"domain"),r=_utils.getXmlFirstChild(n,"ip");if(r){var s=_utils.getXmlFirstChild(n,"port");o=("https:"===location.protocol?"https:":"http:")+"//"+r.textContent+":"+s.textContent}else o=("https:"===location.protocol?"https:":"http:")+"//"+i.textContent;""!=o&&(this.apiUrl=o,e.apiUrl=o),"login"==t?this.login(e):this.signup(e)},connection.prototype.getHttpDNS=function(e,t){if(this.restHosts)return void this.getRestFromHttpDNS(e,t);var o=this,n=function(n,i){n=(new DOMParser).parseFromString(n,"text/xml").documentElement;var r=o.getHostsByTag(n,"rest");if(!r)return void console.log("rest hosts error3");o.restHosts=r,o.restTotal=r.length;var s=o.getHostsByTag(n,"xmpp");return s?(o.xmppHosts=s,o.xmppTotal=s.length,void o.getRestFromHttpDNS(e,t)):void console.log("xmpp hosts error3")},i=function(n,i,r){console.log("getHttpDNS error",n,r),o.dnsIndex++,o.dnsIndex<o.dnsTotal&&o.getHttpDNS(e,t)},r={url:this.dnsArr[this.dnsIndex]+"/easemob/server.xml",
-dataType:"text",type:"GET",data:{app_key:encodeURIComponent(e.appKey)},success:n||_utils.emptyfn,error:i||_utils.emptyfn};_utils.ajax(r)},connection.prototype.signup=function(e){var t=this,o=e.orgName||"",n=e.appName||"",i=e.appKey||"",r=e.success||EMPTYFN,s=e.error||EMPTYFN;if(!o&&!n&&i){var a=i.split("#");2===a.length&&(o=a[0],n=a[1])}if(!o&&!n)return void s({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR});var c=function(o,n,i){return"https:"!=location.protocol&&t.isHttpDNS&&t.restIndex+1<t.restTotal?(t.restIndex++,void t.getRestFromHttpDNS(e,"signup")):(t.clear(),void s(o))},p=e.https||p,l=e.apiUrl,u=l+"/"+o+"/"+n+"/users",d={username:e.username,password:e.password,nickname:e.nickname||""},m=_utils.stringify(d),h={url:u,dataType:"json",data:m,success:r,error:c};_utils.ajax(h)},connection.prototype.open=function(e){e.xmppURL&&(this.url=_getXmppUrl(e.xmppURL,this.https)),"https:"!=location.protocol&&this.isHttpDNS?(this.dnsIndex=0,this.getHttpDNS(e,"login")):this.login(e)},connection.prototype.login=function(e){var t=_validCheck(e,this);if(t){var o=this;if(!o.isOpened())if(e.accessToken)e.access_token=e.accessToken,o.context.restTokenData=e,_login(e,o);else{var n=e.apiUrl,i=this.context.userId,r=e.pwd||"",s=this.context.appName,a=this.context.orgName,c=function(t,n){o.context.status=_code.STATUS_DOLOGIN_IM,o.context.restTokenData=t,e.success&&e.success(t),_login(t,o)},p=function(t,n,i){return e.error&&e.error(),"https:"!=location.protocol&&o.isHttpDNS&&o.restIndex+1<o.restTotal?(o.restIndex++,void o.getRestFromHttpDNS(e,"login")):(o.clear(),void(t.error&&t.error_description?o.onError({type:_code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,data:t,xhr:n}):o.onError({type:_code.WEBIM_CONNCTION_OPEN_ERROR,data:t,xhr:n})))};this.context.status=_code.STATUS_DOLOGIN_USERGRID;var l={grant_type:"password",username:i,password:r,timestamp:+new Date},u=_utils.stringify(l),d={url:n+"/"+a+"/"+s+"/token",dataType:"json",data:u,success:c||_utils.emptyfn,error:p||_utils.emptyfn};_utils.ajax(d)}}},connection.prototype.attach=function(e){var t=_validCheck(e,this);if(t){e=e||{};var o=e.accessToken||"";if(""==o)return void this.onError({type:_code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR});var n=e.sid||"";if(""===n)return void this.onError({type:_code.WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR});var i=e.rid||"";if(""===i)return void this.onError({type:_code.WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR});var r=this.getStrophe();this.context.accessToken=o,this.context.stropheConn=r,this.context.status=_code.STATUS_DOLOGIN_IM;var s=this,a=function(e,t){_loginCallback(e,t,s)},c=this.context.jid,p=this.wait,l=this.hold,u=this.wind||5;r.attach(c,n,i,a,p,l,u)}},connection.prototype.close=function(e){this.stopHeartBeat();var t=this.context.status;t!=_code.STATUS_INIT&&(this.isClosed()||this.isClosing()||(this.context.status=_code.STATUS_CLOSING,this.context.stropheConn.disconnect(e)))},connection.prototype.addHandler=function(e,t,o,n,i,r,s){this.context.stropheConn.addHandler(e,t,o,n,i,r,s)},connection.prototype.notifyVersion=function(e,t){var o=(_getJid({},this),$iq({from:this.context.jid||"",to:this.domain,type:"result"}).c("query",{xmlns:"jabber:iq:version"}).c("name").t("easemob").up().c("version").t(_version).up().c("os").t("webim")),e=e||_utils.emptyfn,n=t||this.onError,i=function(e){n({type:_code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR,data:e})};this.context.stropheConn.sendIQ(o.tree(),e,i)},connection.prototype.handlePresence=function(e){if(!this.isClosed()){var t=e.getAttribute("from")||"",o=e.getAttribute("to")||"",n=e.getAttribute("type")||"",i=e.getAttribute("presence_type")||"",r=_parseNameFromJidFn(t),s=_parseNameFromJidFn(o),a=!1,c=!1,p=!1,l=!1,u={from:r,to:s,fromJid:t,toJid:o,type:n,chatroom:!!e.getElementsByTagName("roomtype").length},d=e.getElementsByTagName("show");if(d&&d.length>0){var m=d[0];u.show=Strophe.getText(m)}var h=e.getElementsByTagName("status");if(h&&h.length>0){var f=h[0];u.status=Strophe.getText(f),u.code=f.getAttribute("code")}var _=e.getElementsByTagName("priority");if(_&&_.length>0){var y=_[0];u.priority=Strophe.getText(y)}var g=e.getElementsByTagName("error");if(g&&g.length>0){var g=g[0];u.error={code:g.getAttribute("code")}}var E=e.getElementsByTagName("destroy");if(E&&E.length>0){var E=E[0];u.destroy=!0;var O=E.getElementsByTagName("reason");O&&O.length>0&&(u.reason=Strophe.getText(O[0]))}var I=e.getElementsByTagName("item");if(I&&I.length>0){var N=I[0],v=N.getAttribute("role"),T=N.getAttribute("jid"),R=N.getAttribute("affiliation");if("none"==v&&T){var C=_parseNameFromJidFn(T),b=N.getElementsByTagName("actor")[0],x=b.getAttribute("nick");u.actor=x,u.kicked=C}"moderator"==v&&"201"==u.code&&"owner"===R&&(u.type="createGroupACK",a=!0)}var M=e.getElementsByTagName("x");if(M&&M.length>0){var S=M[0].getElementsByTagName("apply"),A=M[0].getElementsByTagName("accept"),B=M[0].getElementsByTagName("item"),w=M[0].getElementsByTagName("decline");if(S&&S.length>0){l=!0,u.toNick=S[0].getAttribute("toNick"),u.type="joinGroupNotifications";var U=S[0].getAttribute("to"),W=U.split("@")[0].split("_");W=W[W.length-1],u.gid=W}else if(A&&A.length>0)u.type="joinPublicGroupSuccess";else if(B&&B.length>0){var R=B[0].getAttribute("affiliation"),v=B[0].getAttribute("role");"member"!=R&&"participant"!=v||(c=!0,u.mid=u.fromJid.split("/"),u.mid=u.mid[u.mid.length-1],u.type="memberJoinPublicGroupSuccess")}else if(w&&w.length){p=!0;var W=w[0].getAttribute("fromNick"),F=_parseNameFromJidFn(w[0].getAttribute("from"));u.type="joinPublicGroupDeclined",u.owner=F,u.gid=W}}if(u.chatroom){u.presence_type=i,u.original_type=u.type;var D=t.slice(t.lastIndexOf("/")+1);D===this.context.userId&&(""!==u.type||u.code?"unavailable"!==i&&"unavailable"!==u.type||(u.status?110==u.code?u.type="leaveChatRoom":u.error&&406==u.error.code&&(u.type="reachChatRoomCapacity"):u.type="leaveChatRoom"):u.type="joinChatRoomSuccess")}else if(u.presence_type=i,u.original_type=n,/subscribe/.test(u.type));else if(""!=n||u.status||u.error||a||l||c||p){if("unavailable"===i||"unavailable"===n)if(u.destroy)u.type="deleteGroupChat";else if(307==u.code||321==u.code){var L=e.getAttribute("nick");L?u.type="removedFromGroup":u.type="leaveGroup"}}else u.type="joinPublicGroupSuccess";this.onPresence(u,e)}},connection.prototype.handlePing=function(e){if(!this.isClosed()){var t=e.getAttribute("id"),o=e.getAttribute("from"),n=e.getAttribute("to"),i=$iq({from:n,to:o,id:t,type:"result"});this.sendCommand(i.tree())}},connection.prototype.handleIq=function(e){return!0},connection.prototype.handleIqPrivacy=function(e){var t=e.getElementsByTagName("list");0!=t.length&&this.getBlacklist()},connection.prototype.handleIqRoster=function(e){var t=e.getAttribute("id"),o=e.getAttribute("from")||"",n=(_parseNameFromJidFn(o),this.context.jid),i=(this.context.userId,$iq({type:"result",id:t,from:n}));this.sendCommand(i.tree());var r=e.getElementsByTagName("query");if(r&&r.length>0){var s=r[0],a=_parseFriend(s,this,o);this.onRoster(a)}return!0},connection.prototype.handleMessage=function(e){var t=this;if(!this.isClosed()){var o=e.getAttribute("id")||"";this.cacheReceiptsMessage({id:o});var n=_parseResponseMessage(e);if(n.errorMsg)return void this.handlePresence(e);var i=e.getElementsByTagName("error"),r="",s="",a=!1;if(i.length>0){a=!0,r=i[0].getAttribute("code");var c=i[0].getElementsByTagName("text");s=c[0].textContent||c[0].text}var p=n.data;for(var l in p)if(p.hasOwnProperty(l)){var u=p[l];if(u.from&&u.to){var d=(u.from+"").toLowerCase(),m=(u.to+"").toLowerCase(),h=u.ext||{},f="",_=e.getElementsByTagName("roomtype");f=_.length?_[0].getAttribute("type")||"chat":e.getAttribute("type")||"chat";var y=u.bodies;if(y&&0!=y.length){var g=u.bodies[0],E=g.type;try{switch(E){case"txt":var O=g.msg,I=_utils.parseTextMessage(O,WebIM.Emoji);if(I.isemoji){var u={id:o,type:f,from:d,to:m,delay:n.delayTimeStamp,data:I.body,ext:h};!u.delay&&delete u.delay,u.error=a,u.errorText=s,u.errorCode=r,this.onEmojiMessage(u)}else{var u={id:o,type:f,from:d,to:m,delay:n.delayTimeStamp,data:O,ext:h};!u.delay&&delete u.delay,u.error=a,u.errorText=s,u.errorCode=r,this.onTextMessage(u)}break;case"img":var N=0,v=0;g.size&&(N=g.size.width,v=g.size.height);var u={id:o,type:f,from:d,to:m,url:"https:"!=location.protocol&&t.isHttpDNS?t.apiUrl+g.url.substr(g.url.indexOf("/",9)):g.url,secret:g.secret,filename:g.filename,thumb:g.thumb,thumb_secret:g.thumb_secret,file_length:g.file_length||"",width:N,height:v,filetype:g.filetype||"",accessToken:this.context.accessToken||"",ext:h,delay:n.delayTimeStamp};!u.delay&&delete u.delay,u.error=a,u.errorText=s,u.errorCode=r,this.onPictureMessage(u);break;case"audio":var u={id:o,type:f,from:d,to:m,url:"https:"!=location.protocol&&t.isHttpDNS?t.apiUrl+g.url.substr(g.url.indexOf("/",9)):g.url,secret:g.secret,filename:g.filename,length:g.length||"",file_length:g.file_length||"",filetype:g.filetype||"",accessToken:this.context.accessToken||"",ext:h,delay:n.delayTimeStamp};!u.delay&&delete u.delay,u.error=a,u.errorText=s,u.errorCode=r,this.onAudioMessage(u);break;case"file":var u={id:o,type:f,from:d,to:m,url:"https:"!=location.protocol&&t.isHttpDNS?t.apiUrl+g.url.substr(g.url.indexOf("/",9)):g.url,secret:g.secret,filename:g.filename,file_length:g.file_length,accessToken:this.context.accessToken||"",ext:h,delay:n.delayTimeStamp};!u.delay&&delete u.delay,u.error=a,u.errorText=s,u.errorCode=r,this.onFileMessage(u);break;case"loc":var u={id:o,type:f,from:d,to:m,addr:g.addr,lat:g.lat,lng:g.lng,ext:h,delay:n.delayTimeStamp};!u.delay&&delete u.delay,u.error=a,u.errorText=s,u.errorCode=r,this.onLocationMessage(u);break;case"video":var u={id:o,type:f,from:d,to:m,url:"https:"!=location.protocol&&t.isHttpDNS?t.apiUrl+g.url.substr(g.url.indexOf("/",9)):g.url,secret:g.secret,filename:g.filename,file_length:g.file_length,accessToken:this.context.accessToken||"",ext:h,delay:n.delayTimeStamp};!u.delay&&delete u.delay,u.error=a,u.errorText=s,u.errorCode=r,this.onVideoMessage(u);break;case"cmd":var u={id:o,from:d,to:m,action:g.action,ext:h,delay:n.delayTimeStamp};!u.delay&&delete u.delay,u.error=a,u.errorText=s,u.errorCode=r,this.onCmdMessage(u)}}catch(T){this.onError({type:_code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:T})}}}}}},connection.prototype.handleDeliveredMessage=function(e){var t=e.id,o=e.getElementsByTagName("body"),n=0;n=isNaN(o[0].innerHTML)?o[1].innerHTML:o[0].innerHTML;var i={mid:n};this.onDeliverdMessage(i),this.sendReceiptsMessage({id:t})},connection.prototype.handleAckedMessage=function(e){var t=e.id,o=e.getElementsByTagName("body"),n=0;n=isNaN(o[0].innerHTML)?o[1].innerHTML:o[0].innerHTML;var i={mid:n};this.onReadMessage(i),this.sendReceiptsMessage({id:t})},connection.prototype.handleReceivedMessage=function(e){try{var t=e.getElementsByTagName("received"),o=t[0].getAttribute("mid"),n=e.getElementsByTagName("body"),i=n[0].innerHTML,r={mid:o,id:i};this.onReceivedMessage(r)}catch(s){this.onError({type:_code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:s})}var i,o,a=e.getElementsByTagName("received");if(a.length>0&&(i=a[0].childNodes&&a[0].childNodes.length>0?a[0].childNodes[0].nodeValue:a[0].innerHTML||a[0].innerText,o=a[0].getAttribute("mid")),_msgHash[i]){try{_msgHash[i].msg.success instanceof Function&&_msgHash[i].msg.success(i,o)}catch(s){this.onError({type:_code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:s})}delete _msgHash[i]}},connection.prototype.handleInviteMessage=function(e){var t=null,o=e.getElementsByTagName("invite"),n=e.getElementsByTagName("reason")[0],i=n.textContent,r=e.getAttribute("id")||"";if(this.sendReceiptsMessage({id:r}),o&&o.length>0){var s=o[0].getAttribute("from");t=_parseNameFromJidFn(s)}var a=e.getElementsByTagName("x"),c=null;if(a&&a.length>0)for(var p=0;p<a.length;p++)if("jabber:x:conference"===a[p].namespaceURI){var l=a[p].getAttribute("jid");c=_parseNameFromJidFn(l)}this.onInviteMessage({type:"invite",from:t,roomid:c,reason:i})},connection.prototype.handleMutedMessage=function(e){var t=e.id;this.onMutedMessage({mid:t})},connection.prototype.sendCommand=function(e,t){this.isOpened()?this.context.stropheConn.send(e):this.onError({type:_code.WEBIM_CONNCTION_DISCONNECTED,reconnect:!0})},connection.prototype.getUniqueId=function(e){this.autoIncrement?this.autoIncrement++:this.autoIncrement=1;var t=new Date,o=new Date(2010,1,1),n=t.getTime()-o.getTime(),i=parseFloat(n).toString(16)+this.autoIncrement;return"string"==typeof e||"number"==typeof e?e+"_"+i:"WEBIM_"+i},connection.prototype.send=function(e){var t=this;if(this.isWindowSDK)WebIM.doQuery('{"type":"sendMessage","to":"'+e.to+'","message_type":"'+e.type+'","msg":"'+encodeURI(e.msg)+'","chatType":"'+e.chatType+'"}',function(e){},function(e,o){var n={data:{data:"send"},type:_code.WEBIM_MESSAGE_SED_ERROR};t.onError(n)});else if("[object Object]"===Object.prototype.toString.call(e)){var o=this.context.appKey||"",n=o+"_"+e.to+"@"+this.domain;e.group&&(n=o+"_"+e.to+"@conference."+this.domain),e.resource&&(n=n+"/"+e.resource),e.toJid=n,e.id=e.id||this.getUniqueId(),_msgHash[e.id]=new _message(e),_msgHash[e.id].send(this)}else"string"==typeof e&&_msgHash[e]&&_msgHash[e].send(this)},connection.prototype.addRoster=function(e){var t=_getJid(e,this),o=e.name||"",n=e.groups||"",i=$iq({type:"set"});if(i.c("query",{xmlns:"jabber:iq:roster"}),i.c("item",{jid:t,name:o}),n)for(var r=0;r<n.length;r++)i.c("group").t(n[r]).up();var s=e.success||_utils.emptyfn,a=e.error||_utils.emptyfn;this.context.stropheConn.sendIQ(i.tree(),s,a)},connection.prototype.removeRoster=function(e){var t=_getJid(e,this),o=$iq({type:"set"}).c("query",{xmlns:"jabber:iq:roster"}).c("item",{jid:t,subscription:"remove"}),n=e.success||_utils.emptyfn,i=e.error||_utils.emptyfn;this.context.stropheConn.sendIQ(o,n,i)},connection.prototype.getRoster=function(e){var t=$iq({type:"get"}).c("query",{xmlns:"jabber:iq:roster"}),e=e||{},o=e.success||this.onRoster,n=function(e){var t=[],n=e.getElementsByTagName("query");if(n&&n.length>0){var i=n[0];t=_parseFriend(i)}o(t,e)},i=e.error||this.onError,r=function(e){i({type:_code.WEBIM_CONNCTION_GETROSTER_ERROR,data:e})};this.isOpened()?this.context.stropheConn.sendIQ(t.tree(),n,r):i({type:_code.WEBIM_CONNCTION_DISCONNECTED})},connection.prototype.subscribe=function(e){var t=_getJid(e,this),o=$pres({to:t,type:"subscribe"});e.message&&o.c("status").t(e.message).up(),e.nick&&o.c("nick",{xmlns:"http://jabber.org/protocol/nick"}).t(e.nick),this.sendCommand(o.tree())},connection.prototype.subscribed=function(e){var t=_getJid(e,this),o=$pres({to:t,type:"subscribed"});e.message&&o.c("status").t(e.message).up(),this.sendCommand(o.tree())},connection.prototype.unsubscribe=function(e){var t=_getJid(e,this),o=$pres({to:t,type:"unsubscribe"});e.message&&o.c("status").t(e.message),this.sendCommand(o.tree())},connection.prototype.unsubscribed=function(e){var t=_getJid(e,this),o=$pres({to:t,type:"unsubscribed"});e.message&&o.c("status").t(e.message).up(),this.sendCommand(o.tree())},connection.prototype.joinPublicGroup=function(e){var t=this.context.appKey+"_"+e.roomId+"@conference."+this.domain,o=t+"/"+this.context.userId,n=e.success||_utils.emptyfn,i=e.error||_utils.emptyfn,r=function(e){i({type:_code.WEBIM_CONNCTION_JOINROOM_ERROR,data:e})},s=$pres({from:this.context.jid,to:o}).c("x",{xmlns:Strophe.NS.MUC});this.context.stropheConn.sendIQ(s.tree(),n,r)},connection.prototype.listRooms=function(e){var t=$iq({to:e.server||"conference."+this.domain,from:this.context.jid,type:"get"}).c("query",{xmlns:Strophe.NS.DISCO_ITEMS}),o=e.success||_utils.emptyfn,n=e.error||this.onError,i=function(e){var t=[];t=_parseRoom(e);try{o(t)}catch(i){n({type:_code.WEBIM_CONNCTION_GETROOM_ERROR,data:i})}},r=e.error||_utils.emptyfn,s=function(e){r({type:_code.WEBIM_CONNCTION_GETROOM_ERROR,data:e})};this.context.stropheConn.sendIQ(t.tree(),i,s)},connection.prototype.queryRoomMember=function(e){var t=(this.domain,[]),o=$iq({to:this.context.appKey+"_"+e.roomId+"@conference."+this.domain,type:"get"}).c("query",{xmlns:Strophe.NS.MUC+"#admin"}).c("item",{affiliation:"member"}),n=e.success||_utils.emptyfn,i=function(e){var o=e.getElementsByTagName("item");if(o)for(var i=0;i<o.length;i++){var r=o[i],s={jid:r.getAttribute("jid"),affiliation:"member"};t.push(s)}n(t)},r=e.error||_utils.emptyfn,s=function(e){r({type:_code.WEBIM_CONNCTION_GETROOMMEMBER_ERROR,data:e})};this.context.stropheConn.sendIQ(o.tree(),i,s)},connection.prototype.queryRoomInfo=function(e){var t=this.domain,o=$iq({to:this.context.appKey+"_"+e.roomId+"@conference."+t,type:"get"}).c("query",{xmlns:Strophe.NS.DISCO_INFO}),n=e.success||_utils.emptyfn,i=[],r=function(e){var o="",r=e.getElementsByTagName("feature");switch(r&&(o=r[1].getAttribute("var")+"|"+r[3].getAttribute("var")+"|"+r[4].getAttribute("var")),o){case"muc_public|muc_membersonly|muc_notallowinvites":o="PUBLIC_JOIN_APPROVAL";break;case"muc_public|muc_open|muc_notallowinvites":o="PUBLIC_JOIN_OPEN";break;case"muc_hidden|muc_membersonly|muc_allowinvites":o="PRIVATE_MEMBER_INVITE";break;case"muc_hidden|muc_membersonly|muc_notallowinvites":o="PRIVATE_OWNER_INVITE"}var s=e.getElementsByTagName("field"),a={};if(s){for(var c=0;c<s.length;c++){var p=s[c],l=p.getAttribute("var"),u=l.split("_")[1];switch(l){case"muc#roominfo_occupants":case"muc#roominfo_maxusers":case"muc#roominfo_affiliations":case"muc#roominfo_description":a[u]=p.textContent||p.text||"";break;case"muc#roominfo_owner":var d={jid:(p.textContent||p.text)+"@"+t,affiliation:"owner"};i.push(d),a[u]=p.textContent||p.text}}a.name=e.getElementsByTagName("identity")[0].getAttribute("name")}n(o,i,a)},s=e.error||_utils.emptyfn,a=function(e){s({type:_code.WEBIM_CONNCTION_GETROOMINFO_ERROR,data:e})};this.context.stropheConn.sendIQ(o.tree(),r,a)},connection.prototype.queryRoomOccupants=function(e){var t=e.success||_utils.emptyfn,o=function(e){var o=[];o=_parseRoomOccupants(e),t(o)},n=e.error||_utils.emptyfn,i=function(e){n({type:_code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR,data:e})},r={xmlns:Strophe.NS.DISCO_ITEMS},s=$iq({from:this.context.jid,to:this.context.appKey+"_"+e.roomId+"@conference."+this.domain,type:"get"}).c("query",r);this.context.stropheConn.sendIQ(s.tree(),o,i)},connection.prototype.setUserSig=function(e){var t=$pres({xmlns:"jabber:client"});e=e||"",t.c("status").t(e),this.sendCommand(t.tree())},connection.prototype.setPresence=function(e,t){var o=$pres({xmlns:"jabber:client"});e&&(t?(o.c("show").t(e),o.up().c("status").t(t)):o.c("show").t(e)),this.sendCommand(o.tree())},connection.prototype.getPresence=function(){var e=$pres({xmlns:"jabber:client"});this.sendCommand(e.tree())},connection.prototype.ping=function(e){var e=e||{},t=_getJid(e,this),o=$iq({from:this.context.jid||"",to:t,type:"get"}).c("ping",{xmlns:"urn:xmpp:ping"}),n=e.success||_utils.emptyfn,i=e.error||this.onError,r=function(e){i({type:_code.WEBIM_CONNCTION_PING_ERROR,data:e})};this.isOpened()?this.context.stropheConn.sendIQ(o.tree(),n,r):i({type:_code.WEBIM_CONNCTION_DISCONNECTED})},connection.prototype.isOpened=function(){return this.context.status==_code.STATUS_OPENED},connection.prototype.isOpening=function(){var e=this.context.status;return e==_code.STATUS_DOLOGIN_USERGRID||e==_code.STATUS_DOLOGIN_IM},connection.prototype.isClosing=function(){return this.context.status==_code.STATUS_CLOSING},connection.prototype.isClosed=function(){return this.context.status==_code.STATUS_CLOSED},connection.prototype.clear=function(){var e=this.context.appKey;if(this.errorType!=_code.WEBIM_CONNCTION_DISCONNECTED&&(this.context={status:_code.STATUS_INIT,appKey:e}),this.intervalId&&clearInterval(this.intervalId),this.restIndex=0,this.xmppIndex=0,this.errorType==_code.WEBIM_CONNCTION_CLIENT_LOGOUT||this.errorType==-1){var t={data:{data:"logout"},type:_code.WEBIM_CONNCTION_CLIENT_LOGOUT};this.onError(t)}},connection.prototype.getChatRooms=function(e){if(!_utils.isCanSetRequestHeader)return void t.onError({type:_code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR});var t=this,o=e.accessToken||this.context.accessToken;if(o){var n=e.apiUrl,i=this.context.appName,r=this.context.orgName;if(!i||!r)return void t.onError({type:_code.WEBIM_CONNCTION_AUTH_ERROR});var s=function(t,o){"function"==typeof e.success&&e.success(t)},a=function(e,o,n){e.error&&e.error_description&&t.onError({type:_code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,msg:e.error_description,data:e,xhr:o})},c={pagenum:parseInt(e.pagenum)||1,pagesize:parseInt(e.pagesize)||20},p={url:n+"/"+r+"/"+i+"/chatrooms",dataType:"json",type:"GET",headers:{Authorization:"Bearer "+o},data:c,success:s||_utils.emptyfn,error:a||_utils.emptyfn};_utils.ajax(p)}else t.onError({type:_code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR})},connection.prototype.joinChatRoom=function(e){var t=this.context.appKey+"_"+e.roomId+"@conference."+this.domain,o=t+"/"+this.context.userId,n=e.success||_utils.emptyfn,i=e.error||_utils.emptyfn,r=function(e){i({type:_code.WEBIM_CONNCTION_JOINCHATROOM_ERROR,data:e})},s=$pres({from:this.context.jid,to:o}).c("x",{xmlns:Strophe.NS.MUC+"#user"}).c("item",{affiliation:"member",role:"participant"}).up().up().c("roomtype",{xmlns:"easemob:x:roomtype",type:"chatroom"});this.context.stropheConn.sendIQ(s.tree(),n,r)},connection.prototype.quitChatRoom=function(e){var t=this.context.appKey+"_"+e.roomId+"@conference."+this.domain,o=t+"/"+this.context.userId,n=e.success||_utils.emptyfn,i=e.error||_utils.emptyfn,r=function(e){i({type:_code.WEBIM_CONNCTION_QUITCHATROOM_ERROR,data:e})},s=$pres({from:this.context.jid,to:o,type:"unavailable"}).c("x",{xmlns:Strophe.NS.MUC+"#user"}).c("item",{affiliation:"none",role:"none"}).up().up().c("roomtype",{xmlns:"easemob:x:roomtype",type:"chatroom"});this.context.stropheConn.sendIQ(s.tree(),n,r)},connection.prototype._onReceiveInviteFromGroup=function(info){info=eval("("+info+")");var self=this,options={title:"Group invitation",msg:info.user+" invites you to join into group:"+info.group_id,agree:function(){WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"'+info.group_id+'","user":"'+info.user+'"}',function(e){},function(e,t){var o={data:{data:"acceptInvitationFromGroup error:"+t},type:_code.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP};self.onError(o)})},reject:function(){WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"'+info.group_id+'","user":"'+info.user+'"}',function(e){},function(e,t){var o={data:{data:"declineInvitationFromGroup error:"+t},type:_code.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP};self.onError(o)})}};this.onConfirmPop(options)},connection.prototype._onReceiveInviteAcceptionFromGroup=function(info){info=eval("("+info+")");var options={title:"Group invitation response",msg:info.user+" agreed to join into group:"+info.group_id,agree:function(){}};this.onConfirmPop(options)},connection.prototype._onReceiveInviteDeclineFromGroup=function(info){info=eval("("+info+")");var options={title:"Group invitation response",msg:info.user+" rejected to join into group:"+info.group_id,agree:function(){}};this.onConfirmPop(options)},connection.prototype._onAutoAcceptInvitationFromGroup=function(info){info=eval("("+info+")");var options={title:"Group invitation",msg:"You had joined into the group:"+info.group_name+" automatically.Inviter:"+info.user,agree:function(){}};this.onConfirmPop(options)},connection.prototype._onLeaveGroup=function(info){info=eval("("+info+")");var options={title:"Group notification",msg:"You have been out of the group:"+info.group_id+".Reason:"+info.msg,agree:function(){}};this.onConfirmPop(options)},connection.prototype._onReceiveJoinGroupApplication=function(info){info=eval("("+info+")");var self=this,options={title:"Group join application",msg:info.user+" applys to join into group:"+info.group_id,agree:function(){WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"'+info.group_id+'","user":"'+info.user+'"}',function(e){},function(e,t){var o={data:{data:"acceptJoinGroupApplication error:"+t},type:_code.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP};self.onError(o)})},reject:function(){WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"'+info.group_id+'","user":"'+info.user+'"}',function(e){},function(e,t){var o={data:{data:"declineJoinGroupApplication error:"+t},type:_code.WEBIM_CONNECTION_DECLINE_JOIN_GROUP};self.onError(o)})}};this.onConfirmPop(options)},connection.prototype._onReceiveAcceptionFromGroup=function(info){info=eval("("+info+")");var options={title:"Group notification",msg:"You had joined into the group:"+info.group_name+".",agree:function(){}};this.onConfirmPop(options)},connection.prototype._onReceiveRejectionFromGroup=function(){info=eval("("+info+")");var options={title:"Group notification",msg:"You have been rejected to join into the group:"+info.group_name+".",agree:function(){}};this.onConfirmPop(options)},connection.prototype._onUpdateMyGroupList=function(e){this.onUpdateMyGroupList(e)},connection.prototype._onUpdateMyRoster=function(e){this.onUpdateMyRoster(e)},connection.prototype.reconnect=function(){var e=this;setTimeout(function(){_login(e.context.restTokenData,e)},1e3*(0==this.autoReconnectNumTotal?0:this.autoReconnectInterval)),this.autoReconnectNumTotal++},connection.prototype.closed=function(){var e={data:{data:"Closed error"},type:_code.WEBIM_CONNECTION_CLOSED};this.onError(e)},connection.prototype.getBlacklist=function(e){e=e||{};var t=$iq({type:"get"}),o=e.success||_utils.emptyfn,n=e.error||_utils.emptyfn,i=this;t.c("query",{xmlns:"jabber:iq:privacy"}).c("list",{name:"special"}),this.context.stropheConn.sendIQ(t.tree(),function(e){i.onBlacklistUpdate(_parsePrivacy(e)),o()},function(){i.onBlacklistUpdate([]),n()})},connection.prototype.addToBlackList=function(e){for(var t=$iq({type:"set"}),o=e.list||{},n=e.type||"jid",i=e.success||_utils.emptyfn,r=e.error||_utils.emptyfn,s=t.c("query",{xmlns:"jabber:iq:privacy"}).c("list",{name:"special"}),a=Object.keys(o),c=a.length,p=2,l=0;l<c;l++){var u=o[a[l]],n=u.type||"jid",d=u.jid;s=s.c("item",{action:"deny",order:p++,type:n,value:d}).c("message"),l!==c-1&&(s=s.up().up())}this.context.stropheConn.sendIQ(s.tree(),i,r)},connection.prototype.removeFromBlackList=function(e){for(var t=$iq({type:"set"}),o=e.list||{},n=e.success||_utils.emptyfn,i=e.error||_utils.emptyfn,r=t.c("query",{xmlns:"jabber:iq:privacy"}).c("list",{name:"special"}),s=Object.keys(o),a=s.length,c=0;c<a;c++){var p=o[s[c]],l=p.type||"jid",u=p.jid,d=p.order;r=r.c("item",{action:"deny",order:d,type:l,value:u}).c("message"),c!==a-1&&(r=r.up().up())}this.context.stropheConn.sendIQ(r.tree(),n,i)},connection.prototype._getGroupJid=function(e){var t=this.context.appKey||"";return t+"_"+e+"@conference."+this.domain},connection.prototype.addToGroupBlackList=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n=_getJid(e,this),i="admin",r=this._getGroupJid(e.roomId),s=$iq({type:"set",to:r});s.c("query",{xmlns:"http://jabber.org/protocol/muc#"+i}).c("item",{affiliation:"outcast",jid:n}),this.context.stropheConn.sendIQ(s.tree(),t,o)},connection.prototype.getGroupBlacklist=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n="admin",i=this._getGroupJid(e.roomId),r=$iq({type:"get",to:i});r.c("query",{xmlns:"http://jabber.org/protocol/muc#"+n}).c("item",{affiliation:"outcast"}),this.context.stropheConn.sendIQ(r.tree(),function(e){t(_parseGroupBlacklist(e))},function(){o()})},connection.prototype.removeGroupMemberFromBlacklist=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n=_getJid(e,this),i="admin",r=this._getGroupJid(e.roomId),s=$iq({type:"set",to:r});s.c("query",{xmlns:"http://jabber.org/protocol/muc#"+i}).c("item",{affiliation:"none",jid:n}),this.context.stropheConn.sendIQ(s.tree(),function(e){t()},function(){o()})},connection.prototype.changeGroupSubject=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n="owner",i=this._getGroupJid(e.roomId),r=$iq({type:"set",to:i});r.c("query",{xmlns:"http://jabber.org/protocol/muc#"+n}).c("x",{type:"submit",xmlns:"jabber:x:data"}).c("field",{"var":"FORM_TYPE"}).c("value").t("http://jabber.org/protocol/muc#roomconfig").up().up().c("field",{"var":"muc#roomconfig_roomname"}).c("value").t(e.subject).up().up().c("field",{"var":"muc#roomconfig_roomdesc"}).c("value").t(e.description),this.context.stropheConn.sendIQ(r.tree(),function(e){t()},function(){o()})},connection.prototype.destroyGroup=function(e){var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n="owner",i=this._getGroupJid(e.roomId),r=$iq({type:"set",to:i});r.c("query",{xmlns:"http://jabber.org/protocol/muc#"+n}).c("destroy").c("reason").t(e.reason||""),this.context.stropheConn.sendIQ(r.tree(),function(e){t()},function(){o()})},connection.prototype.leaveGroupBySelf=function(e){var t=this,o=e.success||_utils.emptyfn,n=e.error||_utils.emptyfn,i=_getJid(e,this),r="admin",s=this._getGroupJid(e.roomId),a=$iq({type:"set",to:s});a.c("query",{xmlns:"http://jabber.org/protocol/muc#"+r}).c("item",{affiliation:"none",jid:i}),this.context.stropheConn.sendIQ(a.tree(),function(e){o(e);var n=$pres({type:"unavailable",to:s+"/"+t.context.userId});t.sendCommand(n.tree())},function(e){n(e)})},connection.prototype.leaveGroup=function(e){for(var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n=e.list||[],i="admin",r=this._getGroupJid(e.roomId),s=$iq({type:"set",to:r}),a=s.c("query",{xmlns:"http://jabber.org/protocol/muc#"+i}),c=Object.keys(n),p=c.length,l=0;l<p;l++){var u=n[c[l]],d=_getJidByName(u,this);a=a.c("item",{affiliation:"none",jid:d}).up().c("item",{role:"none",jid:d}).up()}this.context.stropheConn.sendIQ(s.tree(),function(e){t(e)},function(e){o(e)})},connection.prototype.addGroupMembers=function(e){for(var t=e.success||_utils.emptyfn,o=e.error||_utils.emptyfn,n=e.list||[],i="admin",r=this._getGroupJid(e.roomId),s=$iq({type:"set",to:r}),a=s.c("query",{xmlns:"http://jabber.org/protocol/muc#"+i}),c=n.length,p=0;p<c;p++){var l=n[p],u=_getJidByName(l,this);a=a.c("item",{affiliation:"member",jid:u}).up();var d=$msg({to:r}).c("x",{xmlns:"http://jabber.org/protocol/muc#user"}).c("invite",{to:u}).c("reason").t(e.reason||"");this.sendCommand(d.tree())}this.context.stropheConn.sendIQ(s.tree(),function(e){t(e)},function(e){o(e)})},connection.prototype.acceptInviteFromGroup=function(e){e.success=function(){},this.addGroupMembers(e)},connection.prototype.rejectInviteFromGroup=function(e){},connection.prototype.createGroupAsync=function(e){var t=e.from,o=this,n=this._getGroupJid(t),i=(n+"/"+this.context.userId,this.groupOption),r=e.success||_utils.emptyfn,s=$iq({type:"get",to:n}).c("query",{xmlns:"http://jabber.org/protocol/muc#owner"});o.context.stropheConn.sendIQ(s.tree(),function(e){if("setAttribute"in e){var s=e.getElementsByTagName("x")[0];s.setAttribute("type","submit")}else Strophe.forEachChild(e,"x",function(e){e.setAttribute("type","submit")});Strophe.info("step 5 ----------"),Strophe.forEachChild(s,"field",function(e){var t=e.getAttribute("var"),o=e.getElementsByTagName("value")[0];switch(Strophe.info(t),t){case"muc#roomconfig_maxusers":_setText(o,i.optionsMaxUsers||200);break;case"muc#roomconfig_roomname":_setText(o,i.subject||"");break;case"muc#roomconfig_roomdesc":_setText(o,i.description||"");break;case"muc#roomconfig_publicroom":_setText(o,+i.optionsPublic);break;case"muc#roomconfig_membersonly":_setText(o,+i.optionsMembersOnly);break;case"muc#roomconfig_moderatedroom":_setText(o,+i.optionsModerate);break;case"muc#roomconfig_persistentroom":_setText(o,1);break;case"muc#roomconfig_allowinvites":_setText(o,+i.optionsAllowInvites);break;case"muc#roomconfig_allowvisitornickchange":_setText(o,0);break;case"muc#roomconfig_allowvisitorstatus":_setText(o,0);break;case"allow_private_messages":_setText(o,0);break;case"allow_private_messages_from_visitors":_setText(o,"nobody")}});var a=$iq({to:n,type:"set"}).c("query",{xmlns:"http://jabber.org/protocol/muc#owner"}).cnode(s);o.context.stropheConn.sendIQ(a.tree(),function(e){o.addGroupMembers({list:i.members,roomId:t}),r(i)},function(e){})},function(e){})},connection.prototype.createGroup=function(e){this.groupOption=e;var t=+new Date,o=this._getGroupJid(t),n=o+"/"+this.context.userId,i=$pres({
-to:n}).c("x",{xmlns:"http://jabber.org/protocol/muc"}).up().c("create",{xmlns:"http://jabber.org/protocol/muc"}).up();this.sendCommand(i.tree())},connection.prototype.createGroupNew=function(e){e.success=function(e){this.onCreateGroup(e)}.bind(this),WebIM.utils.ajax(e)},connection.prototype.shieldGroup=function(e){WebIM.utils.ajax(e)};var WebIM=window.WebIM||{};WebIM.connection=connection,WebIM.utils=_utils,WebIM.statusCode=_code,WebIM.message=_msg.message,WebIM.doQuery=function(e,t,o){"undefined"!=typeof window.cefQuery&&window.cefQuery({request:e,persistent:!1,onSuccess:t,onFailure:o})},WebIM&&WebIM.config.isDebug&&(Strophe.Connection.prototype.rawOutput=function(e){console.log("%c "+WebIM.utils.ts()+"[send] "+e,"background-color: #e2f7da")}),WebIM&&WebIM.config&&WebIM.config.isSandBox&&(WebIM.config.xmppURL=WebIM.config.xmppURL.replace(".easemob.","-sandbox.easemob."),WebIM.config.apiURL=WebIM.config.apiURL.replace(".easemob.","-sdb.easemob.")),module.exports=WebIM},213:function(e,t,o){"use strict";!function(){var e=o(204).utils,n=function r(e,t){return!this instanceof r?new r(e):(this._msg={},"function"==typeof r[e]&&(r[e].prototype.setGroup=this.setGroup,this._msg=new r[e](t)),this._msg)};n.prototype.setGroup=function(e){this.body.group=e},n.read=function(e){this.id=e,this.type="read"},n.read.prototype.set=function(e){this.body={ackId:e.id,to:e.to}},n.delivery=function(e){this.id=e,this.type="delivery"},n.delivery.prototype.set=function(e){this.body={bodyId:e.id,to:e.to}},n.txt=function(e){this.id=e,this.type="txt",this.body={}},n.txt.prototype.set=function(e){this.value=e.msg,this.body={id:this.id,to:e.to,msg:this.value,type:this.type,roomType:e.roomType,ext:e.ext||{},success:e.success,fail:e.fail},!e.roomType&&delete this.body.roomType},n.cmd=function(e){this.id=e,this.type="cmd",this.body={}},n.cmd.prototype.set=function(e){this.value="",this.body={to:e.to,action:e.action,msg:this.value,type:this.type,roomType:e.roomType,ext:e.ext||{},success:e.success},!e.roomType&&delete this.body.roomType},n.location=function(e){this.id=e,this.type="loc",this.body={}},n.location.prototype.set=function(e){this.body={to:e.to,type:this.type,roomType:e.roomType,addr:e.addr,lat:e.lat,lng:e.lng,ext:e.ext||{}}},n.img=function(e){this.id=e,this.type="img",this.body={}},n.img.prototype.set=function(t){t.file=t.file||e.getFileUrl(t.fileInputId),this.value=t.file,this.body={id:this.id,file:this.value,apiUrl:t.apiUrl,to:t.to,type:this.type,ext:t.ext||{},roomType:t.roomType,onFileUploadError:t.onFileUploadError,onFileUploadComplete:t.onFileUploadComplete,success:t.success,fail:t.fail,flashUpload:t.flashUpload,width:t.width,height:t.height,body:t.body,uploadError:t.uploadError,uploadComplete:t.uploadComplete},!t.roomType&&delete this.body.roomType},n.audio=function(e){this.id=e,this.type="audio",this.body={}},n.audio.prototype.set=function(t){t.file=t.file||e.getFileUrl(t.fileInputId),this.value=t.file,this.filename=t.filename||this.value.filename,this.body={id:this.id,file:this.value,filename:this.filename,apiUrl:t.apiUrl,to:t.to,type:this.type,ext:t.ext||{},length:t.length||0,roomType:t.roomType,file_length:t.file_length,onFileUploadError:t.onFileUploadError,onFileUploadComplete:t.onFileUploadComplete,success:t.success,fail:t.fail,flashUpload:t.flashUpload,body:t.body},!t.roomType&&delete this.body.roomType},n.file=function(e){this.id=e,this.type="file",this.body={}},n.file.prototype.set=function(t){t.file=t.file||e.getFileUrl(t.fileInputId),this.value=t.file,this.filename=t.filename||this.value.filename,this.body={id:this.id,file:this.value,filename:this.filename,apiUrl:t.apiUrl,to:t.to,type:this.type,ext:t.ext||{},roomType:t.roomType,onFileUploadError:t.onFileUploadError,onFileUploadComplete:t.onFileUploadComplete,success:t.success,fail:t.fail,flashUpload:t.flashUpload,body:t.body},!t.roomType&&delete this.body.roomType},n.video=function(e){},n.video.prototype.set=function(e){};var i=function s(e){return!this instanceof s?new s(e,conn):void(this.msg=e)};i.prototype.send=function(t){var o=this,n=function(o){o.ext=o.ext||{},o.ext.weichat=o.ext.weichat||{},o.ext.weichat.originType=o.ext.weichat.originType||"webim";var n,i={from:t.context.userId||"",to:o.to,bodies:[o.body],ext:o.ext||{}},r=e.stringify(i);if(n=$msg({type:o.group||"chat",to:o.toJid,id:o.id,xmlns:"jabber:client"}).c("body").t(r),o.roomType&&n.up().c("roomtype",{xmlns:"easemob:x:roomtype",type:"chatroom"}),o.bodyId){n.up().c("body").t(o.bodyId);var s={xmlns:"urn:xmpp:receipts",id:o.bodyId};n.up().c("delivery").t(e.stringify(s))}if(o.ackId){n.up().c("body").t(o.ackId);var a={xmlns:"urn:xmpp:receipts",id:o.ackId};n.up().c("acked").t(e.stringify(a))}setTimeout(function(){"undefined"!=typeof _msgHash&&_msgHash[o.id]&&_msgHash[o.id].msg.fail instanceof Function&&_msgHash[o.id].msg.fail(o.id)},6e4),t.sendCommand(n.tree(),o.id)};if(o.msg.file){if(o.msg.body&&o.msg.body.url)return void n(o.msg);var i=o.msg.onFileUploadComplete,r=function(e){if(e.entities[0]["file-metadata"]){var r=e.entities[0]["file-metadata"]["content-length"];o.msg.filetype=e.entities[0]["file-metadata"]["content-type"],r>204800&&(o.msg.thumbnail=!0)}o.msg.body={type:o.msg.type||"file",url:("https:"!=location.protocol&&t.isHttpDNS?t.apiUrl+e.uri.substr(e.uri.indexOf("/",9)):e.uri)+"/"+e.entities[0].uuid,secret:e.entities[0]["share-secret"],filename:o.msg.file.filename||o.msg.filename,size:{width:o.msg.width||0,height:o.msg.height||0},length:o.msg.length||0,file_length:o.msg.ext.file_length||0,filetype:o.msg.filetype},n(o.msg),i instanceof Function&&i(e,o.msg.id)};o.msg.onFileUploadComplete=r,e.uploadFile.call(t,o.msg)}else o.msg.body={type:"chat"===o.msg.type?"txt":o.msg.type,msg:o.msg.msg},"cmd"===o.msg.type?o.msg.body.action=o.msg.action:"loc"===o.msg.type&&(o.msg.body.addr=o.msg.addr,o.msg.body.lat=o.msg.lat,o.msg.body.lng=o.msg.lng),n(o.msg)},t._msg=i,t.message=n}()},214:function(e,t){"use strict";!function(){function e(e){this.array=void 0===e?[]:new Array(e)}e.prototype={length:function(){return this.array.length},at:function(e){return this.array[e]},set:function(e,t){this.array[e]=t},push:function(e){return this.array.push(e)},slice:function(e,t){return this.array=this.array.slice(e,t)},concat:function(e){this.array=this.array.concat(e)},remove:function(e,t){t=void 0===t?1:t,this.array.splice(e,t)},join:function(e){return this.array.join(e)},clear:function(){this.array.length=0}};var o=function(){this._array_h=new e};o.prototype={_index:0,push:function(e){this._array_h.push(e)},pop:function(){var e=null;return this._array_h.length()&&(e=this._array_h.at(this._index),2*++this._index>=this._array_h.length()&&(this._array_h.slice(this._index),this._index=0)),e},head:function(){var e=null,t=this._array_h.length();return t&&(e=this._array_h.at(t-1)),e},tail:function(){var e=null,t=this._array_h.length();return t&&(e=this._array_h.at(this._index)),e},length:function(){return this._array_h.length()-this._index},empty:function(){return 0===this._array_h.length()},clear:function(){this._array_h.clear()}},t.Queue=o}()}});
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "./";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ 0:
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(241);
+
+
+/***/ },
+
+/***/ 234:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	;
+	(function () {
+
+	    var EMPTYFN = function EMPTYFN() {};
+	    var _code = __webpack_require__(235).code;
+	    var WEBIM_FILESIZE_LIMIT = 10485760;
+
+	    var _createStandardXHR = function _createStandardXHR() {
+	        try {
+	            return new window.XMLHttpRequest();
+	        } catch (e) {
+	            return false;
+	        }
+	    };
+
+	    var _createActiveXHR = function _createActiveXHR() {
+	        try {
+	            return new window.ActiveXObject('Microsoft.XMLHTTP');
+	        } catch (e) {
+	            return false;
+	        }
+	    };
+
+	    var _xmlrequest = function _xmlrequest(crossDomain) {
+	        crossDomain = crossDomain || true;
+	        var temp = _createStandardXHR() || _createActiveXHR();
+
+	        if ('withCredentials' in temp) {
+	            return temp;
+	        }
+	        if (!crossDomain) {
+	            return temp;
+	        }
+	        if (typeof window.XDomainRequest === 'undefined') {
+	            return temp;
+	        }
+	        var xhr = new XDomainRequest();
+	        xhr.readyState = 0;
+	        xhr.status = 100;
+	        xhr.onreadystatechange = EMPTYFN;
+	        xhr.onload = function () {
+	            xhr.readyState = 4;
+	            xhr.status = 200;
+
+	            var xmlDoc = new ActiveXObject('Microsoft.XMLDOM');
+	            xmlDoc.async = 'false';
+	            xmlDoc.loadXML(xhr.responseText);
+	            xhr.responseXML = xmlDoc;
+	            xhr.response = xhr.responseText;
+	            xhr.onreadystatechange();
+	        };
+	        xhr.ontimeout = xhr.onerror = function () {
+	            xhr.readyState = 4;
+	            xhr.status = 500;
+	            xhr.onreadystatechange();
+	        };
+	        return xhr;
+	    };
+
+	    var _hasFlash = function () {
+	        if ('ActiveXObject' in window) {
+	            try {
+	                return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+	            } catch (ex) {
+	                return 0;
+	            }
+	        } else {
+	            if (navigator.plugins && navigator.plugins.length > 0) {
+	                return navigator.plugins['Shockwave Flash'];
+	            }
+	        }
+	        return 0;
+	    }();
+
+	    var _base64 = function _base64() {
+
+	        var self = this;
+
+	        // private property
+	        var _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+	        // public method for encoding
+	        this.encode = function (input) {
+	            var output = "";
+	            var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+	            var i = 0;
+	            input = self._utf8_encode(input);
+	            while (i < input.length) {
+	                chr1 = input.charCodeAt(i++);
+	                chr2 = input.charCodeAt(i++);
+	                chr3 = input.charCodeAt(i++);
+	                enc1 = chr1 >> 2;
+	                enc2 = (chr1 & 3) << 4 | chr2 >> 4;
+	                enc3 = (chr2 & 15) << 2 | chr3 >> 6;
+	                enc4 = chr3 & 63;
+	                if (isNaN(chr2)) {
+	                    enc3 = enc4 = 64;
+	                } else if (isNaN(chr3)) {
+	                    enc4 = 64;
+	                }
+	                output = output + _keyStr.charAt(enc1) + _keyStr.charAt(enc2) + _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
+	            }
+	            return output;
+	        };
+
+	        // public method for decoding
+	        this.decode = function (input) {
+	            var output = "";
+	            var chr1, chr2, chr3;
+	            var enc1, enc2, enc3, enc4;
+	            var i = 0;
+	            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+	            while (i < input.length) {
+	                enc1 = _keyStr.indexOf(input.charAt(i++));
+	                enc2 = _keyStr.indexOf(input.charAt(i++));
+	                enc3 = _keyStr.indexOf(input.charAt(i++));
+	                enc4 = _keyStr.indexOf(input.charAt(i++));
+	                chr1 = enc1 << 2 | enc2 >> 4;
+	                chr2 = (enc2 & 15) << 4 | enc3 >> 2;
+	                chr3 = (enc3 & 3) << 6 | enc4;
+	                output = output + String.fromCharCode(chr1);
+	                if (enc3 != 64) {
+	                    output = output + String.fromCharCode(chr2);
+	                }
+	                if (enc4 != 64) {
+	                    output = output + String.fromCharCode(chr3);
+	                }
+	            }
+	            output = self._utf8_decode(output);
+	            return output;
+	        };
+
+	        // private method for UTF-8 encoding
+	        this._utf8_encode = function (string) {
+	            string = string.replace(/\r\n/g, "\n");
+	            var utftext = "";
+	            for (var n = 0; n < string.length; n++) {
+	                var c = string.charCodeAt(n);
+	                if (c < 128) {
+	                    utftext += String.fromCharCode(c);
+	                } else if (c > 127 && c < 2048) {
+	                    utftext += String.fromCharCode(c >> 6 | 192);
+	                    utftext += String.fromCharCode(c & 63 | 128);
+	                } else {
+	                    utftext += String.fromCharCode(c >> 12 | 224);
+	                    utftext += String.fromCharCode(c >> 6 & 63 | 128);
+	                    utftext += String.fromCharCode(c & 63 | 128);
+	                }
+	            }
+	            return utftext;
+	        };
+
+	        // private method for UTF-8 decoding
+	        this._utf8_decode = function (utftext) {
+	            var string = "";
+	            var i = 0;
+	            var c = 0;
+	            var c1 = 0;
+	            var c2 = 0;
+	            var c3 = 0;
+	            while (i < utftext.length) {
+	                c = utftext.charCodeAt(i);
+	                if (c < 128) {
+	                    string += String.fromCharCode(c);
+	                    i++;
+	                } else if (c > 191 && c < 224) {
+	                    c2 = utftext.charCodeAt(i + 1);
+	                    string += String.fromCharCode((c & 31) << 6 | c2 & 63);
+	                    i += 2;
+	                } else {
+	                    c2 = utftext.charCodeAt(i + 1);
+	                    c3 = utftext.charCodeAt(i + 2);
+	                    string += String.fromCharCode((c & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+	                    i += 3;
+	                }
+	            }
+	            return string;
+	        };
+	    };
+
+	    var _tmpUtilXHR = _xmlrequest(),
+	        _hasFormData = typeof FormData !== 'undefined',
+	        _hasBlob = typeof Blob !== 'undefined',
+	        _isCanSetRequestHeader = _tmpUtilXHR.setRequestHeader || false,
+	        _hasOverrideMimeType = _tmpUtilXHR.overrideMimeType || false,
+	        _isCanUploadFileAsync = _isCanSetRequestHeader && _hasFormData,
+	        _isCanUploadFile = _isCanUploadFileAsync || _hasFlash,
+	        _isCanDownLoadFile = _isCanSetRequestHeader && (_hasBlob || _hasOverrideMimeType);
+
+	    if (!Object.keys) {
+	        Object.keys = function () {
+	            'use strict';
+
+	            var hasOwnProperty = Object.prototype.hasOwnProperty,
+	                hasDontEnumBug = !{ toString: null }.propertyIsEnumerable('toString'),
+	                dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'],
+	                dontEnumsLength = dontEnums.length;
+
+	            return function (obj) {
+	                if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object' && (typeof obj !== 'function' || obj === null)) {
+	                    throw new TypeError('Object.keys called on non-object');
+	                }
+
+	                var result = [],
+	                    prop,
+	                    i;
+
+	                for (prop in obj) {
+	                    if (hasOwnProperty.call(obj, prop)) {
+	                        result.push(prop);
+	                    }
+	                }
+
+	                if (hasDontEnumBug) {
+	                    for (i = 0; i < dontEnumsLength; i++) {
+	                        if (hasOwnProperty.call(obj, dontEnums[i])) {
+	                            result.push(dontEnums[i]);
+	                        }
+	                    }
+	                }
+	                return result;
+	            };
+	        }();
+	    }
+
+	    var utils = {
+	        hasFormData: _hasFormData,
+
+	        hasBlob: _hasBlob,
+
+	        emptyfn: EMPTYFN,
+
+	        isCanSetRequestHeader: _isCanSetRequestHeader,
+
+	        hasOverrideMimeType: _hasOverrideMimeType,
+
+	        isCanUploadFileAsync: _isCanUploadFileAsync,
+
+	        isCanUploadFile: _isCanUploadFile,
+
+	        isCanDownLoadFile: _isCanDownLoadFile,
+
+	        isSupportWss: function () {
+	            var notSupportList = [
+	            //1: QQ browser X5 core
+	            /MQQBrowser[\/]5([.]\d+)?\sTBS/
+
+	            //2: etc.
+	            //...
+	            ];
+
+	            if (!window.WebSocket) {
+	                return false;
+	            }
+
+	            var ua = window.navigator.userAgent;
+	            for (var i = 0, l = notSupportList.length; i < l; i++) {
+	                if (notSupportList[i].test(ua)) {
+	                    return false;
+	                }
+	            }
+	            return true;
+	        }(),
+
+	        getIEVersion: function () {
+	            var ua = navigator.userAgent,
+	                matches,
+	                tridentMap = { '4': 8, '5': 9, '6': 10, '7': 11 };
+
+	            matches = ua.match(/MSIE (\d+)/i);
+
+	            if (matches && matches[1]) {
+	                return +matches[1];
+	            }
+	            matches = ua.match(/Trident\/(\d+)/i);
+	            if (matches && matches[1]) {
+	                return tridentMap[matches[1]] || null;
+	            }
+	            return null;
+	        }(),
+
+	        stringify: function stringify(json) {
+	            if (typeof JSON !== 'undefined' && JSON.stringify) {
+	                return JSON.stringify(json);
+	            } else {
+	                var s = '',
+	                    arr = [];
+
+	                var iterate = function iterate(json) {
+	                    var isArr = false;
+
+	                    if (Object.prototype.toString.call(json) === '[object Array]') {
+	                        arr.push(']', '[');
+	                        isArr = true;
+	                    } else if (Object.prototype.toString.call(json) === '[object Object]') {
+	                        arr.push('}', '{');
+	                    }
+
+	                    for (var o in json) {
+	                        if (Object.prototype.toString.call(json[o]) === '[object Null]') {
+	                            json[o] = 'null';
+	                        } else if (Object.prototype.toString.call(json[o]) === '[object Undefined]') {
+	                            json[o] = 'undefined';
+	                        }
+
+	                        if (json[o] && _typeof(json[o]) === 'object') {
+	                            s += ',' + (isArr ? '' : '"' + o + '":' + (isArr ? '"' : '')) + iterate(json[o]) + '';
+	                        } else {
+	                            s += ',"' + (isArr ? '' : o + '":"') + json[o] + '"';
+	                        }
+	                    }
+
+	                    if (s != '') {
+	                        s = s.slice(1);
+	                    }
+
+	                    return arr.pop() + s + arr.pop();
+	                };
+	                return iterate(json);
+	            }
+	        },
+	        login: function login(options) {
+	            var options = options || {};
+	            var suc = options.success || EMPTYFN;
+	            var err = options.error || EMPTYFN;
+
+	            var appKey = options.appKey || '';
+	            var devInfos = appKey.split('#');
+	            if (devInfos.length !== 2) {
+	                err({
+	                    type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	                });
+	                return false;
+	            }
+
+	            var orgName = devInfos[0];
+	            var appName = devInfos[1];
+	            var https = https || options.https;
+	            var user = options.user || '';
+	            var pwd = options.pwd || '';
+
+	            var apiUrl = options.apiUrl;
+
+	            var loginJson = {
+	                grant_type: 'password',
+	                username: user,
+	                password: pwd,
+	                timestamp: +new Date()
+	            };
+	            var loginfo = utils.stringify(loginJson);
+
+	            var options = {
+	                url: apiUrl + '/' + orgName + '/' + appName + '/token',
+	                dataType: 'json',
+	                data: loginfo,
+	                success: suc,
+	                error: err
+	            };
+	            return utils.ajax(options);
+	        },
+
+	        getFileUrl: function getFileUrl(fileInputId) {
+	            var uri = {
+	                url: '',
+	                filename: '',
+	                filetype: '',
+	                data: ''
+	            };
+
+	            var fileObj = typeof fileInputId === 'string' ? document.getElementById(fileInputId) : fileInputId;
+
+	            if (!utils.isCanUploadFileAsync || !fileObj) {
+	                return uri;
+	            }
+	            try {
+	                if (window.URL.createObjectURL) {
+	                    var fileItems = fileObj.files;
+	                    if (fileItems.length > 0) {
+	                        var u = fileItems.item(0);
+	                        uri.data = u;
+	                        uri.url = window.URL.createObjectURL(u);
+	                        uri.filename = u.name || '';
+	                    }
+	                } else {
+	                    // IE
+	                    var u = document.getElementById(fileInputId).value;
+	                    uri.url = u;
+	                    var pos1 = u.lastIndexOf('/');
+	                    var pos2 = u.lastIndexOf('\\');
+	                    var pos = Math.max(pos1, pos2);
+	                    if (pos < 0) uri.filename = u;else uri.filename = u.substring(pos + 1);
+	                }
+	                var index = uri.filename.lastIndexOf('.');
+	                if (index != -1) {
+	                    uri.filetype = uri.filename.substring(index + 1).toLowerCase();
+	                }
+	                return uri;
+	            } catch (e) {
+	                throw e;
+	            }
+	        },
+
+	        getFileSize: function getFileSize(file) {
+	            var fileSize = this.getFileLength(file);
+	            if (fileSize > 10000000) {
+	                return false;
+	            }
+	            var kb = Math.round(fileSize / 1000);
+	            if (kb < 1000) {
+	                fileSize = kb + ' KB';
+	            } else if (kb >= 1000) {
+	                var mb = kb / 1000;
+	                if (mb < 1000) {
+	                    fileSize = mb.toFixed(1) + ' MB';
+	                } else {
+	                    var gb = mb / 1000;
+	                    fileSize = gb.toFixed(1) + ' GB';
+	                }
+	            }
+	            return fileSize;
+	        },
+
+	        getFileLength: function getFileLength(file) {
+	            var fileLength = 0;
+	            if (file) {
+	                if (file.files) {
+	                    if (file.files.length > 0) {
+	                        fileLength = file.files[0].size;
+	                    }
+	                } else if (file.select && 'ActiveXObject' in window) {
+	                    file.select();
+	                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
+	                    var file = fileobject.GetFile(file.value);
+	                    fileLength = file.Size;
+	                }
+	            }
+	            return fileLength;
+	        },
+
+	        hasFlash: _hasFlash,
+
+	        trim: function trim(str) {
+
+	            str = typeof str === 'string' ? str : '';
+
+	            return str.trim ? str.trim() : str.replace(/^\s|\s$/g, '');
+	        },
+
+	        parseEmoji: function parseEmoji(msg) {
+	            if (typeof WebIM.Emoji === 'undefined' || typeof WebIM.Emoji.map === 'undefined') {
+	                return msg;
+	            } else {
+	                var emoji = WebIM.Emoji,
+	                    reg = null;
+
+	                for (var face in emoji.map) {
+	                    if (emoji.map.hasOwnProperty(face)) {
+	                        while (msg.indexOf(face) > -1) {
+	                            msg = msg.replace(face, '<img class="emoji" src="' + emoji.path + emoji.map[face] + '" />');
+	                        }
+	                    }
+	                }
+	                return msg;
+	            }
+	        },
+
+	        parseLink: function parseLink(msg) {
+
+	            var reg = /(https?\:\/\/|www\.)([a-zA-Z0-9-]+(\.[a-zA-Z0-9]+)+)(\:[0-9]{2,4})?\/?((\.[:_0-9a-zA-Z-]+)|[:_0-9a-zA-Z-]*\/?)*\??[:_#@*&%0-9a-zA-Z-/=]*/gm;
+
+	            msg = msg.replace(reg, function (v) {
+
+	                var prefix = /^https?/gm.test(v);
+
+	                return "<a href='" + (prefix ? v : '//' + v) + "' target='_blank'>" + v + "</a>";
+	            });
+
+	            return msg;
+	        },
+
+	        parseJSON: function parseJSON(data) {
+
+	            if (window.JSON && window.JSON.parse) {
+	                return window.JSON.parse(data + '');
+	            }
+
+	            var requireNonComma,
+	                depth = null,
+	                str = utils.trim(data + '');
+
+	            return str && !utils.trim(str.replace(/(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g, function (token, comma, open, close) {
+
+	                if (requireNonComma && comma) {
+	                    depth = 0;
+	                }
+
+	                if (depth === 0) {
+	                    return token;
+	                }
+
+	                requireNonComma = open || comma;
+	                depth += !close - !open;
+	                return '';
+	            })) ? Function('return ' + str)() : Function('Invalid JSON: ' + data)();
+	        },
+
+	        parseUploadResponse: function parseUploadResponse(response) {
+	            return response.indexOf('callback') > -1 ? //lte ie9
+	            response.slice(9, -1) : response;
+	        },
+
+	        parseDownloadResponse: function parseDownloadResponse(response) {
+	            return response && response.type && response.type === 'application/json' || 0 > Object.prototype.toString.call(response).indexOf('Blob') ? this.url + '?token=' : window.URL.createObjectURL(response);
+	        },
+
+	        uploadFile: function uploadFile(options) {
+	            var options = options || {};
+	            options.onFileUploadProgress = options.onFileUploadProgress || EMPTYFN;
+	            options.onFileUploadComplete = options.onFileUploadComplete || EMPTYFN;
+	            options.onFileUploadError = options.onFileUploadError || EMPTYFN;
+	            options.onFileUploadCanceled = options.onFileUploadCanceled || EMPTYFN;
+
+	            var acc = options.accessToken || this.context.accessToken;
+	            if (!acc) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_NO_LOGIN,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var orgName, appName, devInfos;
+	            var appKey = options.appKey || this.context.appKey || '';
+
+	            if (appKey) {
+	                devInfos = appKey.split('#');
+	                orgName = devInfos[0];
+	                appName = devInfos[1];
+	            }
+
+	            if (!orgName && !appName) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var apiUrl = options.apiUrl;
+	            var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
+
+	            if (!utils.isCanUploadFileAsync) {
+	                if (utils.hasFlash && typeof options.flashUpload === 'function') {
+	                    options.flashUpload && options.flashUpload(uploadUrl, options);
+	                } else {
+	                    options.onFileUploadError({
+	                        type: _code.WEBIM_UPLOADFILE_BROWSER_ERROR,
+	                        id: options.id
+	                    });
+	                }
+	                return;
+	            }
+
+	            var fileSize = options.file.data ? options.file.data.size : undefined;
+	            if (fileSize > WEBIM_FILESIZE_LIMIT) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            } else if (fileSize <= 0) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var xhr = utils.xmlrequest();
+	            var onError = function onError(e) {
+	                options.onFileUploadError({
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id,
+	                    xhr: xhr
+	                });
+	            };
+	            if (xhr.upload) {
+	                xhr.upload.addEventListener('progress', options.onFileUploadProgress, false);
+	            }
+	            if (xhr.addEventListener) {
+	                xhr.addEventListener('abort', options.onFileUploadCanceled, false);
+	                xhr.addEventListener('load', function (e) {
+	                    try {
+	                        var json = utils.parseJSON(xhr.responseText);
+	                        try {
+	                            options.onFileUploadComplete(json);
+	                        } catch (e) {
+	                            options.onFileUploadError({
+	                                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                                data: e
+	                            });
+	                        }
+	                    } catch (e) {
+	                        options.onFileUploadError({
+	                            type: _code.WEBIM_UPLOADFILE_ERROR,
+	                            data: xhr.responseText,
+	                            id: options.id,
+	                            xhr: xhr
+	                        });
+	                    }
+	                }, false);
+	                xhr.addEventListener('error', onError, false);
+	            } else if (xhr.onreadystatechange) {
+	                xhr.onreadystatechange = function () {
+	                    if (xhr.readyState === 4) {
+	                        if (ajax.status === 200) {
+	                            try {
+	                                var json = utils.parseJSON(xhr.responseText);
+	                                options.onFileUploadComplete(json);
+	                            } catch (e) {
+	                                options.onFileUploadError({
+	                                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                                    data: xhr.responseText,
+	                                    id: options.id,
+	                                    xhr: xhr
+	                                });
+	                            }
+	                        } else {
+	                            options.onFileUploadError({
+	                                type: _code.WEBIM_UPLOADFILE_ERROR,
+	                                data: xhr.responseText,
+	                                id: options.id,
+	                                xhr: xhr
+	                            });
+	                        }
+	                    } else {
+	                        xhr.abort();
+	                        options.onFileUploadCanceled();
+	                    }
+	                };
+	            }
+
+	            xhr.open('POST', uploadUrl);
+
+	            xhr.setRequestHeader('restrict-access', 'true');
+	            xhr.setRequestHeader('Accept', '*/*'); // Android QQ browser has some problem with this attribute.
+	            xhr.setRequestHeader('Authorization', 'Bearer ' + acc);
+
+	            var formData = new FormData();
+	            formData.append('file', options.file.data);
+	            xhr.send(formData);
+	        },
+
+	        download: function download(options) {
+	            options.onFileDownloadComplete = options.onFileDownloadComplete || EMPTYFN;
+	            options.onFileDownloadError = options.onFileDownloadError || EMPTYFN;
+
+	            var accessToken = options.accessToken || this.context.accessToken;
+	            if (!accessToken) {
+	                options.onFileDownloadError({
+	                    type: _code.WEBIM_DOWNLOADFILE_NO_LOGIN,
+	                    id: options.id
+	                });
+	                return;
+	            }
+
+	            var onError = function onError(e) {
+	                options.onFileDownloadError({
+	                    type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                    id: options.id,
+	                    xhr: xhr
+	                });
+	            };
+
+	            if (!utils.isCanDownLoadFile) {
+	                options.onFileDownloadComplete();
+	                return;
+	            }
+	            var xhr = utils.xmlrequest();
+	            if ('addEventListener' in xhr) {
+	                xhr.addEventListener('load', function (e) {
+	                    options.onFileDownloadComplete(xhr.response, xhr);
+	                }, false);
+	                xhr.addEventListener('error', onError, false);
+	            } else if ('onreadystatechange' in xhr) {
+	                xhr.onreadystatechange = function () {
+	                    if (xhr.readyState === 4) {
+	                        if (ajax.status === 200) {
+	                            options.onFileDownloadComplete(xhr.response, xhr);
+	                        } else {
+	                            options.onFileDownloadError({
+	                                type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                                id: options.id,
+	                                xhr: xhr
+	                            });
+	                        }
+	                    } else {
+	                        xhr.abort();
+	                        options.onFileDownloadError({
+	                            type: _code.WEBIM_DOWNLOADFILE_ERROR,
+	                            id: options.id,
+	                            xhr: xhr
+	                        });
+	                    }
+	                };
+	            }
+
+	            var method = options.method || 'GET';
+	            var resType = options.responseType || 'blob';
+	            var mimeType = options.mimeType || 'text/plain; charset=x-user-defined';
+	            xhr.open(method, options.url);
+	            if (typeof Blob !== 'undefined') {
+	                xhr.responseType = resType;
+	            } else {
+	                xhr.overrideMimeType(mimeType);
+	            }
+
+	            var innerHeaer = {
+	                'X-Requested-With': 'XMLHttpRequest',
+	                'Accept': 'application/octet-stream',
+	                'share-secret': options.secret,
+	                'Authorization': 'Bearer ' + accessToken
+	            };
+	            var headers = options.headers || {};
+	            for (var key in headers) {
+	                innerHeaer[key] = headers[key];
+	            }
+	            for (var key in innerHeaer) {
+	                if (innerHeaer[key]) {
+	                    xhr.setRequestHeader(key, innerHeaer[key]);
+	                }
+	            }
+	            xhr.send(null);
+	        },
+
+	        parseTextMessage: function parseTextMessage(message, faces) {
+	            if (typeof message !== 'string') {
+	                return;
+	            }
+
+	            if (Object.prototype.toString.call(faces) !== '[object Object]') {
+	                return {
+	                    isemoji: false,
+	                    body: [{
+	                        type: 'txt',
+	                        data: message
+	                    }]
+	                };
+	            }
+
+	            var receiveMsg = message;
+	            var emessage = [];
+	            var expr = /\[[^[\]]{2,3}\]/mg;
+	            var emoji = receiveMsg.match(expr);
+
+	            if (!emoji || emoji.length < 1) {
+	                return {
+	                    isemoji: false,
+	                    body: [{
+	                        type: 'txt',
+	                        data: message
+	                    }]
+	                };
+	            }
+	            var isemoji = false;
+	            for (var i = 0; i < emoji.length; i++) {
+	                var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emoji[i])),
+	                    existEmoji = WebIM.Emoji.map[emoji[i]];
+
+	                if (tmsg) {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: tmsg
+	                    });
+	                }
+	                if (!existEmoji) {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: emoji[i]
+	                    });
+	                    continue;
+	                }
+	                var emojiStr = WebIM.Emoji.map ? WebIM.Emoji.path + existEmoji : null;
+
+	                if (emojiStr) {
+	                    isemoji = true;
+	                    emessage.push({
+	                        type: 'emoji',
+	                        data: emojiStr
+	                    });
+	                } else {
+	                    emessage.push({
+	                        type: 'txt',
+	                        data: emoji[i]
+	                    });
+	                }
+	                var restMsgIndex = receiveMsg.indexOf(emoji[i]) + emoji[i].length;
+	                receiveMsg = receiveMsg.substring(restMsgIndex);
+	            }
+	            if (receiveMsg) {
+	                emessage.push({
+	                    type: 'txt',
+	                    data: receiveMsg
+	                });
+	            }
+	            if (isemoji) {
+	                return {
+	                    isemoji: isemoji,
+	                    body: emessage
+	                };
+	            }
+	            return {
+	                isemoji: false,
+	                body: [{
+	                    type: 'txt',
+	                    data: message
+	                }]
+	            };
+	        },
+
+	        parseUri: function parseUri() {
+	            var pattern = /([^\?|&])\w+=([^&]+)/g;
+	            var uri = {};
+	            if (window.location.search) {
+	                var args = window.location.search.match(pattern);
+	                for (var i in args) {
+	                    var str = args[i];
+	                    var eq = str.indexOf('=');
+	                    var key = str.substr(0, eq);
+	                    var value = str.substr(eq + 1);
+	                    uri[key] = value;
+	                }
+	            }
+	            return uri;
+	        },
+
+	        xmlrequest: _xmlrequest,
+
+	        getXmlFirstChild: function getXmlFirstChild(data, tagName) {
+	            var children = data.getElementsByTagName(tagName);
+	            if (children.length == 0) {
+	                return null;
+	            } else {
+	                return children[0];
+	            }
+	        },
+	        ajax: function ajax(options) {
+	            var dataType = options.dataType || 'text';
+	            var suc = options.success || EMPTYFN;
+	            var error = options.error || EMPTYFN;
+	            var xhr = utils.xmlrequest();
+
+	            xhr.onreadystatechange = function () {
+	                if (xhr.readyState === 4) {
+	                    var status = xhr.status || 0;
+	                    if (status === 200) {
+	                        try {
+	                            switch (dataType) {
+	                                case 'text':
+	                                    suc(xhr.responseText);
+	                                    return;
+	                                case 'json':
+	                                    var json = utils.parseJSON(xhr.responseText);
+	                                    suc(json, xhr);
+	                                    return;
+	                                case 'xml':
+	                                    if (xhr.responseXML && xhr.responseXML.documentElement) {
+	                                        suc(xhr.responseXML.documentElement, xhr);
+	                                    } else {
+	                                        error({
+	                                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                                            data: xhr.responseText
+	                                        });
+	                                    }
+	                                    return;
+	                            }
+	                            suc(xhr.response || xhr.responseText, xhr);
+	                        } catch (e) {
+	                            error({
+	                                type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                                data: e
+	                            });
+	                        }
+	                        return;
+	                    } else {
+	                        error({
+	                            type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                            data: xhr.responseText
+	                        });
+	                        return;
+	                    }
+	                }
+	                if (xhr.readyState === 0) {
+	                    error({
+	                        type: _code.WEBIM_CONNCTION_AJAX_ERROR,
+	                        data: xhr.responseText
+	                    });
+	                }
+	            };
+
+	            if (options.responseType) {
+	                if (xhr.responseType) {
+	                    xhr.responseType = options.responseType;
+	                }
+	            }
+	            if (options.mimeType) {
+	                if (utils.hasOverrideMimeType) {
+	                    xhr.overrideMimeType(options.mimeType);
+	                }
+	            }
+
+	            var type = options.type || 'POST',
+	                data = options.data || null,
+	                tempData = '';
+
+	            if (type.toLowerCase() === 'get' && data) {
+	                for (var o in data) {
+	                    if (data.hasOwnProperty(o)) {
+	                        tempData += o + '=' + data[o] + '&';
+	                    }
+	                }
+	                tempData = tempData ? tempData.slice(0, -1) : tempData;
+	                options.url += (options.url.indexOf('?') > 0 ? '&' : '?') + (tempData ? tempData + '&' : tempData) + '_v=' + new Date().getTime();
+	                data = null;
+	                tempData = null;
+	            }
+	            xhr.open(type, options.url);
+
+	            if (utils.isCanSetRequestHeader) {
+	                var headers = options.headers || {};
+	                for (var key in headers) {
+	                    if (headers.hasOwnProperty(key)) {
+	                        xhr.setRequestHeader(key, headers[key]);
+	                    }
+	                }
+	            }
+
+	            xhr.send(data);
+	            return xhr;
+	        },
+	        ts: function ts() {
+	            var d = new Date();
+	            var Hours = d.getHours(); //获取当前小时数(0-23)
+	            var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
+	            var Seconds = d.getSeconds(); //获取当前秒数(0-59)
+	            var Milliseconds = d.getMilliseconds(); //获取当前毫秒
+	            return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
+	        },
+
+	        getObjectKey: function getObjectKey(obj, val) {
+	            for (var key in obj) {
+	                if (obj[key] == val) {
+	                    return key;
+	                }
+	            }
+	            return '';
+	        },
+
+	        sprintf: function sprintf() {
+	            var arg = arguments,
+	                str = arg[0] || '',
+	                i,
+	                len;
+	            for (i = 1, len = arg.length; i < len; i++) {
+	                str = str.replace(/%s/, arg[i]);
+	            }
+	            return str;
+	        },
+
+	        encrypt: function encrypt(str) {
+	            var base64 = new _base64();
+	            var encrypt = base64.encode(str);
+	            return encrypt;
+	        },
+
+	        decrypt: function decrypt(str) {
+	            var base64 = new _base64();
+	            var decrypt = base64.decode(str);
+	            decrypt = escape(decrypt);
+	            decrypt = decrypt.replace(/%00/g, '');
+	            decrypt = unescape(decrypt);
+	            return decrypt;
+	        },
+
+	        setCookie: function setCookie(name, value, days) {
+	            var cookie = name + '=' + encodeURIComponent(value);
+	            if (typeof days == 'number') {
+	                cookie += '; max-age: ' + days * 60 * 60 * 24;
+	            }
+	            document.cookie = cookie;
+	        },
+
+	        getCookie: function getCookie() {
+	            var allCookie = {};
+	            var all = document.cookie;
+	            if (all === "") {
+	                return allCookie;
+	            }
+	            var list = all.split("; ");
+	            for (var i = 0; i < list.length; i++) {
+	                var cookie = list[i];
+	                var p = cookie.indexOf('=');
+	                var name = cookie.substring(0, p);
+	                var value = cookie.substring(p + 1);
+	                value = decodeURIComponent(value);
+	                allCookie[name] = value;
+	            }
+	            return allCookie;
+	        }
+	    };
+
+	    exports.utils = utils;
+	})();
+
+/***/ },
+
+/***/ 235:
+/***/ function(module, exports) {
+
+	"use strict";
+
+	;
+	(function () {
+
+	    exports.code = {
+	        WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: 0,
+	        WEBIM_CONNCTION_OPEN_ERROR: 1,
+	        WEBIM_CONNCTION_AUTH_ERROR: 2,
+	        WEBIM_CONNCTION_OPEN_USERGRID_ERROR: 3,
+	        WEBIM_CONNCTION_ATTACH_ERROR: 4,
+	        WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: 5,
+	        WEBIM_CONNCTION_REOPEN_ERROR: 6,
+	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7, //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+	        WEBIM_CONNCTION_SERVER_ERROR: 8, //8: offline by multi login
+	        WEBIM_CONNCTION_IQ_ERROR: 9,
+
+	        WEBIM_CONNCTION_PING_ERROR: 10,
+	        WEBIM_CONNCTION_NOTIFYVERSION_ERROR: 11,
+	        WEBIM_CONNCTION_GETROSTER_ERROR: 12,
+	        WEBIM_CONNCTION_CROSSDOMAIN_ERROR: 13,
+	        WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: 14,
+	        WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: 15,
+	        WEBIM_CONNCTION_DISCONNECTED: 16, //16: server-side close the websocket connection
+	        WEBIM_CONNCTION_AJAX_ERROR: 17,
+	        WEBIM_CONNCTION_JOINROOM_ERROR: 18,
+	        WEBIM_CONNCTION_GETROOM_ERROR: 19,
+
+	        WEBIM_CONNCTION_GETROOMINFO_ERROR: 20,
+	        WEBIM_CONNCTION_GETROOMMEMBER_ERROR: 21,
+	        WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR: 22,
+	        WEBIM_CONNCTION_LOAD_CHATROOM_ERROR: 23,
+	        WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR: 24,
+	        WEBIM_CONNCTION_JOINCHATROOM_ERROR: 25,
+	        WEBIM_CONNCTION_QUITCHATROOM_ERROR: 26,
+	        WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR: 27,
+	        WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR: 28,
+	        WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: 29,
+
+	        WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: 30,
+	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31, //31: 处理下行消息出错 try/catch抛出异常
+	        WEBIM_CONNCTION_CLIENT_OFFLINE: 32, //32: client offline
+	        WEBIM_CONNCTION_CLIENT_LOGOUT: 33, //33: client logout
+	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34, // 34: Over amount of the tabs a user opened in the same browser
+	        WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP: 35,
+	        WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP: 36,
+	        WEBIM_CONNECTION_ACCEPT_JOIN_GROUP: 37,
+	        WEBIM_CONNECTION_DECLINE_JOIN_GROUP: 38,
+	        WEBIM_CONNECTION_CLOSED: 39,
+
+	        WEBIM_UPLOADFILE_BROWSER_ERROR: 100,
+	        WEBIM_UPLOADFILE_ERROR: 101,
+	        WEBIM_UPLOADFILE_NO_LOGIN: 102,
+	        WEBIM_UPLOADFILE_NO_FILE: 103,
+
+	        WEBIM_DOWNLOADFILE_ERROR: 200,
+	        WEBIM_DOWNLOADFILE_NO_LOGIN: 201,
+	        WEBIM_DOWNLOADFILE_BROWSER_ERROR: 202,
+
+	        WEBIM_MESSAGE_REC_TEXT: 300,
+	        WEBIM_MESSAGE_REC_TEXT_ERROR: 301,
+	        WEBIM_MESSAGE_REC_EMOTION: 302,
+	        WEBIM_MESSAGE_REC_PHOTO: 303,
+	        WEBIM_MESSAGE_REC_AUDIO: 304,
+	        WEBIM_MESSAGE_REC_AUDIO_FILE: 305,
+	        WEBIM_MESSAGE_REC_VEDIO: 306,
+	        WEBIM_MESSAGE_REC_VEDIO_FILE: 307,
+	        WEBIM_MESSAGE_REC_FILE: 308,
+	        WEBIM_MESSAGE_SED_TEXT: 309,
+	        WEBIM_MESSAGE_SED_EMOTION: 310,
+	        WEBIM_MESSAGE_SED_PHOTO: 311,
+	        WEBIM_MESSAGE_SED_AUDIO: 312,
+	        WEBIM_MESSAGE_SED_AUDIO_FILE: 313,
+	        WEBIM_MESSAGE_SED_VEDIO: 314,
+	        WEBIM_MESSAGE_SED_VEDIO_FILE: 315,
+	        WEBIM_MESSAGE_SED_FILE: 316,
+	        WEBIM_MESSAGE_SED_ERROR: 317,
+
+	        STATUS_INIT: 400,
+	        STATUS_DOLOGIN_USERGRID: 401,
+	        STATUS_DOLOGIN_IM: 402,
+	        STATUS_OPENED: 403,
+	        STATUS_CLOSING: 404,
+	        STATUS_CLOSED: 405,
+	        STATUS_ERROR: 406
+	    };
+	})();
+
+/***/ },
+
+/***/ 241:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(242);
+
+/***/ },
+
+/***/ 242:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';var _version='1.4.2';var _code=__webpack_require__(235).code;var _utils=__webpack_require__(234).utils;var _msg=__webpack_require__(243);var _message=_msg._msg;var _msgHash={};var Queue=__webpack_require__(244).Queue;window.URL=window.URL||window.webkitURL||window.mozURL||window.msURL;if(window.XDomainRequest){XDomainRequest.prototype.oldsend=XDomainRequest.prototype.send;XDomainRequest.prototype.send=function(){XDomainRequest.prototype.oldsend.apply(this,arguments);this.readyState=2;};}Strophe.Request.prototype._newXHR=function(){var xhr=_utils.xmlrequest(true);if(xhr.overrideMimeType){xhr.overrideMimeType('text/xml');}// use Function.bind() to prepend ourselves as an argument
+	xhr.onreadystatechange=this.func.bind(null,this);return xhr;};Strophe.Websocket.prototype._closeSocket=function(){if(this.socket){var me=this;setTimeout(function(){try{me.socket.close();}catch(e){}},0);}else{this.socket=null;}};/**
+	 *
+	 * Strophe.Websocket has a bug while logout:
+	 * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
+	 * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
+	 * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+	 * 3 "Websocket error [object Event]"
+	 * _changeConnectStatus
+	 * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
+	 *
+	 * this will trigger socket.onError, therefore _doDisconnect again.
+	 * Fix it by overide  _onMessage
+	 */Strophe.Websocket.prototype._onMessage=function(message){logMessage(message);var elem,data;// check for closing stream
+	// var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
+	// if (message.data === close) {
+	//     this._conn.rawInput(close);
+	//     this._conn.xmlInput(message);
+	//     if (!this._conn.disconnecting) {
+	//         this._conn._doDisconnect();
+	//     }
+	//     return;
+	//
+	// send and receive close xml: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/>
+	// so we can't judge whether message.data equals close by === simply.
+	if(message.data.indexOf("<close ")===0){elem=new DOMParser().parseFromString(message.data,"text/xml").documentElement;var see_uri=elem.getAttribute("see-other-uri");if(see_uri){this._conn._changeConnectStatus(Strophe.Status.REDIRECT,"Received see-other-uri, resetting connection");this._conn.reset();this._conn.service=see_uri;this._connect();}else{// if (!this._conn.disconnecting) {
+	this._conn._doDisconnect("receive <close> from server");// }
+	}return;}else if(message.data.search("<open ")===0){// This handles stream restarts
+	elem=new DOMParser().parseFromString(message.data,"text/xml").documentElement;if(!this._handleStreamStart(elem)){return;}}else{data=this._streamWrap(message.data);elem=new DOMParser().parseFromString(data,"text/xml").documentElement;}if(this._check_streamerror(elem,Strophe.Status.ERROR)){return;}//handle unavailable presence stanza before disconnecting
+	if(this._conn.disconnecting&&elem.firstChild.nodeName==="presence"&&elem.firstChild.getAttribute("type")==="unavailable"){this._conn.xmlInput(elem);this._conn.rawInput(Strophe.serialize(elem));// if we are already disconnecting we will ignore the unavailable stanza and
+	// wait for the </stream:stream> tag before we close the connection
+	return;}this._conn._dataRecv(elem,message.data);};var _listenNetwork=function _listenNetwork(onlineCallback,offlineCallback){if(window.addEventListener){window.addEventListener('online',onlineCallback);window.addEventListener('offline',offlineCallback);}else if(window.attachEvent){if(document.body){document.body.attachEvent('ononline',onlineCallback);document.body.attachEvent('onoffline',offlineCallback);}else{window.attachEvent('load',function(){document.body.attachEvent('ononline',onlineCallback);document.body.attachEvent('onoffline',offlineCallback);});}}else{/*var onlineTmp = window.ononline;
+	         var offlineTmp = window.onoffline;
+
+	         window.attachEvent('ononline', function () {
+	         try {
+	         typeof onlineTmp === 'function' && onlineTmp();
+	         } catch ( e ) {}
+	         onlineCallback();
+	         });
+	         window.attachEvent('onoffline', function () {
+	         try {
+	         typeof offlineTmp === 'function' && offlineTmp();
+	         } catch ( e ) {}
+	         offlineCallback();
+	         });*/}};var _parseRoom=function _parseRoom(result){var rooms=[];var items=result.getElementsByTagName('item');if(items){for(var i=0;i<items.length;i++){var item=items[i];var roomJid=item.getAttribute('jid');var tmp=roomJid.split('@')[0];var room={jid:roomJid,name:item.getAttribute('name'),roomId:tmp.split('_')[1]};rooms.push(room);}}return rooms;};var _parseRoomOccupants=function _parseRoomOccupants(result){var occupants=[];var items=result.getElementsByTagName('item');if(items){for(var i=0;i<items.length;i++){var item=items[i];var room={jid:item.getAttribute('jid'),name:item.getAttribute('name')};occupants.push(room);}}return occupants;};var _parseResponseMessage=function _parseResponseMessage(msginfo){var parseMsgData={errorMsg:true,data:[]};var msgBodies=msginfo.getElementsByTagName('body');if(msgBodies){for(var i=0;i<msgBodies.length;i++){var msgBody=msgBodies[i];var childNodes=msgBody.childNodes;if(childNodes&&childNodes.length>0){var childNode=msgBody.childNodes[0];if(childNode.nodeType==Strophe.ElementType.TEXT){var jsondata=childNode.wholeText||childNode.nodeValue;jsondata=jsondata.replace('\n','<br>');try{var data=eval('('+jsondata+')');parseMsgData.errorMsg=false;parseMsgData.data=[data];}catch(e){}}}}var delayTags=msginfo.getElementsByTagName('delay');if(delayTags&&delayTags.length>0){var delayTag=delayTags[0];var delayMsgTime=delayTag.getAttribute('stamp');if(delayMsgTime){parseMsgData.delayTimeStamp=delayMsgTime;}}}else{var childrens=msginfo.childNodes;if(childrens&&childrens.length>0){var child=msginfo.childNodes[0];if(child.nodeType==Strophe.ElementType.TEXT){try{var data=eval('('+child.nodeValue+')');parseMsgData.errorMsg=false;parseMsgData.data=[data];}catch(e){}}}}return parseMsgData;};var _parseNameFromJidFn=function _parseNameFromJidFn(jid,domain){domain=domain||'';var tempstr=jid;var findex=tempstr.indexOf('_');if(findex!==-1){tempstr=tempstr.substring(findex+1);}var atindex=tempstr.indexOf('@'+domain);if(atindex!==-1){tempstr=tempstr.substring(0,atindex);}return tempstr;};var _parseFriend=function _parseFriend(queryTag,conn,from){var rouster=[];var items=queryTag.getElementsByTagName('item');if(items){for(var i=0;i<items.length;i++){var item=items[i];var jid=item.getAttribute('jid');if(!jid){continue;}var subscription=item.getAttribute('subscription');var friend={subscription:subscription,jid:jid};var ask=item.getAttribute('ask');if(ask){friend.ask=ask;}var name=item.getAttribute('name');if(name){friend.name=name;}else{var n=_parseNameFromJidFn(jid);friend.name=n;}var groups=[];Strophe.forEachChild(item,'group',function(group){groups.push(Strophe.getText(group));});friend.groups=groups;rouster.push(friend);// B同意之后 -> B订阅A
+	// fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
+	if(conn&&subscription=='from'&&!ask){conn.subscribe({toJid:jid});}if(conn&&subscription=='to'){conn.subscribed({toJid:jid});}}}return rouster;};var _login=function _login(options,conn){var accessToken=options.access_token||'';if(accessToken==''){var loginfo=_utils.stringify(options);conn.onError({type:_code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,data:options});return;}conn.context.accessToken=options.access_token;conn.context.accessTokenExpires=options.expires_in;var stropheConn=null;if(conn.isOpening()&&conn.context.stropheConn){stropheConn=conn.context.stropheConn;}else if(conn.isOpened()&&conn.context.stropheConn){// return;
+	stropheConn=conn.getStrophe();}else{stropheConn=conn.getStrophe();}var callback=function callback(status,msg){_loginCallback(status,msg,conn);};//console.log('jid=', conn.context.jid)
+	conn.context.stropheConn=stropheConn;if(conn.route){stropheConn.connect(conn.context.jid,'$t$'+accessToken,callback,conn.wait,conn.hold,conn.route);}else{stropheConn.connect(conn.context.jid,'$t$'+accessToken,callback,conn.wait,conn.hold);}};var _parseMessageType=function _parseMessageType(msginfo){var receiveinfo=msginfo.getElementsByTagName('received'),inviteinfo=msginfo.getElementsByTagName('invite'),deliveryinfo=msginfo.getElementsByTagName('delivery'),acked=msginfo.getElementsByTagName('acked'),error=msginfo.getElementsByTagName('error'),msgtype='normal';if(receiveinfo&&receiveinfo.length>0&&receiveinfo[0].namespaceURI==='urn:xmpp:receipts'){msgtype='received';}else if(inviteinfo&&inviteinfo.length>0){msgtype='invite';}else if(deliveryinfo&&deliveryinfo.length>0){msgtype='delivery';// 消息送达
+	}else if(acked&&acked.length){msgtype='acked';// 消息已读
+	}else if(error&&error.length){var errorItem=error[0],userMuted=errorItem.getElementsByTagName('user-muted');if(userMuted&&userMuted.length){msgtype='userMuted';}}return msgtype;};var _handleMessageQueue=function _handleMessageQueue(conn){for(var i in _msgHash){if(_msgHash.hasOwnProperty(i)){_msgHash[i].send(conn);}}};var _loginCallback=function _loginCallback(status,msg,conn){// console.log('stropheConn.connected status=', status, msg)
+	var conflict,error;if(msg==='conflict'){conflict=true;}if(status==Strophe.Status.CONNFAIL){//client offline, ping/pong timeout, server quit, server offline
+	error={type:_code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,msg:msg,reconnect:true};conflict&&(error.conflict=true);conn.onError(error);}else if(status==Strophe.Status.ATTACHED||status==Strophe.Status.CONNECTED){// client should limit the speed of sending ack messages  up to 5/s
+	conn.autoReconnectNumTotal=0;conn.intervalId=setInterval(function(){conn.handelSendQueue();},200);var handleMessage=function handleMessage(msginfo){var delivery=msginfo.getElementsByTagName('delivery');var acked=msginfo.getElementsByTagName('acked');if(delivery.length){conn.handleDeliveredMessage(msginfo);return true;}if(acked.length){conn.handleAckedMessage(msginfo);return true;}var type=_parseMessageType(msginfo);switch(type){case"received":conn.handleReceivedMessage(msginfo);return true;case"invite":conn.handleInviteMessage(msginfo);return true;case"delivery":conn.handleDeliveredMessage(msginfo);return true;case"acked":conn.handleAckedMessage(msginfo);return true;case"userMuted":conn.handleMutedMessage(msginfo);return true;default:conn.handleMessage(msginfo);return true;}};var handlePresence=function handlePresence(msginfo){conn.handlePresence(msginfo);return true;};var handlePing=function handlePing(msginfo){conn.handlePing(msginfo);return true;};var handleIqRoster=function handleIqRoster(msginfo){conn.handleIqRoster(msginfo);return true;};var handleIqPrivacy=function handleIqPrivacy(msginfo){conn.handleIqPrivacy(msginfo);return true;};var handleIq=function handleIq(msginfo){conn.handleIq(msginfo);return true;};conn.addHandler(handleMessage,null,'message',null,null,null);conn.addHandler(handlePresence,null,'presence',null,null,null);conn.addHandler(handlePing,'urn:xmpp:ping','iq','get',null,null);conn.addHandler(handleIqRoster,'jabber:iq:roster','iq','set',null,null);conn.addHandler(handleIqPrivacy,'jabber:iq:privacy','iq','set',null,null);conn.addHandler(handleIq,null,'iq',null,null,null);conn.registerConfrIQHandler&&conn.registerConfrIQHandler();conn.context.status=_code.STATUS_OPENED;var supportRecMessage=[_code.WEBIM_MESSAGE_REC_TEXT,_code.WEBIM_MESSAGE_REC_EMOJI];if(_utils.isCanDownLoadFile){supportRecMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);supportRecMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);}var supportSedMessage=[_code.WEBIM_MESSAGE_SED_TEXT];if(_utils.isCanUploadFile){supportSedMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);supportSedMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);}conn.notifyVersion();conn.retry&&_handleMessageQueue(conn);conn.heartBeat();conn.isAutoLogin&&conn.setPresence();conn.onOpened({canReceive:supportRecMessage,canSend:supportSedMessage,accessToken:conn.context.accessToken});}else if(status==Strophe.Status.DISCONNECTING){if(conn.isOpened()){conn.stopHeartBeat();conn.context.status=_code.STATUS_CLOSING;error={type:_code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,msg:msg,reconnect:true};conflict&&(error.conflict=true);conn.onError(error);}}else if(status==Strophe.Status.DISCONNECTED){if(conn.isOpened()){if(conn.autoReconnectNumTotal<conn.autoReconnectNumMax){conn.reconnect();return;}else{error={type:_code.WEBIM_CONNCTION_DISCONNECTED};conn.onError(error);}}conn.context.status=_code.STATUS_CLOSED;conn.clear();conn.onClosed();}else if(status==Strophe.Status.AUTHFAIL){error={type:_code.WEBIM_CONNCTION_AUTH_ERROR};conflict&&(error.conflict=true);conn.onError(error);conn.clear();}else if(status==Strophe.Status.ERROR){conn.context.status=_code.STATUS_ERROR;error={type:_code.WEBIM_CONNCTION_SERVER_ERROR};conflict&&(error.conflict=true);conn.onError(error);}conn.context.status_now=status;};var _getJid=function _getJid(options,conn){var jid=options.toJid||'';if(jid===''){var appKey=conn.context.appKey||'';var toJid=appKey+'_'+options.to+'@'+conn.domain;if(options.resource){toJid=toJid+'/'+options.resource;}jid=toJid;}return jid;};var _getJidByName=function _getJidByName(name,conn){var options={to:name};return _getJid(options,conn);};var _validCheck=function _validCheck(options,conn){options=options||{};if(options.user==''){conn.onError({type:_code.WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR});return false;}var user=options.user+''||'';var appKey=options.appKey||'';var devInfos=appKey.split('#');if(devInfos.length!==2){conn.onError({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR});return false;}var orgName=devInfos[0];var appName=devInfos[1];if(!orgName){conn.onError({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR});return false;}if(!appName){conn.onError({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR});return false;}var jid=appKey+'_'+user.toLowerCase()+'@'+conn.domain,resource=options.resource||'webim';if(conn.isMultiLoginSessions){resource+=user+new Date().getTime()+Math.floor(Math.random().toFixed(6)*1000000);}conn.context.jid=jid+'/'+resource;/*jid: {appkey}_{username}@domain/resource*/conn.context.userId=user;conn.context.appKey=appKey;conn.context.appName=appName;conn.context.orgName=orgName;return true;};var _getXmppUrl=function _getXmppUrl(baseUrl,https){if(/^(ws|http)s?:\/\/?/.test(baseUrl)){return baseUrl;}var url={prefix:'http',base:'://'+baseUrl,suffix:'/http-bind/'};if(https&&_utils.isSupportWss){url.prefix='wss';url.suffix='/ws/';}else{if(https){url.prefix='https';}else if(window.WebSocket){url.prefix='ws';url.suffix='/ws/';}}return url.prefix+url.base+url.suffix;};//class
+	var connection=function connection(options){if(!this instanceof connection){return new connection(options);}var options=options||{};this.isHttpDNS=options.isHttpDNS||false;this.isMultiLoginSessions=options.isMultiLoginSessions||false;this.wait=options.wait||30;this.retry=options.retry||false;this.https=options.https||location.protocol==='https:';this.url=_getXmppUrl(options.url,this.https);this.hold=options.hold||1;this.route=options.route||null;this.domain=options.domain||'easemob.com';this.inactivity=options.inactivity||30;this.heartBeatWait=options.heartBeatWait||4500;this.maxRetries=options.maxRetries||5;this.isAutoLogin=options.isAutoLogin===false?false:true;this.pollingTime=options.pollingTime||800;this.stropheConn=false;this.autoReconnectNumMax=options.autoReconnectNumMax||0;this.autoReconnectNumTotal=0;this.autoReconnectInterval=options.autoReconnectInterval||0;this.context={status:_code.STATUS_INIT};this.sendQueue=new Queue();//instead of sending message immediately,cache them in this queue
+	this.intervalId=null;//clearInterval return value
+	this.apiUrl=options.apiUrl||'';this.isWindowSDK=options.isWindowSDK||false;this.dnsArr=['https://rs.easemob.com','https://rsbak.easemob.com','http://182.92.174.78','http://112.126.66.111'];//http dns server hosts
+	this.dnsIndex=0;//the dns ip used in dnsArr currently
+	this.dnsTotal=this.dnsArr.length;//max number of getting dns retries
+	this.restHosts=null;//rest server ips
+	this.restIndex=0;//the rest ip used in restHosts currently
+	this.restTotal=0;//max number of getting rest token retries
+	this.xmppHosts=null;//xmpp server ips
+	this.xmppIndex=0;//the xmpp ip used in xmppHosts currently
+	this.xmppTotal=0;//max number of creating xmpp server connection(ws/bosh) retries
+	this.groupOption={};};connection.prototype.registerUser=function(options){if(location.protocol!='https:'&&this.isHttpDNS){this.dnsIndex=0;this.getHttpDNS(options,'signup');}else{this.signup(options);}};connection.prototype.handelSendQueue=function(){var options=this.sendQueue.pop();if(options!==null){this.sendReceiptsMessage(options);}};connection.prototype.listen=function(options){this.onOpened=options.onOpened||_utils.emptyfn;this.onClosed=options.onClosed||_utils.emptyfn;this.onTextMessage=options.onTextMessage||_utils.emptyfn;this.onEmojiMessage=options.onEmojiMessage||_utils.emptyfn;this.onPictureMessage=options.onPictureMessage||_utils.emptyfn;this.onAudioMessage=options.onAudioMessage||_utils.emptyfn;this.onVideoMessage=options.onVideoMessage||_utils.emptyfn;this.onFileMessage=options.onFileMessage||_utils.emptyfn;this.onLocationMessage=options.onLocationMessage||_utils.emptyfn;this.onCmdMessage=options.onCmdMessage||_utils.emptyfn;this.onPresence=options.onPresence||_utils.emptyfn;this.onRoster=options.onRoster||_utils.emptyfn;this.onError=options.onError||_utils.emptyfn;this.onReceivedMessage=options.onReceivedMessage||_utils.emptyfn;this.onInviteMessage=options.onInviteMessage||_utils.emptyfn;this.onDeliverdMessage=options.onDeliveredMessage||_utils.emptyfn;this.onReadMessage=options.onReadMessage||_utils.emptyfn;this.onMutedMessage=options.onMutedMessage||_utils.emptyfn;this.onOffline=options.onOffline||_utils.emptyfn;this.onOnline=options.onOnline||_utils.emptyfn;this.onConfirmPop=options.onConfirmPop||_utils.emptyfn;this.onCreateGroup=options.onCreateGroup||_utils.emptyfn;//for WindowSDK start
+	this.onUpdateMyGroupList=options.onUpdateMyGroupList||_utils.emptyfn;this.onUpdateMyRoster=options.onUpdateMyRoster||_utils.emptyfn;//for WindowSDK end
+	this.onBlacklistUpdate=options.onBlacklistUpdate||_utils.emptyfn;_listenNetwork(this.onOnline,this.onOffline);};//webrtc需要强制心跳，加个默认为false的参数 向下兼容
+	connection.prototype.heartBeat=function(){var forcing=arguments.length<=0||arguments[0]===undefined?false:arguments[0];var me=this;//IE8: strophe auto switch from ws to BOSH, need heartbeat
+	var isNeed=!/^ws|wss/.test(me.url)||/mobile/.test(navigator.userAgent);if(this.heartBeatID||!forcing&&!isNeed){return;}var options={toJid:this.domain,type:'normal'};this.heartBeatID=setInterval(function(){me.ping(options);},this.heartBeatWait);};connection.prototype.stopHeartBeat=function(){if(typeof this.heartBeatID=="number"){this.heartBeatID=clearInterval(this.heartBeatID);}};connection.prototype.sendReceiptsMessage=function(options){var dom=$msg({from:this.context.jid||'',to:this.domain,id:options.id||''}).c('received',{xmlns:'urn:xmpp:receipts',id:options.id||''});this.sendCommand(dom.tree());};connection.prototype.cacheReceiptsMessage=function(options){this.sendQueue.push(options);};connection.prototype.getStrophe=function(){if(location.protocol!='https:'&&this.isHttpDNS){//TODO: try this.xmppTotal times on fail
+	var url='';var host=this.xmppHosts[this.xmppIndex];var domain=_utils.getXmlFirstChild(host,'domain');var ip=_utils.getXmlFirstChild(host,'ip');if(ip){url=ip.textContent;var port=_utils.getXmlFirstChild(host,'port');if(port.textContent!='80'){url+=':'+port.textContent;}}else{url=domain.textContent;}if(url!=''){var parter=/(.+\/\/).+(\/.+)/;this.url=this.url.replace(parter,"$1"+url+"$2");}}var stropheConn=new Strophe.Connection(this.url,{inactivity:this.inactivity,maxRetries:this.maxRetries,pollingTime:this.pollingTime});return stropheConn;};connection.prototype.getHostsByTag=function(data,tagName){var tag=_utils.getXmlFirstChild(data,tagName);if(!tag){console.log(tagName+' hosts error');return null;}var hosts=tag.getElementsByTagName('hosts');if(hosts.length==0){console.log(tagName+' hosts error2');return null;}return hosts[0].getElementsByTagName('host');};connection.prototype.getRestFromHttpDNS=function(options,type){if(this.restIndex>this.restTotal){console.log('rest hosts all tried,quit');return;}var url='';var host=this.restHosts[this.restIndex];var domain=_utils.getXmlFirstChild(host,'domain');var ip=_utils.getXmlFirstChild(host,'ip');if(ip){var port=_utils.getXmlFirstChild(host,'port');url=(location.protocol==='https:'?'https:':'http:')+'//'+ip.textContent+':'+port.textContent;}else{url=(location.protocol==='https:'?'https:':'http:')+'//'+domain.textContent;}if(url!=''){this.apiUrl=url;options.apiUrl=url;}if(type=='login'){this.login(options);}else{this.signup(options);}};connection.prototype.getHttpDNS=function(options,type){if(this.restHosts){this.getRestFromHttpDNS(options,type);return;}var self=this;var suc=function suc(data,xhr){data=new DOMParser().parseFromString(data,"text/xml").documentElement;//get rest ips
+	var restHosts=self.getHostsByTag(data,'rest');if(!restHosts){console.log('rest hosts error3');return;}self.restHosts=restHosts;self.restTotal=restHosts.length;//get xmpp ips
+	var xmppHosts=self.getHostsByTag(data,'xmpp');if(!xmppHosts){console.log('xmpp hosts error3');return;}self.xmppHosts=xmppHosts;self.xmppTotal=xmppHosts.length;self.getRestFromHttpDNS(options,type);};var error=function error(res,xhr,msg){console.log('getHttpDNS error',res,msg);self.dnsIndex++;if(self.dnsIndex<self.dnsTotal){self.getHttpDNS(options,type);}};var options2={url:this.dnsArr[this.dnsIndex]+'/easemob/server.xml',dataType:'text',type:'GET',// url: 'http://www.easemob.com/easemob/server.xml',
+	// dataType: 'xml',
+	data:{app_key:encodeURIComponent(options.appKey)},success:suc||_utils.emptyfn,error:error||_utils.emptyfn};_utils.ajax(options2);};connection.prototype.signup=function(options){var self=this;var orgName=options.orgName||'';var appName=options.appName||'';var appKey=options.appKey||'';var suc=options.success||EMPTYFN;var err=options.error||EMPTYFN;if(!orgName&&!appName&&appKey){var devInfos=appKey.split('#');if(devInfos.length===2){orgName=devInfos[0];appName=devInfos[1];}}if(!orgName&&!appName){err({type:_code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR});return;}var error=function error(res,xhr,msg){if(location.protocol!='https:'&&self.isHttpDNS){if(self.restIndex+1<self.restTotal){self.restIndex++;self.getRestFromHttpDNS(options,'signup');return;}}self.clear();err(res);};var https=options.https||https;var apiUrl=options.apiUrl;var restUrl=apiUrl+'/'+orgName+'/'+appName+'/users';var userjson={username:options.username,password:options.password,nickname:options.nickname||''};var userinfo=_utils.stringify(userjson);var options2={url:restUrl,dataType:'json',data:userinfo,success:suc,error:error};_utils.ajax(options2);};connection.prototype.open=function(options){if(options.xmppURL){this.url=_getXmppUrl(options.xmppURL,this.https);}if(location.protocol!='https:'&&this.isHttpDNS){this.dnsIndex=0;this.getHttpDNS(options,'login');}else{this.login(options);}};connection.prototype.login=function(options){var pass=_validCheck(options,this);if(!pass){return;}var conn=this;if(conn.isOpened()){return;}if(options.accessToken){options.access_token=options.accessToken;conn.context.restTokenData=options;_login(options,conn);}else{var apiUrl=options.apiUrl;var userId=this.context.userId;var pwd=options.pwd||'';var appName=this.context.appName;var orgName=this.context.orgName;var suc=function suc(data,xhr){conn.context.status=_code.STATUS_DOLOGIN_IM;conn.context.restTokenData=data;if(options.success)options.success(data);_login(data,conn);};var error=function error(res,xhr,msg){if(options.error)options.error();if(location.protocol!='https:'&&conn.isHttpDNS){if(conn.restIndex+1<conn.restTotal){conn.restIndex++;conn.getRestFromHttpDNS(options,'login');return;}}conn.clear();if(res.error&&res.error_description){conn.onError({type:_code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,data:res,xhr:xhr});}else{conn.onError({type:_code.WEBIM_CONNCTION_OPEN_ERROR,data:res,xhr:xhr});}};this.context.status=_code.STATUS_DOLOGIN_USERGRID;var loginJson={grant_type:'password',username:userId,password:pwd,timestamp:+new Date()};var loginfo=_utils.stringify(loginJson);var options2={url:apiUrl+'/'+orgName+'/'+appName+'/token',dataType:'json',data:loginfo,success:suc||_utils.emptyfn,error:error||_utils.emptyfn};_utils.ajax(options2);}};// attach to xmpp server for BOSH
+	connection.prototype.attach=function(options){var pass=_validCheck(options,this);if(!pass){return;}options=options||{};var accessToken=options.accessToken||'';if(accessToken==''){this.onError({type:_code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR});return;}var sid=options.sid||'';if(sid===''){this.onError({type:_code.WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR});return;}var rid=options.rid||'';if(rid===''){this.onError({type:_code.WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR});return;}var stropheConn=this.getStrophe();this.context.accessToken=accessToken;this.context.stropheConn=stropheConn;this.context.status=_code.STATUS_DOLOGIN_IM;var conn=this;var callback=function callback(status,msg){_loginCallback(status,msg,conn);};var jid=this.context.jid;var wait=this.wait;var hold=this.hold;var wind=this.wind||5;stropheConn.attach(jid,sid,rid,callback,wait,hold,wind);};connection.prototype.close=function(reason){this.stopHeartBeat();var status=this.context.status;if(status==_code.STATUS_INIT){return;}if(this.isClosed()||this.isClosing()){return;}this.context.status=_code.STATUS_CLOSING;this.context.stropheConn.disconnect(reason);};connection.prototype.addHandler=function(handler,ns,name,type,id,from,options){this.context.stropheConn.addHandler(handler,ns,name,type,id,from,options);};connection.prototype.notifyVersion=function(suc,fail){var jid=_getJid({},this);var dom=$iq({from:this.context.jid||'',to:this.domain,type:'result'}).c('query',{xmlns:'jabber:iq:version'}).c('name').t('easemob').up().c('version').t(_version).up().c('os').t('webim');var suc=suc||_utils.emptyfn;var error=fail||this.onError;var failFn=function failFn(ele){error({type:_code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR,data:ele});};this.context.stropheConn.sendIQ(dom.tree(),suc,failFn);return;};// handle all types of presence message
+	connection.prototype.handlePresence=function(msginfo){if(this.isClosed()){return;}var from=msginfo.getAttribute('from')||'';var to=msginfo.getAttribute('to')||'';var type=msginfo.getAttribute('type')||'';var presence_type=msginfo.getAttribute('presence_type')||'';var fromUser=_parseNameFromJidFn(from);var toUser=_parseNameFromJidFn(to);var isCreate=false;var isMemberJoin=false;var isDecline=false;var isApply=false;var info={from:fromUser,to:toUser,fromJid:from,toJid:to,type:type,chatroom:msginfo.getElementsByTagName('roomtype').length?true:false};var showTags=msginfo.getElementsByTagName('show');if(showTags&&showTags.length>0){var showTag=showTags[0];info.show=Strophe.getText(showTag);}var statusTags=msginfo.getElementsByTagName('status');if(statusTags&&statusTags.length>0){var statusTag=statusTags[0];info.status=Strophe.getText(statusTag);info.code=statusTag.getAttribute('code');}var priorityTags=msginfo.getElementsByTagName('priority');if(priorityTags&&priorityTags.length>0){var priorityTag=priorityTags[0];info.priority=Strophe.getText(priorityTag);}var error=msginfo.getElementsByTagName('error');if(error&&error.length>0){var error=error[0];info.error={code:error.getAttribute('code')};}var destroy=msginfo.getElementsByTagName('destroy');if(destroy&&destroy.length>0){var destroy=destroy[0];info.destroy=true;var reason=destroy.getElementsByTagName('reason');if(reason&&reason.length>0){info.reason=Strophe.getText(reason[0]);}}var members=msginfo.getElementsByTagName('item');if(members&&members.length>0){var member=members[0];var role=member.getAttribute('role');var jid=member.getAttribute('jid');var affiliation=member.getAttribute('affiliation');// dismissed by group
+	if(role=='none'&&jid){var kickedMember=_parseNameFromJidFn(jid);var actor=member.getElementsByTagName('actor')[0];var actorNick=actor.getAttribute('nick');info.actor=actorNick;info.kicked=kickedMember;}// Service Acknowledges Room Creation `createGroupACK`
+	if(role=='moderator'&&info.code=='201'){if(affiliation==='owner'){info.type='createGroupACK';isCreate=true;}// else
+	//     info.type = 'joinPublicGroupSuccess';
+	}}var x=msginfo.getElementsByTagName('x');if(x&&x.length>0){// 加群申请
+	var apply=x[0].getElementsByTagName('apply');// 加群成功
+	var accept=x[0].getElementsByTagName('accept');// 同意加群后用户进群通知
+	var item=x[0].getElementsByTagName('item');// 加群被拒绝
+	var decline=x[0].getElementsByTagName('decline');// console.log('ScareCrow: ', decline, decline.length);
+	if(apply&&apply.length>0){isApply=true;info.toNick=apply[0].getAttribute('toNick');info.type='joinGroupNotifications';var groupJid=apply[0].getAttribute('to');var gid=groupJid.split('@')[0].split('_');gid=gid[gid.length-1];info.gid=gid;}else if(accept&&accept.length>0){info.type='joinPublicGroupSuccess';}else if(item&&item.length>0){var affiliation=item[0].getAttribute('affiliation'),role=item[0].getAttribute('role');if(affiliation=='member'||role=='participant'){isMemberJoin=true;info.mid=info.fromJid.split('/');info.mid=info.mid[info.mid.length-1];info.type='memberJoinPublicGroupSuccess';}}else if(decline&&decline.length){isDecline=true;var gid=decline[0].getAttribute("fromNick");var owner=_parseNameFromJidFn(decline[0].getAttribute("from"));info.type="joinPublicGroupDeclined";info.owner=owner;info.gid=gid;}}if(info.chatroom){// diff the
+	info.presence_type=presence_type;info.original_type=info.type;var reflectUser=from.slice(from.lastIndexOf('/')+1);if(reflectUser===this.context.userId){if(info.type===''&&!info.code){info.type='joinChatRoomSuccess';}else if(presence_type==='unavailable'||info.type==='unavailable'){if(!info.status){// logout successfully.
+	info.type='leaveChatRoom';}else if(info.code==110){// logout or dismissied by admin.
+	info.type='leaveChatRoom';}else if(info.error&&info.error.code==406){// The chat room is full.
+	info.type='reachChatRoomCapacity';}}}}else{info.presence_type=presence_type;info.original_type=type;if(/subscribe/.test(info.type)){//subscribe | subscribed | unsubscribe | unsubscribed
+	}else if(type==""&&!info.status&&!info.error&&!isCreate&&!isApply&&!isMemberJoin&&!isDecline){//console.log(2222222, msginfo, info, isApply);
+	info.type='joinPublicGroupSuccess';}else if(presence_type==='unavailable'||type==='unavailable'){// There is no roomtype when a chat room is deleted.
+	if(info.destroy){// Group or Chat room Deleted.
+	info.type='deleteGroupChat';}else if(info.code==307||info.code==321){// Dismissed by group.
+	var nick=msginfo.getAttribute('nick');if(!nick)info.type='leaveGroup';else info.type='removedFromGroup';}}}this.onPresence(info,msginfo);};connection.prototype.handlePing=function(e){if(this.isClosed()){return;}var id=e.getAttribute('id');var from=e.getAttribute('from');var to=e.getAttribute('to');var dom=$iq({from:to,to:from,id:id,type:'result'});this.sendCommand(dom.tree());};connection.prototype.handleIq=function(iq){return true;};connection.prototype.handleIqPrivacy=function(msginfo){var list=msginfo.getElementsByTagName('list');if(list.length==0){return;}this.getBlacklist();};connection.prototype.handleIqRoster=function(e){var id=e.getAttribute('id');var from=e.getAttribute('from')||'';var name=_parseNameFromJidFn(from);var curJid=this.context.jid;var curUser=this.context.userId;var iqresult=$iq({type:'result',id:id,from:curJid});this.sendCommand(iqresult.tree());var msgBodies=e.getElementsByTagName('query');if(msgBodies&&msgBodies.length>0){var queryTag=msgBodies[0];var rouster=_parseFriend(queryTag,this,from);this.onRoster(rouster);}return true;};connection.prototype.handleMessage=function(msginfo){var self=this;if(this.isClosed()){return;}var id=msginfo.getAttribute('id')||'';// cache ack into sendQueue first , handelSendQueue will do the send thing with the speed of  5/s
+	this.cacheReceiptsMessage({id:id});var parseMsgData=_parseResponseMessage(msginfo);if(parseMsgData.errorMsg){this.handlePresence(msginfo);return;}// send error
+	var error=msginfo.getElementsByTagName('error');var errorCode='';var errorText='';var errorBool=false;if(error.length>0){errorBool=true;errorCode=error[0].getAttribute('code');var textDOM=error[0].getElementsByTagName('text');errorText=textDOM[0].textContent||textDOM[0].text;}var msgDatas=parseMsgData.data;for(var i in msgDatas){if(!msgDatas.hasOwnProperty(i)){continue;}var msg=msgDatas[i];if(!msg.from||!msg.to){continue;}var from=(msg.from+'').toLowerCase();var too=(msg.to+'').toLowerCase();var extmsg=msg.ext||{};var chattype='';var typeEl=msginfo.getElementsByTagName('roomtype');if(typeEl.length){chattype=typeEl[0].getAttribute('type')||'chat';}else{chattype=msginfo.getAttribute('type')||'chat';}var msgBodies=msg.bodies;if(!msgBodies||msgBodies.length==0){continue;}var msgBody=msg.bodies[0];var type=msgBody.type;try{switch(type){case'txt':var receiveMsg=msgBody.msg;var emojibody=_utils.parseTextMessage(receiveMsg,WebIM.Emoji);if(emojibody.isemoji){var msg={id:id,type:chattype,from:from,to:too,delay:parseMsgData.delayTimeStamp,data:emojibody.body,ext:extmsg};!msg.delay&&delete msg.delay;msg.error=errorBool;msg.errorText=errorText;msg.errorCode=errorCode;this.onEmojiMessage(msg);}else{var msg={id:id,type:chattype,from:from,to:too,delay:parseMsgData.delayTimeStamp,data:receiveMsg,ext:extmsg};!msg.delay&&delete msg.delay;msg.error=errorBool;msg.errorText=errorText;msg.errorCode=errorCode;this.onTextMessage(msg);}break;case'img':var rwidth=0;var rheight=0;if(msgBody.size){rwidth=msgBody.size.width;rheight=msgBody.size.height;}var msg={id:id,type:chattype,from:from,to:too,url:location.protocol!='https:'&&self.isHttpDNS?self.apiUrl+msgBody.url.substr(msgBody.url.indexOf("/",9)):msgBody.url,secret:msgBody.secret,filename:msgBody.filename,thumb:msgBody.thumb,thumb_secret:msgBody.thumb_secret,file_length:msgBody.file_length||'',width:rwidth,height:rheight,filetype:msgBody.filetype||'',accessToken:this.context.accessToken||'',ext:extmsg,delay:parseMsgData.delayTimeStamp};!msg.delay&&delete msg.delay;msg.error=errorBool;msg.errorText=errorText;msg.errorCode=errorCode;this.onPictureMessage(msg);break;case'audio':var msg={id:id,type:chattype,from:from,to:too,url:location.protocol!='https:'&&self.isHttpDNS?self.apiUrl+msgBody.url.substr(msgBody.url.indexOf("/",9)):msgBody.url,secret:msgBody.secret,filename:msgBody.filename,length:msgBody.length||'',file_length:msgBody.file_length||'',filetype:msgBody.filetype||'',accessToken:this.context.accessToken||'',ext:extmsg,delay:parseMsgData.delayTimeStamp};!msg.delay&&delete msg.delay;msg.error=errorBool;msg.errorText=errorText;msg.errorCode=errorCode;this.onAudioMessage(msg);break;case'file':var msg={id:id,type:chattype,from:from,to:too,url:location.protocol!='https:'&&self.isHttpDNS?self.apiUrl+msgBody.url.substr(msgBody.url.indexOf("/",9)):msgBody.url,secret:msgBody.secret,filename:msgBody.filename,file_length:msgBody.file_length,accessToken:this.context.accessToken||'',ext:extmsg,delay:parseMsgData.delayTimeStamp};!msg.delay&&delete msg.delay;msg.error=errorBool;msg.errorText=errorText;msg.errorCode=errorCode;this.onFileMessage(msg);break;case'loc':var msg={id:id,type:chattype,from:from,to:too,addr:msgBody.addr,lat:msgBody.lat,lng:msgBody.lng,ext:extmsg,delay:parseMsgData.delayTimeStamp};!msg.delay&&delete msg.delay;msg.error=errorBool;msg.errorText=errorText;msg.errorCode=errorCode;this.onLocationMessage(msg);break;case'video':var msg={id:id,type:chattype,from:from,to:too,url:location.protocol!='https:'&&self.isHttpDNS?self.apiUrl+msgBody.url.substr(msgBody.url.indexOf("/",9)):msgBody.url,secret:msgBody.secret,filename:msgBody.filename,file_length:msgBody.file_length,accessToken:this.context.accessToken||'',ext:extmsg,delay:parseMsgData.delayTimeStamp};!msg.delay&&delete msg.delay;msg.error=errorBool;msg.errorText=errorText;msg.errorCode=errorCode;this.onVideoMessage(msg);break;case'cmd':var msg={id:id,from:from,to:too,action:msgBody.action,ext:extmsg,delay:parseMsgData.delayTimeStamp};!msg.delay&&delete msg.delay;msg.error=errorBool;msg.errorText=errorText;msg.errorCode=errorCode;this.onCmdMessage(msg);break;};}catch(e){this.onError({type:_code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:e});}}};connection.prototype.handleDeliveredMessage=function(message){var id=message.id;var body=message.getElementsByTagName('body');var mid=0;if(isNaN(body[0].innerHTML))mid=body[1].innerHTML;else mid=body[0].innerHTML;var msg={mid:mid};this.onDeliverdMessage(msg);this.sendReceiptsMessage({id:id});};connection.prototype.handleAckedMessage=function(message){var id=message.id;var body=message.getElementsByTagName('body');var mid=0;if(isNaN(body[0].innerHTML))mid=body[1].innerHTML;else mid=body[0].innerHTML;var msg={mid:mid};this.onReadMessage(msg);this.sendReceiptsMessage({id:id});};connection.prototype.handleReceivedMessage=function(message){try{var received=message.getElementsByTagName("received");var mid=received[0].getAttribute('mid');var body=message.getElementsByTagName("body");var id=body[0].innerHTML;var msg={mid:mid,id:id};this.onReceivedMessage(msg);}catch(e){this.onError({type:_code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:e});}var rcv=message.getElementsByTagName('received'),id,mid;if(rcv.length>0){if(rcv[0].childNodes&&rcv[0].childNodes.length>0){id=rcv[0].childNodes[0].nodeValue;}else{id=rcv[0].innerHTML||rcv[0].innerText;}mid=rcv[0].getAttribute('mid');}if(_msgHash[id]){try{_msgHash[id].msg.success instanceof Function&&_msgHash[id].msg.success(id,mid);}catch(e){this.onError({type:_code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,data:e});}delete _msgHash[id];}};connection.prototype.handleInviteMessage=function(message){var form=null;var invitemsg=message.getElementsByTagName('invite');var reasonDom=message.getElementsByTagName('reason')[0];var reasonMsg=reasonDom.textContent;var id=message.getAttribute('id')||'';this.sendReceiptsMessage({id:id});if(invitemsg&&invitemsg.length>0){var fromJid=invitemsg[0].getAttribute('from');form=_parseNameFromJidFn(fromJid);}var xmsg=message.getElementsByTagName('x');var roomid=null;if(xmsg&&xmsg.length>0){for(var i=0;i<xmsg.length;i++){if('jabber:x:conference'===xmsg[i].namespaceURI){var roomjid=xmsg[i].getAttribute('jid');roomid=_parseNameFromJidFn(roomjid);}}}this.onInviteMessage({type:'invite',from:form,roomid:roomid,reason:reasonMsg});};connection.prototype.handleMutedMessage=function(message){var id=message.id;this.onMutedMessage({mid:id});};connection.prototype.sendCommand=function(dom,id){if(this.isOpened()){this.context.stropheConn.send(dom);}else{this.onError({type:_code.WEBIM_CONNCTION_DISCONNECTED,reconnect:true});}};connection.prototype.getUniqueId=function(prefix){// fix: too frequently msg sending will make same id
+	if(this.autoIncrement){this.autoIncrement++;}else{this.autoIncrement=1;}var cdate=new Date();var offdate=new Date(2010,1,1);var offset=cdate.getTime()-offdate.getTime();var hexd=parseFloat(offset).toString(16)+this.autoIncrement;if(typeof prefix==='string'||typeof prefix==='number'){return prefix+'_'+hexd;}else{return'WEBIM_'+hexd;}};connection.prototype.send=function(message){var self=this;if(this.isWindowSDK){WebIM.doQuery('{"type":"sendMessage","to":"'+message.to+'","message_type":"'+message.type+'","msg":"'+encodeURI(message.msg)+'","chatType":"'+message.chatType+'"}',function(response){},function(code,msg){var message={data:{data:"send"},type:_code.WEBIM_MESSAGE_SED_ERROR};self.onError(message);});}else{if(Object.prototype.toString.call(message)==='[object Object]'){var appKey=this.context.appKey||'';var toJid=appKey+'_'+message.to+'@'+this.domain;if(message.group){toJid=appKey+'_'+message.to+'@conference.'+this.domain;}if(message.resource){toJid=toJid+'/'+message.resource;}message.toJid=toJid;message.id=message.id||this.getUniqueId();_msgHash[message.id]=new _message(message);_msgHash[message.id].send(this);}else if(typeof message==='string'){_msgHash[message]&&_msgHash[message].send(this);}}};connection.prototype.addRoster=function(options){var jid=_getJid(options,this);var name=options.name||'';var groups=options.groups||'';var iq=$iq({type:'set'});iq.c('query',{xmlns:'jabber:iq:roster'});iq.c('item',{jid:jid,name:name});if(groups){for(var i=0;i<groups.length;i++){iq.c('group').t(groups[i]).up();}}var suc=options.success||_utils.emptyfn;var error=options.error||_utils.emptyfn;this.context.stropheConn.sendIQ(iq.tree(),suc,error);};connection.prototype.removeRoster=function(options){var jid=_getJid(options,this);var iq=$iq({type:'set'}).c('query',{xmlns:'jabber:iq:roster'}).c('item',{jid:jid,subscription:'remove'});var suc=options.success||_utils.emptyfn;var error=options.error||_utils.emptyfn;this.context.stropheConn.sendIQ(iq,suc,error);};connection.prototype.getRoster=function(options){var conn=this;var dom=$iq({type:'get'}).c('query',{xmlns:'jabber:iq:roster'});var options=options||{};var suc=options.success||this.onRoster;var completeFn=function completeFn(ele){var rouster=[];var msgBodies=ele.getElementsByTagName('query');if(msgBodies&&msgBodies.length>0){var queryTag=msgBodies[0];rouster=_parseFriend(queryTag);}suc(rouster,ele);};var error=options.error||this.onError;var failFn=function failFn(ele){error({type:_code.WEBIM_CONNCTION_GETROSTER_ERROR,data:ele});};if(this.isOpened()){this.context.stropheConn.sendIQ(dom.tree(),completeFn,failFn);}else{error({type:_code.WEBIM_CONNCTION_DISCONNECTED});}};connection.prototype.subscribe=function(options){var jid=_getJid(options,this);var pres=$pres({to:jid,type:'subscribe'});if(options.message){pres.c('status').t(options.message).up();}if(options.nick){pres.c('nick',{'xmlns':'http://jabber.org/protocol/nick'}).t(options.nick);}this.sendCommand(pres.tree());};connection.prototype.subscribed=function(options){var jid=_getJid(options,this);var pres=$pres({to:jid,type:'subscribed'});if(options.message){pres.c('status').t(options.message).up();}this.sendCommand(pres.tree());};connection.prototype.unsubscribe=function(options){var jid=_getJid(options,this);var pres=$pres({to:jid,type:'unsubscribe'});if(options.message){pres.c('status').t(options.message);}this.sendCommand(pres.tree());};connection.prototype.unsubscribed=function(options){var jid=_getJid(options,this);var pres=$pres({to:jid,type:'unsubscribed'});if(options.message){pres.c('status').t(options.message).up();}this.sendCommand(pres.tree());};connection.prototype.joinPublicGroup=function(options){var roomJid=this.context.appKey+'_'+options.roomId+'@conference.'+this.domain;var room_nick=roomJid+'/'+this.context.userId;var suc=options.success||_utils.emptyfn;var err=options.error||_utils.emptyfn;var errorFn=function errorFn(ele){err({type:_code.WEBIM_CONNCTION_JOINROOM_ERROR,data:ele});};var iq=$pres({from:this.context.jid,to:room_nick}).c('x',{xmlns:Strophe.NS.MUC});this.context.stropheConn.sendIQ(iq.tree(),suc,errorFn);};connection.prototype.listRooms=function(options){var iq=$iq({to:options.server||'conference.'+this.domain,from:this.context.jid,type:'get'}).c('query',{xmlns:Strophe.NS.DISCO_ITEMS});var suc=options.success||_utils.emptyfn;var error=options.error||this.onError;var completeFn=function completeFn(result){var rooms=[];rooms=_parseRoom(result);try{suc(rooms);}catch(e){error({type:_code.WEBIM_CONNCTION_GETROOM_ERROR,data:e});}};var err=options.error||_utils.emptyfn;var errorFn=function errorFn(ele){err({type:_code.WEBIM_CONNCTION_GETROOM_ERROR,data:ele});};this.context.stropheConn.sendIQ(iq.tree(),completeFn,errorFn);};connection.prototype.queryRoomMember=function(options){var domain=this.domain;var members=[];var iq=$iq({to:this.context.appKey+'_'+options.roomId+'@conference.'+this.domain,type:'get'}).c('query',{xmlns:Strophe.NS.MUC+'#admin'}).c('item',{affiliation:'member'});var suc=options.success||_utils.emptyfn;var completeFn=function completeFn(result){var items=result.getElementsByTagName('item');if(items){for(var i=0;i<items.length;i++){var item=items[i];var mem={jid:item.getAttribute('jid'),affiliation:'member'};members.push(mem);}}suc(members);};var err=options.error||_utils.emptyfn;var errorFn=function errorFn(ele){err({type:_code.WEBIM_CONNCTION_GETROOMMEMBER_ERROR,data:ele});};this.context.stropheConn.sendIQ(iq.tree(),completeFn,errorFn);};connection.prototype.queryRoomInfo=function(options){var domain=this.domain;var iq=$iq({to:this.context.appKey+'_'+options.roomId+'@conference.'+domain,type:'get'}).c('query',{xmlns:Strophe.NS.DISCO_INFO});var suc=options.success||_utils.emptyfn;var members=[];var completeFn=function completeFn(result){var settings='';var features=result.getElementsByTagName('feature');if(features){settings=features[1].getAttribute('var')+'|'+features[3].getAttribute('var')+'|'+features[4].getAttribute('var');}switch(settings){case'muc_public|muc_membersonly|muc_notallowinvites':settings='PUBLIC_JOIN_APPROVAL';break;case'muc_public|muc_open|muc_notallowinvites':settings='PUBLIC_JOIN_OPEN';break;case'muc_hidden|muc_membersonly|muc_allowinvites':settings='PRIVATE_MEMBER_INVITE';break;case'muc_hidden|muc_membersonly|muc_notallowinvites':settings='PRIVATE_OWNER_INVITE';break;}var owner='';var fields=result.getElementsByTagName('field');var fieldValues={};if(fields){for(var i=0;i<fields.length;i++){var field=fields[i];var fieldVar=field.getAttribute('var');var fieldSimplify=fieldVar.split('_')[1];switch(fieldVar){case'muc#roominfo_occupants':case'muc#roominfo_maxusers':case'muc#roominfo_affiliations':case'muc#roominfo_description':fieldValues[fieldSimplify]=field.textContent||field.text||'';break;case'muc#roominfo_owner':var mem={jid:(field.textContent||field.text)+'@'+domain,affiliation:'owner'};members.push(mem);fieldValues[fieldSimplify]=field.textContent||field.text;break;}// if (field.getAttribute('label') === 'owner') {
+	//     var mem = {
+	//         jid: (field.textContent || field.text) + '@' + domain
+	//         , affiliation: 'owner'
+	//     };
+	//     members.push(mem);
+	//     break;
+	// }
+	}fieldValues['name']=result.getElementsByTagName('identity')[0].getAttribute('name');}suc(settings,members,fieldValues);};var err=options.error||_utils.emptyfn;var errorFn=function errorFn(ele){err({type:_code.WEBIM_CONNCTION_GETROOMINFO_ERROR,data:ele});};this.context.stropheConn.sendIQ(iq.tree(),completeFn,errorFn);};connection.prototype.queryRoomOccupants=function(options){var suc=options.success||_utils.emptyfn;var completeFn=function completeFn(result){var occupants=[];occupants=_parseRoomOccupants(result);suc(occupants);};var err=options.error||_utils.emptyfn;var errorFn=function errorFn(ele){err({type:_code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR,data:ele});};var attrs={xmlns:Strophe.NS.DISCO_ITEMS};var info=$iq({from:this.context.jid,to:this.context.appKey+'_'+options.roomId+'@conference.'+this.domain,type:'get'}).c('query',attrs);this.context.stropheConn.sendIQ(info.tree(),completeFn,errorFn);};connection.prototype.setUserSig=function(desc){var dom=$pres({xmlns:'jabber:client'});desc=desc||'';dom.c('status').t(desc);this.sendCommand(dom.tree());};connection.prototype.setPresence=function(type,status){var dom=$pres({xmlns:'jabber:client'});if(type){if(status){dom.c('show').t(type);dom.up().c('status').t(status);}else{dom.c('show').t(type);}}this.sendCommand(dom.tree());};connection.prototype.getPresence=function(){var dom=$pres({xmlns:'jabber:client'});var conn=this;this.sendCommand(dom.tree());};connection.prototype.ping=function(options){var options=options||{};var jid=_getJid(options,this);var dom=$iq({from:this.context.jid||'',to:jid,type:'get'}).c('ping',{xmlns:'urn:xmpp:ping'});var suc=options.success||_utils.emptyfn;var error=options.error||this.onError;var failFn=function failFn(ele){error({type:_code.WEBIM_CONNCTION_PING_ERROR,data:ele});};if(this.isOpened()){this.context.stropheConn.sendIQ(dom.tree(),suc,failFn);}else{error({type:_code.WEBIM_CONNCTION_DISCONNECTED});}return;};connection.prototype.isOpened=function(){return this.context.status==_code.STATUS_OPENED;};connection.prototype.isOpening=function(){var status=this.context.status;return status==_code.STATUS_DOLOGIN_USERGRID||status==_code.STATUS_DOLOGIN_IM;};connection.prototype.isClosing=function(){return this.context.status==_code.STATUS_CLOSING;};connection.prototype.isClosed=function(){return this.context.status==_code.STATUS_CLOSED;};connection.prototype.clear=function(){var key=this.context.appKey;if(this.errorType!=_code.WEBIM_CONNCTION_DISCONNECTED){this.context={status:_code.STATUS_INIT,appKey:key};}if(this.intervalId){clearInterval(this.intervalId);}this.restIndex=0;this.xmppIndex=0;if(this.errorType==_code.WEBIM_CONNCTION_CLIENT_LOGOUT||this.errorType==-1){var message={data:{data:"logout"},type:_code.WEBIM_CONNCTION_CLIENT_LOGOUT};this.onError(message);}};connection.prototype.getChatRooms=function(options){if(!_utils.isCanSetRequestHeader){conn.onError({type:_code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR});return;}var conn=this,token=options.accessToken||this.context.accessToken;if(token){var apiUrl=options.apiUrl;var appName=this.context.appName;var orgName=this.context.orgName;if(!appName||!orgName){conn.onError({type:_code.WEBIM_CONNCTION_AUTH_ERROR});return;}var suc=function suc(data,xhr){typeof options.success==='function'&&options.success(data);};var error=function error(res,xhr,msg){if(res.error&&res.error_description){conn.onError({type:_code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,msg:res.error_description,data:res,xhr:xhr});}};var pageInfo={pagenum:parseInt(options.pagenum)||1,pagesize:parseInt(options.pagesize)||20};var opts={url:apiUrl+'/'+orgName+'/'+appName+'/chatrooms',dataType:'json',type:'GET',headers:{'Authorization':'Bearer '+token},data:pageInfo,success:suc||_utils.emptyfn,error:error||_utils.emptyfn};_utils.ajax(opts);}else{conn.onError({type:_code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR});}};connection.prototype.joinChatRoom=function(options){var roomJid=this.context.appKey+'_'+options.roomId+'@conference.'+this.domain;var room_nick=roomJid+'/'+this.context.userId;var suc=options.success||_utils.emptyfn;var err=options.error||_utils.emptyfn;var errorFn=function errorFn(ele){err({type:_code.WEBIM_CONNCTION_JOINCHATROOM_ERROR,data:ele});};var iq=$pres({from:this.context.jid,to:room_nick}).c('x',{xmlns:Strophe.NS.MUC+'#user'}).c('item',{affiliation:'member',role:'participant'}).up().up().c('roomtype',{xmlns:'easemob:x:roomtype',type:'chatroom'});this.context.stropheConn.sendIQ(iq.tree(),suc,errorFn);};connection.prototype.quitChatRoom=function(options){var roomJid=this.context.appKey+'_'+options.roomId+'@conference.'+this.domain;var room_nick=roomJid+'/'+this.context.userId;var suc=options.success||_utils.emptyfn;var err=options.error||_utils.emptyfn;var errorFn=function errorFn(ele){err({type:_code.WEBIM_CONNCTION_QUITCHATROOM_ERROR,data:ele});};var iq=$pres({from:this.context.jid,to:room_nick,type:'unavailable'}).c('x',{xmlns:Strophe.NS.MUC+'#user'}).c('item',{affiliation:'none',role:'none'}).up().up().c('roomtype',{xmlns:'easemob:x:roomtype',type:'chatroom'});this.context.stropheConn.sendIQ(iq.tree(),suc,errorFn);};connection.prototype._onReceiveInviteFromGroup=function(info){info=eval('('+info+')');var self=this;var options={title:"Group invitation",msg:info.user+" invites you to join into group:"+info.group_id,agree:function agree(){WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"'+info.group_id+'","user":"'+info.user+'"}',function(response){},function(code,msg){var message={data:{data:"acceptInvitationFromGroup error:"+msg},type:_code.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP};self.onError(message);});},reject:function reject(){WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"'+info.group_id+'","user":"'+info.user+'"}',function(response){},function(code,msg){var message={data:{data:"declineInvitationFromGroup error:"+msg},type:_code.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP};self.onError(message);});}};this.onConfirmPop(options);};connection.prototype._onReceiveInviteAcceptionFromGroup=function(info){info=eval('('+info+')');var options={title:"Group invitation response",msg:info.user+" agreed to join into group:"+info.group_id,agree:function agree(){}};this.onConfirmPop(options);};connection.prototype._onReceiveInviteDeclineFromGroup=function(info){info=eval('('+info+')');var options={title:"Group invitation response",msg:info.user+" rejected to join into group:"+info.group_id,agree:function agree(){}};this.onConfirmPop(options);};connection.prototype._onAutoAcceptInvitationFromGroup=function(info){info=eval('('+info+')');var options={title:"Group invitation",msg:"You had joined into the group:"+info.group_name+" automatically.Inviter:"+info.user,agree:function agree(){}};this.onConfirmPop(options);};connection.prototype._onLeaveGroup=function(info){info=eval('('+info+')');var options={title:"Group notification",msg:"You have been out of the group:"+info.group_id+".Reason:"+info.msg,agree:function agree(){}};this.onConfirmPop(options);};connection.prototype._onReceiveJoinGroupApplication=function(info){info=eval('('+info+')');var self=this;var options={title:"Group join application",msg:info.user+" applys to join into group:"+info.group_id,agree:function agree(){WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"'+info.group_id+'","user":"'+info.user+'"}',function(response){},function(code,msg){var message={data:{data:"acceptJoinGroupApplication error:"+msg},type:_code.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP};self.onError(message);});},reject:function reject(){WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"'+info.group_id+'","user":"'+info.user+'"}',function(response){},function(code,msg){var message={data:{data:"declineJoinGroupApplication error:"+msg},type:_code.WEBIM_CONNECTION_DECLINE_JOIN_GROUP};self.onError(message);});}};this.onConfirmPop(options);};connection.prototype._onReceiveAcceptionFromGroup=function(info){info=eval('('+info+')');var options={title:"Group notification",msg:"You had joined into the group:"+info.group_name+".",agree:function agree(){}};this.onConfirmPop(options);};connection.prototype._onReceiveRejectionFromGroup=function(){info=eval('('+info+')');var options={title:"Group notification",msg:"You have been rejected to join into the group:"+info.group_name+".",agree:function agree(){}};this.onConfirmPop(options);};connection.prototype._onUpdateMyGroupList=function(options){this.onUpdateMyGroupList(options);};connection.prototype._onUpdateMyRoster=function(options){this.onUpdateMyRoster(options);};connection.prototype.reconnect=function(){var that=this;setTimeout(function(){_login(that.context.restTokenData,that);},(this.autoReconnectNumTotal==0?0:this.autoReconnectInterval)*1000);this.autoReconnectNumTotal++;};connection.prototype.closed=function(){var message={data:{data:"Closed error"},type:_code.WEBIM_CONNECTION_CLOSED};this.onError(message);};// used for blacklist
+	function _parsePrivacy(iq){var list=[];var items=iq.getElementsByTagName('item');if(items){for(var i=0;i<items.length;i++){var item=items[i];var jid=item.getAttribute('value');var order=item.getAttribute('order');var type=item.getAttribute('type');if(!jid){continue;}var n=_parseNameFromJidFn(jid);list[n]={type:type,order:order,jid:jid,name:n};}}return list;};// used for blacklist
+	connection.prototype.getBlacklist=function(options){options=options||{};var iq=$iq({type:'get'});var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;var me=this;iq.c('query',{xmlns:'jabber:iq:privacy'}).c('list',{name:'special'});this.context.stropheConn.sendIQ(iq.tree(),function(iq){me.onBlacklistUpdate(_parsePrivacy(iq));sucFn();},function(){me.onBlacklistUpdate([]);errFn();});};// used for blacklist
+	connection.prototype.addToBlackList=function(options){var iq=$iq({type:'set'});var blacklist=options.list||{};var type=options.type||'jid';var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;var piece=iq.c('query',{xmlns:'jabber:iq:privacy'}).c('list',{name:'special'});var keys=Object.keys(blacklist);var len=keys.length;var order=2;for(var i=0;i<len;i++){var item=blacklist[keys[i]];var type=item.type||'jid';var jid=item.jid;piece=piece.c('item',{action:'deny',order:order++,type:type,value:jid}).c('message');if(i!==len-1){piece=piece.up().up();}}// console.log('addToBlackList', blacklist, piece.tree());
+	this.context.stropheConn.sendIQ(piece.tree(),sucFn,errFn);};// used for blacklist
+	connection.prototype.removeFromBlackList=function(options){var iq=$iq({type:'set'});var blacklist=options.list||{};var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;var piece=iq.c('query',{xmlns:'jabber:iq:privacy'}).c('list',{name:'special'});var keys=Object.keys(blacklist);var len=keys.length;for(var i=0;i<len;i++){var item=blacklist[keys[i]];var type=item.type||'jid';var jid=item.jid;var order=item.order;piece=piece.c('item',{action:'deny',order:order,type:type,value:jid}).c('message');if(i!==len-1){piece=piece.up().up();}}// console.log('removeFromBlackList', blacklist, piece.tree());
+	this.context.stropheConn.sendIQ(piece.tree(),sucFn,errFn);};connection.prototype._getGroupJid=function(to){var appKey=this.context.appKey||'';return appKey+'_'+to+'@conference.'+this.domain;};// used for blacklist
+	connection.prototype.addToGroupBlackList=function(options){var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;var jid=_getJid(options,this);var affiliation='admin';//options.affiliation || 'admin';
+	var to=this._getGroupJid(options.roomId);var iq=$iq({type:'set',to:to});iq.c('query',{xmlns:'http://jabber.org/protocol/muc#'+affiliation}).c('item',{affiliation:'outcast',jid:jid});this.context.stropheConn.sendIQ(iq.tree(),sucFn,errFn);};function _parseGroupBlacklist(iq){var list={};var items=iq.getElementsByTagName('item');if(items){for(var i=0;i<items.length;i++){var item=items[i];var jid=item.getAttribute('jid');var affiliation=item.getAttribute('affiliation');var nick=item.getAttribute('nick');if(!jid){continue;}var n=_parseNameFromJidFn(jid);list[n]={jid:jid,affiliation:affiliation,nick:nick,name:n};}}return list;}// used for blacklist
+	connection.prototype.getGroupBlacklist=function(options){var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;// var jid = _getJid(options, this);
+	var affiliation='admin';//options.affiliation || 'admin';
+	var to=this._getGroupJid(options.roomId);var iq=$iq({type:'get',to:to});iq.c('query',{xmlns:'http://jabber.org/protocol/muc#'+affiliation}).c('item',{affiliation:'outcast'});this.context.stropheConn.sendIQ(iq.tree(),function(msginfo){sucFn(_parseGroupBlacklist(msginfo));},function(){errFn();});};// used for blacklist
+	connection.prototype.removeGroupMemberFromBlacklist=function(options){var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;var jid=_getJid(options,this);var affiliation='admin';//options.affiliation || 'admin';
+	var to=this._getGroupJid(options.roomId);var iq=$iq({type:'set',to:to});iq.c('query',{xmlns:'http://jabber.org/protocol/muc#'+affiliation}).c('item',{affiliation:'none',jid:jid});this.context.stropheConn.sendIQ(iq.tree(),function(msginfo){sucFn();},function(){errFn();});};/**
+	 * changeGroupSubject 修改群名称
+	 *
+	 * @param options
+	 */// <iq to='easemob-demo#chatdemoui_roomid@conference.easemob.com' type='set' id='3940489311' xmlns='jabber:client'>
+	//     <query xmlns='http://jabber.org/protocol/muc#owner'>
+	//         <x type='submit' xmlns='jabber:x:data'>
+	//             <field var='FORM_TYPE'><value>http://jabber.org/protocol/muc#roomconfig</value></field>
+	//             <field var='muc#roomconfig_roomname'><value>Room Name</value></field>
+	//         </x>
+	//     </query>
+	// </iq>
+	connection.prototype.changeGroupSubject=function(options){var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;// must be `owner`
+	var affiliation='owner';var to=this._getGroupJid(options.roomId);var iq=$iq({type:'set',to:to});iq.c('query',{xmlns:'http://jabber.org/protocol/muc#'+affiliation}).c('x',{type:'submit',xmlns:'jabber:x:data'}).c('field',{'var':'FORM_TYPE'}).c('value').t('http://jabber.org/protocol/muc#roomconfig').up().up().c('field',{'var':'muc#roomconfig_roomname'}).c('value').t(options.subject).up().up().c('field',{'var':'muc#roomconfig_roomdesc'}).c('value').t(options.description);this.context.stropheConn.sendIQ(iq.tree(),function(msginfo){sucFn();},function(){errFn();});};/**
+	 * destroyGroup 删除群组
+	 *
+	 * @param options
+	 */// <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
+	//     <query xmlns="http://jabber.org/protocol/muc#owner">
+	//         <destroy>
+	//             <reason>xxx destory group yyy</reason>
+	//         </destroy>
+	//     </query>
+	// </iq>
+	connection.prototype.destroyGroup=function(options){var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;// must be `owner`
+	var affiliation='owner';var to=this._getGroupJid(options.roomId);var iq=$iq({type:'set',to:to});iq.c('query',{xmlns:'http://jabber.org/protocol/muc#'+affiliation}).c('destroy').c('reason').t(options.reason||'');this.context.stropheConn.sendIQ(iq.tree(),function(msginfo){sucFn();},function(){errFn();});};/**
+	 * leaveGroupBySelf 主动离开群组
+	 *
+	 * @param options
+	 */// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
+	//     <query xmlns="http://jabber.org/protocol/muc#admin">
+	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	//     </query>
+	// </iq>
+	// <presence to="easemob-demo#chatdemoui_1479811172349@conference.easemob.com/mt002" type="unavailable"/>
+	connection.prototype.leaveGroupBySelf=function(options){var self=this;var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;// must be `owner`
+	var jid=_getJid(options,this);var affiliation='admin';var to=this._getGroupJid(options.roomId);var iq=$iq({type:'set',to:to});iq.c('query',{xmlns:'http://jabber.org/protocol/muc#'+affiliation}).c('item',{affiliation:'none',jid:jid});this.context.stropheConn.sendIQ(iq.tree(),function(msgInfo){sucFn(msgInfo);var pres=$pres({type:'unavailable',to:to+'/'+self.context.userId});self.sendCommand(pres.tree());},function(errInfo){errFn(errInfo);});};/**
+	 * leaveGroup 被踢出群组
+	 *
+	 * @param options
+	 */// <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
+	//     <query xmlns="http://jabber.org/protocol/muc#admin">
+	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
+	//         <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
+	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	//         <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
+	//     </query>
+	// </iq>
+	connection.prototype.leaveGroup=function(options){var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;var list=options.list||[];var affiliation='admin';var to=this._getGroupJid(options.roomId);var iq=$iq({type:'set',to:to});var piece=iq.c('query',{xmlns:'http://jabber.org/protocol/muc#'+affiliation});var keys=Object.keys(list);var len=keys.length;for(var i=0;i<len;i++){var name=list[keys[i]];var jid=_getJidByName(name,this);piece=piece.c('item',{affiliation:'none',jid:jid}).up().c('item',{role:'none',jid:jid}).up();}this.context.stropheConn.sendIQ(iq.tree(),function(msgInfo){sucFn(msgInfo);},function(errInfo){errFn(errInfo);});};/**
+	 * addGroupMembers 添加群组成员
+	 *
+	 * @param options
+
+	 Attention the sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
+	 <!-- 添加成员通知：send -->
+	 <message to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com'>
+	 <x xmlns='http://jabber.org/protocol/muc#user'>
+	 <invite to='easemob-demo#chatdemoui_lwz2@easemob.com'>
+	 <reason>liuwz invite you to join group '谢谢'</reason>
+	 </invite>
+	 </x>
+	 </message>
+	 <!-- 添加成员：send -->
+	 <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation' to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com' type='set'>
+	 <query xmlns='http://jabber.org/protocol/muc#admin'>
+	 <item affiliation='member' jid='easemob-demo#chatdemoui_lwz2@easemob.com'/>
+	 </query>
+	 </iq>
+	 */connection.prototype.addGroupMembers=function(options){var sucFn=options.success||_utils.emptyfn;var errFn=options.error||_utils.emptyfn;var list=options.list||[];var affiliation='admin';var to=this._getGroupJid(options.roomId);var iq=$iq({type:'set',to:to});var piece=iq.c('query',{xmlns:'http://jabber.org/protocol/muc#'+affiliation});var len=list.length;for(var i=0;i<len;i++){var name=list[i];var jid=_getJidByName(name,this);piece=piece.c('item',{affiliation:'member',jid:jid}).up();var dom=$msg({to:to}).c('x',{xmlns:'http://jabber.org/protocol/muc#user'}).c('invite',{to:jid}).c('reason').t(options.reason||'');this.sendCommand(dom.tree());}this.context.stropheConn.sendIQ(iq.tree(),function(msgInfo){sucFn(msgInfo);},function(errInfo){errFn(errInfo);});};/**
+	 * acceptInviteFromGroup 接受加入申请
+	 *
+	 * @param options
+	 */connection.prototype.acceptInviteFromGroup=function(options){options.success=function(){// then send sendAcceptInviteMessage
+	// connection.prototype.sendAcceptInviteMessage(optoins);
+	};this.addGroupMembers(options);};/**
+	 * rejectInviteFromGroup 拒绝入群申请
+	 *
+	 * throw request for now 暂时不处理，直接丢弃
+	 *
+	 <message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
+	 <x xmlns='http://jabber.org/protocol/muc#user'>
+	 <apply to='easemob-demo#chatdemoui_groupid1@conference.easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' toNick='llllll'>
+	 <reason>reject</reason>
+	 </apply>
+	 </x>
+	 </message>
+	 *
+	 * @param options
+	 */connection.prototype.rejectInviteFromGroup=function(options){// var from = _getJidByName(options.from, this);
+	// var dom = $msg({
+	//     from: from,
+	//     to: _getJidByName(options.to, this)
+	// }).c('x', {
+	//     xmlns: 'http://jabber.org/protocol/muc#user'
+	// }).c('apply', {
+	//     from: from,
+	//     to: this._getGroupJid(options.groupId),
+	//     toNick: options.groupName
+	// }).c('reason').t(options.reason || '');
+	//
+	// this.sendCommand(dom.tree());
+	};connection.prototype.createGroupAsync=function(p){var roomId=p.from;var me=this;var toRoom=this._getGroupJid(roomId);var to=toRoom+'/'+this.context.userId;var options=this.groupOption;var suc=p.success||_utils.emptyfn;// Creating a Reserved Room
+	var iq=$iq({type:'get',to:toRoom}).c('query',{xmlns:'http://jabber.org/protocol/muc#owner'});// Strophe.info('step 1 ----------');
+	// Strophe.info(options);
+	me.context.stropheConn.sendIQ(iq.tree(),function(msgInfo){// console.log(msgInfo);
+	// for ie hack
+	if('setAttribute'in msgInfo){// Strophe.info('step 3 ----------');
+	var x=msgInfo.getElementsByTagName('x')[0];x.setAttribute('type','submit');}else{// Strophe.info('step 4 ----------');
+	Strophe.forEachChild(msgInfo,'x',function(field){field.setAttribute('type','submit');});}Strophe.info('step 5 ----------');Strophe.forEachChild(x,'field',function(field){var fieldVar=field.getAttribute('var');var valueDom=field.getElementsByTagName('value')[0];Strophe.info(fieldVar);switch(fieldVar){case'muc#roomconfig_maxusers':_setText(valueDom,options.optionsMaxUsers||200);break;case'muc#roomconfig_roomname':_setText(valueDom,options.subject||'');break;case'muc#roomconfig_roomdesc':_setText(valueDom,options.description||'');break;case'muc#roomconfig_publicroom':// public 1
+	_setText(valueDom,+options.optionsPublic);break;case'muc#roomconfig_membersonly':_setText(valueDom,+options.optionsMembersOnly);break;case'muc#roomconfig_moderatedroom':_setText(valueDom,+options.optionsModerate);break;case'muc#roomconfig_persistentroom':_setText(valueDom,1);break;case'muc#roomconfig_allowinvites':_setText(valueDom,+options.optionsAllowInvites);break;case'muc#roomconfig_allowvisitornickchange':_setText(valueDom,0);break;case'muc#roomconfig_allowvisitorstatus':_setText(valueDom,0);break;case'allow_private_messages':_setText(valueDom,0);break;case'allow_private_messages_from_visitors':_setText(valueDom,'nobody');break;default:break;}});var iq=$iq({to:toRoom,type:'set'}).c('query',{xmlns:'http://jabber.org/protocol/muc#owner'}).cnode(x);me.context.stropheConn.sendIQ(iq.tree(),function(msgInfo){me.addGroupMembers({list:options.members,roomId:roomId});suc(options);},function(errInfo){// errFn(errInfo);
+	});// sucFn(msgInfo);
+	},function(errInfo){// errFn(errInfo);
+	});};/**
+	 * createGroup 创建群组
+	 *
+	 * 1. 创建申请 -> 得到房主身份
+	 * 2. 获取房主信息 -> 得到房间form
+	 * 3. 完善房间form -> 创建成功
+	 * 4. 添加房间成员
+	 * 5. 消息通知成员
+	 * @param options
+	 */connection.prototype.createGroup=function(options){this.groupOption=options;var roomId=+new Date();var toRoom=this._getGroupJid(roomId);var to=toRoom+'/'+this.context.userId;var pres=$pres({to:to}).c('x',{xmlns:'http://jabber.org/protocol/muc'}).up().c('create',{xmlns:'http://jabber.org/protocol/muc'}).up();// createGroupACK
+	this.sendCommand(pres.tree());};// 通过Rest接口创建群组
+	connection.prototype.createGroupNew=function(options){options.success=function(respData){this.onCreateGroup(respData);}.bind(this);WebIM.utils.ajax(options);};/**
+	 * shieldGroup 屏蔽群组
+	 * @param valueDom
+	 * @param v
+	 * @private
+	 */connection.prototype.shieldGroup=function(options){WebIM.utils.ajax(options);};function _setText(valueDom,v){if('textContent'in valueDom){valueDom.textContent=v;}else if('text'in valueDom){valueDom.text=v;}else{// Strophe.info('_setText 4 ----------');
+	// valueDom.innerHTML = v;
+	}}var WebIM=window.WebIM||{};WebIM.connection=connection;WebIM.utils=_utils;WebIM.statusCode=_code;WebIM.message=_msg.message;WebIM.doQuery=function(str,suc,fail){if(typeof window.cefQuery==='undefined'){return;}window.cefQuery({request:str,persistent:false,onSuccess:suc,onFailure:fail});};/**************************** debug ****************************/function logMessage(message){WebIM&&WebIM.config.isDebug&&console.log(WebIM.utils.ts()+'[recv] ',message.data);}if(WebIM&&WebIM.config.isDebug){Strophe.Connection.prototype.rawOutput=function(data){console.log('%c '+WebIM.utils.ts()+'[send] '+data,"background-color: #e2f7da");};}if(WebIM&&WebIM.config&&WebIM.config.isSandBox){WebIM.config.xmppURL=WebIM.config.xmppURL.replace('.easemob.','-sandbox.easemob.');WebIM.config.apiURL=WebIM.config.apiURL.replace('.easemob.','-sdb.easemob.');}module.exports=WebIM;if(false){module.hot.accept();}
+
+/***/ },
+
+/***/ 243:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	;(function () {
+	    'use strict';
+
+	    var _utils = __webpack_require__(234).utils;
+	    var Message = function Message(type, id) {
+	        if (!this instanceof Message) {
+	            return new Message(type);
+	        }
+
+	        this._msg = {};
+
+	        if (typeof Message[type] === 'function') {
+	            Message[type].prototype.setGroup = this.setGroup;
+	            this._msg = new Message[type](id);
+	        }
+	        return this._msg;
+	    };
+	    Message.prototype.setGroup = function (group) {
+	        this.body.group = group;
+	    };
+
+	    /*
+	     * Read Message
+	     */
+	    Message.read = function (id) {
+	        this.id = id;
+	        this.type = 'read';
+	    };
+
+	    Message.read.prototype.set = function (opt) {
+	        this.body = {
+	            ackId: opt.id,
+	            to: opt.to
+	        };
+	    };
+
+	    /*
+	     * deliver message
+	     */
+	    Message.delivery = function (id) {
+	        this.id = id;
+	        this.type = 'delivery';
+	    };
+
+	    Message.delivery.prototype.set = function (opt) {
+	        this.body = {
+	            bodyId: opt.id,
+	            to: opt.to
+	        };
+	    };
+
+	    /*
+	     * text message
+	     */
+	    Message.txt = function (id) {
+	        this.id = id;
+	        this.type = 'txt';
+	        this.body = {};
+	    };
+	    Message.txt.prototype.set = function (opt) {
+	        this.value = opt.msg;
+	        this.body = {
+	            id: this.id,
+	            to: opt.to,
+	            msg: this.value,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            ext: opt.ext || {},
+	            success: opt.success,
+	            fail: opt.fail
+	        };
+
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * cmd message
+	     */
+	    Message.cmd = function (id) {
+	        this.id = id;
+	        this.type = 'cmd';
+	        this.body = {};
+	    };
+	    Message.cmd.prototype.set = function (opt) {
+	        this.value = '';
+
+	        this.body = {
+	            to: opt.to,
+	            action: opt.action,
+	            msg: this.value,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            ext: opt.ext || {},
+	            success: opt.success
+	        };
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * loc message
+	     */
+	    Message.location = function (id) {
+	        this.id = id;
+	        this.type = 'loc';
+	        this.body = {};
+	    };
+	    Message.location.prototype.set = function (opt) {
+	        this.body = {
+	            to: opt.to,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            addr: opt.addr,
+	            lat: opt.lat,
+	            lng: opt.lng,
+	            ext: opt.ext || {}
+	        };
+	    };
+
+	    /*
+	     * img message
+	     */
+	    Message.img = function (id) {
+	        this.id = id;
+	        this.type = 'img';
+	        this.body = {};
+	    };
+	    Message.img.prototype.set = function (opt) {
+	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+
+	        this.value = opt.file;
+
+	        this.body = {
+	            id: this.id,
+	            file: this.value,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            roomType: opt.roomType,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            width: opt.width,
+	            height: opt.height,
+	            body: opt.body,
+	            uploadError: opt.uploadError,
+	            uploadComplete: opt.uploadComplete
+	        };
+
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * audio message
+	     */
+	    Message.audio = function (id) {
+	        this.id = id;
+	        this.type = 'audio';
+	        this.body = {};
+	    };
+	    Message.audio.prototype.set = function (opt) {
+	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+
+	        this.value = opt.file;
+	        this.filename = opt.filename || this.value.filename;
+
+	        this.body = {
+	            id: this.id,
+	            file: this.value,
+	            filename: this.filename,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            length: opt.length || 0,
+	            roomType: opt.roomType,
+	            file_length: opt.file_length,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            body: opt.body
+	        };
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * file message
+	     */
+	    Message.file = function (id) {
+	        this.id = id;
+	        this.type = 'file';
+	        this.body = {};
+	    };
+	    Message.file.prototype.set = function (opt) {
+	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+
+	        this.value = opt.file;
+	        this.filename = opt.filename || this.value.filename;
+
+	        this.body = {
+	            id: this.id,
+	            file: this.value,
+	            filename: this.filename,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            roomType: opt.roomType,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            body: opt.body
+	        };
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * video message
+	     */
+	    Message.video = function (id) {};
+	    Message.video.prototype.set = function (opt) {};
+
+	    var _Message = function _Message(message) {
+
+	        if (!this instanceof _Message) {
+	            return new _Message(message, conn);
+	        }
+
+	        this.msg = message;
+	    };
+
+	    _Message.prototype.send = function (conn) {
+	        var me = this;
+
+	        var _send = function _send(message) {
+
+	            message.ext = message.ext || {};
+	            message.ext.weichat = message.ext.weichat || {};
+	            message.ext.weichat.originType = message.ext.weichat.originType || 'webim';
+
+	            var dom;
+	            var json = {
+	                from: conn.context.userId || '',
+	                to: message.to,
+	                bodies: [message.body],
+	                ext: message.ext || {}
+	            };
+	            var jsonstr = _utils.stringify(json);
+	            dom = $msg({
+	                type: message.group || 'chat',
+	                to: message.toJid,
+	                id: message.id,
+	                xmlns: 'jabber:client'
+	            }).c('body').t(jsonstr);
+
+	            if (message.roomType) {
+	                dom.up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+	            }
+	            if (message.bodyId) {
+	                dom.up().c('body').t(message.bodyId);
+	                var delivery = {
+	                    xmlns: 'urn:xmpp:receipts',
+	                    id: message.bodyId
+	                };
+	                dom.up().c('delivery').t(_utils.stringify(delivery));
+	            }
+	            if (message.ackId) {
+	                dom.up().c('body').t(message.ackId);
+	                var read = {
+	                    xmlns: 'urn:xmpp:receipts',
+	                    id: message.ackId
+	                };
+	                dom.up().c('acked').t(_utils.stringify(read));
+	            }
+
+	            setTimeout(function () {
+	                if (typeof _msgHash !== 'undefined' && _msgHash[message.id]) {
+	                    _msgHash[message.id].msg.fail instanceof Function && _msgHash[message.id].msg.fail(message.id);
+	                }
+	            }, 60000);
+	            conn.sendCommand(dom.tree(), message.id);
+	        };
+
+	        if (me.msg.file) {
+	            if (me.msg.body && me.msg.body.url) {
+	                // Only send msg
+	                _send(me.msg);
+	                return;
+	            }
+	            var _tmpComplete = me.msg.onFileUploadComplete;
+	            var _complete = function _complete(data) {
+	                if (data.entities[0]['file-metadata']) {
+	                    var file_len = data.entities[0]['file-metadata']['content-length'];
+	                    // me.msg.file_length = file_len;
+	                    me.msg.filetype = data.entities[0]['file-metadata']['content-type'];
+	                    if (file_len > 204800) {
+	                        me.msg.thumbnail = true;
+	                    }
+	                }
+
+	                me.msg.body = {
+	                    type: me.msg.type || 'file',
+
+	                    url: (location.protocol != 'https:' && conn.isHttpDNS ? conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0]['uuid'],
+	                    secret: data.entities[0]['share-secret'],
+	                    filename: me.msg.file.filename || me.msg.filename,
+	                    size: {
+	                        width: me.msg.width || 0,
+	                        height: me.msg.height || 0
+	                    },
+	                    length: me.msg.length || 0,
+	                    file_length: me.msg.ext.file_length || 0,
+	                    filetype: me.msg.filetype
+	                };
+	                _send(me.msg);
+	                _tmpComplete instanceof Function && _tmpComplete(data, me.msg.id);
+	            };
+
+	            me.msg.onFileUploadComplete = _complete;
+	            _utils.uploadFile.call(conn, me.msg);
+	        } else {
+	            me.msg.body = {
+	                type: me.msg.type === 'chat' ? 'txt' : me.msg.type,
+	                msg: me.msg.msg
+	            };
+	            if (me.msg.type === 'cmd') {
+	                me.msg.body.action = me.msg.action;
+	            } else if (me.msg.type === 'loc') {
+	                me.msg.body.addr = me.msg.addr;
+	                me.msg.body.lat = me.msg.lat;
+	                me.msg.body.lng = me.msg.lng;
+	            }
+
+	            _send(me.msg);
+	        }
+	    };
+
+	    exports._msg = _Message;
+	    exports.message = Message;
+	})();
+
+/***/ },
+
+/***/ 244:
+/***/ function(module, exports) {
+
+	"use strict";
+
+	;(function () {
+	    function Array_h(length) {
+	        this.array = length === undefined ? [] : new Array(length);
+	    }
+
+	    Array_h.prototype = {
+	        /**
+	         * 返回数组长度
+	         *
+	         * @return {Number} length [数组长度]
+	         */
+	        length: function length() {
+	            return this.array.length;
+	        },
+
+	        at: function at(index) {
+	            return this.array[index];
+	        },
+
+	        set: function set(index, obj) {
+	            this.array[index] = obj;
+	        },
+
+	        /**
+	         * 向数组的末尾添加一个或多个元素，并返回新的长度。
+	         *
+	         * @param  {*} obj [description]
+	         * @return {Number} length [新数组的长度]
+	         */
+	        push: function push(obj) {
+	            return this.array.push(obj);
+	        },
+
+	        /**
+	         * 返回数组中选定的元素
+	         *
+	         * @param  {Number} start [开始索引值]
+	         * @param  {Number} end [结束索引值]
+	         * @return {Array} newArray  [新的数组]
+	         */
+	        slice: function slice(start, end) {
+	            return this.array = this.array.slice(start, end);
+	        },
+
+	        concat: function concat(array) {
+	            this.array = this.array.concat(array);
+	        },
+
+	        remove: function remove(index, count) {
+	            count = count === undefined ? 1 : count;
+	            this.array.splice(index, count);
+	        },
+
+	        join: function join(separator) {
+	            return this.array.join(separator);
+	        },
+
+	        clear: function clear() {
+	            this.array.length = 0;
+	        }
+	    };
+
+	    /**
+	     * 先进先出队列 (First Input First Output)
+	     *
+	     * 一种先进先出的数据缓存器
+	     */
+	    var Queue = function Queue() {
+	        this._array_h = new Array_h();
+	    };
+
+	    Queue.prototype = {
+	        _index: 0,
+
+	        /**
+	         * 排队
+	         *
+	         * @param  {Object} obj [description]
+	         * @return {[type]}     [description]
+	         */
+	        push: function push(obj) {
+	            this._array_h.push(obj);
+	        },
+
+	        /**
+	         * 出队
+	         *
+	         * @return {Object} [description]
+	         */
+	        pop: function pop() {
+	            var ret = null;
+	            if (this._array_h.length()) {
+	                ret = this._array_h.at(this._index);
+	                if (++this._index * 2 >= this._array_h.length()) {
+	                    this._array_h.slice(this._index);
+	                    this._index = 0;
+	                }
+	            }
+	            return ret;
+	        },
+
+	        /**
+	         * 返回队列中头部(即最新添加的)的动态对象
+	         *
+	         * @return {Object} [description]
+	         */
+	        head: function head() {
+	            var ret = null,
+	                len = this._array_h.length();
+	            if (len) {
+	                ret = this._array_h.at(len - 1);
+	            }
+	            return ret;
+	        },
+
+	        /**
+	         * 返回队列中尾部(即最早添加的)的动态对象
+	         *
+	         * @return {Object} [description]
+	         */
+	        tail: function tail() {
+	            var ret = null,
+	                len = this._array_h.length();
+	            if (len) {
+	                ret = this._array_h.at(this._index);
+	            }
+	            return ret;
+	        },
+
+	        /**
+	         * 返回数据队列长度
+	         *
+	         * @return {Number} [description]
+	         */
+	        length: function length() {
+	            return this._array_h.length() - this._index;
+	        },
+
+	        /**
+	         * 队列是否为空
+	         *
+	         * @return {Boolean} [description]
+	         */
+	        empty: function empty() {
+	            return this._array_h.length() === 0;
+	        },
+
+	        clear: function clear() {
+	            this._array_h.clear();
+	        }
+	    };
+	    exports.Queue = Queue;
+	})();
+
+/***/ }
+
+/******/ });
