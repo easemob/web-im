@@ -5,111 +5,111 @@ workspace:
 
 pipeline:
 
-#  restore-cache:
-#    image: drillster/drone-volume-cache
-#    restore: true
-#    mount:
-#      - node_modules
-#      - tag
-#    volumes:
-#      - /data/apps/opt/web-im:/cache
-#
-#  build:
-#    image: node:7.8
-#    privileged: true
-#    commands:
-#      - npm run build
-#      - mkdir -p publish/demo/javascript
-#      - cp -r demo/images publish/demo
-#      - cp -r demo/stylesheet publish/demo
-#      - cp -r demo/javascript/dist publish/demo/javascript/
-#      - cp -r demo/javascript/src publish/demo/javascript/
-#      - mkdir publish/sdk
-#      - cp -r sdk/dist publish/sdk
-#      - cp -r sdk/src publish/sdk
-#      - cp sdk/*.* publish/sdk
-#      - cp -r webrtc  publish
-#      - cp favicon.ico publish/
-#      - cp index.html publish/
-#      - cp CHANGELOG.md publish/
-#      - cp package.json publish/
-#      - cp webpack.config.js publish/
-#      - cp README.md publish/
-#      - cp .babelrc publish/
-#      - cp -rf publish image/docker/webim/webim
-#      - echo 'build success'
-#    when:
-#      branch: [ dev, online ]
-#
-#
-#  dockerize-latest:
-#    image: plugins/docker
-#    environment:
-#      - DOCKER_LAUNCH_DEBUG=true
-#    debug: true
-#    repo: docker-registry-cn.easemob.com/kubernetes/im/webim
-#    tags: latest
-#    registry: docker-registry-cn.easemob.com
-#    secrets: [ docker_username, docker_password ]
-#    dockerfile: image/docker/webim/Dockerfile
-#    context: image/docker/webim/
-#    when:
-#      branch: dev
-#
-#  deploy-latest:
-#    image: docker-registry-cn.easemob.com/kubernetes/im/webim-deploy:latest
-#    pull: true
-#    environment:
-#      - DOCKER_LAUNCH_DEBUG=true
-#      - TAG=latest
-#    secrets: [ ssh_key, jumpserver_host, jumpserver_port, sandbox_host ]
-#    debug: true
-#    when:
-#      branch: dev
-#
-#  dockerize-online:
-#    image: plugins/docker
-#    environment:
-#      - DOCKER_LAUNCH_DEBUG=true
-#    debug: true
-#    repo: docker-registry-cn.easemob.com/kubernetes/im/webim
-#    tags: ${DRONE_COMMIT:0:7}
-#    registry: docker-registry-cn.easemob.com
-#    secrets: [ docker_username, docker_password ]
-#    dockerfile: image/docker/webim/Dockerfile
-#    context: image/docker/webim/
-#    when:
-#      branch: online
-#
-#  deploy-online:
-#    image: docker-registry-cn.easemob.com/kubernetes/im/webim-online:latest
-#    pull: true
-#    environment:
-#      - DOCKER_LAUNCH_DEBUG=true
-#      - TAG=${DRONE_COMMIT:0:7}
-#    secrets: [ ssh_key, jumpserver_host, jumpserver_port, online_host ]
-#    debug: true
-#    when:
-#      branch: online
-#
-#  rollback-online:
-#    image: docker-registry-cn.easemob.com/kubernetes/im/webim-rollback:latest
-#    pull: true
-#    environment:
-#      - DOCKER_LAUNCH_DEBUG=true
-#    secrets: [ ssh_key, jumpserver_host, jumpserver_port, online_host ]
-#    debug: true
-#    when:
-#      branch: rollback
-#
-#  rebuild-cache:
-#      image: drillster/drone-volume-cache
-#      rebuild: true
-#      mount:
-#        - node_modules
-#        - tag
-#      volumes:
-#        - /data/apps/opt/web-im:/cache
+  restore-cache:
+    image: drillster/drone-volume-cache
+    restore: true
+    mount:
+      - node_modules
+      - tag
+    volumes:
+      - /data/apps/opt/web-im:/cache
+
+  build:
+    image: node:7.8
+    privileged: true
+    commands:
+      - npm run build
+      - mkdir -p publish/demo/javascript
+      - cp -r demo/images publish/demo
+      - cp -r demo/stylesheet publish/demo
+      - cp -r demo/javascript/dist publish/demo/javascript/
+      - cp -r demo/javascript/src publish/demo/javascript/
+      - mkdir publish/sdk
+      - cp -r sdk/dist publish/sdk
+      - cp -r sdk/src publish/sdk
+      - cp sdk/*.* publish/sdk
+      - cp -r webrtc  publish
+      - cp favicon.ico publish/
+      - cp index.html publish/
+      - cp CHANGELOG.md publish/
+      - cp package.json publish/
+      - cp webpack.config.js publish/
+      - cp README.md publish/
+      - cp .babelrc publish/
+      - cp -rf publish image/docker/webim/webim
+      - echo 'build success'
+    when:
+      branch: [ dev, online ]
+
+
+  dockerize-latest:
+    image: plugins/docker
+    environment:
+      - DOCKER_LAUNCH_DEBUG=true
+    debug: true
+    repo: docker-registry-cn.easemob.com/kubernetes/im/webim
+    tags: latest
+    registry: docker-registry-cn.easemob.com
+    secrets: [ docker_username, docker_password ]
+    dockerfile: image/docker/webim/Dockerfile
+    context: image/docker/webim/
+    when:
+      branch: dev
+
+  deploy-latest:
+    image: docker-registry-cn.easemob.com/kubernetes/im/webim-deploy:latest
+    pull: true
+    environment:
+      - DOCKER_LAUNCH_DEBUG=true
+      - TAG=latest
+    secrets: [ ssh_key, jumpserver_host, jumpserver_port, sandbox_host ]
+    debug: true
+    when:
+      branch: dev
+
+  dockerize-online:
+    image: plugins/docker
+    environment:
+      - DOCKER_LAUNCH_DEBUG=true
+    debug: true
+    repo: docker-registry-cn.easemob.com/kubernetes/im/webim
+    tags: ${DRONE_COMMIT:0:7}
+    registry: docker-registry-cn.easemob.com
+    secrets: [ docker_username, docker_password ]
+    dockerfile: image/docker/webim/Dockerfile
+    context: image/docker/webim/
+    when:
+      branch: online
+
+  deploy-online:
+    image: docker-registry-cn.easemob.com/kubernetes/im/webim-online:latest
+    pull: true
+    environment:
+      - DOCKER_LAUNCH_DEBUG=true
+      - TAG=${DRONE_COMMIT:0:7}
+    secrets: [ ssh_key, jumpserver_host, jumpserver_port, online_host ]
+    debug: true
+    when:
+      branch: online
+
+  rollback-online:
+    image: docker-registry-cn.easemob.com/kubernetes/im/webim-rollback:latest
+    pull: true
+    environment:
+      - DOCKER_LAUNCH_DEBUG=true
+    secrets: [ ssh_key, jumpserver_host, jumpserver_port, online_host ]
+    debug: true
+    when:
+      branch: rollback
+
+  rebuild-cache:
+      image: drillster/drone-volume-cache
+      rebuild: true
+      mount:
+        - node_modules
+        - tag
+      volumes:
+        - /data/apps/opt/web-im:/cache
 
   notify:
     image: drillster/drone-email
