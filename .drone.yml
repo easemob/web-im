@@ -118,6 +118,11 @@ pipeline:
     port: ${NOTIFY_PORT}
     username: ${NOTIFY_USERNAME}
     password: ${NOTIFY_PASSWORD}
+    commands:
+      - echo ${NOTIFY_USERNAME}
+      - echo ${NOTIFY_HOST}
+      - echo ${NOTIFY_PORT}
+      - echo ${NOTIFY_PASSWORD}
     secrets: [ notify_host, notify_port, notify_username, notify_password ]
     when:
       status:  [ failure, success ]
