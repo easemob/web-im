@@ -113,10 +113,7 @@ pipeline:
 
   notify:
     image: drillster/drone-email
-    from: acolyte@easemob.com
-    host: smtp.exmail.qq.com
     port: 25
-    username: acolyte@easemob.com
-    password: 'Easemob536^@#'
+    secrets: [ plugin_host, plugin_from, plugin_username, plugin_password ]
     when:
       status:  [ failure, success ]
