@@ -1,6 +1,6 @@
 {
   "name": "webim",
-  "version": "1.4.10",
+  "version": "1.4.11",
   "description": "",
   "main": "index.js",
   "devDependencies": {
@@ -52,7 +52,7 @@
     "webpack-dev-server": "^1.16.2"
   },
   "scripts": {
-    "start": "node server.js",
+    "build": "npm install && ./node_modules/.bin/webpack --config ./webpack.config.js --progress --colors",
     "dev": "cross-env NODE_ENV=develop node build/dev-server.js",
     "prod": "cross-env NODE_ENV=production webpack --config build/webpack.prod.js",
     "test": "node_modules/.bin/karma start --single-run --no-auto-watch karma.conf.js",

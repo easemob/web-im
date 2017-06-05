@@ -5,6 +5,25 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0"/>
     <title>IM-DEMO</title>
+
+    <script src="https://cdn.rawgit.com/GoogleCloudPlatform/stackdriver-errors-js/v0.0.4/dist/stackdriver-errors-concat.min.js"></script>
+    <script type="text/javascript">
+        var errorHandler = new StackdriverErrorReporter();
+        errorHandler.start({
+            key: 'AIzaSyBEtqM9yPpHvcnzDPTsjtP3hiaeDK_6UMw',
+            projectId: 'invertible-pad-162204',
+//            service: '<my-service>',              // (optional)
+//            version: '<my-service-version>'       // (optional)
+            // reportUncaughtExceptions: false    // (optional) Set to false to stop reporting unhandled exceptions.
+            // disabled: true                     // (optional) Set to true to not report errors when calling report(), this can be used when developping locally.
+        });
+
+        (function testErrorReporting() {
+            window.onerror(null, null, null, null, new Error('Test: Something broke!'));
+        })();
+
+    </script>
+
     <!-- HTML5 element  -->
     <script src="./demo/javascript/dist/browser-polyfill.min.js"></script>
 </head>
@@ -21,25 +40,25 @@
     }
     if (WebIM.config.isDebug) {
         document.write("<script src='./sdk/dist/strophe-1.2.8.js'><\/script>");
-        document.write("<script src='./demo/javascript/dist/debug.js'><\/script>");
     } else {
         <!--A JavaScript library for XMPP over Websocket-->
         document.write("<script src='./sdk/dist/strophe-1.2.8.min.js'><\/script>");
     }
 </script>
 <!--sdk-->
-<script src='./sdk/dist/websdk-1.4.10.js'></script>
+<script src='./sdk/dist/websdk-1.4.11.js'></script>
 <!--webrtc-->
 <script>
     if (WebIM.config.isWebRTC) {
         document.write("<script src='./webrtc/dist/adapter.js'><\/script>");
-        document.write("<script src='./webrtc/dist/webrtc-1.4.10.js'><\/script>");
+        document.write("<script src='./webrtc/dist/webrtc-1.4.11.js'><\/script>");
     }
 </script>
 <!--[if lte IE 9]>
 <script src="./demo/javascript/dist/swfupload/swfupload.min.js"></script>
 <![endif]-->
 <!--demo javascript-->
-<script src="./demo/javascript/dist/demo-1.4.10.js"></script>
+<script src="./demo/javascript/dist/demo-1.4.11.js"></script>
+
 </body>
 </html>

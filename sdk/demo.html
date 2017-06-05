@@ -1,12 +1,13 @@
 <!--本Demo登陆测试帐号：mengyuanyuan，密码：123456, 测试对方账号：asdfghj，密码：123456-->
 <html>
 <head>
-    <title>Clock</title>
+    <meta charset="UTF-8">
+    <title>环信测试demo</title>
     <script src="../demo/javascript/dist/webim.config.js"></script>
     <script src="./dist/strophe-1.2.8.min.js"></script>
-    <script src="./dist/websdk-1.4.10.js"></script>
+    <script src="./dist/websdk-1.4.11.js"></script>
     <script src="../webrtc/dist/adapter.js"></script>
-    <script src="../webrtc/dist/webrtc-1.4.10.js"></script>
+    <script src="../webrtc/dist/webrtc-1.4.11.js"></script>
 </head>
 <body>
 <h2>Text Box</h2>
@@ -102,7 +103,7 @@
             //如果isAutoLogin设置为false，那么必须手动设置上线，否则无法收消息
             // 手动上线指的是调用conn.setPresence(); 在本例中，conn初始化时已将isAutoLogin设置为true
             // 所以无需调用conn.setPresence();
-            console.log("opened");
+            console.log("%c [opened] 连接已成功建立", "color: green")
         },
         onTextMessage: function (message) {
             // 在此接收和处理消息，根据message.type区分消息来源，私聊或群组或聊天室
@@ -219,6 +220,9 @@
         onError: function (message) {
             console.log('Error');
             console.log(message);
+            if (message && message.type == 1) {
+                console.warn('连接建立失败！请确认您的登录账号是否和appKey匹配。')
+            }
         },           //失败回调
         onBlacklistUpdate: function (list) {
             // 查询黑名单，将好友拉黑，将好友从黑名单移除都会回调这个函数，list则是黑名单现有的所有好友信息
@@ -226,43 +230,48 @@
         }     // 黑名单变动
     });
     // 初始化WebRTC Call
-    var rtcCall = new WebIM.WebRTC.Call({
-        connection: conn,
+    var rtcCall = null
+    if (WebIM.WebRTC) {
+        rtcCall = new WebIM.WebRTC.Call({
+            connection: conn,
 
-        mediaStreamConstaints: {
-            audio: true,
-            video: true
-        },
+            mediaStreamConstaints: {
+                audio: true,
+                video: true
+            },
 
-        listener: {
-            onAcceptCall: function (from, options) {
-                console.log('onAcceptCall::', 'from: ', from, 'options: ', options);
-            },
-            onGotRemoteStream: function (stream, streamType) {
-                console.log('onGotRemoteStream::', 'stream: ', stream, 'streamType: ', streamType);
-                var video = document.getElementById('video');
-                video.srcObject = stream;
-            },
-            onGotLocalStream: function (stream, streamType) {
-                console.log('onGotLocalStream::', 'stream:', stream, 'streamType: ', streamType);
-                var video = document.getElementById('localVideo');
-                video.srcObject = stream;
-            },
-            onRinging: function (caller) {
-                console.log('onRinging::', 'caller:', caller);
-            },
-            onTermCall: function (reason) {
-                console.log('onTermCall::');
-                console.log('reason:', reason);
-            },
-            onIceConnectionStateChange: function (iceState) {
-                console.log('onIceConnectionStateChange::', 'iceState:', iceState);
-            },
-            onError: function (e) {
-                console.log(e);
+            listener: {
+                onAcceptCall: function (from, options) {
+                    console.log('onAcceptCall::', 'from: ', from, 'options: ', options);
+                },
+                onGotRemoteStream: function (stream, streamType) {
+                    console.log('onGotRemoteStream::', 'stream: ', stream, 'streamType: ', streamType);
+                    var video = document.getElementById('video');
+                    video.srcObject = stream;
+                },
+                onGotLocalStream: function (stream, streamType) {
+                    console.log('onGotLocalStream::', 'stream:', stream, 'streamType: ', streamType);
+                    var video = document.getElementById('localVideo');
+                    video.srcObject = stream;
+                },
+                onRinging: function (caller) {
+                    console.log('onRinging::', 'caller:', caller);
+                },
+                onTermCall: function (reason) {
+                    console.log('onTermCall::');
+                    console.log('reason:', reason);
+                },
+                onIceConnectionStateChange: function (iceState) {
+                    console.log('onIceConnectionStateChange::', 'iceState:', iceState);
+                },
+                onError: function (e) {
+                    console.log(e);
+                }
             }
-        }
-    });
+        });
+    } else {
+        console.warn('不能进行视频通话！您的浏览器不支持webrtc或者协议不是https。')
+    }
 </script>
 <script>
     /**
@@ -732,7 +741,7 @@
     }
 
     // 语音呼叫对方
-    var audioCall = function(){
+    var audioCall = function () {
         console.log('Audio Call');
         rtcCall.caller = 'wenke123';
         rtcCall.makeVoiceCall('asdfghj');

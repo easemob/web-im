@@ -35,6 +35,10 @@ webpackConfig.externals = {
 webpackConfig.plugins = [
     new FriendlyErrorsWebpackPlugin(),
 ]
+//TODO: use cmd to switch interface and functional test
+// FILE=xxx FILE2=yyy npm run test
+// console.log(process.env.FILE, process.env.FILE2)
+// output: xxx yyy
 
 // webpackConfig.devtool = 'inline-sourcemap'
 webpackConfig.devtool = 'cheap-module-source-map'
@@ -100,8 +104,8 @@ module.exports = function (config) {
             'karma-coverage-istanbul-reporter'
         ],
         // 测试使用的浏览器 Chrome
-        // browsers: ['Chrome'],
-        browsers: ['PhantomJS'],
+        browsers: ['Chrome'],
+        // browsers: ['PhantomJS'],
         // 预编译操作，类似webpack的entry
         preprocessors: {
             '__test__/setup.js': ['webpack'],

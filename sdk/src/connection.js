@@ -40,6 +40,7 @@ Strophe.Websocket.prototype._closeSocket = function () {
     }
 };
 
+
 /**
  *
  * Strophe.Websocket has a bug while logout:
@@ -54,7 +55,7 @@ Strophe.Websocket.prototype._closeSocket = function () {
  * Fix it by overide  _onMessage
  */
 Strophe.Websocket.prototype._onMessage = function (message) {
-    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + 'recv:', message.data);
+    logMessage(message)
     var elem, data;
     // check for closing stream
     // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
@@ -277,7 +278,8 @@ var _parseFriend = function (queryTag, conn, from) {
             friend.groups = groups;
             rouster.push(friend);
             // B同意之后 -> B订阅A
-            if (conn && (subscription == 'from')) {
+            // fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
+            if (conn && (subscription == 'from') && !ask) {
                 conn.subscribe({
                     toJid: jid
                 });
@@ -318,6 +320,7 @@ var _login = function (options, conn) {
         _loginCallback(status, msg, conn);
     };
 
+    //console.log('jid=', conn.context.jid)
     conn.context.stropheConn = stropheConn;
     if (conn.route) {
         stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold, conn.route);
@@ -333,30 +336,30 @@ var _parseMessageType = function (msginfo) {
         acked = msginfo.getElementsByTagName('acked'),
         error = msginfo.getElementsByTagName('error'),
         msgtype = 'normal';
-    if(receiveinfo && receiveinfo.length > 0
+    if (receiveinfo && receiveinfo.length > 0
         &&
-        receiveinfo[0].namespaceURI === 'urn:xmpp:receipts'){
+        receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
 
         msgtype = 'received';
 
-    }else if(inviteinfo && inviteinfo.length > 0){
+    } else if (inviteinfo && inviteinfo.length > 0) {
 
         msgtype = 'invite';
 
-    }else if(deliveryinfo && deliveryinfo.length > 0){
+    } else if (deliveryinfo && deliveryinfo.length > 0) {
 
         msgtype = 'delivery';           // 消息送达
 
-    }else if(acked && acked.length){
+    } else if (acked && acked.length) {
 
         msgtype = 'acked';              // 消息已读
 
-    }else if(error && error.length){
+    } else if (error && error.length) {
 
         var errorItem = error[0],
             userMuted = errorItem.getElementsByTagName('user-muted');
 
-        if(userMuted && userMuted.length){
+        if (userMuted && userMuted.length) {
 
             msgtype = 'userMuted';
 
@@ -375,6 +378,7 @@ var _handleMessageQueue = function (conn) {
 };
 
 var _loginCallback = function (status, msg, conn) {
+    // console.log('stropheConn.connected status=', status, msg)
     var conflict, error;
 
     if (msg === 'conflict') {
@@ -409,7 +413,7 @@ var _loginCallback = function (status, msg, conn) {
                 return true;
             }
             var type = _parseMessageType(msginfo);
-            switch (type){
+            switch (type) {
                 case "received":
                     conn.handleReceivedMessage(msginfo);
                     return true;
@@ -1223,7 +1227,7 @@ connection.prototype.handlePresence = function (msginfo) {
     }
 
     var x = msginfo.getElementsByTagName('x');
-    if(x && x.length > 0){
+    if (x && x.length > 0) {
         // 加群申请
         var apply = x[0].getElementsByTagName('apply');
         // 加群成功
@@ -1241,28 +1245,28 @@ connection.prototype.handlePresence = function (msginfo) {
         // 取消禁言
         var removeMute = x[0].getElementsByTagName('remove_mute');
 
-        if(apply && apply.length > 0){
+        if (apply && apply.length > 0) {
             isApply = true;
             info.toNick = apply[0].getAttribute('toNick');
             info.type = 'joinGroupNotifications';
             var groupJid = apply[0].getAttribute('to');
             var gid = groupJid.split('@')[0].split('_');
-            gid = gid[gid.length-1];
+            gid = gid[gid.length - 1];
             info.gid = gid;
-        }else if(accept && accept.length > 0){
+        } else if (accept && accept.length > 0) {
             info.type = 'joinPublicGroupSuccess';
-        }else if(item && item.length > 0){
+        } else if (item && item.length > 0) {
             var affiliation = item[0].getAttribute('affiliation'),
                 role = item[0].getAttribute('role');
-            if(affiliation == 'member'
+            if (affiliation == 'member'
                 ||
-                role == 'participant'){
+                role == 'participant') {
                 isMemberJoin = true;
                 info.mid = info.fromJid.split('/');
-                info.mid = info.mid[info.mid.length-1];
+                info.mid = info.mid[info.mid.length - 1];
                 info.type = 'memberJoinPublicGroupSuccess';
             }
-        }else if(decline && decline.length){
+        } else if (decline && decline.length) {
             isDecline = true;
             var gid = decline[0].getAttribute("fromNick");
             var owner = _parseNameFromJidFn(decline[0].getAttribute("from"));
@@ -3103,6 +3107,23 @@ WebIM.doQuery = function (str, suc, fail) {
         }
     );
 };
+
+/**************************** debug ****************************/
+function logMessage(message) {
+    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
+}
+
+if (WebIM && WebIM.config.isDebug) {
+    Strophe.Connection.prototype.rawOutput = function (data) {
+        console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
+    }
+}
+
+if (WebIM && WebIM.config && WebIM.config.isSandBox) {
+    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '-sandbox.easemob.');
+    WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
+}
+
 
 module.exports = WebIM;
 

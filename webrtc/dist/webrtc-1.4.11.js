@@ -45,20 +45,20 @@
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(234);
+	module.exports = __webpack_require__(245);
 
 
 /***/ },
 
-/***/ 234:
+/***/ 245:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var Util = __webpack_require__(236);
-	var Call = __webpack_require__(237);
+	var Util = __webpack_require__(247);
+	var Call = __webpack_require__(248);
 
 	window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
 	WebIM.WebRTC = WebIM.WebRTC || {};
@@ -81,11 +81,11 @@
 	}
 
 	//WebIM.WebRTC.supportPRAnswer = false;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(235)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(246)(module)))
 
 /***/ },
 
-/***/ 235:
+/***/ 246:
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -102,12 +102,12 @@
 
 /***/ },
 
-/***/ 236:
+/***/ 247:
 /***/ function(module, exports) {
 
 	'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	/*
 	 * ! Math.uuid.js (v1.4) http://www.broofa.com mailto:robert@broofa.com
@@ -517,16 +517,16 @@
 
 /***/ },
 
-/***/ 237:
+/***/ 248:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Util = __webpack_require__(236);
-	var RTCIQHandler = __webpack_require__(238);
-	var API = __webpack_require__(239);
-	var WebRTC = __webpack_require__(240);
-	var CommonPattern = __webpack_require__(241);
+	var Util = __webpack_require__(247);
+	var RTCIQHandler = __webpack_require__(249);
+	var API = __webpack_require__(250);
+	var WebRTC = __webpack_require__(251);
+	var CommonPattern = __webpack_require__(252);
 
 	var RouteTo = API.RouteTo;
 	var Api = API.Api;
@@ -577,13 +577,17 @@
 	    },
 
 	    makeVideoCall: function makeVideoCall(callee, accessSid) {
+	        var self = this;
+
 	        var mediaStreamConstaints = {};
-	        Util.extend(mediaStreamConstaints, this.mediaStreamConstaints);
+	        Util.extend(mediaStreamConstaints, self.mediaStreamConstaints);
+	        self.mediaStreamConstaints.video = true;
 
 	        this.call(callee, mediaStreamConstaints, accessSid);
 	    },
 
 	    makeVoiceCall: function makeVoiceCall(callee, accessSid) {
+	        console.log('ScareCrow');
 	        var self = this;
 
 	        var mediaStreamConstaints = {};
@@ -641,7 +645,7 @@
 	        self.sessId = options.sessId;
 	        self.rtcId = options.rtcId;
 
-	        self.switchPattern();
+	        self.switchPattern(options.streamType == "VIDEO" ? "VIDEO" : "VOICE");
 	        self.pattern._onInitC(from, options, rtkey, tsxId, fromSid);
 	    },
 
@@ -663,13 +667,13 @@
 	            self.admtok = rtcOptions.admtok;
 	            self.tkt = rtcOptions.tkt;
 
-	            self.switchPattern();
+	            self.switchPattern(self.mediaStreamConstaints.audio && self.mediaStreamConstaints.video ? "VIDEO" : "VOICE");
 	        } else {
 	            //
 	        }
 	    },
 
-	    switchPattern: function switchPattern() {
+	    switchPattern: function switchPattern(streamType) {
 	        var self = this;
 
 	        !self._WebRTCCfg && (self.pattern = new CommonPattern({
@@ -686,6 +690,7 @@
 	            _rtcId: self.rtcId,
 
 	            webRtc: new WebRTC({
+	                streamType: streamType,
 	                onGotLocalStream: self.listener.onGotLocalStream,
 	                onGotRemoteStream: self.listener.onGotRemoteStream,
 	                onError: self.listener.onError
@@ -695,7 +700,9 @@
 
 	            onAcceptCall: self.listener && self.listener.onAcceptCall || function () {},
 	            onRinging: self.listener && self.listener.onRinging || function () {},
-	            onTermCall: self.listener && self.listener.onTermCall || function () {}
+	            onTermCall: self.listener && self.listener.onTermCall || function () {},
+	            onOtherUserOpenVoice: self.listener && self.listener.onOtherUserOpenVoice || function () {},
+	            onOtherUserOpenVideo: self.listener && self.listener.onOtherUserOpenVideo || function () {}
 	        }));
 	    }
 	};
@@ -708,7 +715,7 @@
 
 /***/ },
 
-/***/ 238:
+/***/ 249:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -717,9 +724,9 @@
 	 * IQ Message，IM -> CMServer --> IM
 	 */
 
-	var _util = __webpack_require__(236);
+	var _util = __webpack_require__(247);
 	var _logger = _util.logger;
-	var API = __webpack_require__(239);
+	var API = __webpack_require__(250);
 	var RouteTo = API.RouteTo;
 
 	var CONFERENCE_XMLNS = "urn:xmpp:media-conference";
@@ -736,26 +743,22 @@
 
 	        var _conn = self.imConnection;
 
-	        var handleConferenceIQ;
+	        _conn.registerConfrIQHandler = function () {
+	            var handleConferenceIQ = function handleConferenceIQ(msginfo) {
+	                try {
+	                    self.handleRtcMessage(msginfo);
+	                } catch (error) {
+	                    _logger.error(error.stack || error);
+	                    throw error;
+	                }
 
-	        _conn.addHandler = function (handler, ns, name, type, id, from, options) {
-	            if (typeof handleConferenceIQ !== 'function') {
+	                return true;
+	            };
 
-	                handleConferenceIQ = function handleConferenceIQ(msginfo) {
-	                    try {
-	                        self.handleRtcMessage(msginfo);
-	                    } catch (error) {
-	                        _logger.error(error.stack || error);
-	                        throw error;
-	                    }
+	            _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "set");
+	            _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "get");
 
-	                    return true;
-	                };
-	                _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "set", null, null);
-	                _conn.addHandler(handleConferenceIQ, CONFERENCE_XMLNS, 'iq', "get", null, null);
-	            }
-
-	            _conn.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
+	            _logger.warn("Conference iq handler. registered.");
 	        };
 	    },
 
@@ -776,13 +779,24 @@
 
 	        var contentTags = msginfo.getElementsByTagName('content');
 
-	        var streamType = msginfo.getElementsByTagName('stream_type')[0].innerHTML; //VOICE, VIDEO
-
 	        var contentString = contentTags[0].innerHTML;
 
 	        var content = _util.parseJSON(contentString);
 
 	        var rtcOptions = content;
+
+	        var streamType = msginfo.getElementsByTagName('stream_type')[0].innerHTML; //VOICE, VIDEO
+
+	        if (streamType == "") {
+	            streamType = "VOICE";
+	        }
+
+	        rtcOptions.streamType = streamType;
+
+	        if (rtcOptions.op == 102) {
+	            self.singalStreamType = streamType;
+	        }
+
 	        var tsxId = content.tsxId;
 
 	        self.ctx = content.ctx;
@@ -795,6 +809,8 @@
 	                self._connectedSid = fromSessionId;
 	            } else {
 	                if (self._connectedSid != fromSessionId) {
+	                    _logger.debug("Error recv [op = " + rtcOptions.op + "] [tsxId=" + tsxId + "]. caused by _connectedSid != fromSessionId :", self._connectedSid, fromSessionId);
+
 	                    //onInitC
 	                    if (rtcOptions.op == 102) {
 	                        var rt = new RouteTo({
@@ -976,7 +992,10 @@
 	        self.ctx && (options.data.ctx = self.ctx);
 	        self.convertRtcOptions(options);
 
-	        var streamType = "VIDEO"; //VOICE, VIDEO
+	        var streamType = options.streamType || self.singalStreamType || "VIDEO"; // "VIDEO"; //VOICE, VIDEO
+	        if (options.data.op == 102) {
+	            self.singalStreamType = streamType;
+	        }
 
 	        var id = rt.id || _conn.getUniqueId("CONFR_");
 	        var iq = $iq({
@@ -1031,17 +1050,17 @@
 
 /***/ },
 
-/***/ 239:
+/***/ 250:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	/**
 	 * API
 	 */
-	var _util = __webpack_require__(236);
+	var _util = __webpack_require__(247);
 	var _logger = _util.logger;
 
 	var _RouteTo = {
@@ -1105,6 +1124,8 @@
 	        '303': 'onEvUnpub',
 	        '304': 'onEvMems',
 	        '204': 'onEvClose',
+	        '400': 'onStreamControl',
+	        '401': 'onEvJoin',
 
 	        'onServerError': 'onServerError'
 	    },
@@ -1268,6 +1289,36 @@
 	    },
 
 	    /**
+	     * 通知对方 我已经关闭/打开 麦卡，摄像头
+	     *
+	     * PAUSE_VOICE(0, 0), RESUME_VOICE(1, 1), PAUSE_VIDEO(2, 2), RESUME_VIDEO(3, 3)
+	     *
+	     *
+	     * @param rt
+	     * @param sessId
+	     * @param rtcId
+	     * @param controlType
+	     * @param callback
+	     */
+	    streamControl: function streamControl(rt, sessId, rtcId, controlType, callback) {
+	        _logger.debug("streamControl ...");
+
+	        var self = this;
+
+	        var rtcOptions = {
+	            data: {
+	                op: 400
+	            }
+	        };
+
+	        sessId && (rtcOptions.data.sessId = sessId);
+	        rtcId && (rtcOptions.data.rtcId = rtcId);
+	        typeof controlType !== 'undefined' && controlType != null && (rtcOptions.data.controlType = controlType);
+
+	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
+	    },
+
+	    /**
 	     * ReqTkt 3
 	     *
 	     * @param rt
@@ -1319,7 +1370,7 @@
 	     * @param cands [ ]
 	     *
 	     */
-	    initC: function initC(rt, WebRTCId, tkt, sessId, rtcId, pubS, subS, sdp, cands, rtcCfg, WebRTC, callback) {
+	    initC: function initC(rt, streamType, WebRTCId, tkt, sessId, rtcId, pubS, subS, sdp, cands, rtcCfg, WebRTC, callback) {
 	        _logger.debug("initC ...");
 
 	        var rtcOptions = {
@@ -1327,6 +1378,8 @@
 	                op: 102
 	            }
 	        };
+
+	        rtcOptions.streamType = streamType || "VIDEO";
 
 	        WebRTCId && (rtcOptions.data.WebRTCId = WebRTCId);
 	        tkt && (rtcOptions.data.tkt = tkt);
@@ -1392,7 +1445,7 @@
 	     * @param cands
 	     *
 	     */
-	    ansC: function ansC(rt, sessId, rtcId, sdp, cands, callback) {
+	    ansC: function ansC(rt, sessId, rtcId, sdp, cands, callback, enableVoice, enableVideo) {
 	        _logger.debug("ansC ...");
 
 	        var self = this;
@@ -1407,6 +1460,12 @@
 	        rtcId && (rtcOptions.data.rtcId = rtcId);
 	        sdp && (rtcOptions.data.sdp = sdp);
 	        cands && (rtcOptions.data.cands = cands);
+
+	        enableVoice === false && (rtcOptions.data.enableVoice = enableVoice);
+	        enableVideo === false && (rtcOptions.data.enableVideo = enableVideo);
+
+	        // rtcOptions.data.enableVoice = false;
+	        // rtcOptions.data.enableVideo = false;
 
 	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
 	    },
@@ -1427,7 +1486,7 @@
 	     *            1
 	     *
 	     */
-	    acptC: function acptC(rt, sessId, rtcId, sdp, cands, ans, callback) {
+	    acptC: function acptC(rt, sessId, rtcId, sdp, cands, ans, callback, enableVoice, enableVideo) {
 	        _logger.debug("acptC ...");
 
 	        var self = this;
@@ -1443,6 +1502,12 @@
 	        sdp && (rtcOptions.data.sdp = sdp);
 	        cands && (rtcOptions.data.cands = cands);
 	        ans && (rtcOptions.data.ans = ans);
+
+	        enableVoice === false && (rtcOptions.data.enableVoice = enableVoice);
+	        enableVideo === false && (rtcOptions.data.enableVideo = enableVideo);
+
+	        // rtcOptions.data.enableVoice = false;
+	        // rtcOptions.data.enableVideo = false;
 
 	        self.rtcHandler.sendRtcMessage(rt, rtcOptions, callback);
 	    },
@@ -1665,10 +1730,10 @@
 
 /***/ },
 
-/***/ 240:
+/***/ 251:
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	/**
 	 * WebRTC
@@ -1708,8 +1773,128 @@
 	 *                                                  |
 	 *
 	 */
-	var _util = __webpack_require__(236);
+	var _util = __webpack_require__(247);
 	var _logger = _util.logger;
+
+	var _WebrtcStatistics = {
+	    bytesPrev: null,
+	    timestampPrev: null,
+	    sentBytesPrev: null,
+	    sentTimestampPrev: null,
+
+	    printStats: function printStats(rtcPeerConnection) {
+	        var self = this;
+
+	        rtcPeerConnection.getStats(null, function (results) {
+	            self.parseRecvStatistics(results, function (name, value) {
+	                _logger.info(new Date(), "RECV ", name, value);
+	            }, function (name, value) {
+	                _logger.info(new Date(), "SEND ", name, value);
+	            });
+	        });
+	    },
+
+	    stopIntervalPrintStats: function stopIntervalPrintStats() {
+	        var self = this;
+
+	        self._printIntervalId && window.clearInterval(self._printIntervalId);
+	        self._printIntervalId = null;
+	    },
+
+	    intervalPrintStats: function intervalPrintStats(rtcPeerConnection, seconds) {},
+
+	    _intervalPrintStats: function _intervalPrintStats(rtcPeerConnection, seconds) {
+	        var self = this;
+
+	        self._printIntervalId && window.clearInterval(self._printIntervalId);
+	        self._printIntervalId = window.setInterval(function () {
+	            self.printStats(rtcPeerConnection);
+	        }, seconds * 1000);
+	    },
+
+	    parseRecvStatistics: function parseRecvStatistics(results, callback, callbackSent) {
+	        var self = this;
+
+	        // calculate video bitrate
+	        var bitrate;
+	        var remoteWidth;
+	        var remoteHeight;
+
+	        var activeCandidatePair = null;
+	        var remoteCandidate = null;
+
+	        Object.keys(results).forEach(function (result) {
+	            var report = results[result];
+	            var now = report.timestamp;
+
+	            if (report.type === 'inboundrtp' && report.mediaType === 'audio') {
+	                // firefox calculates the bitrate for us
+	                // https://bugzilla.mozilla.org/show_bug.cgi?id=951496
+	                bitrate = Math.floor(report.bitrateMean / 1024);
+	            } else if (report.type === 'ssrc' && report.bytesReceived) {
+	                if (report.mediaType === 'video') {
+	                    // remoteWidth = report.googFrameWidthReceived;
+	                    // remoteHeight = report.googFrameHeightReceived;
+	                    // // chrome does not so we need to do it ourselves
+	                    // var bytes = report.bytesReceived;
+	                    // if (self.timestampPrev) {
+	                    //     bitrate = 8 * (bytes - self.bytesPrev) / (now - self.timestampPrev);
+	                    //     bitrate = Math.floor(bitrate);
+	                    // }
+	                    // self.bytesPrev = bytes;
+	                    // self.timestampPrev = now;
+	                } else {
+	                    // chrome does not so we need to do it ourselves
+	                    var bytes = report.bytesReceived;
+	                    if (self.timestampPrev) {
+	                        bitrate = 8 * (bytes - self.bytesPrev) / (now - self.timestampPrev);
+	                        bitrate = Math.floor(bitrate);
+	                    }
+	                    self.bytesPrev = bytes;
+	                    self.timestampPrev = now;
+	                }
+	            }
+
+	            if (report.type === 'candidatepair' && report.selected || report.type === 'googCandidatePair' && report.googActiveConnection === 'true') {
+	                activeCandidatePair = report;
+	            }
+
+	            if (report.type === 'outboundrtp' && report.mediaType === 'audio') {
+	                callbackSent('audio Bitrate', Math.floor(report.bitrateMean / 1024) + ' kbps');
+	            } else if (report.type === 'ssrc' && report.bytesSent && report.googFrameHeightSent) {
+	                // chrome does not so we need to do it ourselves
+	                var bytes = report.bytesSent;
+	                if (self.sentTimestampPrev) {
+	                    var br = 8 * (bytes - self.sentBytesPrev) / (now - self.sentTimestampPrev);
+	                    br = Math.floor(br);
+	                    callbackSent('audio Bitrate', br + ' kbps');
+	                    callbackSent('audio Size', report.googFrameWidthSent + 'x' + report.googFrameHeightSent);
+	                }
+	                self.sentBytesPrev = bytes;
+	                self.sentTimestampPrev = now;
+	            }
+	        });
+
+	        if (activeCandidatePair && activeCandidatePair.remoteCandidateId) {
+	            remoteCandidate = results[activeCandidatePair.remoteCandidateId];
+	        }
+	        if (remoteCandidate && remoteCandidate.ipAddress && remoteCandidate.portNumber) {
+	            callback('Peer', remoteCandidate.ipAddress + ':' + remoteCandidate.portNumber);
+	        }
+
+	        callback('audio Bitrate', bitrate + ' kbps');
+
+	        if (remoteHeight) {
+	            callback('audio Size', remoteWidth + 'x' + remoteHeight);
+	        }
+	    }
+	};
+
+	var WebrtcStatisticsHelper = function WebrtcStatisticsHelper(cfg) {
+	    _util.extend(this, _WebrtcStatistics, cfg || {});
+	};
+
+	var webrtcStatisticsHelper = new WebrtcStatisticsHelper();
 
 	var _SDPSection = {
 	    headerSection: null,
@@ -1766,6 +1951,26 @@
 	        return arr.join('\n');
 	    },
 
+	    removeField_msid: function removeField_msid(section) {
+	        var arr = [];
+
+	        var _arr = section.split(/a=msid:[^\n]+/g);
+	        for (var i = 0; i < _arr.length; i++) {
+	            _arr[i] != '\n' && arr.push(_arr[i]);
+	        }
+	        // arr.push('');
+
+	        section = arr.join('\n');
+	        arr = [];
+
+	        _arr = section.split(/[\n]+/g);
+	        for (var i = 0; i < _arr.length; i++) {
+	            _arr[i] != '\n' && arr.push(_arr[i]);
+	        }
+
+	        return arr.join('\n');
+	    },
+
 	    updateHeaderMsidSemantic: function updateHeaderMsidSemantic(wms) {
 
 	        var self = this;
@@ -1798,13 +2003,17 @@
 	    updateAudioSSRCSection: function updateAudioSSRCSection(ssrc, cname, msid, label) {
 	        var self = this;
 
-	        self.audioSection && (self.audioSection = self.removeSSRC(self.audioSection) + self.ssrcSection(ssrc, cname, msid, label));
+	        self.audioSection && (self.audioSection = self.removeSSRC(self.audioSection));
+	        self.audioSection && (self.audioSection = self.removeField_msid(self.audioSection));
+	        self.audioSection && (self.audioSection = self.audioSection + self.ssrcSection(ssrc, cname, msid, label));
 	    },
 
 	    updateVideoSSRCSection: function updateVideoSSRCSection(ssrc, cname, msid, label) {
 	        var self = this;
 
-	        self.videoSection && (self.videoSection = self.removeSSRC(self.videoSection) + self.ssrcSection(ssrc, cname, msid, label));
+	        self.videoSection && (self.videoSection = self.removeSSRC(self.videoSection));
+	        self.videoSection && (self.videoSection = self.removeField_msid(self.videoSection));
+	        self.videoSection && (self.videoSection = self.videoSection + self.ssrcSection(ssrc, cname, msid, label));
 	    },
 
 	    getUpdatedSDP: function getUpdatedSDP() {
@@ -1822,7 +2031,7 @@
 	    parseMsidSemantic: function parseMsidSemantic(header) {
 	        var self = this;
 
-	        var regexp = /a=msid\-semantic: WMS (\S+)/ig;
+	        var regexp = /a=msid\-semantic:\s*WMS (\S+)/ig;
 	        var arr = self._parseLine(header, regexp);
 
 	        arr && arr.length == 2 && (self.msidSemantic = {
@@ -1896,6 +2105,8 @@
 	 * Abstract
 	 */
 	var _WebRTC = {
+	    streamType: "VIDEO", // VIDEO or VOICE
+
 	    mediaStreamConstaints: {
 	        audio: true,
 	        video: true
@@ -1934,7 +2145,7 @@
 	                _logger.debug('[WebRTC-API] Using audio device: ' + audioTracks[0].label);
 	            }
 
-	            onGotStream ? onGotStream(self, stream) : self.onGotStream(stream);
+	            onGotStream ? onGotStream(self, stream, self.streamType) : self.onGotStream(stream, self.streamType);
 	        }
 
 	        return navigator.mediaDevices.getUserMedia(constaints || self.mediaStreamConstaints).then(gotStream).then(self.onCreateMedia).catch(function (e) {
@@ -1944,7 +2155,7 @@
 	    },
 
 	    setLocalVideoSrcObject: function setLocalVideoSrcObject(stream) {
-	        this.onGotLocalStream(stream);
+	        this.onGotLocalStream(stream, this.streamType);
 	        _logger.debug('[WebRTC-API] you can see yourself !');
 	    },
 
@@ -1993,6 +2204,14 @@
 
 	        rtcPeerConnection.oniceconnectionstatechange = function (event) {
 	            self.onIceStateChange(event);
+
+	            if ("connected" == event.target.iceConnectionState) {
+	                webrtcStatisticsHelper.intervalPrintStats(rtcPeerConnection, 1);
+	            }
+
+	            if ("closed" == event.target.iceConnectionState) {
+	                webrtcStatisticsHelper.stopIntervalPrintStats();
+	            }
 	        };
 
 	        rtcPeerConnection.onaddstream = function (event) {
@@ -2032,14 +2251,14 @@
 	        // to pass in the right constraints in order for it to
 	        // accept the incoming offer of audio and video.
 	        return self.rtcPeerConnection.createAnswer().then(function (desc) {
-	            _logger.debug('[WebRTC-API] _____________PRAnswer '); //_logger.debug('from :\n' + desc.sdp);
+	            _logger.debug('[WebRTC-API] _____________PRAnswer ', desc.sdp); //_logger.debug('from :\n' + desc.sdp);
 
 	            desc.type = "pranswer";
 	            desc.sdp = desc.sdp.replace(/a=recvonly/g, 'a=inactive');
 
 	            self.prAnswerDescription = desc;
 
-	            _logger.debug('[WebRTC-API] inactive PRAnswer '); //_logger.debug('from :\n' + desc.sdp);
+	            _logger.debug('[WebRTC-API] inactive PRAnswer ', desc.sdp); //_logger.debug('from :\n' + desc.sdp);
 	            _logger.debug('[WebRTC-API] setLocalDescription start');
 
 	            self.rtcPeerConnection.setLocalDescription(desc).then(self.onSetLocalSuccess, self.onSetSessionDescriptionError).then(function () {
@@ -2050,7 +2269,7 @@
 
 	                desc.sdp = sdpSection.getUpdatedSDP();
 
-	                _logger.debug('[WebRTC-API] Send PRAnswer '); //_logger.debug('from :\n' + desc.sdp);
+	                _logger.debug('[WebRTC-API] Send PRAnswer ', desc.sdp); //_logger.debug('from :\n' + desc.sdp);
 
 	                (onCreatePRAnswerSuccess || self.onCreatePRAnswerSuccess)(desc);
 	            });
@@ -2067,37 +2286,45 @@
 	        // to pass in the right constraints in order for it to
 	        // accept the incoming offer of audio and video.
 	        return self.rtcPeerConnection.createAnswer().then(function (desc) {
-	            _logger.debug('[WebRTC-API] _____________________Answer '); //_logger.debug('from :\n' + desc.sdp);
+	            _logger.debug('[WebRTC-API] _____________________Answer ', desc.sdp); //_logger.debug('from :\n' + desc.sdp);
 
 	            desc.type = 'answer';
 
-	            var sdpSection = new SDPSection(desc.sdp);
-	            var ms = sdpSection.parseMsidSemantic(sdpSection.headerSection);
+	            if (WebIM.WebRTC.supportPRAnswer) {
+	                var sdpSection = new SDPSection(desc.sdp);
+	                var ms = sdpSection.parseMsidSemantic(sdpSection.headerSection);
+	                if (ms.WMS == '*') {
+	                    sdpSection.updateHeaderMsidSemantic(ms.WMS = "MS_0000");
+	                }
+	                var audioSSRC = sdpSection.parseSSRC(sdpSection.audioSection);
+	                var videoSSRC = sdpSection.parseSSRC(sdpSection.videoSection);
 
-	            var audioSSRC = sdpSection.parseSSRC(sdpSection.audioSection);
-	            var videoSSRC = sdpSection.parseSSRC(sdpSection.videoSection);
+	                sdpSection.updateAudioSSRCSection(1000, "CHROME0000", ms.WMS, audioSSRC.label || "LABEL_AUDIO_1000");
+	                if (videoSSRC) {
+	                    sdpSection.updateVideoSSRCSection(2000, "CHROME0000", ms.WMS, videoSSRC.label || "LABEL_VIDEO_2000");
+	                }
+	                // mslabel cname
 
-	            sdpSection.updateAudioSSRCSection(1000, "CHROME0000", ms.WMS, audioSSRC.label);
-	            sdpSection.updateVideoSSRCSection(2000, "CHROME0000", ms.WMS, videoSSRC.label);
-	            // mslabel cname
-
-
-	            desc.sdp = sdpSection.getUpdatedSDP();
+	                desc.sdp = sdpSection.getUpdatedSDP();
+	            }
 
 	            self.answerDescription = desc;
 
-	            _logger.debug('[WebRTC-API] Answer '); //_logger.debug('from :\n' + desc.sdp);
+	            _logger.debug('[WebRTC-API] Answer ', desc.sdp); //_logger.debug('from :\n' + desc.sdp);
 	            _logger.debug('[WebRTC-API] setLocalDescription start');
 
 	            self.rtcPeerConnection.setLocalDescription(desc).then(self.onSetLocalSuccess, self.onSetSessionDescriptionError).then(function () {
-	                var sdpSection = new SDPSection(desc.sdp);
-	                sdpSection.updateHeaderMsidSemantic("MS_0000");
-	                sdpSection.updateAudioSSRCSection(1000, "CHROME0000", "MS_0000", "LABEL_AUDIO_1000");
-	                sdpSection.updateVideoSSRCSection(2000, "CHROME0000", "MS_0000", "LABEL_VIDEO_2000");
+	                if (WebIM.WebRTC.supportPRAnswer) {
+	                    var sdpSection = new SDPSection(desc.sdp);
 
-	                desc.sdp = sdpSection.getUpdatedSDP();
+	                    sdpSection.updateHeaderMsidSemantic("MS_0000");
+	                    sdpSection.updateAudioSSRCSection(1000, "CHROME0000", "MS_0000", "LABEL_AUDIO_1000");
+	                    sdpSection.updateVideoSSRCSection(2000, "CHROME0000", "MS_0000", "LABEL_VIDEO_2000");
 
-	                _logger.debug('[WebRTC-API] Send Answer '); //_logger.debug('from :\n' + desc.sdp);
+	                    desc.sdp = sdpSection.getUpdatedSDP();
+	                }
+
+	                _logger.debug('[WebRTC-API] Send Answer ', desc.sdp); //_logger.debug('from :\n' + desc.sdp);
 
 	                (onCreateAnswerSuccess || self.onCreateAnswerSuccess)(desc);
 	            });
@@ -2107,6 +2334,8 @@
 	    close: function close() {
 	        var self = this;
 	        try {
+	            webrtcStatisticsHelper.stopIntervalPrintStats();
+
 	            self.rtcPeerConnection && self.rtcPeerConnection.close();
 	        } catch (e) {}
 
@@ -2163,12 +2392,15 @@
 	    _onGotRemoteStream: function _onGotRemoteStream(event) {
 	        _logger.debug('[WebRTC-API] onGotRemoteStream.', event);
 
-	        this.onGotRemoteStream(event.stream);
+	        event.stream.getAudioTracks()[0].enabled = true;
+	        event.stream.getVideoTracks()[0] && (event.stream.getVideoTracks()[0].enabled = this.streamType == "VIDEO");
+
+	        this.onGotRemoteStream(event.stream, this.streamType);
 	        _logger.debug('[WebRTC-API] received remote stream, you will see the other.');
 	    },
 
-	    onGotStream: function onGotStream(stream) {
-	        _logger.debug('[WebRTC-API] on got a local stream');
+	    onGotStream: function onGotStream(stream, streamType) {
+	        _logger.debug('[WebRTC-API] on got a local stream : ' + streamType);
 	    },
 
 	    onSetRemoteSuccess: function onSetRemoteSuccess() {
@@ -2227,7 +2459,7 @@
 
 /***/ },
 
-/***/ 241:
+/***/ 252:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2235,8 +2467,8 @@
 	/**
 	 * P2P
 	 */
-	var _util = __webpack_require__(236);
-	var RouteTo = __webpack_require__(239).RouteTo;
+	var _util = __webpack_require__(247);
+	var RouteTo = __webpack_require__(250).RouteTo;
 	var _logger = _util.logger;
 
 	var P2PRouteTo = RouteTo({
@@ -2261,10 +2493,13 @@
 
 	    callee: null,
 
-	    consult: false,
-
 	    isCaller: false,
 	    accepted: false,
+
+	    setLocalSDP: false,
+	    setRemoteSDP: false,
+
+	    hangup: false,
 
 	    init: function init() {
 	        var self = this;
@@ -2284,6 +2519,12 @@
 	        self.api.onTermC = function () {
 	            self._onTermC.apply(self, arguments);
 	        };
+	        self.api.onEvJoin = function () {
+	            self._onEvJoin.apply(self, arguments);
+	        };
+	        self.api.onStreamControl = function () {
+	            self._onStreamControl.apply(self, arguments);
+	        };
 	        self.webRtc.onIceCandidate = function () {
 	            self._onIceCandidate.apply(self, arguments);
 	        };
@@ -2295,6 +2536,8 @@
 	    _ping: function _ping() {
 	        var self = this;
 
+	        var index = 0;
+
 	        function ping() {
 	            var rt = new P2PRouteTo({
 	                to: self.callee,
@@ -2304,9 +2547,13 @@
 	            self.api.ping(rt, self._sessId, function (from, rtcOptions) {
 	                _logger.debug("ping result", rtcOptions);
 	            });
+	            // self.api.streamControl(rt, self._sessId, "rtcId", (index++) % 4, function (from, rtcOptions) {
+	            //     _logger.debug("streamControl result", rtcOptions);
+	            //
+	            // });
 	        }
 
-	        self._pingIntervalId = window.setInterval(ping, 59000);
+	        self._pingIntervalId = window.setInterval(ping, 50000);
 	    },
 
 	    _onPing: function _onPing(from, options, rtkey, tsxId, fromSid) {
@@ -2319,14 +2566,17 @@
 
 	        self.isCaller = true;
 	        self.accepted = false;
+	        self.setLocalSDP = false;
+	        self.setRemoteSDP = false;
+	        self.hangup = false;
+
+	        self.streamType = mediaStreamConstaints.audio && mediaStreamConstaints.video ? "VIDEO" : "VOICE";
 
 	        self.createLocalMedia(mediaStreamConstaints);
 	    },
 
 	    createLocalMedia: function createLocalMedia(mediaStreamConstaints) {
 	        var self = this;
-
-	        self.consult = false;
 
 	        this.webRtc.createMedia(mediaStreamConstaints, function (webrtc, stream) {
 	            webrtc.setLocalVideoSrcObject(stream);
@@ -2335,8 +2585,6 @@
 
 	            self.webRtc.createOffer(function (offer) {
 	                self._onGotWebRtcOffer(offer);
-
-	                self._onHandShake();
 	            });
 	        });
 	    },
@@ -2350,9 +2598,11 @@
 	            rtKey: self._rtKey
 	        });
 
-	        self.api.initC(rt, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
+	        self.api.initC(rt, self.streamType, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
 	            _logger.debug("initc result", rtcOptions);
 	        });
+
+	        self.setLocalSDP = true;
 
 	        self._ping();
 	    },
@@ -2362,28 +2612,71 @@
 
 	        if (options.ans && options.ans == 1) {
 	            _logger.info("[WebRTC-API] _onAcptC : 104, ans = 1, it is a answer. will onAcceptCall");
-	            self.onAcceptCall(from, options);
+	            self.onAcceptCall(from, options, options.enableVoice !== false, options.enableVideo !== false);
 	            self._onAnsC(from, options);
-	        }
-	        if (!WebIM.WebRTC.supportPRAnswer) {
+	        } else if (!WebIM.WebRTC.supportPRAnswer) {
 	            _logger.info("[WebRTC-API] _onAcptC : not supported pranswer. drop it. will onAcceptCall");
-	            self.onAcceptCall(from, options);
+
+	            self.setRemoteSDP = false;
+	            self._handRecvCandsOrSend(from, options);
+
+	            self.onAcceptCall(from, options, options.enableVoice !== false, options.enableVideo !== false);
 	        } else {
 	            _logger.info("[WebRTC-API] _onAcptC : recv pranswer. ");
 
 	            if (options.sdp || options.cands) {
 	                // options.sdp && (options.sdp.type = "pranswer");
 	                options.sdp && self.webRtc.setRemoteDescription(options.sdp);
-	                options.cands && self._onTcklC(from, options);
 
-	                //self._onHandShake(from, options);
+	                self.setRemoteSDP = true;
+	                self._handRecvCandsOrSend(from, options);
 
-	                self.onAcceptCall(from, options);
+	                self.onAcceptCall(from, options, options.enableVoice !== false, options.enableVideo !== false);
 	            }
 	        }
 	    },
 
-	    onAcceptCall: function onAcceptCall(from, options) {},
+	    _onEvJoin: function _onEvJoin(from, options, rtkey, tsxId, fromSid) {
+	        var self = this;
+
+	        _logger.debug('_onEvJoin from', fromSid, from);
+
+	        self.onAcceptCall(from, options, options.enableVoice !== false, options.enableVideo !== false);
+	    },
+
+	    onAcceptCall: function onAcceptCall(from, options, enableVoice, enableVideo) {},
+
+	    __onVoiceOrVideo: function __onVoiceOrVideo(from, options, fromSid) {
+	        var self = this;
+
+	        options.enableVoice === false ? self.onOtherUserOpenVoice(from, false) : self.onOtherUserOpenVoice(from, true);
+	        options.enableVideo === false ? self.onOtherUserOpenVideo(from, false) : self.onOtherUserOpenVideo(from, true);
+	    },
+
+	    /*
+	     * { verison : MSYNC_V1, compress_algorimth : 0, command : SYNC, payload : { meta : { id : 2326, to : easemob-demo#chatdemoui_xyj002@easemob.com, ns : CONFERENCE, payload : { session_id : xyj0011494320598055, operation : MEDIA_REQUEST, peer_name : xyj001, route_flag : 1, route_key : --X--, content : {"op":400,"callVersion":"2.0.0","sessId":"128542826909667328","rtcId":"Channel1494320598056","tsxId":"1494320622866-6","controlType":0}, control_type : PAUSE_VOICE } } } }
+	     * PAUSE_VOICE(0, 0), RESUME_VOICE(1, 1), PAUSE_VIDEO(2, 2), RESUME_VIDEO(3, 3)
+	     *
+	     */
+	    _onStreamControl: function _onStreamControl(from, options, rtkey, tsxId, fromSid) {
+	        var self = this;
+	        var controlType = options.controlType;
+
+	        controlType === 0 && self.onOtherUserOpenVoice(from, false);
+	        controlType === 1 && self.onOtherUserOpenVoice(from, true);
+	        controlType === 2 && self.onOtherUserOpenVideo(from, false);
+	        controlType === 3 && self.onOtherUserOpenVideo(from, true);
+
+	        self.onStreamControl(from, options, rtkey, tsxId, fromSid);
+	    },
+	    onStreamControl: function onStreamControl(from, options, rtkey, tsxId, fromSid) {},
+
+	    onOtherUserOpenVoice: function onOtherUserOpenVoice(from, opened) {
+	        _logger.debug("from open:", opened, " voice .", from);
+	    },
+	    onOtherUserOpenVideo: function onOtherUserOpenVideo(from, opened) {
+	        _logger.debug("from open:", opened, " voideo .", from);
+	    },
 
 	    _onAnsC: function _onAnsC(from, options) {
 	        // answer
@@ -2394,16 +2687,21 @@
 	        self.accepted = true;
 
 	        options.sdp && self.webRtc.setRemoteDescription(options.sdp);
-	        options.cands && self._onTcklC(from, options);
+
+	        self.setRemoteSDP = true;
+	        self._handRecvCandsOrSend(from, options);
+
+	        self.__onVoiceOrVideo(from, options);
 	    },
 
 	    _onInitC: function _onInitC(from, options, rtkey, tsxId, fromSid) {
 	        var self = this;
 
-	        self.consult = false;
-
 	        self.isCaller = false;
 	        self.accepted = false;
+	        self.setLocalSDP = false;
+	        self.setRemoteSDP = false;
+	        self.hangup = false;
 
 	        self.callee = from;
 	        self._rtcCfg2 = options.rtcCfg;
@@ -2414,11 +2712,16 @@
 	        self._rtcId = options.rtcId;
 	        self._sessId = options.sessId;
 
+	        self.streamType = options.streamType;
+
 	        self.webRtc.createRtcPeerConnection(self._rtcCfg2);
 
-	        options.cands && self._onTcklC(from, options);
+	        options.sdp && _logger.debug(options.sdp.sdp);
+
 	        options.sdp && self.webRtc.setRemoteDescription(options.sdp).then(function () {
-	            self._onHandShake(from, options);
+
+	            self.setRemoteSDP = true;
+	            self._handRecvCandsOrSend(from, options);
 
 	            /*
 	             * chrome 版本 大于 50时，可以使用pranswer。
@@ -2432,13 +2735,13 @@
 	                    setTimeout(function () {
 	                        //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
 	                        _logger.info("[WebRTC-API] onRinging : after send pranswer. ", self.callee);
-	                        self.onRinging(self.callee);
+	                        self.onRinging(self.callee, self.streamType);
 	                    }, 500);
 	                });
 	            } else {
 	                setTimeout(function () {
 	                    _logger.info("[WebRTC-API] onRinging : After iniC, cause by: not supported pranswer. ", self.callee);
-	                    self.onRinging(self.callee);
+	                    self.onRinging(self.callee, self.streamType);
 	                }, 500);
 	                self._ping();
 	            }
@@ -2454,15 +2757,16 @@
 	            rtKey: self._rtKey
 	        });
 
-	        //self._onHandShake();
-
 	        //self.api.acptC(rt, self._sessId, self._rtcId, prAnswer, null, 1);
 	        self.api.acptC(rt, self._sessId, self._rtcId, prAnswer);
+
+	        self.setLocalSDP = true;
+	        self._handRecvCandsOrSend();
 
 	        self._ping();
 	    },
 
-	    onRinging: function onRinging(caller) {},
+	    onRinging: function onRinging(caller, streamType) {},
 
 	    accept: function accept() {
 	        var self = this;
@@ -2483,61 +2787,78 @@
 	                    self.api.acptC(rt, self._sessId, self._rtcId, answer, null, 1);
 	                }
 
+	                if (!WebIM.WebRTC.supportPRAnswer) {
+	                    self.setLocalSDP = true;
+	                }
+	                self._handRecvCandsOrSend();
+
 	                self.accepted = true;
 	            });
 	        }
 
-	        self.webRtc.createMedia(function (webrtc, stream) {
+	        var constaints = {
+	            audio: true
+	        };
+	        if (self.streamType == "VIDEO") {
+	            constaints.video = true;
+	        }
+
+	        self.webRtc.createMedia(constaints, function (webrtc, stream) {
 	            webrtc.setLocalVideoSrcObject(stream);
 
 	            createAndSendAnswer();
 	        });
 	    },
 
-	    _onHandShake: function _onHandShake(from, options) {
+	    _handRecvCandsOrSend: function _handRecvCandsOrSend(from, options) {
 	        var self = this;
 
-	        self.consult = true;
-	        _logger.info("hand shake over. may switch cands.");
-
-	        options && setTimeout(function () {
+	        setTimeout(function () {
 	            self._onTcklC(from, options);
-	        }, 100);
+	        }, 50);
 
 	        setTimeout(function () {
 	            self._onIceCandidate();
-	        }, 100);
+	        }, 50);
 	    },
 
 	    _onTcklC: function _onTcklC(from, options) {
-	        // offer
+	        // setRemoteSDP，才可以添加 添加 对方 cands
 	        var self = this;
 
 	        // options.sdp && self.webRtc.setRemoteDescription(options.sdp);
 
-	        if (self.consult) {
+	        if (self.setRemoteSDP) {
 	            _logger.info("[WebRTC-API] recv and add cands.");
 
 	            self._recvCands && self._recvCands.length > 0 && self.webRtc.addIceCandidate(self._recvCands);
+	            self._recvCands && self._recvCands.length > 0 && (self._recvCands = []);
 	            options && options.cands && self.webRtc.addIceCandidate(options.cands);
 	        } else if (options && options.cands && options.cands.length > 0) {
 	            for (var i = 0; i < options.cands.length; i++) {
 	                (self._recvCands || (self._recvCands = [])).push(options.cands[i]);
 	            }
-	            _logger.debug("[_onTcklC] temporary memory[recv] ice candidate. util consult = true");
+	            _logger.debug("[_onTcklC] temporary memory[recv] ice candidate. util setRemoteSDP = true");
 	        }
 	    },
 
 	    _onIceStateChange: function _onIceStateChange(event) {
 	        var self = this;
 	        event && _logger.debug("[WebRTC-API] " + self.webRtc.iceConnectionState() + " |||| ice state is " + event.target.iceConnectionState);
+
+	        if (event && event.target.iceConnectionState == "closed") {
+	            self.setLocalSDP = false;
+	            self.setRemoteSDP = false;
+	        }
+
 	        self.api.onIceConnectionStateChange(self.webRtc.iceConnectionState());
 	    },
 
 	    _onIceCandidate: function _onIceCandidate(event) {
+	        //在本地sdp set 发送完成后，发送 cands
 	        var self = this;
 
-	        if (self.consult) {
+	        if (self.setLocalSDP) {
 	            var sendIceCandidate = function sendIceCandidate(candidate) {
 	                _logger.debug("send ice candidate...");
 
@@ -2560,7 +2881,7 @@
 	            event && event.candidate && sendIceCandidate(event.candidate);
 	        } else {
 	            event && event.candidate && (self._cands || (self._cands = [])).push(event.candidate);
-	            _logger.debug("[_onIceCandidate] temporary memory[send] ice candidate. util consult = true");
+	            _logger.debug("[_onIceCandidate] temporary memory[send] ice candidate. util setLocalSDP = true");
 	        }
 	    },
 
@@ -2583,6 +2904,9 @@
 
 	        self.hangup = true;
 
+	        self.setLocalSDP = false;
+	        self.setRemoteSDP = false;
+
 	        self.onTermCall(reason);
 	    },
 
@@ -2601,6 +2925,10 @@
 	        var self = this;
 
 	        self.hangup = true;
+
+	        self.setLocalSDP = false;
+	        self.setRemoteSDP = false;
+
 	        self.termCall(options.reason);
 	    },
 
