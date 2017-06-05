@@ -165,8 +165,9 @@ module.exports = React.createClass({
             username = WebIM.utils.decrypt(username);
             this.signin(username, auth, true);
         } else {
-            window.history.pushState({}, 0, 'debug.html');
+            window.history.pushState({}, 0, 'index.html');
         }
+        // this.signin('zzf1', 'z', false);
     },
 
     componentDidMount: function () {

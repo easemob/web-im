@@ -87,6 +87,7 @@ exports.English = {
     addToGroupBlackList: 'Add to group black list',
     ban: 'Ban this member',
     administrator: 'Set as administrator',
+    rmAdministrator: 'Remove administrator',
     last: ''
 };
 
@@ -181,5 +182,6 @@ exports.Chinese = {
     addToGroupBlackList: '加入群黑名单',
     ban: '禁言',
     administrator: '设为管理员',
+    rmAdministrator: '移除管理员',
     last: ''
 };

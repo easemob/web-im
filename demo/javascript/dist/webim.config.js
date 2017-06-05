@@ -11,18 +11,24 @@ WebIM.config = {
      * XMPP server
      */
     xmppURL: 'im-api.easemob.com',
-    // xmppURL: 'im-api.hyphenate.io',
     /*
      * Backend REST API URL
      */
     apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
-    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
+    /*
+     * Application AppKey
+     */
+    // appkey: 'easemob-demo#chatdemoui',
+
+    // xmppURL: '118.193.28.212:31093',
+    /*
+     * Backend REST API URL
+     */
+    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//118.193.28.212:31080',
     /*
      * Application AppKey
      */
     appkey: 'easemob-demo#chatdemoui',
-    // appkey: 'zhiyunzhiyuan#ip3rynovgmmzgv',
-
     //appDir: 'EasemobDemo_sandbox',
     //imIP: '120.26.12.158',
     //imPort: '6717',

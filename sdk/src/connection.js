@@ -1232,7 +1232,14 @@ connection.prototype.handlePresence = function (msginfo) {
         var item = x[0].getElementsByTagName('item');
         // 加群被拒绝
         var decline = x[0].getElementsByTagName('decline');
-        console.log('ScareCrow: ', decline, decline.length);
+        // 被设为管理员
+        var addAdmin = x[0].getElementsByTagName('add_admin');
+        // 被取消管理员
+        var removeAdmin = x[0].getElementsByTagName('remove_admin');
+        // 被禁言
+        var addMute = x[0].getElementsByTagName('add_mute');
+        // 取消禁言
+        var removeMute = x[0].getElementsByTagName('remove_mute');
 
         if(apply && apply.length > 0){
             isApply = true;
@@ -1262,6 +1269,30 @@ connection.prototype.handlePresence = function (msginfo) {
             info.type = "joinPublicGroupDeclined";
             info.owner = owner;
             info.gid = gid;
+        }else if(addAdmin && addAdmin.length > 0){
+            var gid = _parseNameFromJidFn(addAdmin[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(addAdmin[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "addAdmin";
+        }else if(removeAdmin && removeAdmin.length > 0){
+            var gid = _parseNameFromJidFn(removeAdmin[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(removeAdmin[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "removeAdmin";
+        }else if(addMute && addMute.length > 0){
+            var gid = _parseNameFromJidFn(addMute[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(addMute[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "addMute";
+        }else if(removeMute && removeMute.length > 0){
+            var gid = _parseNameFromJidFn(removeMute[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(removeMute[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "removeMute";
         }
     }
 
@@ -1303,9 +1334,10 @@ connection.prototype.handlePresence = function (msginfo) {
                     &&
                     !isMemberJoin
                     &&
-                    !isDecline) {
+                    !isDecline
+                    ) {
             console.log(2222222, msginfo, info, isApply);
-            info.type = 'joinPublicGroupSuccess';
+            // info.type = 'joinPublicGroupSuccess';
         } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
             if (info.destroy) {// Group or Chat room Deleted.
                 info.type = 'deleteGroupChat';
