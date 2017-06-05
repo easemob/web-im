@@ -18,7 +18,7 @@ WebIM.config = {
     /*
      * Application AppKey
      */
-    // appkey: 'easemob-demo#chatdemoui',
+    appkey: 'easemob-demo#chatdemoui',
 
     // xmppURL: '118.193.28.212:31093',
     /*
@@ -28,7 +28,7 @@ WebIM.config = {
     /*
      * Application AppKey
      */
-    appkey: 'easemob-demo#chatdemoui',
+    // appkey: 'easemob-demo#chatdemoui',
     //appDir: 'EasemobDemo_sandbox',
     //imIP: '120.26.12.158',
     //imPort: '6717',
@@ -64,7 +64,7 @@ WebIM.config = {
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
      */
-    isDebug: true,
+    isDebug: false,
     /**
      * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
      * won't auto connect if autoReconnectNumMax=0.
@@ -100,5 +100,10 @@ WebIM.config = {
      * sender, in order to tell the sender the message has been read.
      * See call back function onReadMessage
      */
-    read: true
+    read: true,
+
+    /**
+     * Will encrypt text message and emoji message into base64 code
+     */
+    base64: false
 };

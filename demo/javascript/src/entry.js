@@ -130,7 +130,8 @@ Demo.conn = new WebIM.connection({
     apiUrl: WebIM.config.apiURL,
     isHttpDNS: WebIM.config.isHttpDNS,
     isWindowSDK: WebIM.config.isWindowSDK,
-    isAutoLogin: true
+    isAutoLogin: true,
+    base64: WebIM.config.base64
 });
 
 Demo.api.render(document.getElementById('demo'));

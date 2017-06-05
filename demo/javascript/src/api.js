@@ -395,6 +395,11 @@ module.exports = {
         if (!msg) {
             return;
         }
+        if(type === 'txt' && WebIM.config.base64){
+            if(msg.msg){
+                msg.msg = atob(msg.msg);
+            }
+        }
         msg.from = msg.from || Demo.user;
         msg.type = msg.type || 'chat';
 

@@ -58,6 +58,9 @@
         this.body = {};
     };
     Message.txt.prototype.set = function (opt) {
+        if(WebIM.config.base64){
+            opt.msg = btoa(opt.msg);
+        }
         this.value = opt.msg;
         this.body = {
             id: this.id

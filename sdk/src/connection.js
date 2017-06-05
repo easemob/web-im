@@ -669,6 +669,7 @@ var connection = function (options) {
     this.intervalId = null;   //clearInterval return value
     this.apiUrl = options.apiUrl || '';
     this.isWindowSDK = options.isWindowSDK || false;
+    this.base64 = options.base64 || false;
 
     this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
     this.dnsIndex = 0;   //the dns ip used in dnsArr currently
@@ -1466,6 +1467,9 @@ connection.prototype.handleMessage = function (msginfo) {
             switch (type) {
                 case 'txt':
                     var receiveMsg = msgBody.msg;
+                    if(self.base64){
+                        receiveMsg = atob(receiveMsg);
+                    }
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
                     if (emojibody.isemoji) {
                         var msg = {
