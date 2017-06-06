@@ -71,5 +71,20 @@ WebIM.config = {
     /**
      * while http access,use ip directly,instead of ServerName,avoiding DNS problem.
      */
-    isHttpDNS: false
+    isHttpDNS: false,
+
+    /**
+     * type=none Will not encrypt text messages
+     * type=base64 Will encrypt text messages into base64 code
+     * type=aes Will encrypt text messages into aes code
+     * mode=cbc Will encrypt text messages into aes code of cbc mode
+     * mode=ebc Will encrypt text messages into aes code of ebc mode
+     */
+    encrypt: {
+        type: 'aes',
+        mode: 'cBc',
+        key: 'easemob@@easemob',
+        iv: '0000000000000000',
+    }
+
 };

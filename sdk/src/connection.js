@@ -5,6 +5,8 @@ var _msg = require('./message');
 var _message = _msg._msg;
 var _msgHash = {};
 var Queue = require('./queue').Queue;
+var _ = require('underscore');
+var CryptoJS = require("crypto-js")
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -620,6 +622,7 @@ var connection = function (options) {
     this.intervalId = null;   //clearInterval return value
     this.apiUrl = options.apiUrl || '';
     this.isWindowSDK = options.isWindowSDK || false;
+    this.encrypt = options.encrypt || {};
 
     this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
     this.dnsIndex = 0;   //the dns ip used in dnsArr currently
@@ -1336,6 +1339,31 @@ connection.prototype.handleMessage = function (msginfo) {
             switch (type) {
                 case 'txt':
                     var receiveMsg = msgBody.msg;
+                    if(self.encrypt.type === 'base64'){
+                        receiveMsg = atob(receiveMsg);
+                    }else if(self.encrypt.type === 'aes'){
+                        var key = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.key);
+                        var iv = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.iv);
+                        var mode = WebIM.config.encrypt.mode.toLowerCase();
+                        var option = {};
+                        if(mode === 'cbc'){
+                            option = {
+                                iv: iv,
+                                mode: CryptoJS.mode.CBC,
+                                padding: CryptoJS.pad.Pkcs7
+                            };
+                        }else if(mode === 'ebc'){
+                            option = {
+                                mode: CryptoJS.mode.ECB,
+                                padding: CryptoJS.pad.Pkcs7
+                            }
+                        }
+                        var encryptedBase64Str = receiveMsg;
+                        var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+                        var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+                        receiveMsg = decryptedStr;
+                    }
+
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
                     if (emojibody.isemoji) {
                         var msg = {
@@ -1602,8 +1630,34 @@ connection.prototype.getUniqueId = function (prefix) {
     }
 };
 
-connection.prototype.send = function (message) {
+connection.prototype.send = function (messageSource) {
+    var message = _.clone(messageSource);
     var self = this;
+    if(message.type === 'txt'){
+        if (self.encrypt.type === 'base64') {
+            message.msg = btoa(message.msg);
+        } else if (self.encrypt.type === 'aes') {
+            var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
+            var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
+            var mode = self.encrypt.mode.toLowerCase();
+            var option = {};
+            if (mode === 'cbc') {
+                option = {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                };
+            } else if (mode === 'ebc') {
+                option = {
+                    mode: CryptoJS.mode.ECB,
+                    padding: CryptoJS.pad.Pkcs7
+                }
+            }
+            var encryptedData = CryptoJS.AES.encrypt(message.msg, key, option);
+
+            message.msg = encryptedData.toString();
+        }
+    }
     if (this.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
