@@ -1487,9 +1487,7 @@ connection.prototype.handleMessage = function (msginfo) {
                                 padding: CryptoJS.pad.Pkcs7
                             }
                         }
-                        var encryptedStr = extmsg.encryptedStr;
-                        var encryptedHexStr = CryptoJS.enc.Hex.parse(encryptedStr);
-                        var encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+                        var encryptedBase64Str = extmsg.encryptedBase64Str;
                         var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
                         var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
                         receiveMsg = decryptedStr;

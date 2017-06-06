@@ -86,6 +86,7 @@ module.exports = React.createClass({
             appKey: this.props.config.appkey,
             success: function (token) {
                 var encryptUsername = btoa(username);
+                encryptUsername = encryptUsername.replace(/=*$/g, "");
                 var token = token.access_token;
                 console.log('EncryptedUsername: ', encryptUsername, 'token: ', token);
                 var url = 'index.html?username=' + encryptUsername;

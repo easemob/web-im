@@ -79,19 +79,11 @@ var CryptoJS = require('crypto-js');
                 }
             }
             var encryptedData = CryptoJS.AES.encrypt(opt.msg, key, option);
-            console.log('AES: ', encryptedData.toString());
-            // 解密
-            var encryptedStr = encryptedData.ciphertext.toString();
-            console.log('encryptedStr: ', encryptedStr);
-            var encryptedHexStr = CryptoJS.enc.Hex.parse(encryptedStr);
-            console.log('encryptedHexStr: ', encryptedHexStr);
-            var encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr);
-            console.log('encryptedBase64Str: ', encryptedBase64Str);
+            var encryptedBase64Str = encryptedData.toString();
             var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
             var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
-            console.log('解密2：', decryptedStr);
             opt.ext = {
-                encryptedStr: encryptedStr
+                encryptedBase64Str: encryptedBase64Str
             };
 
             opt.msg = encryptedData.toString();
