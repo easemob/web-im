@@ -59,29 +59,6 @@ var CryptoJS = require('crypto-js');
         this.body = {};
     };
     Message.txt.prototype.set = function (opt) {
-        if (WebIM.config.encrypt.type === 'base64') {
-            opt.msg = btoa(opt.msg);
-        } else if (WebIM.config.encrypt.type === 'aes') {
-            var key = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.key);
-            var iv = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.iv);
-            var mode = WebIM.config.encrypt.mode.toLowerCase();
-            var option = {};
-            if (mode === 'cbc') {
-                option = {
-                    iv: iv,
-                    mode: CryptoJS.mode.CBC,
-                    padding: CryptoJS.pad.Pkcs7
-                };
-            } else if (mode === 'ebc') {
-                option = {
-                    mode: CryptoJS.mode.ECB,
-                    padding: CryptoJS.pad.Pkcs7
-                }
-            }
-            var encryptedData = CryptoJS.AES.encrypt(opt.msg, key, option);
-
-            opt.msg = encryptedData.toString();
-        }
         this.value = opt.msg;
         this.body = {
             id: this.id

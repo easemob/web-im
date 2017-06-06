@@ -396,32 +396,6 @@ module.exports = {
         if (!msg) {
             return;
         }
-        if(type === 'txt' && msg.msg){
-            if(WebIM.config.encrypt.type === 'base64'){
-                msg.msg = atob(msg.msg);
-            }
-            else if(WebIM.config.encrypt.type === 'aes'){
-                var key = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.key);
-                var iv = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.iv);
-                var mode = WebIM.config.encrypt.mode.toLowerCase();
-                if(mode === 'cbc'){
-                    option = {
-                        iv: iv,
-                        mode: CryptoJS.mode.CBC,
-                        padding: CryptoJS.pad.Pkcs7
-                    };
-                }else if(mode === 'ebc'){
-                    option = {
-                        mode: CryptoJS.mode.ECB,
-                        padding: CryptoJS.pad.Pkcs7
-                    }
-                }
-                var encryptedBase64Str = msg.msg;
-                var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
-                var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
-                msg.msg = decryptedStr;
-            }
-        }
         msg.from = msg.from || Demo.user;
         msg.type = msg.type || 'chat';
 

@@ -370,6 +370,7 @@ module.exports = React.createClass({
         Demo.conn.send(msg);
         Demo.api.addToChatRecord(msg, 'txt', 'Undelivered');
         Demo.api.appendMsg(msg, 'txt');
+        console.log("Send ScareCrow: ", msg);
     },
 
     // hide when blur | bind focus event

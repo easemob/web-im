@@ -6,6 +6,7 @@ var _message = _msg._msg;
 var _msgHash = {};
 var Queue = require('./queue').Queue;
 var CryptoJS = require('crypto-js');
+var _ = require('underscore');
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -1471,9 +1472,9 @@ connection.prototype.handleMessage = function (msginfo) {
                     if(self.encrypt.type === 'base64'){
                         receiveMsg = atob(receiveMsg);
                     }else if(self.encrypt.type === 'aes'){
-                        var key = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.key);
-                        var iv = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.iv);
-                        var mode = WebIM.config.encrypt.mode.toLowerCase();
+                        var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
+                        var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
+                        var mode = self.encrypt.mode.toLowerCase();
                         var option = {};
                         if(mode === 'cbc'){
                             option = {
@@ -1813,8 +1814,34 @@ connection.prototype.getUniqueId = function (prefix) {
     }
 };
 
-connection.prototype.send = function (message) {
+connection.prototype.send = function (messageSource) {
     var self = this;
+    var message = _.clone(messageSource);
+    if(message.type === 'txt'){
+        if (WebIM.config.encrypt.type === 'base64') {
+            message.msg = btoa(message.msg);
+        } else if (WebIM.config.encrypt.type === 'aes') {
+            var key = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.key);
+            var iv = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.iv);
+            var mode = WebIM.config.encrypt.mode.toLowerCase();
+            var option = {};
+            if (mode === 'cbc') {
+                option = {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                };
+            } else if (mode === 'ebc') {
+                option = {
+                    mode: CryptoJS.mode.ECB,
+                    padding: CryptoJS.pad.Pkcs7
+                }
+            }
+            var encryptedData = CryptoJS.AES.encrypt(message.msg, key, option);
+
+            message.msg = encryptedData.toString();
+        }
+    }
     if (this.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
