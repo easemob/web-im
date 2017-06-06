@@ -84,7 +84,6 @@ module.exports = React.createClass({
                 me.state.showEmoji && me.setState({showEmoji: false});
             }
         });
-        console.log('Send Message: ', msg);
 
         if (Demo.selectedCate === 'groups') {
             msg.setGroup(Demo.groupType);
