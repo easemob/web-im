@@ -64,7 +64,7 @@ WebIM.config = {
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
      */
-    isDebug: false,
+    isDebug: true,
     /**
      * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
      * won't auto connect if autoReconnectNumMax=0.
@@ -104,6 +104,13 @@ WebIM.config = {
 
     /**
      * Will encrypt text message and emoji message into base64 code
+     * if type equals to base64. Or encrypt text message and emoji message
+     * into aes code if type equals to aes
      */
-    base64: false
+    encrypt: {
+        type: 'aes',
+        mode: 'cBc',
+        key: 'easemob@@easemob',
+        iv: '0000000000000000',
+    }
 };

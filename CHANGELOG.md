@@ -5,11 +5,24 @@
 ###Feature
 
 * [sdk] debug.js融合到sdk当中，优化日志内容输出
+* [sdk] 屏蔽群消息推送
+* [sdk] 添加公开群
+* [sdk] 根据ID搜索公开群
+* [sdk] 群禁言
+* [sdk] 群解禁
+* [sdk] 设置群管理员
+* [sdk] 取消群管理员
+* [sdk] 新增创建群组的Rest接口 **createGroupNew**
+* [sdk] 新增分页获取公开群组的Rest接口
+* [demo] 聊天窗口中记录可清空
+* [demo] 查看聊天室成员
+* [demo] 通过链接直接打开与好友的对话框
 
 ###BugFix
 
 * [sdk] 添加好友会产生多余的订阅消息
 * [sdk] 频繁的发送消息会导致消息id重复的问题
+* [sdk] 适配SDK发送文件和图片的大小
 * [demo] 优化sdk/demo.html，修复某些依赖文件找不到的问题
 
 

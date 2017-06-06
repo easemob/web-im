@@ -10,6 +10,7 @@ var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
 var Notify = require('./components/common/notify');
 var _ = require('underscore');
+var CryptoJS = require('crypto-js');
 
 var Blacklist = (function () {
     var data = {};
@@ -395,9 +396,32 @@ module.exports = {
         if (!msg) {
             return;
         }
-        if(type === 'txt' && WebIM.config.base64){
-            if(msg.msg){
+        if(type === 'txt' && msg.msg){
+            if(WebIM.config.encrypt.type === 'base64'){
                 msg.msg = atob(msg.msg);
+            }
+            else if(WebIM.config.encrypt.type === 'aes'){
+                var key = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.key);
+                var iv = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.iv);
+                var mode = WebIM.config.encrypt.mode.toLowerCase();
+                if(mode === 'cbc'){
+                    option = {
+                        iv: iv,
+                        mode: CryptoJS.mode.CBC,
+                        padding: CryptoJS.pad.Pkcs7
+                    };
+                }else if(mode === 'ebc'){
+                    option = {
+                        mode: CryptoJS.mode.ECB,
+                        padding: CryptoJS.pad.Pkcs7
+                    }
+                }
+                var encryptedStr = msg.ext.encryptedStr;
+                var encryptedHexStr = CryptoJS.enc.Hex.parse(encryptedStr);
+                var encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+                var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+                var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+                msg.msg = decryptedStr;
             }
         }
         msg.from = msg.from || Demo.user;

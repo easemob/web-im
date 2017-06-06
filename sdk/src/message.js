@@ -1,3 +1,4 @@
+var CryptoJS = require('crypto-js');
 ;(function () {
     'use strict';
 
@@ -58,8 +59,42 @@
         this.body = {};
     };
     Message.txt.prototype.set = function (opt) {
-        if(WebIM.config.base64){
+        if(WebIM.config.encrypt.type === 'base64'){
             opt.msg = btoa(opt.msg);
+        }else if(WebIM.config.encrypt.type === 'aes'){
+            var key = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.key);
+            var iv = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.iv);
+            var mode = WebIM.config.encrypt.mode.toLowerCase();
+            var option = {};
+            if(mode === 'cbc'){
+                option = {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                };
+            }else if(mode === 'ebc'){
+                option = {
+                    mode: CryptoJS.mode.ECB,
+                    padding: CryptoJS.pad.Pkcs7
+                }
+            }
+            var encryptedData = CryptoJS.AES.encrypt(opt.msg, key, option);
+            console.log('AES: ', encryptedData.toString());
+            // 解密
+            var encryptedStr = encryptedData.ciphertext.toString();
+            console.log('encryptedStr: ', encryptedStr);
+            var encryptedHexStr = CryptoJS.enc.Hex.parse(encryptedStr);
+            console.log('encryptedHexStr: ', encryptedHexStr);
+            var encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+            console.log('encryptedBase64Str: ', encryptedBase64Str);
+            var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+            var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+            console.log('解密2：', decryptedStr);
+            opt.ext = {
+                encryptedStr: encryptedStr
+            };
+
+            opt.msg = encryptedData.toString();
         }
         this.value = opt.msg;
         this.body = {

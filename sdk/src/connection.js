@@ -5,6 +5,7 @@ var _msg = require('./message');
 var _message = _msg._msg;
 var _msgHash = {};
 var Queue = require('./queue').Queue;
+var CryptoJS = require('crypto-js');
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -669,7 +670,7 @@ var connection = function (options) {
     this.intervalId = null;   //clearInterval return value
     this.apiUrl = options.apiUrl || '';
     this.isWindowSDK = options.isWindowSDK || false;
-    this.base64 = options.base64 || false;
+    this.encrypt = options.encrypt || false;
 
     this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
     this.dnsIndex = 0;   //the dns ip used in dnsArr currently
@@ -1467,8 +1468,31 @@ connection.prototype.handleMessage = function (msginfo) {
             switch (type) {
                 case 'txt':
                     var receiveMsg = msgBody.msg;
-                    if(self.base64){
+                    if(self.encrypt.type === 'base64'){
                         receiveMsg = atob(receiveMsg);
+                    }else if(self.encrypt.type === 'aes'){
+                        var key = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.key);
+                        var iv = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.iv);
+                        var mode = WebIM.config.encrypt.mode.toLowerCase();
+                        var option = {};
+                        if(mode === 'cbc'){
+                            option = {
+                                iv: iv,
+                                mode: CryptoJS.mode.CBC,
+                                padding: CryptoJS.pad.Pkcs7
+                            };
+                        }else if(mode === 'ebc'){
+                            option = {
+                                mode: CryptoJS.mode.ECB,
+                                padding: CryptoJS.pad.Pkcs7
+                            }
+                        }
+                        var encryptedStr = extmsg.encryptedStr;
+                        var encryptedHexStr = CryptoJS.enc.Hex.parse(encryptedStr);
+                        var encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+                        var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+                        var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+                        receiveMsg = decryptedStr;
                     }
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
                     if (emojibody.isemoji) {
