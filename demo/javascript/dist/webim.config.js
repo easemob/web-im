@@ -82,7 +82,7 @@ WebIM.config = {
      */
     encrypt: {
         type: 'aes',
-        mode: 'cBc',
+        mode: 'ebc',
         key: 'easemob@@easemob',
         iv: '0000000000000000',
     }
