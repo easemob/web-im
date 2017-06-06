@@ -23,12 +23,12 @@ var CryptoJS = require('crypto-js');
     /*
      * Read Message
      */
-    Message.read = function(id){
+    Message.read = function (id) {
         this.id = id;
         this.type = 'read';
     };
 
-    Message.read.prototype.set = function(opt){
+    Message.read.prototype.set = function (opt) {
         this.body = {
             ackId: opt.id
             , to: opt.to
@@ -59,32 +59,26 @@ var CryptoJS = require('crypto-js');
         this.body = {};
     };
     Message.txt.prototype.set = function (opt) {
-        if(WebIM.config.encrypt.type === 'base64'){
+        if (WebIM.config.encrypt.type === 'base64') {
             opt.msg = btoa(opt.msg);
-        }else if(WebIM.config.encrypt.type === 'aes'){
+        } else if (WebIM.config.encrypt.type === 'aes') {
             var key = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.key);
             var iv = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.iv);
             var mode = WebIM.config.encrypt.mode.toLowerCase();
             var option = {};
-            if(mode === 'cbc'){
+            if (mode === 'cbc') {
                 option = {
                     iv: iv,
                     mode: CryptoJS.mode.CBC,
                     padding: CryptoJS.pad.Pkcs7
                 };
-            }else if(mode === 'ebc'){
+            } else if (mode === 'ebc') {
                 option = {
                     mode: CryptoJS.mode.ECB,
                     padding: CryptoJS.pad.Pkcs7
                 }
             }
             var encryptedData = CryptoJS.AES.encrypt(opt.msg, key, option);
-            var encryptedBase64Str = encryptedData.toString();
-            var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
-            var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
-            opt.ext = {
-                encryptedBase64Str: encryptedBase64Str
-            };
 
             opt.msg = encryptedData.toString();
         }
@@ -297,7 +291,7 @@ var CryptoJS = require('crypto-js');
             if (message.roomType) {
                 dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
             }
-            if(message.bodyId){
+            if (message.bodyId) {
                 dom.up().c('body').t(message.bodyId);
                 var delivery = {
                     xmlns: 'urn:xmpp:receipts'
@@ -305,7 +299,7 @@ var CryptoJS = require('crypto-js');
                 };
                 dom.up().c('delivery').t(_utils.stringify(delivery));
             }
-            if(message.ackId){
+            if (message.ackId) {
                 dom.up().c('body').t(message.ackId);
                 var read = {
                     xmlns: 'urn:xmpp:receipts'

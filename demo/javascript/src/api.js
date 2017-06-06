@@ -416,7 +416,7 @@ module.exports = {
                         padding: CryptoJS.pad.Pkcs7
                     }
                 }
-                var encryptedBase64Str = msg.ext.encryptedBase64Str;
+                var encryptedBase64Str = msg.msg;
                 var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
                 var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
                 msg.msg = decryptedStr;

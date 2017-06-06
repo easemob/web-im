@@ -77,7 +77,6 @@ module.exports = React.createClass({
                 // Demo.api.logout();
             },
             onTextMessage: function (message) {
-                console.log('Message: ', message);
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
