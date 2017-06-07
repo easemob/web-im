@@ -5,14 +5,14 @@
 ###Feature
 
 * [sdk] debug.js融合到sdk当中，优化日志内容输出
-* [sdk] 屏蔽群消息推送
+* [sdk] 屏蔽群消息推送（移动端有效）
 * [sdk] 添加公开群
 * [sdk] 根据ID搜索公开群
 * [sdk] 群禁言
 * [sdk] 群解禁
 * [sdk] 设置群管理员
 * [sdk] 取消群管理员
-* [sdk] 新增创建群组的Rest接口 **createGroupNew**
+* [sdk] 新增创建群组的Rest接口
 * [sdk] 新增分页获取公开群组的Rest接口
 * [demo] 聊天窗口中记录可清空
 * [demo] 查看聊天室成员

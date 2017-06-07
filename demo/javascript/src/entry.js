@@ -131,7 +131,8 @@ Demo.conn = new WebIM.connection({
     isHttpDNS: WebIM.config.isHttpDNS,
     isWindowSDK: WebIM.config.isWindowSDK,
     isAutoLogin: true,
-    encrypt: WebIM.config.encrypt
+    encrypt: WebIM.config.encrypt,
+    delivery: WebIM.config.delivery
 });
 
 Demo.api.render(document.getElementById('demo'));

@@ -328,20 +328,6 @@ module.exports = {
         }
     },
 
-    sendDelivery: function (message) {
-        if (!WebIM.config.delivery)
-            return;
-        // 收到消息时反馈一个已收到
-        var msgId = Demo.conn.getUniqueId();
-        var bodyId = message.id;
-        var msg = new WebIM.message('delivery', msgId);
-        msg.set({
-            id: bodyId
-            , to: message.from
-        });
-        Demo.conn.send(msg.body);
-    },
-
     sendRead: function (message) {
         if (!WebIM.config.read)
             return;

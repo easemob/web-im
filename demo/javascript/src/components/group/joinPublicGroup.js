@@ -42,33 +42,18 @@ var JoinPublicGroup = React.createClass({
     },
 
     joinGroup: function(){
-        var appKey = WebIM.config.appkey,
-            orgName = appKey.split('#')[0],
-            appName = appKey.split('#')[1],
-            uri = WebIM.utils.parseUri(),
-            username = uri.username,
-            token = WebIM.utils.getCookie()['webim_' + username];
-        var gid = this.state.gid,
-            options = {
-                url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/' + 'chatgroups' + '/' + gid + '/' + 'apply',
-                type: 'POST',
-                dataType: 'json',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json'
-                },
-                success: function(resp){
-                    console.log(resp);
-                    Demo.api.NotifySuccess('入群申请发送成功!');
-                },
-                error: function(e){
-                    if(e.type == 17){
-                        Demo.api.NotifyError('您已经在这个群组!');
-                    }
+        var options = {
+            groupId: this.state.gid,
+            success: function(resp){
+                Demo.api.NotifySuccess('入群申请发送成功!');
+            },
+            error: function(e){
+                if(e.type == 17){
+                    Demo.api.NotifyError('您已经在这个群组!');
                 }
-            };
-        WebIM.utils.ajax(options);
-        console.log('Join Group ' + gid + '!');
+            }
+        };
+        Demo.conn.joinGroup(options);
     },
 
     componentDidMount: function(){
@@ -90,29 +75,14 @@ var JoinPublicGroup = React.createClass({
             this.getGroupList();
         }
 
-        // console.log('Scroll Top: ', groups.scrollTop);
     },
 
     getGroupList: function(){
-        var appKey = WebIM.config.appkey,
-            orgName = appKey.split('#')[0],
-            appName = appKey.split('#')[1],
-            uri = WebIM.utils.parseUri(),
-            username = uri.username,
-            token = WebIM.utils.getCookie()['webim_' + username];
-
-        var requestData = [];
-        requestData['limit'] = 20;
-        this.state.cursor && (requestData['cursor'] = this.state.cursor);
+        var limit = 20,
+            cursor = this.state.cursor;
         var options = {
-            url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/publicchatgroups',
-            type: 'GET',
-            dataType: 'json',
-            data: requestData,
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
+            limit: limit,
+            cursor: cursor,
             success: function (resp) {
                 var groupData = resp.data,
                     groups = this.state.groups;
@@ -131,12 +101,9 @@ var JoinPublicGroup = React.createClass({
                     loading: false
                 });
             }.bind(this),
-            error: function (e) {
-
-            }
-        }
-
-        WebIM.utils.ajax(options);
+            error: function (e) {}
+        };
+        Demo.conn.listGroups(options);
     },
 
     close: function () {
@@ -151,23 +118,9 @@ var JoinPublicGroup = React.createClass({
         this.setState({
             bodyLoading: true
         });
-        var appKey = WebIM.config.appkey,
-            orgName = appKey.split('#')[0],
-            appName = appKey.split('#')[1],
-            uri = WebIM.utils.parseUri(),
-            username = uri.username,
-            token = WebIM.utils.getCookie()['webim_' + username];
-
         var options = {
-            url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/chatgroups/' + gid,
-            type: 'GET',
-            dataType: 'json',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
+            groupId: gid,
             success: function(resp){
-                console.log('groupDetail: ', resp);
                 var groupName = resp.data[0].name,
                     desc = resp.data[0].description,
                     owner = '',
@@ -195,7 +148,7 @@ var JoinPublicGroup = React.createClass({
 
             }.bind(this)
         };
-        WebIM.utils.ajax(options);
+        Demo.conn.getGroupInfo(options);
     },
 
     render: function () {

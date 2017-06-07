@@ -100,33 +100,10 @@ module.exports = React.createClass({
 
     shield: function(){
         var groupId = this.props.roomId;
-        var appKey = WebIM.config.appkey;
-        var ht = appKey.indexOf('#');
-        var orgName = appKey.substring(0, ht);
-        var appName = appKey.substring(ht+1);
-        groupId = 'notification_ignore_' + groupId;
-        var data = {
-            entities: []
-        };
-        data.entities[0] = {};
-        data.entities[0][groupId] = true;
-        var uri = WebIM.utils.parseUri();
-        var username = uri.username;
-        var token = WebIM.utils.getCookie()['webim_' + username];
         var options = {
-            type: 'PUT',
-            url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/' + 'users' + '/' + Demo.user,
-            data: JSON.stringify(data),
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
-            success: function(){
-                console.log('Shield Success!');
-            },
-            error: function(){
-                console.log('Shield Faild!');
-            }
+            groupId: groupId,
+            success: function () {},
+            error: function () {}
         };
         Demo.conn.shieldGroup(options);
     },

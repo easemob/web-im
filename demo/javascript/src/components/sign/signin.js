@@ -88,7 +88,6 @@ module.exports = React.createClass({
                 var encryptUsername = btoa(username);
                 encryptUsername = encryptUsername.replace(/=*$/g, "");
                 var token = token.access_token;
-                console.log('EncryptedUsername: ', encryptUsername, 'token: ', token);
                 var url = 'index.html?username=' + encryptUsername;
                 WebIM.utils.setCookie('webim_' + encryptUsername, token, 1);
                 window.history.pushState({}, 0, url);

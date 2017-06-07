@@ -33,18 +33,14 @@ module.exports = React.createClass({
                 name: curNode,
                 delFriend: me.delContactItem
             };
-            Demo.chatState['friends'].chatWindow.push( < ChatWindow
-            id = {'wrapper' +curNode}
-            key = {curNode}
-            {...
-                props
-            }
-            chatType = 'singleChat'
-            updateNode = {this.updateNode
-        }
-            className = {''} / >
-        )
-            ;
+            Demo.chatState['friends'].chatWindow.push(
+                <ChatWindow id = {'wrapper' +curNode}
+                            key = {curNode}
+                            {...props}
+                            chatType = 'singleChat'
+                            updateNode = {this.updateNode}
+                            className = {''} />
+            );
             window = Demo.chatState['friends'].chatWindow;
         }
 
@@ -81,7 +77,6 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 // 发送已送达回执
-                Demo.api.sendDelivery(message);
                 if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
@@ -93,7 +88,6 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
                 if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
@@ -105,7 +99,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+
                 if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
@@ -124,7 +118,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+
                 Demo.api.addToChatRecord(message, 'aud');
                 Demo.api.appendMsg(message, 'aud');
             },
@@ -132,7 +126,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+
                 Demo.api.addToChatRecord(message, 'loc');
                 Demo.api.appendMsg(message, 'loc');
             },
@@ -140,7 +134,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+
                 if (Demo.selected == message.from) {
                     // 发送已读回执
                     Demo.api.sendRead(message);
@@ -152,7 +146,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+
                 Demo.api.addToChatRecord(message, 'video');
                 Demo.api.appendMsg(message, 'video');
             },
@@ -163,7 +157,6 @@ module.exports = React.createClass({
                 me.handlePresence(message);
             },
             onRoster: function (message) {
-                console.log('ScareCrow update group');
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
@@ -697,19 +690,8 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('getGroup:' + errCode + ' ' + errMessage);
                 });
         } else {
-            var token = Demo.token;
             var options = {
-                url: WebIM.config.apiURL + '/' + Demo.orgName +
-                '/' + Demo.appName + '/' + 'users' + '/' +
-                Demo.user + '/' + 'joined_chatgroups',
-                dataType: 'json',
-                type: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json'
-                },
                 success: function (resp) {
-                    // console.log('Ajax ResponsData: ', resp);
                     var data = resp.data;
                     for(var i in data){
                         data[i]['name'] = data[i]['groupname'];
@@ -723,19 +705,7 @@ module.exports = React.createClass({
                     console.log('Ajax error');
                 }
             };
-            WebIM.utils.ajax(options);
-            // console.log('GetGroups2');
-            // Demo.conn.listRooms({
-            //     success: function (rooms) {
-            //         Demo.conn.setPresence();
-            //         console.log('Xmpp ResponsData: ', rooms);
-            //         me.setState({groups: rooms});
-            //     },
-            //     error: function (e) {
-            //         console.log('Xmpp error');
-            //         Demo.conn.setPresence();
-            //     }
-            // });
+            Demo.conn.getGroup(options);
         }
     },
 
@@ -838,86 +808,67 @@ module.exports = React.createClass({
                 case 'friends':
                     props.name = id;
                     props.delFriend = this.delContactItem;
-                    Demo.chatState[cate].chatWindow.push( < ChatWindow
-                    id = {'wrapper' +id}
-                    key = {id}
-                {...
-                    props
-                }
-                    chatType = 'singleChat'
-                    updateNode = {this.updateNode
-            }
-            className = {''} / >
-        )
-            ;
-            break;
-        case
-            'groups'
-        :
-            //createGroup is two step progresses.first send presence,second send iq.
-            //on first recv group list, the newest created one's roomId=name,
-            //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
-            for (var i = 0; i < this.state.groups.length; i++) {
-                if (id == this.state.groups[i].roomId) {
-                    props.name = this.state.groups[i].name;
-                    props.leaveGroup = this.delContactItem;
-                    props.destroyGroup = this.delContactItem;
-                    if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
-                        this.state.groups[i].name = Demo.createGroupName;
-                        Demo.createGroupName = '';
-                    }
-                    Demo.chatState[cate].chatWindow.push( < ChatWindow
-                    roomId = {id}
-                    id = {'wrapper' +id}
-                    key = {id}
-                    {...
-                        props
-                    }
-                    chatType = 'groupChat'
-                    className = {''} / >
-                )
-                    ;
+                    Demo.chatState[cate].chatWindow.push(
+                        <ChatWindow id = {'wrapper' +id}
+                                    key = {id}
+                                    {...props}
+                                    chatType = 'singleChat'
+                                    updateNode = {this.updateNode}
+                                    className = {''} />
+                    );
                     break;
-                }
-            }
-            break;
-        case
-            'chatrooms'
-        :
-            for (var i = 0; i < this.state.chatrooms.length; i++) {
-                if (id == this.state.chatrooms[i].id) {
-                    props.name = this.state.chatrooms[i].name;
-                    Demo.chatState[cate].chatWindow.push( < ChatWindow
-                    roomId = {id}
-                    id = {'wrapper' +id}
-                    key = {id}
-                    {...
-                        props
+                case 'groups':
+                    //createGroup is two step progresses.first send presence,second send iq.
+                    //on first recv group list, the newest created one's roomId=name,
+                    //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+                    for (var i = 0; i < this.state.groups.length; i++) {
+                        if (id == this.state.groups[i].roomId) {
+                            props.name = this.state.groups[i].name;
+                            props.leaveGroup = this.delContactItem;
+                            props.destroyGroup = this.delContactItem;
+                            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+                                this.state.groups[i].name = Demo.createGroupName;
+                                Demo.createGroupName = '';
+                            }
+                            Demo.chatState[cate].chatWindow.push(
+                                <ChatWindow roomId = {id}
+                                            id = {'wrapper' +id}
+                                            key = {id}
+                                            {...props}
+                                            chatType = 'groupChat'
+                                            className = {''} />
+                            );
+                            break;
+                        }
                     }
-                    chatType = 'chatRoom'
-                    className = {''} / >
-                )
-                    ;
-                }
-            }
+                    break;
+                case 'chatrooms':
+                    for (var i = 0; i < this.state.chatrooms.length; i++) {
+                        if (id == this.state.chatrooms[i].id) {
+                            props.name = this.state.chatrooms[i].name;
+                            Demo.chatState[cate].chatWindow.push(
+                                <ChatWindow roomId = {id}
+                                            id = {'wrapper' +id}
+                                            key = {id}
+                                            {...props}
+                                            chatType = 'chatRoom'
+                                            className = {''} />
+                            );
+                        }
+                    }
+                    break;
+                case 'strangers':
+                    props.name = id;
+                    Demo.chatState[cate].chatWindow.push(
+                        <ChatWindow id = {'wrapper' +id}
+                            key = {id}
+                            {...props}
+                            className = {''} />
+                    );
             break;
-        case
-            'strangers'
-        :
-            props.name = id;
-            Demo.chatState[cate].chatWindow.push( < ChatWindow
-            id = {'wrapper' +id}
-            key = {id}
-            {...
-                props
+                default:
+                    console.log('Default: ', cate);
             }
-            className = {''} / >
-        )
-            ;
-            break;
-        default:
-            console.log('Default: ', cate);
-        }
         }
     },
 
@@ -1112,7 +1063,6 @@ module.exports = React.createClass({
         }
     },
     sendFileImpl: function (type, chatType) {
-        //this.refs.file.click();
         var is_chatroom = Demo.selectedCate === 'chatrooms' ? "true" : "false";
         var is_group = (Demo.selectedCate === 'chatrooms' || Demo.selectedCate === 'groups') ? "groupchat" : "singlechat";
         WebIM.doQuery('{"type":"sendFileMessage","to":"' + Demo.selected + '","message_type":"' + type + '","group":"' + is_group + '","chatType":"' + chatType + '","roomType":"' + is_chatroom + '"}',
@@ -1178,7 +1128,6 @@ module.exports = React.createClass({
             },
             onFileUploadComplete: function (data) {
                 var url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
-                // var uir = (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
                 var option = {
                     data: url,
@@ -1206,69 +1155,38 @@ module.exports = React.createClass({
 
     render: function () {
         return (
-            < div
-        className = {this.props.show ? 'webim-chat' : 'webim-chat hide'
-    }>
-        <
-        LeftBar
-        cur = {this.state.cur
-    }
-        update = {this.update
-    }/>
-        <
-        Contact
-        cur = {this.state.cur
-    }
-        curNode = {this.state.curNode
-    }
-        updateNode = {this.updateNode
-    }
-        update = {this.update
-    }
-        friends = {this.state.friends
-    }
-        blacklist = {this.state.blacklist
-    }
-        groups = {this.state.groups
-    }
-        chatrooms = {this.state.chatrooms
-    }
-        strangers = {this.state.strangers
-    }
-        getChatroom = {this.getChatroom
-    }
-        loading = {this.state.contact_loading_show
-    }/>
-        {
-            this.state.window
-        }
-        <
-        input
-        ref = 'picture'
-        onChange = {this.pictureChange
-    }
-        type = 'file'
-        className = 'hide' / >
-            < input
-        ref = 'audio'
-        onChange = {this.audioChange
-    }
-        type = 'file'
-        className = 'hide' / >
-            < input
-        ref = 'file'
-        onChange = {this.fileChange
-    }
-        type = 'file'
-        className = 'hide' / >
-            < input
-        id = 'uploadShim'
-        type = 'file'
-        className = 'hide' / >
-            < div
-        ref = 'rtcWrapper' > < / div >
-            < / div >
-        )
-        ;
+            <div className = {this.props.show ? 'webim-chat' : 'webim-chat hide'}>
+                <LeftBar cur = {this.state.cur}
+                         update = {this.update}/>
+                <Contact cur = {this.state.cur}
+                         curNode = {this.state.curNode}
+                         updateNode = {this.updateNode}
+                         update = {this.update}
+                         friends = {this.state.friends}
+                         blacklist = {this.state.blacklist}
+                         groups = {this.state.groups}
+                         chatrooms = {this.state.chatrooms}
+                         strangers = {this.state.strangers}
+                         getChatroom = {this.getChatroom}
+                         loading = {this.state.contact_loading_show}/>
+                    {this.state.window}
+                <input ref = 'picture'
+                        onChange = {this.pictureChange}
+                        type = 'file'
+                        className = 'hide' />
+                <input ref = 'audio'
+                        onChange = {this.audioChange}
+                        type = 'file'
+                        className = 'hide' />
+                <input ref = 'file'
+                        onChange = {this.fileChange}
+                        type = 'file'
+                        className = 'hide' />
+                <input id = 'uploadShim'
+                        type = 'file'
+                        className = 'hide' />
+                <div ref = 'rtcWrapper'></div>
+            </div>
+        );
     }
 });

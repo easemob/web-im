@@ -27,33 +27,20 @@ var ConfirmGroupInfo = React.createClass({
     },
 
     verify: function(result){
-        var orgName = Demo.orgName,
-            appName = Demo.appName,
-            token = Demo.token,
-            gid = this.props.gid,
-            applicant = this.props.from,
-            requestData = {
-                "applicant": this.props.from,
-                "verifyResult": result,
-                "reason": "no clue"
-            };
-        console.log(orgName, appName, token, gid, applicant, result);
+        var applicant = this.props.from,
+            groupId = this.props.gid;
         var options = {
-            url: WebIM.config.apiURL + '/' + orgName + '/' + appName
-                    + '/' + 'chatgroups' + '/' + gid + '/' + 'apply_verify',
-            type: 'POST',
-            dataType: "json",
-            data: JSON.stringify(requestData),
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
+            applicant: applicant,
+            groupId: groupId,
             success: function(resp){
                 console.log(resp);
             }.bind(this),
             error: function(e){}
         };
-        WebIM.utils.ajax(options);
+        if(result)
+            Demo.conn.agreeJoinGroup(options);
+        else
+            Demo.conn.refuseJoinGroup(options);
         this.close();
     },
 
@@ -84,7 +71,6 @@ var ConfirmGroupInfo = React.createClass({
 
 module.exports = {
     show: function (msgInfo) {
-        console.log("Message info: ", msgInfo);
         ReactDOM.render(
             <ConfirmGroupInfo {...msgInfo} onClose={this.close}/>,
             dom

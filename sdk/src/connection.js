@@ -671,7 +671,12 @@ var connection = function (options) {
     this.intervalId = null;   //clearInterval return value
     this.apiUrl = options.apiUrl || '';
     this.isWindowSDK = options.isWindowSDK || false;
-    this.encrypt = options.encrypt || false;
+    this.encrypt = options.encrypt || {encrypt: {type: 'none'}};
+    this.delivery = options.delivery || false;
+    this.user = '';
+    this.orgName = '';
+    this.appName = '';
+    this.token = '';
 
     this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
     this.dnsIndex = 0;   //the dns ip used in dnsArr currently
@@ -953,6 +958,14 @@ connection.prototype.signup = function (options) {
 
 
 connection.prototype.open = function (options) {
+    var appkey = options.appKey,
+        orgName = appkey.split('#')[0],
+        appName = appkey.split('#')[1];
+    this.orgName = orgName;
+    this.appName = appName;
+    if (options.accessToken) {
+        this.token = options.accessToken;
+    }
     if (options.xmppURL) {
         this.url = _getXmppUrl(options.xmppURL, this.https);
     }
@@ -965,6 +978,7 @@ connection.prototype.open = function (options) {
 };
 
 connection.prototype.login = function (options) {
+    this.user = options.user;
     var pass = _validCheck(options, this);
 
     if (!pass) {
@@ -993,6 +1007,7 @@ connection.prototype.login = function (options) {
             conn.context.restTokenData = data;
             if (options.success)
                 options.success(data);
+            conn.token = data.access_token;
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
@@ -1276,25 +1291,25 @@ connection.prototype.handlePresence = function (msginfo) {
             info.type = "joinPublicGroupDeclined";
             info.owner = owner;
             info.gid = gid;
-        }else if(addAdmin && addAdmin.length > 0){
+        } else if (addAdmin && addAdmin.length > 0) {
             var gid = _parseNameFromJidFn(addAdmin[0].getAttribute('mucjid'));
             var owner = _parseNameFromJidFn(addAdmin[0].getAttribute('from'));
             info.owner = owner;
             info.gid = gid;
             info.type = "addAdmin";
-        }else if(removeAdmin && removeAdmin.length > 0){
+        } else if (removeAdmin && removeAdmin.length > 0) {
             var gid = _parseNameFromJidFn(removeAdmin[0].getAttribute('mucjid'));
             var owner = _parseNameFromJidFn(removeAdmin[0].getAttribute('from'));
             info.owner = owner;
             info.gid = gid;
             info.type = "removeAdmin";
-        }else if(addMute && addMute.length > 0){
+        } else if (addMute && addMute.length > 0) {
             var gid = _parseNameFromJidFn(addMute[0].getAttribute('mucjid'));
             var owner = _parseNameFromJidFn(addMute[0].getAttribute('from'));
             info.owner = owner;
             info.gid = gid;
             info.type = "addMute";
-        }else if(removeMute && removeMute.length > 0){
+        } else if (removeMute && removeMute.length > 0) {
             var gid = _parseNameFromJidFn(removeMute[0].getAttribute('mucjid'));
             var owner = _parseNameFromJidFn(removeMute[0].getAttribute('from'));
             info.owner = owner;
@@ -1330,19 +1345,19 @@ connection.prototype.handlePresence = function (msginfo) {
         if (/subscribe/.test(info.type)) {
             //subscribe | subscribed | unsubscribe | unsubscribed
         } else if (type == ""
-                    &&
-                    !info.status
-                    &&
-                    !info.error
-                    &&
-                    !isCreate
-                    &&
-                    !isApply
-                    &&
-                    !isMemberJoin
-                    &&
-                    !isDecline
-                    ) {
+            &&
+            !info.status
+            &&
+            !info.error
+            &&
+            !isCreate
+            &&
+            !isApply
+            &&
+            !isMemberJoin
+            &&
+            !isDecline
+        ) {
             console.log(2222222, msginfo, info, isApply);
             // info.type = 'joinPublicGroupSuccess';
         } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
@@ -1469,20 +1484,20 @@ connection.prototype.handleMessage = function (msginfo) {
             switch (type) {
                 case 'txt':
                     var receiveMsg = msgBody.msg;
-                    if(self.encrypt.type === 'base64'){
+                    if (self.encrypt.type === 'base64') {
                         receiveMsg = atob(receiveMsg);
-                    }else if(self.encrypt.type === 'aes'){
+                    } else if (self.encrypt.type === 'aes') {
                         var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
                         var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
                         var mode = self.encrypt.mode.toLowerCase();
                         var option = {};
-                        if(mode === 'cbc'){
+                        if (mode === 'cbc') {
                             option = {
                                 iv: iv,
                                 mode: CryptoJS.mode.CBC,
                                 padding: CryptoJS.pad.Pkcs7
                             };
-                        }else if(mode === 'ebc'){
+                        } else if (mode === 'ebc') {
                             option = {
                                 mode: CryptoJS.mode.ECB,
                                 padding: CryptoJS.pad.Pkcs7
@@ -1658,6 +1673,16 @@ connection.prototype.handleMessage = function (msginfo) {
                     break;
             }
             ;
+            if (self.delivery) {
+                var msgId = self.getUniqueId();
+                var bodyId = msg.id;
+                var deliverMessage = new WebIM.message('delivery', msgId);
+                deliverMessage.set({
+                    id: bodyId
+                    , to: msg.from
+                });
+                self.send(deliverMessage);
+            }
         } catch (e) {
             this.onError({
                 type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
@@ -1816,14 +1841,16 @@ connection.prototype.getUniqueId = function (prefix) {
 
 connection.prototype.send = function (messageSource) {
     var self = this;
-    var message = _.clone(messageSource);
-    if(message.type === 'txt'){
-        if (WebIM.config.encrypt.type === 'base64') {
+    var message = messageSource;
+    if (message.type === 'txt') {
+        if (this.encrypt.type === 'base64') {
+            message = _.clone(messageSource);
             message.msg = btoa(message.msg);
-        } else if (WebIM.config.encrypt.type === 'aes') {
-            var key = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.key);
-            var iv = CryptoJS.enc.Utf8.parse(WebIM.config.encrypt.iv);
-            var mode = WebIM.config.encrypt.mode.toLowerCase();
+        } else if (this.encrypt.type === 'aes') {
+            message = _.clone(messageSource);
+            var key = CryptoJS.enc.Utf8.parse(this.encrypt.key);
+            var iv = CryptoJS.enc.Utf8.parse(this.encrypt.iv);
+            var mode = this.encrypt.mode.toLowerCase();
             var option = {};
             if (mode === 'cbc') {
                 option = {
@@ -3114,10 +3141,23 @@ connection.prototype.createGroup = function (options) {
     this.sendCommand(pres.tree());
 };
 // 通过Rest接口创建群组
-connection.prototype.createGroupNew = function (options) {
+connection.prototype.createGroupNew = function (opt) {
+    opt.data.owner = this.user;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups',
+        dataType: 'json',
+        type: 'POST',
+        data: JSON.stringify(opt.data),
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
     options.success = function (respData) {
+        opt.success(respData);
         this.onCreateGroup(respData);
     }.bind(this);
+    options.error = opt.error || _utils.emptyfn;
     WebIM.utils.ajax(options);
 };
 
@@ -3127,7 +3167,372 @@ connection.prototype.createGroupNew = function (options) {
  * @param v
  * @private
  */
-connection.prototype.shieldGroup = function (options) {
+// 通过Rest屏蔽群组
+connection.prototype.shieldGroup = function (opt) {
+    var groupId = opt.groupId;
+    groupId = 'notification_ignore_' + groupId;
+    var data = {
+        entities: []
+    };
+    data.entities[0] = {};
+    data.entities[0][groupId] = true;
+    var options = {
+        type: 'PUT',
+        url: this.apiUrl + '/' + this.orgName + '/'
+        + this.appName + '/' + 'users' + '/' + this.user,
+        data: JSON.stringify(data),
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+// 通过Rest发出入群申请
+connection.prototype.joinGroup = function (opt) {
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/'
+        + this.appName + '/' + 'chatgroups' + '/' + opt.groupId + '/' + 'apply',
+        type: 'POST',
+        dataType: 'json',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+// 通过Rest获取群组列表
+connection.prototype.listGroups = function (opt) {
+    var requestData = [];
+    requestData['limit'] = opt.limit;
+    requestData['cursor'] = opt.cursor;
+    if (!requestData['cursor'])
+        delete requestData['cursor'];
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/publicchatgroups',
+        type: 'GET',
+        dataType: 'json',
+        data: requestData,
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest根据groupid获取群组详情
+connection.prototype.getGroupInfo = function (opt) {
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups/' + opt.groupId,
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest列出某用户所加入的所有群组
+connection.prototype.getGroup = function (opt) {
+    var options = {
+        url: this.apiUrl + '/' + this.orgName +
+        '/' + this.appName + '/' + 'users' + '/' +
+        this.user + '/' + 'joined_chatgroups',
+        dataType: 'json',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest列出群组的所有成员
+connection.prototype.listGroupMember = function (opt) {
+    var requestData = [],
+        groupId = opt.groupId;
+    requestData['pagenum'] = opt.pageNum;
+    requestData['pagesize'] = opt.pageSize;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
+        + '/' + groupId + '/users',
+        dataType: 'json',
+        type: 'GET',
+        data: requestData,
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest禁止群用户发言
+connection.prototype.mute = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {
+            "usernames": [opt.username],
+            "mute_duration": opt.muteDuration
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
+            + '/' + groupId + '/' + 'mute',
+            dataType: 'json',
+            type: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(requestData)
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest取消对用户禁言的禁止
+connection.prototype.removeMute = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
+        + '/' + groupId + '/' + 'mute' + '/' + username,
+        dataType: 'json',
+        type: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest获取群组下所有管理员
+connection.prototype.getGroupAdmin = function (opt) {
+    var groupId = opt.groupId;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
+        + '/' + groupId + '/admin',
+        dataType: 'json',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest获取群组下所有被禁言成员
+connection.prototype.getMuted = function (opt) {
+    var groupId = opt.groupId;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
+        + '/' + groupId + '/mute',
+        dataType: 'json',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest设置群管理员
+connection.prototype.setAdmin = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {
+            newadmin: opt.username
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
+            + '/' + groupId + '/' + 'admin',
+            type: "POST",
+            dataType: 'json',
+            data: JSON.stringify(requestData),
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest取消群管理员
+connection.prototype.removeAdmin = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
+            + '/' + groupId + '/' + 'admin' + '/' + username,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest同意用户加入群
+connection.prototype.agreeJoinGroup = function (opt) {
+    console.log('Agree Join Group New');
+    var groupId = opt.groupId,
+        requestData = {
+            "applicant": opt.applicant,
+            "verifyResult": true,
+            "reason": "no clue"
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'apply_verify',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(requestData),
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest拒绝用户加入群
+connection.prototype.refuseJoinGroup = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {
+            "applicant": opt.applicant,
+            "verifyResult": false,
+            "reason": "no clue"
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'apply_verify',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(requestData),
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest添加用户至群组黑名单(单个)
+connection.prototype.groupBlockSingle = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
+            + 'users' + '/' + username,
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest添加用户至群组黑名单(批量)
+connection.prototype.groupBlockMulti = function (opt) {
+    var groupId = opt.groupId,
+        usernames = opt.usernames,
+        requestData = {
+            usernames: usernames
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
+            + 'users',
+            data: JSON.stringify(requestData),
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest将用户从群黑名单移除（单个）
+connection.prototype.removeGroupBlockSingle = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
+            + 'users' + '/' + username,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest将用户从群黑名单移除（批量）
+connection.prototype.removeGroupBlockMulti = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username.join(','),
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
+            + 'users' + '/' + username,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
     WebIM.utils.ajax(options);
 };
 

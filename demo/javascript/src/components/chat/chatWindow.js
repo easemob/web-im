@@ -107,19 +107,12 @@ module.exports = React.createClass({
                         Demo.api.NotifyError("listMember:" + errCode + ' ' + errMessage);
                     });
             } else {
-                var requestData = [];
-                requestData['pagenum'] = 1;
-                requestData['pagesize'] = 1000;
+                var pageNum = 1,
+                    pageSize = 1000;
                 var options = {
-                    url: WebIM.config.apiURL + '/' + Demo.orgName + '/' + Demo.appName + '/chatgroups'
-                        + '/' + Demo.selected + '/users',
-                    dataType: 'json',
-                    type: 'GET',
-                    data: requestData,
-                    headers: {
-                        'Authorization': 'Bearer ' + Demo.token,
-                        'Content-Type': 'application/json'
-                    },
+                    pageNum: pageNum,
+                    pageSize: pageSize,
+                    groupId: Demo.selected,
                     success: function (resp) {
                         var data = resp.data, admin;
                         for(var i in data){
@@ -136,7 +129,7 @@ module.exports = React.createClass({
                     }.bind(this),
                     error: function(e){}
                 };
-                WebIM.utils.ajax(options);
+                Demo.conn.listGroupMember(options);
             }
         } else {
             this.setState({members: [], memberShowStatus: false});
@@ -144,41 +137,51 @@ module.exports = React.createClass({
     },
 
     addToGroupBlackList: function (username, index) {
-        var me = this;
         var members = this.state.members;
-        var item = _.find(this.state.members, function (item) {
-            return new RegExp(Demo.user).test(item.jid);
-        });
-
-        Demo.api.blacklist.addGroupMemberToBlacklist({
-            to: username,
-            roomId: this.props.roomId,
-            affiliation: item.affiliation,
+        var options = {
+            groupId: Demo.selected,
+            username: username,
             success: function () {
-                members.splice(index, 1);
-                me.setState({
-                    members: members
-                })
-            }
-        });
+                for (var i in members){
+                    if(members[i]['member'] && members[i]['member'] === username){
+                        delete members[i];
+                        break;
+                    }
+                }
+                this.setState({members: members});
+            }.bind(this),
+            error: function(){}
+        };
+        Demo.conn.groupBlockSingle(options);
+        /*
+        username = [];
+        username['1qaz'] = true;
+        username['lxj111'] = true;
+        var usernames = ['1qaz', 'lxj111'];
+        var options = {
+            groupId: Demo.selected,
+            usernames: usernames,
+            success: function () {
+                for (var i in members){
+                    if(members[i]['member'] && username[members[i]['member']]){
+                        delete members[i];
+                    }
+                }
+                this.setState({members: members});
+            }.bind(this),
+            error: function(){}
+        };
+        Demo.conn.groupBlockMulti(options);
+        */
     },
 
     // TODO: 群禁言、群升降级
-    ban: function (username) {
-        var requestData = {
-            "usernames":[username],
-            "mute_duration":86400000
-        };
+    mute: function (username) {
+        var muteDuration = 886400000;
         var options = {
-            url: WebIM.config.apiURL + '/' + Demo.orgName + '/' + Demo.appName + '/' + 'chatgroups'
-            + '/' + Demo.selected + '/' + 'mute',
-            dataType: 'json',
-            type: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + Demo.token,
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(requestData),
+            username: username,
+            muteDuration: muteDuration,
+            groupId: Demo.selected,
             success: function (resp) {
                 var members = this.state.members;
                 for(var i in members){
@@ -193,20 +196,14 @@ module.exports = React.createClass({
             }.bind(this),
             error: function(e){}
         };
-        WebIM.utils.ajax(options);
+        Demo.conn.mute(options);
     },
 
     // 移除禁言
-    removeBan: function(username){
+    removeMute: function(username){
         var options = {
-            url: WebIM.config.apiURL + '/' + Demo.orgName + '/' + Demo.appName + '/' + 'chatgroups'
-            + '/' + Demo.selected + '/' + 'mute' + '/' + username,
-            dataType: 'json',
-            type: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + Demo.token,
-                'Content-Type': 'application/json'
-            },
+            groupId: Demo.selected,
+            username: username,
             success: function(resp){
                 var members = this.state.members;
                 for(var i in members){
@@ -223,19 +220,12 @@ module.exports = React.createClass({
 
             }
         };
-        WebIM.utils.ajax(options);
+        Demo.conn.removeMute(options);
     },
 
     getAdmin: function(data){
         var options = {
-            url: WebIM.config.apiURL + '/' + Demo.orgName + '/' + Demo.appName + '/chatgroups'
-            + '/' + Demo.selected + '/admin',
-            dataType: 'json',
-            type: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + Demo.token,
-                'Content-Type': 'application/json'
-            },
+            groupId: Demo.selected,
             success: function (resp) {
                 var admin = resp.data;
                 for(var j in admin){
@@ -250,23 +240,16 @@ module.exports = React.createClass({
                         }
                     }
                 }
-                this.getBanned(data);
+                this.getMuted(data);
             }.bind(this),
             error: function(e){}
         };
-        WebIM.utils.ajax(options);
+        Demo.conn.getGroupAdmin(options);
     },
 
-    getBanned: function(data){
+    getMuted: function(data){
         var options = {
-            url: WebIM.config.apiURL + '/' + Demo.orgName + '/' + Demo.appName + '/chatgroups'
-            + '/' + Demo.selected + '/mute',
-            dataType: 'json',
-            type: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + Demo.token,
-                'Content-Type': 'application/json'
-            },
+            groupId: Demo.selected,
             success: function (resp) {
                 var muted = resp.data;
                 for(var i in muted){
@@ -286,29 +269,14 @@ module.exports = React.createClass({
             }.bind(this),
             error: function(e){}
         };
-        WebIM.utils.ajax(options);
+        Demo.conn.getMuted(options);
     },
 
     setAdmin: function (username) {
-        var appName = Demo.appName,
-            orgName = Demo.orgName,
-            token = Demo.token;
-
-        var requestData = {
-            newadmin: username
-        };
-
         // 设置管理员
         var options = {
-            url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/'+ 'chatgroups'
-                + '/' + Demo.selected + '/' + 'admin',
-            type: "POST",
-            dataType: 'json',
-            data: JSON.stringify(requestData),
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
+            groupId: Demo.selected,
+            username: username,
             success: function(resp){
                 var members = this.state.members;
                 for(var i in members){
@@ -324,7 +292,7 @@ module.exports = React.createClass({
             error: function(e){
             }.bind(this)
         };
-        WebIM.utils.ajax(options);
+        Demo.conn.setAdmin(options);
     },
 
     removeAdmin: function (username) {
@@ -332,14 +300,8 @@ module.exports = React.createClass({
         var me = this;
         // 取消管理员
         var options = {
-            url: WebIM.config.apiURL + '/' + Demo.orgName + '/' + Demo.appName + '/'+ 'chatgroups'
-            + '/' + Demo.selected + '/' + 'admin' + '/' + username,
-            type: 'DELETE',
-            dataType: 'json',
-            headers: {
-                'Authorization': 'Bearer ' + Demo.token,
-                'Content-Type': 'application/json'
-            },
+            groupId: Demo.selected,
+            username: username,
             success: function(resp){
                 var members = me.state.members;
                 for(var i in members){
@@ -357,8 +319,7 @@ module.exports = React.createClass({
             error: function (e) {
             }
         };
-
-        WebIM.utils.ajax(options);
+        Demo.conn.removeAdmin(options);
     },
 
     refreshMemberList: function (members) {
@@ -426,8 +387,8 @@ module.exports = React.createClass({
                             style={{display: affiliation == 'owner' ? 'none' : ''}}>
                         <i className={"webim-leftbar-icon font smaller " + className}
                             style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={isMuted?this.removeBan.bind(this, username) : this.ban.bind(this, username)}
-                            title={Demo.lan.ban}>{isMuted?'e':'f'}</i>
+                            onClick={isMuted?this.removeMute.bind(this, username) : this.mute.bind(this, username)}
+                            title={Demo.lan.mute}>{isMuted?'e':'f'}</i>
                             </div>
                             <div className="webim-operation-icon"
                             style={{display: affiliation == 'owner' ? 'none' : ''}}>
@@ -454,8 +415,8 @@ module.exports = React.createClass({
                             style={{display: affiliation == 'owner' ? 'none' : ''}}>
                         <i className={"webim-leftbar-icon font smaller " + className}
                             style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={isMuted?this.removeBan.bind(this, username) : this.ban.bind(this, username)}
-                            title={Demo.lan.ban}>{isMuted?'e':'f'}</i>
+                            onClick={isMuted?this.removeMute.bind(this, username) : this.mute.bind(this, username)}
+                            title={Demo.lan.mute}>{isMuted?'e':'f'}</i>
                             </div>
                             <div className="webim-operation-icon"
                             style={{display: affiliation == 'owner' ? 'none' : ''}}>
