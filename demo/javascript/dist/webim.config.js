@@ -103,14 +103,13 @@ WebIM.config = {
     read: true,
 
     /**
-     * Will encrypt text message and emoji message into base64 code
-     * if type equals to base64. Or encrypt text message and emoji message
-     * into aes code if type equals to aes
+     * Will encrypt text message and emoji message
+     * {type:'none'}   no encrypt
+     * {type:'base64'} encrypt with base64
+     * {type:'aes',mode: 'ebc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(ebc)
+     * {type:'aes',mode: 'cbc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(cbc)
      */
     encrypt: {
-        type: 'aes',
-        mode: 'ebc',
-        key: 'easemob@@easemob',
-        iv: '0000000000000000',
+        type: 'none'
     }
 };
