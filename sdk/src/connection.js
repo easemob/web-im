@@ -1681,7 +1681,7 @@ connection.prototype.handleMessage = function (msginfo) {
                     id: bodyId
                     , to: msg.from
                 });
-                self.send(deliverMessage);
+                self.send(deliverMessage.body);
             }
         } catch (e) {
             this.onError({

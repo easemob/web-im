@@ -47,7 +47,7 @@ var CryptoJS = require('crypto-js');
         this.body = {
             bodyId: opt.id
             , to: opt.to
-        }
+        };
     };
 
     /*
