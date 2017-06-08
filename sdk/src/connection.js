@@ -380,7 +380,6 @@ var _handleMessageQueue = function (conn) {
 };
 
 var _loginCallback = function (status, msg, conn) {
-    // console.log('stropheConn.connected status=', status, msg)
     var conflict, error;
 
     if (msg === 'conflict') {
@@ -404,6 +403,7 @@ var _loginCallback = function (status, msg, conn) {
             conn.handelSendQueue();
         }, 200);
         var handleMessage = function (msginfo) {
+            console.log("MessageInfo: ", msginfo);
             var delivery = msginfo.getElementsByTagName('delivery');
             var acked = msginfo.getElementsByTagName('acked');
             if (delivery.length) {

@@ -18,7 +18,7 @@ module.exports = React.createClass({
 
         var uri = WebIM.utils.parseUri();
         var curNode = uri.curNode;
-        var window = [];
+        var windows = [];
         if (curNode) {
             Demo.selected = curNode;
             if (Demo.chatState['friends']) {
@@ -41,7 +41,7 @@ module.exports = React.createClass({
                             updateNode = {this.updateNode}
                             className = {''} />
             );
-            window = Demo.chatState['friends'].chatWindow;
+            windows = Demo.chatState['friends'].chatWindow;
         }
 
 
@@ -76,7 +76,6 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                console.log('ScareCrow: ', Demo.selected, message);
                 if (Demo.selected == message.from) {
                     console.log("Read");
                     // 发送已读回执
@@ -307,7 +306,7 @@ module.exports = React.createClass({
             blacklist: {},
             chatrooms_totalnum: Demo.api.pagesize,
             contact_loading_show: false,
-            window: window
+            windows: windows
         };
     },
 
@@ -670,7 +669,7 @@ module.exports = React.createClass({
                     if (flag)
                         me.setState({friends: friends});
                     else
-                        me.setState({friends: friends, window: []});
+                        me.setState({friends: friends, windows: []});
                     doNotUpdateGroup || me.getGroup();
                 }
             });
@@ -878,9 +877,9 @@ module.exports = React.createClass({
     setChatWindow: function (show) {
         var cate = Demo.selectedCate;
         if (!show) {
-            this.setState({window: []});
+            this.setState({windows: []});
         } else {
-            this.setState({window: Demo.chatState[cate].chatWindow});
+            this.setState({windows: Demo.chatState[cate].chatWindow});
         }
     },
 
@@ -1172,7 +1171,7 @@ module.exports = React.createClass({
                          strangers = {this.state.strangers}
                          getChatroom = {this.getChatroom}
                          loading = {this.state.contact_loading_show}/>
-                    {this.state.window}
+                    {this.state.windows}
                 <input ref = 'picture'
                         onChange = {this.pictureChange}
                         type = 'file'
