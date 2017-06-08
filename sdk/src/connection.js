@@ -411,6 +411,7 @@ var _loginCallback = function (status, msg, conn) {
                 return true;
             }
             if (acked.length) {
+                console.log("Acked");
                 conn.handleAckedMessage(msginfo);
                 return true;
             }

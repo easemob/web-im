@@ -76,8 +76,9 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                // 发送已送达回执
+                console.log('ScareCrow: ', Demo.selected, message);
                 if (Demo.selected == message.from) {
+                    console.log("Read");
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
@@ -251,22 +252,27 @@ module.exports = React.createClass({
             },
             onDeliveredMessage: function (message) {
                 var msg = document.getElementsByName(message.mid);
-                if (msg) {
-                    if (msg[0])
-                        msg[0].innerHTML = '已送达';
-                }
                 // 记录消息的状态
                 for (var targetId in Demo.chatRecord) {
-                    if (Demo.chatRecord[targetId].messages[message.mid]) {
+                    if (Demo.chatRecord[targetId].messages[message.mid]
+                        && Demo.chatRecord[targetId].messages[message.mid].status != 'Read') {
+                        if (msg) {
+                            if (msg[0])
+                                msg[0].innerHTML = '已送达';
+                        }
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
                     }
                 }
             },
             onReadMessage: function (message) {
+                console.log("onReadMessage", message);
                 var msg = document.getElementsByName(message.mid);
                 if (msg) {
-                    if (msg[0])
+                    console.log(1);
+                    if (msg[0]){
+                        console.log(2);
                         msg[0].innerHTML = '已读';
+                    }
                 }
                 // 记录消息的状态
                 for (var targetId in Demo.chatRecord) {
