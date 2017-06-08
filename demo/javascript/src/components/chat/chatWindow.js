@@ -385,17 +385,17 @@ module.exports = React.createClass({
                             </div>
                             <div className="webim-operation-icon"
                             style={{display: affiliation == 'owner' ? 'none' : ''}}>
-                        <i className={"webim-leftbar-icon font smaller " + className}
-                            style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={isMuted?this.removeMute.bind(this, username) : this.mute.bind(this, username)}
-                            title={Demo.lan.mute}>{isMuted?'e':'f'}</i>
-                            </div>
-                            <div className="webim-operation-icon"
-                            style={{display: affiliation == 'owner' ? 'none' : ''}}>
-                        <i className={"webim-leftbar-icon font smaller " + className}
-                            style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={isAdmin ? this.removeAdmin.bind(this, username) : this.setAdmin.bind(this, username)}
-                            title={Demo.lan.rmAdministrator}>&darr;</i>
+                        {/*<i className={"webim-leftbar-icon font smaller " + className}*/}
+                                {/*style={{display: this.state.admin != 1 ? 'none' : ''}}*/}
+                                {/*onClick={isMuted?this.removeMute.bind(this, username) : this.mute.bind(this, username)}*/}
+                                {/*title={Demo.lan.mute}>{isMuted?'e':'f'}</i>*/}
+                                {/*</div>*/}
+                                {/*<div className="webim-operation-icon"*/}
+                                {/*style={{display: affiliation == 'owner' ? 'none' : ''}}>*/}
+                                {/*<i className={"webim-leftbar-icon font smaller " + className}*/}
+                                {/*style={{display: this.state.admin != 1 ? 'none' : ''}}*/}
+                                {/*onClick={isAdmin ? this.removeAdmin.bind(this, username) : this.setAdmin.bind(this, username)}*/}
+                                {/*title={Demo.lan.rmAdministrator}>&darr;</i>*/}
                     </div>
                 </li>);
             }else{
@@ -413,17 +413,17 @@ module.exports = React.createClass({
                             </div>
                             <div className="webim-operation-icon"
                             style={{display: affiliation == 'owner' ? 'none' : ''}}>
-                        <i className={"webim-leftbar-icon font smaller " + className}
-                            style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={isMuted?this.removeMute.bind(this, username) : this.mute.bind(this, username)}
-                            title={Demo.lan.mute}>{isMuted?'e':'f'}</i>
-                            </div>
-                            <div className="webim-operation-icon"
-                            style={{display: affiliation == 'owner' ? 'none' : ''}}>
-                        <i className={"webim-leftbar-icon font smaller " + className}
-                            style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={isAdmin ? this.removeAdmin.bind(this, username) : this.setAdmin.bind(this, username)}
-                            title={Demo.lan.administrator}>&uarr;</i>
+                        {/*<i className={"webim-leftbar-icon font smaller " + className}*/}
+                            {/*style={{display: this.state.admin != 1 ? 'none' : ''}}*/}
+                            {/*onClick={isMuted?this.removeMute.bind(this, username) : this.mute.bind(this, username)}*/}
+                            {/*title={Demo.lan.mute}>{isMuted?'e':'f'}</i>*/}
+                            {/*</div>*/}
+                            {/*<div className="webim-operation-icon"*/}
+                            {/*style={{display: affiliation == 'owner' ? 'none' : ''}}>*/}
+                        {/*<i className={"webim-leftbar-icon font smaller " + className}*/}
+                            {/*style={{display: this.state.admin != 1 ? 'none' : ''}}*/}
+                            {/*onClick={isAdmin ? this.removeAdmin.bind(this, username) : this.setAdmin.bind(this, username)}*/}
+                            {/*title={Demo.lan.administrator}>&uarr;</i>*/}
                     </div>
                 </li>);
             }
