@@ -390,9 +390,12 @@ module.exports = {
         var brief = '',
             data = msg.data || msg.msg || '',
             name = this.sendByMe ? Demo.user : msg.from,
-            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
-            targetNode = document.getElementById('wrapper' + targetId),
-            isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
+            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
+        var targetNode = document.getElementById('wrapper' + targetId)
+        if (targetNode == null) {
+            return
+        }
+        var isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
         // TODO: ios/android client doesn't encodeURIComponent yet
         if (typeof data === "string" && WebIM.config.isWindowSDK) {
