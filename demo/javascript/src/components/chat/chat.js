@@ -265,12 +265,9 @@ module.exports = React.createClass({
                 }
             },
             onReadMessage: function (message) {
-                console.log("onReadMessage", message);
                 var msg = document.getElementsByName(message.mid);
                 if (msg) {
-                    console.log(1);
                     if (msg[0]){
-                        console.log(2);
                         msg[0].innerHTML = '已读';
                     }
                 }
