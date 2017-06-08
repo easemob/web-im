@@ -297,6 +297,42 @@ var _parseFriend = function (queryTag, conn, from) {
     return rouster;
 };
 
+var _getAESKey = function (options, conn) {
+    // console.log(options)
+    // console.log('_getAESKey')
+    var self = this;
+    var suc = function (resp, xhr) {
+        console.log('suc')
+        console.log(resp)
+        //{"algorithm": "AES", "mode": "ECB", "padding": "PKCS5Padding", "key": "easemob@@easemob"}
+        conn.encrypt.mode = resp.data.mode.toLowerCase()
+        conn.encrypt.key = CryptoJS.enc.Utf8.parse(resp.data.key)
+        conn.encrypt.iv = CryptoJS.enc.Utf8.parse('0000000000000000')
+        _login(options, conn)
+    };
+    var error = function (res, xhr, msg) {
+        console.log('error')
+        console.log(res)
+
+    };
+
+    // console.log(conn)
+    var apiUrl = conn.context.apiUrl;
+    var appName = conn.context.appName;
+    var orgName = conn.context.orgName;
+    var options2 = {
+        url: apiUrl + '/' + orgName + '/' + appName + '/encrypt_info',
+        dataType: 'json',
+        type: 'GET',
+        headers: {'Authorization': 'Bearer ' + conn.context.accessToken},
+        success: suc || _utils.emptyfn,
+        error: error || _utils.emptyfn
+    };
+    _utils.ajax(options2);
+
+}
+
+
 var _login = function (options, conn) {
     var accessToken = options.access_token || '';
     if (accessToken == '') {
@@ -309,6 +345,13 @@ var _login = function (options, conn) {
     }
     conn.context.accessToken = options.access_token;
     conn.context.accessTokenExpires = options.expires_in;
+
+    if (conn.encrypt.type === 'aes' && !conn.encrypt.mode) {
+        _getAESKey(options, conn)
+        return
+    }
+
+
     var stropheConn = null;
     if (conn.isOpening() && conn.context.stropheConn) {
         stropheConn = conn.context.stropheConn;
@@ -670,6 +713,7 @@ var connection = function (options) {
     this.sendQueue = new Queue();  //instead of sending message immediately,cache them in this queue
     this.intervalId = null;   //clearInterval return value
     this.apiUrl = options.apiUrl || '';
+    this.context.apiUrl = this.apiUrl;
     this.isWindowSDK = options.isWindowSDK || false;
     this.encrypt = options.encrypt || {encrypt: {type: 'none'}};
     this.delivery = options.delivery || false;
@@ -1487,17 +1531,17 @@ connection.prototype.handleMessage = function (msginfo) {
                     if (self.encrypt.type === 'base64') {
                         receiveMsg = atob(receiveMsg);
                     } else if (self.encrypt.type === 'aes') {
-                        var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
-                        var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
-                        var mode = self.encrypt.mode.toLowerCase();
+                        var key = self.encrypt.key
+                        var iv = self.encrypt.iv
+                        var mode = self.encrypt.mode
                         var option = {};
                         if (mode === 'cbc') {
                             option = {
                                 iv: iv,
                                 mode: CryptoJS.mode.CBC,
                                 padding: CryptoJS.pad.Pkcs7
-                            };
-                        } else if (mode === 'ebc') {
+                            }
+                        } else if (mode === 'ecb') {
                             option = {
                                 mode: CryptoJS.mode.ECB,
                                 padding: CryptoJS.pad.Pkcs7
@@ -1842,15 +1886,15 @@ connection.prototype.getUniqueId = function (prefix) {
 connection.prototype.send = function (messageSource) {
     var self = this;
     var message = messageSource;
-    if (message.type === 'txt') {
-        if (this.encrypt.type === 'base64') {
-            message = _.clone(messageSource);
+    if (message.type === 'txt' && (self.encrypt.type === 'base64' || self.encrypt.type === 'aes')) {
+        message = _.clone(messageSource);
+        if (self.encrypt.type === 'base64') {
             message.msg = btoa(message.msg);
-        } else if (this.encrypt.type === 'aes') {
-            message = _.clone(messageSource);
-            var key = CryptoJS.enc.Utf8.parse(this.encrypt.key);
-            var iv = CryptoJS.enc.Utf8.parse(this.encrypt.iv);
-            var mode = this.encrypt.mode.toLowerCase();
+        } else if (self.encrypt.type === 'aes') {
+            console.log(this.encrypt)
+            var key = self.encrypt.key;
+            var iv = self.encrypt.iv;
+            var mode = self.encrypt.mode;
             var option = {};
             if (mode === 'cbc') {
                 option = {
@@ -1858,7 +1902,7 @@ connection.prototype.send = function (messageSource) {
                     mode: CryptoJS.mode.CBC,
                     padding: CryptoJS.pad.Pkcs7
                 };
-            } else if (mode === 'ebc') {
+            } else if (mode === 'ecb') {
                 option = {
                     mode: CryptoJS.mode.ECB,
                     padding: CryptoJS.pad.Pkcs7
