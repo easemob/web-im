@@ -54,7 +54,6 @@ var CreateGroup = React.createClass({
     onSubmit: function () {
         var value = this.refs.input.refs.input.value;
         var info = this.refs.textarea.value;
-        // log('onSubmit', value, info);
         var permission_group = this.state.selectedOption;
         var permission_member = this.state.selectedOption2;
         var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
@@ -87,17 +86,19 @@ var CreateGroup = React.createClass({
         } else {
             Demo.createGroupName = value;
             var pub = false;
-            if(style == 'PUBLIC_JOIN_OPEN'
+            if (style == 'PUBLIC_JOIN_OPEN'
                 || style == 'PUBLIC_JOIN_APPROVAL')
                 pub = true;
+            var approval = option2 == 0;
             var options = {
                 data: {
                     groupname: value,
                     desc: info,
                     members: friendsSelected,
-                    public: pub
+                    public: pub,
+                    approval: approval
                 },
-                success: function(respData){
+                success: function (respData) {
 
                 },
                 error: function () {
@@ -144,12 +145,12 @@ var CreateGroup = React.createClass({
                                        onChange={this.handleOptionChange}/>
                                 <span className="radio_span">公有群</span>
                             </label>
-                            <label>
-                                <input className="radio" type="radio" value="option2"
-                                       checked={this.state.selectedOption === 'option2'}
-                                       onChange={this.handleOptionChange}/>
-                                <span className="radio_span">私有群</span>
-                            </label>
+                            {/*<label>*/}
+                            {/*<input className="radio" type="radio" value="option2"*/}
+                            {/*checked={this.state.selectedOption === 'option2'}*/}
+                            {/*onChange={this.handleOptionChange}/>*/}
+                            {/*<span className="radio_span">私有群</span>*/}
+                            {/*</label>*/}
                         </div>
                         <div>
                             <label>
@@ -159,8 +160,7 @@ var CreateGroup = React.createClass({
                                 <input className="radio" type="radio" value="option3"
                                        checked={this.state.selectedOption2 === 'option3'}
                                        onChange={this.handleOptionChange2}/>
-                                <span
-                                    className="radio_span">{this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'}</span>
+                                <span className="radio_span">{this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'}</span>
                             </label>
                             <label>
                                 <input className="radio" type="radio" value="option4"
