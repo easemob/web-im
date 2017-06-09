@@ -1165,7 +1165,7 @@
 	    },
 
 	    appendMsg: function appendMsg(msg, type, status, nid) {
-	        if (!msg) {
+	        if (!msg || type === 'cmd') {
 	            return;
 	        }
 	        msg.from = msg.from || Demo.user;
@@ -1179,7 +1179,8 @@
 	            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
 	        var targetNode = document.getElementById('wrapper' + targetId);
 	        if (targetNode == null) {
-	            return;
+	            console.log("ScareCrow Return");
+	            // return
 	        }
 	        var isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
@@ -21957,6 +21958,7 @@
 	                // Demo.api.logout();
 	            },
 	            onTextMessage: function onTextMessage(message) {
+	                console.log('onTextMessage');
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }

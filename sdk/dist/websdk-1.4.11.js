@@ -12215,14 +12215,6 @@
 	 *
 	 * @param options
 	 */
-	// <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
-	//     <query xmlns="http://jabber.org/protocol/muc#admin">
-	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
-	//         <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
-	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
-	//         <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
-	//     </query>
-	// </iq>
 	connection.prototype.leaveGroup = function (options) {
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;

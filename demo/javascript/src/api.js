@@ -379,7 +379,7 @@ module.exports = {
     },
 
     appendMsg: function (msg, type, status, nid) {
-        if (!msg) {
+        if (!msg || type === 'cmd') {
             return;
         }
         msg.from = msg.from || Demo.user;
@@ -393,7 +393,8 @@ module.exports = {
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
         var targetNode = document.getElementById('wrapper' + targetId)
         if (targetNode == null) {
-            return
+            console.log("ScareCrow Return");
+            // return
         }
         var isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
