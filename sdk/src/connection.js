@@ -7,6 +7,9 @@ var _msgHash = {};
 var Queue = require('./queue').Queue;
 var CryptoJS = require('crypto-js');
 var _ = require('underscore');
+var global_mode = '';
+var global_key = '';
+var global_iv = '';
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -302,13 +305,14 @@ var _getAESKey = function (options, conn) {
     // console.log('_getAESKey')
     var self = this;
     var suc = function (resp, xhr) {
-        console.log('suc')
-        console.log(resp)
         //{"algorithm": "AES", "mode": "ECB", "padding": "PKCS5Padding", "key": "easemob@@easemob"}
-        conn.encrypt.mode = resp.data.mode.toLowerCase()
-        conn.encrypt.key = CryptoJS.enc.Utf8.parse(resp.data.key)
-        conn.encrypt.iv = CryptoJS.enc.Utf8.parse('0000000000000000')
-        _login(options, conn)
+        conn.encrypt.mode = resp.data.mode.toLowerCase();
+        conn.encrypt.key = CryptoJS.enc.Utf8.parse(resp.data.key);
+        conn.encrypt.iv = CryptoJS.enc.Utf8.parse('0000000000000000');
+        global_mode = resp.data.mode.toLowerCase();
+        global_key = CryptoJS.enc.Utf8.parse(resp.data.key);
+        global_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
+        _login(options, conn);
     };
     var error = function (res, xhr, msg) {
         console.log('error')
@@ -330,8 +334,7 @@ var _getAESKey = function (options, conn) {
     };
     _utils.ajax(options2);
 
-}
-
+};
 
 var _login = function (options, conn) {
     var accessToken = options.access_token || '';
@@ -446,7 +449,6 @@ var _loginCallback = function (status, msg, conn) {
             conn.handelSendQueue();
         }, 200);
         var handleMessage = function (msginfo) {
-            console.log("MessageInfo: ", msginfo);
             var delivery = msginfo.getElementsByTagName('delivery');
             var acked = msginfo.getElementsByTagName('acked');
             if (delivery.length) {
@@ -3612,7 +3614,54 @@ WebIM.doQuery = function (str, suc, fail) {
 
 /**************************** debug ****************************/
 function logMessage(message) {
-    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
+    var data = message.data;
+    if(message.data.indexOf('msg') > 0
+        && message.data.indexOf('type') > 0){
+
+        var cloneData = new DOMParser().parseFromString(message.data, 'text/xml');
+        var body = cloneData.getElementsByTagName('body')[0];
+        if(body && body.innerHTML){
+            var objValue = JSON.parse(body.innerHTML)
+            if(objValue.bodies[0].type === 'txt'){
+                var text = objValue.bodies[0].msg;
+                if (WebIM.config.encrypt.type === 'base64') {
+                    text = atob(text);
+                } else if (WebIM.config.encrypt.type === 'aes') {
+                    var key = global_key;
+                    var iv = global_iv;
+                    var mode = global_mode;
+                    var option = {};
+                    if (mode === 'cbc') {
+                        option = {
+                            iv: iv,
+                            mode: CryptoJS.mode.CBC,
+                            padding: CryptoJS.pad.Pkcs7
+                        }
+                    } else if (mode === 'ecb') {
+                        option = {
+                            mode: CryptoJS.mode.ECB,
+                            padding: CryptoJS.pad.Pkcs7
+                        }
+                    }
+                    var encryptedBase64Str = text;
+                    var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+                    var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+                    text = decryptedStr;
+
+                    // rebuild message.data;
+                    objValue.bodies[0].msg = text;
+                    var objValue = JSON.stringify(objValue);
+                    body.innerHTML = objValue;
+                    if (window.ActiveXObject) {
+                        data = cloneData.xml;
+                    }else{
+                        data = new XMLSerializer().serializeToString(cloneData);
+                    }
+                }
+            }
+        }
+    }
+    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', data);
 }
 
 if (WebIM && WebIM.config.isDebug) {

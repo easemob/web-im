@@ -77,7 +77,6 @@ module.exports = React.createClass({
                     message = eval('(' + message + ')');
                 }
                 if (Demo.selected == message.from) {
-                    console.log("Read");
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }

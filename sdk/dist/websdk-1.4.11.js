@@ -9405,6 +9405,9 @@
 	var Queue = __webpack_require__(249).Queue;
 	var CryptoJS = __webpack_require__(210);
 	var _ = __webpack_require__(183);
+	var global_mode = '';
+	var global_key = '';
+	var global_iv = '';
 
 	window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -9686,6 +9689,40 @@
 	    return rouster;
 	};
 
+	var _getAESKey = function _getAESKey(options, conn) {
+	    // console.log(options)
+	    // console.log('_getAESKey')
+	    var self = this;
+	    var suc = function suc(resp, xhr) {
+	        //{"algorithm": "AES", "mode": "ECB", "padding": "PKCS5Padding", "key": "easemob@@easemob"}
+	        conn.encrypt.mode = resp.data.mode.toLowerCase();
+	        conn.encrypt.key = CryptoJS.enc.Utf8.parse(resp.data.key);
+	        conn.encrypt.iv = CryptoJS.enc.Utf8.parse('0000000000000000');
+	        global_mode = resp.data.mode.toLowerCase();
+	        global_key = CryptoJS.enc.Utf8.parse(resp.data.key);
+	        global_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
+	        _login(options, conn);
+	    };
+	    var error = function error(res, xhr, msg) {
+	        console.log('error');
+	        console.log(res);
+	    };
+
+	    // console.log(conn)
+	    var apiUrl = conn.context.apiUrl;
+	    var appName = conn.context.appName;
+	    var orgName = conn.context.orgName;
+	    var options2 = {
+	        url: apiUrl + '/' + orgName + '/' + appName + '/encrypt_info',
+	        dataType: 'json',
+	        type: 'GET',
+	        headers: { 'Authorization': 'Bearer ' + conn.context.accessToken },
+	        success: suc || _utils.emptyfn,
+	        error: error || _utils.emptyfn
+	    };
+	    _utils.ajax(options2);
+	};
+
 	var _login = function _login(options, conn) {
 	    var accessToken = options.access_token || '';
 	    if (accessToken == '') {
@@ -9698,6 +9735,12 @@
 	    }
 	    conn.context.accessToken = options.access_token;
 	    conn.context.accessTokenExpires = options.expires_in;
+
+	    if (conn.encrypt.type === 'aes' && !conn.encrypt.mode) {
+	        _getAESKey(options, conn);
+	        return;
+	    }
+
 	    var stropheConn = null;
 	    if (conn.isOpening() && conn.context.stropheConn) {
 	        stropheConn = conn.context.stropheConn;
@@ -9761,7 +9804,6 @@
 	};
 
 	var _loginCallback = function _loginCallback(status, msg, conn) {
-	    // console.log('stropheConn.connected status=', status, msg)
 	    var conflict, error;
 
 	    if (msg === 'conflict') {
@@ -10048,6 +10090,7 @@
 	    this.sendQueue = new Queue(); //instead of sending message immediately,cache them in this queue
 	    this.intervalId = null; //clearInterval return value
 	    this.apiUrl = options.apiUrl || '';
+	    this.context.apiUrl = this.apiUrl;
 	    this.isWindowSDK = options.isWindowSDK || false;
 	    this.encrypt = options.encrypt || { encrypt: { type: 'none' } };
 	    this.delivery = options.delivery || false;
@@ -10839,9 +10882,9 @@
 	                    if (self.encrypt.type === 'base64') {
 	                        receiveMsg = atob(receiveMsg);
 	                    } else if (self.encrypt.type === 'aes') {
-	                        var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
-	                        var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
-	                        var mode = self.encrypt.mode.toLowerCase();
+	                        var key = self.encrypt.key;
+	                        var iv = self.encrypt.iv;
+	                        var mode = self.encrypt.mode;
 	                        var option = {};
 	                        if (mode === 'cbc') {
 	                            option = {
@@ -10849,7 +10892,7 @@
 	                                mode: CryptoJS.mode.CBC,
 	                                padding: CryptoJS.pad.Pkcs7
 	                            };
-	                        } else if (mode === 'ebc') {
+	                        } else if (mode === 'ecb') {
 	                            option = {
 	                                mode: CryptoJS.mode.ECB,
 	                                padding: CryptoJS.pad.Pkcs7
@@ -11033,7 +11076,7 @@
 	                    id: bodyId,
 	                    to: msg.from
 	                });
-	                self.send(deliverMessage);
+	                self.send(deliverMessage.body);
 	            }
 	        } catch (e) {
 	            this.onError({
@@ -11188,15 +11231,15 @@
 	connection.prototype.send = function (messageSource) {
 	    var self = this;
 	    var message = messageSource;
-	    if (message.type === 'txt') {
-	        if (this.encrypt.type === 'base64') {
-	            message = _.clone(messageSource);
+	    if (message.type === 'txt' && (self.encrypt.type === 'base64' || self.encrypt.type === 'aes')) {
+	        message = _.clone(messageSource);
+	        if (self.encrypt.type === 'base64') {
 	            message.msg = btoa(message.msg);
-	        } else if (this.encrypt.type === 'aes') {
-	            message = _.clone(messageSource);
-	            var key = CryptoJS.enc.Utf8.parse(this.encrypt.key);
-	            var iv = CryptoJS.enc.Utf8.parse(this.encrypt.iv);
-	            var mode = this.encrypt.mode.toLowerCase();
+	        } else if (self.encrypt.type === 'aes') {
+	            console.log(this.encrypt);
+	            var key = self.encrypt.key;
+	            var iv = self.encrypt.iv;
+	            var mode = self.encrypt.mode;
 	            var option = {};
 	            if (mode === 'cbc') {
 	                option = {
@@ -11204,7 +11247,7 @@
 	                    mode: CryptoJS.mode.CBC,
 	                    padding: CryptoJS.pad.Pkcs7
 	                };
-	            } else if (mode === 'ebc') {
+	            } else if (mode === 'ecb') {
 	                option = {
 	                    mode: CryptoJS.mode.ECB,
 	                    padding: CryptoJS.pad.Pkcs7
@@ -12729,7 +12772,7 @@
 	};
 
 	// 通过Rest添加用户至群组黑名单(单个)
-	connection.prototype.blockSingle = function (opt) {
+	connection.prototype.groupBlockSingle = function (opt) {
 	    var groupId = opt.groupId,
 	        username = opt.username,
 	        options = {
@@ -12747,7 +12790,7 @@
 	};
 
 	// 通过Rest添加用户至群组黑名单(批量)
-	connection.prototype.blockMulti = function (opt) {
+	connection.prototype.groupBlockMulti = function (opt) {
 	    var groupId = opt.groupId,
 	        usernames = opt.usernames,
 	        requestData = {
@@ -12768,8 +12811,41 @@
 	    WebIM.utils.ajax(options);
 	};
 
-	// 通过Rest将用户从群黑名单移除
-	connection.prototype.removeBlock = function (opt) {};
+	// 通过Rest将用户从群黑名单移除（单个）
+	connection.prototype.removeGroupBlockSingle = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users' + '/' + username,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	// 通过Rest将用户从群黑名单移除（批量）
+	connection.prototype.removeGroupBlockMulti = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username.join(','),
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users' + '/' + username,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
 
 	function _setText(valueDom, v) {
 	    if ('textContent' in valueDom) {
@@ -12801,7 +12877,53 @@
 
 	/**************************** debug ****************************/
 	function logMessage(message) {
-	    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
+	    var data = message.data;
+	    if (message.data.indexOf('msg') > 0 && message.data.indexOf('type') > 0) {
+
+	        var cloneData = new DOMParser().parseFromString(message.data, 'text/xml');
+	        var body = cloneData.getElementsByTagName('body')[0];
+	        if (body && body.innerHTML) {
+	            var objValue = JSON.parse(body.innerHTML);
+	            if (objValue.bodies[0].type === 'txt') {
+	                var text = objValue.bodies[0].msg;
+	                if (WebIM.config.encrypt.type === 'base64') {
+	                    text = atob(text);
+	                } else if (WebIM.config.encrypt.type === 'aes') {
+	                    var key = global_key;
+	                    var iv = global_iv;
+	                    var mode = global_mode;
+	                    var option = {};
+	                    if (mode === 'cbc') {
+	                        option = {
+	                            iv: iv,
+	                            mode: CryptoJS.mode.CBC,
+	                            padding: CryptoJS.pad.Pkcs7
+	                        };
+	                    } else if (mode === 'ecb') {
+	                        option = {
+	                            mode: CryptoJS.mode.ECB,
+	                            padding: CryptoJS.pad.Pkcs7
+	                        };
+	                    }
+	                    var encryptedBase64Str = text;
+	                    var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+	                    var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+	                    text = decryptedStr;
+
+	                    // rebuild message.data;
+	                    objValue.bodies[0].msg = text;
+	                    var objValue = JSON.stringify(objValue);
+	                    body.innerHTML = objValue;
+	                    if (window.ActiveXObject) {
+	                        data = cloneData.xml;
+	                    } else {
+	                        data = new XMLSerializer().serializeToString(cloneData);
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', data);
 	}
 
 	if (WebIM && WebIM.config.isDebug) {
