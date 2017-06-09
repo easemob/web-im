@@ -3605,16 +3605,21 @@ WebIM.doQuery = function (str, suc, fail) {
 };
 
 /**************************** debug ****************************/
+var recv_num = 0
+if (window.localStorage) {
+    window.localStorage.clear()
+}
 function logMessage(message) {
+
     var data = message.data;
-    if(message.data.indexOf('msg') > 0
-        && message.data.indexOf('type') > 0){
+    if (message.data.indexOf('msg') > 0
+        && message.data.indexOf('type') > 0) {
 
         var cloneData = new DOMParser().parseFromString(message.data, 'text/xml');
         var body = cloneData.getElementsByTagName('body')[0];
-        if(body && body.innerHTML){
+        if (body && body.innerHTML) {
             var objValue = JSON.parse(body.innerHTML)
-            if(objValue.bodies[0].type === 'txt'){
+            if (objValue.bodies[0].type === 'txt') {
                 var text = objValue.bodies[0].msg;
                 if (WebIM.config.encrypt.type === 'base64') {
                     text = atob(text);
@@ -3646,14 +3651,19 @@ function logMessage(message) {
                     body.innerHTML = objValue;
                     if (window.ActiveXObject) {
                         data = cloneData.xml;
-                    }else{
+                    } else {
                         data = new XMLSerializer().serializeToString(cloneData);
                     }
                 }
             }
         }
     }
-    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', data);
+    // WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', data);
+    if (WebIM && WebIM.config.isDebug) {
+        if (window.localStorage) {
+            window.localStorage.setItem(recv_num++, data)
+        }
+    }
 }
 
 if (WebIM && WebIM.config.isDebug) {

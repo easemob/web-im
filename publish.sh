@@ -36,7 +36,7 @@ cp favicon.ico publish/
 cp index.html publish/
 cp CHANGELOG.md publish/
 cp package.json publish/
-
+cp download.html publish/
 cp webpack.config.js publish/
 cp README.md publish/
 cp .babelrc publish/
