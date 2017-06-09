@@ -3168,7 +3168,7 @@ connection.prototype.createGroupNew = function (opt) {
  * @private
  */
 // 通过Rest屏蔽群组
-connection.prototype.shieldGroup = function (opt) {
+connection.prototype.blockGroup = function (opt) {
     var groupId = opt.groupId;
     groupId = 'notification_ignore_' + groupId;
     var data = {
@@ -3429,7 +3429,7 @@ connection.prototype.agreeJoinGroup = function (opt) {
 };
 
 // 通过Rest拒绝用户加入群
-connection.prototype.refuseJoinGroup = function (opt) {
+connection.prototype.rejectJoinGroup = function (opt) {
     var groupId = opt.groupId,
         requestData = {
             "applicant": opt.applicant,

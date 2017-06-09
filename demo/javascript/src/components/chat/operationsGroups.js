@@ -105,7 +105,7 @@ module.exports = React.createClass({
             success: function () {},
             error: function () {}
         };
-        Demo.conn.shieldGroup(options);
+        Demo.conn.blockGroup(options);
     },
 
     render: function () {

@@ -379,7 +379,7 @@ module.exports = {
     },
 
     appendMsg: function (msg, type, status, nid) {
-        if (!msg) {
+        if (!msg || type === 'cmd') {
             return;
         }
         msg.from = msg.from || Demo.user;
@@ -392,9 +392,7 @@ module.exports = {
             name = this.sendByMe ? Demo.user : msg.from,
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
         var targetNode = document.getElementById('wrapper' + targetId)
-        if (targetNode == null) {
-            return
-        }
+
         var isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
 

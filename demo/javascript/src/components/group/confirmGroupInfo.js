@@ -40,7 +40,7 @@ var ConfirmGroupInfo = React.createClass({
         if(result)
             Demo.conn.agreeJoinGroup(options);
         else
-            Demo.conn.refuseJoinGroup(options);
+            Demo.conn.rejectJoinGroup(options);
         this.close();
     },
 
