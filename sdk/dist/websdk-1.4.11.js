@@ -12868,7 +12868,13 @@
 	};
 
 	/**************************** debug ****************************/
+	var recv_num = 0;
+	if (window.localStorage) {
+	    window.localStorage.clear();
+	}
 	function logMessage(message) {
+	    console.log("LoagMessage");
+
 	    var data = message.data;
 	    if (message.data.indexOf('msg') > 0 && message.data.indexOf('type') > 0) {
 
@@ -12915,7 +12921,13 @@
 	            }
 	        }
 	    }
-	    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', data);
+	    // WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', data);
+	    if (WebIM && WebIM.config.isDebug) {
+	        if (window.localStorage) {
+	            console.log("LocalStorage");
+	            window.localStorage.setItem(recv_num++, data);
+	        }
+	    }
 	}
 
 	if (WebIM && WebIM.config.isDebug) {

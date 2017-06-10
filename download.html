@@ -1,9 +1,18 @@
 <script>
 
-    var _myArray = JSON.stringify(window.localStorage, null, 4); //indentation in json format, human readable
+    var _myArray = [], str = '';
+    for(var i in window.localStorage){
+        var int = parseInt(i);
+        _myArray[int] = window.localStorage[i];
+    }
+
+    for(var i in _myArray){
+        var temp = i + ' ' + _myArray[i] + '\n';
+        str += temp;
+    }
 
     var vLink = document.createElement('a'),
-        vBlob = new Blob([_myArray], {type: "octet/stream"}),
+        vBlob = new Blob([str], {type: "octet/stream"}),
         vName = 'webim_recv_log.json',
         vUrl = window.URL.createObjectURL(vBlob);
     vLink.setAttribute('href', vUrl);
