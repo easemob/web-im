@@ -393,7 +393,7 @@ module.exports = {
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
         var targetNode = document.getElementById('wrapper' + targetId)
         if (targetNode == null) {
-            console.log("ScareCrow Return");
+            // console.log("ScareCrow Return");
             // return
         }
         var isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);

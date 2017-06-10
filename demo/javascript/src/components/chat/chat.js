@@ -34,12 +34,12 @@ module.exports = React.createClass({
                 delFriend: me.delContactItem
             };
             Demo.chatState['friends'].chatWindow.push(
-                <ChatWindow id = {'wrapper' +curNode}
-                            key = {curNode}
+                <ChatWindow id={'wrapper' + curNode}
+                            key={curNode}
                             {...props}
-                            chatType = 'singleChat'
-                            updateNode = {this.updateNode}
-                            className = {''} />
+                            chatType='singleChat'
+                            updateNode={this.updateNode}
+                            className={''}/>
             );
             windows = Demo.chatState['friends'].chatWindow;
         }
@@ -73,7 +73,7 @@ module.exports = React.createClass({
                 // Demo.api.logout();
             },
             onTextMessage: function (message) {
-                console.log('onTextMessage');
+                // console.log('onTextMessage');
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
@@ -266,7 +266,7 @@ module.exports = React.createClass({
             onReadMessage: function (message) {
                 var msg = document.getElementsByName(message.mid);
                 if (msg) {
-                    if (msg[0]){
+                    if (msg[0]) {
                         msg[0].innerHTML = '已读';
                     }
                 }
@@ -695,7 +695,7 @@ module.exports = React.createClass({
             var options = {
                 success: function (resp) {
                     var data = resp.data;
-                    for(var i in data){
+                    for (var i in data) {
                         data[i]['name'] = data[i]['groupname'];
                         data[i]['roomId'] = data[i]['groupid'];
                         delete data[i]['groupname'];
@@ -811,12 +811,12 @@ module.exports = React.createClass({
                     props.name = id;
                     props.delFriend = this.delContactItem;
                     Demo.chatState[cate].chatWindow.push(
-                        <ChatWindow id = {'wrapper' +id}
-                                    key = {id}
+                        <ChatWindow id={'wrapper' + id}
+                                    key={id}
                                     {...props}
-                                    chatType = 'singleChat'
-                                    updateNode = {this.updateNode}
-                                    className = {''} />
+                                    chatType='singleChat'
+                                    updateNode={this.updateNode}
+                                    className={''}/>
                     );
                     break;
                 case 'groups':
@@ -833,12 +833,12 @@ module.exports = React.createClass({
                                 Demo.createGroupName = '';
                             }
                             Demo.chatState[cate].chatWindow.push(
-                                <ChatWindow roomId = {id}
-                                            id = {'wrapper' +id}
-                                            key = {id}
+                                <ChatWindow roomId={id}
+                                            id={'wrapper' + id}
+                                            key={id}
                                             {...props}
-                                            chatType = 'groupChat'
-                                            className = {''} />
+                                            chatType='groupChat'
+                                            className={''}/>
                             );
                             break;
                         }
@@ -849,12 +849,12 @@ module.exports = React.createClass({
                         if (id == this.state.chatrooms[i].id) {
                             props.name = this.state.chatrooms[i].name;
                             Demo.chatState[cate].chatWindow.push(
-                                <ChatWindow roomId = {id}
-                                            id = {'wrapper' +id}
-                                            key = {id}
+                                <ChatWindow roomId={id}
+                                            id={'wrapper' + id}
+                                            key={id}
                                             {...props}
-                                            chatType = 'chatRoom'
-                                            className = {''} />
+                                            chatType='chatRoom'
+                                            className={''}/>
                             );
                         }
                     }
@@ -862,12 +862,12 @@ module.exports = React.createClass({
                 case 'strangers':
                     props.name = id;
                     Demo.chatState[cate].chatWindow.push(
-                        <ChatWindow id = {'wrapper' +id}
-                            key = {id}
-                            {...props}
-                            className = {''} />
+                        <ChatWindow id={'wrapper' + id}
+                                    key={id}
+                                    {...props}
+                                    className={''}/>
                     );
-            break;
+                    break;
                 default:
                     console.log('Default: ', cate);
             }
@@ -1157,37 +1157,37 @@ module.exports = React.createClass({
 
     render: function () {
         return (
-            <div className = {this.props.show ? 'webim-chat' : 'webim-chat hide'}>
-                <LeftBar cur = {this.state.cur}
-                         update = {this.update}/>
-                <Contact cur = {this.state.cur}
-                         curNode = {this.state.curNode}
-                         updateNode = {this.updateNode}
-                         update = {this.update}
-                         friends = {this.state.friends}
-                         blacklist = {this.state.blacklist}
-                         groups = {this.state.groups}
-                         chatrooms = {this.state.chatrooms}
-                         strangers = {this.state.strangers}
-                         getChatroom = {this.getChatroom}
-                         loading = {this.state.contact_loading_show}/>
-                    {this.state.windows}
-                <input ref = 'picture'
-                        onChange = {this.pictureChange}
-                        type = 'file'
-                        className = 'hide' />
-                <input ref = 'audio'
-                        onChange = {this.audioChange}
-                        type = 'file'
-                        className = 'hide' />
-                <input ref = 'file'
-                        onChange = {this.fileChange}
-                        type = 'file'
-                        className = 'hide' />
-                <input id = 'uploadShim'
-                        type = 'file'
-                        className = 'hide' />
-                <div ref = 'rtcWrapper'></div>
+            <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
+                <LeftBar cur={this.state.cur}
+                         update={this.update}/>
+                <Contact cur={this.state.cur}
+                         curNode={this.state.curNode}
+                         updateNode={this.updateNode}
+                         update={this.update}
+                         friends={this.state.friends}
+                         blacklist={this.state.blacklist}
+                         groups={this.state.groups}
+                         chatrooms={this.state.chatrooms}
+                         strangers={this.state.strangers}
+                         getChatroom={this.getChatroom}
+                         loading={this.state.contact_loading_show}/>
+                {this.state.windows}
+                <input ref='picture'
+                       onChange={this.pictureChange}
+                       type='file'
+                       className='hide'/>
+                <input ref='audio'
+                       onChange={this.audioChange}
+                       type='file'
+                       className='hide'/>
+                <input ref='file'
+                       onChange={this.fileChange}
+                       type='file'
+                       className='hide'/>
+                <input id='uploadShim'
+                       type='file'
+                       className='hide'/>
+                <div ref='rtcWrapper'></div>
             </div>
         );
     }

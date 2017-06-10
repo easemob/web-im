@@ -59,8 +59,14 @@ Strophe.Websocket.prototype._closeSocket = function () {
  * this will trigger socket.onError, therefore _doDisconnect again.
  * Fix it by overide  _onMessage
  */
+
+//log aes message into localstorage
+var recv_num = 0
+if (window.localStorage) {
+    window.localStorage.clear()
+}
+
 Strophe.Websocket.prototype._onMessage = function (message) {
-    logMessage(message)
     var elem, data;
     // check for closing stream
     // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
@@ -97,22 +103,67 @@ Strophe.Websocket.prototype._onMessage = function (message) {
     } else {
         data = this._streamWrap(message.data);
         elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
+
+
+        if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
+            return;
+        }
+
+        //handle unavailable presence stanza before disconnecting
+        if (this._conn.disconnecting &&
+            elem.firstChild.nodeName === "presence" &&
+            elem.firstChild.getAttribute("type") === "unavailable") {
+            this._conn.xmlInput(elem);
+            this._conn.rawInput(Strophe.serialize(elem));
+            // if we are already disconnecting we will ignore the unavailable stanza and
+            // wait for the </stream:stream> tag before we close the connection
+            return;
+        }
+
+        //log aes message into localstorage
+        if (message.data.indexOf('msg') > 0 && message.data.indexOf('type') > 0) {
+            var body, objValue, text, option, decryptedData
+            body = elem.getElementsByTagName('body')[0];
+            if (body && body.innerHTML) {
+                objValue = JSON.parse(body.innerHTML)
+                // console.log('objValue', objValue)
+                if (objValue.bodies[0].type === 'txt') {
+                    text = objValue.bodies[0].msg;
+                    if (WebIM.config.encrypt.type === 'base64') {
+                        text = atob(text);
+                    } else if (WebIM.config.encrypt.type === 'aes') {
+                        option = {};
+                        if (global_mode === 'cbc') {
+                            option = {
+                                iv: global_iv,
+                                mode: CryptoJS.mode.CBC,
+                                padding: CryptoJS.pad.Pkcs7
+                            }
+                        } else if (global_mode === 'ecb') {
+                            option = {
+                                mode: CryptoJS.mode.ECB,
+                                padding: CryptoJS.pad.Pkcs7
+                            }
+                        }
+                        decryptedData = CryptoJS.AES.decrypt(text, global_key, option);
+                        text = decryptedData.toString(CryptoJS.enc.Utf8);
+
+                        // console.log('text', text)
+                        if (WebIM && WebIM.config.isDebug && window.localStorage) {
+                            window.localStorage.setItem(recv_num++, text)
+                        }
+
+                    }
+                }
+            }
+            body = null
+            objValue = null
+            text = null
+            option = null
+            decryptedData = null
+        }
     }
 
-    if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
-        return;
-    }
-
-    //handle unavailable presence stanza before disconnecting
-    if (this._conn.disconnecting &&
-        elem.firstChild.nodeName === "presence" &&
-        elem.firstChild.getAttribute("type") === "unavailable") {
-        this._conn.xmlInput(elem);
-        this._conn.rawInput(Strophe.serialize(elem));
-        // if we are already disconnecting we will ignore the unavailable stanza and
-        // wait for the </stream:stream> tag before we close the connection
-        return;
-    }
     this._conn._dataRecv(elem, message.data);
 };
 
@@ -1893,7 +1944,7 @@ connection.prototype.send = function (messageSource) {
         if (self.encrypt.type === 'base64') {
             message.msg = btoa(message.msg);
         } else if (self.encrypt.type === 'aes') {
-            console.log(this.encrypt)
+            // console.log(this.encrypt)
             var key = self.encrypt.key;
             var iv = self.encrypt.iv;
             var mode = self.encrypt.mode;
@@ -3605,69 +3656,10 @@ WebIM.doQuery = function (str, suc, fail) {
 };
 
 /**************************** debug ****************************/
-var recv_num = 0
-if (window.localStorage) {
-    window.localStorage.clear()
-}
-function logMessage(message) {
-    var data = message.data;
-    if (message.data.indexOf('msg') > 0
-        && message.data.indexOf('type') > 0) {
-
-        var cloneData = new DOMParser().parseFromString(message.data, 'text/xml');
-        var body = cloneData.getElementsByTagName('body')[0];
-        if (body && body.innerHTML) {
-            var objValue = JSON.parse(body.innerHTML)
-            if (objValue.bodies[0].type === 'txt') {
-                var text = objValue.bodies[0].msg;
-                if (WebIM.config.encrypt.type === 'base64') {
-                    text = atob(text);
-                } else if (WebIM.config.encrypt.type === 'aes') {
-                    var key = global_key;
-                    var iv = global_iv;
-                    var mode = global_mode;
-                    var option = {};
-                    if (mode === 'cbc') {
-                        option = {
-                            iv: iv,
-                            mode: CryptoJS.mode.CBC,
-                            padding: CryptoJS.pad.Pkcs7
-                        }
-                    } else if (mode === 'ecb') {
-                        option = {
-                            mode: CryptoJS.mode.ECB,
-                            padding: CryptoJS.pad.Pkcs7
-                        }
-                    }
-                    var encryptedBase64Str = text;
-                    var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
-                    var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
-                    text = decryptedStr;
-
-                    // rebuild message.data;
-                    objValue.bodies[0].msg = text;
-                    var objValue = JSON.stringify(objValue);
-                    body.innerHTML = objValue;
-                    if (window.ActiveXObject) {
-                        data = cloneData.xml;
-                    } else {
-                        data = new XMLSerializer().serializeToString(cloneData);
-                    }
-                }
-            }
-        }
-    }
-    // WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', data);
-    if (WebIM && WebIM.config.isDebug) {
-        if (window.localStorage) {
-            window.localStorage.setItem(recv_num++, data)
-        }
-    }
-}
 
 if (WebIM && WebIM.config.isDebug) {
     Strophe.Connection.prototype.rawOutput = function (data) {
-        console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
+        // console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
     }
 }
 
