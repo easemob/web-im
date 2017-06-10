@@ -1,15 +1,19 @@
 <script>
 
-    var _myArray = [], str = '';
+    var _myArray = [], strArr = [], str = '';
     for(var i in window.localStorage){
         var int = parseInt(i);
         _myArray[int] = window.localStorage[i];
     }
 
     for(var i in _myArray){
-        var temp = i + ' ' + _myArray[i] + '\n';
-        str += temp;
+        var tempArr = [];
+        tempArr.push(i);
+        tempArr.push(' ');
+        tempArr.push(_myArray[i]);
+        strArr.push(tempArr.join(''));
     }
+    str = strArr.join('\n');
 
     var vLink = document.createElement('a'),
         vBlob = new Blob([str], {type: "octet/stream"}),
