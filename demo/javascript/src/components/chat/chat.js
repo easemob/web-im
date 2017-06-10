@@ -70,59 +70,72 @@ module.exports = React.createClass({
                 Demo.conn.errorType = -1;
             },
             onClosed: function (msg) {
-                console.log('oCLosed');
                 Demo.first = true;
                 // Demo.api.logout();
             },
             onTextMessage: function (message) {
-                console.log('onTextMessage');
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+
+                Demo.api.addToChatRecord(message, 'txt');
+                Demo.api.appendMsg(message, 'txt');
+
                 if (Demo.selected == message.from) {
+                    var id = message.id,
+                    sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
-                Demo.api.addToChatRecord(message, 'txt');
-                setTimeout(function(){
-                    Demo.api.appendMsg(message, 'txt')
-                }, 250);
             },
             onEmojiMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'emoji');
+                Demo.api.appendMsg(message, 'emoji');
+
                 if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
-                Demo.api.addToChatRecord(message, 'emoji');
-                setTimeout(function(){
-                    Demo.api.appendMsg(message, 'emoji');
-                }, 250);
             },
             onPictureMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
 
+                Demo.api.addToChatRecord(message, 'img');
+                Demo.api.appendMsg(message, 'img');
                 if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
-                Demo.api.addToChatRecord(message, 'img');
-                setTimeout(function(){
-                    Demo.api.appendMsg(message, 'img');
-                }, 250);
             },
             onCmdMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 Demo.api.addToChatRecord(message, 'cmd');
-                setTimeout(function(){
-                    Demo.api.appendMsg(message, 'cmd');
-                }, 250);
+                Demo.api.appendMsg(message, 'cmd');
+                if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
             },
             onAudioMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -130,9 +143,15 @@ module.exports = React.createClass({
                 }
 
                 Demo.api.addToChatRecord(message, 'aud');
-                setTimeout(function(){
-                    Demo.api.appendMsg(message, 'aud');
-                }, 250);
+                Demo.api.appendMsg(message, 'aud');
+                if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
             },
             onLocationMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -140,23 +159,31 @@ module.exports = React.createClass({
                 }
 
                 Demo.api.addToChatRecord(message, 'loc');
-                setTimeout(function(){
-                    Demo.api.appendMsg(message, 'loc');
-                }, 250);
+                Demo.api.appendMsg(message, 'loc');
+                if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
             },
             onFileMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
 
+                Demo.api.addToChatRecord(message, 'file');
+                Demo.api.appendMsg(message, 'file');
                 if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
-                Demo.api.addToChatRecord(message, 'file');
-                setTimeout(function(){
-                    Demo.api.appendMsg(message, 'file');
-                }, 250);
             },
             onVideoMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -164,9 +191,15 @@ module.exports = React.createClass({
                 }
 
                 Demo.api.addToChatRecord(message, 'video');
-                setTimeout(function(){
-                    Demo.api.appendMsg(message, 'video');
-                }, 250);
+                Demo.api.appendMsg(message, 'video');
+                if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
             },
             onPresence: function (message) {
                 if (WebIM.config.isWindowSDK) {

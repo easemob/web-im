@@ -311,9 +311,9 @@ module.exports = {
 
     releaseChatRecord: function (targetId) {
         var targetId = targetId || Demo.selected;
-        if(Demo.first){
+        if (Demo.first) {
             Demo.first = false;
-            for(var i in Demo.chatRecord){
+            for (var i in Demo.chatRecord) {
                 targetId = i;
                 if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
                     if (document.getElementById('wrapper' + targetId))
@@ -321,11 +321,12 @@ module.exports = {
                     for (var i in Demo.chatRecord[targetId].messages) {
                         if (Demo.chatRecord[targetId].messages[i] == undefined)
                             continue;
-                        Demo.api.sendRead(Demo.chatRecord[targetId].messages[i].message);
-                        Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
-                            Demo.chatRecord[targetId].messages[i].type,
-                            Demo.chatRecord[targetId].messages[i].status,
-                            i);
+                        if(!Demo.chatRecord[targetId].messages[i].read){
+                            Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
+                                Demo.chatRecord[targetId].messages[i].type,
+                                Demo.chatRecord[targetId].messages[i].status,
+                                i);
+                        }
                     }
                 }
             }
@@ -338,6 +339,7 @@ module.exports = {
                 for (var i in Demo.chatRecord[targetId].messages) {
                     if (Demo.chatRecord[targetId].messages[i] == undefined)
                         continue;
+                    Demo.chatRecord[targetId].messages[i].read = true;
                     Demo.api.sendRead(Demo.chatRecord[targetId].messages[i].message);
                     Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
                         Demo.chatRecord[targetId].messages[i].type,
@@ -399,8 +401,7 @@ module.exports = {
     },
 
     appendMsg: function (msg, type, status, nid) {
-        if(Demo.first){
-            console.log("AppendMsg Return");
+        if (Demo.first) {
             return;
         }
         if (!msg || type === 'cmd') {
@@ -415,7 +416,7 @@ module.exports = {
             data = msg.data || msg.msg || '',
             name = this.sendByMe ? Demo.user : msg.from,
             targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
-        var targetNode = document.getElementById('wrapper' + targetId)
+        var targetNode = document.getElementById('wrapper' + targetId);
 
         var isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
