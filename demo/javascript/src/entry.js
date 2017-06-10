@@ -8,7 +8,6 @@ var Language = require('./components/language');
 // import emoji
 WebIM.Emoji = Emoji;
 
-
 // global log method
 window.log = Api.log;
 
@@ -19,6 +18,8 @@ window.Demo = {
 // import language package
 // Demo.lan = Language.English;
 Demo.lan = Language.Chinese;
+
+Demo.first = true;
 
 // for webview in client
 Demo.api = Api;

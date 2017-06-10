@@ -403,7 +403,6 @@ var _loginCallback = function (status, msg, conn) {
             conn.handelSendQueue();
         }, 200);
         var handleMessage = function (msginfo) {
-            console.log("MessageInfo: ", msginfo);
             var delivery = msginfo.getElementsByTagName('delivery');
             var acked = msginfo.getElementsByTagName('acked');
             if (delivery.length) {

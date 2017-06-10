@@ -311,6 +311,26 @@ module.exports = {
 
     releaseChatRecord: function (targetId) {
         var targetId = targetId || Demo.selected;
+        if(Demo.first){
+            Demo.first = false;
+            for(var i in Demo.chatRecord){
+                targetId = i;
+                if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
+                    if (document.getElementById('wrapper' + targetId))
+                        document.getElementById('wrapper' + targetId).innerHTML = '';
+                    for (var i in Demo.chatRecord[targetId].messages) {
+                        if (Demo.chatRecord[targetId].messages[i] == undefined)
+                            continue;
+                        Demo.api.sendRead(Demo.chatRecord[targetId].messages[i].message);
+                        Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
+                            Demo.chatRecord[targetId].messages[i].type,
+                            Demo.chatRecord[targetId].messages[i].status,
+                            i);
+                    }
+                }
+            }
+            return;
+        }
         if (targetId) {
             if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
                 if (document.getElementById('wrapper' + targetId))
@@ -379,6 +399,10 @@ module.exports = {
     },
 
     appendMsg: function (msg, type, status, nid) {
+        if(Demo.first){
+            console.log("AppendMsg Return");
+            return;
+        }
         if (!msg || type === 'cmd') {
             return;
         }
@@ -395,12 +419,10 @@ module.exports = {
 
         var isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
-
         // TODO: ios/android client doesn't encodeURIComponent yet
         if (typeof data === "string" && WebIM.config.isWindowSDK) {
             data = decodeURIComponent(data);
         }
-
 
         if (!this.sentByMe && msg.type === 'chat' && isStranger) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
@@ -607,7 +629,6 @@ module.exports = {
                 }
             }
         }
-
 
         // show brief
         this.appendBrief(targetId, brief);

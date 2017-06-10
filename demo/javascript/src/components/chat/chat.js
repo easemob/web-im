@@ -70,19 +70,23 @@ module.exports = React.createClass({
                 Demo.conn.errorType = -1;
             },
             onClosed: function (msg) {
+                console.log('oCLosed');
+                Demo.first = true;
                 // Demo.api.logout();
             },
             onTextMessage: function (message) {
+                console.log('onTextMessage');
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 if (Demo.selected == message.from) {
-                    console.log("Read");
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
                 Demo.api.addToChatRecord(message, 'txt');
-                Demo.api.appendMsg(message, 'txt');
+                setTimeout(function(){
+                    Demo.api.appendMsg(message, 'txt')
+                }, 250);
             },
             onEmojiMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -93,7 +97,9 @@ module.exports = React.createClass({
                     Demo.api.sendRead(message);
                 }
                 Demo.api.addToChatRecord(message, 'emoji');
-                Demo.api.appendMsg(message, 'emoji');
+                setTimeout(function(){
+                    Demo.api.appendMsg(message, 'emoji');
+                }, 250);
             },
             onPictureMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -105,14 +111,18 @@ module.exports = React.createClass({
                     Demo.api.sendRead(message);
                 }
                 Demo.api.addToChatRecord(message, 'img');
-                Demo.api.appendMsg(message, 'img');
+                setTimeout(function(){
+                    Demo.api.appendMsg(message, 'img');
+                }, 250);
             },
             onCmdMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
                 Demo.api.addToChatRecord(message, 'cmd');
-                Demo.api.appendMsg(message, 'cmd');
+                setTimeout(function(){
+                    Demo.api.appendMsg(message, 'cmd');
+                }, 250);
             },
             onAudioMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -120,7 +130,9 @@ module.exports = React.createClass({
                 }
 
                 Demo.api.addToChatRecord(message, 'aud');
-                Demo.api.appendMsg(message, 'aud');
+                setTimeout(function(){
+                    Demo.api.appendMsg(message, 'aud');
+                }, 250);
             },
             onLocationMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -128,7 +140,9 @@ module.exports = React.createClass({
                 }
 
                 Demo.api.addToChatRecord(message, 'loc');
-                Demo.api.appendMsg(message, 'loc');
+                setTimeout(function(){
+                    Demo.api.appendMsg(message, 'loc');
+                }, 250);
             },
             onFileMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -140,7 +154,9 @@ module.exports = React.createClass({
                     Demo.api.sendRead(message);
                 }
                 Demo.api.addToChatRecord(message, 'file');
-                Demo.api.appendMsg(message, 'file');
+                setTimeout(function(){
+                    Demo.api.appendMsg(message, 'file');
+                }, 250);
             },
             onVideoMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -148,7 +164,9 @@ module.exports = React.createClass({
                 }
 
                 Demo.api.addToChatRecord(message, 'video');
-                Demo.api.appendMsg(message, 'video');
+                setTimeout(function(){
+                    Demo.api.appendMsg(message, 'video');
+                }, 250);
             },
             onPresence: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -671,6 +689,7 @@ module.exports = React.createClass({
                     else
                         me.setState({friends: friends, windows: []});
                     doNotUpdateGroup || me.getGroup();
+                    Demo.api.releaseChatRecord();
                 }
             });
         }
