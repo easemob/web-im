@@ -188,6 +188,49 @@
 ---
 # ChangeLog:
 
+## v1.4.11 @ 2017-06-07
+
+###Feature
+
+* [sdk] debug.js fused to sdk logs output optimized
+* [sdk] Block groups through rest api
+* [sdk] Apply for appending groups through rest api
+* [sdk] Get groups list through rest api
+* [sdk] Get a group detail through rest api
+* [sdk] List all groups a user in through rest api
+* [sdk] List all of a group's members through rest api
+* [sdk] Block member in group through rest api
+* [sdk] Unblock member in group through rest api
+* [sdk] List all of administrators in a group through rest api
+* [sdk] List blocked members in a group through rest api
+* [sdk] Set members as administrator in a group through rest api
+* [sdk] Delete an administrator in a group through rest api
+* [sdk] Agree a user's application filings of join in the group through rest api
+* [sdk] Reject a user's application filings of join in the group through rest api
+* [sdk] Add a single user in a group to the blacklist of this group through rest api
+* [sdk] Add multi of users in a group to the blacklist of this group through rest api
+* [sdk] Delete a single user in a group from the blacklist of this group through rest api
+* [sdk] Delete multi of users in a group from the blacklist of this group through rest api
+* [demo] Chat record can be deleted
+* [demo] Show status of chat records(Undelivered, delivered, read) 
+* [demo] List members in a chat room
+* [demo] Open a dialog window with friends just through a link
+* [demo] Add the board apply for join in a group
+* [demo] In the apply for join in a group board get pages of public groups while scroll to the bottom
+* [demo] Click a group's name will show detail information of this group on the apply for join in a group board
+* [demo] Search a group by the group's id will show detail information of this group on the apply for join in a group board
+* [demo] Users are be able to apply for join in a group on the apply for join in a group board
+* [demo] Group owners are able to agree or reject a user's filings of join in the group
+* [demo] Add the add/delete administrator and block/unblock members buttons in the group members list
+
+###BugFix
+
+* [sdk] Add a new friend will create spare subscription information
+* [sdk] Send messages continually will cause the problem of message id repetition
+* [sdk] Adapt size of pictures whild sdk and webim sending pictures to each other 
+* [demo] Optimize sdk/demo.html, fix the problem that some of dependent files can't be found
+* [demo] Fix the problem that off-line messages count not right
+
 ## v1.4.10 @ 2017-02-16
 
 ### Feature
