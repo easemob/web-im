@@ -1,3 +1,4 @@
+var CryptoJS = require('crypto-js');
 ;(function () {
     'use strict';
 
@@ -22,12 +23,12 @@
     /*
      * Read Message
      */
-    Message.read = function(id){
+    Message.read = function (id) {
         this.id = id;
         this.type = 'read';
     };
 
-    Message.read.prototype.set = function(opt){
+    Message.read.prototype.set = function (opt) {
         this.body = {
             ackId: opt.id
             , to: opt.to
@@ -46,7 +47,7 @@
         this.body = {
             bodyId: opt.id
             , to: opt.to
-        }
+        };
     };
 
     /*
@@ -267,7 +268,7 @@
             if (message.roomType) {
                 dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
             }
-            if(message.bodyId){
+            if (message.bodyId) {
                 dom.up().c('body').t(message.bodyId);
                 var delivery = {
                     xmlns: 'urn:xmpp:receipts'
@@ -275,7 +276,7 @@
                 };
                 dom.up().c('delivery').t(_utils.stringify(delivery));
             }
-            if(message.ackId){
+            if (message.ackId) {
                 dom.up().c('body').t(message.ackId);
                 var read = {
                     xmlns: 'urn:xmpp:receipts'

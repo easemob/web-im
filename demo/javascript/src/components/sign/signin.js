@@ -85,7 +85,8 @@ module.exports = React.createClass({
             accessToken: auth,
             appKey: this.props.config.appkey,
             success: function (token) {
-                var encryptUsername = WebIM.utils.encrypt(username);
+                var encryptUsername = btoa(username);
+                encryptUsername = encryptUsername.replace(/=*$/g, "");
                 var token = token.access_token;
                 var url = 'index.html?username=' + encryptUsername;
                 WebIM.utils.setCookie('webim_' + encryptUsername, token, 1);
@@ -162,7 +163,7 @@ module.exports = React.createClass({
         var auth = WebIM.utils.getCookie()['webim_' + username];
         Demo.token = auth;
         if (username && auth) {
-            username = WebIM.utils.decrypt(username);
+            username = atob(username);
             this.signin(username, auth, true);
         } else {
             window.history.pushState({}, 0, 'index.html');

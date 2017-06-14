@@ -82,7 +82,8 @@
   &-body {
     min-height: 100px;
     max-height: 126px;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
 
     &-detail{
       width: 100%;

@@ -8,7 +8,6 @@ var Language = require('./components/language');
 // import emoji
 WebIM.Emoji = Emoji;
 
-
 // global log method
 window.log = Api.log;
 
@@ -19,6 +18,8 @@ window.Demo = {
 // import language package
 // Demo.lan = Language.English;
 Demo.lan = Language.Chinese;
+
+Demo.first = true;
 
 // for webview in client
 Demo.api = Api;
@@ -130,7 +131,9 @@ Demo.conn = new WebIM.connection({
     apiUrl: WebIM.config.apiURL,
     isHttpDNS: WebIM.config.isHttpDNS,
     isWindowSDK: WebIM.config.isWindowSDK,
-    isAutoLogin: false
+    isAutoLogin: true,
+    encrypt: WebIM.config.encrypt,
+    delivery: WebIM.config.delivery
 });
 
 Demo.api.render(document.getElementById('demo'));

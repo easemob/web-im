@@ -85,8 +85,10 @@ exports.English = {
     search: 'Search',
     join: 'Join',
     addToGroupBlackList: 'Add to group black list',
-    ban: 'Ban this member',
+    mute: 'Block this member',
+    removeMute: 'Unblock this member',
     administrator: 'Set as administrator',
+    rmAdministrator: 'Remove administrator',
     last: ''
 };
 
@@ -179,7 +181,9 @@ exports.Chinese = {
     search: '搜索',
     join: '加入群组',
     addToGroupBlackList: '加入群黑名单',
-    ban: '禁言',
+    mute: '禁言',
+    removeMute: '解除禁言',
     administrator: '设为管理员',
+    rmAdministrator: '移除管理员',
     last: ''
 };

@@ -10,6 +10,7 @@ var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
 var Notify = require('./components/common/notify');
 var _ = require('underscore');
+var CryptoJS = require('crypto-js');
 
 var Blacklist = (function () {
     var data = {};
@@ -310,6 +311,27 @@ module.exports = {
 
     releaseChatRecord: function (targetId) {
         var targetId = targetId || Demo.selected;
+        if (Demo.first) {
+            Demo.first = false;
+            for (var i in Demo.chatRecord) {
+                targetId = i;
+                if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
+                    if (document.getElementById('wrapper' + targetId))
+                        document.getElementById('wrapper' + targetId).innerHTML = '';
+                    for (var i in Demo.chatRecord[targetId].messages) {
+                        if (Demo.chatRecord[targetId].messages[i] == undefined)
+                            continue;
+                        if(!Demo.chatRecord[targetId].messages[i].read){
+                            Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
+                                Demo.chatRecord[targetId].messages[i].type,
+                                Demo.chatRecord[targetId].messages[i].status,
+                                i);
+                        }
+                    }
+                }
+            }
+            return;
+        }
         if (targetId) {
             if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
                 if (document.getElementById('wrapper' + targetId))
@@ -317,6 +339,7 @@ module.exports = {
                 for (var i in Demo.chatRecord[targetId].messages) {
                     if (Demo.chatRecord[targetId].messages[i] == undefined)
                         continue;
+                    Demo.chatRecord[targetId].messages[i].read = true;
                     Demo.api.sendRead(Demo.chatRecord[targetId].messages[i].message);
                     Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
                         Demo.chatRecord[targetId].messages[i].type,
@@ -325,20 +348,6 @@ module.exports = {
                 }
             }
         }
-    },
-
-    sendDelivery: function (message) {
-        if (!WebIM.config.delivery)
-            return;
-        // 收到消息时反馈一个已收到
-        var msgId = Demo.conn.getUniqueId();
-        var bodyId = message.id;
-        var msg = new WebIM.message('delivery', msgId);
-        msg.set({
-            id: bodyId
-            , to: message.from
-        });
-        Demo.conn.send(msg.body);
     },
 
     sendRead: function (message) {
@@ -392,7 +401,10 @@ module.exports = {
     },
 
     appendMsg: function (msg, type, status, nid) {
-        if (!msg) {
+        if (Demo.first) {
+            return;
+        }
+        if (!msg || type === 'cmd') {
             return;
         }
         msg.from = msg.from || Demo.user;
@@ -403,15 +415,15 @@ module.exports = {
         var brief = '',
             data = msg.data || msg.msg || '',
             name = this.sendByMe ? Demo.user : msg.from,
-            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
-            targetNode = document.getElementById('wrapper' + targetId),
-            isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
+            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
+        var targetNode = document.getElementById('wrapper' + targetId);
+
+        var isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
         // TODO: ios/android client doesn't encodeURIComponent yet
         if (typeof data === "string" && WebIM.config.isWindowSDK) {
             data = decodeURIComponent(data);
         }
-
 
         if (!this.sentByMe && msg.type === 'chat' && isStranger) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
@@ -618,7 +630,6 @@ module.exports = {
                 }
             }
         }
-
 
         // show brief
         this.appendBrief(targetId, brief);

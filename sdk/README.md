@@ -2,11 +2,11 @@
 
 ## v1.4.10 @ 2017-02-16
 
-###Feature
+### Feature
 
 * [sdk] webrtc add voice call
 
-###BugFix
+### BugFix
 
 * [sdk] webrtc:Firefox error while close call
 * [sdk] webrtc:logical error after multitimes connection and close
@@ -15,31 +15,31 @@
 
 ## v1.4.9 @ 2017-01-20
 
-###BugFix
+### BugFix
 
 * [sdk] fix a bug in success/error callback
 
 ## v1.4.8 @ 2016-12-27
 
-###Feature
+### Feature
 
 * [demo] Add a mute button to the video chat window
 * [demo] Create a chat window automaticly
 * [demo] Hide the chat window when switch a cate in leftbar
 * [demo] Not back to the login page when refresh the webpage if login succeed
 
-###BugFix
+### BugFix
 
 * [sdk] Remove all of the log methods
 * [sdk] Send an unavailable presence stanza when leave a group
 
 ## v1.4.7 @ 2016-12-21
 
-###Feature
+### Feature
 
 * [demo] Add video chat and send video file functions into the demo.html
 
-###BugFix
+### BugFix
 
 * [sdk] Fix the bug when the browser runs in back end that WebIM can't reconnect on phones
 * [demo] Refresh the group list on the front end after create a group succeed on back end
@@ -48,24 +48,24 @@
 
 ## v1.4.6
 
-###Feature
+### Feature
 
 * add demo.html
 
-###BugFix
+### BugFix
 
 * to decoupling from Demo namespaces, delete codes using Demo
 * delete connection.prototype.createRoom, which is not supported by server
 
 ## v1.4.5
 
-###Feature
+### Feature
 
 * GNU version number: `Major_Version_Number.Minor_Version_Number.Revision_Number`
 * support webrtc
 * while http access,use ip directly instead of ServerName,avoid DNS hijacking.  `isHttpDNS:true`
 
-###BugFix
+### BugFix
 
 * does not update catact list UI after destory group
 * does not call the callback function after send out the cmd message

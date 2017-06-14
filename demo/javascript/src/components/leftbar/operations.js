@@ -39,6 +39,7 @@ module.exports = React.createClass({
     },
 
     logout: function () {
+        Demo.selected = '';
         Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT);
     },
 

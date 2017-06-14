@@ -18,7 +18,7 @@ module.exports = React.createClass({
 
         var uri = WebIM.utils.parseUri();
         var curNode = uri.curNode;
-        var window = [];
+        var windows = [];
         if (curNode) {
             Demo.selected = curNode;
             if (Demo.chatState['friends']) {
@@ -33,10 +33,15 @@ module.exports = React.createClass({
                 name: curNode,
                 delFriend: me.delContactItem
             };
-            Demo.chatState['friends'].chatWindow.push(<ChatWindow id={'wrapper' + curNode} key={curNode} {...props}
-                                                                  chatType='singleChat'
-                                                                  updateNode={this.updateNode} className={''}/>);
-            window = Demo.chatState['friends'].chatWindow;
+            Demo.chatState['friends'].chatWindow.push(
+                <ChatWindow id = {'wrapper' +curNode}
+                            key = {curNode}
+                            {...props}
+                            chatType = 'singleChat'
+                            updateNode = {this.updateNode}
+                            className = {''} />
+            );
+            windows = Demo.chatState['friends'].chatWindow;
         }
 
 
@@ -65,45 +70,57 @@ module.exports = React.createClass({
                 Demo.conn.errorType = -1;
             },
             onClosed: function (msg) {
+                Demo.first = true;
                 // Demo.api.logout();
             },
             onTextMessage: function (message) {
-                console.log('Message: ', message);
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                // 发送已送达回执
-                Demo.api.sendDelivery(message);
+
+                Demo.api.addToChatRecord(message, 'txt');
+                Demo.api.appendMsg(message, 'txt');
+
                 if (Demo.selected == message.from) {
+                    var id = message.id,
+                    sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
-                Demo.api.addToChatRecord(message, 'txt');
-                Demo.api.appendMsg(message, 'txt');
             },
             onEmojiMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+                Demo.api.addToChatRecord(message, 'emoji');
+                Demo.api.appendMsg(message, 'emoji');
+
                 if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
-                Demo.api.addToChatRecord(message, 'emoji');
-                Demo.api.appendMsg(message, 'emoji');
             },
             onPictureMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+
+                Demo.api.addToChatRecord(message, 'img');
+                Demo.api.appendMsg(message, 'img');
                 if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
-                Demo.api.addToChatRecord(message, 'img');
-                Demo.api.appendMsg(message, 'img');
             },
             onCmdMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -111,42 +128,78 @@ module.exports = React.createClass({
                 }
                 Demo.api.addToChatRecord(message, 'cmd');
                 Demo.api.appendMsg(message, 'cmd');
+                if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
             },
             onAudioMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+
                 Demo.api.addToChatRecord(message, 'aud');
                 Demo.api.appendMsg(message, 'aud');
+                if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
             },
             onLocationMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+
                 Demo.api.addToChatRecord(message, 'loc');
                 Demo.api.appendMsg(message, 'loc');
+                if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
             },
             onFileMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+
+                Demo.api.addToChatRecord(message, 'file');
+                Demo.api.appendMsg(message, 'file');
                 if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
                     // 发送已读回执
                     Demo.api.sendRead(message);
                 }
-                Demo.api.addToChatRecord(message, 'file');
-                Demo.api.appendMsg(message, 'file');
             },
             onVideoMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
-                Demo.api.sendDelivery(message);
+
                 Demo.api.addToChatRecord(message, 'video');
                 Demo.api.appendMsg(message, 'video');
+                if (Demo.selected == message.from) {
+                    var id = message.id,
+                        sentByMe = message.from === Demo.user;
+                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+                    Demo.chatRecord[targetId].messages[id].read = true;
+                    // 发送已读回执
+                    Demo.api.sendRead(message);
+                }
             },
             onPresence: function (message) {
                 if (WebIM.config.isWindowSDK) {
@@ -155,7 +208,6 @@ module.exports = React.createClass({
                 me.handlePresence(message);
             },
             onRoster: function (message) {
-                console.log('ScareCrow update group');
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
@@ -250,13 +302,14 @@ module.exports = React.createClass({
             },
             onDeliveredMessage: function (message) {
                 var msg = document.getElementsByName(message.mid);
-                if (msg) {
-                    if (msg[0])
-                        msg[0].innerHTML = '已送达';
-                }
                 // 记录消息的状态
                 for (var targetId in Demo.chatRecord) {
-                    if (Demo.chatRecord[targetId].messages[message.mid]) {
+                    if (Demo.chatRecord[targetId].messages[message.mid]
+                        && Demo.chatRecord[targetId].messages[message.mid].status != 'Read') {
+                        if (msg) {
+                            if (msg[0])
+                                msg[0].innerHTML = '已送达';
+                        }
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
                     }
                 }
@@ -264,8 +317,9 @@ module.exports = React.createClass({
             onReadMessage: function (message) {
                 var msg = document.getElementsByName(message.mid);
                 if (msg) {
-                    if (msg[0])
+                    if (msg[0]){
                         msg[0].innerHTML = '已读';
+                    }
                 }
                 // 记录消息的状态
                 for (var targetId in Demo.chatRecord) {
@@ -303,7 +357,7 @@ module.exports = React.createClass({
             blacklist: {},
             chatrooms_totalnum: Demo.api.pagesize,
             contact_loading_show: false,
-            window: window
+            windows: windows
         };
     },
 
@@ -595,6 +649,18 @@ module.exports = React.createClass({
 
                 Demo.api.NotifySuccess(options.msg);
                 break;
+            case 'addAdmin':
+                Demo.api.NotifySuccess(msg.owner + '将您设为了组' + msg.gid + '的管理员');
+                break;
+            case 'removeAdmin':
+                Demo.api.NotifyError(msg.owner + '取消了您在' + msg.gid + '的管理员');
+                break;
+            case 'addMute':
+                Demo.api.NotifyError(msg.owner + '将您在组' + msg.gid + '中禁言');
+                break;
+            case 'removeMute':
+                Demo.api.NotifySuccess(msg.owner + '取消了您在' + msg.gid + '的禁言');
+                break;
         }
 
     },
@@ -654,8 +720,9 @@ module.exports = React.createClass({
                     if (flag)
                         me.setState({friends: friends});
                     else
-                        me.setState({friends: friends, window: []});
+                        me.setState({friends: friends, windows: []});
                     doNotUpdateGroup || me.getGroup();
+                    Demo.api.releaseChatRecord();
                 }
             });
         }
@@ -677,16 +744,22 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('getGroup:' + errCode + ' ' + errMessage);
                 });
         } else {
-            Demo.conn.listRooms({
-                success: function (rooms) {
-                    Demo.conn.setPresence();
-                    me.setState({groups: rooms});
-                },
+            var options = {
+                success: function (resp) {
+                    var data = resp.data;
+                    for(var i in data){
+                        data[i]['name'] = data[i]['groupname'];
+                        data[i]['roomId'] = data[i]['groupid'];
+                        delete data[i]['groupname'];
+                        delete data[i]['groupid'];
+                    }
+                    this.setState({groups: data});
+                }.bind(this),
                 error: function (e) {
-                    console.log('error');
-                    Demo.conn.setPresence();
+                    console.log('Ajax error');
                 }
-            });
+            };
+            Demo.conn.getGroup(options);
         }
     },
 
@@ -789,9 +862,14 @@ module.exports = React.createClass({
                 case 'friends':
                     props.name = id;
                     props.delFriend = this.delContactItem;
-                    Demo.chatState[cate].chatWindow.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
-                                                                     chatType='singleChat'
-                                                                     updateNode={this.updateNode} className={''}/>);
+                    Demo.chatState[cate].chatWindow.push(
+                        <ChatWindow id = {'wrapper' +id}
+                                    key = {id}
+                                    {...props}
+                                    chatType = 'singleChat'
+                                    updateNode = {this.updateNode}
+                                    className = {''} />
+                    );
                     break;
                 case 'groups':
                     //createGroup is two step progresses.first send presence,second send iq.
@@ -806,9 +884,14 @@ module.exports = React.createClass({
                                 this.state.groups[i].name = Demo.createGroupName;
                                 Demo.createGroupName = '';
                             }
-                            Demo.chatState[cate].chatWindow.push(<ChatWindow roomId={id} id={'wrapper' + id}
-                                                                             key={id} {...props} chatType='groupChat'
-                                                                             className={''}/>);
+                            Demo.chatState[cate].chatWindow.push(
+                                <ChatWindow roomId = {id}
+                                            id = {'wrapper' +id}
+                                            key = {id}
+                                            {...props}
+                                            chatType = 'groupChat'
+                                            className = {''} />
+                            );
                             break;
                         }
                     }
@@ -817,17 +900,26 @@ module.exports = React.createClass({
                     for (var i = 0; i < this.state.chatrooms.length; i++) {
                         if (id == this.state.chatrooms[i].id) {
                             props.name = this.state.chatrooms[i].name;
-                            Demo.chatState[cate].chatWindow.push(<ChatWindow roomId={id} id={'wrapper' + id}
-                                                                             key={id} {...props} chatType='chatRoom'
-                                                                             className={''}/>);
+                            Demo.chatState[cate].chatWindow.push(
+                                <ChatWindow roomId = {id}
+                                            id = {'wrapper' +id}
+                                            key = {id}
+                                            {...props}
+                                            chatType = 'chatRoom'
+                                            className = {''} />
+                            );
                         }
                     }
                     break;
                 case 'strangers':
                     props.name = id;
-                    Demo.chatState[cate].chatWindow.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
-                                                                     className={''}/>);
-                    break;
+                    Demo.chatState[cate].chatWindow.push(
+                        <ChatWindow id = {'wrapper' +id}
+                            key = {id}
+                            {...props}
+                            className = {''} />
+                    );
+            break;
                 default:
                     console.log('Default: ', cate);
             }
@@ -837,9 +929,9 @@ module.exports = React.createClass({
     setChatWindow: function (show) {
         var cate = Demo.selectedCate;
         if (!show) {
-            this.setState({window: []});
+            this.setState({windows: []});
         } else {
-            this.setState({window: Demo.chatState[cate].chatWindow});
+            this.setState({windows: Demo.chatState[cate].chatWindow});
         }
     },
 
@@ -1025,7 +1117,6 @@ module.exports = React.createClass({
         }
     },
     sendFileImpl: function (type, chatType) {
-        //this.refs.file.click();
         var is_chatroom = Demo.selectedCate === 'chatrooms' ? "true" : "false";
         var is_group = (Demo.selectedCate === 'chatrooms' || Demo.selectedCate === 'groups') ? "groupchat" : "singlechat";
         WebIM.doQuery('{"type":"sendFileMessage","to":"' + Demo.selected + '","message_type":"' + type + '","group":"' + is_group + '","chatType":"' + chatType + '","roomType":"' + is_chatroom + '"}',
@@ -1091,7 +1182,6 @@ module.exports = React.createClass({
             },
             onFileUploadComplete: function (data) {
                 var url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
-                // var uir = (location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
                 var option = {
                     data: url,
@@ -1119,25 +1209,37 @@ module.exports = React.createClass({
 
     render: function () {
         return (
-            <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
-                <LeftBar cur={this.state.cur} update={this.update}/>
-                <Contact cur={this.state.cur}
-                         curNode={this.state.curNode}
-                         updateNode={this.updateNode}
-                         update={this.update}
-                         friends={this.state.friends}
-                         blacklist={this.state.blacklist}
-                         groups={this.state.groups}
-                         chatrooms={this.state.chatrooms}
-                         strangers={this.state.strangers}
-                         getChatroom={this.getChatroom}
-                         loading={this.state.contact_loading_show}/>
-                {this.state.window}
-                <input ref='picture' onChange={this.pictureChange} type='file' className='hide'/>
-                <input ref='audio' onChange={this.audioChange} type='file' className='hide'/>
-                <input ref='file' onChange={this.fileChange} type='file' className='hide'/>
-                <input id='uploadShim' type='file' className='hide'/>
-                <div ref='rtcWrapper'></div>
+            <div className = {this.props.show ? 'webim-chat' : 'webim-chat hide'}>
+                <LeftBar cur = {this.state.cur}
+                         update = {this.update}/>
+                <Contact cur = {this.state.cur}
+                         curNode = {this.state.curNode}
+                         updateNode = {this.updateNode}
+                         update = {this.update}
+                         friends = {this.state.friends}
+                         blacklist = {this.state.blacklist}
+                         groups = {this.state.groups}
+                         chatrooms = {this.state.chatrooms}
+                         strangers = {this.state.strangers}
+                         getChatroom = {this.getChatroom}
+                         loading = {this.state.contact_loading_show}/>
+                    {this.state.windows}
+                <input ref = 'picture'
+                        onChange = {this.pictureChange}
+                        type = 'file'
+                        className = 'hide' />
+                <input ref = 'audio'
+                        onChange = {this.audioChange}
+                        type = 'file'
+                        className = 'hide' />
+                <input ref = 'file'
+                        onChange = {this.fileChange}
+                        type = 'file'
+                        className = 'hide' />
+                <input id = 'uploadShim'
+                        type = 'file'
+                        className = 'hide' />
+                <div ref = 'rtcWrapper'></div>
             </div>
         );
     }

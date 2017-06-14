@@ -54,7 +54,6 @@ var CreateGroup = React.createClass({
     onSubmit: function () {
         var value = this.refs.input.refs.input.value;
         var info = this.refs.textarea.value;
-        // log('onSubmit', value, info);
         var permission_group = this.state.selectedOption;
         var permission_member = this.state.selectedOption2;
         var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
@@ -86,50 +85,27 @@ var CreateGroup = React.createClass({
                 });
         } else {
             Demo.createGroupName = value;
-            var appKey = WebIM.config.appkey;
-            var ht = appKey.indexOf('#');
-            var orgName = appKey.substring(0, ht);
-            var appName = appKey.substring(ht+1);
-            var uri = WebIM.utils.parseUri();
-            var username = uri.username;
-            var token = WebIM.utils.getCookie()['webim_' + username];
             var pub = false;
-            if(style == 'PUBLIC_JOIN_OPEN'
+            if (style == 'PUBLIC_JOIN_OPEN'
                 || style == 'PUBLIC_JOIN_APPROVAL')
                 pub = true;
-            var requestData = {
-                groupname: value,
-                desc: info,
-                owner: Demo.user,
-                members: friendsSelected,
-                public: pub
-            };
+            var approval = option2 == 0;
             var options = {
-                url: WebIM.config.apiURL + '/' + orgName + '/' + appName + '/chatgroups',
-                dataType: 'json',
-                type: 'POST',
-                data: JSON.stringify(requestData),
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json'
+                data: {
+                    groupname: value,
+                    desc: info,
+                    members: friendsSelected,
+                    public: pub,
+                    approval: approval
+                },
+                success: function (respData) {
+
                 },
                 error: function () {
-                    console.log('Create Group Failed!');
+
                 }
             };
             Demo.conn.createGroupNew(options);
-            /*
-            Demo.conn.createGroup({
-                subject: value,
-                description: info,
-                members: friendsSelected,
-                optionsPublic: style == 'PUBLIC_JOIN_OPEN' || style == 'PUBLIC_JOIN_APPROVAL',
-                optionsModerate: style != 'PUBLIC_JOIN_OPEN',
-                // 是否只允许 会员进入 ??
-                optionsMembersOnly: style != 'PUBLIC_JOIN_OPEN',
-                optionsAllowInvites: style == 'PRIVATE_MEMBER_INVITE',
-            });
-            */
         }
         this.close();
     },
@@ -169,12 +145,12 @@ var CreateGroup = React.createClass({
                                        onChange={this.handleOptionChange}/>
                                 <span className="radio_span">公有群</span>
                             </label>
-                            <label>
-                                <input className="radio" type="radio" value="option2"
-                                       checked={this.state.selectedOption === 'option2'}
-                                       onChange={this.handleOptionChange}/>
-                                <span className="radio_span">私有群</span>
-                            </label>
+                            {/*<label>*/}
+                            {/*<input className="radio" type="radio" value="option2"*/}
+                            {/*checked={this.state.selectedOption === 'option2'}*/}
+                            {/*onChange={this.handleOptionChange}/>*/}
+                            {/*<span className="radio_span">私有群</span>*/}
+                            {/*</label>*/}
                         </div>
                         <div>
                             <label>
@@ -184,8 +160,7 @@ var CreateGroup = React.createClass({
                                 <input className="radio" type="radio" value="option3"
                                        checked={this.state.selectedOption2 === 'option3'}
                                        onChange={this.handleOptionChange2}/>
-                                <span
-                                    className="radio_span">{this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'}</span>
+                                <span className="radio_span">{this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'}</span>
                             </label>
                             <label>
                                 <input className="radio" type="radio" value="option4"

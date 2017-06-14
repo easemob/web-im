@@ -45,20 +45,20 @@
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(245);
+	module.exports = __webpack_require__(250);
 
 
 /***/ },
 
-/***/ 245:
+/***/ 250:
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-	var Util = __webpack_require__(247);
-	var Call = __webpack_require__(248);
+	var Util = __webpack_require__(252);
+	var Call = __webpack_require__(253);
 
 	window.WebIM = typeof WebIM !== 'undefined' ? WebIM : {};
 	WebIM.WebRTC = WebIM.WebRTC || {};
@@ -81,11 +81,11 @@
 	}
 
 	//WebIM.WebRTC.supportPRAnswer = false;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(246)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(251)(module)))
 
 /***/ },
 
-/***/ 246:
+/***/ 251:
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -102,12 +102,12 @@
 
 /***/ },
 
-/***/ 247:
+/***/ 252:
 /***/ function(module, exports) {
 
 	'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	/*
 	 * ! Math.uuid.js (v1.4) http://www.broofa.com mailto:robert@broofa.com
@@ -517,16 +517,16 @@
 
 /***/ },
 
-/***/ 248:
+/***/ 253:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Util = __webpack_require__(247);
-	var RTCIQHandler = __webpack_require__(249);
-	var API = __webpack_require__(250);
-	var WebRTC = __webpack_require__(251);
-	var CommonPattern = __webpack_require__(252);
+	var Util = __webpack_require__(252);
+	var RTCIQHandler = __webpack_require__(254);
+	var API = __webpack_require__(255);
+	var WebRTC = __webpack_require__(256);
+	var CommonPattern = __webpack_require__(257);
 
 	var RouteTo = API.RouteTo;
 	var Api = API.Api;
@@ -715,7 +715,7 @@
 
 /***/ },
 
-/***/ 249:
+/***/ 254:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -724,9 +724,9 @@
 	 * IQ Message，IM -> CMServer --> IM
 	 */
 
-	var _util = __webpack_require__(247);
+	var _util = __webpack_require__(252);
 	var _logger = _util.logger;
-	var API = __webpack_require__(250);
+	var API = __webpack_require__(255);
 	var RouteTo = API.RouteTo;
 
 	var CONFERENCE_XMLNS = "urn:xmpp:media-conference";
@@ -930,6 +930,7 @@
 	                        candidate: cands[i].candidate,
 	                        mlineindex: cands[i].sdpMLineIndex,
 	                        mid: cands[i].sdpMid
+	                        // seq: i
 	                    };
 
 	                    cands[i] = _util.stringifyJSON(_cand);
@@ -1050,17 +1051,17 @@
 
 /***/ },
 
-/***/ 250:
+/***/ 255:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	/**
 	 * API
 	 */
-	var _util = __webpack_require__(247);
+	var _util = __webpack_require__(252);
 	var _logger = _util.logger;
 
 	var _RouteTo = {
@@ -1730,7 +1731,7 @@
 
 /***/ },
 
-/***/ 251:
+/***/ 256:
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1773,7 +1774,7 @@
 	 *                                                  |
 	 *
 	 */
-	var _util = __webpack_require__(247);
+	var _util = __webpack_require__(252);
 	var _logger = _util.logger;
 
 	var _WebrtcStatistics = {
@@ -2459,7 +2460,7 @@
 
 /***/ },
 
-/***/ 252:
+/***/ 257:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2467,8 +2468,8 @@
 	/**
 	 * P2P
 	 */
-	var _util = __webpack_require__(247);
-	var RouteTo = __webpack_require__(250).RouteTo;
+	var _util = __webpack_require__(252);
+	var RouteTo = __webpack_require__(255).RouteTo;
 	var _logger = _util.logger;
 
 	var P2PRouteTo = RouteTo({

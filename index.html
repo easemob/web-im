@@ -6,24 +6,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0"/>
     <title>IM-DEMO</title>
 
-    <script src="https://cdn.rawgit.com/GoogleCloudPlatform/stackdriver-errors-js/v0.0.4/dist/stackdriver-errors-concat.min.js"></script>
-    <script type="text/javascript">
-        var errorHandler = new StackdriverErrorReporter();
-        errorHandler.start({
-            key: 'AIzaSyBEtqM9yPpHvcnzDPTsjtP3hiaeDK_6UMw',
-            projectId: 'invertible-pad-162204',
-//            service: '<my-service>',              // (optional)
-//            version: '<my-service-version>'       // (optional)
-            // reportUncaughtExceptions: false    // (optional) Set to false to stop reporting unhandled exceptions.
-            // disabled: true                     // (optional) Set to true to not report errors when calling report(), this can be used when developping locally.
-        });
-
-        (function testErrorReporting() {
-            window.onerror(null, null, null, null, new Error('Test: Something broke!'));
-        })();
-
-    </script>
-
     <!-- HTML5 element  -->
     <script src="./demo/javascript/dist/browser-polyfill.min.js"></script>
 </head>

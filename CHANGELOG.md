@@ -1,25 +1,56 @@
-#版本更新说明:
+# 版本更新说明:
 
-## v1.4.11 @ 2017-06-01
+## v1.4.11 @ 2017-06-07
 
 ###Feature
 
 * [sdk] debug.js融合到sdk当中，优化日志内容输出
+* [sdk] 通过Rest屏蔽群组
+* [sdk] 通过Rest发出入群申请
+* [sdk] 通过Rest获取群组列表
+* [sdk] 通过Rest根据groupid获取群组详情
+* [sdk] 通过Rest列出某用户所加入的所有群组
+* [sdk] 通过Rest列出群组的所有成员
+* [sdk] 通过Rest禁止群用户发言
+* [sdk] 通过Rest取消对用户禁言的禁止
+* [sdk] 通过Rest获取群组下所有管理员
+* [sdk] 通过Rest获取群组下所有被禁言成员
+* [sdk] 通过Rest设置群管理员
+* [sdk] 通过Rest取消群管理员
+* [sdk] 通过Rest同意用户加入群
+* [sdk] 通过Rest拒绝用户加入群
+* [sdk] 通过Rest添加用户至群组黑名单（单个）
+* [sdk] 通过Rest添加用户至群组黑名单（批量）
+* [sdk] 通过Rest将用户从群黑名单移除（单个）
+* [sdk] 通过Rest将用户从群黑名单移除（批量）
+* [demo] 聊天窗口中记录可清空
+* [demo] 聊天窗口中发送方聊天记录显示状态（未送达、已送达、已读）
+* [demo] 查看聊天室成员
+* [demo] 通过链接直接打开与好友的对话框
+* [demo] 新增申请加入公开群面板
+* [demo] 在申请加入公开群面板可下拉分页获取公开群
+* [demo] 在申请加入公开群面板可点击群名称可查看群详情
+* [demo] 在申请加入公开群面板可搜索群查看群详情
+* [demo] 在申请加入公开群面板群详情页面可申请加入群组
+* [demo] 群主可同意、拒绝加群申请
+* [demo] 在群主的群成员列表中新增添加/移除管理员、禁言/解禁群成员按钮
 
 ###BugFix
 
 * [sdk] 添加好友会产生多余的订阅消息
 * [sdk] 频繁的发送消息会导致消息id重复的问题
+* [sdk] 适配SDK发送文件和图片的大小
 * [demo] 优化sdk/demo.html，修复某些依赖文件找不到的问题
+* [demo] 修复离线消息数量统计不准确问题
 
 
 ## v1.4.10 @ 2017-02-16
 
-###Feature
+### Feature
 
 * [sdk] webrtc新增语音呼叫
 
-###BugFix
+### BugFix
 
 * [sdk] webrtc:Firefox在结束通话后的问题
 * [sdk] webrtc:多次接通挂断之后,逻辑功能混乱
@@ -28,32 +59,32 @@
 
 ## v1.4.9 @ 2017-01-20
 
-###BugFix
+### BugFix
 
 * [sdk] 成功/失败的回调函数如果没有定义会报错
 
 
 ## v1.4.8 @ 2016-12-27
 
-###Feature
+### Feature
 
 * [demo] 增加webrtc视频聊天的声音开关
 * [demo] 动态创建chatWindow，提高网页性能
 * [demo] 切换leftbar时会给chatWindow添加遮罩，返回之前的leftbar时会直接跳到之前选中的cate和chatWindow
 * [demo] 登录成功后，刷新页面不会再回到登录页
 
-###BugFix
+### BugFix
 
 * [sdk] 移除sdk中所有log方法
 * [sdk] 退出muc group room 时，追加发送一条unavailable的presence stanza
 
 ## v1.4.7 @ 2016-12-21
 
-###Feature
+### Feature
 
 * [demo] 在demo.html中新增视频聊天及发送视频文件的功能
 
-###BugFix
+### BugFix
 
 * [sdk] 解决在手机浏览器在后台运行时无法断线重连的问题
 * [demo] WebIM建群，等待后台建群成功后再拉取群信息并更新UI中的群列表
@@ -62,11 +93,11 @@
 
 ## v1.4.6 @ 2016-12-20
 
-###Feature
+### Feature
 
 * [sdk] 新增 demo.html, 演示如何调用sdk的各种接口
 
-###BugFix
+### BugFix
 
 * [demo] 创建群组成功之后，立即刷新群组列表，不再等1秒
 * [sdk]  sdk与上层Demo解耦，删除Demo相关代码
@@ -74,8 +105,8 @@
 
 
 
-##v1.4.5 @ 2016-12-01
-###新功能
+## v1.4.5 @ 2016-12-01
+### 新功能
 
 - GNU风格的版本号命名格式: 主版本号.子版本号.修正版本号  (新版本规则的1.4.5 = 旧版本规则的1.1.4.5)
 - [demo] 好友之间可以通过webrtc进行视频聊(仅支持 https + Webkit浏览器)
@@ -127,14 +158,14 @@
 
 
     ```
-###Bug修复
+### Bug修复
 
 - [sdk] 解散群组不更新UI
 - [sdk] 修复了发送cmd消息成功后无法调用回调函数的bug
 
 
 
-##v1.1.3 @ 2016-11-01
+## v1.1.3 @ 2016-11-01
 
 * [demo] 支持 Windows SDK. <http://www.easemob.com/download/im>
 * [demo] 新增黑名单功能.
@@ -155,15 +186,15 @@
    
    
 ---
-#ChangeLog:
+# ChangeLog:
 
 ## v1.4.10 @ 2017-02-16
 
-###Feature
+### Feature
 
 * [sdk] webrtc add voice call
 
-###BugFix
+### BugFix
 
 * [sdk] webrtc:Firefox error while close call
 * [sdk] webrtc:logical error after multitimes connection and close
@@ -172,31 +203,31 @@
 
 ## v1.4.9 @ 2017-01-20
 
-###BugFix
+### BugFix
 
 * [sdk] fix a bug in success/error callback
 
 ## v1.4.8 @ 2016-12-27
 
-###Feature
+### Feature
 
 * [demo] Add a mute button to the video chat window
 * [demo] Create a chat window automaticly
 * [demo] Hide the chat window when switch a cate in leftbar
 * [demo] Not back to the login page when refresh the webpage if login succeed
 
-###BugFix
+### BugFix
 
 * [sdk] Remove all of the log methods
 * [sdk] Send an unavailable presence stanza when leave a group
 
 ## v1.4.7 @ 2016-12-21
 
-###Feature
+### Feature
 
 * [demo] Add video chat and send video file functions into the demo.html
 
-###BugFix
+### BugFix
 
 * [sdk] Fix the bug when the browser runs in back end that WebIM can't reconnect on phones
 * [demo] Refresh the group list on the front end after create a group succeed on back end
@@ -205,20 +236,20 @@
 
 ## v1.4.6 @ 2016-12-20
 
-###Feature
+### Feature
 
 * [sdk] add demo.html, listing how to use sdk's interfaces
 
-###BugFix
+### BugFix
 
 * [demo] after create group success, UI will refresh group list immediately, won't wait 1 second any more.
 * [sdk] to decoupling from Demo namespaces, delete codes using Demo
 * [sdk] delete connection.prototype.createRoom, which is not supported by server
 
 
-##v1.4.5 @ 2016-12-01
+## v1.4.5 @ 2016-12-01
 
-###Feature
+### Feature
 
 - GNU version number: `Major_Version_Number.Minor_Version_Number.Revision_Number` (new v1.4.5 = old v1.1.4.5)
 - [demo] friends can video chat to each other (support https + Webkit only)
@@ -270,12 +301,12 @@
 
 
     ```
-###BugFix
+### BugFix
 
 - [sdk] does not update catact list UI after destory group
 - [sdk] does not call the callback function after send out the cmd message
 
-##v1.1.3 @ 2016-11-01
+## v1.1.3 @ 2016-11-01
 
 * [demo] support Windows SDK. <http://www.easemob.com/download/im>
 * [demo] add blacklist feature.

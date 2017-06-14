@@ -11,21 +11,14 @@ WebIM.config = {
      * XMPP server
      */
     xmppURL: 'im-api.easemob.com',
-    // xmppURL: 'im-api.hyphenate.io',
     /*
      * Backend REST API URL
      */
     apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
-    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
     /*
      * Application AppKey
      */
     appkey: 'easemob-demo#chatdemoui',
-
-    //appDir: 'EasemobDemo_sandbox',
-    //imIP: '120.26.12.158',
-    //imPort: '6717',
-    //restIPandPort: '121.41.120.89:8080',
 
     /*
      * Whether to use wss
@@ -41,7 +34,7 @@ WebIM.config = {
     /*
      * Set to auto sign-in
      */
-    isAutoLogin: false,
+    isAutoLogin: true,
     /**
      * Whether to use window.doQuery()
      * @parameter {Boolean} true or false
@@ -57,7 +50,7 @@ WebIM.config = {
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
      */
-    isDebug: true,
+    isDebug: false,
     /**
      * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
      * won't auto connect if autoReconnectNumMax=0.
@@ -93,5 +86,16 @@ WebIM.config = {
      * sender, in order to tell the sender the message has been read.
      * See call back function onReadMessage
      */
-    read: true
+    read: true,
+
+    /**
+     * Will encrypt text message and emoji message
+     * {type:'none'}   no encrypt
+     * {type:'base64'} encrypt with base64
+     * {type:'aes',mode: 'ebc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(ebc)
+     * {type:'aes',mode: 'cbc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(cbc)
+     */
+    encrypt: {
+        type: 'none'
+    }
 };

@@ -33,7 +33,6 @@ module.exports = React.createClass({
         Demo.chatState[this.props.cate].count = curCateCount;
     },
 
-
     update: function () {
         Demo.chatingCate = Demo.selectedCate;
 
