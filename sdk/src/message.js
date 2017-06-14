@@ -1,3 +1,4 @@
+var CryptoJS = require('crypto-js');
 ;(function () {
     'use strict';
 
@@ -19,6 +20,35 @@
         this.body.group = group;
     }
 
+    /*
+     * Read Message
+     */
+    Message.read = function (id) {
+        this.id = id;
+        this.type = 'read';
+    };
+
+    Message.read.prototype.set = function (opt) {
+        this.body = {
+            ackId: opt.id
+            , to: opt.to
+        }
+    };
+
+    /*
+     * deliver message
+     */
+    Message.delivery = function (id) {
+        this.id = id;
+        this.type = 'delivery';
+    };
+
+    Message.delivery.prototype.set = function (opt) {
+        this.body = {
+            bodyId: opt.id
+            , to: opt.to
+        };
+    };
 
     /*
      * text message
@@ -220,15 +250,15 @@
             message.ext.weichat = message.ext.weichat || {};
             message.ext.weichat.originType = message.ext.weichat.originType || 'webim';
 
+            var dom;
             var json = {
                 from: conn.context.userId || ''
                 , to: message.to
                 , bodies: [message.body]
                 , ext: message.ext || {}
             };
-
             var jsonstr = _utils.stringify(json);
-            var dom = $msg({
+            dom = $msg({
                 type: message.group || 'chat'
                 , to: message.toJid
                 , id: message.id
@@ -237,6 +267,22 @@
 
             if (message.roomType) {
                 dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+            }
+            if (message.bodyId) {
+                dom.up().c('body').t(message.bodyId);
+                var delivery = {
+                    xmlns: 'urn:xmpp:receipts'
+                    , id: message.bodyId
+                };
+                dom.up().c('delivery').t(_utils.stringify(delivery));
+            }
+            if (message.ackId) {
+                dom.up().c('body').t(message.ackId);
+                var read = {
+                    xmlns: 'urn:xmpp:receipts'
+                    , id: message.ackId
+                };
+                dom.up().c('acked').t(_utils.stringify(read));
             }
 
             setTimeout(function () {
@@ -256,10 +302,9 @@
             }
             var _tmpComplete = me.msg.onFileUploadComplete;
             var _complete = function (data) {
-
                 if (data.entities[0]['file-metadata']) {
                     var file_len = data.entities[0]['file-metadata']['content-length'];
-                    me.msg.file_length = file_len;
+                    // me.msg.file_length = file_len;
                     me.msg.filetype = data.entities[0]['file-metadata']['content-type'];
                     if (file_len > 204800) {
                         me.msg.thumbnail = true;
@@ -277,7 +322,7 @@
                         , height: me.msg.height || 0
                     }
                     , length: me.msg.length || 0
-                    , file_length: me.msg.file_length || 0
+                    , file_length: me.msg.ext.file_length || 0
                     , filetype: me.msg.filetype
                 }
                 _send(me.msg);

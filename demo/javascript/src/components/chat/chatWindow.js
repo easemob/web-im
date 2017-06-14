@@ -20,7 +20,8 @@ module.exports = React.createClass({
 
     getGroupInfo: function (cb_type) {
         //only group window
-        if (this.props.chatType == 'groupChat') {
+        if (this.props.chatType == 'groupChat'
+            || this.props.chatType == 'chatRoom') {
             var me = this;
             if (WebIM.config.isWindowSDK) {
                 WebIM.doQuery('{"type":"groupSpecification","id":"' + me.props.roomId + '"}',
@@ -42,7 +43,7 @@ module.exports = React.createClass({
                         }
                     },
                     function failure(errCode, errMessage) {
-                        Demo.api.NotifyError("queryRoomInfo:" + errCode);
+                        Demo.api.NotifyError("queryRoomInfo:" + errCode + ' ' + errMessage);
                     });
 
             } else {
@@ -51,9 +52,9 @@ module.exports = React.createClass({
                     success: function (settings, members, fields) {
                         if (members && members.length > 0) {
                             var jid = members[0].jid;
-                            var username = jid.substring(jid.indexOf('_') + 1).split('@')[0];
+                            var username = jid.substr(0, jid.lastIndexOf("@"));
                             var admin = 0;
-                            if (members[0].affiliation == 'owner' && username == Demo.user) {
+                            if (members[0].affiliation == 'owner' && username.toLowerCase() == Demo.user) {
                                 admin = 1;
                             }
                             me.setState({settings: settings, admin: admin, owner: members, fields: fields});
@@ -103,58 +104,232 @@ module.exports = React.createClass({
                         }
                     },
                     function failure(errCode, errMessage) {
-                        Demo.api.NotifyError("listMember:" + errCode);
+                        Demo.api.NotifyError("listMember:" + errCode + ' ' + errMessage);
                     });
             } else {
-                Demo.conn.queryRoomMember({
-                    roomId: me.props.roomId,
-                    success: function (members) {
-                        if (members && members.length > 0) {
-                            me.refreshMemberList(members);
-                        } else {
-                            //trigger adding owner to members
-                            me.refreshMemberList([]);
+                var pageNum = 1,
+                    pageSize = 1000;
+                var options = {
+                    pageNum: pageNum,
+                    pageSize: pageSize,
+                    groupId: Demo.selected,
+                    success: function (resp) {
+                        var data = resp.data, admin;
+                        for(var i in data){
+                            if(data[i]['owner']){
+                                if(data[i]['owner'] === Demo.user){
+                                    this.getAdmin(data);
+                                    admin = true;
+                                }
+                            }
                         }
-                    },
-                    error: function () {
-                    }
-                });
+                        if(!admin){
+                            this.refreshMemberList(data);
+                        }
+                    }.bind(this),
+                    error: function(e){}
+                };
+                Demo.conn.listGroupMember(options);
             }
         } else {
             this.setState({members: [], memberShowStatus: false});
         }
     },
 
-    addToGroupBlackList: function (username, index) {
-        var me = this;
+    addToGroupBlackList: function (username) {
         var members = this.state.members;
-        var item = _.find(this.state.members, function (item) {
-            return new RegExp(Demo.user).test(item.jid);
-        });
-
-        Demo.api.blacklist.addGroupMemberToBlacklist({
-            to: username,
-            roomId: this.props.roomId,
-            affiliation: item.affiliation,
+        var options = {
+            groupId: Demo.selected,
+            username: username,
             success: function () {
-                log('memebers', members);
-                members.splice(index, 1);
-                me.setState({
-                    members: members
-                })
+                for (var i in members){
+                    if(members[i]['member'] && members[i]['member'] === username){
+                        delete members[i];
+                        break;
+                    }
+                }
+                this.setState({members: members});
+            }.bind(this),
+            error: function(){}
+        };
+        Demo.conn.groupBlockSingle(options);
+        /*
+        username = [];
+        username['1qaz'] = true;
+        username['lxj111'] = true;
+        var usernames = ['1qaz', 'lxj111'];
+        var options = {
+            groupId: Demo.selected,
+            usernames: usernames,
+            success: function () {
+                for (var i in members){
+                    if(members[i]['member'] && username[members[i]['member']]){
+                        delete members[i];
+                    }
+                }
+                this.setState({members: members});
+            }.bind(this),
+            error: function(){}
+        };
+        Demo.conn.groupBlockMulti(options);
+        */
+    },
+
+    // TODO: 群禁言、群升降级
+    mute: function (username) {
+        var muteDuration = 886400000;
+        var options = {
+            username: username,
+            muteDuration: muteDuration,
+            groupId: Demo.selected,
+            success: function (resp) {
+                var members = this.state.members;
+                for(var i in members){
+                    if(members[i]['member']){
+                        if(members[i]['member'] === username){
+                            members[i]['muted'] = true;
+                            break;
+                        }
+                    }
+                }
+                this.setState({members: members});
+            }.bind(this),
+            error: function(e){}
+        };
+        Demo.conn.mute(options);
+    },
+
+    // 移除禁言
+    removeMute: function(username){
+        var options = {
+            groupId: Demo.selected,
+            username: username,
+            success: function(resp){
+                var members = this.state.members;
+                for(var i in members){
+                    if(members[i]['member']){
+                        if(members[i]['member'] === username){
+                            members[i]['muted'] && delete members[i]['muted'];
+                            break;
+                        }
+                    }
+                }
+                this.setState({members: members});
+            }.bind(this),
+            error: function (e) {
+
             }
-        });
+        };
+        Demo.conn.removeMute(options);
+    },
+
+    getAdmin: function(data){
+        var options = {
+            groupId: Demo.selected,
+            success: function (resp) {
+                var admin = resp.data;
+                for(var j in admin){
+                    admin[admin[j]] = true;
+                    delete admin[j];
+                }
+                for(var i in data){
+                    if(data[i]['member']){
+                        var username = data[i]['member'];
+                        if(admin[username]){
+                            data[i]['admin'] = true;
+                        }
+                    }
+                }
+                this.getMuted(data);
+            }.bind(this),
+            error: function(e){}
+        };
+        Demo.conn.getGroupAdmin(options);
+    },
+
+    getMuted: function(data){
+        var options = {
+            groupId: Demo.selected,
+            success: function (resp) {
+                var muted = resp.data;
+                for(var i in muted){
+                    var user = muted[i]['user']
+                    muted[user] = true;
+                    delete muted[i];
+                }
+                for(var j in data){
+                    if(data[j]['member']){
+                        var username = data[j]['member'];
+                        if(muted[username]){
+                            data[j]['muted'] = true;
+                        }
+                    }
+                }
+                this.refreshMemberList(data);
+            }.bind(this),
+            error: function(e){}
+        };
+        Demo.conn.getMuted(options);
+    },
+
+    setAdmin: function (username) {
+        // 设置管理员
+        var options = {
+            groupId: Demo.selected,
+            username: username,
+            success: function(resp){
+                var members = this.state.members;
+                for(var i in members){
+                    if(members[i]['member']){
+                        if(members[i]['member'] === username){
+                            members[i]['admin'] = true;
+                            break;
+                        }
+                    }
+                }
+                this.setState({members: members});
+            }.bind(this),
+            error: function(e){
+            }.bind(this)
+        };
+        Demo.conn.setAdmin(options);
+    },
+
+    removeAdmin: function (username) {
+
+        var me = this;
+        // 取消管理员
+        var options = {
+            groupId: Demo.selected,
+            username: username,
+            success: function(resp){
+                var members = me.state.members;
+                for(var i in members){
+                    if(members[i]['member']){
+                        if(members[i]['member'] === username){
+                            if(members[i]['admin']){
+                                delete members[i]['admin'];
+                            }
+                            break;
+                        }
+                    }
+                }
+                me.setState({members: members});
+            },
+            error: function (e) {
+            }
+        };
+        Demo.conn.removeAdmin(options);
     },
 
     refreshMemberList: function (members) {
-        // this.refs.i.className = 'webim-down-icon font smallest dib webim-up-icon';
-        this.setState({members: this.state.owner.concat(members), memberShowStatus: true});
+        this.setState({members: members, memberShowStatus: true});
     },
 
     send: function (msg) {
         msg.chatType = this.props.chatType;
         Demo.conn.send(msg);
-        Demo.api.addToChatRecord(msg, 'txt');
+        Demo.api.addToChatRecord(msg, 'txt', 'Undelivered');
         Demo.api.appendMsg(msg, 'txt');
     },
 
@@ -169,7 +344,7 @@ module.exports = React.createClass({
 
     // hide when blur close
     handleOnBlur: function () {
-        // this.setState({memberShowStatus: false});
+        this.setState({memberShowStatus: false});
     },
 
     render: function () {
@@ -183,65 +358,133 @@ module.exports = React.createClass({
             memberStatus = this.state.memberShowStatus ? '' : ' hide',
             roomMember = [];
 
+        for(var i in this.state.members){
+            var affiliation = i, username = this.state.members[i], isAdmin=false, isMuted=false;
+            var item = this.state.members[i];
+            if(item['member']){
+                affiliation = 'member';
+                isAdmin = item['admin'];
+                isMuted = item['muted'];
+            }else{
+                affiliation = 'owner';
+            }
+            username = item[affiliation];
 
-        for (var i = 0, l = this.state.members.length; i < l; i++) {
-            var jid = this.state.members[i].jid,
-                username = jid.substring(jid.indexOf('_') + 1).split('@')[0],
-                affiliation = this.state.members[i].affiliation;
+            if(isAdmin){
+                roomMember.push(<li key={i}>
+                    <Avatar src='demo/images/default.png'/>
+                    <span className="webim-group-name">
+                    {username}
+                    </span>
+                    <div className="webim-operation-icon"
+                        style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                        <i className={"webim-leftbar-icon font smaller " + className}
+                            style={{display: this.state.admin != 1 ? 'none' : ''}}
+                            onClick={this.addToGroupBlackList.bind(this, username, i)}
+                            title={Demo.lan.addToGroupBlackList}>n</i>
+                            </div>
+                            <div className="webim-operation-icon"
+                            style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                        <i className={"webim-leftbar-icon font smaller " + className}
+                            style={{display: this.state.admin != 1 ? 'none' : ''}}
+                            onClick={isMuted?this.removeMute.bind(this, username) : this.mute.bind(this, username)}
+                            title={isMuted?Demo.lan.removeMute:Demo.lan.mute}>{isMuted?'e':'f'}</i>
+                            </div>
+                            <div className="webim-operation-icon"
+                            style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                        <i className={"webim-leftbar-icon font smaller " + className}
+                            style={{display: this.state.admin != 1 ? 'none' : ''}}
+                            onClick={isAdmin ? this.removeAdmin.bind(this, username) : this.setAdmin.bind(this, username)}
+                            title={Demo.lan.rmAdministrator}>&darr;</i>
+                    </div>
+                </li>);
+            }else{
+                roomMember.push(<li key={i}>
+                    <Avatar src='demo/images/default.png'/>
+                    <span className="webim-group-name">
+                    {username}
+                    </span>
+                    <div className="webim-operation-icon"
+                        style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                        <i className={"webim-leftbar-icon font smaller " + className}
+                            style={{display: this.state.admin != 1 ? 'none' : ''}}
+                            onClick={this.addToGroupBlackList.bind(this, username, i)}
+                            title={Demo.lan.addToGroupBlackList}>n</i>
+                            </div>
+                            <div className="webim-operation-icon"
+                            style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                        <i className={"webim-leftbar-icon font smaller " + className}
+                            style={{display: this.state.admin != 1 ? 'none' : ''}}
+                            onClick={isMuted?this.removeMute.bind(this, username) : this.mute.bind(this, username)}
+                            title={isMuted?Demo.lan.removeMute:Demo.lan.mute}>{isMuted?'e':'f'}</i>
+                            </div>
+                            <div className="webim-operation-icon"
+                            style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                        <i className={"webim-leftbar-icon font smaller " + className}
+                            style={{display: this.state.admin != 1 ? 'none' : ''}}
+                            onClick={isAdmin ? this.removeAdmin.bind(this, username) : this.setAdmin.bind(this, username)}
+                            title={Demo.lan.administrator}>&uarr;</i>
+                    </div>
+                </li>);
+            }
 
 
-            roomMember.push(<li key={i}>
-                <Avatar src='demo/images/default.png'/>
-                <span>{username}</span>
-                <div className="webim-operation-icon" style={ {display: affiliation == 'owner' ? 'none' : ''} }>
-                    <i className={"webim-leftbar-icon font smaller " + className}
-                       style={{display: this.state.admin != 1 ? 'none' : ''}}
-                       onClick={this.addToGroupBlackList.bind(this, username, i)}>n</i>
-                </div>
-            </li>);
         }
 
         var operations = [];
         if (Demo.selectedCate == 'friends') {
-            operations.push(<OperationsFriends key='operation_div' ref='operation_div' roomId={this.props.roomId}
-                                               admin={this.state.admin}
-                                               owner={this.state.owner}
-                                               settings={this.state.settings}
-                                               getGroupInfo={this.getGroupInfo}
-                                               onBlur={this.handleOnBlur}
-                                               name={this.props.name}
-                                               updateNode={this.props.updateNode}
-                                               delFriend={this.props.delFriend}
+            operations.push(< OperationsFriends
+                key='operation_div'
+                ref='operation_div'
+                roomId={this.props.roomId}
+                admin={this.state.admin}
+                owner={this.state.owner}
+                settings={this.state.settings}
+                getGroupInfo={this.getGroupInfo}
+                onBlur={this.handleOnBlur}
+                name={this.props.name}
+                updateNode={this.props.updateNode}
+                delFriend={this.props.delFriend}
             />);
         } else if (Demo.selectedCate == 'groups') {
-            operations.push(<OperationsGroups key='operation_div' ref='operation_div' name={this.props.name}
-                                              roomId={this.props.roomId}
-                                              admin={this.state.admin}
-                                              owner={this.state.owner}
-                                              settings={this.state.settings}
-                                              fields={this.state.fields}
-                                              getGroupInfo={this.getGroupInfo}
-                                              onBlur={this.handleOnBlur}
-                                              leaveGroup={this.props.leaveGroup}
-                                              destroyGroup = {this.props.destroyGroup}
+            operations.push(< OperationsGroups
+                key='operation_div'
+                ref='operation_div'
+                name={this.props.name}
+                roomId={this.props.roomId}
+                admin={this.state.admin}
+                owner={this.state.owner}
+                settings={this.state.settings}
+                fields={this.state.fields}
+                getGroupInfo={this.getGroupInfo}
+                onBlur={this.handleOnBlur}
+                leaveGroup={this.props.leaveGroup}
+                destroyGroup={this.props.destroyGroup}
             />);
         }
 
         return (
             <div className={'webim-chatwindow ' + this.props.className}>
                 <div className='webim-chatwindow-title'>
-                    {(Demo.selectedCate == 'chatrooms' || Demo.selectedCate == 'groups') ? Demo.lan.groupMemberLabel : this.props.name }
+                    {(Demo.selectedCate == 'chatrooms' || Demo.selectedCate == 'groups') ? Demo.lan.groupMemberLabel : this.props.name}
                     <i ref='i'
                        className={'webim-down-icon font smallest ' + className + " " + (this.state.memberShowStatus ? 'webim-up-icon' : 'webim-down-icon')}
-                       onClick={this.preListMember}>D</i>
+                       onClick={this.preListMember}>D
+                    </i>
                 </div>
                 <div className={(operations.length > 0) ? '' : 'hide'}>
                     {operations}
                 </div>
-                <ul onBlur={this.handleOnBlur} tabIndex="-1" ref='member'
-                    className={'webim-group-memeber' + memberStatus}>{roomMember}</ul>
-                <div id={this.props.id} ref='wrapper' className='webim-chatwindow-msg'></div>
-                <SendWrapper send={this.send} {...props} />
+                <ul onBlur={this.handleOnBlur}
+                    tabIndex="-1"
+                    ref='member'
+                    className={'webim-group-memeber' + memberStatus}> {roomMember}
+                </ul>
+                <div id={this.props.id}
+                     ref='wrapper'
+                     className='webim-chatwindow-msg'>
+                </div>
+                <SendWrapper send={this.send}{...props}/>
             </div>
         );
     }

@@ -126,6 +126,13 @@
   cursor: pointer;
   margin-bottom: 10px;
   color: $grayColor;
+  .rotate{
+    transform:rotate(180deg);
+    -webkit-transform:rotate(180deg);
+    -moz-transform:rotate(180deg);
+    -o-transform:rotate(180deg);
+    -ms-transform:rotate(180deg);
+  }
 }
 
 .webim-operations-icon:hover,
@@ -239,7 +246,6 @@
   //border-right: 1px solid rgb(242, 242, 242);
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   background-color: rgb(255, 255, 255);
-  margin-bottom: 30px;
 }
 
 .webim-blacklist-item {

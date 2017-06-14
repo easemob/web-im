@@ -39,7 +39,12 @@ module.exports = React.createClass({
     },
 
     logout: function () {
+        Demo.selected = '';
         Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT);
+    },
+
+    restUpdateGroups: function(rooms){
+        this.props.restUpdateGroups(rooms);
     },
 
     render: function () {
@@ -52,6 +57,10 @@ module.exports = React.createClass({
                         <i className='font smallest'>L</i>
                         <span>{Demo.lan.addAFriend}</span>
                     </li>
+                    <li onClick={this.joinPublicGroup}>
+                    <i className='font smallest'>L</i>
+                        <span>{Demo.lan.joinPublicGroup}</span>
+                    </li>
                     <li onClick={this.showBlacklist}>
                         <i className='font smallest'>n</i>
                         <span>{Demo.lan.blacklist}</span>
@@ -60,10 +69,6 @@ module.exports = React.createClass({
                         <i className='font smallest'>L</i>
                         <span>{Demo.lan.createGroup}</span>
                     </li>
-                    {/*<li onClick={this.joinPublicGroup} className={WebIM.config.isWindowSDK ? 'hide' : ''}>*/}
-                    {/*<i className='font smallest'>L</i>*/}
-                    {/*<span>{Demo.lan.joinPublicGroup}</span>*/}
-                    {/*</li>*/}
                     <li onClick={this.logout}>
                         <i className='font smallest'>Q</i>
                         <span>{Demo.lan.quit}({this.props.username})</span>

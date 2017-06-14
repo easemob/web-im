@@ -33,7 +33,7 @@ var FridendList = React.createClass({
                     }
                 },
                 function failure(errCode, errMessage) {
-                    Demo.api.NotifyError("FridendList queryRoomMember:" + errCode);
+                    Demo.api.NotifyError("FridendList queryRoomMember:" + errCode + ' ' + errMessage);
                 });
         } else {
             Demo.conn.queryRoomMember({

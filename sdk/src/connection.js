@@ -5,6 +5,8 @@ var _msg = require('./message');
 var _message = _msg._msg;
 var _msgHash = {};
 var Queue = require('./queue').Queue;
+var CryptoJS = require('crypto-js');
+var _ = require('underscore');
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -40,6 +42,7 @@ Strophe.Websocket.prototype._closeSocket = function () {
     }
 };
 
+
 /**
  *
  * Strophe.Websocket has a bug while logout:
@@ -54,7 +57,7 @@ Strophe.Websocket.prototype._closeSocket = function () {
  * Fix it by overide  _onMessage
  */
 Strophe.Websocket.prototype._onMessage = function (message) {
-    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + 'recv:', message.data);
+    logMessage(message)
     var elem, data;
     // check for closing stream
     // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
@@ -277,7 +280,8 @@ var _parseFriend = function (queryTag, conn, from) {
             friend.groups = groups;
             rouster.push(friend);
             // B同意之后 -> B订阅A
-            if (conn && (subscription == 'from')) {
+            // fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
+            if (conn && (subscription == 'from') && !ask) {
                 conn.subscribe({
                     toJid: jid
                 });
@@ -318,6 +322,7 @@ var _login = function (options, conn) {
         _loginCallback(status, msg, conn);
     };
 
+    //console.log('jid=', conn.context.jid)
     conn.context.stropheConn = stropheConn;
     if (conn.route) {
         stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold, conn.route);
@@ -327,15 +332,41 @@ var _login = function (options, conn) {
 };
 
 var _parseMessageType = function (msginfo) {
-    var msgtype = 'normal';
-    var receiveinfo = msginfo.getElementsByTagName('received');
-    if (receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
+    var receiveinfo = msginfo.getElementsByTagName('received'),
+        inviteinfo = msginfo.getElementsByTagName('invite'),
+        deliveryinfo = msginfo.getElementsByTagName('delivery'),
+        acked = msginfo.getElementsByTagName('acked'),
+        error = msginfo.getElementsByTagName('error'),
+        msgtype = 'normal';
+    if (receiveinfo && receiveinfo.length > 0
+        &&
+        receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
+
         msgtype = 'received';
-    } else {
-        var inviteinfo = msginfo.getElementsByTagName('invite');
-        if (inviteinfo && inviteinfo.length > 0) {
-            msgtype = 'invite';
+
+    } else if (inviteinfo && inviteinfo.length > 0) {
+
+        msgtype = 'invite';
+
+    } else if (deliveryinfo && deliveryinfo.length > 0) {
+
+        msgtype = 'delivery';           // 消息送达
+
+    } else if (acked && acked.length) {
+
+        msgtype = 'acked';              // 消息已读
+
+    } else if (error && error.length) {
+
+        var errorItem = error[0],
+            userMuted = errorItem.getElementsByTagName('user-muted');
+
+        if (userMuted && userMuted.length) {
+
+            msgtype = 'userMuted';
+
         }
+
     }
     return msgtype;
 };
@@ -372,17 +403,36 @@ var _loginCallback = function (status, msg, conn) {
             conn.handelSendQueue();
         }, 200);
         var handleMessage = function (msginfo) {
+            var delivery = msginfo.getElementsByTagName('delivery');
+            var acked = msginfo.getElementsByTagName('acked');
+            if (delivery.length) {
+                conn.handleDeliveredMessage(msginfo);
+                return true;
+            }
+            if (acked.length) {
+                conn.handleAckedMessage(msginfo);
+                return true;
+            }
             var type = _parseMessageType(msginfo);
-
-            if ('received' === type) {
-                conn.handleReceivedMessage(msginfo);
-                return true;
-            } else if ('invite' === type) {
-                conn.handleInviteMessage(msginfo);
-                return true;
-            } else {
-                conn.handleMessage(msginfo);
-                return true;
+            switch (type) {
+                case "received":
+                    conn.handleReceivedMessage(msginfo);
+                    return true;
+                case "invite":
+                    conn.handleInviteMessage(msginfo);
+                    return true;
+                case "delivery":
+                    conn.handleDeliveredMessage(msginfo);
+                    return true;
+                case "acked":
+                    conn.handleAckedMessage(msginfo);
+                    return true;
+                case "userMuted":
+                    conn.handleMutedMessage(msginfo);
+                    return true;
+                default:
+                    conn.handleMessage(msginfo);
+                    return true;
             }
         };
         var handlePresence = function (msginfo) {
@@ -620,6 +670,12 @@ var connection = function (options) {
     this.intervalId = null;   //clearInterval return value
     this.apiUrl = options.apiUrl || '';
     this.isWindowSDK = options.isWindowSDK || false;
+    this.encrypt = options.encrypt || {encrypt: {type: 'none'}};
+    this.delivery = options.delivery || false;
+    this.user = '';
+    this.orgName = '';
+    this.appName = '';
+    this.token = '';
 
     this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
     this.dnsIndex = 0;   //the dns ip used in dnsArr currently
@@ -665,9 +721,13 @@ connection.prototype.listen = function (options) {
     this.onError = options.onError || _utils.emptyfn;
     this.onReceivedMessage = options.onReceivedMessage || _utils.emptyfn;
     this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
+    this.onDeliverdMessage = options.onDeliveredMessage || _utils.emptyfn;
+    this.onReadMessage = options.onReadMessage || _utils.emptyfn;
+    this.onMutedMessage = options.onMutedMessage || _utils.emptyfn;
     this.onOffline = options.onOffline || _utils.emptyfn;
     this.onOnline = options.onOnline || _utils.emptyfn;
     this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
+    this.onCreateGroup = options.onCreateGroup || _utils.emptyfn;
     //for WindowSDK start
     this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
     this.onUpdateMyRoster = options.onUpdateMyRoster || _utils.emptyfn;
@@ -897,6 +957,17 @@ connection.prototype.signup = function (options) {
 
 
 connection.prototype.open = function (options) {
+    var appkey = options.appKey,
+        orgName = appkey.split('#')[0],
+        appName = appkey.split('#')[1];
+    this.orgName = orgName;
+    this.appName = appName;
+    if (options.accessToken) {
+        this.token = options.accessToken;
+    }
+    if (options.xmppURL) {
+        this.url = _getXmppUrl(options.xmppURL, this.https);
+    }
     if (location.protocol != 'https:' && this.isHttpDNS) {
         this.dnsIndex = 0;
         this.getHttpDNS(options, 'login');
@@ -906,6 +977,7 @@ connection.prototype.open = function (options) {
 };
 
 connection.prototype.login = function (options) {
+    this.user = options.user;
     var pass = _validCheck(options, this);
 
     if (!pass) {
@@ -932,12 +1004,13 @@ connection.prototype.login = function (options) {
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
-            if(options.success)
+            if (options.success)
                 options.success(data);
+            conn.token = data.access_token;
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
-            if(options.error)
+            if (options.error)
                 options.error();
             if (location.protocol != 'https:' && conn.isHttpDNS) {
                 if ((conn.restIndex + 1) < conn.restTotal) {
@@ -1096,6 +1169,9 @@ connection.prototype.handlePresence = function (msginfo) {
     var fromUser = _parseNameFromJidFn(from);
     var toUser = _parseNameFromJidFn(to);
     var isCreate = false;
+    var isMemberJoin = false;
+    var isDecline = false;
+    var isApply = false;
     var info = {
         from: fromUser,
         to: toUser,
@@ -1162,25 +1238,82 @@ connection.prototype.handlePresence = function (msginfo) {
                 info.type = 'createGroupACK';
                 isCreate = true;
             }
-            else
-                info.type = 'joinPublicGroupSuccess';
+            // else
+            //     info.type = 'joinPublicGroupSuccess';
         }
     }
 
-    var apply = msginfo.getElementsByTagName('apply');
-    if (apply && apply.length > 0) {
-        apply = apply[0];
-        var toNick = apply.getAttribute('toNick');
-        var groupJid = apply.getAttribute('to');
-        var userJid = apply.getAttribute('from');
-        var groupName = _parseNameFromJidFn(groupJid);
-        var userName = _parseNameFromJidFn(userJid);
-        info.toNick = toNick;
-        info.groupName = groupName;
-        info.type = 'joinGroupNotifications';
-        var reason = apply.getElementsByTagName('reason');
-        if (reason && reason.length > 0) {
-            info.reason = Strophe.getText(reason[0]);
+    var x = msginfo.getElementsByTagName('x');
+    if (x && x.length > 0) {
+        // 加群申请
+        var apply = x[0].getElementsByTagName('apply');
+        // 加群成功
+        var accept = x[0].getElementsByTagName('accept');
+        // 同意加群后用户进群通知
+        var item = x[0].getElementsByTagName('item');
+        // 加群被拒绝
+        var decline = x[0].getElementsByTagName('decline');
+        // 被设为管理员
+        var addAdmin = x[0].getElementsByTagName('add_admin');
+        // 被取消管理员
+        var removeAdmin = x[0].getElementsByTagName('remove_admin');
+        // 被禁言
+        var addMute = x[0].getElementsByTagName('add_mute');
+        // 取消禁言
+        var removeMute = x[0].getElementsByTagName('remove_mute');
+
+        if (apply && apply.length > 0) {
+            isApply = true;
+            info.toNick = apply[0].getAttribute('toNick');
+            info.type = 'joinGroupNotifications';
+            var groupJid = apply[0].getAttribute('to');
+            var gid = groupJid.split('@')[0].split('_');
+            gid = gid[gid.length - 1];
+            info.gid = gid;
+        } else if (accept && accept.length > 0) {
+            info.type = 'joinPublicGroupSuccess';
+        } else if (item && item.length > 0) {
+            var affiliation = item[0].getAttribute('affiliation'),
+                role = item[0].getAttribute('role');
+            if (affiliation == 'member'
+                ||
+                role == 'participant') {
+                isMemberJoin = true;
+                info.mid = info.fromJid.split('/');
+                info.mid = info.mid[info.mid.length - 1];
+                info.type = 'memberJoinPublicGroupSuccess';
+            }
+        } else if (decline && decline.length) {
+            isDecline = true;
+            var gid = decline[0].getAttribute("fromNick");
+            var owner = _parseNameFromJidFn(decline[0].getAttribute("from"));
+            info.type = "joinPublicGroupDeclined";
+            info.owner = owner;
+            info.gid = gid;
+        } else if (addAdmin && addAdmin.length > 0) {
+            var gid = _parseNameFromJidFn(addAdmin[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(addAdmin[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "addAdmin";
+        } else if (removeAdmin && removeAdmin.length > 0) {
+            var gid = _parseNameFromJidFn(removeAdmin[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(removeAdmin[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "removeAdmin";
+        } else if (addMute && addMute.length > 0) {
+            var gid = _parseNameFromJidFn(addMute[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(addMute[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "addMute";
+        } else if (removeMute && removeMute.length > 0) {
+            var gid = _parseNameFromJidFn(removeMute[0].getAttribute('mucjid'));
+            var owner = _parseNameFromJidFn(removeMute[0].getAttribute('from'));
+            info.owner = owner;
+            info.gid = gid;
+            info.type = "removeMute";
         }
     }
 
@@ -1210,8 +1343,22 @@ connection.prototype.handlePresence = function (msginfo) {
 
         if (/subscribe/.test(info.type)) {
             //subscribe | subscribed | unsubscribe | unsubscribed
-        } else if (type == "" && !info.status && !info.error && !isCreate) {
-            info.type = 'joinPublicGroupSuccess';
+        } else if (type == ""
+            &&
+            !info.status
+            &&
+            !info.error
+            &&
+            !isCreate
+            &&
+            !isApply
+            &&
+            !isMemberJoin
+            &&
+            !isDecline
+        ) {
+            console.log(2222222, msginfo, info, isApply);
+            // info.type = 'joinPublicGroupSuccess';
         } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
             if (info.destroy) {// Group or Chat room Deleted.
                 info.type = 'deleteGroupChat';
@@ -1282,6 +1429,7 @@ connection.prototype.handleMessage = function (msginfo) {
 
     var id = msginfo.getAttribute('id') || '';
 
+
     // cache ack into sendQueue first , handelSendQueue will do the send thing with the speed of  5/s
     this.cacheReceiptsMessage({
         id: id
@@ -1301,7 +1449,6 @@ connection.prototype.handleMessage = function (msginfo) {
         errorCode = error[0].getAttribute('code');
         var textDOM = error[0].getElementsByTagName('text');
         errorText = textDOM[0].textContent || textDOM[0].text;
-        log('handle error', errorCode, errorText);
     }
 
     var msgDatas = parseMsgData.data;
@@ -1336,6 +1483,30 @@ connection.prototype.handleMessage = function (msginfo) {
             switch (type) {
                 case 'txt':
                     var receiveMsg = msgBody.msg;
+                    if (self.encrypt.type === 'base64') {
+                        receiveMsg = atob(receiveMsg);
+                    } else if (self.encrypt.type === 'aes') {
+                        var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
+                        var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
+                        var mode = self.encrypt.mode.toLowerCase();
+                        var option = {};
+                        if (mode === 'cbc') {
+                            option = {
+                                iv: iv,
+                                mode: CryptoJS.mode.CBC,
+                                padding: CryptoJS.pad.Pkcs7
+                            };
+                        } else if (mode === 'ebc') {
+                            option = {
+                                mode: CryptoJS.mode.ECB,
+                                padding: CryptoJS.pad.Pkcs7
+                            }
+                        }
+                        var encryptedBase64Str = receiveMsg;
+                        var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+                        var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+                        receiveMsg = decryptedStr;
+                    }
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
                     if (emojibody.isemoji) {
                         var msg = {
@@ -1501,6 +1672,16 @@ connection.prototype.handleMessage = function (msginfo) {
                     break;
             }
             ;
+            if (self.delivery) {
+                var msgId = self.getUniqueId();
+                var bodyId = msg.id;
+                var deliverMessage = new WebIM.message('delivery', msgId);
+                deliverMessage.set({
+                    id: bodyId
+                    , to: msg.from
+                });
+                self.send(deliverMessage.body);
+            }
         } catch (e) {
             this.onError({
                 type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
@@ -1510,9 +1691,51 @@ connection.prototype.handleMessage = function (msginfo) {
     }
 };
 
+connection.prototype.handleDeliveredMessage = function (message) {
+    var id = message.id;
+    var body = message.getElementsByTagName('body');
+    var mid = 0;
+    if (isNaN(body[0].innerHTML))
+        mid = body[1].innerHTML;
+    else
+        mid = body[0].innerHTML;
+    var msg = {
+        mid: mid
+    };
+    this.onDeliverdMessage(msg);
+    this.sendReceiptsMessage({
+        id: id
+    });
+};
+
+connection.prototype.handleAckedMessage = function (message) {
+    var id = message.id;
+    var body = message.getElementsByTagName('body');
+    var mid = 0;
+    if (isNaN(body[0].innerHTML))
+        mid = body[1].innerHTML;
+    else
+        mid = body[0].innerHTML;
+    var msg = {
+        mid: mid
+    };
+    this.onReadMessage(msg);
+    this.sendReceiptsMessage({
+        id: id
+    });
+};
+
 connection.prototype.handleReceivedMessage = function (message) {
     try {
-        this.onReceivedMessage(message);
+        var received = message.getElementsByTagName("received");
+        var mid = received[0].getAttribute('mid');
+        var body = message.getElementsByTagName("body");
+        var id = body[0].innerHTML;
+        var msg = {
+            mid: mid,
+            id: id
+        };
+        this.onReceivedMessage(msg);
     } catch (e) {
         this.onError({
             type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
@@ -1578,6 +1801,13 @@ connection.prototype.handleInviteMessage = function (message) {
     });
 };
 
+connection.prototype.handleMutedMessage = function (message) {
+    var id = message.id;
+    this.onMutedMessage({
+        mid: id
+    });
+};
+
 connection.prototype.sendCommand = function (dom, id) {
     if (this.isOpened()) {
         this.context.stropheConn.send(dom);
@@ -1590,10 +1820,16 @@ connection.prototype.sendCommand = function (dom, id) {
 };
 
 connection.prototype.getUniqueId = function (prefix) {
+    // fix: too frequently msg sending will make same id
+    if (this.autoIncrement) {
+        this.autoIncrement++
+    } else {
+        this.autoIncrement = 1
+    }
     var cdate = new Date();
     var offdate = new Date(2010, 1, 1);
     var offset = cdate.getTime() - offdate.getTime();
-    var hexd = parseInt(offset).toString(16);
+    var hexd = parseFloat(offset).toString(16) + this.autoIncrement;
 
     if (typeof prefix === 'string' || typeof prefix === 'number') {
         return prefix + '_' + hexd;
@@ -1602,8 +1838,36 @@ connection.prototype.getUniqueId = function (prefix) {
     }
 };
 
-connection.prototype.send = function (message) {
+connection.prototype.send = function (messageSource) {
     var self = this;
+    var message = messageSource;
+    if (message.type === 'txt') {
+        if (this.encrypt.type === 'base64') {
+            message = _.clone(messageSource);
+            message.msg = btoa(message.msg);
+        } else if (this.encrypt.type === 'aes') {
+            message = _.clone(messageSource);
+            var key = CryptoJS.enc.Utf8.parse(this.encrypt.key);
+            var iv = CryptoJS.enc.Utf8.parse(this.encrypt.iv);
+            var mode = this.encrypt.mode.toLowerCase();
+            var option = {};
+            if (mode === 'cbc') {
+                option = {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                };
+            } else if (mode === 'ebc') {
+                option = {
+                    mode: CryptoJS.mode.ECB,
+                    padding: CryptoJS.pad.Pkcs7
+                }
+            }
+            var encryptedData = CryptoJS.AES.encrypt(message.msg, key, option);
+
+            message.msg = encryptedData.toString();
+        }
+    }
     if (this.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
@@ -1900,7 +2164,6 @@ connection.prototype.queryRoomInfo = function (options) {
             }
             fieldValues['name'] = (result.getElementsByTagName('identity')[0]).getAttribute('name');
         }
-        log(settings, members, fieldValues);
         suc(settings, members, fieldValues);
     };
     var err = options.error || _utils.emptyfn;
@@ -2367,7 +2630,7 @@ connection.prototype.addToBlackList = function (options) {
         }
     }
 
-    // log('addToBlackList', blacklist, piece.tree());
+    // console.log('addToBlackList', blacklist, piece.tree());
     this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
 };
 
@@ -2397,7 +2660,7 @@ connection.prototype.removeFromBlackList = function (options) {
         }
     }
 
-    // log('removeFromBlackList', blacklist, piece.tree());
+    // console.log('removeFromBlackList', blacklist, piece.tree());
     this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
 };
 
@@ -2465,7 +2728,6 @@ connection.prototype.getGroupBlacklist = function (options) {
         });
 
     this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
-        log('getGroupBlackList');
         sucFn(_parseGroupBlacklist(msginfo));
     }, function () {
         errFn();
@@ -2773,7 +3035,7 @@ connection.prototype.createGroupAsync = function (p) {
     // Strophe.info('step 1 ----------');
     // Strophe.info(options);
     me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-        // log(msgInfo);
+        // console.log(msgInfo);
 
         // for ie hack
         if ('setAttribute' in msgInfo) {
@@ -2793,6 +3055,9 @@ connection.prototype.createGroupAsync = function (p) {
             var valueDom = field.getElementsByTagName('value')[0];
             Strophe.info(fieldVar);
             switch (fieldVar) {
+                case 'muc#roomconfig_maxusers':
+                    _setText(valueDom, options.optionsMaxUsers || 200);
+                    break;
                 case 'muc#roomconfig_roomname':
                     _setText(valueDom, options.subject || '');
                     break;
@@ -2874,6 +3139,414 @@ connection.prototype.createGroup = function (options) {
     // createGroupACK
     this.sendCommand(pres.tree());
 };
+// 通过Rest接口创建群组
+connection.prototype.createGroupNew = function (opt) {
+    opt.data.owner = this.user;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups',
+        dataType: 'json',
+        type: 'POST',
+        data: JSON.stringify(opt.data),
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = function (respData) {
+        opt.success(respData);
+        this.onCreateGroup(respData);
+    }.bind(this);
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+/**
+ * shieldGroup 屏蔽群组
+ * @param valueDom
+ * @param v
+ * @private
+ */
+// 通过Rest屏蔽群组
+connection.prototype.blockGroup = function (opt) {
+    var groupId = opt.groupId;
+    groupId = 'notification_ignore_' + groupId;
+    var data = {
+        entities: []
+    };
+    data.entities[0] = {};
+    data.entities[0][groupId] = true;
+    var options = {
+        type: 'PUT',
+        url: this.apiUrl + '/' + this.orgName + '/'
+        + this.appName + '/' + 'users' + '/' + this.user,
+        data: JSON.stringify(data),
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+// 通过Rest发出入群申请
+connection.prototype.joinGroup = function (opt) {
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/'
+        + this.appName + '/' + 'chatgroups' + '/' + opt.groupId + '/' + 'apply',
+        type: 'POST',
+        dataType: 'json',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+// 通过Rest获取群组列表
+connection.prototype.listGroups = function (opt) {
+    var requestData = [];
+    requestData['limit'] = opt.limit;
+    requestData['cursor'] = opt.cursor;
+    if (!requestData['cursor'])
+        delete requestData['cursor'];
+    if(isNaN(opt.limit)){
+        throw 'The parameter \"limit\" should be a number';
+        return;
+    }
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/publicchatgroups',
+        type: 'GET',
+        dataType: 'json',
+        data: requestData,
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest根据groupid获取群组详情
+connection.prototype.getGroupInfo = function (opt) {
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups/' + opt.groupId,
+        type: 'GET',
+        dataType: 'json',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest列出某用户所加入的所有群组
+connection.prototype.getGroup = function (opt) {
+    var options = {
+        url: this.apiUrl + '/' + this.orgName +
+        '/' + this.appName + '/' + 'users' + '/' +
+        this.user + '/' + 'joined_chatgroups',
+        dataType: 'json',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest列出群组的所有成员
+connection.prototype.listGroupMember = function (opt) {
+    if(isNaN(opt.pageNum) || opt.pageNum <= 0){
+        throw 'The parameter \"pageNum\" should be a positive number';
+        return;
+    }else if(isNaN(opt.pageSize) || opt.pageSize <= 0){
+        throw 'The parameter \"pageSize\" should be a positive number';
+        return;
+    }else if(opt.groupId === null && typeof opt.groupId === 'undefined'){
+        throw 'The parameter \"groupId\" should be added';
+        return;
+    }
+    var requestData = [],
+        groupId = opt.groupId;
+    requestData['pagenum'] = opt.pageNum;
+    requestData['pagesize'] = opt.pageSize;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
+        + '/' + groupId + '/users',
+        dataType: 'json',
+        type: 'GET',
+        data: requestData,
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest禁止群用户发言
+connection.prototype.mute = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {
+            "usernames": [opt.username],
+            "mute_duration": opt.muteDuration
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
+            + '/' + groupId + '/' + 'mute',
+            dataType: 'json',
+            type: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(requestData)
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest取消对用户禁言
+connection.prototype.removeMute = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
+        + '/' + groupId + '/' + 'mute' + '/' + username,
+        dataType: 'json',
+        type: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest获取群组下所有管理员
+connection.prototype.getGroupAdmin = function (opt) {
+    var groupId = opt.groupId;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
+        + '/' + groupId + '/admin',
+        dataType: 'json',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest获取群组下所有被禁言成员
+connection.prototype.getMuted = function (opt) {
+    var groupId = opt.groupId;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
+        + '/' + groupId + '/mute',
+        dataType: 'json',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest设置群管理员
+connection.prototype.setAdmin = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {
+            newadmin: opt.username
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
+            + '/' + groupId + '/' + 'admin',
+            type: "POST",
+            dataType: 'json',
+            data: JSON.stringify(requestData),
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest取消群管理员
+connection.prototype.removeAdmin = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
+            + '/' + groupId + '/' + 'admin' + '/' + username,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest同意用户加入群
+connection.prototype.agreeJoinGroup = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {
+            "applicant": opt.applicant,
+            "verifyResult": true,
+            "reason": "no clue"
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'apply_verify',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(requestData),
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest拒绝用户加入群
+connection.prototype.rejectJoinGroup = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {
+            "applicant": opt.applicant,
+            "verifyResult": false,
+            "reason": "no clue"
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'apply_verify',
+            type: 'POST',
+            dataType: "json",
+            data: JSON.stringify(requestData),
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest添加用户至群组黑名单(单个)
+connection.prototype.groupBlockSingle = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
+            + 'users' + '/' + username,
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest添加用户至群组黑名单(批量)
+connection.prototype.groupBlockMulti = function (opt) {
+    var groupId = opt.groupId,
+        usernames = opt.usernames,
+        requestData = {
+            usernames: usernames
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
+            + 'users',
+            data: JSON.stringify(requestData),
+            type: 'POST',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest将用户从群黑名单移除（单个）
+connection.prototype.removeGroupBlockSingle = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
+            + 'users' + '/' + username,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest将用户从群黑名单移除（批量）
+connection.prototype.removeGroupBlockMulti = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username.join(','),
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
+            + 'users' + '/' + username,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
 
 function _setText(valueDom, v) {
     if ('textContent' in valueDom) {
@@ -2904,6 +3577,23 @@ WebIM.doQuery = function (str, suc, fail) {
         }
     );
 };
+
+/**************************** debug ****************************/
+function logMessage(message) {
+    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
+}
+
+if (WebIM && WebIM.config.isDebug) {
+    Strophe.Connection.prototype.rawOutput = function (data) {
+        console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
+    }
+}
+
+if (WebIM && WebIM.config && WebIM.config.isSandBox) {
+    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '-sandbox.easemob.');
+    WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
+}
+
 
 module.exports = WebIM;
 

@@ -55,6 +55,8 @@ exports.English = {
     changeGroupDescription: 'Change Description',
     destroyGroup: 'Destroy',
     leaveGroup: 'Leave',
+    shield: 'Shield',
+    receive: 'Remove shield',
     haveaccount: 'i have account',
     confirm: "confirm",
     cancel: "cancel",
@@ -79,6 +81,14 @@ exports.English = {
     inviteGroup: 'You invited %s to this group',
     createGroupSuc: 'Group %s is successfully created',
     logoutSuc: 'You are off line!',
+    onMuted: 'You were muted in this group',
+    search: 'Search',
+    join: 'Join',
+    addToGroupBlackList: 'Add to group black list',
+    mute: 'Block this member',
+    removeMute: 'Unblock this member',
+    administrator: 'Set as administrator',
+    rmAdministrator: 'Remove administrator',
     last: ''
 };
 
@@ -139,6 +149,8 @@ exports.Chinese = {
     changeGroupDescription: '修改群简介',
     destroyGroup: '解散群组',
     leaveGroup: '退出群组',
+    shield: '消息免打扰',
+    receive: '接受消息',
     haveaccount: '已有账号',
     confirm: "确定",
     cancel: "取消",
@@ -165,5 +177,13 @@ exports.Chinese = {
     inviteGroup: '您邀请了%s进群',
     createGroupSuc: '已成功创建群组%s',
     logoutSuc: '您已下线',
+    onMuted: '您已被禁言',
+    search: '搜索',
+    join: '加入群组',
+    addToGroupBlackList: '加入群黑名单',
+    mute: '禁言',
+    removeMute: '解除禁言',
+    administrator: '设为管理员',
+    rmAdministrator: '移除管理员',
     last: ''
 };

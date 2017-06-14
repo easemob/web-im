@@ -70,6 +70,7 @@ var _Call = {
     },
 
     makeVoiceCall: function (callee, accessSid) {
+        console.log('ScareCrow');
         var self = this;
 
         var mediaStreamConstaints = {};
@@ -193,6 +194,12 @@ var _Call = {
 
             },
             onTermCall: (self.listener && self.listener.onTermCall) || function () {
+
+            },
+            onOtherUserOpenVoice: (self.listener && self.listener.onOtherUserOpenVoice) || function () {
+
+            },
+            onOtherUserOpenVideo: (self.listener && self.listener.onOtherUserOpenVideo) || function () {
 
             }
         }));

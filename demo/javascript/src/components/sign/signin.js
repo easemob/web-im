@@ -85,12 +85,13 @@ module.exports = React.createClass({
             accessToken: auth,
             appKey: this.props.config.appkey,
             success: function (token) {
-                var encryptUsername = WebIM.utils.encrypt(username);
-                var encryptAuth = WebIM.utils.encrypt(auth);
+                var encryptUsername = btoa(username);
+                encryptUsername = encryptUsername.replace(/=*$/g, "");
                 var token = token.access_token;
                 var url = 'index.html?username=' + encryptUsername;
                 WebIM.utils.setCookie('webim_' + encryptUsername, token, 1);
                 window.history.pushState({}, 0, url);
+                Demo.token = token;
             },
             error: function () {
                 window.history.pushState({}, 0, 'index.html');
@@ -115,8 +116,20 @@ module.exports = React.createClass({
 
         if (WebIM.config.isWindowSDK) {
             var me = this;
-            WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd + '"}',
-                function (response) {
+            if (!WebIM.config.appDir) {
+                WebIM.config.appDir = "";
+            }
+            if (!WebIM.config.imIP) {
+                WebIM.config.imIP = "";
+            }
+            if (!WebIM.config.imPort) {
+                WebIM.config.imPort = "";
+            }
+            if (!WebIM.config.restIPandPort) {
+                WebIM.config.restIPandPort = "";
+            }
+            WebIM.doQuery('{"type":"login","id":"' + options.user + '","password":"' + options.pwd
+                + '","appDir":"' + WebIM.config.appDir + '","appKey":"' + WebIM.config.appkey + '","imIP":"' + WebIM.config.imIP + '","imPort":"' + WebIM.config.imPort + '","restIPandPort":"' + WebIM.config.restIPandPort + '"}', function (response) {
                     Demo.conn.onOpened();
                 },
                 function (code, msg) {
@@ -145,22 +158,15 @@ module.exports = React.createClass({
     },
 
     componentWillMount: function () {
-        var pattern = /([^\?|&])\w+=([^&]+)/g;
-        var username, auth, type;
-        if (window.location.search) {
-            var args = window.location.search.match(pattern);
-            if (args.length == 1 && args[0]) {
-                username = args[0].substr(9);
-                auth = WebIM.utils.getCookie()['webim_' + username];
-                type = true;
-            }
-
-            if (username && auth) {
-                username = WebIM.utils.decrypt(username);
-                this.signin(username, auth, type);
-            } else {
-                window.history.pushState({}, 0, 'index.html');
-            }
+        var uri = WebIM.utils.parseUri();
+        var username = uri.username;
+        var auth = WebIM.utils.getCookie()['webim_' + username];
+        Demo.token = auth;
+        if (username && auth) {
+            username = atob(username);
+            this.signin(username, auth, true);
+        } else {
+            window.history.pushState({}, 0, 'index.html');
         }
     },
 

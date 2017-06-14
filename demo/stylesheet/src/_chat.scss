@@ -46,20 +46,25 @@
 
         li {
             height: 30px;
-            line-height: 30px;
             padding: 0 4px;
             box-sizing: border-box;
             text-align: left;
 
             > div {
                 display: inline-block;
-                vertical-align: middle;
-                margin: 0 6px;
+                margin-right: 6px;
                 width: 20px;
                 height: 20px;
             }
         }
 
+    }
+
+    .webim-group-name {
+        max-width: 64px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        display: inline-block;
     }
 }
 .webim-chatwindow-title {

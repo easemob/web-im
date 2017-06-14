@@ -67,7 +67,6 @@ var Channel = React.createClass({
     },
 
     setStream: function (props) {
-
         this.refs.remoteVideo.srcObject = props.remoteStream;
         this.refs.localVideo.srcObject = props.localStream;
     },
@@ -310,6 +309,20 @@ module.exports = function (dom) {
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
                          title={title} localFullRemoteCorner={localFullRemoteCorner}/>,
+                me.dom
+            );
+        },
+        ringing: function (caller, streamType) {
+            var title = '';
+            var localFullRemoteCorner = false;
+            if (Demo.call.caller != '' && Demo.call.caller == Demo.user) {
+                title = Demo.call.callee.split('@')[0].split('_')[1];
+            } else {
+                title = Demo.call.callee.split('@')[0].split('_')[1] + (streamType == 'VOICE' ? ' 请求语音通话...' : ' 请求视频通话...');
+            }
+            ReactDOM.render(
+            <Channel close={this.close}
+            title={title} localFullRemoteCorner={localFullRemoteCorner}/>,
                 me.dom
             );
         },

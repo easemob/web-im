@@ -8,7 +8,6 @@ var Language = require('./components/language');
 // import emoji
 WebIM.Emoji = Emoji;
 
-
 // global log method
 window.log = Api.log;
 
@@ -20,30 +19,32 @@ window.Demo = {
 // Demo.lan = Language.English;
 Demo.lan = Language.Chinese;
 
+Demo.first = true;
+
 // for webview in client
 Demo.api = Api;
 
 // The messages cache
 /*
 
-Demo.chatRecord = {
-   targetId: {
-        messages: [{
-           msg: 'msg',
-           type: 'type'
-       },
-         {
-         msg: 'msg',
-         type: 'type'
-         }],
-       brief: 'brief'
-   }
-}
-*/
+ Demo.chatRecord = {
+ targetId: {
+ messages: [{
+ msg: 'msg',
+ type: 'type'
+ },
+ {
+ msg: 'msg',
+ type: 'type'
+ }],
+ brief: 'brief'
+ }
+ }
+ */
 
 Demo.chatRecord = {};
 // The max messages count of a dialog
-Demo.maxChatRecordCount = 20;
+Demo.maxChatRecordCount = 20000;
 
 Demo.roster = {};
 Demo.friends = [];
@@ -67,36 +68,36 @@ Demo.chatingCate = '';    // friends|groups|chatrooms|strangers
 Demo.selectedCate = 'friends';   // friends|groups|chatrooms|strangers
 
 Demo.chatState = {
-    friends:{
+    friends: {
         selected: '',
         scroll: 0,
         chatWindow: [],
         count: 0
     },
-    groups:{
+    groups: {
         selected: '',
         scroll: 0,
         chatWindow: [],
         count: 0
     },
-    chatrooms:{
+    chatrooms: {
         selected: '',
         scroll: 0,
         chatWindow: [],
         count: 0
     },
-    strangers:{
+    strangers: {
         selected: '',
         scroll: 0,
         chatWindow: [],
         count: 0
     },
     clear: function (cate) {
-        if(cate) {
+        if (cate) {
             this[cate].selected = '';
             this[cate].scroll = 0;
             this[cate].chatWindow = [];
-        }else{
+        } else {
             this['friends'].selected = '';
             this['friends'].scroll = 0;
             this['friends'].chatWindow = [];
@@ -116,6 +117,9 @@ Demo.chatState = {
     }
 }
 
+Demo.orgName = WebIM.config.appkey.split('#')[0];
+Demo.appName = WebIM.config.appkey.split('#')[1];
+
 // initialize webIM connection
 Demo.conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
@@ -127,7 +131,9 @@ Demo.conn = new WebIM.connection({
     apiUrl: WebIM.config.apiURL,
     isHttpDNS: WebIM.config.isHttpDNS,
     isWindowSDK: WebIM.config.isWindowSDK,
-    isAutoLogin: false
+    isAutoLogin: true,
+    encrypt: WebIM.config.encrypt,
+    delivery: WebIM.config.delivery
 });
 
 Demo.api.render(document.getElementById('demo'));

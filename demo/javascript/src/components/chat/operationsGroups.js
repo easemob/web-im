@@ -98,6 +98,16 @@ module.exports = React.createClass({
         this.update();
     },
 
+    shield: function(){
+        var groupId = this.props.roomId;
+        var options = {
+            groupId: groupId,
+            success: function () {},
+            error: function () {}
+        };
+        Demo.conn.blockGroup(options);
+    },
+
     render: function () {
         var actionName = (this.props.admin == 1) ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
         var actionMethod = (this.props.admin == 1) ? this.destroyGroup : this.leaveGroupBySelf;
@@ -132,7 +142,6 @@ module.exports = React.createClass({
                             <i className = 'font smallest'>n</i>
                             <span>{Demo.lan.groupBlacklist}</span>
                         </li>
-                        {/* destroy or leave group */}
                         <li
                             onClick = {actionMethod} >
                             <i className = 'font smallest'>Q</i>

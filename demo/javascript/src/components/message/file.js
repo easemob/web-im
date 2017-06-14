@@ -40,6 +40,21 @@ var FileMsg = React.createClass({
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
         var links = [];
+        var statusClass = this.props.className == 'left' ? 'hide' : '';
+        var id = this.props.id;
+        var status = this.props.status;
+        var nid = this.props.nid;
+        switch(status){
+            case 'Undelivered':
+                status = '未送达';
+                break;
+            case 'Delivered':
+                status = '已送达';
+                break;
+            case 'Read':
+                status = '已读';
+            default:
+        }
         if (WebIM.config.isWindowSDK) {
             if (this.state.value == "") {
                 links.push(<a key='0' href="javascript:void(0)">{Demo.lan.FileLoading}</a>);
@@ -51,7 +66,6 @@ var FileMsg = React.createClass({
 
         } else {
             links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.download}</a>);
-            //links.push(<a key='0' href="javascript:void(0)" onClick={this.download}>{Demo.lan.download}</a>);
         }
 
         return (
@@ -59,6 +73,9 @@ var FileMsg = React.createClass({
                 <Avatar src={this.props.src} className={this.props.className + ' small'}/>
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
                 <div className="clearfix" style={{minWidth: '280px'}}>
+                    <div className={"webim-msg-delivered " + statusClass} id={id} name={nid}>
+                        {status}
+                    </div>
                     <div className='webim-msg-value' style={{minWidth: '200px'}}>
                         <span className='webim-msg-icon font'>{icon}</span>
                         <div>
@@ -89,12 +106,13 @@ module.exports = function (options, sentByMe) {
         name: options.name,
         filename: options.filename || '',
         error: options.error,
-        errorText: options.errorText
+        errorText: options.errorText,
+        status: options.status || 'Undelivered',
+        nid: options.nid || ''
     };
 
     if(options.fileSize){
         props.fileSize = options.fileSize;
-        console.log('props.fileSize: ', options.fileSize);
     }
 
     var node = document.createElement('div');

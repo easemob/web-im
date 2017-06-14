@@ -30,19 +30,28 @@ var ShowGroupBlacklist = React.createClass({
     },
 
     onRemoveFromGroupBlackList: function (value) {
-        var me = this;
         var list = this.state.list;
 
-        Demo.api.blacklist.removeGroupMemberFromBlacklist({
-            roomId: this.props.roomId,
-            to: value,
-            success: function () {
+        var options = {
+            groupId: Demo.selected,
+            username: value,
+            success: function(){
                 delete list[value];
-                me.setState({
-                    list: list
-                })
-            }
-        });
+                this.setState({list: list});
+            }.bind(this)
+        };
+        Demo.conn.removeGroupBlockSingle(options);
+
+        // value = ['zzf2', 'zzf3'];
+        // var options = {
+        //     groupId: Demo.selected,
+        //     username: value,
+        //     success: function(){
+        //         delete list[value];
+        //         this.setState({list: list});
+        //     }.bind(this)
+        // };
+        // Demo.conn.removeGroupBlockMulti(options);
     },
 
     close: function () {

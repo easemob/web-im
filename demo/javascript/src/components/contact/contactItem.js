@@ -7,19 +7,6 @@ module.exports = React.createClass({
 
     getInitialState: function () {
         var me = this;
-        // var id = this.props.id;
-        // var count = 0;
-        // if(Demo.chatRecord[id]){
-        //     count = Demo.chatRecord[id].count;
-        //     if(count == undefined || !isNaN(count)){
-        //         // Demo.chatRecord[id].count = 0;
-        //         count = 0;
-        //     }
-        //     else
-        //         count = Math.max(0, count);
-        // }
-        //
-        // var display = count == 0 ? 'none' : 'block';
 
         return {
             msg: '',
@@ -45,7 +32,6 @@ module.exports = React.createClass({
         curCate.setAttribute('data-count', curCateCount);
         Demo.chatState[this.props.cate].count = curCateCount;
     },
-
 
     update: function () {
         Demo.chatingCate = Demo.selectedCate;
@@ -79,7 +65,7 @@ module.exports = React.createClass({
                         //do nothing
                     },
                     function failure(errCode, errMessage) {
-                        Demo.api.NotifyError('update currentChatroom:' + errCode);
+                        Demo.api.NotifyError('update currentChatroom:' + errCode + ' ' + errMessage);
                     });
             } else {
                 Demo.conn.quitChatRoom({
@@ -98,9 +84,12 @@ module.exports = React.createClass({
                         Demo.currentChatroom = str;
                     },
                     function failure(errCode, errMessage) {
-                        Demo.api.NotifyError('update chatrooms:' + errCode);
+                        Demo.api.NotifyError('update chatrooms:' + errCode + ' ' + errMessage);
                     });
             } else {
+                var wrapper = document.getElementById('wrapper' + this.props.id);
+                if(wrapper)
+                    wrapper.innerHTML = '';
                 Demo.conn.joinChatRoom({
                     roomId: this.props.id
                 });

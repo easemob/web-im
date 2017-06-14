@@ -10,6 +10,7 @@ var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
 var Notify = require('./components/common/notify');
 var _ = require('underscore');
+var CryptoJS = require('crypto-js');
 
 var Blacklist = (function () {
     var data = {};
@@ -26,7 +27,6 @@ var Blacklist = (function () {
 
     function _add(name) {
         data[name] = _.find(Demo.friends, function (item) {
-            log('name', name, item.name);
             return (item.name == name);
         });
 
@@ -46,7 +46,6 @@ var Blacklist = (function () {
     }
 
     function _remove(name) {
-        log(JSON.stringify(data));
 
         try {
             delete data[name];
@@ -59,7 +58,7 @@ var Blacklist = (function () {
         try {
             delete data[name];
         } catch (e) {
-            log('blacklist remove error');
+            console.log('blacklist remove error');
         }
 
         return _set();
@@ -264,6 +263,7 @@ module.exports = {
                     Demo.api.NotifyError("logout:" + msg);
                 });
         } else {
+            window.history.pushState({}, 0, 'index.html');
             Demo.conn.close('logout');
             if (type == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
                 Demo.conn.errorType = type;
@@ -280,25 +280,25 @@ module.exports = {
         Demo.blacklist = {};
         Demo.selectedCate = 'friends';
         Demo.chatState.clear();
-        if(Demo.currentChatroom){
+        if (Demo.currentChatroom) {
             delete Demo.chatRecord[Demo.currentChatroom];
         }
         ReactDOM.unmountComponentAtNode(this.node);
         this.render(this.node);
     },
 
-    addToChatRecord: function (msg, type) {
+    addToChatRecord: function (msg, type, status) {
         var data = msg.data || msg.msg || '';
         var brief = this.getBrief(data, type);
+        var id = msg.id;
         this.sentByMe = msg.from === Demo.user;
         var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
-
-        if(!Demo.chatRecord[targetId] || !Demo.chatRecord[targetId].messages){
+        if (!Demo.chatRecord[targetId] || !Demo.chatRecord[targetId].messages) {
             Demo.chatRecord[targetId] = {};
 
             Demo.chatRecord[targetId].messages = [];
 
-        }else if(Demo.chatRecord[targetId].messages.length >= Demo.maxChatRecordCount){
+        } else if (Demo.chatRecord[targetId].messages.length >= Demo.maxChatRecordCount) {
 
             Demo.chatRecord[targetId].messages.shift();
 
@@ -306,26 +306,68 @@ module.exports = {
         Demo.chatRecord[targetId].brief = brief;
         Demo.chatRecord[targetId].briefType = type;
 
-        Demo.chatRecord[targetId].messages.push({message: msg, type: type});
-
+        Demo.chatRecord[targetId].messages[id] = {message: msg, type: type, status: status};
     },
 
     releaseChatRecord: function (targetId) {
         var targetId = targetId || Demo.selected;
-        if(targetId){
-            if(Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages){
-                if(document.getElementById('wrapper' + targetId))
+        if (Demo.first) {
+            Demo.first = false;
+            for (var i in Demo.chatRecord) {
+                targetId = i;
+                if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
+                    if (document.getElementById('wrapper' + targetId))
+                        document.getElementById('wrapper' + targetId).innerHTML = '';
+                    for (var i in Demo.chatRecord[targetId].messages) {
+                        if (Demo.chatRecord[targetId].messages[i] == undefined)
+                            continue;
+                        if(!Demo.chatRecord[targetId].messages[i].read){
+                            Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
+                                Demo.chatRecord[targetId].messages[i].type,
+                                Demo.chatRecord[targetId].messages[i].status,
+                                i);
+                        }
+                    }
+                }
+            }
+            return;
+        }
+        if (targetId) {
+            if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
+                if (document.getElementById('wrapper' + targetId))
                     document.getElementById('wrapper' + targetId).innerHTML = '';
-                for(var i = 0 ; i < Demo.chatRecord[targetId].messages.length ; i++){
-                    Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message, Demo.chatRecord[targetId].messages[i].type);
+                for (var i in Demo.chatRecord[targetId].messages) {
+                    if (Demo.chatRecord[targetId].messages[i] == undefined)
+                        continue;
+                    Demo.chatRecord[targetId].messages[i].read = true;
+                    Demo.api.sendRead(Demo.chatRecord[targetId].messages[i].message);
+                    Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
+                        Demo.chatRecord[targetId].messages[i].type,
+                        Demo.chatRecord[targetId].messages[i].status,
+                        i);
                 }
             }
         }
     },
 
-    getBrief: function(data, type){
+    sendRead: function (message) {
+        if (!WebIM.config.read)
+            return;
+        // 阅读消息时反馈一个已阅读
+        var msgId = Demo.conn.getUniqueId();
+        var bodyId = message.id;
+        var msg = new WebIM.message('read', msgId);
+        msg.set({
+            id: bodyId
+            , to: message.from
+        });
+        Demo.conn.send(msg.body);
+
+    },
+
+    getBrief: function (data, type) {
         var brief = '';
-        switch(type){
+        switch (type) {
             case 'txt':
                 brief = WebIM.utils.parseEmoji(this.encode(data).replace(/\n/mg, ''));
                 break;
@@ -358,8 +400,11 @@ module.exports = {
         return brief;
     },
 
-    appendMsg: function (msg, type) {
-        if (!msg) {
+    appendMsg: function (msg, type, status, nid) {
+        if (Demo.first) {
+            return;
+        }
+        if (!msg || type === 'cmd') {
             return;
         }
         msg.from = msg.from || Demo.user;
@@ -370,11 +415,15 @@ module.exports = {
         var brief = '',
             data = msg.data || msg.msg || '',
             name = this.sendByMe ? Demo.user : msg.from,
-            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
-            targetNode = document.getElementById('wrapper' + targetId),
-            isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
+            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
+        var targetNode = document.getElementById('wrapper' + targetId);
+
+        var isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
         // TODO: ios/android client doesn't encodeURIComponent yet
+        if (typeof data === "string" && WebIM.config.isWindowSDK) {
+            data = decodeURIComponent(data);
+        }
 
         if (!this.sentByMe && msg.type === 'chat' && isStranger) {
             Demo.strangers[targetId] = Demo.strangers[targetId] || [];
@@ -386,9 +435,9 @@ module.exports = {
             Demo.strangers[targetId].push({msg: msg, type: type});
             this.render(this.node, 'stranger');
             return;
-        }else{
+        } else {
             brief = this.getBrief(data, type);
-            if(targetNode){
+            if (targetNode) {
                 switch (type) {
                     case 'txt':
                         textMsg({
@@ -396,7 +445,10 @@ module.exports = {
                             name: name,
                             value: brief,
                             error: msg.error,
-                            errorText: msg.errorText
+                            errorText: msg.errorText,
+                            id: msg.id,
+                            status: status,
+                            nid: nid
                         }, this.sentByMe);
                         break;
                     case 'emoji':
@@ -405,7 +457,10 @@ module.exports = {
                             name: name,
                             value: brief,
                             error: msg.error,
-                            errorText: msg.errorText
+                            errorText: msg.errorText,
+                            id: msg.id,
+                            status: status,
+                            nid: nid
                         }, this.sentByMe);
                         break;
                     case 'img':
@@ -428,7 +483,8 @@ module.exports = {
                                     name: name,
                                     value: data || msg.url,
                                     error: msg.error,
-                                    errorText: msg.errorText
+                                    errorText: msg.errorText,
+                                    status: status
                                 }, this.sentByMe);
                             }
                         } else {
@@ -438,7 +494,9 @@ module.exports = {
                                 name: name,
                                 value: data || msg.url,
                                 error: msg.error,
-                                errorText: msg.errorText
+                                errorText: msg.errorText,
+                                status: status,
+                                nid: nid
                             }, this.sentByMe);
                         }
                         break;
@@ -512,9 +570,11 @@ module.exports = {
                                 value: data || msg.url,
                                 filename: msg.filename,
                                 error: msg.error,
-                                errorText: msg.errorText
+                                errorText: msg.errorText,
+                                status: status,
+                                nid: nid
                             };
-                            if(msg.ext){
+                            if (msg.ext) {
                                 option.fileSize = msg.ext.fileSize;
                             }
                             fileMsg(option, this.sentByMe);
@@ -571,7 +631,6 @@ module.exports = {
             }
         }
 
-
         // show brief
         this.appendBrief(targetId, brief);
 
@@ -586,7 +645,7 @@ module.exports = {
                     return;
                 }
                 var contact = document.getElementById(msg.from);
-                    cate = Demo.roster[msg.from] ? 'friends' : 'strangers';
+                cate = Demo.roster[msg.from] ? 'friends' : 'strangers';
 
                 this.addCount(msg.from, cate);
                 break;
@@ -600,7 +659,7 @@ module.exports = {
 
     appendBrief: function (id, value) {
         var cur = document.getElementById(id);
-        if(!cur)
+        if (!cur)
             return;
         cur.querySelector('em').innerHTML = value;
     },
@@ -616,7 +675,7 @@ module.exports = {
             var curCateCount = curCate.getAttribute('data-count') / 1;
 
             // Don't increase the count of the cate if an opened item got messages
-            if(Demo.chatState[cate].selected != id){
+            if (Demo.chatState[cate].selected != id) {
 
                 curCateCount++;
 
@@ -634,7 +693,7 @@ module.exports = {
             Demo.chatState[cate].count = curCateCount;
 
         } else {
-            if(Demo.selected !== id){
+            if (Demo.selected !== id) {
                 var curCate = document.getElementById(cate).getElementsByTagName('i')[1];
                 curCate.style.display = 'block';
                 var curCateCount = curCate.getAttribute('data-count') / 1;
