@@ -74,6 +74,8 @@
 	// Demo.lan = Language.English;
 	Demo.lan = Language.Chinese;
 
+	Demo.first = true;
+
 	// for webview in client
 	Demo.api = Api;
 
@@ -235,7 +237,7 @@
 
 
 	// module
-	exports.push([module.id, "@charset \"UTF-8\";\nhtml, body, section, article, h1, h2, h3, h4, h5, h6, p, div, i, em, span, ul, li, ol {\n  font-family: Arial, Helvetica, sans-serif;\n  margin: 0;\n  padding: 0; }\n\nhtml, body {\n  width: 100%;\n  height: 100%;\n  font-size: 13px;\n  overflow-y: hidden;\n  overflow-x: hidden;\n  background-color: #fafafa;\n  border: 1px solid rgba(250, 250, 250, 0);\n  -webkit-font-smoothing: antialiased; }\n\ninput, button {\n  outline: none; }\n  input:focus, button:focus {\n    border: 1px solid #4eb1f4;\n    box-shadow: rgba(25, 161, 219, 0.247059) 0px 0px 5px 0px; }\n\ntextarea {\n  outline: none;\n  resize: none; }\n\nul, ol, li {\n  list-style: none; }\n\n.pointer {\n  cursor: pointer; }\n\n.left {\n  float: left; }\n\n.right {\n  float: right; }\n\n.w100 {\n  width: 100%;\n  height: 100%; }\n\n.pad0 {\n  padding: 0; }\n\n.top50 {\n  margin-top: 50px; }\n\n.rel {\n  position: relative; }\n\n.dib {\n  display: inline-block; }\n\nobject {\n  z-index: 3;\n  position: absolute;\n  left: 340px;\n  bottom: 118px;\n  width: 84px; }\n\n@font-face {\n  font-family: 'webim';\n  src: url(" + __webpack_require__(5) + ");\n  src: url(" + __webpack_require__(6) + ") format(\"woff\"), url(" + __webpack_require__(7) + ") format(\"truetype\"), url(" + __webpack_require__(8) + "#iconfont) format(\"svg\"); }\n\n.font {\n  width: 40px;\n  height: 40px;\n  font-family: 'webim' !important;\n  font-size: 40px;\n  font-style: normal;\n  -webkit-font-smoothing: antialiased;\n  -webkit-text-stroke-width: 0.2px;\n  -moz-osx-font-smoothing: grayscale; }\n  .font.small {\n    width: 30px;\n    height: 30px;\n    font-size: 30px; }\n  .font.xsmaller {\n    width: 26px;\n    height: 26px;\n    font-size: 26px; }\n  .font.smaller {\n    width: 24px;\n    height: 24px;\n    font-size: 24px; }\n  .font.smallest {\n    width: 16px;\n    height: 16px;\n    font-size: 16px; }\n\n.hide {\n  display: none; }\n\n.bg-color {\n  color: #fff;\n  border: 1px solid #4eb1f4;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #4eb1f4; }\n\n.color {\n  color: #4eb1f4; }\n\n.hover-color:hover {\n  color: #4eb1f4; }\n\n.webim-logo {\n  width: 200px;\n  margin: 0 auto; }\n\n.webim {\n  position: absolute;\n  right: 0;\n  left: 0;\n  margin: auto;\n  top: 10%;\n  bottom: 10%; }\n\n.copyright {\n  z-index: 3;\n  position: absolute;\n  width: 100%;\n  bottom: 10px;\n  text-align: center;\n  color: #cccccc; }\n\n.webim-rtc-video {\n  z-index: 3;\n  cursor: pointer;\n  position: fixed;\n  margin: auto;\n  right: 0;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  overflow: hidden;\n  border-radius: 4px;\n  background-color: #cccccc; }\n  .webim-rtc-video video {\n    position: absolute; }\n    .webim-rtc-video video.full {\n      z-index: 1;\n      width: 100%;\n      height: 100%;\n      object-fit: contain; }\n    .webim-rtc-video video.corner {\n      z-index: 2;\n      top: 40px;\n      left: auto;\n      right: 10px;\n      bottom: auto;\n      max-height: 17%;\n      max-width: 17%;\n      object-fit: contain; }\n  .webim-rtc-video span {\n    z-index: 2;\n    position: absolute;\n    margin: 0 auto;\n    left: 0;\n    right: 0;\n    top: 6px;\n    bottom: 0;\n    width: 200px;\n    height: 80px;\n    text-align: center;\n    color: #fff; }\n  .webim-rtc-video i {\n    z-index: 2;\n    position: absolute;\n    background-color: rgba(255, 255, 255, 0.2);\n    font-style: normal;\n    border-radius: 50%;\n    text-align: center;\n    color: rgba(0, 0, 0, 0.2);\n    cursor: pointer; }\n    .webim-rtc-video i.close {\n      color: #e90101; }\n    .webim-rtc-video i.toggle {\n      color: #98e024; }\n    .webim-rtc-video i.accept {\n      color: #98e024; }\n    .webim-rtc-video i.mute {\n      color: #eeeeee; }\n\n/*\n * loading\n */\n.webim-loading {\n  position: fixed;\n  z-index: 3;\n  background-color: #FAFAFA;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0; }\n  .webim-loading img {\n    position: absolute;\n    margin: auto;\n    left: 0;\n    right: 0;\n    top: 0;\n    bottom: 0;\n    width: 24px; }\n\n/*\n * button\n */\n.webim-button {\n  font-size: 16px;\n  box-sizing: border-box;\n  display: inline-block;\n  margin: 10px auto;\n  width: 300px;\n  height: 36px;\n  cursor: pointer;\n  border-radius: 2px; }\n  .webim-button.error {\n    background-color: #ff3a00;\n    border: 1px solid #ff3a00; }\n  .webim-button:hover {\n    background-color: #1aa1e4; }\n\n/*\n * input\n */\n.webim-input {\n  box-sizing: border-box;\n  font-size: 14px;\n  padding: 0 4px;\n  display: inline-block;\n  margin: 10px auto 0;\n  width: 300px;\n  height: 36px;\n  line-height: 36px;\n  cursor: pointer;\n  border-radius: 2px;\n  border: 1px solid #e5e5e5;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n/*\n * checkbox\n */\n.webim-checkbox {\n  text-align: left;\n  margin: 10px 0 10px 5px;\n  padding-left: 50px;\n  box-sizing: border-box; }\n  .webim-checkbox span {\n    height: 30px;\n    line-height: 30px; }\n  .webim-checkbox > i {\n    position: relative;\n    margin-right: 6px;\n    width: 14px;\n    height: 14px;\n    border-radius: 2px;\n    display: inline-block;\n    vertical-align: middle;\n    border: 1px solid #cccccc;\n    cursor: pointer; }\n    .webim-checkbox > i:hover {\n      background-color: #fff; }\n      .webim-checkbox > i:hover em {\n        display: inline-block;\n        color: #cccccc; }\n    .webim-checkbox > i.checked {\n      background-color: #afd7e8; }\n      .webim-checkbox > i.checked em {\n        display: inline-block;\n        color: #000; }\n    .webim-checkbox > i em {\n      display: none;\n      position: absolute;\n      left: -6px;\n      top: -10px;\n      color: #000; }\n\n/*\n * left bar\n */\n.webim-leftbar {\n  position: relative;\n  float: left;\n  width: 50px;\n  height: 100%;\n  text-align: center;\n  border-radius: 2px 0px 0px 2px;\n  border: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #fcfdfb; }\n\n/*\n * contact list\n */\n.webim-contact-wrapper {\n  float: left;\n  height: 100%;\n  width: 250px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  border-right: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n.webim-contact-item {\n  cursor: pointer;\n  position: relative;\n  width: 100%;\n  overflow: hidden;\n  height: 60px; }\n  .webim-contact-item .webim-avatar-icon {\n    float: left;\n    margin: 10px; }\n  .webim-contact-item .webim-contact-info {\n    position: relative; }\n  .webim-contact-item .webim-contact-handlers {\n    text-align: right;\n    position: absolute;\n    right: 2px;\n    top: 0; }\n    .webim-contact-item .webim-contact-handlers i {\n      font-size: 16px;\n      line-height: 36px; }\n  .webim-contact-item > span, .webim-contact-item .webim-contact-username {\n    color: #1a1a1a;\n    font-size: 14px;\n    margin: 10px 0;\n    display: inline-block;\n    width: calc(100% - 70px);\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis; }\n  .webim-contact-item > i {\n    display: inline-block;\n    right: 2px;\n    bottom: 10px;\n    top: auto; }\n  .webim-contact-item > em {\n    display: block;\n    height: 20px;\n    line-height: 20px;\n    width: calc(100% - 100px);\n    position: absolute;\n    margin: auto;\n    left: 30px;\n    top: 30px;\n    right: 10px;\n    color: #999999;\n    font-style: normal;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden; }\n    .webim-contact-item > em img {\n      width: 20px;\n      vertical-align: middle; }\n  .webim-contact-item.selected {\n    background-color: #f3f6f6; }\n\n.webim-profile-avatar {\n  display: inline-block;\n  margin: 10px auto; }\n\n.webim-avatar-icon {\n  width: 40px;\n  height: 40px;\n  border-radius: 50%;\n  overflow: hidden;\n  -webkit-filter: contrast(1.2);\n  -webkit-tap-highlight-color: transparent; }\n  .webim-avatar-icon.small {\n    width: 30px;\n    height: 30px; }\n\n.webim-operations-icon,\n.webim-leftbar-icon {\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  margin-bottom: 10px;\n  color: #cccccc; }\n  .webim-operations-icon .rotate,\n  .webim-leftbar-icon .rotate {\n    transform: rotate(180deg);\n    -webkit-transform: rotate(180deg);\n    -moz-transform: rotate(180deg);\n    -o-transform: rotate(180deg);\n    -ms-transform: rotate(180deg); }\n\n.webim-operations-icon:hover,\n.webim-leftbar-icon:hover,\n.webim-operations-icon.selected,\n.webim-leftbar-icon.selected {\n  color: #4eb1f4; }\n\n.webim-operations-icon {\n  color: #cccccc;\n  position: absolute;\n  margin-bottom: 0;\n  bottom: 10px;\n  left: 10px; }\n  .webim-operations-icon:hover {\n    color: #4eb1f4; }\n\n/*\n * operations\n */\n.webim-operations {\n  z-index: 1;\n  position: absolute;\n  text-align: left;\n  left: 40px;\n  bottom: 10px;\n  width: 160px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  background-color: #fff; }\n  .webim-operations i {\n    margin: 0 10px;\n    color: #cccccc; }\n  .webim-operations span {\n    vertical-align: top;\n    word-break: keep-all;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis; }\n  .webim-operations li {\n    height: 30px;\n    line-height: 30px;\n    cursor: pointer;\n    overflow: hidden; }\n    .webim-operations li:hover {\n      color: #4eb1f4;\n      background-color: #f2f2f2; }\n      .webim-operations li:hover i {\n        color: #4eb1f4; }\n    .webim-operations li:nth-child(2) i {\n      display: inline-block;\n      margin-top: -4px;\n      vertical-align: top; }\n    .webim-operations li:last-child:hover {\n      color: #e90101; }\n      .webim-operations li:last-child:hover i {\n        color: #e90101; }\n\n.webim-msg-prompt {\n  position: absolute;\n  top: -4px;\n  right: 0;\n  line-height: 16px;\n  font-style: normal;\n  width: 16px;\n  height: 16px;\n  font-size: 12px;\n  text-align: center;\n  color: #fff;\n  border-radius: 50%;\n  border: 2px solid #fcfdfb;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #ff3a00; }\n\n.webim-msg-icon-prompt {\n  width: 10px;\n  height: 10px;\n  top: 0px;\n  right: 8px; }\n\n.webim-blacklist-wrapper {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  overflow-x: hidden;\n  overflow-y: auto;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n.webim-blacklist-item {\n  position: relative;\n  cursor: pointer;\n  display: block;\n  width: 100%;\n  overflow: hidden;\n  height: 30px;\n  font-size: 20px;\n  line-height: 30px; }\n  .webim-blacklist-item i.font {\n    line-height: 30px;\n    float: right;\n    position: static; }\n\n.webim-operation-icon {\n  width: 100px;\n  float: right;\n  margin-right: 10px;\n  text-align: right; }\n\n* :focus {\n  outline: 0; }\n\n/*\n * notify\n */\n.webim-notify {\n  z-index: 3;\n  position: fixed;\n  top: 10px;\n  word-wrap: break-word;\n  padding: 4px;\n  width: 50%;\n  color: #fff;\n  left: 0;\n  right: 0;\n  margin: 0 auto;\n  max-width: 90%;\n  min-height: 30px;\n  border-radius: 2px;\n  line-height: 30px;\n  text-align: center;\n  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 6px 0px;\n  -webkit-tap-highlight-color: transparent;\n  border: 0px none black; }\n  .webim-notify.success {\n    background-color: #aeda3e; }\n  .webim-notify.error {\n    background-color: #ff3a00; }\n  .webim-notify i {\n    position: absolute;\n    right: 10px;\n    top: 9px; }\n\n/*\n * signin & signup\n */\n.webim-sign {\n  overflow: hidden;\n  width: 400px;\n  margin: 40px auto;\n  text-align: center;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n  .webim-sign h2 {\n    font-size: 24px;\n    color: #1a1a1a;\n    width: 100%;\n    line-height: 84px;\n    height: 64px; }\n  .webim-sign p {\n    margin: 0px auto 40px;\n    width: 300px;\n    text-align: left; }\n    .webim-sign p i {\n      font-style: normal;\n      color: #4eb1f4;\n      cursor: pointer; }\n  .webim-sign.webim-signup button {\n    margin-top: 30px; }\n\n.webim-chat {\n  position: relative;\n  max-width: 1024px;\n  min-width: 960px;\n  max-height: 600px;\n  height: 100%;\n  margin: auto;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white;\n  border-radius: 2px;\n  overflow: hidden; }\n\n.webim-chatwindow {\n  position: relative;\n  float: left;\n  height: 100%;\n  width: calc(100% - 303px); }\n  .webim-chatwindow textarea {\n    position: absolute;\n    bottom: 40px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: none;\n    width: 100%;\n    padding: 10px 15px; }\n  .webim-chatwindow .webim-group-memeber {\n    position: absolute;\n    left: 0;\n    right: 0;\n    top: 40px;\n    margin: auto;\n    padding: 10px 7px;\n    border-radius: 2px;\n    width: 200px;\n    overflow: auto;\n    box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n    z-index: 2;\n    background: #fff;\n    max-height: 300px; }\n    .webim-chatwindow .webim-group-memeber li {\n      height: 30px;\n      padding: 0 4px;\n      box-sizing: border-box;\n      text-align: left; }\n      .webim-chatwindow .webim-group-memeber li > div {\n        display: inline-block;\n        margin-right: 6px;\n        width: 20px;\n        height: 20px; }\n  .webim-chatwindow .webim-group-name {\n    max-width: 64px;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    display: inline-block; }\n\n.webim-chatwindow-title {\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  font-size: 14px; }\n  .webim-chatwindow-title i {\n    color: #cccccc;\n    vertical-align: middle;\n    cursor: pointer;\n    margin-left: 10px;\n    padding-bottom: 22px; }\n    .webim-chatwindow-title i.webim-up-icon {\n      transform: rotate(180deg); }\n    .webim-chatwindow-title i.webim-call-icon {\n      position: absolute;\n      left: 0;\n      top: 0; }\n    .webim-chatwindow-title i.webim-accept-icon {\n      position: absolute;\n      left: 40px;\n      top: 0; }\n\n.webim-chatwindow-options {\n  border-top: 1px solid #f2f2f2;\n  width: 100%;\n  z-index: 1;\n  position: absolute;\n  bottom: 120px;\n  left: 0;\n  height: 30px;\n  line-height: 30px; }\n  .webim-chatwindow-options > span {\n    margin-left: 6px;\n    color: #cccccc;\n    cursor: pointer; }\n  .webim-chatwindow-options > span:hover {\n    color: #4eb1f4; }\n\n.webim-send-btn {\n  position: absolute;\n  bottom: 0;\n  right: 10px;\n  width: 80px;\n  height: 24px;\n  font-size: 12px; }\n\n.webim-chatwindow-msg {\n  z-index: 1;\n  position: absolute;\n  top: 40px;\n  bottom: 150px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  box-sizing: border-box;\n  padding: 20px 10px;\n  width: 100%; }\n\n.webim-send-wrapper > ul {\n  z-index: 1;\n  position: absolute;\n  width: 280px;\n  height: 194px;\n  bottom: 150px;\n  left: -140px;\n  border-radius: 2px;\n  background: #fff;\n  box-sizing: border-box;\n  padding: 4px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 4px 12px 0px; }\n  .webim-send-wrapper > ul li {\n    cursor: pointer;\n    display: inline-block;\n    margin: 2px 3px 0 3px; }\n\n#test {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  z-index: 2222; }\n\n.webim-msg-container {\n  overflow: hidden;\n  margin: 24px 0; }\n  .webim-msg-container > div {\n    max-width: 60%;\n    overflow: hidden; }\n  .webim-msg-container .right > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-right: 10px; }\n  .webim-msg-container .right .webim-msg-icon {\n    color: #b4e4fc;\n    right: -40px; }\n  .webim-msg-container .right .webim-msg-delivered {\n    float: left;\n    margin: 6px 2px 0 0;\n    background-color: #cccccc; }\n  .webim-msg-container .right .webim-msg-value {\n    float: right;\n    margin: 6px 10px 0 0;\n    background-color: #b4e4fc; }\n  .webim-msg-container .right .webim-msg-error {\n    float: right;\n    margin: 6px 10px 0 0; }\n  .webim-msg-container .right .webim-msg-header {\n    text-align: right; }\n  .webim-msg-container .left > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-left: 10px; }\n  .webim-msg-container .left .webim-msg-icon {\n    color: #f1f2ec;\n    left: -10px; }\n  .webim-msg-container .left .webim-msg-value {\n    background-color: #f1f2ec;\n    float: left;\n    margin: 6px 0 0 10px; }\n  .webim-msg-container .left .webim-msg-header {\n    text-align: left; }\n\n.webim-msg-icon {\n  position: absolute;\n  top: 4px;\n  font-size: 10px; }\n\n.webim-msg-value {\n  position: relative;\n  min-height: 30px;\n  max-width: calc(100% - 80px);\n  border-radius: 4px;\n  padding: 6px;\n  box-sizing: border-box;\n  min-width: 60%; }\n  .webim-msg-value video {\n    width: 100%; }\n  .webim-msg-value.webim-img-msg-wrapper {\n    padding: 1px; }\n  .webim-msg-value > div,\n  .webim-msg-value > pre {\n    white-space: pre-wrap;\n    word-break: break-all;\n    color: #1a1a1a;\n    font-size: 14px;\n    line-height: 20px;\n    margin: 0; }\n  .webim-msg-value .emoji {\n    width: 32px;\n    vertical-align: bottom; }\n  .webim-msg-value i {\n    display: block;\n    font-style: normal;\n    margin-left: 40px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25); }\n  .webim-msg-value a {\n    display: block;\n    margin-left: 30px;\n    margin-top: -28px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25);\n    text-decoration: none; }\n\n.webim-msg-img {\n  max-width: 100%;\n  vertical-align: middle;\n  cursor: pointer;\n  border-radius: 4px; }\n\n.webim-msg-header {\n  line-height: 30px;\n  margin-bottom: 4px;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.15); }\n\n.webim-msg-header-icon {\n  vertical-align: middle;\n  display: inline-block;\n  margin: -46px 4px 0 -4px;\n  line-height: 40px;\n  color: #868683; }\n\n.webim-msg-name {\n  width: calc(100% - 80px);\n  display: inline-block;\n  height: 40px;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden; }\n\n.webim-msg-fileSize {\n  display: inline-block;\n  float: right;\n  width: 47px;\n  overflow: hidden; }\n\n.webim-img-expand {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.3);\n  z-index: 3; }\n  .webim-img-expand img {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    max-width: 90%;\n    max-height: 90%;\n    margin: auto; }\n\n.webim-audio-slash {\n  background-color: transparent;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  border-radius: 4px; }\n\n.slash {\n  animation: slash 1s infinite;\n  -moz-animation: slash 1s infinite;\n  -webkit-animation: slash 1s infinite; }\n\n@keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-moz-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-webkit-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n.clearfix:after {\n  content: ' ';\n  display: table;\n  clear: both; }\n\n/*\n * dialog\n */\n.webim-dialog {\n  z-index: 3;\n  position: absolute;\n  width: 400px;\n  min-height: 168px;\n  top: 20%;\n  left: 0;\n  right: 0;\n  margin: auto;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 8px 0px;\n  background-color: white; }\n  .webim-dialog h3 {\n    line-height: 40px;\n    box-sizing: border-box;\n    padding-left: 10px;\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    font-weight: normal; }\n  .webim-dialog .font {\n    font-size: 20px;\n    position: absolute;\n    right: 6px;\n    top: 6px;\n    width: 20px;\n    height: 20px;\n    color: rgba(0, 0, 0, 0.1);\n    cursor: pointer; }\n  .webim-dialog > div {\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    padding: 10px 10px 10px; }\n  .webim-dialog .webim-dialog-button {\n    position: absolute;\n    right: 8px;\n    bottom: 2px;\n    width: 80px;\n    height: 26px; }\n  .webim-dialog .webim-dialog-button-search {\n    bottom: 2px;\n    width: 80px;\n    height: 30px;\n    margin-left: 70px; }\n  .webim-dialog .webim-dialog-button-left {\n    position: absolute;\n    right: 100px;\n    bottom: 2px;\n    width: 80px;\n    height: 26px; }\n  .webim-dialog .webim-subscribe-button {\n    width: 60px;\n    height: 30px;\n    margin-left: 10px; }\n  .webim-dialog input {\n    height: 30px;\n    width: 220px; }\n  .webim-dialog textarea {\n    margin-top: 20px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: 1px solid rgba(0, 0, 0, 0.1);\n    width: 220px; }\n  .webim-dialog-body {\n    min-height: 100px;\n    max-height: 126px;\n    overflow: scroll; }\n    .webim-dialog-body-detail {\n      width: 100%; }\n      .webim-dialog-body-detail span.title {\n        font-size: 14px;\n        display: block;\n        font-weight: 700;\n        margin-bottom: 5px; }\n      .webim-dialog-body-detail span.content {\n        font-size: 12px;\n        color: #6a737c; }\n  .webim-dialog .webim-dialog-footer {\n    padding: 10px;\n    position: relative;\n    min-height: 20px;\n    text-align: right; }\n    .webim-dialog .webim-dialog-footer .webim-button {\n      position: static;\n      margin-right: 10px; }\n    .webim-dialog .webim-dialog-footer .webim-group-back {\n      position: absolute;\n      left: 0;\n      height: 67px;\n      width: 50px;\n      background-color: #f2f2f2;\n      top: 0;\n      border-radius: 0 2px 2px 0;\n      text-align: center;\n      cursor: pointer; }\n      .webim-dialog .webim-dialog-footer .webim-group-back span {\n        line-height: 67px;\n        font-size: 30px;\n        font-weight: 700;\n        color: #868683; }\n\n.webim-dialog-2 {\n  height: 450px; }\n\n.webim-friend-requests {\n  height: auto; }\n  .webim-friend-requests span {\n    width: 60%;\n    display: inline-block;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap; }\n  .webim-friend-requests > div {\n    overflow: auto;\n    max-height: 400px; }\n\n.webim-body-loading {\n  height: 86px;\n  width: 400px;\n  position: absolute;\n  opacity: 0.5;\n  z-index: 999;\n  margin-top: -10px;\n  margin-left: -10px;\n  padding-top: 61px; }\n  .webim-body-loading img {\n    margin: auto;\n    display: block;\n    width: 30px;\n    line-height: inherit; }\n\n/*\n * layer\n */\n.webim-layer {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n  background-color: rgba(0, 0, 0, 0.25); }\n\n/*\n  说明:\n  下面的css都是为了快速实现功能，覆盖旧有属性的各种trick\n  后期需要找专门的css人员整理一遍，合并入正常的文件，然后删除本文件!\n*/\n/******************* multiple select box ********************/\n.react-multi-select-box-container {\n  position: relative;\n  width: 240px;\n  display: inline-block;\n  background-color: #fff;\n  border-radius: 4px;\n  text-align: left;\n  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); }\n\n.react-multi-select-box {\n  padding: 10px 0;\n  display: inline-block;\n  cursor: pointer;\n  border: none;\n  width: 100%;\n  text-align: left;\n  background-color: transparent; }\n  .react-multi-select-box::before {\n    content: ' ';\n    position: absolute;\n    z-index: 1;\n    height: 20px;\n    top: -7px;\n    right: 13px;\n    border-left: 3px solid transparent;\n    border-right: 3px solid transparent;\n    border-bottom: 4px solid #a7a8aa; }\n  .react-multi-select-box::after {\n    content: ' ';\n    position: absolute;\n    z-index: 1;\n    top: 20px;\n    right: 13px;\n    border-top: 4px solid #a7a8aa;\n    border-left: 3px solid transparent;\n    border-right: 3px solid transparent; }\n\n.react-multi-select-box-label {\n  padding: 0 40px 0 10px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #333;\n  line-height: 16px; }\n\n.react-multi-select-box-empty .react-multi-select-box-label {\n  color: #c5c5c5; }\n\n.react-multi-select-area {\n  position: absolute;\n  margin-top: 4px;\n  padding: 0 10px;\n  height: 225px;\n  min-width: 260px;\n  border-radius: 4px;\n  background-color: #fff;\n  z-index: 4;\n  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); }\n\n.react-multi-select-box-hidden {\n  display: none; }\n\n.react-multi-select-hide {\n  display: none; }\n\n.react-multi-select-panel {\n  display: flex;\n  height: 185px; }\n\n.react-multi-select-col {\n  min-width: 110px;\n  overflow-y: auto; }\n  .react-multi-select-col .selected-option-row {\n    padding: 5px 0;\n    cursor: pointer; }\n\n.react-multi-select-sign {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  width: 15px; }\n  .react-multi-select-sign i {\n    width: 6px;\n    height: 6px;\n    border-top: 2px solid #a9a9a9;\n    border-right: 2px solid #a9a9a9;\n    -webkit-transform: rotate(45deg);\n    -moz-transform: rotate(45deg);\n    -o-transform: rotate(45deg);\n    transform: rotate(45deg); }\n\n.react-multi-select-area-btn {\n  padding: 5px 0;\n  height: 40px;\n  border-top: 1px solid #eee;\n  text-align: center; }\n  .react-multi-select-area-btn .eg-btn {\n    padding: 4px 20px;\n    margin-right: 10px; }\n    .react-multi-select-area-btn .eg-btn:last-child {\n      margin-right: 0; }\n\n.classification {\n  padding: 5px 0;\n  cursor: pointer; }\n\n.react-multi-select-list-arrow {\n  position: relative;\n  display: inline-block;\n  vertical-align: middle;\n  width: 8px;\n  height: 8px; }\n  .react-multi-select-list-arrow::before {\n    content: ' ';\n    position: absolute;\n    border-top: 3px solid transparent;\n    border-bottom: 3px solid transparent;\n    border-left: 4px solid #87c2e5; }\n\n.react-multi-select-list-arrow.expand::before {\n  content: ' ';\n  position: absolute;\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  border-top: 4px solid #87c2e5; }\n\n.react-multi-select-sub-options {\n  padding-left: 16px; }\n\n.react-multi-select-list-option:last-child {\n  padding-bottom: 0; }\n\n.react-multi-select-list-option .eg-input.checkbox .input-icon {\n  margin-right: 2px; }\n\n.react-multi-select-list-option .eg-input.checkbox.active .input-icon {\n  fill: #87c2e5; }\n\n.react-multi-select-list-option .react-multi-select-box-option {\n  position: relative;\n  padding: 5px 0 5px 20px;\n  margin: 0;\n  cursor: pointer;\n  display: block;\n  text-decoration: none; }\n  .react-multi-select-list-option .react-multi-select-box-option:before {\n    content: ' ';\n    position: absolute;\n    text-align: center;\n    line-height: 1.1;\n    left: 2px;\n    top: 8px;\n    height: 12px;\n    width: 12px;\n    margin-right: 10px;\n    border: 1px solid #7B8E9B;\n    background: #f9f9f9;\n    vertical-align: middle; }\n\n.react-multi-select-list-option .react-multi-select-box-option-selected:before {\n  content: '\\2713';\n  color: #87c2e5; }\n\n.react-multiple-select-type-name {\n  padding: 5px 0 4px 0;\n  border-bottom: 1px solid #eee;\n  color: #c5c5c5; }\n\n.react-multi-select-btn {\n  padding: 4px 20px;\n  border-radius: 6px;\n  background-color: #307fc8;\n  display: inline-block;\n  margin-right: 10px;\n  margin-bottom: 0;\n  text-align: center;\n  vertical-align: middle;\n  touch-action: manipulation;\n  cursor: pointer;\n  background-image: none;\n  border: 1px solid transparent;\n  white-space: nowrap;\n  outline: 0;\n  text-decoration: none;\n  font-weight: normal;\n  font-size: 14px;\n  line-height: 1.42857143;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  color: #fff;\n  border-color: transparent; }\n  .react-multi-select-btn:last-child {\n    margin-right: 0; }\n\n.react-multi-select-btn-white {\n  background-color: #fff;\n  color: #333;\n  border-color: #d5d5d5; }\n\n/******************* multiple select box ********************/\n.webim-chatwindow .webim-operations-icon {\n  top: 5px;\n  left: auto;\n  right: 10px;\n  bottom: 0px; }\n\n.webim-chatwindow .webim-operations {\n  left: inherit;\n  right: 40px;\n  top: 10px;\n  bottom: auto;\n  z-index: 2; }\n\n.webim-friend-options span.radio_span {\n  width: 80px;\n  display: inline-block; }\n\n.webim-friend-options input.radio {\n  height: 10px;\n  width: 20px; }\n\n.webim_isWindowSDK {\n  top: 0;\n  bottom: 0; }\n\n.webim_isWindowSDK .webim-chat {\n  max-width: 100%;\n  min-width: 100%;\n  max-height: 100%;\n  width: 100%; }\n\n.webim-friend-requests-windowSDK {\n  width: 500px; }\n\n.webim-friend-requests-windowSDK span {\n  width: 100%; }\n\n.webim-msg-value a.dir {\n  margin-left: 130px;\n  margin-top: -20px; }\n\n.webim-leftbar .username {\n  width: 100%;\n  overflow: hidden; }\n\n.webim-loading span {\n  position: absolute;\n  margin: auto;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  width: 200px;\n  height: 80px;\n  text-align: center; }\n\nspan.red {\n  color: #ff2a00; }\n\n.webim-contact-loading {\n  width: 24px;\n  margin: 0 auto; }\n\n.webim-contact-loading img {\n  width: 24px; }\n", ""]);
+	exports.push([module.id, "@charset \"UTF-8\";\nhtml, body, section, article, h1, h2, h3, h4, h5, h6, p, div, i, em, span, ul, li, ol {\n  font-family: Arial, Helvetica, sans-serif;\n  margin: 0;\n  padding: 0; }\n\nhtml, body {\n  width: 100%;\n  height: 100%;\n  font-size: 13px;\n  overflow-y: hidden;\n  overflow-x: hidden;\n  background-color: #fafafa;\n  border: 1px solid rgba(250, 250, 250, 0);\n  -webkit-font-smoothing: antialiased; }\n\ninput, button {\n  outline: none; }\n  input:focus, button:focus {\n    border: 1px solid #4eb1f4;\n    box-shadow: rgba(25, 161, 219, 0.247059) 0px 0px 5px 0px; }\n\ntextarea {\n  outline: none;\n  resize: none; }\n\nul, ol, li {\n  list-style: none; }\n\n.pointer {\n  cursor: pointer; }\n\n.left {\n  float: left; }\n\n.right {\n  float: right; }\n\n.w100 {\n  width: 100%;\n  height: 100%; }\n\n.pad0 {\n  padding: 0; }\n\n.top50 {\n  margin-top: 50px; }\n\n.rel {\n  position: relative; }\n\n.dib {\n  display: inline-block; }\n\nobject {\n  z-index: 3;\n  position: absolute;\n  left: 340px;\n  bottom: 118px;\n  width: 84px; }\n\n@font-face {\n  font-family: 'webim';\n  src: url(" + __webpack_require__(5) + ");\n  src: url(" + __webpack_require__(6) + ") format(\"woff\"), url(" + __webpack_require__(7) + ") format(\"truetype\"), url(" + __webpack_require__(8) + "#iconfont) format(\"svg\"); }\n\n.font {\n  width: 40px;\n  height: 40px;\n  font-family: 'webim' !important;\n  font-size: 40px;\n  font-style: normal;\n  -webkit-font-smoothing: antialiased;\n  -webkit-text-stroke-width: 0.2px;\n  -moz-osx-font-smoothing: grayscale; }\n  .font.small {\n    width: 30px;\n    height: 30px;\n    font-size: 30px; }\n  .font.xsmaller {\n    width: 26px;\n    height: 26px;\n    font-size: 26px; }\n  .font.smaller {\n    width: 24px;\n    height: 24px;\n    font-size: 24px; }\n  .font.smallest {\n    width: 16px;\n    height: 16px;\n    font-size: 16px; }\n\n.hide {\n  display: none; }\n\n.bg-color {\n  color: #fff;\n  border: 1px solid #4eb1f4;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #4eb1f4; }\n\n.color {\n  color: #4eb1f4; }\n\n.hover-color:hover {\n  color: #4eb1f4; }\n\n.webim-logo {\n  width: 200px;\n  margin: 0 auto; }\n\n.webim {\n  position: absolute;\n  right: 0;\n  left: 0;\n  margin: auto;\n  top: 10%;\n  bottom: 10%; }\n\n.copyright {\n  z-index: 3;\n  position: absolute;\n  width: 100%;\n  bottom: 10px;\n  text-align: center;\n  color: #cccccc; }\n\n.webim-rtc-video {\n  z-index: 3;\n  cursor: pointer;\n  position: fixed;\n  margin: auto;\n  right: 0;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  overflow: hidden;\n  border-radius: 4px;\n  background-color: #cccccc; }\n  .webim-rtc-video video {\n    position: absolute; }\n    .webim-rtc-video video.full {\n      z-index: 1;\n      width: 100%;\n      height: 100%;\n      object-fit: contain; }\n    .webim-rtc-video video.corner {\n      z-index: 2;\n      top: 40px;\n      left: auto;\n      right: 10px;\n      bottom: auto;\n      max-height: 17%;\n      max-width: 17%;\n      object-fit: contain; }\n  .webim-rtc-video span {\n    z-index: 2;\n    position: absolute;\n    margin: 0 auto;\n    left: 0;\n    right: 0;\n    top: 6px;\n    bottom: 0;\n    width: 200px;\n    height: 80px;\n    text-align: center;\n    color: #fff; }\n  .webim-rtc-video i {\n    z-index: 2;\n    position: absolute;\n    background-color: rgba(255, 255, 255, 0.2);\n    font-style: normal;\n    border-radius: 50%;\n    text-align: center;\n    color: rgba(0, 0, 0, 0.2);\n    cursor: pointer; }\n    .webim-rtc-video i.close {\n      color: #e90101; }\n    .webim-rtc-video i.toggle {\n      color: #98e024; }\n    .webim-rtc-video i.accept {\n      color: #98e024; }\n    .webim-rtc-video i.mute {\n      color: #eeeeee; }\n\n/*\n * loading\n */\n.webim-loading {\n  position: fixed;\n  z-index: 3;\n  background-color: #FAFAFA;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0; }\n  .webim-loading img {\n    position: absolute;\n    margin: auto;\n    left: 0;\n    right: 0;\n    top: 0;\n    bottom: 0;\n    width: 24px; }\n\n/*\n * button\n */\n.webim-button {\n  font-size: 16px;\n  box-sizing: border-box;\n  display: inline-block;\n  margin: 10px auto;\n  width: 300px;\n  height: 36px;\n  cursor: pointer;\n  border-radius: 2px; }\n  .webim-button.error {\n    background-color: #ff3a00;\n    border: 1px solid #ff3a00; }\n  .webim-button:hover {\n    background-color: #1aa1e4; }\n\n/*\n * input\n */\n.webim-input {\n  box-sizing: border-box;\n  font-size: 14px;\n  padding: 0 4px;\n  display: inline-block;\n  margin: 10px auto 0;\n  width: 300px;\n  height: 36px;\n  line-height: 36px;\n  cursor: pointer;\n  border-radius: 2px;\n  border: 1px solid #e5e5e5;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n/*\n * checkbox\n */\n.webim-checkbox {\n  text-align: left;\n  margin: 10px 0 10px 5px;\n  padding-left: 50px;\n  box-sizing: border-box; }\n  .webim-checkbox span {\n    height: 30px;\n    line-height: 30px; }\n  .webim-checkbox > i {\n    position: relative;\n    margin-right: 6px;\n    width: 14px;\n    height: 14px;\n    border-radius: 2px;\n    display: inline-block;\n    vertical-align: middle;\n    border: 1px solid #cccccc;\n    cursor: pointer; }\n    .webim-checkbox > i:hover {\n      background-color: #fff; }\n      .webim-checkbox > i:hover em {\n        display: inline-block;\n        color: #cccccc; }\n    .webim-checkbox > i.checked {\n      background-color: #afd7e8; }\n      .webim-checkbox > i.checked em {\n        display: inline-block;\n        color: #000; }\n    .webim-checkbox > i em {\n      display: none;\n      position: absolute;\n      left: -6px;\n      top: -10px;\n      color: #000; }\n\n/*\n * left bar\n */\n.webim-leftbar {\n  position: relative;\n  float: left;\n  width: 50px;\n  height: 100%;\n  text-align: center;\n  border-radius: 2px 0px 0px 2px;\n  border: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #fcfdfb; }\n\n/*\n * contact list\n */\n.webim-contact-wrapper {\n  float: left;\n  height: 100%;\n  width: 250px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  border-right: 1px solid #f2f2f2;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n.webim-contact-item {\n  cursor: pointer;\n  position: relative;\n  width: 100%;\n  overflow: hidden;\n  height: 60px; }\n  .webim-contact-item .webim-avatar-icon {\n    float: left;\n    margin: 10px; }\n  .webim-contact-item .webim-contact-info {\n    position: relative; }\n  .webim-contact-item .webim-contact-handlers {\n    text-align: right;\n    position: absolute;\n    right: 2px;\n    top: 0; }\n    .webim-contact-item .webim-contact-handlers i {\n      font-size: 16px;\n      line-height: 36px; }\n  .webim-contact-item > span, .webim-contact-item .webim-contact-username {\n    color: #1a1a1a;\n    font-size: 14px;\n    margin: 10px 0;\n    display: inline-block;\n    width: calc(100% - 70px);\n    overflow: hidden;\n    white-space: nowrap;\n    text-overflow: ellipsis; }\n  .webim-contact-item > i {\n    display: inline-block;\n    right: 2px;\n    bottom: 10px;\n    top: auto; }\n  .webim-contact-item > em {\n    display: block;\n    height: 20px;\n    line-height: 20px;\n    width: calc(100% - 100px);\n    position: absolute;\n    margin: auto;\n    left: 30px;\n    top: 30px;\n    right: 10px;\n    color: #999999;\n    font-style: normal;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden; }\n    .webim-contact-item > em img {\n      width: 20px;\n      vertical-align: middle; }\n  .webim-contact-item.selected {\n    background-color: #f3f6f6; }\n\n.webim-profile-avatar {\n  display: inline-block;\n  margin: 10px auto; }\n\n.webim-avatar-icon {\n  width: 40px;\n  height: 40px;\n  border-radius: 50%;\n  overflow: hidden;\n  -webkit-filter: contrast(1.2);\n  -webkit-tap-highlight-color: transparent; }\n  .webim-avatar-icon.small {\n    width: 30px;\n    height: 30px; }\n\n.webim-operations-icon,\n.webim-leftbar-icon {\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  margin-bottom: 10px;\n  color: #cccccc; }\n  .webim-operations-icon .rotate,\n  .webim-leftbar-icon .rotate {\n    transform: rotate(180deg);\n    -webkit-transform: rotate(180deg);\n    -moz-transform: rotate(180deg);\n    -o-transform: rotate(180deg);\n    -ms-transform: rotate(180deg); }\n\n.webim-operations-icon:hover,\n.webim-leftbar-icon:hover,\n.webim-operations-icon.selected,\n.webim-leftbar-icon.selected {\n  color: #4eb1f4; }\n\n.webim-operations-icon {\n  color: #cccccc;\n  position: absolute;\n  margin-bottom: 0;\n  bottom: 10px;\n  left: 10px; }\n  .webim-operations-icon:hover {\n    color: #4eb1f4; }\n\n/*\n * operations\n */\n.webim-operations {\n  z-index: 1;\n  position: absolute;\n  text-align: left;\n  left: 40px;\n  bottom: 10px;\n  width: 160px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  background-color: #fff; }\n  .webim-operations i {\n    margin: 0 10px;\n    color: #cccccc; }\n  .webim-operations span {\n    vertical-align: top;\n    word-break: keep-all;\n    white-space: nowrap;\n    overflow: hidden;\n    text-overflow: ellipsis; }\n  .webim-operations li {\n    height: 30px;\n    line-height: 30px;\n    cursor: pointer;\n    overflow: hidden; }\n    .webim-operations li:hover {\n      color: #4eb1f4;\n      background-color: #f2f2f2; }\n      .webim-operations li:hover i {\n        color: #4eb1f4; }\n    .webim-operations li:nth-child(2) i {\n      display: inline-block;\n      margin-top: -4px;\n      vertical-align: top; }\n    .webim-operations li:last-child:hover {\n      color: #e90101; }\n      .webim-operations li:last-child:hover i {\n        color: #e90101; }\n\n.webim-msg-prompt {\n  position: absolute;\n  top: -4px;\n  right: 0;\n  line-height: 16px;\n  font-style: normal;\n  width: 16px;\n  height: 16px;\n  font-size: 12px;\n  text-align: center;\n  color: #fff;\n  border-radius: 50%;\n  border: 2px solid #fcfdfb;\n  -webkit-tap-highlight-color: transparent;\n  background-color: #ff3a00; }\n\n.webim-msg-icon-prompt {\n  width: 10px;\n  height: 10px;\n  top: 0px;\n  right: 8px; }\n\n.webim-blacklist-wrapper {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  overflow-x: hidden;\n  overflow-y: auto;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n\n.webim-blacklist-item {\n  position: relative;\n  cursor: pointer;\n  display: block;\n  width: 100%;\n  overflow: hidden;\n  height: 30px;\n  font-size: 20px;\n  line-height: 30px; }\n  .webim-blacklist-item i.font {\n    line-height: 30px;\n    float: right;\n    position: static; }\n\n.webim-operation-icon {\n  width: 100px;\n  float: right;\n  margin-right: 10px;\n  text-align: right; }\n\n* :focus {\n  outline: 0; }\n\n/*\n * notify\n */\n.webim-notify {\n  z-index: 3;\n  position: fixed;\n  top: 10px;\n  word-wrap: break-word;\n  padding: 4px;\n  width: 50%;\n  color: #fff;\n  left: 0;\n  right: 0;\n  margin: 0 auto;\n  max-width: 90%;\n  min-height: 30px;\n  border-radius: 2px;\n  line-height: 30px;\n  text-align: center;\n  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 6px 0px;\n  -webkit-tap-highlight-color: transparent;\n  border: 0px none black; }\n  .webim-notify.success {\n    background-color: #aeda3e; }\n  .webim-notify.error {\n    background-color: #ff3a00; }\n  .webim-notify i {\n    position: absolute;\n    right: 10px;\n    top: 9px; }\n\n/*\n * signin & signup\n */\n.webim-sign {\n  overflow: hidden;\n  width: 400px;\n  margin: 40px auto;\n  text-align: center;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white; }\n  .webim-sign h2 {\n    font-size: 24px;\n    color: #1a1a1a;\n    width: 100%;\n    line-height: 84px;\n    height: 64px; }\n  .webim-sign p {\n    margin: 0px auto 40px;\n    width: 300px;\n    text-align: left; }\n    .webim-sign p i {\n      font-style: normal;\n      color: #4eb1f4;\n      cursor: pointer; }\n  .webim-sign.webim-signup button {\n    margin-top: 30px; }\n\n.webim-chat {\n  position: relative;\n  max-width: 1024px;\n  min-width: 960px;\n  max-height: 600px;\n  height: 100%;\n  margin: auto;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n  border: 0px none black;\n  -webkit-tap-highlight-color: transparent;\n  background-color: white;\n  border-radius: 2px;\n  overflow: hidden; }\n\n.webim-chatwindow {\n  position: relative;\n  float: left;\n  height: 100%;\n  width: calc(100% - 303px); }\n  .webim-chatwindow textarea {\n    position: absolute;\n    bottom: 40px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: none;\n    width: 100%;\n    padding: 10px 15px; }\n  .webim-chatwindow .webim-group-memeber {\n    position: absolute;\n    left: 0;\n    right: 0;\n    top: 40px;\n    margin: auto;\n    padding: 10px 7px;\n    border-radius: 2px;\n    width: 200px;\n    overflow: auto;\n    box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 6px 0px;\n    z-index: 2;\n    background: #fff;\n    max-height: 300px; }\n    .webim-chatwindow .webim-group-memeber li {\n      height: 30px;\n      padding: 0 4px;\n      box-sizing: border-box;\n      text-align: left; }\n      .webim-chatwindow .webim-group-memeber li > div {\n        display: inline-block;\n        margin-right: 6px;\n        width: 20px;\n        height: 20px; }\n  .webim-chatwindow .webim-group-name {\n    max-width: 64px;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    display: inline-block; }\n\n.webim-chatwindow-title {\n  position: absolute;\n  top: 0;\n  width: 100%;\n  height: 40px;\n  line-height: 40px;\n  text-align: center;\n  font-size: 14px; }\n  .webim-chatwindow-title i {\n    color: #cccccc;\n    vertical-align: middle;\n    cursor: pointer;\n    margin-left: 10px;\n    padding-bottom: 22px; }\n    .webim-chatwindow-title i.webim-up-icon {\n      transform: rotate(180deg); }\n    .webim-chatwindow-title i.webim-call-icon {\n      position: absolute;\n      left: 0;\n      top: 0; }\n    .webim-chatwindow-title i.webim-accept-icon {\n      position: absolute;\n      left: 40px;\n      top: 0; }\n\n.webim-chatwindow-options {\n  border-top: 1px solid #f2f2f2;\n  width: 100%;\n  z-index: 1;\n  position: absolute;\n  bottom: 120px;\n  left: 0;\n  height: 30px;\n  line-height: 30px; }\n  .webim-chatwindow-options > span {\n    margin-left: 6px;\n    color: #cccccc;\n    cursor: pointer; }\n  .webim-chatwindow-options > span:hover {\n    color: #4eb1f4; }\n\n.webim-send-btn {\n  position: absolute;\n  bottom: 0;\n  right: 10px;\n  width: 80px;\n  height: 24px;\n  font-size: 12px; }\n\n.webim-chatwindow-msg {\n  z-index: 1;\n  position: absolute;\n  top: 40px;\n  bottom: 150px;\n  overflow-x: hidden;\n  overflow-y: auto;\n  box-sizing: border-box;\n  padding: 20px 10px;\n  width: 100%; }\n\n.webim-send-wrapper > ul {\n  z-index: 1;\n  position: absolute;\n  width: 280px;\n  height: 194px;\n  bottom: 150px;\n  left: -140px;\n  border-radius: 2px;\n  background: #fff;\n  box-sizing: border-box;\n  padding: 4px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 4px 12px 0px; }\n  .webim-send-wrapper > ul li {\n    cursor: pointer;\n    display: inline-block;\n    margin: 2px 3px 0 3px; }\n\n#test {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  z-index: 2222; }\n\n.webim-msg-container {\n  overflow: hidden;\n  margin: 24px 0; }\n  .webim-msg-container > div {\n    max-width: 60%;\n    overflow: hidden; }\n  .webim-msg-container .right > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-right: 10px; }\n  .webim-msg-container .right .webim-msg-icon {\n    color: #b4e4fc;\n    right: -40px; }\n  .webim-msg-container .right .webim-msg-delivered {\n    float: left;\n    margin: 6px 2px 0 0;\n    background-color: #cccccc; }\n  .webim-msg-container .right .webim-msg-value {\n    float: right;\n    margin: 6px 10px 0 0;\n    background-color: #b4e4fc; }\n  .webim-msg-container .right .webim-msg-error {\n    float: right;\n    margin: 6px 10px 0 0; }\n  .webim-msg-container .right .webim-msg-header {\n    text-align: right; }\n  .webim-msg-container .left > p {\n    color: #999999;\n    letter-spacing: 1px;\n    margin-left: 10px; }\n  .webim-msg-container .left .webim-msg-icon {\n    color: #f1f2ec;\n    left: -10px; }\n  .webim-msg-container .left .webim-msg-value {\n    background-color: #f1f2ec;\n    float: left;\n    margin: 6px 0 0 10px; }\n  .webim-msg-container .left .webim-msg-header {\n    text-align: left; }\n\n.webim-msg-icon {\n  position: absolute;\n  top: 4px;\n  font-size: 10px; }\n\n.webim-msg-value {\n  position: relative;\n  min-height: 30px;\n  max-width: calc(100% - 80px);\n  border-radius: 4px;\n  padding: 6px;\n  box-sizing: border-box;\n  min-width: 60%; }\n  .webim-msg-value video {\n    width: 100%; }\n  .webim-msg-value.webim-img-msg-wrapper {\n    padding: 1px; }\n  .webim-msg-value > div,\n  .webim-msg-value > pre {\n    white-space: pre-wrap;\n    word-break: break-all;\n    color: #1a1a1a;\n    font-size: 14px;\n    line-height: 20px;\n    margin: 0; }\n  .webim-msg-value .emoji {\n    width: 32px;\n    vertical-align: bottom; }\n  .webim-msg-value i {\n    display: block;\n    font-style: normal;\n    margin-left: 40px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25); }\n  .webim-msg-value a {\n    display: block;\n    margin-left: 30px;\n    margin-top: -28px;\n    font-size: 12px;\n    color: rgba(0, 0, 0, 0.25);\n    text-decoration: none; }\n\n.webim-msg-img {\n  max-width: 100%;\n  vertical-align: middle;\n  cursor: pointer;\n  border-radius: 4px; }\n\n.webim-msg-header {\n  line-height: 30px;\n  margin-bottom: 4px;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.15); }\n\n.webim-msg-header-icon {\n  vertical-align: middle;\n  display: inline-block;\n  margin: -46px 4px 0 -4px;\n  line-height: 40px;\n  color: #868683; }\n\n.webim-msg-name {\n  width: calc(100% - 80px);\n  display: inline-block;\n  height: 40px;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden; }\n\n.webim-msg-fileSize {\n  display: inline-block;\n  float: right;\n  width: 47px;\n  overflow: hidden; }\n\n.webim-img-expand {\n  position: fixed;\n  width: 100%;\n  height: 100%;\n  left: 0;\n  top: 0;\n  background: rgba(0, 0, 0, 0.3);\n  z-index: 3; }\n  .webim-img-expand img {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    max-width: 90%;\n    max-height: 90%;\n    margin: auto; }\n\n.webim-audio-slash {\n  background-color: transparent;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  border-radius: 4px; }\n\n.slash {\n  animation: slash 1s infinite;\n  -moz-animation: slash 1s infinite;\n  -webkit-animation: slash 1s infinite; }\n\n@keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-moz-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n@-webkit-keyframes slash {\n  from {\n    background-color: transparent; }\n  50% {\n    background-color: rgba(0, 0, 0, 0.1); }\n  to {\n    background-color: transparent; } }\n\n.clearfix:after {\n  content: ' ';\n  display: table;\n  clear: both; }\n\n/*\n * dialog\n */\n.webim-dialog {\n  z-index: 3;\n  position: absolute;\n  width: 400px;\n  min-height: 168px;\n  top: 20%;\n  left: 0;\n  right: 0;\n  margin: auto;\n  border-radius: 2px;\n  box-shadow: rgba(0, 0, 0, 0.298039) 0px 0px 8px 0px;\n  background-color: white; }\n  .webim-dialog h3 {\n    line-height: 40px;\n    box-sizing: border-box;\n    padding-left: 10px;\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    font-weight: normal; }\n  .webim-dialog .font {\n    font-size: 20px;\n    position: absolute;\n    right: 6px;\n    top: 6px;\n    width: 20px;\n    height: 20px;\n    color: rgba(0, 0, 0, 0.1);\n    cursor: pointer; }\n  .webim-dialog > div {\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n    padding: 10px 10px 10px; }\n  .webim-dialog .webim-dialog-button {\n    position: absolute;\n    right: 8px;\n    bottom: 2px;\n    width: 80px;\n    height: 26px; }\n  .webim-dialog .webim-dialog-button-search {\n    bottom: 2px;\n    width: 80px;\n    height: 30px;\n    margin-left: 70px; }\n  .webim-dialog .webim-dialog-button-left {\n    position: absolute;\n    right: 100px;\n    bottom: 2px;\n    width: 80px;\n    height: 26px; }\n  .webim-dialog .webim-subscribe-button {\n    width: 60px;\n    height: 30px;\n    margin-left: 10px; }\n  .webim-dialog input {\n    height: 30px;\n    width: 220px; }\n  .webim-dialog textarea {\n    margin-top: 20px;\n    right: 0;\n    box-sizing: border-box;\n    height: 80px;\n    border: 1px solid rgba(0, 0, 0, 0.1);\n    width: 220px; }\n  .webim-dialog-body {\n    min-height: 100px;\n    max-height: 126px;\n    overflow-y: scroll;\n    overflow-x: hidden; }\n    .webim-dialog-body-detail {\n      width: 100%; }\n      .webim-dialog-body-detail span.title {\n        font-size: 14px;\n        display: block;\n        font-weight: 700;\n        margin-bottom: 5px; }\n      .webim-dialog-body-detail span.content {\n        font-size: 12px;\n        color: #6a737c; }\n  .webim-dialog .webim-dialog-footer {\n    padding: 10px;\n    position: relative;\n    min-height: 20px;\n    text-align: right; }\n    .webim-dialog .webim-dialog-footer .webim-button {\n      position: static;\n      margin-right: 10px; }\n    .webim-dialog .webim-dialog-footer .webim-group-back {\n      position: absolute;\n      left: 0;\n      height: 67px;\n      width: 50px;\n      background-color: #f2f2f2;\n      top: 0;\n      border-radius: 0 2px 2px 0;\n      text-align: center;\n      cursor: pointer; }\n      .webim-dialog .webim-dialog-footer .webim-group-back span {\n        line-height: 67px;\n        font-size: 30px;\n        font-weight: 700;\n        color: #868683; }\n\n.webim-dialog-2 {\n  height: 450px; }\n\n.webim-friend-requests {\n  height: auto; }\n  .webim-friend-requests span {\n    width: 60%;\n    display: inline-block;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap; }\n  .webim-friend-requests > div {\n    overflow: auto;\n    max-height: 400px; }\n\n.webim-body-loading {\n  height: 86px;\n  width: 400px;\n  position: absolute;\n  opacity: 0.5;\n  z-index: 999;\n  margin-top: -10px;\n  margin-left: -10px;\n  padding-top: 61px; }\n  .webim-body-loading img {\n    margin: auto;\n    display: block;\n    width: 30px;\n    line-height: inherit; }\n\n/*\n * layer\n */\n.webim-layer {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 1;\n  background-color: rgba(0, 0, 0, 0.25); }\n\n/*\n  说明:\n  下面的css都是为了快速实现功能，覆盖旧有属性的各种trick\n  后期需要找专门的css人员整理一遍，合并入正常的文件，然后删除本文件!\n*/\n/******************* multiple select box ********************/\n.react-multi-select-box-container {\n  position: relative;\n  width: 240px;\n  display: inline-block;\n  background-color: #fff;\n  border-radius: 4px;\n  text-align: left;\n  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); }\n\n.react-multi-select-box {\n  padding: 10px 0;\n  display: inline-block;\n  cursor: pointer;\n  border: none;\n  width: 100%;\n  text-align: left;\n  background-color: transparent; }\n  .react-multi-select-box::before {\n    content: ' ';\n    position: absolute;\n    z-index: 1;\n    height: 20px;\n    top: -7px;\n    right: 13px;\n    border-left: 3px solid transparent;\n    border-right: 3px solid transparent;\n    border-bottom: 4px solid #a7a8aa; }\n  .react-multi-select-box::after {\n    content: ' ';\n    position: absolute;\n    z-index: 1;\n    top: 20px;\n    right: 13px;\n    border-top: 4px solid #a7a8aa;\n    border-left: 3px solid transparent;\n    border-right: 3px solid transparent; }\n\n.react-multi-select-box-label {\n  padding: 0 40px 0 10px;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  color: #333;\n  line-height: 16px; }\n\n.react-multi-select-box-empty .react-multi-select-box-label {\n  color: #c5c5c5; }\n\n.react-multi-select-area {\n  position: absolute;\n  margin-top: 4px;\n  padding: 0 10px;\n  height: 225px;\n  min-width: 260px;\n  border-radius: 4px;\n  background-color: #fff;\n  z-index: 4;\n  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); }\n\n.react-multi-select-box-hidden {\n  display: none; }\n\n.react-multi-select-hide {\n  display: none; }\n\n.react-multi-select-panel {\n  display: flex;\n  height: 185px; }\n\n.react-multi-select-col {\n  min-width: 110px;\n  overflow-y: auto; }\n  .react-multi-select-col .selected-option-row {\n    padding: 5px 0;\n    cursor: pointer; }\n\n.react-multi-select-sign {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  width: 15px; }\n  .react-multi-select-sign i {\n    width: 6px;\n    height: 6px;\n    border-top: 2px solid #a9a9a9;\n    border-right: 2px solid #a9a9a9;\n    -webkit-transform: rotate(45deg);\n    -moz-transform: rotate(45deg);\n    -o-transform: rotate(45deg);\n    transform: rotate(45deg); }\n\n.react-multi-select-area-btn {\n  padding: 5px 0;\n  height: 40px;\n  border-top: 1px solid #eee;\n  text-align: center; }\n  .react-multi-select-area-btn .eg-btn {\n    padding: 4px 20px;\n    margin-right: 10px; }\n    .react-multi-select-area-btn .eg-btn:last-child {\n      margin-right: 0; }\n\n.classification {\n  padding: 5px 0;\n  cursor: pointer; }\n\n.react-multi-select-list-arrow {\n  position: relative;\n  display: inline-block;\n  vertical-align: middle;\n  width: 8px;\n  height: 8px; }\n  .react-multi-select-list-arrow::before {\n    content: ' ';\n    position: absolute;\n    border-top: 3px solid transparent;\n    border-bottom: 3px solid transparent;\n    border-left: 4px solid #87c2e5; }\n\n.react-multi-select-list-arrow.expand::before {\n  content: ' ';\n  position: absolute;\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  border-top: 4px solid #87c2e5; }\n\n.react-multi-select-sub-options {\n  padding-left: 16px; }\n\n.react-multi-select-list-option:last-child {\n  padding-bottom: 0; }\n\n.react-multi-select-list-option .eg-input.checkbox .input-icon {\n  margin-right: 2px; }\n\n.react-multi-select-list-option .eg-input.checkbox.active .input-icon {\n  fill: #87c2e5; }\n\n.react-multi-select-list-option .react-multi-select-box-option {\n  position: relative;\n  padding: 5px 0 5px 20px;\n  margin: 0;\n  cursor: pointer;\n  display: block;\n  text-decoration: none; }\n  .react-multi-select-list-option .react-multi-select-box-option:before {\n    content: ' ';\n    position: absolute;\n    text-align: center;\n    line-height: 1.1;\n    left: 2px;\n    top: 8px;\n    height: 12px;\n    width: 12px;\n    margin-right: 10px;\n    border: 1px solid #7B8E9B;\n    background: #f9f9f9;\n    vertical-align: middle; }\n\n.react-multi-select-list-option .react-multi-select-box-option-selected:before {\n  content: '\\2713';\n  color: #87c2e5; }\n\n.react-multiple-select-type-name {\n  padding: 5px 0 4px 0;\n  border-bottom: 1px solid #eee;\n  color: #c5c5c5; }\n\n.react-multi-select-btn {\n  padding: 4px 20px;\n  border-radius: 6px;\n  background-color: #307fc8;\n  display: inline-block;\n  margin-right: 10px;\n  margin-bottom: 0;\n  text-align: center;\n  vertical-align: middle;\n  touch-action: manipulation;\n  cursor: pointer;\n  background-image: none;\n  border: 1px solid transparent;\n  white-space: nowrap;\n  outline: 0;\n  text-decoration: none;\n  font-weight: normal;\n  font-size: 14px;\n  line-height: 1.42857143;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n  color: #fff;\n  border-color: transparent; }\n  .react-multi-select-btn:last-child {\n    margin-right: 0; }\n\n.react-multi-select-btn-white {\n  background-color: #fff;\n  color: #333;\n  border-color: #d5d5d5; }\n\n/******************* multiple select box ********************/\n.webim-chatwindow .webim-operations-icon {\n  top: 5px;\n  left: auto;\n  right: 10px;\n  bottom: 0px; }\n\n.webim-chatwindow .webim-operations {\n  left: inherit;\n  right: 40px;\n  top: 10px;\n  bottom: auto;\n  z-index: 2; }\n\n.webim-friend-options span.radio_span {\n  width: 80px;\n  display: inline-block; }\n\n.webim-friend-options input.radio {\n  height: 10px;\n  width: 20px; }\n\n.webim_isWindowSDK {\n  top: 0;\n  bottom: 0; }\n\n.webim_isWindowSDK .webim-chat {\n  max-width: 100%;\n  min-width: 100%;\n  max-height: 100%;\n  width: 100%; }\n\n.webim-friend-requests-windowSDK {\n  width: 500px; }\n\n.webim-friend-requests-windowSDK span {\n  width: 100%; }\n\n.webim-msg-value a.dir {\n  margin-left: 130px;\n  margin-top: -20px; }\n\n.webim-leftbar .username {\n  width: 100%;\n  overflow: hidden; }\n\n.webim-loading span {\n  position: absolute;\n  margin: auto;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  width: 200px;\n  height: 80px;\n  text-align: center; }\n\nspan.red {\n  color: #ff2a00; }\n\n.webim-contact-loading {\n  width: 24px;\n  margin: 0 auto; }\n\n.webim-contact-loading img {\n  width: 24px; }\n", ""]);
 
 	// exports
 
@@ -1106,11 +1108,28 @@
 
 	    releaseChatRecord: function releaseChatRecord(targetId) {
 	        var targetId = targetId || Demo.selected;
+	        if (Demo.first) {
+	            Demo.first = false;
+	            for (var i in Demo.chatRecord) {
+	                targetId = i;
+	                if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
+	                    if (document.getElementById('wrapper' + targetId)) document.getElementById('wrapper' + targetId).innerHTML = '';
+	                    for (var i in Demo.chatRecord[targetId].messages) {
+	                        if (Demo.chatRecord[targetId].messages[i] == undefined) continue;
+	                        if (!Demo.chatRecord[targetId].messages[i].read) {
+	                            Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message, Demo.chatRecord[targetId].messages[i].type, Demo.chatRecord[targetId].messages[i].status, i);
+	                        }
+	                    }
+	                }
+	            }
+	            return;
+	        }
 	        if (targetId) {
 	            if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
 	                if (document.getElementById('wrapper' + targetId)) document.getElementById('wrapper' + targetId).innerHTML = '';
 	                for (var i in Demo.chatRecord[targetId].messages) {
 	                    if (Demo.chatRecord[targetId].messages[i] == undefined) continue;
+	                    Demo.chatRecord[targetId].messages[i].read = true;
 	                    Demo.api.sendRead(Demo.chatRecord[targetId].messages[i].message);
 	                    Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message, Demo.chatRecord[targetId].messages[i].type, Demo.chatRecord[targetId].messages[i].status, i);
 	                }
@@ -1165,7 +1184,10 @@
 	    },
 
 	    appendMsg: function appendMsg(msg, type, status, nid) {
-	        if (!msg) {
+	        if (Demo.first) {
+	            return;
+	        }
+	        if (!msg || type === 'cmd') {
 	            return;
 	        }
 	        msg.from = msg.from || Demo.user;
@@ -1176,9 +1198,10 @@
 	        var brief = '',
 	            data = msg.data || msg.msg || '',
 	            name = this.sendByMe ? Demo.user : msg.from,
-	            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from,
-	            targetNode = document.getElementById('wrapper' + targetId),
-	            isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
+	            targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
+	        var targetNode = document.getElementById('wrapper' + targetId);
+
+	        var isStranger = !document.getElementById(targetId) && !document.getElementById('wrapper' + targetId);
 
 	        // TODO: ios/android client doesn't encodeURIComponent yet
 	        if (typeof data === "string" && WebIM.config.isWindowSDK) {
@@ -21902,7 +21925,7 @@
 
 	        var uri = WebIM.utils.parseUri();
 	        var curNode = uri.curNode;
-	        var window = [];
+	        var windows = [];
 	        if (curNode) {
 	            Demo.selected = curNode;
 	            if (Demo.chatState['friends']) {
@@ -21923,7 +21946,7 @@
 	                chatType: 'singleChat',
 	                updateNode: this.updateNode,
 	                className: '' })));
-	            window = Demo.chatState['friends'].chatWindow;
+	            windows = Demo.chatState['friends'].chatWindow;
 	        }
 
 	        Demo.conn.listen({
@@ -21951,42 +21974,57 @@
 	                Demo.conn.errorType = -1;
 	            },
 	            onClosed: function onClosed(msg) {
+	                Demo.first = true;
 	                // Demo.api.logout();
 	            },
 	            onTextMessage: function onTextMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
-	                // 发送已送达回执
+
+	                Demo.api.addToChatRecord(message, 'txt');
+	                Demo.api.appendMsg(message, 'txt');
+
 	                if (Demo.selected == message.from) {
+	                    var id = message.id,
+	                        sentByMe = message.from === Demo.user;
+	                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+	                    Demo.chatRecord[targetId].messages[id].read = true;
 	                    // 发送已读回执
 	                    Demo.api.sendRead(message);
 	                }
-	                Demo.api.addToChatRecord(message, 'txt');
-	                Demo.api.appendMsg(message, 'txt');
 	            },
 	            onEmojiMessage: function onEmojiMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
+	                Demo.api.addToChatRecord(message, 'emoji');
+	                Demo.api.appendMsg(message, 'emoji');
+
 	                if (Demo.selected == message.from) {
+	                    var id = message.id,
+	                        sentByMe = message.from === Demo.user;
+	                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+	                    Demo.chatRecord[targetId].messages[id].read = true;
 	                    // 发送已读回执
 	                    Demo.api.sendRead(message);
 	                }
-	                Demo.api.addToChatRecord(message, 'emoji');
-	                Demo.api.appendMsg(message, 'emoji');
 	            },
 	            onPictureMessage: function onPictureMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
 
+	                Demo.api.addToChatRecord(message, 'img');
+	                Demo.api.appendMsg(message, 'img');
 	                if (Demo.selected == message.from) {
+	                    var id = message.id,
+	                        sentByMe = message.from === Demo.user;
+	                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+	                    Demo.chatRecord[targetId].messages[id].read = true;
 	                    // 发送已读回执
 	                    Demo.api.sendRead(message);
 	                }
-	                Demo.api.addToChatRecord(message, 'img');
-	                Demo.api.appendMsg(message, 'img');
 	            },
 	            onCmdMessage: function onCmdMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
@@ -21994,6 +22032,14 @@
 	                }
 	                Demo.api.addToChatRecord(message, 'cmd');
 	                Demo.api.appendMsg(message, 'cmd');
+	                if (Demo.selected == message.from) {
+	                    var id = message.id,
+	                        sentByMe = message.from === Demo.user;
+	                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+	                    Demo.chatRecord[targetId].messages[id].read = true;
+	                    // 发送已读回执
+	                    Demo.api.sendRead(message);
+	                }
 	            },
 	            onAudioMessage: function onAudioMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
@@ -22002,6 +22048,14 @@
 
 	                Demo.api.addToChatRecord(message, 'aud');
 	                Demo.api.appendMsg(message, 'aud');
+	                if (Demo.selected == message.from) {
+	                    var id = message.id,
+	                        sentByMe = message.from === Demo.user;
+	                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+	                    Demo.chatRecord[targetId].messages[id].read = true;
+	                    // 发送已读回执
+	                    Demo.api.sendRead(message);
+	                }
 	            },
 	            onLocationMessage: function onLocationMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
@@ -22010,18 +22064,30 @@
 
 	                Demo.api.addToChatRecord(message, 'loc');
 	                Demo.api.appendMsg(message, 'loc');
+	                if (Demo.selected == message.from) {
+	                    var id = message.id,
+	                        sentByMe = message.from === Demo.user;
+	                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+	                    Demo.chatRecord[targetId].messages[id].read = true;
+	                    // 发送已读回执
+	                    Demo.api.sendRead(message);
+	                }
 	            },
 	            onFileMessage: function onFileMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
 
+	                Demo.api.addToChatRecord(message, 'file');
+	                Demo.api.appendMsg(message, 'file');
 	                if (Demo.selected == message.from) {
+	                    var id = message.id,
+	                        sentByMe = message.from === Demo.user;
+	                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+	                    Demo.chatRecord[targetId].messages[id].read = true;
 	                    // 发送已读回执
 	                    Demo.api.sendRead(message);
 	                }
-	                Demo.api.addToChatRecord(message, 'file');
-	                Demo.api.appendMsg(message, 'file');
 	            },
 	            onVideoMessage: function onVideoMessage(message) {
 	                if (WebIM.config.isWindowSDK) {
@@ -22030,6 +22096,14 @@
 
 	                Demo.api.addToChatRecord(message, 'video');
 	                Demo.api.appendMsg(message, 'video');
+	                if (Demo.selected == message.from) {
+	                    var id = message.id,
+	                        sentByMe = message.from === Demo.user;
+	                    var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
+	                    Demo.chatRecord[targetId].messages[id].read = true;
+	                    // 发送已读回执
+	                    Demo.api.sendRead(message);
+	                }
 	            },
 	            onPresence: function onPresence(message) {
 	                if (WebIM.config.isWindowSDK) {
@@ -22124,12 +22198,12 @@
 	            },
 	            onDeliveredMessage: function onDeliveredMessage(message) {
 	                var msg = document.getElementsByName(message.mid);
-	                if (msg) {
-	                    if (msg[0]) msg[0].innerHTML = '已送达';
-	                }
 	                // 记录消息的状态
 	                for (var targetId in Demo.chatRecord) {
-	                    if (Demo.chatRecord[targetId].messages[message.mid]) {
+	                    if (Demo.chatRecord[targetId].messages[message.mid] && Demo.chatRecord[targetId].messages[message.mid].status != 'Read') {
+	                        if (msg) {
+	                            if (msg[0]) msg[0].innerHTML = '已送达';
+	                        }
 	                        Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
 	                    }
 	                }
@@ -22137,7 +22211,9 @@
 	            onReadMessage: function onReadMessage(message) {
 	                var msg = document.getElementsByName(message.mid);
 	                if (msg) {
-	                    if (msg[0]) msg[0].innerHTML = '已读';
+	                    if (msg[0]) {
+	                        msg[0].innerHTML = '已读';
+	                    }
 	                }
 	                // 记录消息的状态
 	                for (var targetId in Demo.chatRecord) {
@@ -22175,7 +22251,7 @@
 	            blacklist: {},
 	            chatrooms_totalnum: Demo.api.pagesize,
 	            contact_loading_show: false,
-	            window: window
+	            windows: windows
 	        };
 	    },
 
@@ -22535,8 +22611,9 @@
 	                        var name = friends[i].name;
 	                        if (name == me.state.curNode) flag = true;
 	                    }
-	                    if (flag) me.setState({ friends: friends });else me.setState({ friends: friends, window: [] });
+	                    if (flag) me.setState({ friends: friends });else me.setState({ friends: friends, windows: [] });
 	                    doNotUpdateGroup || me.getGroup();
+	                    Demo.api.releaseChatRecord();
 	                }
 	            });
 	        }
@@ -22732,9 +22809,9 @@
 	    setChatWindow: function setChatWindow(show) {
 	        var cate = Demo.selectedCate;
 	        if (!show) {
-	            this.setState({ window: [] });
+	            this.setState({ windows: [] });
 	        } else {
-	            this.setState({ window: Demo.chatState[cate].chatWindow });
+	            this.setState({ windows: Demo.chatState[cate].chatWindow });
 	        }
 	    },
 
@@ -23022,7 +23099,7 @@
 	                strangers: this.state.strangers,
 	                getChatroom: this.getChatroom,
 	                loading: this.state.contact_loading_show }),
-	            this.state.window,
+	            this.state.windows,
 	            React.createElement('input', { ref: 'picture',
 	                onChange: this.pictureChange,
 	                type: 'file',
@@ -23261,6 +23338,7 @@
 	    },
 
 	    logout: function logout() {
+	        Demo.selected = '';
 	        Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT);
 	    },
 
@@ -23528,7 +23606,6 @@
 	    onSubmit: function onSubmit() {
 	        var value = this.refs.input.refs.input.value;
 	        var info = this.refs.textarea.value;
-	        // log('onSubmit', value, info);
 	        var permission_group = this.state.selectedOption;
 	        var permission_member = this.state.selectedOption2;
 	        var friendsSelected = []; //this.refs.friendList.refs.multiSelected.label();
@@ -23560,12 +23637,14 @@
 	            Demo.createGroupName = value;
 	            var pub = false;
 	            if (style == 'PUBLIC_JOIN_OPEN' || style == 'PUBLIC_JOIN_APPROVAL') pub = true;
+	            var approval = option2 == 0;
 	            var options = {
 	                data: {
 	                    groupname: value,
 	                    desc: info,
 	                    members: friendsSelected,
-	                    public: pub
+	                    public: pub,
+	                    approval: approval
 	                },
 	                success: function success(respData) {},
 	                error: function error() {}
@@ -23629,18 +23708,6 @@
 	                                { className: 'radio_span' },
 	                                '\u516C\u6709\u7FA4'
 	                            )
-	                        ),
-	                        React.createElement(
-	                            'label',
-	                            null,
-	                            React.createElement('input', { className: 'radio', type: 'radio', value: 'option2',
-	                                checked: this.state.selectedOption === 'option2',
-	                                onChange: this.handleOptionChange }),
-	                            React.createElement(
-	                                'span',
-	                                { className: 'radio_span' },
-	                                '\u79C1\u6709\u7FA4'
-	                            )
 	                        )
 	                    ),
 	                    React.createElement(
@@ -23660,8 +23727,7 @@
 	                                onChange: this.handleOptionChange2 }),
 	                            React.createElement(
 	                                'span',
-	                                {
-	                                    className: 'radio_span' },
+	                                { className: 'radio_span' },
 	                                this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'
 	                            )
 	                        ),
@@ -25831,6 +25897,7 @@
 	    },
 
 	    getGroupList: function getGroupList() {
+	        this.setState({ loading: true });
 	        var limit = 20,
 	            cursor = this.state.cursor;
 	        var options = {
@@ -26547,7 +26614,7 @@
 	        }
 	    },
 
-	    addToGroupBlackList: function addToGroupBlackList(username, index) {
+	    addToGroupBlackList: function addToGroupBlackList(username) {
 	        var members = this.state.members;
 	        var options = {
 	            groupId: Demo.selected,
@@ -26563,7 +26630,7 @@
 	            }.bind(this),
 	            error: function error() {}
 	        };
-	        Demo.conn.blockSingle(options);
+	        Demo.conn.groupBlockSingle(options);
 	        /*
 	        username = [];
 	        username['1qaz'] = true;
@@ -26582,7 +26649,7 @@
 	            }.bind(this),
 	            error: function(){}
 	        };
-	        Demo.conn.blockMulti(options);
+	        Demo.conn.groupBlockMulti(options);
 	        */
 	    },
 
@@ -26812,7 +26879,7 @@
 	                            { className: "webim-leftbar-icon font smaller " + className,
 	                                style: { display: this.state.admin != 1 ? 'none' : '' },
 	                                onClick: isMuted ? this.removeMute.bind(this, username) : this.mute.bind(this, username),
-	                                title: Demo.lan.mute },
+	                                title: isMuted ? Demo.lan.removeMute : Demo.lan.mute },
 	                            isMuted ? 'e' : 'f'
 	                        )
 	                    ),
@@ -26862,7 +26929,7 @@
 	                            { className: "webim-leftbar-icon font smaller " + className,
 	                                style: { display: this.state.admin != 1 ? 'none' : '' },
 	                                onClick: isMuted ? this.removeMute.bind(this, username) : this.mute.bind(this, username),
-	                                title: Demo.lan.mute },
+	                                title: isMuted ? Demo.lan.removeMute : Demo.lan.mute },
 	                            isMuted ? 'e' : 'f'
 	                        )
 	                    ),
@@ -27424,7 +27491,7 @@
 	            success: function success() {},
 	            error: function error() {}
 	        };
-	        Demo.conn.shieldGroup(options);
+	        Demo.conn.blockGroup(options);
 	    },
 
 	    render: function render() {
@@ -27894,19 +27961,28 @@
 	    },
 
 	    onRemoveFromGroupBlackList: function onRemoveFromGroupBlackList(value) {
-	        var me = this;
 	        var list = this.state.list;
 
-	        // Demo.api.blacklist.removeGroupMemberFromBlacklist({
-	        //     roomId: this.props.roomId,
-	        //     to: value,
-	        //     success: function () {
+	        var options = {
+	            groupId: Demo.selected,
+	            username: value,
+	            success: function () {
+	                delete list[value];
+	                this.setState({ list: list });
+	            }.bind(this)
+	        };
+	        Demo.conn.removeGroupBlockSingle(options);
+
+	        // value = ['zzf2', 'zzf3'];
+	        // var options = {
+	        //     groupId: Demo.selected,
+	        //     username: value,
+	        //     success: function(){
 	        //         delete list[value];
-	        //         me.setState({
-	        //             list: list
-	        //         })
-	        //     }
-	        // });
+	        //         this.setState({list: list});
+	        //     }.bind(this)
+	        // };
+	        // Demo.conn.removeGroupBlockMulti(options);
 	    },
 
 	    close: function close() {
@@ -28990,7 +29066,7 @@
 	            }.bind(this),
 	            error: function error(e) {}
 	        };
-	        if (result) Demo.conn.agreeJoinGroup(options);else Demo.conn.refuseJoinGroup(options);
+	        if (result) Demo.conn.agreeJoinGroup(options);else Demo.conn.rejectJoinGroup(options);
 	        this.close();
 	    },
 
@@ -37731,7 +37807,8 @@
 	    search: 'Search',
 	    join: 'Join',
 	    addToGroupBlackList: 'Add to group black list',
-	    ban: 'Ban this member',
+	    mute: 'Block this member',
+	    removeMute: 'Unblock this member',
 	    administrator: 'Set as administrator',
 	    rmAdministrator: 'Remove administrator',
 	    last: ''
@@ -37826,7 +37903,8 @@
 	    search: '搜索',
 	    join: '加入群组',
 	    addToGroupBlackList: '加入群黑名单',
-	    ban: '禁言',
+	    mute: '禁言',
+	    removeMute: '解除禁言',
 	    administrator: '设为管理员',
 	    rmAdministrator: '移除管理员',
 	    last: ''

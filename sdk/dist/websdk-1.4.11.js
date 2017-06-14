@@ -9761,7 +9761,6 @@
 	};
 
 	var _loginCallback = function _loginCallback(status, msg, conn) {
-	    // console.log('stropheConn.connected status=', status, msg)
 	    var conflict, error;
 
 	    if (msg === 'conflict') {
@@ -11033,7 +11032,7 @@
 	                    id: bodyId,
 	                    to: msg.from
 	                });
-	                self.send(deliverMessage);
+	                self.send(deliverMessage.body);
 	            }
 	        } catch (e) {
 	            this.onError({
@@ -12458,7 +12457,7 @@
 	 * @private
 	 */
 	// 通过Rest屏蔽群组
-	connection.prototype.shieldGroup = function (opt) {
+	connection.prototype.blockGroup = function (opt) {
 	    var groupId = opt.groupId;
 	    groupId = 'notification_ignore_' + groupId;
 	    var data = {
@@ -12500,6 +12499,10 @@
 	    requestData['limit'] = opt.limit;
 	    requestData['cursor'] = opt.cursor;
 	    if (!requestData['cursor']) delete requestData['cursor'];
+	    if (isNaN(opt.limit)) {
+	        throw 'The parameter \"limit\" should be a number';
+	        return;
+	    }
 	    var options = {
 	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/publicchatgroups',
 	        type: 'GET',
@@ -12549,6 +12552,16 @@
 
 	// 通过Rest列出群组的所有成员
 	connection.prototype.listGroupMember = function (opt) {
+	    if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
+	        throw 'The parameter \"pageNum\" should be a positive number';
+	        return;
+	    } else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
+	        throw 'The parameter \"pageSize\" should be a positive number';
+	        return;
+	    } else if (opt.groupId === null && typeof opt.groupId === 'undefined') {
+	        throw 'The parameter \"groupId\" should be added';
+	        return;
+	    }
 	    var requestData = [],
 	        groupId = opt.groupId;
 	    requestData['pagenum'] = opt.pageNum;
@@ -12590,7 +12603,7 @@
 	    WebIM.utils.ajax(options);
 	};
 
-	// 通过Rest取消对用户禁言的禁止
+	// 通过Rest取消对用户禁言
 	connection.prototype.removeMute = function (opt) {
 	    var groupId = opt.groupId,
 	        username = opt.username;
@@ -12683,7 +12696,6 @@
 
 	// 通过Rest同意用户加入群
 	connection.prototype.agreeJoinGroup = function (opt) {
-	    console.log('Agree Join Group New');
 	    var groupId = opt.groupId,
 	        requestData = {
 	        "applicant": opt.applicant,
@@ -12706,7 +12718,7 @@
 	};
 
 	// 通过Rest拒绝用户加入群
-	connection.prototype.refuseJoinGroup = function (opt) {
+	connection.prototype.rejectJoinGroup = function (opt) {
 	    var groupId = opt.groupId,
 	        requestData = {
 	        "applicant": opt.applicant,
@@ -12729,7 +12741,7 @@
 	};
 
 	// 通过Rest添加用户至群组黑名单(单个)
-	connection.prototype.blockSingle = function (opt) {
+	connection.prototype.groupBlockSingle = function (opt) {
 	    var groupId = opt.groupId,
 	        username = opt.username,
 	        options = {
@@ -12747,7 +12759,7 @@
 	};
 
 	// 通过Rest添加用户至群组黑名单(批量)
-	connection.prototype.blockMulti = function (opt) {
+	connection.prototype.groupBlockMulti = function (opt) {
 	    var groupId = opt.groupId,
 	        usernames = opt.usernames,
 	        requestData = {
@@ -12768,8 +12780,41 @@
 	    WebIM.utils.ajax(options);
 	};
 
-	// 通过Rest将用户从群黑名单移除
-	connection.prototype.removeBlock = function (opt) {};
+	// 通过Rest将用户从群黑名单移除（单个）
+	connection.prototype.removeGroupBlockSingle = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users' + '/' + username,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	// 通过Rest将用户从群黑名单移除（批量）
+	connection.prototype.removeGroupBlockMulti = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username.join(','),
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users' + '/' + username,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
 
 	function _setText(valueDom, v) {
 	    if ('textContent' in valueDom) {

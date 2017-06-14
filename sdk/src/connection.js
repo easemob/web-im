@@ -3212,6 +3212,10 @@ connection.prototype.listGroups = function (opt) {
     requestData['cursor'] = opt.cursor;
     if (!requestData['cursor'])
         delete requestData['cursor'];
+    if(isNaN(opt.limit)){
+        throw 'The parameter \"limit\" should be a number';
+        return;
+    }
     var options = {
         url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/publicchatgroups',
         type: 'GET',
@@ -3263,6 +3267,16 @@ connection.prototype.getGroup = function (opt) {
 
 // 通过Rest列出群组的所有成员
 connection.prototype.listGroupMember = function (opt) {
+    if(isNaN(opt.pageNum) || opt.pageNum <= 0){
+        throw 'The parameter \"pageNum\" should be a positive number';
+        return;
+    }else if(isNaN(opt.pageSize) || opt.pageSize <= 0){
+        throw 'The parameter \"pageSize\" should be a positive number';
+        return;
+    }else if(opt.groupId === null && typeof opt.groupId === 'undefined'){
+        throw 'The parameter \"groupId\" should be added';
+        return;
+    }
     var requestData = [],
         groupId = opt.groupId;
     requestData['pagenum'] = opt.pageNum;
@@ -3306,7 +3320,7 @@ connection.prototype.mute = function (opt) {
     WebIM.utils.ajax(options);
 };
 
-// 通过Rest取消对用户禁言的禁止
+// 通过Rest取消对用户禁言
 connection.prototype.removeMute = function (opt) {
     var groupId = opt.groupId,
         username = opt.username;
@@ -3404,7 +3418,6 @@ connection.prototype.removeAdmin = function (opt) {
 
 // 通过Rest同意用户加入群
 connection.prototype.agreeJoinGroup = function (opt) {
-    console.log('Agree Join Group New');
     var groupId = opt.groupId,
         requestData = {
             "applicant": opt.applicant,

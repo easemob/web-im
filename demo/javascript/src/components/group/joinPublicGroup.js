@@ -78,6 +78,7 @@ var JoinPublicGroup = React.createClass({
     },
 
     getGroupList: function(){
+        this.setState({loading:true});
         var limit = 20,
             cursor = this.state.cursor;
         var options = {

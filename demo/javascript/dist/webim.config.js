@@ -20,20 +20,6 @@ WebIM.config = {
      */
     appkey: 'easemob-demo#chatdemoui',
 
-    // xmppURL: '118.193.28.212:31093',
-    /*
-     * Backend REST API URL
-     */
-    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//118.193.28.212:31080',
-    /*
-     * Application AppKey
-     */
-    // appkey: 'easemob-demo#chatdemoui',
-    //appDir: 'EasemobDemo_sandbox',
-    //imIP: '120.26.12.158',
-    //imPort: '6717',
-    //restIPandPort: '121.41.120.89:8080',
-
     /*
      * Whether to use wss
      * @parameter {Boolean} true or false
