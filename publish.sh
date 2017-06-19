@@ -64,12 +64,12 @@ echo isDebug=${isDebug##* }
 if [ ${isDebug##* } == 'false' ]
 then
     sed -i '28d' publish/index.html
-    sed -i '22,25d' publish/index.html
+    sed -i '23,25d' publish/index.html
 fi
 
 if [ ${isWindowSDK##* } == 'false' ]
 then
-    sed -i '19,21d' publish/index.html
+    sed -i '20,22d' publish/index.html
 fi
 
 echo 'publish done!'
