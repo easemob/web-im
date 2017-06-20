@@ -49,7 +49,7 @@
     "react-transform-hmr": "^1.0.4",
     "sass-loader": "^4.1.1",
     "style-loader": "*",
-    "webpack": "1.13.2",
+    "webpack": "^1.13.2",
     "webpack-dev-server": "^1.16.2"
   },
   "scripts": {

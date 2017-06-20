@@ -63,13 +63,13 @@ isDebug=`grep 'isDebug' ./demo/javascript/dist/webim.config.js |awk -F ':' '{pri
 echo isDebug=${isDebug##* }
 if [ ${isDebug##* } == 'false' ]
 then
-    sed -i '27d' publish/index.html
-    sed -i '22,24d' publish/index.html
+    sed -i '28d' publish/index.html
+    sed -i '23,25d' publish/index.html
 fi
 
 if [ ${isWindowSDK##* } == 'false' ]
 then
-    sed -i '19,21d' publish/index.html
+    sed -i '20,22d' publish/index.html
 fi
 
 echo 'publish done!'
