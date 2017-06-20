@@ -34,6 +34,7 @@
 * [demo] 在申请加入公开群面板群详情页面可申请加入群组
 * [demo] 群主可同意、拒绝加群申请
 * [demo] 在群主的群成员列表中新增添加/移除管理员、禁言/解禁群成员按钮
+* [demo] 添加消息状态显示开关
 
 ###BugFix
 
@@ -222,6 +223,7 @@
 * [demo] Users are be able to apply for join in a group on the apply for join in a group board
 * [demo] Group owners are able to agree or reject a user's filings of join in the group
 * [demo] Add the add/delete administrator and block/unblock members buttons in the group members list
+* [demo] Add a switch of status in a single chat
 
 ###BugFix
 
