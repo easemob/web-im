@@ -75,6 +75,13 @@ WebIM.config = {
     isHttpDNS: false,
 
     /**
+     * Will show the status of messages in single chat
+     * msgStatus: true  show
+     * msgStatus: true  hide
+     */
+    msgStatus: true,
+
+    /**
      * When a message arrived, the receiver send an ack message to the
      * sender, in order to tell the sender the message has delivered.
      * See call back function onReceivedMessage
