@@ -55,7 +55,7 @@ then
     rm -rf publish/webrtc
     rm -rf publish/demo/javascript/src
     rm -rf publish/sdk/src
-    sed -i '32,38d' publish/index.html
+    sed -i '31,37d' publish/index.html
 fi
 
 # not debug mode: 1.delete debug.js, 2.strophe.js->strophe-1.2.8.min.js
@@ -63,8 +63,8 @@ isDebug=`grep 'isDebug' ./demo/javascript/dist/webim.config.js |awk -F ':' '{pri
 echo isDebug=${isDebug##* }
 if [ ${isDebug##* } == 'false' ]
 then
-    sed -i '28d' publish/index.html
-    sed -i '22,25d' publish/index.html
+    sed -i '27d' publish/index.html
+    sed -i '22,24d' publish/index.html
 fi
 
 if [ ${isWindowSDK##* } == 'false' ]
