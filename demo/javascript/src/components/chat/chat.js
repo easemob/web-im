@@ -267,7 +267,7 @@ module.exports = React.createClass({
                     } else {
                         if (text == 'logout' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8') {
                             text = Demo.lan.logoutSuc;
-                            window.location.href = 'index.html'
+                            window.location.href = '#'
                             Demo.api.NotifySuccess(text);
                         } else {
                             Demo.api.NotifyError('onError:' + text);
@@ -946,7 +946,7 @@ module.exports = React.createClass({
     updateNode: function (cid) {
         var uri = WebIM.utils.parseUri();
         var username = uri.username;
-        window.location.href = 'index.html?username=' + username + '&curNode=' + cid;
+        window.location.href = '#username=' + username + '&curNode=' + cid;
         Demo.chatState[Demo.selectedCate].selected = cid;
         this.storeChatWindow();
         this.setChatWindow(true);
