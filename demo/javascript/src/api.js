@@ -263,7 +263,7 @@ module.exports = {
                     Demo.api.NotifyError("logout:" + msg);
                 });
         } else {
-            window.history.pushState({}, 0, 'index.html');
+            window.location.href = '#';
             Demo.conn.close('logout');
             if (type == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
                 Demo.conn.errorType = type;
@@ -321,7 +321,7 @@ module.exports = {
                     for (var i in Demo.chatRecord[targetId].messages) {
                         if (Demo.chatRecord[targetId].messages[i] == undefined)
                             continue;
-                        if(!Demo.chatRecord[targetId].messages[i].read){
+                        if (!Demo.chatRecord[targetId].messages[i].read) {
                             Demo.api.appendMsg(Demo.chatRecord[targetId].messages[i].message,
                                 Demo.chatRecord[targetId].messages[i].type,
                                 Demo.chatRecord[targetId].messages[i].status,
