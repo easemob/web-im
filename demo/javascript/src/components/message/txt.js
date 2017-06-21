@@ -8,7 +8,8 @@ var TextMsg = React.createClass({
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
         var statusClass = this.props.className == 'left'
-            || Demo.selectedCate !== 'friends' ? 'hide' : '';
+            || Demo.selectedCate !== 'friends'
+            || !WebIM.config.msgStatus ? 'hide' : '';
         var id = this.props.id;
         var status = this.props.status;
         var nid = this.props.nid;

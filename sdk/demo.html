@@ -203,6 +203,14 @@
                 case 'joinPublicGroupSuccess':              // 意义待查
                     console.log('join public group success', message.from);
                     break;
+                case 'createGroupACK':
+                    conn.createGroupAsync({
+                        from: message.from,
+                        success: function (option) {
+                            console.log('Create Group Succeed');
+                        }
+                    });
+                    break;
             }
         },       //收到联系人订阅请求（加好友）、处理群组、聊天室被踢解散等消息
         onRoster: function (message) {
