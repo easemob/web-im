@@ -145,8 +145,12 @@ var JoinPublicGroup = React.createClass({
                     membersOnly: membersOnly
                 });
             }.bind(this),
-            error: function(){
-
+            error: function(e){
+                if(e.type == 17)
+                    Demo.api.NotifyError('此群组ID不存在！');
+                this.setState({
+                    bodyLoading: false
+                });
             }.bind(this)
         };
         Demo.conn.getGroupInfo(options);
