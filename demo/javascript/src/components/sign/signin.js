@@ -90,11 +90,12 @@ module.exports = React.createClass({
                 var token = token.access_token;
                 var url = 'index.html?username=' + encryptUsername;
                 WebIM.utils.setCookie('webim_' + encryptUsername, token, 1);
-                window.history.pushState({}, 0, url);
+                window.location.href = url
                 Demo.token = token;
             },
             error: function () {
-                window.history.pushState({}, 0, 'index.html');
+                window.location.href = 'index.html'
+
             }
         };
 
@@ -166,7 +167,7 @@ module.exports = React.createClass({
             username = atob(username);
             this.signin(username, auth, true);
         } else {
-            window.history.pushState({}, 0, 'index.html');
+            window.location.href = 'index.html'
         }
     },
 
