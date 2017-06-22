@@ -16,7 +16,7 @@ module.exports = React.createClass({
     getInitialState: function () {
         var me = this;
 
-        var uri = WebIM.utils.parseUri();
+        var uri = WebIM.utils.parseHrefHash();
         var curNode = uri.curNode;
         var windows = [];
         if (curNode) {
@@ -944,7 +944,7 @@ module.exports = React.createClass({
     },
 
     updateNode: function (cid) {
-        var uri = WebIM.utils.parseUri();
+        var uri = WebIM.utils.parseHrefHash();
         var username = uri.username;
         window.location.href = '#username=' + username + '&curNode=' + cid;
         Demo.chatState[Demo.selectedCate].selected = cid;
