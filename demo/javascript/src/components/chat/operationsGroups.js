@@ -98,14 +98,20 @@ module.exports = React.createClass({
         this.update();
     },
 
-    shield: function(){
+    shield: function () {
         var groupId = this.props.roomId;
-        var options = {
-            groupId: groupId,
-            success: function () {},
-            error: function () {}
-        };
-        Demo.conn.blockGroup(options);
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            var options = {
+                groupId: groupId,
+                success: function () {
+                },
+                error: function () {
+                }
+            };
+            Demo.conn.blockGroup(options);
+        }
     },
 
     render: function () {
@@ -118,37 +124,37 @@ module.exports = React.createClass({
             adminMemberLabel = Demo.lan.inviteGroupMembers;
         }
         return (<div>
-                    <i ref = 'switch'
-                        className = 'webim-operations-icon font xsmaller'
-                        onClick = {this.update}>
+                <i ref='switch'
+                   className='webim-operations-icon font xsmaller'
+                   onClick={this.update}>
                     M</i>
-                    <ul
-                        tabIndex = "-1"
-                        ref = "webim-operations"
-                        className = {'webim-operations ' +(this.state.hide ? 'hide' : '')}
-                        onBlur = {this.handleOnBlur}>
-                        <li onClick = {this.adminGroupMembers}
-                            className = {this.props.admin ? '' : 'hide'}>
-                            <i className = 'font smallest'>F</i>
-                            <span>{adminMemberLabel}</span>
-                        </li>
-                        < li onClick = {this.changeGroupInfo}
-                                className = {this.props.admin ? '' : 'hide'}>
-                            <i className = 'font smallest'>B</i>
-                            <span>{Demo.lan.changeGroupInfo}</span >
-                        </li>
-                        <li onClick = {this.showGroupBlacklist}
-                            className = {this.props.admin ? '' : 'hide'}>
-                            <i className = 'font smallest'>n</i>
-                            <span>{Demo.lan.groupBlacklist}</span>
-                        </li>
-                        <li
-                            onClick = {actionMethod} >
-                            <i className = 'font smallest'>Q</i>
-                            <span> {actionName}</span>
-                        </li>
-                    </ul>
-                </div>
+                <ul
+                    tabIndex="-1"
+                    ref="webim-operations"
+                    className={'webim-operations ' + (this.state.hide ? 'hide' : '')}
+                    onBlur={this.handleOnBlur}>
+                    <li onClick={this.adminGroupMembers}
+                        className={this.props.admin ? '' : 'hide'}>
+                        <i className='font smallest'>F</i>
+                        <span>{adminMemberLabel}</span>
+                    </li>
+                    < li onClick={this.changeGroupInfo}
+                         className={this.props.admin ? '' : 'hide'}>
+                        <i className='font smallest'>B</i>
+                        <span>{Demo.lan.changeGroupInfo}</span >
+                    </li>
+                    <li onClick={this.showGroupBlacklist}
+                        className={this.props.admin ? '' : 'hide'}>
+                        <i className='font smallest'>n</i>
+                        <span>{Demo.lan.groupBlacklist}</span>
+                    </li>
+                    <li
+                        onClick={actionMethod}>
+                        <i className='font smallest'>Q</i>
+                        <span> {actionName}</span>
+                    </li>
+                </ul>
+            </div>
         );
     }
 });
