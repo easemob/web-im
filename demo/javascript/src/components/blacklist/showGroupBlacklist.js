@@ -32,15 +32,19 @@ var ShowGroupBlacklist = React.createClass({
     onRemoveFromGroupBlackList: function (value) {
         var list = this.state.list;
 
-        var options = {
-            groupId: Demo.selected,
-            username: value,
-            success: function(){
-                delete list[value];
-                this.setState({list: list});
-            }.bind(this)
-        };
-        Demo.conn.removeGroupBlockSingle(options);
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            var options = {
+                groupId: Demo.selected,
+                username: value,
+                success: function () {
+                    delete list[value];
+                    this.setState({list: list});
+                }.bind(this)
+            };
+            Demo.conn.removeGroupBlockSingle(options);
+        }
 
         // value = ['zzf2', 'zzf3'];
         // var options = {

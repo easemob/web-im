@@ -28,7 +28,7 @@ var JoinPublicGroup = React.createClass({
         };
     },
 
-    onInputChange: function(e){
+    onInputChange: function (e) {
         this.setState({
             inputValue: e.target.value
         });
@@ -41,34 +41,38 @@ var JoinPublicGroup = React.createClass({
         this.showDetail(value);
     },
 
-    joinGroup: function(){
-        var options = {
-            groupId: this.state.gid,
-            success: function(resp){
-                Demo.api.NotifySuccess('入群申请发送成功!');
-            },
-            error: function(e){
-                if(e.type == 17){
-                    Demo.api.NotifyError('您已经在这个群组!');
+    joinGroup: function () {
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            var options = {
+                groupId: this.state.gid,
+                success: function (resp) {
+                    Demo.api.NotifySuccess('入群申请发送成功!');
+                },
+                error: function (e) {
+                    if (e.type == 17) {
+                        Demo.api.NotifyError('您已经在这个群组!');
+                    }
                 }
-            }
-        };
-        Demo.conn.joinGroup(options);
+            };
+            Demo.conn.joinGroup(options);
+        }
     },
 
-    componentDidMount: function(){
+    componentDidMount: function () {
         this.getGroupList();
     },
 
-    onScroll: function(){
-        if(this.state.groupDetail)
+    onScroll: function () {
+        if (this.state.groupDetail)
             return;
         var groups = this.refs.groupList,
             scrollTop = groups.scrollTop,
             count = this.state.groups.length;
-        if(scrollTop - 174 < 0)
+        if (scrollTop - 174 < 0)
             return;
-        else if((scrollTop - 174) / 300 == (count / 10) - 1){
+        else if ((scrollTop - 174) / 300 == (count / 10) - 1) {
             this.setState({
                 loading: true
             });
@@ -77,79 +81,91 @@ var JoinPublicGroup = React.createClass({
 
     },
 
-    getGroupList: function(){
-        this.setState({loading:true});
+    getGroupList: function () {
         var limit = 20,
             cursor = this.state.cursor;
-        var options = {
-            limit: limit,
-            cursor: cursor,
-            success: function (resp) {
-                var groupData = resp.data,
-                    groups = this.state.groups;
-                for(var i in groupData){
-                    groups.push(<li className="webim-blacklist-item"
-                                    data-gid={groupData[i].groupid}
-                                    key={groupData[i].groupid}
-                                    onClick={this.showDetail.bind(this, groupData[i].groupid)}>
-                                    {groupData[i].groupname}
-                                    <i className="webim-leftbar-icon font smaller">F</i>
-                                </li>);
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            this.setState({loading: true});
+            var options = {
+                limit: limit,
+                cursor: cursor,
+                success: function (resp) {
+                    var groupData = resp.data,
+                        groups = this.state.groups;
+                    for (var i in groupData) {
+                        groups.push(<li className="webim-blacklist-item"
+                                        data-gid={groupData[i].groupid}
+                                        key={groupData[i].groupid}
+                                        onClick={this.showDetail.bind(this, groupData[i].groupid)}>
+                            {groupData[i].groupname}
+                            <i className="webim-leftbar-icon font smaller">F</i>
+                        </li>);
+                    }
+                    this.setState({
+                        cursor: resp.cursor,
+                        groups: groups,
+                        loading: false
+                    });
+                }.bind(this),
+                error: function (e) {
                 }
-                this.setState({
-                    cursor: resp.cursor,
-                    groups: groups,
-                    loading: false
-                });
-            }.bind(this),
-            error: function (e) {}
-        };
-        Demo.conn.listGroups(options);
+            };
+            Demo.conn.listGroups(options);
+        }
     },
 
     close: function () {
         typeof this.props.onClose === 'function' && this.props.onClose();
     },
 
-    backToList: function(){
+    backToList: function () {
         this.setState({groupDetail: false});
     },
 
-    showDetail:function(gid){
-        this.setState({
-            bodyLoading: true
-        });
-        var options = {
-            groupId: gid,
-            success: function(resp){
-                var groupName = resp.data[0].name,
-                    desc = resp.data[0].description,
-                    owner = '',
-                    affiliations = resp.data[0].affiliations,
-                    membersOnly = resp.data[0].membersonly;
+    showDetail: function (gid) {
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            this.setState({
+                bodyLoading: true
+            });
+            var options = {
+                groupId: gid,
+                success: function (resp) {
+                    var groupName = resp.data[0].name,
+                        desc = resp.data[0].description,
+                        owner = '',
+                        affiliations = resp.data[0].affiliations,
+                        membersOnly = resp.data[0].membersonly;
 
-                for(var i in affiliations){
-                    if(affiliations[i].owner){
-                        owner = affiliations[i].owner;
-                        break;
+                    for (var i in affiliations) {
+                        if (affiliations[i].owner) {
+                            owner = affiliations[i].owner;
+                            break;
+                        }
                     }
-                }
-
-                this.setState({
-                    groupName: groupName,
-                    description: desc,
-                    owner: owner,
-                    groupDetail: true,
-                    bodyLoading: false,
-                    gid: gid,
-                    membersOnly: membersOnly
-                });
-            }.bind(this),
-            error: function(){
-
-            }.bind(this)
-        };
-        Demo.conn.getGroupInfo(options);
+                    this.setState({
+                        groupName: groupName,
+                        description: desc,
+                        owner: owner,
+                        groupDetail: true,
+                        bodyLoading: false,
+                        gid: gid,
+                        membersOnly: membersOnly
+                    });
+                }.bind(this),
+                error: function (e) {
+                    if (e.type == 17)
+                        Demo.api.NotifyError('此群组ID不存在！');
+                    this.setState({
+                        bodyLoading: false
+                    });
+                }.bind(this)
+            };
+            Demo.conn.getGroupInfo(options);
+        }
     },
 
     render: function () {
@@ -169,34 +185,36 @@ var JoinPublicGroup = React.createClass({
                         <div ref='loading' className={'webim-body-loading ' + (this.state.bodyLoading ? '' : 'hide')}>
                             <img src='demo/images/loading.gif'/>
                         </div>
-                        <ul className={this.state.groupDetail?"hide":"webim-blacklist-wrapper"}>
+                        <ul className={this.state.groupDetail ? "hide" : "webim-blacklist-wrapper"}>
                             {groups}
                         </ul>
                         <div ref='loading' className={'webim-contact-loading ' + (this.state.loading ? '' : 'hide')}>
                             <img src='demo/images/loading.gif'/>
                         </div>
-                        <div className={!this.state.groupDetail?"hide":"webim-dialog-body-detail"}>
+                        <div className={!this.state.groupDetail ? "hide" : "webim-dialog-body-detail"}>
                             <span className="title">群名称</span>
                             <span className="content">{this.state.groupName || '[群名称未设置]'}</span>
                         </div>
-                        <div className={!this.state.groupDetail?"hide":"webim-dialog-body-detail"}>
+                        <div className={!this.state.groupDetail ? "hide" : "webim-dialog-body-detail"}>
                             <span className="title">群主</span>
                             <span className="content">{this.state.owner || '[群主未设置]'}</span>
                         </div>
-                        <div className={!this.state.groupDetail?"hide":"webim-dialog-body-detail"}>
+                        <div className={!this.state.groupDetail ? "hide" : "webim-dialog-body-detail"}>
                             <span className="title">群简介</span>
                             <span className="content">{this.state.description || '[群简介未设置]'}</span>
                         </div>
-                        <div className={!this.state.groupDetail?"hide":"webim-dialog-body-detail"}>
+                        <div className={!this.state.groupDetail ? "hide" : "webim-dialog-body-detail"}>
                             <span className="title">是否需要审批</span>
                             <span className="content">{this.state.membersOnly ? '[是]' : '否'}</span>
                         </div>
                     </div>
                     <div className="webim-dialog-footer">
-                        <div className={!this.state.groupDetail?"hide":"webim-group-back"} onClick={this.backToList}>
+                        <div className={!this.state.groupDetail ? "hide" : "webim-group-back"}
+                             onClick={this.backToList}>
                             <span>&crarr;</span>
                         </div>
-                        <Button text={Demo.lan.join} onClick={this.joinGroup} className={!this.state.groupDetail?"hide":"webim-dialog-button"}/>
+                        <Button text={Demo.lan.join} onClick={this.joinGroup}
+                                className={!this.state.groupDetail ? "hide" : "webim-dialog-button"}/>
                     </div>
                     <span className='font' onClick={this.close}>A</span>
                 </div>

@@ -115,19 +115,20 @@ module.exports = React.createClass({
                     groupId: Demo.selected,
                     success: function (resp) {
                         var data = resp.data, admin;
-                        for(var i in data){
-                            if(data[i]['owner']){
-                                if(data[i]['owner'] === Demo.user){
+                        for (var i in data) {
+                            if (data[i]['owner']) {
+                                if (data[i]['owner'] === Demo.user) {
                                     this.getAdmin(data);
                                     admin = true;
                                 }
                             }
                         }
-                        if(!admin){
+                        if (!admin) {
                             this.refreshMemberList(data);
                         }
                     }.bind(this),
-                    error: function(e){}
+                    error: function (e) {
+                    }
                 };
                 Demo.conn.listGroupMember(options);
             }
@@ -137,189 +138,220 @@ module.exports = React.createClass({
     },
 
     addToGroupBlackList: function (username) {
-        var members = this.state.members;
-        var options = {
-            groupId: Demo.selected,
-            username: username,
-            success: function () {
-                for (var i in members){
-                    if(members[i]['member'] && members[i]['member'] === username){
-                        delete members[i];
-                        break;
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            var members = this.state.members;
+            var options = {
+                groupId: Demo.selected,
+                username: username,
+                success: function () {
+                    for (var i in members) {
+                        if (members[i]['member'] && members[i]['member'] === username) {
+                            delete members[i];
+                            break;
+                        }
                     }
+                    this.setState({members: members});
+                }.bind(this),
+                error: function () {
                 }
-                this.setState({members: members});
-            }.bind(this),
-            error: function(){}
-        };
-        Demo.conn.groupBlockSingle(options);
+            };
+            Demo.conn.groupBlockSingle(options);
+        }
         /*
-        username = [];
-        username['1qaz'] = true;
-        username['lxj111'] = true;
-        var usernames = ['1qaz', 'lxj111'];
-        var options = {
-            groupId: Demo.selected,
-            usernames: usernames,
-            success: function () {
-                for (var i in members){
-                    if(members[i]['member'] && username[members[i]['member']]){
-                        delete members[i];
-                    }
-                }
-                this.setState({members: members});
-            }.bind(this),
-            error: function(){}
-        };
-        Demo.conn.groupBlockMulti(options);
-        */
+         username = [];
+         username['1qaz'] = true;
+         username['lxj111'] = true;
+         var usernames = ['1qaz', 'lxj111'];
+         var options = {
+         groupId: Demo.selected,
+         usernames: usernames,
+         success: function () {
+         for (var i in members){
+         if(members[i]['member'] && username[members[i]['member']]){
+         delete members[i];
+         }
+         }
+         this.setState({members: members});
+         }.bind(this),
+         error: function(){}
+         };
+         Demo.conn.groupBlockMulti(options);
+         */
     },
 
     // TODO: 群禁言、群升降级
     mute: function (username) {
-        var muteDuration = 886400000;
-        var options = {
-            username: username,
-            muteDuration: muteDuration,
-            groupId: Demo.selected,
-            success: function (resp) {
-                var members = this.state.members;
-                for(var i in members){
-                    if(members[i]['member']){
-                        if(members[i]['member'] === username){
-                            members[i]['muted'] = true;
-                            break;
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            var muteDuration = 886400000;
+            var options = {
+                username: username,
+                muteDuration: muteDuration,
+                groupId: Demo.selected,
+                success: function (resp) {
+                    var members = this.state.members;
+                    for (var i in members) {
+                        if (members[i]['member']) {
+                            if (members[i]['member'] === username) {
+                                members[i]['muted'] = true;
+                                break;
+                            }
                         }
                     }
+                    this.setState({members: members});
+                }.bind(this),
+                error: function (e) {
                 }
-                this.setState({members: members});
-            }.bind(this),
-            error: function(e){}
-        };
-        Demo.conn.mute(options);
+            };
+            Demo.conn.mute(options);
+        }
     },
 
     // 移除禁言
-    removeMute: function(username){
-        var options = {
-            groupId: Demo.selected,
-            username: username,
-            success: function(resp){
-                var members = this.state.members;
-                for(var i in members){
-                    if(members[i]['member']){
-                        if(members[i]['member'] === username){
-                            members[i]['muted'] && delete members[i]['muted'];
-                            break;
+    removeMute: function (username) {
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            var options = {
+                groupId: Demo.selected,
+                username: username,
+                success: function (resp) {
+                    var members = this.state.members;
+                    for (var i in members) {
+                        if (members[i]['member']) {
+                            if (members[i]['member'] === username) {
+                                members[i]['muted'] && delete members[i]['muted'];
+                                break;
+                            }
                         }
                     }
-                }
-                this.setState({members: members});
-            }.bind(this),
-            error: function (e) {
+                    this.setState({members: members});
+                }.bind(this),
+                error: function (e) {
 
-            }
-        };
-        Demo.conn.removeMute(options);
+                }
+            };
+            Demo.conn.removeMute(options);
+        }
     },
 
-    getAdmin: function(data){
-        var options = {
-            groupId: Demo.selected,
-            success: function (resp) {
-                var admin = resp.data;
-                for(var j in admin){
-                    admin[admin[j]] = true;
-                    delete admin[j];
-                }
-                for(var i in data){
-                    if(data[i]['member']){
-                        var username = data[i]['member'];
-                        if(admin[username]){
-                            data[i]['admin'] = true;
+    getAdmin: function (data) {
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            var options = {
+                groupId: Demo.selected,
+                success: function (resp) {
+                    var admin = resp.data;
+                    for (var j in admin) {
+                        admin[admin[j]] = true;
+                        delete admin[j];
+                    }
+                    for (var i in data) {
+                        if (data[i]['member']) {
+                            var username = data[i]['member'];
+                            if (admin[username]) {
+                                data[i]['admin'] = true;
+                            }
                         }
                     }
+                    this.getMuted(data);
+                }.bind(this),
+                error: function (e) {
                 }
-                this.getMuted(data);
-            }.bind(this),
-            error: function(e){}
-        };
-        Demo.conn.getGroupAdmin(options);
+            };
+            Demo.conn.getGroupAdmin(options);
+        }
     },
 
-    getMuted: function(data){
-        var options = {
-            groupId: Demo.selected,
-            success: function (resp) {
-                var muted = resp.data;
-                for(var i in muted){
-                    var user = muted[i]['user']
-                    muted[user] = true;
-                    delete muted[i];
-                }
-                for(var j in data){
-                    if(data[j]['member']){
-                        var username = data[j]['member'];
-                        if(muted[username]){
-                            data[j]['muted'] = true;
+    getMuted: function (data) {
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            var options = {
+                groupId: Demo.selected,
+                success: function (resp) {
+                    var muted = resp.data;
+                    for (var i in muted) {
+                        var user = muted[i]['user']
+                        muted[user] = true;
+                        delete muted[i];
+                    }
+                    for (var j in data) {
+                        if (data[j]['member']) {
+                            var username = data[j]['member'];
+                            if (muted[username]) {
+                                data[j]['muted'] = true;
+                            }
                         }
                     }
+                    this.refreshMemberList(data);
+                }.bind(this),
+                error: function (e) {
                 }
-                this.refreshMemberList(data);
-            }.bind(this),
-            error: function(e){}
-        };
-        Demo.conn.getMuted(options);
+            };
+            Demo.conn.getMuted(options);
+        }
     },
 
     setAdmin: function (username) {
-        // 设置管理员
-        var options = {
-            groupId: Demo.selected,
-            username: username,
-            success: function(resp){
-                var members = this.state.members;
-                for(var i in members){
-                    if(members[i]['member']){
-                        if(members[i]['member'] === username){
-                            members[i]['admin'] = true;
-                            break;
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            // 设置管理员
+            var options = {
+                groupId: Demo.selected,
+                username: username,
+                success: function (resp) {
+                    var members = this.state.members;
+                    for (var i in members) {
+                        if (members[i]['member']) {
+                            if (members[i]['member'] === username) {
+                                members[i]['admin'] = true;
+                                break;
+                            }
                         }
                     }
-                }
-                this.setState({members: members});
-            }.bind(this),
-            error: function(e){
-            }.bind(this)
-        };
-        Demo.conn.setAdmin(options);
+                    this.setState({members: members});
+                }.bind(this),
+                error: function (e) {
+                }.bind(this)
+            };
+            Demo.conn.setAdmin(options);
+        }
     },
 
     removeAdmin: function (username) {
-
-        var me = this;
-        // 取消管理员
-        var options = {
-            groupId: Demo.selected,
-            username: username,
-            success: function(resp){
-                var members = me.state.members;
-                for(var i in members){
-                    if(members[i]['member']){
-                        if(members[i]['member'] === username){
-                            if(members[i]['admin']){
-                                delete members[i]['admin'];
+        if (WebIM.config.isWindowSDK) {
+            //TODO:isWindowSDK
+        } else {
+            var me = this;
+            // 取消管理员
+            var options = {
+                groupId: Demo.selected,
+                username: username,
+                success: function (resp) {
+                    var members = me.state.members;
+                    for (var i in members) {
+                        if (members[i]['member']) {
+                            if (members[i]['member'] === username) {
+                                if (members[i]['admin']) {
+                                    delete members[i]['admin'];
+                                }
+                                break;
                             }
-                            break;
                         }
                     }
+                    me.setState({members: members});
+                },
+                error: function (e) {
                 }
-                me.setState({members: members});
-            },
-            error: function (e) {
-            }
-        };
-        Demo.conn.removeAdmin(options);
+            };
+            Demo.conn.removeAdmin(options);
+        }
     },
 
     refreshMemberList: function (members) {
@@ -358,72 +390,72 @@ module.exports = React.createClass({
             memberStatus = this.state.memberShowStatus ? '' : ' hide',
             roomMember = [];
 
-        for(var i in this.state.members){
-            var affiliation = i, username = this.state.members[i], isAdmin=false, isMuted=false;
+        for (var i in this.state.members) {
+            var affiliation = i, username = this.state.members[i], isAdmin = false, isMuted = false;
             var item = this.state.members[i];
-            if(item['member']){
+            if (item['member']) {
                 affiliation = 'member';
                 isAdmin = item['admin'];
                 isMuted = item['muted'];
-            }else{
+            } else {
                 affiliation = 'owner';
             }
             username = item[affiliation];
 
-            if(isAdmin){
+            if (isAdmin) {
                 roomMember.push(<li key={i}>
                     <Avatar src='demo/images/default.png'/>
                     <span className="webim-group-name">
                     {username}
                     </span>
                     <div className="webim-operation-icon"
-                        style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                         style={{display: affiliation == 'owner' ? 'none' : ''}}>
                         <i className={"webim-leftbar-icon font smaller " + className}
-                            style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={this.addToGroupBlackList.bind(this, username, i)}
-                            title={Demo.lan.addToGroupBlackList}>n</i>
-                            </div>
-                            <div className="webim-operation-icon"
-                            style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                           style={{display: this.state.admin != 1 ? 'none' : ''}}
+                           onClick={this.addToGroupBlackList.bind(this, username, i)}
+                           title={Demo.lan.addToGroupBlackList}>n</i>
+                    </div>
+                    <div className="webim-operation-icon"
+                         style={{display: affiliation == 'owner' ? 'none' : ''}}>
                         <i className={"webim-leftbar-icon font smaller " + className}
-                            style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={isMuted?this.removeMute.bind(this, username) : this.mute.bind(this, username)}
-                            title={isMuted?Demo.lan.removeMute:Demo.lan.mute}>{isMuted?'e':'f'}</i>
-                            </div>
-                            <div className="webim-operation-icon"
-                            style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                           style={{display: this.state.admin != 1 ? 'none' : ''}}
+                           onClick={isMuted ? this.removeMute.bind(this, username) : this.mute.bind(this, username)}
+                           title={isMuted ? Demo.lan.removeMute : Demo.lan.mute}>{isMuted ? 'e' : 'f'}</i>
+                    </div>
+                    <div className="webim-operation-icon"
+                         style={{display: affiliation == 'owner' ? 'none' : ''}}>
                         <i className={"webim-leftbar-icon font smaller " + className}
-                            style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={isAdmin ? this.removeAdmin.bind(this, username) : this.setAdmin.bind(this, username)}
-                            title={Demo.lan.rmAdministrator}>&darr;</i>
+                           style={{display: this.state.admin != 1 ? 'none' : ''}}
+                           onClick={isAdmin ? this.removeAdmin.bind(this, username) : this.setAdmin.bind(this, username)}
+                           title={Demo.lan.rmAdministrator}>&darr;</i>
                     </div>
                 </li>);
-            }else{
+            } else {
                 roomMember.push(<li key={i}>
                     <Avatar src='demo/images/default.png'/>
                     <span className="webim-group-name">
                     {username}
                     </span>
                     <div className="webim-operation-icon"
-                        style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                         style={{display: affiliation == 'owner' ? 'none' : ''}}>
                         <i className={"webim-leftbar-icon font smaller " + className}
-                            style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={this.addToGroupBlackList.bind(this, username, i)}
-                            title={Demo.lan.addToGroupBlackList}>n</i>
-                            </div>
-                            <div className="webim-operation-icon"
-                            style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                           style={{display: this.state.admin != 1 ? 'none' : ''}}
+                           onClick={this.addToGroupBlackList.bind(this, username, i)}
+                           title={Demo.lan.addToGroupBlackList}>n</i>
+                    </div>
+                    <div className="webim-operation-icon"
+                         style={{display: affiliation == 'owner' ? 'none' : ''}}>
                         <i className={"webim-leftbar-icon font smaller " + className}
-                            style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={isMuted?this.removeMute.bind(this, username) : this.mute.bind(this, username)}
-                            title={isMuted?Demo.lan.removeMute:Demo.lan.mute}>{isMuted?'e':'f'}</i>
-                            </div>
-                            <div className="webim-operation-icon"
-                            style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                           style={{display: this.state.admin != 1 ? 'none' : ''}}
+                           onClick={isMuted ? this.removeMute.bind(this, username) : this.mute.bind(this, username)}
+                           title={isMuted ? Demo.lan.removeMute : Demo.lan.mute}>{isMuted ? 'e' : 'f'}</i>
+                    </div>
+                    <div className="webim-operation-icon"
+                         style={{display: affiliation == 'owner' ? 'none' : ''}}>
                         <i className={"webim-leftbar-icon font smaller " + className}
-                            style={{display: this.state.admin != 1 ? 'none' : ''}}
-                            onClick={isAdmin ? this.removeAdmin.bind(this, username) : this.setAdmin.bind(this, username)}
-                            title={Demo.lan.administrator}>&uarr;</i>
+                           style={{display: this.state.admin != 1 ? 'none' : ''}}
+                           onClick={isAdmin ? this.removeAdmin.bind(this, username) : this.setAdmin.bind(this, username)}
+                           title={Demo.lan.administrator}>&uarr;</i>
                     </div>
                 </li>);
             }

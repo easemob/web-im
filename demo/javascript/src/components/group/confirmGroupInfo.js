@@ -29,19 +29,23 @@ var ConfirmGroupInfo = React.createClass({
     verify: function(result){
         var applicant = this.props.from,
             groupId = this.props.gid;
-        var options = {
-            applicant: applicant,
-            groupId: groupId,
-            success: function(resp){
-                console.log(resp);
-            }.bind(this),
-            error: function(e){}
-        };
-        if(result)
-            Demo.conn.agreeJoinGroup(options);
-        else
-            Demo.conn.rejectJoinGroup(options);
-        this.close();
+        if(WebIM.config.isWindowSDK){
+            //TODO:isWindowSDK
+        }else{
+            var options = {
+                applicant: applicant,
+                groupId: groupId,
+                success: function(resp){
+                    console.log(resp);
+                }.bind(this),
+                error: function(e){}
+            };
+            if(result)
+                Demo.conn.agreeJoinGroup(options);
+            else
+                Demo.conn.rejectJoinGroup(options);
+            this.close();
+        }
     },
 
     close: function () {
