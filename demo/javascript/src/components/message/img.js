@@ -32,7 +32,9 @@ var ImgMsg = React.createClass({
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
         var imgs = [];
-        var statusClass = this.props.className == 'left' ? 'hide' : '';
+        var statusClass = this.props.className == 'left'
+        || Demo.selectedCate !== 'friends'
+        || !WebIM.config.msgStatus ? 'hide' : '';
         var id = this.props.id;
         var status = this.props.status;
         var nid = this.props.nid;

@@ -88,13 +88,14 @@ module.exports = React.createClass({
                 var encryptUsername = btoa(username);
                 encryptUsername = encryptUsername.replace(/=*$/g, "");
                 var token = token.access_token;
-                var url = 'index.html?username=' + encryptUsername;
+                var url = '#username=' + encryptUsername;
                 WebIM.utils.setCookie('webim_' + encryptUsername, token, 1);
-                window.history.pushState({}, 0, url);
+                window.location.href = url
                 Demo.token = token;
             },
             error: function () {
-                window.history.pushState({}, 0, 'index.html');
+                window.location.href = '#'
+
             }
         };
 
@@ -104,7 +105,6 @@ module.exports = React.createClass({
         if (Demo.user) {
             if (Demo.user != username) {
                 Demo.chatRecord = {};
-                console.log('clearclear');
             }
         }
 
@@ -158,15 +158,13 @@ module.exports = React.createClass({
     },
 
     componentWillMount: function () {
-        var uri = WebIM.utils.parseUri();
+        var uri = WebIM.utils.parseHrefHash();
         var username = uri.username;
         var auth = WebIM.utils.getCookie()['webim_' + username];
         Demo.token = auth;
         if (username && auth) {
             username = atob(username);
             this.signin(username, auth, true);
-        } else {
-            window.history.pushState({}, 0, 'index.html');
         }
     },
 

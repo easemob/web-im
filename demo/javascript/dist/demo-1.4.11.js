@@ -25970,7 +25970,12 @@
 	                    membersOnly: membersOnly
 	                });
 	            }.bind(this),
-	            error: function () {}.bind(this)
+	            error: function (e) {
+	                if (e.type == 17) Demo.api.NotifyError('此群组ID不存在！');
+	                this.setState({
+	                    bodyLoading: false
+	                });
+	            }.bind(this)
 	        };
 	        Demo.conn.getGroupInfo(options);
 	    },
@@ -29166,7 +29171,7 @@
 
 	    render: function render() {
 	        var icon = this.props.className === 'left' ? 'H' : 'I';
-	        var statusClass = this.props.className == 'left' || Demo.selectedCate !== 'friends' ? 'hide' : '';
+	        var statusClass = this.props.className == 'left' || Demo.selectedCate !== 'friends' || !WebIM.config.msgStatus ? 'hide' : '';
 	        var id = this.props.id;
 	        var status = this.props.status;
 	        var nid = this.props.nid;
@@ -29293,7 +29298,7 @@
 	    render: function render() {
 	        var icon = this.props.className === 'left' ? 'H' : 'I';
 	        var imgs = [];
-	        var statusClass = this.props.className == 'left' ? 'hide' : '';
+	        var statusClass = this.props.className == 'left' || Demo.selectedCate !== 'friends' || !WebIM.config.msgStatus ? 'hide' : '';
 	        var id = this.props.id;
 	        var status = this.props.status;
 	        var nid = this.props.nid;
@@ -29445,7 +29450,7 @@
 	    render: function render() {
 	        var icon = this.props.className === 'left' ? 'H' : 'I';
 	        var links = [];
-	        var statusClass = this.props.className == 'left' ? 'hide' : '';
+	        var statusClass = this.props.className == 'left' || Demo.selectedCate !== 'friends' || !WebIM.config.msgStatus ? 'hide' : '';
 	        var id = this.props.id;
 	        var status = this.props.status;
 	        var nid = this.props.nid;
@@ -37687,17 +37692,17 @@
 	        '[:$]': 'ee_9.png',
 	        '[:(]': 'ee_10.png',
 	        '[:\'(]': 'ee_11.png',
-	        '[:|]': 'ee_12.png',
+	        '[:|]': 'ee_18.png',
 	        '[(a)]': 'ee_13.png',
 	        '[8o|]': 'ee_14.png',
 	        '[8-|]': 'ee_15.png',
 	        '[+o(]': 'ee_16.png',
-	        '[<o)]': 'ee_17.png',
-	        '[|-)]': 'ee_18.png',
+	        '[<o)]': 'ee_12.png',
+	        '[|-)]': 'ee_17.png',
 	        '[*-)]': 'ee_19.png',
 	        '[:-#]': 'ee_20.png',
-	        '[:-*]': 'ee_21.png',
-	        '[^o)]': 'ee_22.png',
+	        '[:-*]': 'ee_22.png',
+	        '[^o)]': 'ee_21.png',
 	        '[8-)]': 'ee_23.png',
 	        '[(|)]': 'ee_24.png',
 	        '[(u)]': 'ee_25.png',
