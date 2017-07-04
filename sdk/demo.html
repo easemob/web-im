@@ -107,6 +107,7 @@
         },
         onTextMessage: function (message) {
             // 在此接收和处理消息，根据message.type区分消息来源，私聊或群组或聊天室
+            console.log(message);
             console.log(message.type);
             console.log('Text');
         },  //收到文本消息
@@ -171,11 +172,6 @@
                     document.getElementById('agreeFriends').onclick = function (message) {
                         conn.subscribed({
                             to: 'asdfghj',
-                            message: "[resp:true]"
-                        });
-                        // 需要反向添加对方好友
-                        conn.subscribe({
-                            to: message.from,
                             message: "[resp:true]"
                         });
                     };

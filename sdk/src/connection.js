@@ -283,7 +283,8 @@ var _parseFriend = function (queryTag, conn, from) {
             // fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
             if (conn && (subscription == 'from') && !ask) {
                 conn.subscribe({
-                    toJid: jid
+                    toJid: jid,
+                    message: "[resp:true]"
                 });
             }
 
