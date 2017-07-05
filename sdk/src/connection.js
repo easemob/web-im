@@ -11,11 +11,13 @@ var _ = require('underscore');
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 if (window.XDomainRequest) {
-    XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
-    XDomainRequest.prototype.send = function () {
-        XDomainRequest.prototype.oldsend.apply(this, arguments);
-        this.readyState = 2;
-    };
+    // not support ie8 send is not a function , canot 
+    // case send is object, doesn't has a attr of call
+    // XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
+    // XDomainRequest.prototype.send = function () {
+    //     XDomainRequest.prototype.oldsend.call(this, arguments);
+    //     this.readyState = 2;
+    // };
 }
 
 Strophe.Request.prototype._newXHR = function () {
@@ -755,7 +757,8 @@ connection.prototype.heartBeat = function (forcing) {
         type: 'normal'
     };
     this.heartBeatID = setInterval(function () {
-        me.ping(options);
+        // fix: do heartbeat only when websocket 
+        _utils.isSupportWss && me.ping(options);
     }, this.heartBeatWait);
 };
 
