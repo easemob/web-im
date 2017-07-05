@@ -181,7 +181,6 @@ module.exports = React.createClass({
          */
     },
 
-    // TODO: 群禁言、群升降级
     mute: function (username) {
         if (WebIM.config.isWindowSDK) {
             //TODO:isWindowSDK
@@ -358,6 +357,38 @@ module.exports = React.createClass({
         this.setState({members: members, memberShowStatus: true});
     },
 
+    // 从群组中移除
+    removeGroupMember: function(username, i){
+        // var options = {
+        //     groupId: Demo.selected,
+        //     users: ['zzf2', 'zzf3', 'zzf4'],
+        //     success: function(){
+        //         Demo.api.NotifySuccess(`Remove ${username} succeed!`);
+        //         var members = this.state.members;
+        //         delete members[i];
+        //         this.setState({
+        //             members: members
+        //         });
+        //     }.bind(this),
+        //     error: function(e){}
+        // };
+        // Demo.conn.removeMultiGroupMember(options);
+        var options = {
+            groupId: Demo.selected,
+            username: username,
+            success: function(){
+                Demo.api.NotifySuccess(`Remove ${username} succeed!`);
+                var members = this.state.members;
+                delete members[i];
+                this.setState({
+                    members: members
+                });
+            }.bind(this),
+            error: function(e){}
+        };
+        Demo.conn.removeSingleGroupMember(options);
+    },
+
     send: function (msg) {
         msg.chatType = this.props.chatType;
         Demo.conn.send(msg);
@@ -412,6 +443,13 @@ module.exports = React.createClass({
                          style={{display: affiliation == 'owner' ? 'none' : ''}}>
                         <i className={"webim-leftbar-icon font smaller " + className}
                            style={{display: this.state.admin != 1 ? 'none' : ''}}
+                           onClick={this.removeGroupMember.bind(this, username, i)}
+                           title={Demo.lan.removeGroupMember}>A</i>
+                    </div>
+                    <div className="webim-operation-icon"
+                         style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                        <i className={"webim-leftbar-icon font smaller " + className}
+                           style={{display: this.state.admin != 1 ? 'none' : ''}}
                            onClick={this.addToGroupBlackList.bind(this, username, i)}
                            title={Demo.lan.addToGroupBlackList}>n</i>
                     </div>
@@ -436,6 +474,13 @@ module.exports = React.createClass({
                     <span className="webim-group-name">
                     {username}
                     </span>
+                    <div className="webim-operation-icon"
+                         style={{display: affiliation == 'owner' ? 'none' : ''}}>
+                        <i className={"webim-leftbar-icon font smaller " + className}
+                           style={{display: this.state.admin != 1 ? 'none' : ''}}
+                           onClick={this.removeGroupMember.bind(this, username, i)}
+                           title={Demo.lan.removeGroupMember}>A</i>
+                    </div>
                     <div className="webim-operation-icon"
                          style={{display: affiliation == 'owner' ? 'none' : ''}}>
                         <i className={"webim-leftbar-icon font smaller " + className}
@@ -465,7 +510,7 @@ module.exports = React.createClass({
 
         var operations = [];
         if (Demo.selectedCate == 'friends') {
-            operations.push(< OperationsFriends
+            operations.push(<OperationsFriends
                 key='operation_div'
                 ref='operation_div'
                 roomId={this.props.roomId}
@@ -479,7 +524,7 @@ module.exports = React.createClass({
                 delFriend={this.props.delFriend}
             />);
         } else if (Demo.selectedCate == 'groups') {
-            operations.push(< OperationsGroups
+            operations.push(<OperationsGroups
                 key='operation_div'
                 ref='operation_div'
                 name={this.props.name}

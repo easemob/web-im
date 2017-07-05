@@ -20,7 +20,7 @@ beforeEach(() => {
 
 require('../demo/javascript/dist/webim.config.js');
 require('../sdk/dist/strophe-1.2.8.min.js');
-require('../sdk/dist/websdk-1.4.8.js');
+require('../sdk/dist/websdk-1.4.11.js');
 
 log('WebIM.config:', WebIM.config)
 
