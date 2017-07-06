@@ -60,10 +60,10 @@ module.exports = function (config) {
                 pattern: './sdk/dist/strophe-1.2.8.js',
                 included: true,
             },
-            {
-                pattern: './demo/javascript/dist/debug.js',
-                included: true,
-            },
+            // {
+            //     pattern: './demo/javascript/dist/debug.js',
+            //     included: true,
+            // },
             //
             // {
             //     pattern: './web/styles/css/*\.css',
@@ -87,7 +87,7 @@ module.exports = function (config) {
             // './demo/javascript/dist/swfupload/swfupload.min.js',
             // './demo/javascript/dist/demo-1.4.10.js',
             '__test__/setup.js',
-            '__test__/interface.test.js'
+            '__test__/flow.test.js'
         ],
         proxies: {
             "/demo/": "/base/demo/",
@@ -104,8 +104,46 @@ module.exports = function (config) {
             'karma-coverage-istanbul-reporter'
         ],
         // 测试使用的浏览器 Chrome
-        browsers: ['Chrome'],
-        // browsers: ['PhantomJS'],
+        // Chrome
+        // ChromeCanary
+        // Chromium
+        // ChromeHeadless (only on Chrome >= 59)
+        // ChromeCanaryHeadless (only on Chrome >= 59)
+        // Dartium
+        //browsers: ['Chrome', 'Chrome_without_security'], // You may use 'ChromeCanary', 'Chromium' or any other supported browser
+        // you can define custom flags
+        // customLaunchers: {
+        //     Chrome_without_security: {
+        //         base: 'Chrome',
+        //         flags: ['--disable-web-security']
+        //     }
+            // Chrome_with_debugging: {
+            //     base: 'Chrome',
+            //     chromeDataDir: path.resolve(__dirname, '.chrome')
+            // }
+        // }
+        // browsers: ['Chrome'],
+        // browsers: ['Firefox'],
+        // customLaunchers: {
+        //     ChromeNoSandbox: {
+        //         base: 'Chrome',
+        //         flags: ['--no-sandbox']
+        //     }
+        // },
+        browsers: ['PhantomJS_custom'],
+        customLaunchers: {
+            'PhantomJS_custom': {
+                base: 'PhantomJS',
+                options: {
+                    windowName: 'my-window',
+                    settings: {
+                        webSecurityEnabled: false
+                    },
+                },
+                flags: ['--load-images=true'],
+                debug: true
+            }
+        },
         // 预编译操作，类似webpack的entry
         preprocessors: {
             '__test__/setup.js': ['webpack'],
