@@ -28,6 +28,8 @@ root.innerHTML = `
 // before 在每个case之前只会执行一遍，所以清理缓存类似操作不能放在此处
 beforeEach(() => {
     jasmineEnzyme();
+
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 });
 
 // Fake: render by enzyme
@@ -94,21 +96,27 @@ let wrapper = Demo.api.wrapper;
 let signin = wrapper.find(Signin);
 let Wait = (() => {
 
-    let events = {};
+    let events = [];
     let timeId = null;
 
     function init() {
         if (timeId) return false;
         timeId = setInterval(() => {
             try {
-                for (let k in events) {
-                    let v = events[k]
-                    // console.log(k, 'check', Symbol.for(v.check()).toString())
-                    if (v.check()) {
+                events.forEach((v) => {
+                    if (v.check() && !v.done) {
                         v.callback();
-                        delete events[k]
+                        v.done = true
                     }
-                }
+                })
+                // for (let k in events) {
+                //     let v = events[k]
+                //     console.log(k, 'check', Symbol.for(v.check()).toString())
+                //     if (v.check()) {
+                //         v.callback();
+                //         delete events[k]
+                //     }
+                // }
             } catch (e) {
                 console.log('error', e)
                 clearInterval(timeId)
@@ -118,9 +126,10 @@ let Wait = (() => {
 
     function add(check, callback) {
         // events.push()
-        events[Symbol.for(check).toString()] = {
-            check, callback
-        };
+        // events[Symbol.for(check).toString()] = {
+        events.push({
+            check, callback, done: false
+        })
 
         if (!timeId) {
             init()
@@ -168,6 +177,7 @@ describe(' test login ', () => {
         let contact = wrapper.find(Contact).getNode()
 
         Wait.add(() => {
+            // console.log(contact.props.friends)
             return contact.props.friends.length > 0
         }, () => {
             console.log('gogo', contact.props.friends)
