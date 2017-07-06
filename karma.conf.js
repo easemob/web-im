@@ -60,10 +60,16 @@ module.exports = function (config) {
                 pattern: './sdk/dist/strophe-1.2.8.js',
                 included: true,
             },
+
             {
-                pattern: './demo/javascript/dist/debug.js',
-                included: true,
+                pattern: './demo/images/**/*.*',
+                included: false,
+                served: true,
             },
+            // {
+            //     pattern: './demo/javascript/dist/debug.js',
+            //     included: true,
+            // },
             //
             // {
             //     pattern: './web/styles/css/*\.css',
@@ -76,7 +82,6 @@ module.exports = function (config) {
             //     included: false,
             //     served: true,
             // },
-
             // './web/build/vendor.ui.js',
             './node_modules/phantomjs-polyfill/bind-polyfill.js',
             // './demo/javascript/dist/browser-polyfill.min.js',
@@ -87,7 +92,8 @@ module.exports = function (config) {
             // './demo/javascript/dist/swfupload/swfupload.min.js',
             // './demo/javascript/dist/demo-1.4.10.js',
             '__test__/setup.js',
-            '__test__/interface.test.js'
+            // '__test__/interface.test.js'  //接口测试
+            '__test__/flow.test.js'          //e2e测试
         ],
         proxies: {
             "/demo/": "/base/demo/",
@@ -104,8 +110,8 @@ module.exports = function (config) {
             'karma-coverage-istanbul-reporter'
         ],
         // 测试使用的浏览器 Chrome
-        browsers: ['Chrome'],
-        // browsers: ['PhantomJS'],
+        // browsers: ['Chrome'],
+        browsers: ['PhantomJS'],
         // 预编译操作，类似webpack的entry
         preprocessors: {
             '__test__/setup.js': ['webpack'],
