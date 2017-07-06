@@ -565,6 +565,8 @@
 
             var formData = new FormData();
             formData.append('file', options.file.data);
+            // fix: ie8 status error
+            window.XDomainRequest && (xhr.readyState = 2)
             xhr.send(formData);
         },
 
@@ -648,6 +650,8 @@
                     xhr.setRequestHeader(key, innerHeaer[key]);
                 }
             }
+            // fix: ie8 status error
+            window.XDomainRequest && (xhr.readyState = 2)
             xhr.send(null);
         },
 
@@ -865,7 +869,7 @@
                 data = null;
                 tempData = null;
             }
-            xhr.open(type, options.url);
+            xhr.open(type, options.url, utils.isCanSetRequestHeader);
 
             if (utils.isCanSetRequestHeader) {
                 var headers = options.headers || {};
@@ -875,7 +879,8 @@
                     }
                 }
             }
-
+            // fix: ie8 status error
+            window.XDomainRequest && (xhr.readyState = 2)
             xhr.send(data);
             return xhr;
         },

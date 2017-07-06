@@ -11,11 +11,13 @@ var _ = require('underscore');
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 if (window.XDomainRequest) {
-    XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
-    XDomainRequest.prototype.send = function () {
-        XDomainRequest.prototype.oldsend.apply(this, arguments);
-        this.readyState = 2;
-    };
+    // not support ie8 send is not a function , canot 
+    // case send is object, doesn't has a attr of call
+    // XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
+    // XDomainRequest.prototype.send = function () {
+    //     XDomainRequest.prototype.oldsend.call(this, arguments);
+    //     this.readyState = 2;
+    // };
 }
 
 Strophe.Request.prototype._newXHR = function () {
@@ -739,7 +741,7 @@ connection.prototype.listen = function (options) {
 
 //webrtc需要强制心跳，加个默认为false的参数 向下兼容
 connection.prototype.heartBeat = function (forcing) {
-    if(forcing !== true){
+    if (forcing !== true) {
         forcing = false;
     }
     var me = this;
@@ -755,7 +757,8 @@ connection.prototype.heartBeat = function (forcing) {
         type: 'normal'
     };
     this.heartBeatID = setInterval(function () {
-        me.ping(options);
+        // fix: do heartbeat only when websocket 
+        _utils.isSupportWss && me.ping(options);
     }, this.heartBeatWait);
 };
 
@@ -3215,7 +3218,7 @@ connection.prototype.listGroups = function (opt) {
     requestData['cursor'] = opt.cursor;
     if (!requestData['cursor'])
         delete requestData['cursor'];
-    if(isNaN(opt.limit)){
+    if (isNaN(opt.limit)) {
         throw 'The parameter \"limit\" should be a number';
         return;
     }
@@ -3270,13 +3273,13 @@ connection.prototype.getGroup = function (opt) {
 
 // 通过Rest列出群组的所有成员
 connection.prototype.listGroupMember = function (opt) {
-    if(isNaN(opt.pageNum) || opt.pageNum <= 0){
+    if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
         throw 'The parameter \"pageNum\" should be a positive number';
         return;
-    }else if(isNaN(opt.pageSize) || opt.pageSize <= 0){
+    } else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
         throw 'The parameter \"pageSize\" should be a positive number';
         return;
-    }else if(opt.groupId === null && typeof opt.groupId === 'undefined'){
+    } else if (opt.groupId === null && typeof opt.groupId === 'undefined') {
         throw 'The parameter \"groupId\" should be added';
         return;
     }
@@ -3540,6 +3543,142 @@ connection.prototype.removeGroupBlockMulti = function (opt) {
             + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
             + 'users' + '/' + username,
             type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest解散群组
+connection.prototype.dissolveGroup = function (opt) {
+    var groupId = opt.groupId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '?version=v3',
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest获取群组
+connection.prototype.getGroupBlacklistNew = function (opt) {
+    var groupId = opt.groupId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users',
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest离开群组
+connection.prototype.quitGroup = function (opt) {
+    var groupId = opt.groupId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'quit',
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+connection.prototype.modifyGroup = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {
+            groupname: opt.groupName,
+            description: opt.description
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId,
+            type: 'PUT',
+            data: JSON.stringify(requestData),
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+connection.prototype.removeSingleGroupMember = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'users' + '/'
+            + username,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+connection.prototype.removeMultiGroupMember = function (opt) {
+    var groupId = opt.groupId,
+        users = opt.users.join(','),
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'users' + '/'
+            + users,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+connection.prototype.inviteToGroup = function (opt) {
+    var groupId = opt.groupId,
+        users = opt.users,
+        requestData = {
+            usernames: users
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'invite',
+            type: 'POST',
+            data: JSON.stringify(requestData),
             dataType: 'json',
             headers: {
                 'Authorization': 'Bearer ' + this.token,

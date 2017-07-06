@@ -43,15 +43,15 @@
 /******/ ({
 
 /***/ 0:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__(246);
 
 
-/***/ },
+/***/ }),
 
 /***/ 183:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.8.3
 	//     http://underscorejs.org
@@ -1603,10 +1603,10 @@
 	}.call(this));
 
 
-/***/ },
+/***/ }),
 
 /***/ 205:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -2156,6 +2156,8 @@
 
 	            var formData = new FormData();
 	            formData.append('file', options.file.data);
+	            // fix: ie8 status error
+	            window.XDomainRequest && (xhr.readyState = 2);
 	            xhr.send(formData);
 	        },
 
@@ -2238,6 +2240,8 @@
 	                    xhr.setRequestHeader(key, innerHeaer[key]);
 	                }
 	            }
+	            // fix: ie8 status error
+	            window.XDomainRequest && (xhr.readyState = 2);
 	            xhr.send(null);
 	        },
 
@@ -2342,6 +2346,22 @@
 	            return uri;
 	        },
 
+	        parseHrefHash: function parseHrefHash() {
+	            var pattern = /([^\#|&])\w+=([^&]+)/g;
+	            var uri = {};
+	            if (window.location.hash) {
+	                var args = window.location.hash.match(pattern);
+	                for (var i in args) {
+	                    var str = args[i];
+	                    var eq = str.indexOf('=');
+	                    var key = str.substr(0, eq);
+	                    var value = str.substr(eq + 1);
+	                    uri[key] = value;
+	                }
+	            }
+	            return uri;
+	        },
+
 	        xmlrequest: _xmlrequest,
 
 	        getXmlFirstChild: function getXmlFirstChild(data, tagName) {
@@ -2432,7 +2452,7 @@
 	                data = null;
 	                tempData = null;
 	            }
-	            xhr.open(type, options.url);
+	            xhr.open(type, options.url, utils.isCanSetRequestHeader);
 
 	            if (utils.isCanSetRequestHeader) {
 	                var headers = options.headers || {};
@@ -2442,7 +2462,8 @@
 	                    }
 	                }
 	            }
-
+	            // fix: ie8 status error
+	            window.XDomainRequest && (xhr.readyState = 2);
 	            xhr.send(data);
 	            return xhr;
 	        },
@@ -2505,10 +2526,10 @@
 	    exports.utils = utils;
 	})();
 
-/***/ },
+/***/ }),
 
 /***/ 206:
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -2598,10 +2619,10 @@
 	    };
 	})();
 
-/***/ },
+/***/ }),
 
 /***/ 210:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -2622,10 +2643,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 211:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -3388,10 +3409,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 212:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -3698,10 +3719,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 213:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -3780,10 +3801,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 214:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -3935,10 +3956,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 215:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -4076,10 +4097,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 216:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -4350,10 +4371,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 217:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -4506,10 +4527,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 218:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -4711,10 +4732,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 219:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -4797,10 +4818,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 220:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -5126,10 +5147,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 221:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -5215,10 +5236,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 222:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -5544,10 +5565,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 223:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -5817,10 +5838,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 224:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -5966,10 +5987,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 225:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -6117,10 +6138,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 226:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -6255,10 +6276,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 227:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7141,10 +7162,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 228:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7225,10 +7246,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 229:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7289,10 +7310,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 230:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7411,10 +7432,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 231:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7471,10 +7492,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 232:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7517,10 +7538,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 233:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7572,10 +7593,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 234:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7622,10 +7643,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 235:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7668,10 +7689,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 236:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7719,10 +7740,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 237:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7755,10 +7776,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 238:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -7827,10 +7848,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 239:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -8065,10 +8086,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 240:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -8841,10 +8862,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 241:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -8986,10 +9007,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 242:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -9184,10 +9205,10 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 243:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
@@ -9380,19 +9401,19 @@
 
 	}));
 
-/***/ },
+/***/ }),
 
 /***/ 246:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	module.exports = __webpack_require__(247);
 
-/***/ },
+/***/ }),
 
 /***/ 247:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -9409,11 +9430,13 @@
 	window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 	if (window.XDomainRequest) {
-	    XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
-	    XDomainRequest.prototype.send = function () {
-	        XDomainRequest.prototype.oldsend.apply(this, arguments);
-	        this.readyState = 2;
-	    };
+	    // not support ie8 send is not a function , canot 
+	    // case send is object, doesn't has a attr of call
+	    // XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
+	    // XDomainRequest.prototype.send = function () {
+	    //     XDomainRequest.prototype.oldsend.call(this, arguments);
+	    //     this.readyState = 2;
+	    // };
 	}
 
 	Strophe.Request.prototype._newXHR = function () {
@@ -10133,7 +10156,8 @@
 	        type: 'normal'
 	    };
 	    this.heartBeatID = setInterval(function () {
-	        me.ping(options);
+	        // fix: do heartbeat only when websocket 
+	        _utils.isSupportWss && me.ping(options);
 	    }, this.heartBeatWait);
 	};
 
@@ -12867,10 +12891,10 @@
 	    module.hot.accept();
 	}
 
-/***/ },
+/***/ }),
 
 /***/ 248:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -13222,10 +13246,10 @@
 	    exports.message = Message;
 	})();
 
-/***/ },
+/***/ }),
 
 /***/ 249:
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -13383,6 +13407,6 @@
 	    exports.Queue = Queue;
 	})();
 
-/***/ }
+/***/ })
 
 /******/ });

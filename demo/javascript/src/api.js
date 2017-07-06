@@ -113,10 +113,10 @@ var Blacklist = (function () {
         var errFn = options.success || emptyfn;
 
         options.success = function (list) {
-            dataGroup = list;
-            sucFn(list);
+            dataGroup = list.data;
+            sucFn(list.data);
         };
-        Demo.conn.getGroupBlacklist(options);
+        Demo.conn.getGroupBlacklistNew(options);
     }
 
     function _getGroupBlacklistWin(options) {

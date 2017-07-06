@@ -4921,6 +4921,7 @@
 
                     // Fires the XHR request -- may be invoked immediately
                     // or on a gradually expanding retry window for reconnects
+                    var self = this
                     var sendFunc = function () {
                         req.date = new Date();
                         if (self._conn.options.customHeaders) {
@@ -4931,6 +4932,8 @@
                                 }
                             }
                         }
+                        // fix: ie8 req state error
+                        window.XDomainRequest && (req.xhr.readyState = 2)
                         req.xhr.send(req.data);
                     };
 

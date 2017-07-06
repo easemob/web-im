@@ -89,6 +89,9 @@ exports.English = {
     removeMute: 'Unblock this member',
     administrator: 'Set as administrator',
     rmAdministrator: 'Remove administrator',
+    removeGroupMember: 'Remove this member',
+    addGroupMember: 'Add Group Member',
+    allowInvite: 'Allow invite',
     last: ''
 };
 
@@ -185,5 +188,8 @@ exports.Chinese = {
     removeMute: '解除禁言',
     administrator: '设为管理员',
     rmAdministrator: '移除管理员',
+    removeGroupMember: '从本群中移除',
+    addGroupMember: '添加群成员',
+    allowInvite: '允许邀请入群',
     last: ''
 };

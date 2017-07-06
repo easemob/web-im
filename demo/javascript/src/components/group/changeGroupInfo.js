@@ -51,15 +51,26 @@ var ChangeGroupSubject = React.createClass({
                     Demo.api.NotifyError("changeGroupDescription:" + code);
                 });
         } else {
-            Demo.conn.changeGroupSubject({
-                roomId: this.props.roomId,
-                subject: this.state.subject,
+            // Demo.conn.changeGroupSubject({
+            //     roomId: this.props.roomId,
+            //     subject: this.state.subject,
+            //     description: this.state.description,
+            //     success: () => {
+            //         Demo.api.changeGroupSubjectCallBack(this.props.roomId, value);
+            //         typeof this.props.getGroupInfo == 'function' && this.props.getGroupInfo('groupChat');
+            //     }
+            // });
+            var options = {
+                groupId: this.props.roomId,
+                groupName: this.state.subject,
                 description: this.state.description,
                 success: () => {
                     Demo.api.changeGroupSubjectCallBack(this.props.roomId, value);
                     typeof this.props.getGroupInfo == 'function' && this.props.getGroupInfo('groupChat');
                 }
-            });
+            };
+            console.log(options);
+            Demo.conn.modifyGroup(options);
         }
         this.close();
     },
