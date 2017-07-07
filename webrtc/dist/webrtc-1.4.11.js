@@ -43,15 +43,15 @@
 /******/ ({
 
 /***/ 0:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__(250);
 
 
-/***/ },
+/***/ }),
 
 /***/ 250:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {'use strict';
 
@@ -83,10 +83,10 @@
 	//WebIM.WebRTC.supportPRAnswer = false;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(251)(module)))
 
-/***/ },
+/***/ }),
 
 /***/ 251:
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = function(module) {
 		if(!module.webpackPolyfill) {
@@ -100,10 +100,10 @@
 	}
 
 
-/***/ },
+/***/ }),
 
 /***/ 252:
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -515,10 +515,10 @@
 
 	module.exports = new Util();
 
-/***/ },
+/***/ }),
 
 /***/ 253:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -713,10 +713,10 @@
 	    this.init();
 	};
 
-/***/ },
+/***/ }),
 
 /***/ 254:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1049,10 +1049,10 @@
 	};
 	module.exports = RTCIQHandler;
 
-/***/ },
+/***/ }),
 
 /***/ 255:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1729,10 +1729,10 @@
 	    this.rtcHandler.onRecvRtcMessage = _onRecvRtcMessage;
 	};
 
-/***/ },
+/***/ }),
 
 /***/ 256:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -2458,10 +2458,10 @@
 	    _util.extend(true, this, _WebRTC, initConfigs || {});
 	};
 
-/***/ },
+/***/ }),
 
 /***/ 257:
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -2950,6 +2950,6 @@
 	 * TODO: Conference
 	 */
 
-/***/ }
+/***/ })
 
 /******/ });

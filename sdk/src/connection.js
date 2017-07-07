@@ -11,11 +11,13 @@ var _ = require('underscore');
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 if (window.XDomainRequest) {
-    XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
-    XDomainRequest.prototype.send = function () {
-        XDomainRequest.prototype.oldsend.apply(this, arguments);
-        this.readyState = 2;
-    };
+    // not support ie8 send is not a function , canot 
+    // case send is object, doesn't has a attr of call
+    // XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
+    // XDomainRequest.prototype.send = function () {
+    //     XDomainRequest.prototype.oldsend.call(this, arguments);
+    //     this.readyState = 2;
+    // };
 }
 
 Strophe.Request.prototype._newXHR = function () {
@@ -283,7 +285,8 @@ var _parseFriend = function (queryTag, conn, from) {
             // fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
             if (conn && (subscription == 'from') && !ask) {
                 conn.subscribe({
-                    toJid: jid
+                    toJid: jid,
+                    message: "[resp:true]"
                 });
             }
 
@@ -755,7 +758,8 @@ connection.prototype.heartBeat = function (forcing) {
         type: 'normal'
     };
     this.heartBeatID = setInterval(function () {
-        me.ping(options);
+        // fix: do heartbeat only when websocket 
+        _utils.isSupportWss && me.ping(options);
     }, this.heartBeatWait);
 };
 
