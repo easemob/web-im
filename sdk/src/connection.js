@@ -2302,15 +2302,15 @@ connection.prototype.clear = function () {
 
 connection.prototype.getChatRooms = function (options) {
 
+    var conn = this,
+        token = options.accessToken || this.context.accessToken;
+
     if (!_utils.isCanSetRequestHeader) {
         conn.onError({
             type: _code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR
         });
         return;
     }
-
-    var conn = this,
-        token = options.accessToken || this.context.accessToken;
 
     if (token) {
         var apiUrl = options.apiUrl;
