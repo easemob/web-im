@@ -351,6 +351,10 @@ module.exports = {
     },
 
     sendRead: function (message) {
+        // TODO: Window SDK
+        if (WebIM.config.isWindowSDK) {
+
+        }
         if (!WebIM.config.read)
             return;
         // 阅读消息时反馈一个已阅读

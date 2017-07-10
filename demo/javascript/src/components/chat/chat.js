@@ -301,6 +301,10 @@ module.exports = React.createClass({
                 }
             },
             onDeliveredMessage: function (message) {
+                // TODO: Window SDK
+                if (WebIM.config.isWindowSDK) {
+
+                }
                 var msg = document.getElementsByName(message.mid);
                 // 记录消息的状态
                 for (var targetId in Demo.chatRecord) {
@@ -315,6 +319,10 @@ module.exports = React.createClass({
                 }
             },
             onReadMessage: function (message) {
+                // TODO: Window SDK
+                if (WebIM.config.isWindowSDK) {
+
+                }
                 var msg = document.getElementsByName(message.mid);
                 if (msg) {
                     if (msg[0]) {
