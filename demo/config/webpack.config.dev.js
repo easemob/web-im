@@ -1,5 +1,6 @@
 const autoprefixer = require("autoprefixer")
 const path = require("path")
+const fs = require("fs")
 const webpack = require("webpack")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin")
@@ -135,6 +136,7 @@ module.exports = {
 					/\.html$/,
 					/\.(js|jsx)$/,
 					/\.css$/,
+					/\.less$/,
 					/\.json$/,
 					/\.bmp$/,
 					/\.gif$/,
@@ -166,7 +168,7 @@ module.exports = {
 					// This is a feature of `babel-loader` for webpack (not Babel itself).
 					// It enables caching results in ./node_modules/.cache/babel-loader/
 					// directory for faster rebuilds.
-					plugins: [["import", { libraryName: "antd", style: "css" }]],
+					plugins: [["import", { libraryName: "antd", style: true }]],
 					cacheDirectory: true
 				}
 			},
@@ -206,9 +208,47 @@ module.exports = {
 						}
 					}
 				]
-			}
+			},
 			// ** STOP ** Are you adding a new loader?
 			// Remember to add the new extension(s) to the "file" loader exclusion list.
+			{
+				test: /\.less$/,
+				use: [
+					require.resolve("style-loader"),
+					{
+						loader: require.resolve("css-loader")
+						// options: {
+						// 	importLoaders: 1
+						// }
+					},
+					{
+						loader: require.resolve("postcss-loader"),
+						options: {
+							// Necessary for external CSS imports to work
+							// https://github.com/facebookincubator/create-react-app/issues/2677
+							ident: "postcss",
+							plugins: () => [
+								require("postcss-flexbugs-fixes"),
+								autoprefixer({
+									browsers: [
+										">1%",
+										"last 4 versions",
+										"Firefox ESR",
+										"not ie < 9" // React doesn't support IE8 anyway
+									],
+									flexbox: "no-2009"
+								})
+							]
+						}
+					},
+					{
+						loader: require.resolve("less-loader"),
+						options: {
+							modifyVars: getThemeConfig()
+						}
+					}
+				]
+			}
 		]
 	},
 	plugins: [
@@ -259,4 +299,26 @@ module.exports = {
 	performance: {
 		hints: false
 	}
+}
+
+console.log(getThemeConfig())
+
+function getThemeConfig() {
+	const pkgPath = path.resolve(__dirname, "../package.json")
+	const pkg = fs.existsSync(pkgPath) ? require(pkgPath) : {}
+
+	let theme = {}
+	if (pkg.theme && typeof pkg.theme === "string") {
+		let cfgPath = pkg.theme
+		// relative path
+		if (cfgPath.charAt(0) === ".") {
+			cfgPath = path.resolve(__dirname, "../" + cfgPath)
+		}
+		const getThemeConfigByJS = require(cfgPath)
+		theme = getThemeConfigByJS
+	} else if (pkg.theme && typeof pkg.theme === "object") {
+		theme = pkg.theme
+	}
+
+	return theme
 }
