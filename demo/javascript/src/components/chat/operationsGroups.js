@@ -10,6 +10,7 @@ module.exports = React.createClass({
     getInitialState: function () {
         return {
             // the operations list whether show or not
+            admin: false,
             hide: true
         };
     },
@@ -20,7 +21,39 @@ module.exports = React.createClass({
             return;
         }
 
-        this.setState({hide: !this.state.hide});
+        var admin = false;
+        var jid = this.props.owner[0].jid;
+        var owner = jid.substr(0, jid.lastIndexOf("@"));
+        if (owner == Demo.user) {
+            admin = true;
+            this.setState({
+                hide: !this.state.hide,
+                admin: admin
+            });
+        } else {
+            if(!this.state.admin){
+                var options = {
+                    groupId: Demo.selected,
+                    success: function(resp){
+                        for(var i in resp.data){
+                            if(resp.data[i] == Demo.user){
+                                admin = true;
+                                break;
+                            }
+                        }
+                        this.setState({
+                            hide: !this.state.hide,
+                            admin: admin
+                        });
+                    }.bind(this)
+                };
+                Demo.conn.getGroupAdmin(options);
+            }else{
+                this.setState({
+                    hide: !this.state.hide
+                });
+            }
+        }
     },
 
     // hide when blur | bind focus event
@@ -48,7 +81,7 @@ module.exports = React.createClass({
         this.update();
     },
 
-    addGroupMember: function(){
+    addGroupMember: function () {
         AddGroupMember.show(this.props.roomId);
         this.update();
     },
@@ -114,7 +147,7 @@ module.exports = React.createClass({
             var groupId = this.props.roomId;
             var options = {
                 groupId: groupId,
-                success: function(){
+                success: function () {
                     Demo.selected = '';
                     Demo.api.updateGroup();
                     delete Demo.chatRecord[groupId];
@@ -147,10 +180,10 @@ module.exports = React.createClass({
     },
 
     render: function () {
-        var actionName = (this.props.admin == 1) ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
-        var actionMethod = (this.props.admin == 1) ? this.destroyGroup : this.leaveGroupBySelf;
+        var actionName = (this.state.admin == 1) ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
+        var actionMethod = (this.state.admin == 1) ? this.destroyGroup : this.leaveGroupBySelf;
         var adminMemberLabel = '';
-        if (this.props.admin) {
+        if (this.state.admin) {
             adminMemberLabel = Demo.lan.adminGroupMembers;
         } else if (this.props.settings == "PRIVATE_MEMBER_INVITE") {
             adminMemberLabel = Demo.lan.inviteGroupMembers;
@@ -166,7 +199,7 @@ module.exports = React.createClass({
                     className={'webim-operations ' + (this.state.hide ? 'hide' : '')}
                     onBlur={this.handleOnBlur}>
                     <li onClick={this.adminGroupMembers}
-                        className={this.props.admin ? '' : 'hide'}>
+                        className={this.state.admin ? '' : 'hide'}>
                         <i className='font smallest'>F</i>
                         <span>{adminMemberLabel}</span>
                     </li>
@@ -175,12 +208,12 @@ module.exports = React.createClass({
                         <span>{Demo.lan.addGroupMember}</span >
                     </li>
                     <li onClick={this.changeGroupInfo}
-                         className={this.props.admin ? '' : 'hide'}>
+                        className={this.state.admin ? '' : 'hide'}>
                         <i className='font smallest'>B</i>
                         <span>{Demo.lan.changeGroupInfo}</span >
                     </li>
                     <li onClick={this.showGroupBlacklist}
-                        className={this.props.admin ? '' : 'hide'}>
+                        className={this.state.admin ? '' : 'hide'}>
                         <i className='font smallest'>n</i>
                         <span>{Demo.lan.groupBlacklist}</span>
                     </li>

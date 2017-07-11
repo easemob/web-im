@@ -53,8 +53,10 @@ module.exports = React.createClass({
                         if (members && members.length > 0) {
                             var jid = members[0].jid;
                             var username = jid.substr(0, jid.lastIndexOf("@"));
-                            var admin = 0;
-                            if (members[0].affiliation == 'owner' && username.toLowerCase() == Demo.user) {
+                            var admin = this.state.admin;
+                            if (members[0].affiliation == 'owner'
+                                &&
+                                username.toLowerCase() == Demo.user) {
                                 admin = 1;
                             }
                             me.setState({settings: settings, admin: admin, owner: members, fields: fields});
@@ -64,7 +66,7 @@ module.exports = React.createClass({
                                 me.refs['operation_div'].refs['switch'].click();
                             }
                         }
-                    },
+                    }.bind(this),
                     error: function () {
                         Demo.api.NotifyError('queryRoomInfo error', me.props.roomId);
                     }
@@ -114,12 +116,17 @@ module.exports = React.createClass({
                     pageSize: pageSize,
                     groupId: Demo.selected,
                     success: function (resp) {
-                        var data = resp.data, admin;
-                        for (var i in data) {
-                            if (data[i]['owner']) {
-                                if (data[i]['owner'] === Demo.user) {
-                                    this.getAdmin(data);
-                                    admin = true;
+                        var data = resp.data, admin = this.state.admin;
+                        if (this.state.admin) {
+                            this.getAdmin(data);
+                        } else {
+                            for (var i in data) {
+                                if (data[i]['owner']) {
+                                    if (data[i]['owner'] === Demo.user) {
+                                        this.getAdmin(data);
+                                        admin = true;
+                                    }
+                                    break;
                                 }
                             }
                         }
@@ -154,7 +161,8 @@ module.exports = React.createClass({
                     }
                     this.setState({members: members});
                 }.bind(this),
-                error: function () {
+                error: function (e) {
+                    Demo.api.NotifyError(e.data);
                 }
             };
             Demo.conn.groupBlockSingle(options);
@@ -203,6 +211,7 @@ module.exports = React.createClass({
                     this.setState({members: members});
                 }.bind(this),
                 error: function (e) {
+                    Demo.api.NotifyError(e.data);
                 }
             };
             Demo.conn.mute(options);
@@ -230,7 +239,7 @@ module.exports = React.createClass({
                     this.setState({members: members});
                 }.bind(this),
                 error: function (e) {
-
+                    Demo.api.NotifyError(e.data);
                 }
             };
             Demo.conn.removeMute(options);
@@ -260,6 +269,7 @@ module.exports = React.createClass({
                     this.getMuted(data);
                 }.bind(this),
                 error: function (e) {
+                    Demo.api.NotifyError(e.data);
                 }
             };
             Demo.conn.getGroupAdmin(options);
@@ -290,6 +300,7 @@ module.exports = React.createClass({
                     this.refreshMemberList(data);
                 }.bind(this),
                 error: function (e) {
+                    Demo.api.NotifyError(e.data);
                 }
             };
             Demo.conn.getMuted(options);
@@ -317,6 +328,7 @@ module.exports = React.createClass({
                     this.setState({members: members});
                 }.bind(this),
                 error: function (e) {
+                    Demo.api.NotifyError(e.data);
                 }.bind(this)
             };
             Demo.conn.setAdmin(options);
@@ -347,6 +359,7 @@ module.exports = React.createClass({
                     me.setState({members: members});
                 },
                 error: function (e) {
+                    Demo.api.NotifyError(e.data);
                 }
             };
             Demo.conn.removeAdmin(options);
@@ -358,7 +371,7 @@ module.exports = React.createClass({
     },
 
     // 从群组中移除
-    removeGroupMember: function(username, i){
+    removeGroupMember: function (username, i) {
         // var options = {
         //     groupId: Demo.selected,
         //     users: ['zzf2', 'zzf3', 'zzf4'],
@@ -376,7 +389,7 @@ module.exports = React.createClass({
         var options = {
             groupId: Demo.selected,
             username: username,
-            success: function(){
+            success: function () {
                 Demo.api.NotifySuccess(`Remove ${username} succeed!`);
                 var members = this.state.members;
                 delete members[i];
@@ -384,7 +397,9 @@ module.exports = React.createClass({
                     members: members
                 });
             }.bind(this),
-            error: function(e){}
+            error: function (e) {
+                Demo.api.NotifyError(e.data);
+            }
         };
         Demo.conn.removeSingleGroupMember(options);
     },
@@ -402,6 +417,25 @@ module.exports = React.createClass({
     },
 
     componentDidMount: function () {
+        if (Demo.selectedCate == 'groups') {
+            var admin = false;
+            var options = {
+                groupId: Demo.selected,
+                success: function (resp) {
+                    for (var i in resp.data) {
+                        if (resp.data[i] == Demo.user) {
+                            console.log('True');
+                            admin = true;
+                            break;
+                        }
+                    }
+                    this.setState({
+                        admin: admin
+                    });
+                }.bind(this)
+            };
+            Demo.conn.getGroupAdmin(options);
+        }
         Demo.api.releaseChatRecord();
     },
 

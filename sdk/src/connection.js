@@ -285,7 +285,8 @@ var _parseFriend = function (queryTag, conn, from) {
             // fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
             if (conn && (subscription == 'from') && !ask) {
                 conn.subscribe({
-                    toJid: jid
+                    toJid: jid,
+                    message: "[resp:true]"
                 });
             }
 
@@ -2305,15 +2306,15 @@ connection.prototype.clear = function () {
 
 connection.prototype.getChatRooms = function (options) {
 
+    var conn = this,
+        token = options.accessToken || this.context.accessToken;
+
     if (!_utils.isCanSetRequestHeader) {
         conn.onError({
             type: _code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR
         });
         return;
     }
-
-    var conn = this,
-        token = options.accessToken || this.context.accessToken;
 
     if (token) {
         var apiUrl = options.apiUrl;
