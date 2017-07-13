@@ -4,7 +4,7 @@ node_modules
 .idea/*
 *.swp
 publish/*
-npm-debug.log
+npm-debug.log*
 web-im
 web-im-*.zip
 image/docker/webim/webim
