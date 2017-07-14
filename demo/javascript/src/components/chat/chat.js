@@ -267,7 +267,7 @@ module.exports = React.createClass({
                     } else {
                         if (text == 'logout' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8') {
                             text = Demo.lan.logoutSuc;
-                            window.location.href = '#'
+                            window.location.href = '#';
                             Demo.api.NotifySuccess(text);
                         } else {
                             Demo.api.NotifyError('onError:' + text);
