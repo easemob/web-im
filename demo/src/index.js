@@ -1,8 +1,22 @@
 import React from "react"
 import ReactDOM from "react-dom"
+// antd theme
 import "./index.css"
-import App from "./App"
 import registerServiceWorker from "./registerServiceWorker"
 
-ReactDOM.render(<App />, document.getElementById("root"))
+// redux
+import { Provider } from "react-redux"
+import { store } from "@/redux"
+
+// component
+import Routers from "./Routers"
+
+import "./theme.less"
+
+ReactDOM.render(
+	<Provider store={store}>
+		<Routers />
+	</Provider>,
+	document.getElementById("root")
+)
 registerServiceWorker()

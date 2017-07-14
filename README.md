@@ -5,24 +5,70 @@
 更多关于环信的开发文档请见：https://docs.easemob.com
 
 
-## 
+### create-react-app
 
-## QA
+https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#code-splitting
 
-### Q: IE8下总是提示**拒绝访问**
+## Ant Design
 
-A: 请确保自己的demo地址是否通过web服务，以http协议访问
-   
-原因见： [XDomainRequest](https://developer.mozilla.org/zh-CN/docs/Web/API/XDomainRequest)
-
-```
-XDomainRequest为了确保安全构建，采用了多种方法。
-- 安全协议源必须匹配请求的URL。（http到http，https到https）。如果不匹配，请求会报“拒绝访问”的错误。
-```
+- how to custom theme ?
+    - how to custom theme dynamically
+- how to make responsive component ? see: Sider.tsx
+- ie9 pollyfill 
 
 
-### no such file or directory, scandir 'node_modules/node-sass/vendor'
+https://github.com/ant-design
 
-`npm rebuild node-sass` is the official solution. Deleting your node_modules and running `npm install` will also do the trick.
+### 自定义antd样式
 
-https://github.com/sass/node-sass/issues/1579
+参考：https://ant.design/docs/react/customize-theme-cn
+
+1. 组件按需引入
+    - 文件修改并不会触发页面刷新
+    - 适合prod时使用
+    - theme.js And webpack
+2. 全部导入 
+    - 资源多
+    - 按照正常的加载less的逻辑
+    - 文件修改会触发页面刷新
+    - 适合开发时使用
+    - theme.less
+
+## 路由 react-router
+
+- code splitting with webpack ?
+- how to do auth ?
+- how to add transition ?
+
+https://react-guide.github.io/react-router-cn/
+https://github.com/ReactTraining/react-router
+https://github.com/thejameskyle/react-loadable
+https://reacttraining.com/react-router/web/guides/code-splitting/code-splitting-server-rendering
+
+## react-bits
+
+- HOC ?
+
+https://github.com/vasanthk/react-bits
+
+
+## ant-admin
+
+
+https://github.com/zuiidea/antd-admin/blob/master/src/router.js
+
+
+## Tips
+
+### media-match
+
+- how to do media query in component ?
+
+
+### 布局
+
+position: abasolute; 浮动层，不占用内容区域大小
+所以sider和footer都这种浮动层，的父级元素必须是最外层决定内容大小的元素比如body
+relative的父级不能是内容的大小，因为内容区可能很小，会影响sider和footer的大小
+
+body: min-height: 1000px

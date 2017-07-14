@@ -11,6 +11,10 @@ const ModuleScopePlugin = require("react-dev-utils/ModuleScopePlugin")
 const getClientEnvironment = require("./env")
 const paths = require("./paths")
 
+function resolve(dir) {
+	return path.join(__dirname, "..", dir)
+}
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
 const publicPath = "/"
@@ -89,7 +93,8 @@ module.exports = {
 		alias: {
 			// Support React Native Web
 			// https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-			"react-native": "react-native-web"
+			"react-native": "react-native-web",
+			"@": resolve("src")
 		},
 		plugins: [
 			// Prevents users from importing files from outside of src/ (or node_modules/).
@@ -168,7 +173,9 @@ module.exports = {
 					// This is a feature of `babel-loader` for webpack (not Babel itself).
 					// It enables caching results in ./node_modules/.cache/babel-loader/
 					// directory for faster rebuilds.
-					plugins: [["import", { libraryName: "antd", style: true }]],
+					// TODO 通过theme.js定义antd组件样式，并且支持按照依赖导入  https://ant.design/docs/react/customize-theme-cn
+					// TODO custom style by theme.js,  https://ant.design/docs/react/customize-theme-cn
+					// plugins: [["import", { libraryName: "antd", style: true }]],
 					cacheDirectory: true
 				}
 			},
@@ -244,7 +251,9 @@ module.exports = {
 					{
 						loader: require.resolve("less-loader"),
 						options: {
-							modifyVars: getThemeConfig()
+							// TODO 通过theme.js定义antd组件样式，并且支持按照依赖导入  https://ant.design/docs/react/customize-theme-cn
+							// TODO custom style by theme.js,  https://ant.design/docs/react/customize-theme-cn
+							// modifyVars: getThemeConfig()
 						}
 					}
 				]
@@ -300,8 +309,6 @@ module.exports = {
 		hints: false
 	}
 }
-
-console.log(getThemeConfig())
 
 function getThemeConfig() {
 	const pkgPath = path.resolve(__dirname, "../package.json")
