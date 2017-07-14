@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"module": "commonjs",
+		"baseUrl": "./",
+		"allowSyntheticDefaultImports": true,
+		"paths": {
+			"@/*": ["demo/src/*"]
+		}
+	},
+	"exclude": [
+		"bower_components",
+		"node_modules"
+	]
+}
