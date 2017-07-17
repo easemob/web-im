@@ -40,7 +40,7 @@ pipeline:
     dockerfile: image/docker/webim/Dockerfile
     context: image/docker/webim/
     when:
-      branch: 2.0
+      branch: [ 2.0 ]
 
   deploy-latest:
     image: docker-registry-cn.easemob.com/kubernetes/im/webim-deploy:latest
@@ -51,7 +51,7 @@ pipeline:
     secrets: [ ssh_key, jumpserver_host, jumpserver_port, sandbox_host ]
     debug: true
     when:
-      branch: 2.0
+      branch: [ 2.0 ]
 
 
   rebuild-cache:
