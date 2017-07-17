@@ -55,6 +55,8 @@ cp webpack.config.js publish/
 cp README.md publish/
 cp .babelrc publish/
 
+cp -r demo/build publish/
+
 file_conf="./demo/javascript/dist/webim.config.js"
 
 if [ ! -f "$file_conf" ]; then

@@ -37,9 +37,10 @@ pipeline:
       - cp README.md publish/
       - cp .babelrc publish/
       - cp -rf publish image/docker/webim/webim
+      - cp -r demo/build publish/
       - echo 'build success'
     when:
-      branch: [ dev, online ]
+      branch: [ 2.0 ]
 
 
   dockerize-latest:
@@ -54,7 +55,7 @@ pipeline:
     dockerfile: image/docker/webim/Dockerfile
     context: image/docker/webim/
     when:
-      branch: dev
+      branch: 2.0
 
   deploy-latest:
     image: docker-registry-cn.easemob.com/kubernetes/im/webim-deploy:latest
@@ -65,42 +66,8 @@ pipeline:
     secrets: [ ssh_key, jumpserver_host, jumpserver_port, sandbox_host ]
     debug: true
     when:
-      branch: dev
+      branch: 2.0
 
-  dockerize-online:
-    image: plugins/docker
-    environment:
-      - DOCKER_LAUNCH_DEBUG=true
-    debug: true
-    repo: docker-registry-cn.easemob.com/kubernetes/im/webim
-    tags: ${DRONE_COMMIT:0:7}
-    registry: docker-registry-cn.easemob.com
-    secrets: [ docker_username, docker_password ]
-    dockerfile: image/docker/webim/Dockerfile
-    context: image/docker/webim/
-    when:
-      branch: online
-
-  deploy-online:
-    image: docker-registry-cn.easemob.com/kubernetes/im/webim-online:latest
-    pull: true
-    environment:
-      - DOCKER_LAUNCH_DEBUG=true
-      - TAG=${DRONE_COMMIT:0:7}
-    secrets: [ ssh_key, jumpserver_host, jumpserver_port, online_host ]
-    debug: true
-    when:
-      branch: online
-
-  rollback-online:
-    image: docker-registry-cn.easemob.com/kubernetes/im/webim-rollback:latest
-    pull: true
-    environment:
-      - DOCKER_LAUNCH_DEBUG=true
-    secrets: [ ssh_key, jumpserver_host, jumpserver_port, online_host ]
-    debug: true
-    when:
-      branch: rollback
 
   rebuild-cache:
       image: drillster/drone-volume-cache

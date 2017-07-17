@@ -72,3 +72,15 @@ position: abasolute; 浮动层，不占用内容区域大小
 relative的父级不能是内容的大小，因为内容区可能很小，会影响sider和footer的大小
 
 body: min-height: 1000px
+
+
+## storybook
+
+```
+npm i -g @storybook/cli
+getstorybook
+yarn run storybook
+```
+
+https://github.com/storybooks/storybook/tree/master/lib/cli
+https://storybook.js.org/configurations
