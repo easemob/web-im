@@ -43,9 +43,6 @@ pipeline:
     when:
       branch: [ 2.0 ]
 
-
-        docker rm -f 413f8a2e9b39
-
   deploy-latest:
     image: docker-registry-cn.easemob.com/kubernetes/im/webim-deploy:latest
     pull: true
