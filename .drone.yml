@@ -18,26 +18,10 @@ pipeline:
     image: node:7.8
     privileged: true
     commands:
-      - cd demo && npm run build
-      - mkdir -p publish/demo/javascript
-      - cp -r demo/images publish/demo
-      - cp -r demo/stylesheet publish/demo
-      - cp -r demo/javascript/dist publish/demo/javascript/
-      - cp -r demo/javascript/src publish/demo/javascript/
-      - mkdir publish/sdk
-      - cp -r sdk/dist publish/sdk
-      - cp -r sdk/src publish/sdk
-      - cp sdk/*.* publish/sdk
-      - cp -r webrtc  publish
-      - cp favicon.ico publish/
-      - cp index.html publish/
-      - cp CHANGELOG.md publish/
-      - cp package.json publish/
-      - cp webpack.config.js publish/
-      - cp README.md publish/
-      - cp .babelrc publish/
-      - cp -rf publish image/docker/webim/webim
-      - cp -r demo/build publish/
+      # 2.0 demo 相关编译操作在demo目录下面
+      - cd demo && npm install
+      - npm run build
+      - cp -r build publish/
       - echo 'build success'
     when:
       branch: [ 2.0 ]
