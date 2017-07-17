@@ -21,7 +21,8 @@ pipeline:
       # 2.0 demo 相关编译操作在demo目录下面
       - cd demo && npm install
       - npm run build
-      - cp -r build publish/
+      - cd ..
+      - cp -rf demo/build image/docker/webim/webim
       - echo 'build success'
     when:
       branch: [ 2.0 ]
