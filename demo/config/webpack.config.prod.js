@@ -112,19 +112,19 @@ module.exports = {
 
 			// First, run the linter.
 			// It's important to do this before Babel processes the JS.
-			{
-				test: /\.(js|jsx)$/,
-				enforce: "pre",
-				use: [
-					{
-						options: {
-							formatter: eslintFormatter
-						},
-						loader: require.resolve("eslint-loader")
-					}
-				],
-				include: paths.appSrc
-			},
+			// {
+			// 	test: /\.(js|jsx)$/,
+			// 	enforce: "pre",
+			// 	use: [
+			// 		{
+			// 			options: {
+			// 				formatter: eslintFormatter
+			// 			},
+			// 			loader: require.resolve("eslint-loader")
+			// 		}
+			// 	],
+			// 	include: paths.appSrc
+			// },
 			// ** ADDING/UPDATING LOADERS **
 			// The "file" loader handles all assets unless explicitly excluded.
 			// The `exclude` list *must* be updated with every change to loader extensions.
