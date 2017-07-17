@@ -19,9 +19,9 @@ pipeline:
     privileged: true
     commands:
       # 2.0 demo 相关编译操作在demo目录下面
-      - cd demo && npm install
-      - npm run build
-      - cd ..
+      # - cd demo && npm install
+      # - npm run build
+      # - cd ..
       - cp -rf demo/build image/docker/webim/webim
       - echo 'build success'
     when:
@@ -42,6 +42,9 @@ pipeline:
     context: image/docker/webim/
     when:
       branch: [ 2.0 ]
+
+
+        docker rm -f 413f8a2e9b39
 
   deploy-latest:
     image: docker-registry-cn.easemob.com/kubernetes/im/webim-deploy:latest
