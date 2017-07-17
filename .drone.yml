@@ -18,7 +18,7 @@ pipeline:
     image: node:7.8
     privileged: true
     commands:
-      - npm run build
+      - cd demo && npm run build
       - mkdir -p publish/demo/javascript
       - cp -r demo/images publish/demo
       - cp -r demo/stylesheet publish/demo
