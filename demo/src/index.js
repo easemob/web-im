@@ -7,7 +7,7 @@ import registerServiceWorker from "./registerServiceWorker"
 // redux
 import { Provider } from "react-redux"
 import { store } from "@/redux"
-import conf from "@config"
+import conf from "@/config"
 
 // component
 import Routers from "./Routers"

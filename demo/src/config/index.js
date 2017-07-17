@@ -8,7 +8,7 @@ export const dimensionMap = {
 
 export const SIDER_COL_BREAK = "xs" //md
 export const SIDER_COL_WIDTH = 80
-export const SIDER_WIDTH = 375
+export const SIDER_WIDTH = 350
 
 export default {
 	// whether auto check media query and dispatch by redux or not ?
