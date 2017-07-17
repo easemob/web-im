@@ -27,6 +27,7 @@ pipeline:
       branch: [ 2.0 ]
 
 
+
   dockerize-latest:
     image: plugins/docker
     environment:
