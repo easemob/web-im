@@ -488,15 +488,15 @@ var _loginCallback = function (status, msg, conn) {
         conn.heartBeat();
         conn.isAutoLogin && conn.setPresence();
 
-        try{
-            if(conn.unSendMsgArr.length > 0){
-                for(var i in conn.unSendMsgArr){
+        try {
+            if (conn.unSendMsgArr.length > 0) {
+                for (var i in conn.unSendMsgArr) {
                     var dom = conn.unSendMsgArr[i];
                     conn.sendCommand(dom);
                     delete conn.unSendMsgArr[i];
                 }
             }
-        }catch(e){
+        } catch (e) {
             console.error(e.message);
         }
         conn.offLineSendConnecting = false;
@@ -657,7 +657,10 @@ var _getXmppUrl = function (baseUrl, https) {
 };
 
 
-//class
+/**
+ * Represents a conn.
+ * @constructor
+ */
 var connection = function (options) {
     if (!this instanceof connection) {
         return new connection(options);
@@ -1839,7 +1842,7 @@ connection.prototype.sendCommand = function (dom, id) {
         this.context.stropheConn.send(dom);
     } else {
         this.unSendMsgArr.push(dom);
-        if(!this.offLineSendConnecting && !this.logOut){
+        if (!this.offLineSendConnecting && !this.logOut) {
             this.offLineSendConnecting = true;
             this.reconnect();
         }
@@ -2306,7 +2309,7 @@ connection.prototype.isClosed = function () {
 connection.prototype.clear = function () {
     var key = this.context.appKey;
     if (this.errorType != _code.WEBIM_CONNCTION_DISCONNECTED) {
-        if(this.logOut){
+        if (this.logOut) {
             this.unSendMsgArr = [];
             this.offLineSendConnecting = false;
             this.context = {
