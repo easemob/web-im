@@ -1,9 +1,9 @@
 #!/bin/bash
 
-eval $(docker-machine env default)
+# eval $(docker-machine env default)
 CURDIR=$(cd "$(dirname "$0")"; pwd)
 SERVER=`docker-machine ip`
-docker run -d --name=webim -p=8089:8089    -e "SERVER=${SERVER}" docker-registry-cn.easemob.com/kubernetes/im/webim:latest
+docker run -d --name=webim -p=8089:8089    -e "SERVER=${SERVER}" docker-registry-cn.easemob.com/kubernetes/im/webim:2.0
 docker ps
 
 

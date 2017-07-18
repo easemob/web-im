@@ -1,0 +1,10 @@
+version: '2'
+services:
+  webim:
+    image: docker-registry-cn.easemob.com/kubernetes/im/webim:2.0
+    ports:
+      - "18024:8089"
+    environment:
+      IM_SERVER: "im-api.easemob.com"
+      REST_SERVER: "a1.easemob.com"
+      APPKEY: "easemob-demo#chatdemoui"

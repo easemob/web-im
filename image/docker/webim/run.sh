@@ -14,11 +14,11 @@ fi
 
 
 
-CONFIG=/data/apps/opt/webim/demo/javascript/dist/webim.config.js
+# CONFIG=/data/apps/opt/webim/demo/javascript/dist/webim.config.js
 
-sed -i "s/im-api.easemob.com/${IM_SERVER}/g" $CONFIG
-sed -i "s/a1.easemob.com/${REST_SERVER}/g" $CONFIG
-sed -i "s/easemob-demo#chatdemoui/${APPKEY}/g" $CONFIG
+# sed -i "s/im-api.easemob.com/${IM_SERVER}/g" $CONFIG
+# sed -i "s/a1.easemob.com/${REST_SERVER}/g" $CONFIG
+# sed -i "s/easemob-demo#chatdemoui/${APPKEY}/g" $CONFIG
 
 
 /nginx.sh start
