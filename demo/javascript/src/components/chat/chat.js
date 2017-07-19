@@ -217,6 +217,7 @@ module.exports = React.createClass({
             },
             onOnline: function () {
                 // log(WebIM.utils.ts(), 'online');
+                console.log('onOnline');
             },
             onOffline: function () {
                 if (WebIM.config.isWindowSDK) {

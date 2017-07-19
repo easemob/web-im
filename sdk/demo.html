@@ -199,7 +199,7 @@
                     break;
                 case 'unsubscribed':                        // 被拒绝添加好友，或被对方删除好友成功
                     break;
-                case 'joinChatRoomSuccess':                 // 成功加入聊天室
+                case 'memberJoinPublicGroupSuccess':                 // 成功加入聊天室
                     console.log('join chat room success');
                     break;
                 case 'joinChatRoomFaild':                   // 加入聊天室失败
@@ -360,7 +360,7 @@
             'png': true,
             'bmp': true
         };
-        
+
         var option = {
             apiUrl: WebIM.config.apiURL,
             file: file,
@@ -379,11 +379,11 @@
         };
         // for ie8
         try {
-            if (! file.filetype.toLowerCase() in allowType) {
+            if (!file.filetype.toLowerCase() in allowType) {
                 console.log('file type error')
                 return
             }
-        }catch(e) {
+        } catch (e) {
             option.flashUpload = WebIM.flashUpload
         }
         msg.set(option);

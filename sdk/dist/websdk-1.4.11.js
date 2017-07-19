@@ -43,15 +43,15 @@
 /******/ ({
 
 /***/ 0:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(246);
+	module.exports = __webpack_require__(247);
 
 
-/***/ }),
+/***/ },
 
 /***/ 183:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.8.3
 	//     http://underscorejs.org
@@ -1603,10 +1603,10 @@
 	}.call(this));
 
 
-/***/ }),
+/***/ },
 
-/***/ 205:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 206:
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -1616,7 +1616,7 @@
 	(function () {
 
 	    var EMPTYFN = function EMPTYFN() {};
-	    var _code = __webpack_require__(206).code;
+	    var _code = __webpack_require__(207).code;
 	    var WEBIM_FILESIZE_LIMIT = 10485760;
 
 	    var _createStandardXHR = function _createStandardXHR() {
@@ -2526,10 +2526,10 @@
 	    exports.utils = utils;
 	})();
 
-/***/ }),
+/***/ },
 
-/***/ 206:
-/***/ (function(module, exports) {
+/***/ 207:
+/***/ function(module, exports) {
 
 	"use strict";
 
@@ -2619,15 +2619,15 @@
 	    };
 	})();
 
-/***/ }),
+/***/ },
 
-/***/ 210:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 211:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(212), __webpack_require__(213), __webpack_require__(214), __webpack_require__(215), __webpack_require__(216), __webpack_require__(217), __webpack_require__(218), __webpack_require__(219), __webpack_require__(220), __webpack_require__(221), __webpack_require__(222), __webpack_require__(223), __webpack_require__(224), __webpack_require__(225), __webpack_require__(226), __webpack_require__(227), __webpack_require__(228), __webpack_require__(229), __webpack_require__(230), __webpack_require__(231), __webpack_require__(232), __webpack_require__(233), __webpack_require__(234), __webpack_require__(235), __webpack_require__(236), __webpack_require__(237), __webpack_require__(238), __webpack_require__(239), __webpack_require__(240), __webpack_require__(241), __webpack_require__(242), __webpack_require__(243));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(213), __webpack_require__(214), __webpack_require__(215), __webpack_require__(216), __webpack_require__(217), __webpack_require__(218), __webpack_require__(219), __webpack_require__(220), __webpack_require__(221), __webpack_require__(222), __webpack_require__(223), __webpack_require__(224), __webpack_require__(225), __webpack_require__(226), __webpack_require__(227), __webpack_require__(228), __webpack_require__(229), __webpack_require__(230), __webpack_require__(231), __webpack_require__(232), __webpack_require__(233), __webpack_require__(234), __webpack_require__(235), __webpack_require__(236), __webpack_require__(237), __webpack_require__(238), __webpack_require__(239), __webpack_require__(240), __webpack_require__(241), __webpack_require__(242), __webpack_require__(243), __webpack_require__(244));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -2643,10 +2643,10 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 211:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 212:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
@@ -3409,15 +3409,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 212:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 213:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -3719,15 +3719,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 213:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 214:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -3801,15 +3801,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 214:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 215:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -3956,15 +3956,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 215:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 216:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -4097,15 +4097,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 216:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 217:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -4371,15 +4371,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 217:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 218:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -4527,15 +4527,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 218:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 219:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -4732,15 +4732,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 219:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 220:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(218));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(219));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -4818,15 +4818,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 220:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 221:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(212));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(213));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -5147,15 +5147,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 221:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 222:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(212), __webpack_require__(220));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(213), __webpack_require__(221));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -5236,15 +5236,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 222:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 223:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(212));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(213));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -5565,15 +5565,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 223:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 224:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -5838,15 +5838,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 224:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 225:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -5987,15 +5987,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 225:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 226:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(217), __webpack_require__(224));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(218), __webpack_require__(225));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -6138,15 +6138,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 226:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 227:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(217), __webpack_require__(224));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(218), __webpack_require__(225));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -6276,15 +6276,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 227:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 228:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(226));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(227));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7162,15 +7162,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 228:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 229:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7246,15 +7246,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 229:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 230:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7310,15 +7310,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 230:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 231:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7432,15 +7432,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 231:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 232:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7492,15 +7492,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 232:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 233:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7538,15 +7538,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 233:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 234:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7593,15 +7593,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 234:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 235:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7643,15 +7643,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 235:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 236:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7689,15 +7689,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 236:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 237:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7740,15 +7740,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 237:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 238:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7776,15 +7776,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 238:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 239:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7848,15 +7848,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 239:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 240:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(215), __webpack_require__(216), __webpack_require__(226), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(216), __webpack_require__(217), __webpack_require__(227), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -8086,15 +8086,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 240:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 241:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(215), __webpack_require__(216), __webpack_require__(226), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(216), __webpack_require__(217), __webpack_require__(227), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -8862,15 +8862,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 241:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 242:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(215), __webpack_require__(216), __webpack_require__(226), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(216), __webpack_require__(217), __webpack_require__(227), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -9007,15 +9007,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 242:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 243:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(215), __webpack_require__(216), __webpack_require__(226), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(216), __webpack_require__(217), __webpack_require__(227), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -9205,15 +9205,15 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 243:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 244:
+/***/ function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(211), __webpack_require__(215), __webpack_require__(216), __webpack_require__(226), __webpack_require__(227));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(216), __webpack_require__(217), __webpack_require__(227), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -9401,30 +9401,30 @@
 
 	}));
 
-/***/ }),
+/***/ },
 
-/***/ 246:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 247:
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(247);
+	module.exports = __webpack_require__(248);
 
-/***/ }),
+/***/ },
 
-/***/ 247:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 248:
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _version = '1.4.2';
-	var _code = __webpack_require__(206).code;
-	var _utils = __webpack_require__(205).utils;
-	var _msg = __webpack_require__(248);
+	var _code = __webpack_require__(207).code;
+	var _utils = __webpack_require__(206).utils;
+	var _msg = __webpack_require__(249);
 	var _message = _msg._msg;
 	var _msgHash = {};
-	var Queue = __webpack_require__(249).Queue;
-	var CryptoJS = __webpack_require__(210);
+	var Queue = __webpack_require__(250).Queue;
+	var CryptoJS = __webpack_require__(211);
 	var _ = __webpack_require__(183);
 
 	window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
@@ -9695,7 +9695,8 @@
 	            // fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
 	            if (conn && subscription == 'from' && !ask) {
 	                conn.subscribe({
-	                    toJid: jid
+	                    toJid: jid,
+	                    message: "[resp:true]"
 	                });
 	            }
 
@@ -9886,6 +9887,21 @@
 	        conn.retry && _handleMessageQueue(conn);
 	        conn.heartBeat();
 	        conn.isAutoLogin && conn.setPresence();
+
+	        try {
+	            if (conn.unSendMsgArr.length > 0) {
+	                for (var i in conn.unSendMsgArr) {
+	                    var dom = conn.unSendMsgArr[i];
+	                    conn.sendCommand(dom);
+	                    delete conn.unSendMsgArr[i];
+	                }
+	            }
+	        } catch (e) {
+	            console.error(e.message);
+	        }
+	        conn.offLineSendConnecting = false;
+	        conn.logOut = false;
+
 	        conn.onOpened({
 	            canReceive: supportRecMessage,
 	            canSend: supportSedMessage,
@@ -10077,6 +10093,9 @@
 	    this.orgName = '';
 	    this.appName = '';
 	    this.token = '';
+	    this.unSendMsgArr = [];
+	    this.offLineSendConnecting = false;
+	    this.logOut = false;
 
 	    this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
 	    this.dnsIndex = 0; //the dns ip used in dnsArr currently
@@ -10089,6 +10108,13 @@
 	    this.xmppTotal = 0; //max number of creating xmpp server connection(ws/bosh) retries
 
 	    this.groupOption = {};
+	};
+
+	connection.prototype.testInit = function (options) {
+	    this.orgName = options.orgName;
+	    this.appName = options.appName;
+	    this.user = options.user;
+	    this.token = options.token;
 	};
 
 	connection.prototype.registerUser = function (options) {
@@ -10509,6 +10535,7 @@
 	};
 
 	connection.prototype.close = function (reason) {
+	    this.logOut = true;
 	    this.stopHeartBeat();
 
 	    var status = this.context.status;
@@ -11183,6 +11210,11 @@
 	    if (this.isOpened()) {
 	        this.context.stropheConn.send(dom);
 	    } else {
+	        this.unSendMsgArr.push(dom);
+	        if (!this.offLineSendConnecting && !this.logOut) {
+	            this.offLineSendConnecting = true;
+	            this.reconnect();
+	        }
 	        this.onError({
 	            type: _code.WEBIM_CONNCTION_DISCONNECTED,
 	            reconnect: true
@@ -11638,10 +11670,14 @@
 	connection.prototype.clear = function () {
 	    var key = this.context.appKey;
 	    if (this.errorType != _code.WEBIM_CONNCTION_DISCONNECTED) {
-	        this.context = {
-	            status: _code.STATUS_INIT,
-	            appKey: key
-	        };
+	        if (this.logOut) {
+	            this.unSendMsgArr = [];
+	            this.offLineSendConnecting = false;
+	            this.context = {
+	                status: _code.STATUS_INIT,
+	                appKey: key
+	            };
+	        }
 	    }
 	    if (this.intervalId) {
 	        clearInterval(this.intervalId);
@@ -11662,15 +11698,15 @@
 
 	connection.prototype.getChatRooms = function (options) {
 
+	    var conn = this,
+	        token = options.accessToken || this.context.accessToken;
+
 	    if (!_utils.isCanSetRequestHeader) {
 	        conn.onError({
 	            type: _code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR
 	        });
 	        return;
 	    }
-
-	    var conn = this,
-	        token = options.accessToken || this.context.accessToken;
 
 	    if (token) {
 	        var apiUrl = options.apiUrl;
@@ -12841,6 +12877,133 @@
 	    WebIM.utils.ajax(options);
 	};
 
+	// 通过Rest解散群组
+	connection.prototype.dissolveGroup = function (opt) {
+	    var groupId = opt.groupId,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '?version=v3',
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	// 通过Rest获取群组
+	connection.prototype.getGroupBlacklistNew = function (opt) {
+	    var groupId = opt.groupId,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users',
+	        type: 'GET',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	// 通过Rest离开群组
+	connection.prototype.quitGroup = function (opt) {
+	    var groupId = opt.groupId,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'quit',
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	connection.prototype.modifyGroup = function (opt) {
+	    var groupId = opt.groupId,
+	        requestData = {
+	        groupname: opt.groupName,
+	        description: opt.description
+	    },
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId,
+	        type: 'PUT',
+	        data: JSON.stringify(requestData),
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	connection.prototype.removeSingleGroupMember = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'users' + '/' + username,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	connection.prototype.removeMultiGroupMember = function (opt) {
+	    var groupId = opt.groupId,
+	        users = opt.users.join(','),
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'users' + '/' + users,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	connection.prototype.inviteToGroup = function (opt) {
+	    var groupId = opt.groupId,
+	        users = opt.users,
+	        requestData = {
+	        usernames: users
+	    },
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'invite',
+	        type: 'POST',
+	        data: JSON.stringify(requestData),
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
 	function _setText(valueDom, v) {
 	    if ('textContent' in valueDom) {
 	        valueDom.textContent = v;
@@ -12891,18 +13054,18 @@
 	    module.hot.accept();
 	}
 
-/***/ }),
+/***/ },
 
-/***/ 248:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 249:
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var CryptoJS = __webpack_require__(210);
+	var CryptoJS = __webpack_require__(211);
 	;(function () {
 	    'use strict';
 
-	    var _utils = __webpack_require__(205).utils;
+	    var _utils = __webpack_require__(206).utils;
 	    var Message = function Message(type, id) {
 	        if (!this instanceof Message) {
 	            return new Message(type);
@@ -13164,20 +13327,28 @@
 	                dom.up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
 	            }
 	            if (message.bodyId) {
-	                dom.up().c('body').t(message.bodyId);
+	                dom = $msg({
+	                    to: message.toJid,
+	                    id: message.id,
+	                    xmlns: 'jabber:client'
+	                }).c('body').t(message.bodyId);
 	                var delivery = {
 	                    xmlns: 'urn:xmpp:receipts',
 	                    id: message.bodyId
 	                };
-	                dom.up().c('delivery').t(_utils.stringify(delivery));
+	                dom.up().c('delivery', delivery);
 	            }
 	            if (message.ackId) {
-	                dom.up().c('body').t(message.ackId);
+	                dom = $msg({
+	                    to: message.toJid,
+	                    id: message.id,
+	                    xmlns: 'jabber:client'
+	                }).c('body').t(message.ackId);
 	                var read = {
 	                    xmlns: 'urn:xmpp:receipts',
 	                    id: message.ackId
 	                };
-	                dom.up().c('acked').t(_utils.stringify(read));
+	                dom.up().c('acked', read);
 	            }
 
 	            setTimeout(function () {
@@ -13246,10 +13417,10 @@
 	    exports.message = Message;
 	})();
 
-/***/ }),
+/***/ },
 
-/***/ 249:
-/***/ (function(module, exports) {
+/***/ 250:
+/***/ function(module, exports) {
 
 	"use strict";
 
@@ -13407,6 +13578,6 @@
 	    exports.Queue = Queue;
 	})();
 
-/***/ })
+/***/ }
 
 /******/ });

@@ -488,15 +488,15 @@ var _loginCallback = function (status, msg, conn) {
         conn.heartBeat();
         conn.isAutoLogin && conn.setPresence();
 
-        try{
-            if(conn.unSendMsgArr.length > 0){
-                for(var i in conn.unSendMsgArr){
+        try {
+            if (conn.unSendMsgArr.length > 0) {
+                for (var i in conn.unSendMsgArr) {
                     var dom = conn.unSendMsgArr[i];
                     conn.sendCommand(dom);
                     delete conn.unSendMsgArr[i];
                 }
             }
-        }catch(e){
+        } catch (e) {
             console.error(e.message);
         }
         conn.offLineSendConnecting = false;
@@ -709,6 +709,13 @@ var connection = function (options) {
     this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
 
     this.groupOption = {};
+};
+
+connection.prototype.testInit = function (options) {
+    this.orgName = options.orgName;
+    this.appName = options.appName;
+    this.user = options.user;
+    this.token = options.token;
 };
 
 connection.prototype.registerUser = function (options) {
@@ -1839,7 +1846,7 @@ connection.prototype.sendCommand = function (dom, id) {
         this.context.stropheConn.send(dom);
     } else {
         this.unSendMsgArr.push(dom);
-        if(!this.offLineSendConnecting && !this.logOut){
+        if (!this.offLineSendConnecting && !this.logOut) {
             this.offLineSendConnecting = true;
             this.reconnect();
         }
@@ -2306,7 +2313,7 @@ connection.prototype.isClosed = function () {
 connection.prototype.clear = function () {
     var key = this.context.appKey;
     if (this.errorType != _code.WEBIM_CONNCTION_DISCONNECTED) {
-        if(this.logOut){
+        if (this.logOut) {
             this.unSendMsgArr = [];
             this.offLineSendConnecting = false;
             this.context = {
@@ -3601,7 +3608,7 @@ connection.prototype.dissolveGroup = function (opt) {
     WebIM.utils.ajax(options);
 };
 
-// 通过Rest获取群组
+// 通过Rest获取群组黑名单
 connection.prototype.getGroupBlacklistNew = function (opt) {
     var groupId = opt.groupId,
         options = {
@@ -3637,6 +3644,7 @@ connection.prototype.quitGroup = function (opt) {
     WebIM.utils.ajax(options);
 };
 
+// 通过Rest修改群信息
 connection.prototype.modifyGroup = function (opt) {
     var groupId = opt.groupId,
         requestData = {

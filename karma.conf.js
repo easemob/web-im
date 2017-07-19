@@ -92,8 +92,8 @@ module.exports = function (config) {
             // './demo/javascript/dist/swfupload/swfupload.min.js',
             // './demo/javascript/dist/demo-1.4.10.js',
             '__test__/setup.js',
-            // '__test__/interface.test.js'  //接口测试
-            '__test__/flow.test.js'          //e2e测试
+            '__test__/interface.test.js'  //接口测试
+            // '__test__/flow.test.js'          //e2e测试
         ],
         proxies: {
             "/demo/": "/base/demo/",
