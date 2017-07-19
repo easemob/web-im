@@ -150,9 +150,11 @@ $ npm run build
 ```
 
 
-# How to gen doc
+# How to generate exported APIs doc
 
 ```
+$ npm install
 $ ./jsdoc.sh
 ```
+
 then open jsdoc/out/index.html in your browser.
