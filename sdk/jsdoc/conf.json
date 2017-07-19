@@ -1,0 +1,37 @@
+{
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": [
+      "jsdoc",
+      "closure"
+    ]
+  },
+  "source": {
+    "include": [
+      //      "src"
+    ],
+    "exclude": [],
+    "includePattern": ".+\\.js$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "plugins": [],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "default": {
+      "outputSourceFiles": false
+    },
+    "path": "ink-docstrap",
+    "theme": "cerulean",
+    "navType": "vertical",
+    "linenums": true,
+    "dateFormat": "MMMM DD YYYY, h:mm:ss a"
+  },
+  "opts": {
+    "template": "node_modules/docdash",
+    "encoding": "utf8",
+    "destination": "jsdoc/out",
+    "recurse": true
+    //    "tutorials": "path/to/tutorials",
+  }
+}

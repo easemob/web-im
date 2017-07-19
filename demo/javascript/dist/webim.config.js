@@ -32,7 +32,7 @@ WebIM.config = {
      */
     isMultiLoginSessions: false,
     /*
-     * Set to auto sign-in
+     * set presence after login
      */
     isAutoLogin: true,
     /**
