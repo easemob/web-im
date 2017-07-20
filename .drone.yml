@@ -23,6 +23,7 @@ pipeline:
       # - npm run build
       # - cd ..
       - cp -rf demo/build image/docker/webim/webim
+      - cp -rf demo/storybook-static image/docker/webim/storybook
       - echo 'build success'
     when:
       branch: [ 2.0 ]
