@@ -57,6 +57,7 @@ echo 'webpack done!'
 # cp .babelrc publish/
 
 cp -r demo/build publish/
+cp -r demo/storybook-static publish/storybook
 
 file_conf="./demo/javascript/dist/webim.config.js"
 
