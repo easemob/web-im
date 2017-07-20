@@ -5,16 +5,19 @@ import { Menu, Icon } from "antd"
 const SubMenu = Menu.SubMenu
 const MenuItemGroup = Menu.ItemGroup
 
-const HeaderTab = ({ collapse, ...rest }) => {
+const ContactItem = ({ collapse, ...rest }) => {
 	const tabs = ["Contacts", "Chat", "Public"]
 	const tabsLen = tabs.length
-	const tabCls = collapse ? "" : `ant-col-${Math.floor(24 / tabsLen)}`
+	const tabCls = collapse ? "" : ``
 
 	const tabsItem = tabs.map(name =>
 		<Menu.Item key={name} className={tabCls}>
-			<span className="nav-text">
-				{name}
-			</span>
+			<div className="nav-img">test</div>
+			<div className="nav-text">
+				<p>Jerry</p>
+				<p className="nav-text-desc">How long will you take ?</p>
+			</div>
+			<div className="nav-op">10.02 AM</div>
 		</Menu.Item>
 	)
 
@@ -25,15 +28,20 @@ const HeaderTab = ({ collapse, ...rest }) => {
 	)
 
 	return (
-		<Menu id="x-header-tab" mode="horizontal" {...rest}>
-			{collapse ? tabsColItem : tabsItem}
+		<Menu
+			id="x-contact-item2"
+			mode={"inline"}
+			inlineCollapsed={collapse}
+			{...rest}
+		>
+			{tabsItem}
 		</Menu>
 	)
 }
 
-HeaderTab.propTypes = {
+ContactItem.propTypes = {
 	collapse: PropTypes.bool
 	// menuOptions: PropTypes.array.isRequired,
 }
 
-export default HeaderTab
+export default ContactItem

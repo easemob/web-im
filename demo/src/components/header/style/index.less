@@ -1,0 +1,43 @@
+@import (reference) "~antd/dist/antd.less"; // 引入官方提供的 less 样式入口文件
+
+@menu-prefix-cls: ~"@{ant-prefix}-menu";
+
+#x-header-tab.@{menu-prefix-cls} {
+	text-align: center;
+	// width: 350px;
+	background-color: #000;
+	color: #adb9c1;
+
+	&-horizontal &-item,
+	&-horizontal &-submenu {
+		top: 0;
+	}
+
+	&-horizontal {
+		> .@{menu-prefix-cls}-item {
+			&:hover,
+			&-active,
+			&-open,
+			&-selected {
+				border-bottom: 1px solid transparent;
+				color: #fff;
+				background-color: #00ba6e;
+			}
+		}
+	}
+
+	&-item,
+	&-submenu-title {
+		padding: 20px 33px;
+		line-height: 0;
+	}
+
+	.anticon {
+		margin-right: 0;
+	}
+
+	.collapse {
+		width: 100%;
+		text-align: left;
+	}
+}

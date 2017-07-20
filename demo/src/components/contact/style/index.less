@@ -1,0 +1,171 @@
+@import (reference) "~antd/dist/antd.less"; // 引入官方提供的 less 样式入口文件
+
+@menu-prefix-cls: ~"@{ant-prefix}-menu";
+
+#x-contact-item.@{menu-prefix-cls} {
+	// text-align: center;
+	// width: 350px;
+	background-color: #fff;
+	color: #000;
+
+	&-inline &-item,
+	&-inline &-submenu {
+	}
+
+	&-inline {
+		> .@{menu-prefix-cls}-item {
+			&:after {
+				border: 0px;
+			}
+
+			&:hover,
+			&-active,
+			&-open,
+			&-selected {
+				color: #000;
+				border-bottom: 1px solid transparent;
+				background-color: rgba(113, 134, 161, 0.1);
+			}
+		}
+	}
+
+	&-inline {
+		.@{menu-prefix-cls}-item,
+		.@{menu-prefix-cls}-submenu-title {
+			padding: 0 16px;
+			font-size: @font-size-lg;
+			line-height: 42px;
+			height: 80px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.nav-img {
+			// display: inline-block;
+			float: left;
+			width: 50px;
+			height: 50px;
+			line-height: 50px;
+			margin: 15px 20px 15px 0px;
+			border-radius: 50%;
+			background-color: gray;
+			text-align: center;
+			overflow: hidden;
+			color: #fff;
+
+			&:first-letter {
+				text-transform: uppercase;
+			}
+		}
+
+		.nav-text {
+			font-size: @font-size-lg;
+			// display: inline-block;
+			height: 100%;
+			float: left;
+			padding: 19px 0;
+			line-height: 1.43;
+			// display: flex;
+			// flex-direction: column;
+			// align-items: center;
+
+			p {
+				// flex: 1;
+			}
+
+			&-desc {
+				margin-top: 3px;
+				color: #8798a4;
+			}
+		}
+
+		.nav-op {
+			position: absolute;
+			right: 20px;
+			top: 20px;
+			line-height: 1;
+			color: #8798a4;
+			font-size: 11px;
+			line-height: 1.64;
+		}
+	}
+
+	&-inline-collapsed {
+		width: 80px;
+		// transform: all .3;
+
+		.@{menu-prefix-cls}-item,
+		.@{menu-prefix-cls}-submenu-title {
+			padding: 15px;
+			font-size: @font-size-lg;
+			line-height: 42px;
+			height: 80px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.nav-img {
+			// display: inline-block;
+			float: left;
+			width: 50px;
+			height: 50px;
+			line-height: 50px;
+			// margin: 15px 20px 15px -4px;
+			border-radius: 50%;
+			background-color: gray;
+			text-align: center;
+			overflow: hidden;
+			color: #fff;
+
+			&:first-letter {
+				text-transform: uppercase;
+			}
+		}
+
+		.nav-text {
+			font-size: @font-size-lg;
+			// display: inline-block;
+			height: 100%;
+			float: left;
+			padding: 19px 0;
+			line-height: 1.43;
+			// display: flex;
+			// flex-direction: column;
+			// align-items: center;
+
+			p {
+				// flex: 1;
+			}
+
+			&-desc {
+				margin-top: 3px;
+				color: #8798a4;
+			}
+		}
+
+		.nav-op {
+			display: none;
+			position: absolute;
+			right: 20px;
+			top: 20px;
+			font-size: 11px;
+			line-height: 1.64;
+			color: #8798a4;
+		}
+	}
+
+	// &-item,
+	// &-submenu-title {
+	// 	padding: 20px 33px;
+	// 	line-height: 0;
+	// }
+
+	.anticon {
+		margin-right: 0;
+	}
+
+	.collapse {
+		width: 100%;
+		text-align: left;
+	}
+}
