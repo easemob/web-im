@@ -1,6 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { Menu, Icon } from "antd"
+import ContactHead from "./ContactHead"
 
 const SubMenu = Menu.SubMenu
 const MenuItemGroup = Menu.ItemGroup
@@ -12,7 +13,7 @@ const ContactItem = ({ collapse, ...rest }) => {
 
 	const tabsItem = tabs.map(name =>
 		<Menu.Item key={name} className={tabCls}>
-			<div className="nav-img">test</div>
+			<ContactHead className="fl nav-img" name="test" width={50} />
 			<div className="nav-text">
 				<p>Jerry</p>
 				<p className="nav-text-desc">How long will you take ?</p>

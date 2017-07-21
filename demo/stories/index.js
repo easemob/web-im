@@ -7,10 +7,12 @@ import { Welcome } from "@storybook/react/demo"
 
 import "../src/theme.less"
 
-import { Button, Modal } from "antd"
+import { Button, Modal, Menu, Icon, Dropdown } from "antd"
 import HeaderTab from "../src/components/header/HeaderTab"
 import ContactItem from "../src/components/contact/ContactItem"
+import ContactHead from "../src/components/contact/ContactHead"
 import ListItem from "../src/components/list/ListItem"
+import ChatEmoji from "../src/components/chat/ChatEmoji"
 
 // 注意
 // 1. action(x) x不能是循环引用的对象，否则会卡死
@@ -92,6 +94,7 @@ storiesOf("Contact", module)
 			}}
 		/>
 	)
+	.add("item head", () => <ContactHead width={50} name={"中test"} />)
 
 /**
  *   模态框
@@ -170,9 +173,122 @@ storiesOf("Confirm", module).add("item", (...args) => {
  */
 
 storiesOf("ListItem", module).add("item", () =>
-	<ListItem
-		onClick={e => {
-			return action("clicked")(e.key)
-		}}
-	/>
+	<div>
+		<ListItem
+			config={[
+				{
+					mode: "left",
+					component: () =>
+						<div style={{ margin: "15px 20px 15px 0" }}>
+							<ContactHead width={50} name={"中test"} />
+						</div>
+				},
+				{
+					mode: "left",
+					component: () => <div style={{ lineHeight: "80px" }}>123</div>
+				},
+				{
+					mode: "right",
+					component: () =>
+						<span style={{ lineHeight: "80px", color: "#8798a4" }}>Admin</span>
+				}
+			]}
+		/>
+		<ListItem />
+
+		<ListItem
+			config={[
+				{
+					mode: "left",
+					component: () =>
+						<div
+							style={{
+								lineHeight: "60px",
+								fontSize: "20px",
+								marginRight: "17px"
+							}}
+						>
+							<Icon type="link" />
+						</div>
+				},
+				{
+					mode: "left",
+					component: () =>
+						<div style={{ lineHeight: "60px" }}>Delete Group</div>
+				}
+			]}
+		/>
+		<ListItem />
+
+		<ListItem
+			config={[
+				{
+					mode: "left",
+					component: () =>
+						<div
+							style={{
+								fontSize: 20,
+								marginRight: 17,
+								height: 60,
+								lineHeight: "60px"
+							}}
+						>
+							Hyphenate
+						</div>
+				},
+				{
+					mode: "left",
+					component: () =>
+						<div
+							style={{
+								fontSize: 14,
+								height: 60,
+								lineHeight: "25px"
+							}}
+						>
+							Group Invite
+							<p style={{ color: "#8789a4", fontSize: 12 }}>
+								Jake invited you to 'a'
+							</p>
+						</div>
+				},
+				{
+					mode: "right",
+					component: () =>
+						<div style={{ lineHeight: "60px", fontSize: 20 }}>
+							<Icon type="ellipsis" />
+						</div>
+				}
+			]}
+		/>
+		<ListItem />
+	</div>
 )
+
+/**
+ *  
+ */
+storiesOf("Dropdown", module).add("item", (...args) => {
+	const m = (
+		<Menu>
+			<Menu.Item key="0">
+				<ChatEmoji />
+			</Menu.Item>
+		</Menu>
+	)
+
+	return (
+		<div style={{ position: "absolute", right: 0, bottom: 0 }}>
+			<Dropdown
+				overlay={m}
+				placement="topLeft"
+				trigger={["click"]}
+				onVisibleChange={v => {
+					console.log(v)
+				}}
+			>
+				<Button>bottomLeft</Button>
+			</Dropdown>
+		</div>
+	)
+})
