@@ -7,6 +7,7 @@ var _msgHash = {};
 var Queue = require('./queue').Queue;
 var CryptoJS = require('crypto-js');
 var _ = require('underscore');
+var stropheConn = null;
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -312,7 +313,6 @@ var _login = function (options, conn) {
     }
     conn.context.accessToken = options.access_token;
     conn.context.accessTokenExpires = options.expires_in;
-    var stropheConn = null;
     if (conn.isOpening() && conn.context.stropheConn) {
         stropheConn = conn.context.stropheConn;
     } else if (conn.isOpened() && conn.context.stropheConn) {
@@ -325,7 +325,6 @@ var _login = function (options, conn) {
         _loginCallback(status, msg, conn);
     };
 
-    //console.log('jid=', conn.context.jid)
     conn.context.stropheConn = stropheConn;
     if (conn.route) {
         stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold, conn.route);
@@ -621,7 +620,6 @@ var _validCheck = function (options, conn) {
         resource += user + new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000);
     }
     conn.context.jid = jid + '/' + resource;
-    /*jid: {appkey}_{username}@domain/resource*/
     conn.context.userId = user;
     conn.context.appKey = appKey;
     conn.context.appName = appName;
@@ -1206,7 +1204,7 @@ connection.prototype.attach = function (options) {
         return;
     }
 
-    var stropheConn = this.getStrophe();
+    stropheConn = this.getStrophe();
 
     this.context.accessToken = accessToken;
     this.context.stropheConn = stropheConn;
@@ -1256,9 +1254,10 @@ connection.prototype.addHandler = function (handler, ns, name, type, id, from, o
  * @private
  */
 connection.prototype.notifyVersion = function (suc, fail) {
-    var jid = _getJid({}, this);
+    var jid = stropheConn.getJid();
+    this.context.jid = jid;
     var dom = $iq({
-        from: this.context.jid || ''
+        from: jid || ''
         , to: this.domain
         , type: 'result'
     })
@@ -1289,6 +1288,7 @@ connection.prototype.notifyVersion = function (suc, fail) {
  * @private
  */
 connection.prototype.handlePresence = function (msginfo) {
+    console.log('Info: ', typeof msginfo);
     if (this.isClosed()) {
         return;
     }
@@ -1412,6 +1412,13 @@ connection.prototype.handlePresence = function (msginfo) {
                 info.mid = info.fromJid.split('/');
                 info.mid = info.mid[info.mid.length - 1];
                 info.type = 'memberJoinPublicGroupSuccess';
+                var roomtype = msginfo.getElementsByTagName('roomtype');
+                if (roomtype && roomtype.length > 0) {
+                    var type = roomtype[0].getAttribute('type');
+                    if (type == 'chatroom') {
+                        info.type = 'memberJoinChatRoomSuccess';
+                    }
+                }
             }
         } else if (decline && decline.length) {
             isDecline = true;
@@ -4181,6 +4188,14 @@ WebIM.doQuery = function (str, suc, fail) {
 
 /**************************** debug ****************************/
 function logMessage(message) {
+    // 获取Resource
+    var data = message.data;
+    if (data.indexOf('<jid>') > 0) {
+        var start = data.indexOf('<jid>'),
+            end = data.indexOf('</jid>'),
+            data = data.substring(start + 5, end);
+        stropheConn.setJid(data);
+    }
     WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
 }
 

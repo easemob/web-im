@@ -624,7 +624,10 @@ module.exports = React.createClass({
                 Demo.api.NotifySuccess('Fail to Join the group');
                 break;
             case 'memberJoinPublicGroupSuccess':
-                Demo.api.NotifySuccess(msg.mid + '已成功加入' + msg.from);
+                Demo.api.NotifySuccess(msg.mid + '已成功加入群组' + msg.from);
+                break;
+            case 'memberJoinChatRoomSuccess':
+                Demo.api.NotifySuccess(msg.mid + '已成功加入聊天室' + msg.from);
                 break;
             case 'joinPublicGroupDeclined':
                 Demo.api.NotifyError(msg.owner + '拒绝了您加入' + msg.gid + '的请求');
