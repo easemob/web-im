@@ -5,7 +5,7 @@ import { action } from "@storybook/addon-actions"
 import { linkTo } from "@storybook/addon-links"
 import { Welcome } from "@storybook/react/demo"
 
-import "../src/theme.less"
+import "../src/themes/theme.less"
 
 import { Button, Modal, Menu, Icon, Dropdown } from "antd"
 import HeaderTab from "../src/components/header/HeaderTab"

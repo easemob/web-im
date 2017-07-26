@@ -14,5 +14,7 @@ export default {
 	// whether auto check media query and dispatch by redux or not ?
 	reduxMatchMedia: true,
 	// map of media query breakpoints
-	dimensionMap
+	dimensionMap,
+	name: "Web IM",
+	logo: ""
 }

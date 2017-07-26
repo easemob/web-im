@@ -4,7 +4,7 @@ import { forEach } from "lodash"
 import thunkMiddleware from "redux-thunk"
 
 // todo media query pollyfill
-import { breakpointReducer, combinedReducer, MATCH_MEDIA } from "./indexRedux"
+import { breakpointReducer, combinedReducer, MATCH_MEDIA } from "./IndexRedux"
 
 /* ------------- Redux Dev Tools ------------- */
 
@@ -20,8 +20,16 @@ const middlewares = [thunkMiddleware]
 enhancers.push(applyMiddleware(...middlewares))
 
 /* ------------- Assemble The Reducers ------------- */
+
+const initState = {
+	breakpoint: {},
+	login: {},
+	im: {}
+}
 const rootReducer = combineReducers({
-	breakpoint: breakpointReducer
+	breakpoint: breakpointReducer,
+	login: require("./LoginRedux").reducer,
+	im: require("./WebIMRedux").reducer
 	// entities: combineReducers({
 	//   roster: require('./RosterRedux').reducer,
 	//   group: require('./GroupRedux').reducer,
@@ -42,10 +50,6 @@ const rootReducer = combineReducers({
 const appReducer = (state = initState, action) => {
 	const newState = combinedReducer(state, action)
 	return rootReducer(newState, action)
-}
-
-const initState = {
-	breakpoint: {}
 }
 
 /* ------------- Enhancers ------------- */

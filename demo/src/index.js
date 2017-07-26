@@ -1,25 +1,24 @@
 import React from "react"
 import ReactDOM from "react-dom"
 // antd theme
-import "./index.css"
+import "./App.css"
+import "./themes/theme.less"
 import registerServiceWorker from "./registerServiceWorker"
 
 // redux
 import { Provider } from "react-redux"
 import { store } from "@/redux"
-import conf from "@/config"
+import App from "./App"
 
-// component
-import Routers from "./Routers"
+const rootEl = document.getElementById("root")
+const render = Component =>
+	ReactDOM.render(
+		<Provider store={store}>
+			<Component />
+		</Provider>,
+		rootEl
+	)
 
-import "./theme.less"
-
-console.log(conf)
-
-ReactDOM.render(
-	<Provider store={store}>
-		<Routers />
-	</Provider>,
-	document.getElementById("root")
-)
+render(App)
+if (module.hot) module.hot.accept("./App", () => render(App))
 registerServiceWorker()

@@ -1,7 +1,9 @@
-export const MATCH_MEDIA = "MATCH_MEDIA"
-export const USER_LOGOUT = "USER_LOGOUT"
+export const MATCH_MEDIA = "INDEX::MATCH_MEDIA"
+export const USER_LOGOUT = "INDEX::LOGOUT"
 
-export function breakpointReducer(state = {}, action) {
+const defaultState = {}
+
+export function breakpointReducer(state = defaultState, action) {
 	switch (action.type) {
 		case MATCH_MEDIA:
 			return {

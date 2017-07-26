@@ -3,14 +3,16 @@
 	"version": "0.1.0",
 	"private": true,
 	"devDependencies": {
+		"@storybook/react": "^3.1.9",
 		"babel-plugin-import": "^1.2.1",
 		"less": "^2.7.2",
 		"less-loader": "^4.0.5",
-		"@storybook/react": "^3.1.9"
+		"less-vars-to-js": "^1.1.2"
 	},
 	"dependencies": {
 		"antd": "^2.12.0",
 		"autoprefixer": "7.1.1",
+		"axios": "^0.16.2",
 		"babel-core": "6.25.0",
 		"babel-eslint": "7.2.3",
 		"babel-jest": "20.0.3",
@@ -34,6 +36,7 @@
 		"fs-extra": "3.0.1",
 		"html-webpack-plugin": "2.29.0",
 		"jest": "20.0.4",
+		"nprogress": "^0.2.0",
 		"object-assign": "4.1.1",
 		"postcss-flexbugs-fixes": "3.0.0",
 		"postcss-loader": "2.0.6",
@@ -47,6 +50,9 @@
 		"react-router-dom": "^4.1.1",
 		"redux": "^3.7.2",
 		"redux-thunk": "^2.2.0",
+		"reduxsauce": "^0.6.0",
+		"script-loader": "^0.7.0",
+		"seamless-immutable": "^7.1.2",
 		"style-loader": "0.18.2",
 		"sw-precache-webpack-plugin": "0.11.3",
 		"url-loader": "0.5.9",
@@ -63,8 +69,12 @@
 		"build-storybook": "build-storybook"
 	},
 	"jest": {
-		"collectCoverageFrom": ["src/**/*.{js,jsx}"],
-		"setupFiles": ["<rootDir>/config/polyfills.js"],
+		"collectCoverageFrom": [
+			"src/**/*.{js,jsx}"
+		],
+		"setupFiles": [
+			"<rootDir>/config/polyfills.js"
+		],
 		"testMatch": [
 			"<rootDir>/src/**/__tests__/**/*.js?(x)",
 			"<rootDir>/src/**/?(*.)(spec|test).js?(x)"
@@ -76,14 +86,24 @@
 			"^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
 			"^(?!.*\\.(js|jsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
 		},
-		"transformIgnorePatterns": ["[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"],
+		"transformIgnorePatterns": [
+			"[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+		],
 		"moduleNameMapper": {
 			"^react-native$": "react-native-web"
 		},
-		"moduleFileExtensions": ["web.js", "js", "json", "web.jsx", "jsx"]
+		"moduleFileExtensions": [
+			"web.js",
+			"js",
+			"json",
+			"web.jsx",
+			"jsx"
+		]
 	},
 	"babel": {
-		"presets": ["react-app"]
+		"presets": [
+			"react-app"
+		]
 	},
 	"eslintConfig": {
 		"extends": "react-app"
