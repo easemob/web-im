@@ -2372,21 +2372,21 @@
                 this.paused = true;
             },
 
-            /** Function: resume
-             *  Resume the request manager.
-             *
-             *  This resumes after pause() has been called.
-             */
-
-            setJid: function(jid){
+            setJid: function (jid) {
                 this.jid = jid;
                 this.authzid = Strophe.getBareJidFromJid(this.jid);
                 this.authcid = Strophe.getNodeFromJid(this.jid);
             },
 
-            getJid: function(){
+            getJid: function () {
                 return this.jid;
             },
+
+            /** Function: resume
+             *  Resume the request manager.
+             *
+             *  This resumes after pause() has been called.
+             */
 
             resume: function () {
                 this.paused = false;
@@ -5592,7 +5592,6 @@
              * (string) message - The websocket message.
              */
             _onMessage: function (message) {
-                console.log('Message: : ', message);
                 WebIM && WebIM.config.isDebug && Strophe.info(WebIM.utils.ts() + 'recv:', message.data);
 
                 var elem, data;

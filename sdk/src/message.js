@@ -282,6 +282,10 @@ var CryptoJS = require('crypto-js');
                 dom.up().c('delivery', delivery);
             }
             if (message.ackId) {
+
+                if (conn.context.jid.indexOf(message.toJid) >= 0) {
+                    return;
+                }
                 dom = $msg({
                     from: conn.context.jid || ''
                     , to: message.toJid
