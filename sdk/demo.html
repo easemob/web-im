@@ -8,6 +8,11 @@
     <script src="./dist/websdk-1.4.11.js"></script>
     <script src="../webrtc/dist/adapter.js"></script>
     <script src="../webrtc/dist/webrtc-1.4.11.js"></script>
+
+    <!-- fix: ie8 upload -->
+    <script type='text/javascript' src='../ie8/swfupload/swfupload.js'></script>
+    <script type='text/javascript' src='../ie8/swfupload/swfupload.cookie.js'></script>
+    <script type='text/javascript' src='../ie8/swfupload/uploadShim.js'></script>
 </head>
 <body>
 <h2>Text Box</h2>
@@ -97,6 +102,10 @@
         autoReconnectInterval: WebIM.config.autoReconnectInterval
     });
 
+    // tips: ie8 support  fileInputId should match with the file in the document
+    WebIM.flashUpload = UploadShim({fileInputId: 'image'}, conn).flashUpload;
+
+
     // listern，添加回调函数
     conn.listen({
         onOpened: function (message) {          //连接成功回调，连接成功后才可以发送消息
@@ -107,6 +116,7 @@
         },
         onTextMessage: function (message) {
             // 在此接收和处理消息，根据message.type区分消息来源，私聊或群组或聊天室
+            console.log(message);
             console.log(message.type);
             console.log('Text');
         },  //收到文本消息
@@ -173,11 +183,6 @@
                             to: 'asdfghj',
                             message: "[resp:true]"
                         });
-                        // 需要反向添加对方好友
-                        conn.subscribe({
-                            to: message.from,
-                            message: "[resp:true]"
-                        });
                     };
                     // 拒绝对方添加好友
                     document.getElementById('rejectFriends').onclick = function (message) {
@@ -194,7 +199,7 @@
                     break;
                 case 'unsubscribed':                        // 被拒绝添加好友，或被对方删除好友成功
                     break;
-                case 'joinChatRoomSuccess':                 // 成功加入聊天室
+                case 'memberJoinPublicGroupSuccess':                 // 成功加入聊天室
                     console.log('join chat room success');
                     break;
                 case 'joinChatRoomFaild':                   // 加入聊天室失败
@@ -355,28 +360,34 @@
             'png': true,
             'bmp': true
         };
-        if (file.filetype.toLowerCase() in allowType) {
-            console.log('send');
-            var option = {
-                apiUrl: WebIM.config.apiURL,
-                file: file,
-                to: 'asdfghj',
-                roomType: false,
-                chatType: 'singleChat',
-                onFileUploadError: function () {
-                    console.log('onFileUploadError');
-                },
-                onFileUploadComplete: function () {
-                    console.log('onFileUploadComplete');
-                },
-                success: function () {
-                    console.log('Success');
-                },
-                // flashUpload: WebIM.flashUpload               // 意义待查
-            };
-            msg.set(option);
-            conn.send(msg.body);
+
+        var option = {
+            apiUrl: WebIM.config.apiURL,
+            file: file,
+            to: 'asdfghj',
+            roomType: false,
+            chatType: 'singleChat',
+            onFileUploadError: function () {
+                console.log('onFileUploadError');
+            },
+            onFileUploadComplete: function () {
+                console.log('onFileUploadComplete');
+            },
+            success: function () {
+                console.log('Success');
+            },
+        };
+        // for ie8
+        try {
+            if (!file.filetype.toLowerCase() in allowType) {
+                console.log('file type error')
+                return
+            }
+        } catch (e) {
+            option.flashUpload = WebIM.flashUpload
         }
+        msg.set(option);
+        conn.send(msg.body);
     };
 
     // 获取好友列表

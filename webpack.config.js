@@ -4,9 +4,9 @@ path = require('path');
 module.exports = {
     entry: {
         //add [] to fix: Module not found: Error: a dependency to an entry point is not allowed
-        './sdk/dist/websdk-1.4.11': ['./sdk/index'],
-        './demo/javascript/dist/demo-1.4.11': ['./demo/javascript/src/entry'],
-        './webrtc/dist/webrtc-1.4.11': ['./webrtc/src/entry']
+        './sdk/dist/websdk-1.4.12': ['./sdk/index'],
+        './demo/javascript/dist/demo-1.4.12': ['./demo/javascript/src/entry'],
+        './webrtc/dist/webrtc-1.4.12': ['./webrtc/src/entry']
     },
     output: {
         path: './',

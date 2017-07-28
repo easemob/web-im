@@ -1,6 +1,7 @@
 var React = require("react");
 var ReactDOM = require('react-dom');
 var ChangeGroupInfo = require("../group/changeGroupInfo");
+var AddGroupMember = require("../group/addGroupMember");
 var AdminGroupMembers = require("../group/adminGroupMembers");
 var ShowGroupBlacklist = require("../blacklist/showGroupBlacklist");
 
@@ -9,6 +10,7 @@ module.exports = React.createClass({
     getInitialState: function () {
         return {
             // the operations list whether show or not
+            admin: false,
             hide: true
         };
     },
@@ -19,7 +21,39 @@ module.exports = React.createClass({
             return;
         }
 
-        this.setState({hide: !this.state.hide});
+        var admin = false;
+        var jid = this.props.owner[0].jid;
+        var owner = jid.substr(0, jid.lastIndexOf("@"));
+        if (owner == Demo.user) {
+            admin = true;
+            this.setState({
+                hide: !this.state.hide,
+                admin: admin
+            });
+        } else {
+            if(!this.state.admin){
+                var options = {
+                    groupId: Demo.selected,
+                    success: function(resp){
+                        for(var i in resp.data){
+                            if(resp.data[i] == Demo.user){
+                                admin = true;
+                                break;
+                            }
+                        }
+                        this.setState({
+                            hide: !this.state.hide,
+                            admin: admin
+                        });
+                    }.bind(this)
+                };
+                Demo.conn.getGroupAdmin(options);
+            }else{
+                this.setState({
+                    hide: !this.state.hide
+                });
+            }
+        }
     },
 
     // hide when blur | bind focus event
@@ -47,6 +81,11 @@ module.exports = React.createClass({
         this.update();
     },
 
+    addGroupMember: function () {
+        AddGroupMember.show(this.props.roomId);
+        this.update();
+    },
+
     destroyGroup: function () {
         var roomId = this.props.roomId;
         if (WebIM.config.isWindowSDK) {
@@ -59,13 +98,25 @@ module.exports = React.createClass({
                 });
         } else {
             // success update on chat.js async msg `deleteGroupChat`
-            Demo.conn.destroyGroup({
-                reason: Demo.user + ' destory group ' + this.props.name,
-                roomId: this.props.roomId,
+            // Demo.conn.destroyGroup({
+            //     reason: Demo.user + ' destory group ' + this.props.name,
+            //     roomId: this.props.roomId,
+            //     error: function (code, msg) {
+            //         Demo.api.NotifyError("destroyGroup:" + code + " " + msg);
+            //     }
+            // })
+            var groupId = this.props.roomId;
+            var options = {
+                groupId: groupId,
+                success: function (respData) {
+                    Demo.api.NotifySuccess(`You just dissolved group ${groupId}`);
+                    Demo.api.updateGroup();
+                },
                 error: function (code, msg) {
                     Demo.api.NotifyError("destroyGroup:" + code + " " + msg);
                 }
-            })
+            };
+            Demo.conn.dissolveGroup(options);
         }
         this.props.destroyGroup();
         this.update();
@@ -82,17 +133,31 @@ module.exports = React.createClass({
                 });
         } else {
             // success update on chat.js async msg `deleteGroupChat`
-            Demo.conn.leaveGroupBySelf({
-                to: Demo.user,
-                roomId: this.props.roomId,
+            // Demo.conn.leaveGroupBySelf({
+            //     to: Demo.user,
+            //     roomId: this.props.roomId,
+            //     success: function () {
+            //         Demo.selected = '';
+            //         Demo.api.updateGroup();
+            //     },
+            //     error: function (code, msg) {
+            //         Demo.api.NotifyError("leaveGroup:" + code + " " + msg);
+            //     }
+            // })
+            var groupId = this.props.roomId;
+            var options = {
+                groupId: groupId,
                 success: function () {
                     Demo.selected = '';
                     Demo.api.updateGroup();
+                    delete Demo.chatRecord[groupId];
+                    Demo.api.NotifySuccess("You have been out of the group " + groupId);
                 },
                 error: function (code, msg) {
                     Demo.api.NotifyError("leaveGroup:" + code + " " + msg);
                 }
-            })
+            };
+            Demo.conn.quitGroup(options);
         }
         this.props.leaveGroup();
         this.update();
@@ -115,10 +180,10 @@ module.exports = React.createClass({
     },
 
     render: function () {
-        var actionName = (this.props.admin == 1) ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
-        var actionMethod = (this.props.admin == 1) ? this.destroyGroup : this.leaveGroupBySelf;
+        var actionName = (this.state.admin == 1) ? Demo.lan.destroyGroup : Demo.lan.leaveGroup;
+        var actionMethod = (this.state.admin == 1) ? this.destroyGroup : this.leaveGroupBySelf;
         var adminMemberLabel = '';
-        if (this.props.admin) {
+        if (this.state.admin) {
             adminMemberLabel = Demo.lan.adminGroupMembers;
         } else if (this.props.settings == "PRIVATE_MEMBER_INVITE") {
             adminMemberLabel = Demo.lan.inviteGroupMembers;
@@ -134,17 +199,21 @@ module.exports = React.createClass({
                     className={'webim-operations ' + (this.state.hide ? 'hide' : '')}
                     onBlur={this.handleOnBlur}>
                     <li onClick={this.adminGroupMembers}
-                        className={this.props.admin ? '' : 'hide'}>
+                        className={this.state.admin ? '' : 'hide'}>
                         <i className='font smallest'>F</i>
                         <span>{adminMemberLabel}</span>
                     </li>
-                    < li onClick={this.changeGroupInfo}
-                         className={this.props.admin ? '' : 'hide'}>
+                    <li onClick={this.addGroupMember}>
+                        <i className='font smallest'>L</i>
+                        <span>{Demo.lan.addGroupMember}</span >
+                    </li>
+                    <li onClick={this.changeGroupInfo}
+                        className={this.state.admin ? '' : 'hide'}>
                         <i className='font smallest'>B</i>
                         <span>{Demo.lan.changeGroupInfo}</span >
                     </li>
                     <li onClick={this.showGroupBlacklist}
-                        className={this.props.admin ? '' : 'hide'}>
+                        className={this.state.admin ? '' : 'hide'}>
                         <i className='font smallest'>n</i>
                         <span>{Demo.lan.groupBlacklist}</span>
                     </li>

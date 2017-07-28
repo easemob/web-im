@@ -48,6 +48,7 @@ var CreateGroup = React.createClass({
         return {
             selectedOption: 'option1',
             selectedOption2: 'option3',
+            allowInvite: true,
             colors: []
         }
     },
@@ -56,9 +57,9 @@ var CreateGroup = React.createClass({
         var info = this.refs.textarea.value;
         var permission_group = this.state.selectedOption;
         var permission_member = this.state.selectedOption2;
-        var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
+        var friendsSelected = [];
         var friendsValues = this.refs.friendList.refs.multiSelected.value();
-        var self = this;
+        var allowInvite = this.state.allowInvite;
         if (!value) {
             Demo.api.NotifyError(Demo.lan.groupNameNotEmpty);
             return;
@@ -73,8 +74,6 @@ var CreateGroup = React.createClass({
         var option2 = permission_member == "option3" ? 0 : 1;
         var style = styles[option1 * 2 + option2];
 
-        // friendsSelected = '["' + friendsSelected.replace(/, /g, '","') + '"]';
-        // log(style)
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"createGroup","subject":"' + value + '","description":"' + info + '","welcomeMessage":"","style":"' + style + '","maxUserCount":"200","members":' + JSON.stringify(friendsSelected) + '}',
                 function (response) {
@@ -96,7 +95,8 @@ var CreateGroup = React.createClass({
                     desc: info,
                     members: friendsSelected,
                     public: pub,
-                    approval: approval
+                    approval: approval,
+                    allowinvites: allowInvite
                 },
                 success: function (respData) {
 
@@ -123,6 +123,12 @@ var CreateGroup = React.createClass({
             selectedOption2: changeEvent.target.value
         });
     },
+    handleInviteChange: function (e) {
+        var checked = e.target.checked;
+        this.setState({
+            allowInvite: checked
+        });
+    },
     render: function () {
         return (
             <div className='webim-friend-options'>
@@ -135,7 +141,7 @@ var CreateGroup = React.createClass({
                         <textarea ref='textarea' placeholder={Demo.lan.groupDescription}></textarea>
                         <br/>
                         <br/>
-                        <div >
+                        <div>
                             <label>
                                 {Demo.lan.groupPermission}:
                             </label>
@@ -145,14 +151,14 @@ var CreateGroup = React.createClass({
                                        onChange={this.handleOptionChange}/>
                                 <span className="radio_span">公有群</span>
                             </label>
-                            {/*<label>*/}
-                            {/*<input className="radio" type="radio" value="option2"*/}
-                            {/*checked={this.state.selectedOption === 'option2'}*/}
-                            {/*onChange={this.handleOptionChange}/>*/}
-                            {/*<span className="radio_span">私有群</span>*/}
-                            {/*</label>*/}
+                            <label>
+                                <input className="radio" type="radio" value="option2"
+                                       checked={this.state.selectedOption === 'option2'}
+                                       onChange={this.handleOptionChange}/>
+                                <span className="radio_span">私有群</span>
+                            </label>
                         </div>
-                        <div>
+                        <div className={this.state.selectedOption === 'option1' ? '' : 'hide'}>
                             <label>
                                 {Demo.lan.groupMemberPermission}:
                             </label>
@@ -160,7 +166,8 @@ var CreateGroup = React.createClass({
                                 <input className="radio" type="radio" value="option3"
                                        checked={this.state.selectedOption2 === 'option3'}
                                        onChange={this.handleOptionChange2}/>
-                                <span className="radio_span">{this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'}</span>
+                                <span
+                                    className="radio_span">{this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'}</span>
                             </label>
                             <label>
                                 <input className="radio" type="radio" value="option4"
@@ -168,6 +175,16 @@ var CreateGroup = React.createClass({
                                        onChange={this.handleOptionChange2}/>
                                 <span
                                     className="radio_span">{this.state.selectedOption === 'option1' ? '随便加' : '允许'}</span>
+                            </label>
+                        </div>
+                        <div className={this.state.selectedOption === 'option1' ? 'hide' : ''}>
+                            <label>
+                                {Demo.lan.allowInvite}:
+                            </label>
+                            <label>
+                                <input className="checkbox" type="checkbox"
+                                       defaultChecked='checked'
+                                       onChange={this.handleInviteChange}/>
                             </label>
                         </div>
                     </div>

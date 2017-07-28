@@ -21,6 +21,7 @@ var ShowGroupBlacklist = React.createClass({
         var me = this;
         Demo.api.blacklist.getGroupBlacklist({
             roomId: this.props.roomId,
+            groupId: this.props.roomId,
             success: function (list) {
                 me.setState({
                     list: list
@@ -39,7 +40,11 @@ var ShowGroupBlacklist = React.createClass({
                 groupId: Demo.selected,
                 username: value,
                 success: function () {
-                    delete list[value];
+                    for(var i in list){
+                        if(list[i] == value){
+                            delete list[i];
+                        }
+                    }
                     this.setState({list: list});
                 }.bind(this)
             };
@@ -65,15 +70,17 @@ var ShowGroupBlacklist = React.createClass({
     render: function () {
         var items = [];
         _.each(this.state.list, (item, k) => {
-            items.push(
-                (
-                    <li className="webim-blacklist-item" key={item.name}>
-                        {item.name}
-                        <i className="webim-leftbar-icon font smaller"
-                           onClick={this.onRemoveFromGroupBlackList.bind(this, item.name)}>d</i>
-                    </li>
+            if(item){
+                items.push(
+                    (
+                        <li className="webim-blacklist-item" key={item}>
+                            {item}
+                            <i className="webim-leftbar-icon font smaller"
+                               onClick={this.onRemoveFromGroupBlackList.bind(this, item)}>d</i>
+                        </li>
+                    )
                 )
-            )
+            }
         });
 
         return (
