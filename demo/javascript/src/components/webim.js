@@ -7,7 +7,6 @@ var Loading = require('./common/loading');
 
 module.exports = React.createClass({
     getInitialState: function () {
-
         return {
             signIn: true,
             signUp: false,

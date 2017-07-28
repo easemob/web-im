@@ -217,6 +217,7 @@ module.exports = React.createClass({
             },
             onOnline: function () {
                 // log(WebIM.utils.ts(), 'online');
+                console.log('onOnline');
             },
             onOffline: function () {
                 if (WebIM.config.isWindowSDK) {
@@ -267,7 +268,7 @@ module.exports = React.createClass({
                     } else {
                         if (text == 'logout' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8') {
                             text = Demo.lan.logoutSuc;
-                            window.location.href = '#'
+                            window.location.href = '#';
                             Demo.api.NotifySuccess(text);
                         } else {
                             Demo.api.NotifyError('onError:' + text);
@@ -365,7 +366,8 @@ module.exports = React.createClass({
             blacklist: {},
             chatrooms_totalnum: Demo.api.pagesize,
             contact_loading_show: false,
-            windows: windows
+            windows: windows,
+            fileId: null
         };
     },
 
@@ -622,7 +624,10 @@ module.exports = React.createClass({
                 Demo.api.NotifySuccess('Fail to Join the group');
                 break;
             case 'memberJoinPublicGroupSuccess':
-                Demo.api.NotifySuccess(msg.mid + '已成功加入' + msg.from);
+                Demo.api.NotifySuccess(msg.mid + '已成功加入群组' + msg.from);
+                break;
+            case 'memberJoinChatRoomSuccess':
+                Demo.api.NotifySuccess(msg.mid + '已成功加入聊天室' + msg.from);
                 break;
             case 'joinPublicGroupDeclined':
                 Demo.api.NotifyError(msg.owner + '拒绝了您加入' + msg.gid + '的请求');
@@ -1118,6 +1123,10 @@ module.exports = React.createClass({
     },
 
     sendFile: function (chatType) {
+        var fileId = Demo.conn.getUniqueId();
+        this.setState({
+            fileId: fileId
+        });
         if (WebIM.config.isWindowSDK) {
             this.sendFileImpl("file", chatType);
         } else {
@@ -1150,7 +1159,7 @@ module.exports = React.createClass({
     },
     fileChange: function () {
         var me = this,
-            uid = Demo.conn.getUniqueId(),
+            uid = this.state.fileId,
             msg = new WebIM.message('file', uid),
             chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.file),

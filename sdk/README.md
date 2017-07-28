@@ -143,6 +143,18 @@ Demo.conn = new WebIM.connection({
 
 # How to release
 
-npm install
+```
+$ npm install
 
-npm run build
+$ npm run build
+```
+
+
+# How to generate exported APIs doc
+
+```
+$ npm install
+$ ./jsdoc.sh
+```
+
+then open jsdoc/out/index.html in your browser.

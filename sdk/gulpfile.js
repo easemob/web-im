@@ -31,8 +31,6 @@ gulp.task('sdk:umd', function () {
         .pipe(gulp.dest('dist/'))
 })
 
-// websdk-{version}.min.js
-// websdk-{version}.min.js.map
 gulp.task('sdk:umd:min', ['sdk:umd'], function () {
     return gulp.src('./dist/websdk-' + version + '.js')
         .pipe(babel({
@@ -46,7 +44,17 @@ gulp.task('sdk:umd:min', ['sdk:umd'], function () {
         .pipe(gulp.dest('dist/'))
 })
 
-gulp.task('sdk', ['sdk:umd', 'sdk:umd:min'])
+gulp.task('strophe:umd:min', ['sdk:umd'], function () {
+    return gulp.src('./dist/strophe-1.2.8.js')
+        .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(uglify())
+        .pipe(rename('strophe-1.2.8.min.js'))
+        .on('error', gutil.log)
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('dist/'))
+})
+
+gulp.task('sdk', ['sdk:umd', 'sdk:umd:min', 'strophe:umd:min'])
 
 gulp.task('default', ['sdk'])
 

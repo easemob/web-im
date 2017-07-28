@@ -32,7 +32,7 @@ WebIM.config = {
      */
     isMultiLoginSessions: false,
     /*
-     * Set to auto sign-in
+     * set presence after login
      */
     isAutoLogin: true,
     /**
@@ -93,7 +93,7 @@ WebIM.config = {
      * sender, in order to tell the sender the message has been read.
      * See call back function onReadMessage
      */
-    read: true,
+    read: false,
 
     /**
      * Will encrypt text message and emoji message

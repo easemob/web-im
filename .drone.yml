@@ -27,6 +27,7 @@ pipeline:
       - mkdir publish/sdk
       - cp -r sdk/dist publish/sdk
       - cp -r sdk/src publish/sdk
+      - cp -r sdk/jsdoc publish/sdk
       - cp sdk/*.* publish/sdk
       - cp -r webrtc  publish
       - cp favicon.ico publish/
