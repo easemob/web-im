@@ -5,6 +5,7 @@ import { Button, Row, Form, Input } from "antd"
 import { config } from "@/config"
 import styles from "./index.less"
 import LoginActions from "@/redux/LoginRedux"
+import WebIM from "@/config/WebIM"
 
 const FormItem = Form.Item
 
@@ -13,6 +14,11 @@ const Login = ({
 	doLogin,
 	form: { getFieldDecorator, validateFieldsAndScroll }
 }) => {
+	// close connection
+	if (WebIM.conn.isOpened()) {
+		WebIM.conn.close("logout")
+	}
+
 	const { loginLoading } = login
 
 	function handleOk() {
@@ -77,19 +83,19 @@ const Login = ({
 					</Button>
 				</Row>
 			</form>
-			<div className="extra">
-				<p>
-					Have an account?
-					<span>Sign In</span>
-				</p>
-				<p>
-					New around here?
-					<span>Sign Up</span>
-				</p>
-			</div>
+			<div className="extra" />
 		</div>
 	)
 }
+
+// <p>
+// 				Have an account?
+// 				<span>Sign In</span>
+// 			</p>
+// 			<p>
+// 				New around here?
+// 				<span>Sign Up</span>
+// 			</p>
 
 Login.propTypes = {
 	form: PropTypes.object,

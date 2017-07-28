@@ -4,10 +4,12 @@ import ReactDOM from "react-dom"
 import "./App.css"
 import "./themes/theme.less"
 import registerServiceWorker from "./registerServiceWorker"
+import { history } from "@/utils"
 
 import {
 	// BrowserRouter as Router,
-	HashRouter as Router
+	// HashRouter as Router
+	Router
 } from "react-router-dom"
 // redux
 import { Provider } from "react-redux"
@@ -18,7 +20,7 @@ const rootEl = document.getElementById("root")
 const render = Component =>
 	ReactDOM.render(
 		<Provider store={store}>
-			<Router>
+			<Router history={history}>
 				<Component />
 			</Router>
 		</Provider>,

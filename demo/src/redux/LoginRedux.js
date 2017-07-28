@@ -4,13 +4,14 @@ import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
 import WebIM, { api } from "@/config/WebIM"
 import Cookie from "js-cookie"
+import { message } from "antd"
 
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
 	setLoginToken: ["username", "token"],
-	loginRequest: ["username", "password"],
-	loginSuccess: ["username"],
+	setLoging: ["username", "password", "token"],
+	setLoginSuccess: ["username"],
 	loginFailure: ["error"],
 	registerRequest: ["username", "password"],
 	registerSuccess: ["json"],
@@ -49,12 +50,11 @@ const { Types, Creators } = createActions({
 	},
 	login: (username, password) => {
 		return (dispatch, getState) => {
-			dispatch(Creators.loginRequest(username, password))
+			dispatch(Creators.setLoging(username, password, null))
 
 			if (WebIM.conn.isOpened()) {
 				WebIM.conn.close("logout")
 			}
-			console.log("open", username, password)
 			WebIM.conn.open({
 				apiUrl: WebIM.config.apiURL,
 				user: username.trim().toLowerCase(),
@@ -62,26 +62,31 @@ const { Types, Creators } = createActions({
 				//  accessToken: password,
 				appKey: WebIM.config.appkey,
 				success(token) {
+					message.success("login success", 1)
+
 					dispatch(Creators.setLoginToken(username, token.access_token))
+					dispatch(Creators.setLoginSuccess(username))
 				}
 			})
 		}
 	},
-	loginByToken: () => {
+	loginByToken: (username, token) => {
 		return (dispatch, getState) => {
+			dispatch(Creators.setLoging(username, null, token))
+
 			if (WebIM.conn.isOpened()) {
 				WebIM.conn.close("logout")
 			}
-			console.log("open", username, password)
+			console.log("open", username, token)
 			WebIM.conn.open({
 				apiUrl: WebIM.config.apiURL,
 				user: username.trim().toLowerCase(),
-				pwd: password,
-				//  accessToken: password,
-				appKey: WebIM.config.appkey,
-				success(token) {
-					dispatch(Creators.setLoginToken(username, token.access_token))
-				}
+				pwd: token,
+				accessToken: token,
+				appKey: WebIM.config.appkey
+				// there is no success callback whene login by token
+				// success(token) {
+				// }
 			})
 		}
 	}
@@ -107,26 +112,29 @@ export const INITIAL_STATE = Immutable({
 /* ------------- Reducers ------------- */
 export const setLoginToken = (state = INITIAL_STATE, { username, token }) => {
 	Cookie.set("web_im_" + username, token)
-	Cookie.set("web_im_username", username)
 	return Immutable.merge(state, {
-		token,
-		isLogin: true
+		username: username,
+		token
 	})
 }
 
 // we're attempting to login
-export const request = (state = INITIAL_STATE, { username, password }) => {
+export const setLoging = (
+	state = INITIAL_STATE,
+	{ username, password, token }
+) => {
 	return Immutable.merge(state, {
 		username,
 		password,
+		token,
 		fetching: true,
 		error: false
 	})
 }
 
 // we've successfully logged in
-export const success = (state, { msg }) => {
-	return Immutable.merge(state, { fetching: false, error: false, msg })
+export const setLoginSuccess = state => {
+	return Immutable.merge(state, { isLogin: true })
 }
 
 // we've had a problem logging in
@@ -156,8 +164,8 @@ export const logout = state => INITIAL_STATE
 
 export const reducer = createReducer(INITIAL_STATE, {
 	[Types.SET_LOGIN_TOKEN]: setLoginToken,
-	[Types.LOGIN_REQUEST]: request,
-	[Types.LOGIN_SUCCESS]: success,
+	[Types.SET_LOGING]: setLoging,
+	[Types.SET_LOGIN_SUCCESS]: setLoginSuccess,
 	[Types.LOGIN_FAILURE]: failure,
 	[Types.REGISTER_REQUEST]: registerRequest,
 	[Types.REGISTER_SUCCESS]: registerSuccess,

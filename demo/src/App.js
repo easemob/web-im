@@ -21,6 +21,7 @@ import GroupActions from "@/redux/GroupRedux"
 import Loading from "@/components/common/LoadingComponent"
 import WebIM from "@/config/WebIM"
 import { store } from "@/redux"
+import utils from "@/utils"
 
 const AuthorizedComponent = ({ token, Layout, ...rest }) => {
 	console.log("auth", token)
@@ -39,17 +40,26 @@ const AuthorizedComponent = ({ token, Layout, ...rest }) => {
 class App extends Component {
 	constructor() {
 		super()
+
+		this.state = {
+			hasToken: utils.hasToken() && utils.getUserName()
+		}
 	}
 
 	componentDidMount() {
 		// 1. check user auth by cookie
+		const { hasToken } = this.state
+		const { loginByToken } = this.props
+		if (hasToken) {
+			loginByToken(utils.getUserName(), utils.getToken())
+		}
 	}
 
 	componentWillReceiveProps() {}
 
 	render() {
-		const { token, hasToken, isLogin } = this.props
-		// logining...
+		const { isLogin, token } = this.props
+		const { hasToken } = this.state
 		if (!isLogin && hasToken) return <Loading />
 
 		const authorizedComponent = (
@@ -69,8 +79,12 @@ export default withRouter(
 	connect(
 		({ breakpoint, login }) => ({
 			breakpoint,
-			token: login.token
+			token: login.token,
+			isLogin: login.isLogin
 		}),
-		dispatch => ({})
+		dispatch => ({
+			loginByToken: (username, token) =>
+				dispatch(LoginActions.loginByToken(username, token))
+		})
 	)(App)
 )

@@ -2,25 +2,38 @@ import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
 import WebIM from "@/config/WebIM"
 import RosterActions from "@/redux/RosterRedux"
+import LoginActions from "@/redux/LoginRedux"
 import GroupActions from "@/redux/GroupRedux"
 import { store } from "@/redux"
+import { withRouter } from "react-router-dom"
+import { history } from "@/utils"
+import utils from "@/utils"
+
+import { message } from "antd"
 
 WebIM.conn.listen({
 	// xmpp连接成功
 	onOpened: msg => {
-		console.log("onOpened")
+		const username = store.getState().login.username
+		const token = utils.getToken()
+		const hash = utils.getHash()
+		const redirectUrl = `/contact?username=${username}`
+
 		// 出席后才能接受推送消息
+		// presence to be online
 		WebIM.conn.setPresence()
 		// 获取好友信息
+		// get roster
 		store.dispatch(RosterActions.getContacts())
 		// 通知登陆成功
-		store.dispatch(LoginActions.loginSuccess(msg))
+		store.dispatch(LoginActions.setLoginSuccess())
 		// 获取黑名单列表
-		store.dispatch(BlacklistActions.getBlacklist())
+		// store.dispatch(BlacklistActions.getBlacklist())
 		// 获取群组列表
-		store.dispatch(GroupActions.getGroups())
+		// store.dispatch(GroupActions.getGroups())
 
-		// this.props.history.push("/contact")
+		// refresh page
+		hash.indexOf(redirectUrl) === -1 && history.push(redirectUrl)
 	},
 	// 出席消息
 	onPresence: msg => {
@@ -38,7 +51,8 @@ WebIM.conn.listen({
 				break
 			case "subscribed":
 				store.dispatch(RosterActions.getContacts())
-				Alert.alert(msg.from + " " + I18n.t("subscribed"))
+				// Alert.alert(msg.from + " " + I18n.t("subscribed"))
+				message.warning(msg.from + " 订阅")
 				break
 			case "unsubscribe":
 				// TODO: 局部刷新
@@ -47,7 +61,8 @@ WebIM.conn.listen({
 			case "unsubscribed":
 				// 好友退订消息
 				store.dispatch(RosterActions.getContacts())
-				Alert.alert(msg.from + " " + I18n.t("unsubscribed"))
+				// Alert.alert(msg.from + " " + I18n.t("unsubscribed"))
+				message.warning(msg.from + " 退订")
 				break
 		}
 	},
@@ -64,26 +79,27 @@ WebIM.conn.listen({
 			if (WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax) {
 				return
 			}
-			Alert.alert("Error", "server-side close the websocket connection")
-			NavigationActions.login()
+			message.error("server-side close the websocket connection")
+			history.push("/login")
 			return
 		}
 		// 8: offline by multi login
 		if (error.type == WebIM.statusCode.WEBIM_CONNCTION_SERVER_ERROR) {
 			console.log("WEBIM_CONNCTION_SERVER_ERROR")
-			Alert.alert("Error", "offline by multi login")
-			NavigationActions.login()
+			message.error("offline by multi login")
+			history.push("/login")
 			return
 		}
 		if (error.type == 1) {
 			let data = error.data ? error.data.data : ""
-			data && Alert.alert("Error", data)
+			data && message.error(data)
 			store.dispatch(LoginActions.loginFailure(error))
 		}
 	},
 	// 连接断开
 	onClosed: msg => {
 		console.log("onClosed")
+		msg.msg && message.error(msg.msg)
 	},
 	// 更新黑名单
 	onBlacklistUpdate: list => {
