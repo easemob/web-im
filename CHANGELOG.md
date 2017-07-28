@@ -9,9 +9,11 @@
 * [sdk] WEBIM支持多设备，添加加入聊天室事件
 * [sdk] 给delivered和ack加上from字段
 * [demo] 添加Rest Interface的 Test case
+* [demo] sdk/demo上传功能兼容ie8
 
 ###BugFix
 
+* [sdk] 提升ie8的兼容性
 * [sdk] 强制不发送自己发送的消息的read ack
 * [demo] 修复建公开群需要审核，实际不需要审核的bug
 * [demo] 鼠标悬浮在群禁言图标上出现提示信息"禁言"
@@ -20,7 +22,6 @@
 * [demo] window.history.pushState在windows的chrome上有兼容性问题，统一改成window.location.href
 * [demo] window.location.href = xxxx，如果修改的是href.search参数(?a=x&b=y)时候, 如果遇到file://方式打开本地index.html会直接跳转页面，造成登录一直不成功，改成修改 href.hash 参数(#a=x&b=y)
 * [demo] 将群管理员可操作的项目展示给管理员
-
 
 
 ## v1.4.11 @ 2017-06-07

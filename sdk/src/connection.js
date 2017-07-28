@@ -61,6 +61,15 @@ Strophe.Websocket.prototype._closeSocket = function () {
  */
 Strophe.Websocket.prototype._onMessage = function (message) {
     logMessage(message)
+    // 获取Resource
+    var data = message.data;
+    if (data.indexOf('<jid>') > 0) {
+        var start = data.indexOf('<jid>'),
+            end = data.indexOf('</jid>'),
+            data = data.substring(start + 5, end);
+        stropheConn.setJid(data);
+    }
+
     var elem, data;
     // check for closing stream
     // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
@@ -4188,14 +4197,6 @@ WebIM.doQuery = function (str, suc, fail) {
 
 /**************************** debug ****************************/
 function logMessage(message) {
-    // 获取Resource
-    var data = message.data;
-    if (data.indexOf('<jid>') > 0) {
-        var start = data.indexOf('<jid>'),
-            end = data.indexOf('</jid>'),
-            data = data.substring(start + 5, end);
-        stropheConn.setJid(data);
-    }
     WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
 }
 
