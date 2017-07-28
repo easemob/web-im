@@ -8,8 +8,5 @@
 			"@/*": ["demo/src/*"]
 		}
 	},
-	"exclude": [
-		"bower_components",
-		"node_modules"
-	]
+	"exclude": ["bower_components", "node_modules", "demo/node_modules"]
 }

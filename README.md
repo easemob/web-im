@@ -84,3 +84,21 @@ yarn run storybook
 
 https://github.com/storybooks/storybook/tree/master/lib/cli
 https://storybook.js.org/configurations
+
+
+## 结构设计
+
+1. 路由 / layout 如何更好的组合
+    - layout设计
+        - 有外层的时候
+        - 无外层接口的时候
+            - 登陆
+    - 如何做身份校验
+    - 如何引入进度条
+
+
+
+### eslint
+"eslintConfig": {
+    "extends": "react-app"
+},

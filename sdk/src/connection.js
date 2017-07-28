@@ -8,7 +8,11 @@ var Queue = require('./queue').Queue;
 var CryptoJS = require('crypto-js');
 var _ = require('underscore');
 
+var Strophe = window.Strophe
+
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+let logMessage = function(message) {}
 
 if (window.XDomainRequest) {
     // not support ie8 send is not a function , canot 
@@ -3721,21 +3725,22 @@ WebIM.doQuery = function (str, suc, fail) {
 };
 
 /**************************** debug ****************************/
-function logMessage(message) {
-    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
-}
+WebIM.debug = function (bool) {
 
-if (WebIM && WebIM.config.isDebug) {
-    Strophe.Connection.prototype.rawOutput = function (data) {
-        console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
+    logMessage = function (message) {
+        bool && console.log(WebIM.utils.ts() + '[recv] ', message.data);
     }
+
+    Strophe.Connection.prototype.rawOutput = function (data) {
+        bool && console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
+    }
+    
 }
 
 if (WebIM && WebIM.config && WebIM.config.isSandBox) {
-    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '-sandbox.easemob.');
-    WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
-}
-
+        WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '-sandbox.easemob.');
+        WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
+    }
 
 module.exports = WebIM;
 
