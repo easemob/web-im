@@ -6,7 +6,9 @@ import omit from 'omit.js';
 import PropTypes from 'prop-types';
 import {Icon} from 'antd';
 import {connect} from 'react-redux'
-import {SIDER_COL_BREAK} from '@/config'
+import {config} from '@/config'
+
+const {SIDER_COL_BREAK } = config
 
 class Sider extends React.Component{
   static __ANT_LAYOUT_SIDER = true;

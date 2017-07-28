@@ -22,19 +22,13 @@ const ContactItem = ({ collapse, ...rest }) => {
 		</Menu.Item>
 	)
 
-	const tabsColItem = (
-		<SubMenu title={<Icon type="bars" />} className="collapse">
-			{tabsItem}
-		</SubMenu>
-	)
-
 	return (
 		<Menu
 			id="x-contact-item"
 			mode={"inline"}
 			inlineIndent={24}
-			inlineCollapsed={collapse}
 			{...rest}
+			inlineCollapsed={false}
 		>
 			{tabsItem}
 		</Menu>

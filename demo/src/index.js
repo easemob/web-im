@@ -5,6 +5,10 @@ import "./App.css"
 import "./themes/theme.less"
 import registerServiceWorker from "./registerServiceWorker"
 
+import {
+	// BrowserRouter as Router,
+	HashRouter as Router
+} from "react-router-dom"
 // redux
 import { Provider } from "react-redux"
 import { store } from "@/redux"
@@ -14,7 +18,9 @@ const rootEl = document.getElementById("root")
 const render = Component =>
 	ReactDOM.render(
 		<Provider store={store}>
-			<Component />
+			<Router>
+				<Component />
+			</Router>
 		</Provider>,
 		rootEl
 	)

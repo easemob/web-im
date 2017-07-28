@@ -3,14 +3,20 @@ import { Icon } from "antd"
 import Layout from "./Layout"
 import { connect } from "react-redux"
 import ContactItem from "@/components/contact/ContactItem"
-import { SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH } from "@/config"
+import { config } from "@/config"
 
+const { SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH } = config
 const { Header, Content, Footer, Sider } = Layout
 
 class DefaultLayout extends Component {
-	state = {
-		collapsed: false
+	constructor({ breakpoint }) {
+		super()
+
+		this.state = {
+			collapsed: breakpoint[SIDER_COL_BREAK] || false
+		}
 	}
+
 	toggle = collapsed => {
 		this.setState({
 			collapsed
@@ -22,11 +28,6 @@ class DefaultLayout extends Component {
 		const nextBeakpoint = nextProps.breakpoint
 
 		if (breakpoint[SIDER_COL_BREAK] != nextBeakpoint[SIDER_COL_BREAK]) {
-			console.log(
-				"componentWillReceiveProps",
-				breakpoint,
-				nextBeakpoint[SIDER_COL_BREAK]
-			)
 			this.toggle(nextBeakpoint[SIDER_COL_BREAK])
 		}
 	}
@@ -45,6 +46,7 @@ class DefaultLayout extends Component {
 				<Content>
 					<Layout style={{ flex: "none" }}>
 						<Sider
+							trigger={null}
 							collapsed={collapsed}
 							width={SIDER_WIDTH}
 							collapsedWidth={SIDER_COL_WIDTH}

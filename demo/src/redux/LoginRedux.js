@@ -3,10 +3,12 @@
 import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
 import WebIM, { api } from "@/config/WebIM"
+import Cookie from "js-cookie"
 
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
+	setLoginToken: ["username", "token"],
 	loginRequest: ["username", "password"],
 	loginSuccess: ["username"],
 	loginFailure: ["error"],
@@ -58,7 +60,28 @@ const { Types, Creators } = createActions({
 				user: username.trim().toLowerCase(),
 				pwd: password,
 				//  accessToken: password,
-				appKey: WebIM.config.appkey
+				appKey: WebIM.config.appkey,
+				success(token) {
+					dispatch(Creators.setLoginToken(username, token.access_token))
+				}
+			})
+		}
+	},
+	loginByToken: () => {
+		return (dispatch, getState) => {
+			if (WebIM.conn.isOpened()) {
+				WebIM.conn.close("logout")
+			}
+			console.log("open", username, password)
+			WebIM.conn.open({
+				apiUrl: WebIM.config.apiURL,
+				user: username.trim().toLowerCase(),
+				pwd: password,
+				//  accessToken: password,
+				appKey: WebIM.config.appkey,
+				success(token) {
+					dispatch(Creators.setLoginToken(username, token.access_token))
+				}
 			})
 		}
 	}
@@ -71,12 +94,25 @@ export default Creators
 
 export const INITIAL_STATE = Immutable({
 	username: null,
+	token: null,
 	error: null,
 	fetching: false,
-	registerError: null
+	registerError: null,
+	isLoadingToken: false,
+	//
+	hasToken: false,
+	isLogin: false
 })
 
 /* ------------- Reducers ------------- */
+export const setLoginToken = (state = INITIAL_STATE, { username, token }) => {
+	Cookie.set("web_im_" + username, token)
+	Cookie.set("web_im_username", username)
+	return Immutable.merge(state, {
+		token,
+		isLogin: true
+	})
+}
 
 // we're attempting to login
 export const request = (state = INITIAL_STATE, { username, password }) => {
@@ -119,6 +155,7 @@ export const logout = state => INITIAL_STATE
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
+	[Types.SET_LOGIN_TOKEN]: setLoginToken,
 	[Types.LOGIN_REQUEST]: request,
 	[Types.LOGIN_SUCCESS]: success,
 	[Types.LOGIN_FAILURE]: failure,

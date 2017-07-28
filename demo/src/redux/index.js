@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, compose, combineReducers } from "redux"
-import config from "@/config"
+import { config } from "@/config"
 import { forEach } from "lodash"
 import thunkMiddleware from "redux-thunk"
 
@@ -23,12 +23,23 @@ enhancers.push(applyMiddleware(...middlewares))
 
 const initState = {
 	breakpoint: {},
+	entities: {},
 	login: {},
 	im: {}
 }
 const rootReducer = combineReducers({
 	breakpoint: breakpointReducer,
+	entities: combineReducers({
+		roster: require("./RosterRedux").reducer,
+		group: require("./GroupRedux").reducer,
+		groupMember: require("./GroupMemberRedux").reducer,
+		subscribe: require("./SubscribeRedux").reducer,
+		blacklist: require("./BlacklistRedux").reducer,
+		message: require("./MessageRedux").reducer
+	}),
+	common: require("./CommonRedux").reducer,
 	login: require("./LoginRedux").reducer,
+	contacts: require("./ContactsScreenRedux").reducer,
 	im: require("./WebIMRedux").reducer
 	// entities: combineReducers({
 	//   roster: require('./RosterRedux').reducer,

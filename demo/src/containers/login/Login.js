@@ -2,7 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Button, Row, Form, Input } from "antd"
-import config from "@/config"
+import { config } from "@/config"
 import styles from "./index.less"
 import LoginActions from "@/redux/LoginRedux"
 
@@ -10,8 +10,7 @@ const FormItem = Form.Item
 
 const Login = ({
 	login,
-	dispatch,
-	attemptLogin,
+	doLogin,
 	form: { getFieldDecorator, validateFieldsAndScroll }
 }) => {
 	const { loginLoading } = login
@@ -23,7 +22,7 @@ const Login = ({
 			}
 			console.log(values)
 			// dispatch({ type: "login/login", payload: values })
-			attemptLogin(values.username, values.password)
+			doLogin(values.username, values.password)
 		})
 	}
 	//
@@ -105,7 +104,7 @@ export default connect(
 		}
 	}),
 	dispatch => ({
-		attemptLogin: (username, password) =>
+		doLogin: (username, password) =>
 			dispatch(LoginActions.login(username, password))
 	})
 )(Form.create()(Login))
