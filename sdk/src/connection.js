@@ -740,6 +740,23 @@ var connection = function (options) {
     this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
 
     this.groupOption = {};
+
+    /*
+     Demo.chatRecord = {
+     targetId: {
+     messages: [
+     {
+     msg: 'msg',
+     type: 'type'
+     },
+     {
+     msg: 'msg',
+     type: 'type'
+     }],
+     brief: 'brief'
+     }
+     }
+     */
 };
 
 connection.prototype.testInit = function (options) {
@@ -1644,6 +1661,7 @@ connection.prototype.handleMessage = function (msginfo) {
             switch (type) {
                 case 'txt':
                     var receiveMsg = msgBody.msg;
+                    var sourceMsg = _.clone(receiveMsg);
                     if (self.encrypt.type === 'base64') {
                         receiveMsg = atob(receiveMsg);
                     } else if (self.encrypt.type === 'aes') {
@@ -1678,6 +1696,7 @@ connection.prototype.handleMessage = function (msginfo) {
                             , delay: parseMsgData.delayTimeStamp
                             , data: emojibody.body
                             , ext: extmsg
+                            , sourceMsg: sourceMsg
                         };
                         !msg.delay && delete msg.delay;
                         msg.error = errorBool;
@@ -1693,6 +1712,7 @@ connection.prototype.handleMessage = function (msginfo) {
                             , delay: parseMsgData.delayTimeStamp
                             , data: receiveMsg
                             , ext: extmsg
+                            , sourceMsg: sourceMsg
                         };
                         !msg.delay && delete msg.delay;
                         msg.error = errorBool;
@@ -2923,6 +2943,14 @@ connection.prototype.closed = function () {
         type: _code.WEBIM_CONNECTION_CLOSED
     };
     this.onError(message);
+};
+
+connection.prototype.addToLocal = function (chatRecord) {
+    console.log('Add to local');
+    if (window.localStorage) {
+        var serializedChatRecord = JSON.stringify(chatRecord);
+        window.localStorage.setItem(this.user, serializedChatRecord);
+    }
 };
 
 /**

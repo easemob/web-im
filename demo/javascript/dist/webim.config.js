@@ -93,7 +93,7 @@ WebIM.config = {
      * sender, in order to tell the sender the message has been read.
      * See call back function onReadMessage
      */
-    read: false,
+    read: true,
 
     /**
      * Will encrypt text message and emoji message
@@ -102,7 +102,11 @@ WebIM.config = {
      * {type:'aes',mode: 'ebc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(ebc)
      * {type:'aes',mode: 'cbc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(cbc)
      */
+    // encrypt: {
+    //     type: 'none'
+    // }
+
     encrypt: {
-        type: 'none'
+        type: 'aes', mode: 'ebc', key: '123456789easemob', iv: '0000000000000000'
     }
 };

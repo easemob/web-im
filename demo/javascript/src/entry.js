@@ -43,6 +43,7 @@ Demo.api = Api;
  */
 
 Demo.chatRecord = {};
+Demo.localChatRecord = {};
 // The max messages count of a dialog
 Demo.maxChatRecordCount = 20000;
 

@@ -50,7 +50,7 @@ module.exports = React.createClass({
     },
 
     sendText: function () {
-        console.log("SendText");
+        console.log('sendText');
         var me = this,
             value = this.refs.textarea.value,
             chatroom = Demo.selectedCate === 'chatrooms';

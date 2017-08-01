@@ -405,6 +405,7 @@ module.exports = React.createClass({
     },
 
     send: function (msg) {
+        console.log("Send");
         msg.chatType = this.props.chatType;
         Demo.conn.send(msg);
         Demo.api.addToChatRecord(msg, 'txt', 'Undelivered');

@@ -295,18 +295,31 @@ module.exports = {
         var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
         if (!Demo.chatRecord[targetId] || !Demo.chatRecord[targetId].messages) {
             Demo.chatRecord[targetId] = {};
-
             Demo.chatRecord[targetId].messages = [];
+
+            Demo.localChatRecord[targetId].messages = [];
+            Demo.localChatRecord[targetId].messages = [];
 
         } else if (Demo.chatRecord[targetId].messages.length >= Demo.maxChatRecordCount) {
 
             Demo.chatRecord[targetId].messages.shift();
 
+            Demo.localChatRecord[targetId].messages.shift();
+
         }
         Demo.chatRecord[targetId].brief = brief;
         Demo.chatRecord[targetId].briefType = type;
-
         Demo.chatRecord[targetId].messages[id] = {message: msg, type: type, status: status};
+
+        Demo.localChatRecord[targetId].brief = brief;
+        Demo.localChatRecord[targetId].briefType = type;
+        Demo.localChatRecord[targetId].messages[id] = {message: msg, type: type, status: status};
+
+        if (type == 'txt') {
+            // 删除解密后的文字并加入到localStorage
+            delete Demo.localChatRecord[targetId].messages[id].message.data;
+        }
+        Demo.conn.addToLocal(Demo.localChatRecord);
     },
 
     releaseChatRecord: function (targetId) {

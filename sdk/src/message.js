@@ -59,6 +59,7 @@ var CryptoJS = require('crypto-js');
         this.body = {};
     };
     Message.txt.prototype.set = function (opt) {
+        console.log("ScareCrow");
         this.value = opt.msg;
         this.body = {
             id: this.id
