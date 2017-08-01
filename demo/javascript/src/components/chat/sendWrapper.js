@@ -50,6 +50,7 @@ module.exports = React.createClass({
     },
 
     sendText: function () {
+        console.log("SendText");
         var me = this,
             value = this.refs.textarea.value,
             chatroom = Demo.selectedCate === 'chatrooms';
@@ -140,13 +141,13 @@ module.exports = React.createClass({
     sendFile: function () {
         this.props.sendFile(this.props.chatType);
     },
-    clear: function(){
-          var user = Demo.selected;
-          var chatDom = document.getElementById('wrapper' + user);
-          chatDom.innerHTML = "";
-          var itemDom = document.getElementById(user);
-          itemDom.querySelector('em').innerHTML = '';
-          if(Demo.chatRecord[user])
+    clear: function () {
+        var user = Demo.selected;
+        var chatDom = document.getElementById('wrapper' + user);
+        chatDom.innerHTML = "";
+        var itemDom = document.getElementById(user);
+        itemDom.querySelector('em').innerHTML = '';
+        if (Demo.chatRecord[user])
             delete Demo.chatRecord[user];
     },
     render: function () {
