@@ -197,7 +197,7 @@ module.exports = React.createClass({
             var options = {
                 username: username,
                 muteDuration: muteDuration,
-                groupId: Demo.selected,
+                groupId: Demo.selected
                 success: function (resp) {
                     var members = this.state.members;
                     for (var i in members) {

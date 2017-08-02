@@ -92,7 +92,6 @@ module.exports = React.createClass({
 
             Demo.conn.addToBlackList({
                 list: list,
-                type: 'jid',
                 success: function () {
                     me.props.updateNode(null);
                 },

@@ -97,14 +97,6 @@ module.exports = React.createClass({
                     Demo.api.NotifyError("destroyGroup:" + code + " " + msg);
                 });
         } else {
-            // success update on chat.js async msg `deleteGroupChat`
-            // Demo.conn.destroyGroup({
-            //     reason: Demo.user + ' destory group ' + this.props.name,
-            //     roomId: this.props.roomId,
-            //     error: function (code, msg) {
-            //         Demo.api.NotifyError("destroyGroup:" + code + " " + msg);
-            //     }
-            // })
             var groupId = this.props.roomId;
             var options = {
                 groupId: groupId,
@@ -132,18 +124,6 @@ module.exports = React.createClass({
                     Demo.api.NotifyError("leaveGroup:" + code + " " + msg);
                 });
         } else {
-            // success update on chat.js async msg `deleteGroupChat`
-            // Demo.conn.leaveGroupBySelf({
-            //     to: Demo.user,
-            //     roomId: this.props.roomId,
-            //     success: function () {
-            //         Demo.selected = '';
-            //         Demo.api.updateGroup();
-            //     },
-            //     error: function (code, msg) {
-            //         Demo.api.NotifyError("leaveGroup:" + code + " " + msg);
-            //     }
-            // })
             var groupId = this.props.roomId;
             var options = {
                 groupId: groupId,

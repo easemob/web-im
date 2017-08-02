@@ -813,7 +813,6 @@ module.exports = React.createClass({
                 });
         } else {
             Demo.conn.getChatRooms({
-                apiUrl: Demo.conn.apiUrl,
                 pagenum: pagenum,
                 pagesize: Demo.api.pagesize,
                 success: function (list) {
