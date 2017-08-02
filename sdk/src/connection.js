@@ -663,6 +663,30 @@ var _getXmppUrl = function (baseUrl, https) {
     return url.prefix + url.base + url.suffix;
 };
 
+function _deepClone(data) {
+    var t = typeof data, o, i, ni;
+
+    if (t === 'array') {
+        o = [];
+    } else if (t === 'object') {
+        o = {};
+    } else {
+        return data;
+    }
+
+    if (t === 'array') {
+        for (i = 0, ni = data.length; i < ni; i++) {
+            o.push(_deepClone(data[i]));
+        }
+        return o;
+    } else if (t === 'object') {
+        for (i in data) {
+            o[i] = _deepClone(data[i]);
+        }
+        return o;
+    }
+}
+
 
 /**
  * The connection class.
@@ -1314,7 +1338,6 @@ connection.prototype.notifyVersion = function (suc, fail) {
  * @private
  */
 connection.prototype.handlePresence = function (msginfo) {
-    console.log('Info: ', typeof msginfo);
     if (this.isClosed()) {
         return;
     }
@@ -1520,7 +1543,6 @@ connection.prototype.handlePresence = function (msginfo) {
             &&
             !isDecline
         ) {
-            console.log(2222222, msginfo, info, isApply);
             // info.type = 'joinPublicGroupSuccess';
         } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
             if (info.destroy) {// Group or Chat room Deleted.
@@ -1662,30 +1684,33 @@ connection.prototype.handleMessage = function (msginfo) {
                 case 'txt':
                     var receiveMsg = msgBody.msg;
                     var sourceMsg = _.clone(receiveMsg);
-                    if (self.encrypt.type === 'base64') {
-                        receiveMsg = atob(receiveMsg);
-                    } else if (self.encrypt.type === 'aes') {
-                        var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
-                        var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
-                        var mode = self.encrypt.mode.toLowerCase();
-                        var option = {};
-                        if (mode === 'cbc') {
-                            option = {
-                                iv: iv,
-                                mode: CryptoJS.mode.CBC,
-                                padding: CryptoJS.pad.Pkcs7
-                            };
-                        } else if (mode === 'ebc') {
-                            option = {
-                                mode: CryptoJS.mode.ECB,
-                                padding: CryptoJS.pad.Pkcs7
-                            }
-                        }
-                        var encryptedBase64Str = receiveMsg;
-                        var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
-                        var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
-                        receiveMsg = decryptedStr;
-                    }
+                    /*
+                     if (self.encrypt.type === 'base64') {
+                     receiveMsg = atob(receiveMsg);
+                     } else if (self.encrypt.type === 'aes') {
+                     var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
+                     var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
+                     var mode = self.encrypt.mode.toLowerCase();
+                     var option = {};
+                     if (mode === 'cbc') {
+                     option = {
+                     iv: iv,
+                     mode: CryptoJS.mode.CBC,
+                     padding: CryptoJS.pad.Pkcs7
+                     };
+                     } else if (mode === 'ebc') {
+                     option = {
+                     mode: CryptoJS.mode.ECB,
+                     padding: CryptoJS.pad.Pkcs7
+                     }
+                     }
+                     var encryptedBase64Str = receiveMsg;
+                     var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+                     var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+                     receiveMsg = decryptedStr;
+                     }
+                     */
+                    receiveMsg = self.decrypt(receiveMsg);
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
                     if (emojibody.isemoji) {
                         var msg = {
@@ -2945,12 +2970,119 @@ connection.prototype.closed = function () {
     this.onError(message);
 };
 
-connection.prototype.addToLocal = function (chatRecord) {
-    console.log('Add to local');
-    if (window.localStorage) {
-        var serializedChatRecord = JSON.stringify(chatRecord);
-        window.localStorage.setItem(this.user, serializedChatRecord);
+connection.prototype.addToLocal = function (message, type, status) {
+    var sendByMe = (typeof message.msg == 'string');
+    if (!window.localStorage)
+        return;
+    try {
+        var msg = _deepClone(message);
+    } catch (e) {
+        console.log(e.message);
     }
+    msg.data = msg.sourceMsg;
+    if (type == 'txt') {
+        if (!message.data && !message.msg) {
+            return;
+        }
+        if (sendByMe) {
+            msg.data = this.enc(msg.msg);
+            delete msg.msg;
+        } else {
+            msg.data = msg.sourceMsg;
+        }
+    }
+    msg.msgType = type;
+    msg.msgStatus = status;
+    var oldRecord = window.localStorage.getItem(this.user);
+    var serializedChatRecord = JSON.stringify(msg);
+    if (oldRecord && (oldRecord.indexOf(message.id) >= 0
+        || oldRecord.indexOf(serializedChatRecord) >= 0)) {
+        return;
+    }
+    var record = "";
+    if (!oldRecord || oldRecord == "") {
+        record = serializedChatRecord;
+    } else {
+        record = oldRecord + '\n' + serializedChatRecord;
+    }
+    window.localStorage.setItem(this.user, record);
+};
+
+connection.prototype.enc = function (messageSource) {
+    var message = _.clone(messageSource);
+    if (this.encrypt.type === 'base64') {
+        message = btoa(messageSource);
+    } else if (this.encrypt.type === 'aes') {
+        var key = CryptoJS.enc.Utf8.parse(this.encrypt.key);
+        var iv = CryptoJS.enc.Utf8.parse(this.encrypt.iv);
+        var mode = this.encrypt.mode.toLowerCase();
+        var option = {};
+        if (mode === 'cbc') {
+            option = {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            };
+        } else if (mode === 'ebc') {
+            option = {
+                mode: CryptoJS.mode.ECB,
+                padding: CryptoJS.pad.Pkcs7
+            }
+        }
+        var encryptedData = CryptoJS.AES.encrypt(message, key, option);
+
+        message = encryptedData.toString();
+    }
+    return message;
+};
+
+connection.prototype.decrypt = function (source) {
+    var receiveMsg = source, self = this;
+    if (self.encrypt.type === 'base64') {
+        receiveMsg = atob(receiveMsg);
+    } else if (self.encrypt.type === 'aes') {
+        var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
+        var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
+        var mode = self.encrypt.mode.toLowerCase();
+        var option = {};
+        if (mode === 'cbc') {
+            option = {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            };
+        } else if (mode === 'ebc') {
+            option = {
+                mode: CryptoJS.mode.ECB,
+                padding: CryptoJS.pad.Pkcs7
+            }
+        }
+        var encryptedBase64Str = receiveMsg;
+        var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+        var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+        receiveMsg = decryptedStr;
+    }
+    return receiveMsg;
+};
+
+connection.prototype.getLocal = function () {
+    if (!window.localStorage)
+        return;
+    var user = this.user;
+    var record = window.localStorage.getItem(user);
+
+    if (!record || record == '')
+        return;
+
+    var recordArr = record.split('\n');
+    for (var i in recordArr) {
+        var recordItem = recordArr[i];
+        recordItem = JSON.parse(recordItem);
+        recordItem.data = this.decrypt(recordItem.data);
+        recordArr[i] = recordItem;
+    }
+    console.log()
+    return recordArr;
 };
 
 /**

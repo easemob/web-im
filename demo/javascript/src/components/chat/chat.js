@@ -74,6 +74,8 @@ module.exports = React.createClass({
                 // Demo.api.logout();
             },
             onTextMessage: function (message) {
+                console.log('Message: ', message);
+
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
@@ -735,6 +737,20 @@ module.exports = React.createClass({
                     else
                         me.setState({friends: friends, windows: []});
                     doNotUpdateGroup || me.getGroup();
+
+                    var localChatRecord = null;
+                    try {
+                        localChatRecord = Demo.conn.getLocal();
+                    } catch (e) {
+                        console.log(e);
+                    }
+                    Demo.chatRecord = {};
+
+                    Demo.first = false;
+                    for (var i in localChatRecord) {
+                        var record = localChatRecord[i];
+                        Demo.api.addToChatRecord(record, record.msgType, record.msgStatus);
+                    }
                     Demo.api.releaseChatRecord();
                 }
             });
