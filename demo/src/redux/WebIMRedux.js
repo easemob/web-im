@@ -4,6 +4,9 @@ import WebIM from "@/config/WebIM"
 import RosterActions from "@/redux/RosterRedux"
 import LoginActions from "@/redux/LoginRedux"
 import GroupActions from "@/redux/GroupRedux"
+import SubscribeActions from "@/redux/SubscribeRedux"
+import BlacklistActions from "@/redux/BlacklistRedux"
+import MessageActions from "@/redux/MessageRedux"
 import { store } from "@/redux"
 import { withRouter } from "react-router-dom"
 import { history } from "@/utils"
@@ -17,7 +20,13 @@ WebIM.conn.listen({
 		const username = store.getState().login.username
 		const token = utils.getToken()
 		const hash = utils.getHash()
-		const redirectUrl = `/contact?username=${username}`
+		console.log(history)
+		// todo 所有不需要默认登陆的path都需要配置
+		const path =
+			history.location.pathname.indexOf("login") !== -1
+				? "/contact"
+				: history.location.pathname
+		const redirectUrl = `${path}?username=${username}`
 
 		// 出席后才能接受推送消息
 		// presence to be online
@@ -30,7 +39,7 @@ WebIM.conn.listen({
 		// 获取黑名单列表
 		// store.dispatch(BlacklistActions.getBlacklist())
 		// 获取群组列表
-		// store.dispatch(GroupActions.getGroups())
+		store.dispatch(GroupActions.getGroups())
 
 		// refresh page
 		hash.indexOf(redirectUrl) === -1 && history.push(redirectUrl)
@@ -131,7 +140,7 @@ const { Types, Creators } = createActions({
 
 			dispatch({ type: "USER_LOGOUT" })
 
-			NavigationActions.login({ type: ActionConst.REPLACE })
+			// NavigationActions.login({ type: ActionConst.REPLACE })
 		}
 	}
 })

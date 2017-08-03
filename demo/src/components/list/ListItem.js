@@ -1,14 +1,17 @@
 import React from "react"
 import PropTypes from "prop-types"
+import classNames from "classnames"
 
 let key = 0
 
-const ListItem = ({ config, ...rest }) => {
+const ListItem = ({ config, className, ...rest }) => {
 	!config && (config = [])
 
 	const modes = {
 		left: "fl",
-		right: "fr"
+		right: "fr",
+		inlineBlock: "ib",
+		block: ""
 	}
 
 	const content = config.map(conf => {
@@ -22,7 +25,7 @@ const ListItem = ({ config, ...rest }) => {
 	})
 
 	return (
-		<div className="x-list-item">
+		<div className={classNames("x-list-item", className)} {...rest}>
 			{content}
 		</div>
 	)

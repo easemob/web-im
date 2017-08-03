@@ -164,7 +164,7 @@ const { Types, Creators } = createActions({
 				},
 				onFileUploadComplete: function(data) {
 					console.log(data)
-					url = data.uri + "/" + data.entities[0].uuid
+					let url = data.uri + "/" + data.entities[0].uuid
 					dispatch(Creators.updateMessageStatus(pMessage, "sent"))
 				},
 				success: function(id) {

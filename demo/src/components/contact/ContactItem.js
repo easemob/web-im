@@ -6,19 +6,27 @@ import ContactHead from "./ContactHead"
 const SubMenu = Menu.SubMenu
 const MenuItemGroup = Menu.ItemGroup
 
-const ContactItem = ({ collapse, ...rest }) => {
-	const tabs = ["Contacts", "Chat", "Public"]
+const ContactItem = ({ chatType, items, collapse, hasLogo, ...rest }) => {
+	const tabs = items //["Contacts", "Chat", "Public"]
 	const tabsLen = tabs.length
 	const tabCls = collapse ? "" : ``
 
-	const tabsItem = tabs.map(name =>
-		<Menu.Item key={name} className={tabCls}>
-			<ContactHead className="fl nav-img" name="test" width={50} />
+	const tabsItem = tabs.map(item =>
+		<Menu.Item key={item.name} className={tabCls}>
+			{hasLogo
+				? <ContactHead className="fl nav-img" name="test" width={50} />
+				: ""}
 			<div className="nav-text">
-				<p>Jerry</p>
-				<p className="nav-text-desc">How long will you take ?</p>
+				<p>
+					{item.name}
+				</p>
+				<p className="nav-text-desc">
+					{item.latestMessage}
+				</p>
 			</div>
-			<div className="nav-op">10.02 AM</div>
+			<div className="nav-op">
+				{item.latestTime}
+			</div>
 		</Menu.Item>
 	)
 

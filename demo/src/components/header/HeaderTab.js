@@ -5,34 +5,37 @@ import { Menu, Icon } from "antd"
 const SubMenu = Menu.SubMenu
 const MenuItemGroup = Menu.ItemGroup
 
-const HeaderTab = ({ collapse, ...rest }) => {
-	const tabs = ["Contacts", "Chat", "Public"]
+const HeaderTab = ({ collapsed, items, ...rest }) => {
+	const tabs = items || ["Chat", "Groups", "Chat Rooms", "Friends"]
 	const tabsLen = tabs.length
-	const tabCls = collapse ? "" : `ant-col-${Math.floor(24 / tabsLen)}`
+	const tabCls = collapsed ? `ant-col-${Math.floor(24 / tabsLen)}` : ""
 
-	const tabsItem = tabs.map(name =>
-		<Menu.Item key={name} className={tabCls}>
-			<span className="nav-text">
-				{name}
-			</span>
+	const tabsItem = tabs.map(({ key, name }) =>
+		<Menu.Item key={key} className={tabCls}>
+			<Icon type="user" style={{ fontSize: 20, marginRight: 12 }} />
+			{collapsed
+				? ""
+				: <span className="nav-text">
+						{name}
+					</span>}
 		</Menu.Item>
 	)
 
-	const tabsColItem = (
-		<SubMenu title={<Icon type="bars" />} className="collapse">
-			{tabsItem}
-		</SubMenu>
-	)
+	// const tabsColItem = (
+	// 	<SubMenu title={<Icon type="bars" />} className="collapsed">
+	// 		{tabsItem}
+	// 	</SubMenu>
+	// )
 
 	return (
-		<Menu id="x-header-tab" mode="horizontal" {...rest}>
-			{collapse ? tabsColItem : tabsItem}
+		<Menu {...rest} id="x-header-tab" mode="horizontal">
+			{tabsItem}
 		</Menu>
 	)
 }
 
 HeaderTab.propTypes = {
-	collapse: PropTypes.bool
+	collapsed: PropTypes.bool
 	// menuOptions: PropTypes.array.isRequired,
 }
 

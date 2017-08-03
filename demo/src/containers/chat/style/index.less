@@ -1,0 +1,66 @@
+@import (reference) '../../../themes/theme.less';
+
+@chat-prefix-cls: ~"x-chat";
+@box-height: 50px;
+
+.@{chat-prefix-cls} {
+	height: 100%;
+
+	&-header {
+		border-bottom: 1px solid #d6dce0;
+		box-sizing: border-box;
+		height: @box-height;
+		line-height: @box-height;
+	}
+
+	&-content {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: @box-height;
+		bottom: @box-height * 2;
+		background: #fff;
+		padding: 0 16px;
+	}
+
+	&-footer {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: @box-height * 2;
+		line-height: @box-height;
+		background: #fff;
+		border-top: 1px solid #d6dce0;
+	}
+
+	&-ops-icon {
+		font-size: 20px;
+		margin-right: 20px;
+	}
+
+	&-send {
+		width: 100%;
+		height: @box-height;
+
+		.ant-input-group-wrapper {
+			display: block;
+			margin-top: (@box-height - 28px) / 2;
+		}
+		.ant-input {
+			box-sizing: border-box;
+			border: 0;
+			font-size: 14px;
+			padding: 0;
+			box-shadow: 0 0 0 0;
+
+			&:focus {
+				border: 0;
+			}
+		}
+		.ant-input-group-addon {
+			border: 0;
+			background-color: #fff;
+		}
+	}
+}

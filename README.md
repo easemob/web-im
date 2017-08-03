@@ -102,3 +102,10 @@ https://storybook.js.org/configurations
 "eslintConfig": {
     "extends": "react-app"
 },
+
+
+### todo
+
+1. http://localhost:3000/#/login?username=lwz2 当前页面刷新会无法登陆
+2. multi login 互相踢的问题
+

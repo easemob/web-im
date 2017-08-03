@@ -48,7 +48,7 @@ const { Types, Creators } = createActions({
 		return (dispatch, getState) => {
 			WebIM.conn.subscribe({
 				to: id,
-				message: I18n.t("request")
+				message: "" //I18n.t("request")
 			})
 		}
 	}

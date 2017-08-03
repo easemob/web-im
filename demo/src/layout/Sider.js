@@ -48,7 +48,7 @@ class Sider extends React.Component{
   }
 
   setResponsive() {
-    let matches = this.props.breakpoint[SIDER_COL_BREAK]
+    let matches = false;// this.props.breakpoint[SIDER_COL_BREAK]
 
     this.setState({ below: matches });
     if (this.state.collapsed !== matches) {

@@ -11,6 +11,7 @@ import {
 } from "react-router-dom"
 import Layout from "@/layout/DefaultLayout"
 import Login from "@/containers/login/Login"
+import Chat from "@/containers/chat/Chat"
 import WebIMActions from "@/redux/WebIMRedux"
 import LoginActions from "@/redux/LoginRedux"
 import SubscribeActions from "@/redux/SubscribeRedux"
@@ -23,18 +24,27 @@ import WebIM from "@/config/WebIM"
 import { store } from "@/redux"
 import utils from "@/utils"
 
+const debug = false
+
 const AuthorizedComponent = ({ token, Layout, ...rest }) => {
-	console.log("auth", token)
-	if (!token) {
+	// console.log("auth", token)
+	if (!token && !debug) {
 		return <Redirect to="/login" />
 	}
+
+	// todo
 	return (
-		<Layout {...rest}>
-			<Route path="/contact" component={null} />
-			<Route path="/group" component={null} />
-			<Route path="/room" component={null} />
-		</Layout>
+		<Switch>
+			<Route
+				path="/:selectTab/:selectItem"
+				render={props => <Layout {...rest} />}
+			/>
+			<Route path="/:selectTab" render={props => <Layout {...rest} />} />
+		</Switch>
 	)
+	// <Redirect from="/" to="/contact" />
+	// <Redirect from="/" to={"/contact" + location.search} />
+	//
 }
 
 class App extends Component {
@@ -50,7 +60,7 @@ class App extends Component {
 		// 1. check user auth by cookie
 		const { hasToken } = this.state
 		const { loginByToken } = this.props
-		if (hasToken) {
+		if (hasToken && !debug) {
 			loginByToken(utils.getUserName(), utils.getToken())
 		}
 	}
@@ -60,12 +70,14 @@ class App extends Component {
 	render() {
 		const { isLogin, token } = this.props
 		const { hasToken } = this.state
-		if (!isLogin && hasToken) return <Loading />
+		// console.log(hasToken, !isLogin, !debug)
+		if (!isLogin && hasToken && !debug) return <Loading />
 
 		const authorizedComponent = (
-			<AuthorizedComponent token={token} Layout={Layout} />
+			<AuthorizedComponent {...this.props} token={token} Layout={Layout} />
 		)
 
+		// console.log("logged")
 		return (
 			<Switch>
 				<Route exact path="/login" component={Login} />

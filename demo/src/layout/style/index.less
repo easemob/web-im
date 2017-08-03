@@ -37,10 +37,11 @@ body {
 	}
 
 	&-header {
-		background: #323d4d;
-		padding: @layout-header-padding;
-		height: @layout-header-height;
+		background: #000;
+		// padding: @layout-header-padding;
+		height: 100px;
 		line-height: @layout-header-height;
+		overflow: hidden;
 	}
 
 	&-footer {
@@ -53,18 +54,36 @@ body {
 		font-size: @font-size-base;
 	}
 
-	&-content {
+	&-main {
 		// flex: auto;
+		position: absolute;
+		top: 100px;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 100;
+	}
+
+	&-chat {
+		// flex: auto;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 98;
 	}
 
 	&-sider {
 		position: absolute;
-		top: 64px;
+		top: 0px;
 		left: 0;
 		bottom: 0;
 		z-index: 99;
 		transition: all .3s @ease-out;
 		background: #fff;
+		border-right: 1px solid #d6dce0;
+		overflow-y: scroll;
 
 		/* fix firefox can't set width smaller than content on flex item */
 		min-width: 0;
