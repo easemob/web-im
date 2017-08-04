@@ -1,0 +1,74 @@
+@import (reference) "~antd/dist/antd.less";
+@x-message-prefix-cls: ~"x-message";
+
+.@{x-message-prefix-cls} {
+	&-group {
+		padding-top: 3px;
+		font-size: @font-size-lg;
+		line-height: @line-height-base;
+	}
+
+	&-user {
+		font-size: @font-size-lg;
+		line-height: @line-height-base;
+		color: #1c2238;
+	}
+
+	&-content {
+	}
+
+	&-text {
+		display: inline-block;
+		padding: 13px 15px;
+		margin-top: 11px;
+		border-radius: 100px;
+		border: 1px solid #eceff1;
+		min-width: 100px;
+	}
+
+	&-img {
+		max-width: 60%;
+	}
+
+	&-time {
+		margin-left: 2px;
+		margin-top: 3px;
+		font-size: @font-size-base;
+		color: #888c98;
+		// font-weight: lighter;
+	}
+
+	&-status {
+		margin: 0 15px;
+	}
+
+	&-right {
+		text-align: right;
+
+		.@{x-message-prefix-cls} {
+			&-img {
+				float: right;
+			}
+
+			&-content {
+				overflow: hidden;
+			}
+			&-text {
+				float: right;
+				max-width: 80%;
+				text-align: left;
+				background: #eceff1;
+				word-wrap: break-word;
+			}
+			&-user {
+				text-align: right;
+				display: none;
+			}
+			&-time {
+				text-align: right;
+			}
+			&-status {
+			}
+		}
+	}
+}

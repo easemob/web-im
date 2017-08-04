@@ -6,7 +6,7 @@ import ListItem from "@/components/list/ListItem"
 const SubMenu = Menu.SubMenu
 const MenuItemGroup = Menu.ItemGroup
 
-const HeaderTab = ({ collapse, ...rest }) => {
+const HeaderTab = ({ collapse, title, ...rest }) => {
 	const tabs = ["Contacts", "Chat", "Public"]
 	const tabsLen = tabs.length
 	const tabCls = collapse ? "" : `ant-col-${Math.floor(24 / tabsLen)}`
@@ -46,7 +46,9 @@ const HeaderTab = ({ collapse, ...rest }) => {
 				{
 					mode: "left",
 					component: () =>
-						<div style={{ lineHeight: "50px", color: "#fff" }}>123</div>
+						<div style={{ lineHeight: "50px", color: "#fff" }}>
+							{title}
+						</div>
 				},
 				{
 					mode: "right",

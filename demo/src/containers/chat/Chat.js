@@ -1,121 +1,225 @@
 import React from "react"
+import ReactDOM from "react-dom"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
 import { Button, Row, Form, Input, Icon } from "antd"
 import { config } from "@/config"
 import ListItem from "@/components/list/ListItem"
+import ChatMessage from "@/components/chat/ChatMessage"
 import styles from "./style/index.less"
 import LoginActions from "@/redux/LoginRedux"
+import MessageActions from "@/redux/MessageRedux"
 import WebIM from "@/config/WebIM"
 const { TextArea } = Input
 const FormItem = Form.Item
 
-const Chat = ({
-	collapsed,
-	match,
-	history,
-	location
-	// form: { getFieldDecorator, validateFieldsAndScroll }
-}) => {
-	const { selectItem, selectTab } = match.params
-	console.log(collapsed, selectTab, selectItem)
+const chatType = {
+	contact: "chat"
+}
 
-	const back = () => {
-		const redirectPath = "/" + [selectTab].join("/") + location.search
-		history.push(redirectPath)
+class Chat extends React.Component {
+	input = null
+
+	constructor() {
+		super()
+		this.state = {
+			value: ""
+		}
+		this.handleSend = this.handleSend.bind(this)
+		this.handleChange = this.handleChange.bind(this)
 	}
 
-	return (
-		<div className="x-chat">
-			<ListItem
-				className="x-chat-header"
-				config={[
-					{
-						mode: "left",
-						component: () =>
-							<div>
-								{!collapsed
-									? <Icon
-											type="arrow-left"
-											onClick={back}
-											style={{
-												cursor: "pointer",
-												fontSize: 20,
-												verticalAlign: "middle",
-												marginRight: 10
-											}}
-										/>
-									: null}
-								{selectItem}
-							</div>
-					},
-					{
-						mode: "right",
-						component: () =>
-							<span style={{ color: "#8798a4" }}>
-								<Icon type="ellipsis" />
-							</span>
-					}
-				]}
-			/>
-			<div className="x-chat-content">123</div>
-			<div className="x-chat-footer">
+	scollBottom() {
+		const dom = this.refs["x-chat-content"]
+		setTimeout(function() {
+			dom.scrollTop = dom.scrollHeight
+		}, 0)
+	}
+
+	handleChange(e) {
+		const value = e.target.value.trim()
+		this.setState({
+			value
+		})
+	}
+	handleSend(e) {
+		console.log(this.state.value)
+		const {
+			match,
+			message
+			// form: { getFieldDecorator, validateFieldsAndScroll }
+		} = this.props
+		const { selectItem, selectTab } = match.params
+		const { value } = this.state
+		if (!value) return
+		this.props.sendTxtMessage(chatType[selectTab], selectItem, {
+			msg: value
+		})
+		this.emitEmpty()
+	}
+
+	emitEmpty() {
+		this.setState({
+			value: ""
+			// height: 34
+		})
+		this.input.value = ""
+		this.input.focus()
+	}
+
+	componentWillReceiveProps(nextProps) {
+		// setTimeout(this.scollBottom, 0)
+		// this.scollBottom()
+	}
+
+	componentDidUpdate() {
+		this.scollBottom()
+	}
+
+	componentDidMount() {
+		this.scollBottom()
+	}
+
+	render() {
+		const {
+			collapsed,
+			match,
+			history,
+			location,
+			message
+			// form: { getFieldDecorator, validateFieldsAndScroll }
+		} = this.props
+
+		const { selectItem, selectTab } = match.params
+		// console.log(collapsed, selectTab, selectItem)
+
+		const back = () => {
+			const redirectPath = "/" + [selectTab].join("/") + location.search
+			history.push(redirectPath)
+		}
+
+		const { byId = {}, chat = {} } = message
+		let messageList = []
+		switch (selectTab) {
+			case "contact":
+				messageList = chat[selectItem] || []
+				messageList = messageList.map(id => byId[id] || {})
+				// console.log(messageList)
+				break
+		}
+
+		return (
+			<div className="x-chat">
 				<ListItem
-					className="x-chat-ops"
+					className="x-chat-header"
 					config={[
 						{
-							mode: "inlineBlock",
-							component: () =>
-								<div className="x-chat-ops-icon">
-									<Icon type="android" />
-								</div>
-						},
-						{
-							mode: "inlineBlock",
-							component: () =>
-								<div className="x-chat-ops-icon">
-									<Icon type="apple" />
-								</div>
-						},
-						{
-							mode: "inlineBlock",
-							component: () =>
-								<div className="x-chat-ops-icon">
-									<Icon type="windows" />
-								</div>
-						},
-						{
-							mode: "inlineBlock",
-							component: () =>
-								<div className="x-chat-ops-icon">
-									<Icon type="ie" />
-								</div>
-						}
-					]}
-				/>
-				<ListItem
-					className="x-chat-send"
-					config={[
-						{
-							mode: "block",
+							mode: "left",
 							component: () =>
 								<div>
-									<Input
-										onPressEnter={e => console.log(e.target.value)}
-										placeholder="Type a message"
-										addonAfter={<Icon type="setting" />}
-										// defaultValue="mysite"
-									/>
-									{/*<TextArea rows={2} />*/}
+									{collapsed
+										? <Icon
+												type="arrow-left"
+												onClick={back}
+												style={{
+													cursor: "pointer",
+													fontSize: 20,
+													verticalAlign: "middle",
+													marginRight: 10
+												}}
+											/>
+										: null}
+									{selectItem}
 								</div>
+						},
+						{
+							mode: "right",
+							component: () =>
+								<span style={{ color: "#8798a4" }}>
+									<Icon type="ellipsis" />
+								</span>
 						}
 					]}
 				/>
+				<div className="x-chat-content" ref="x-chat-content">
+					{messageList.map(message =>
+						<ChatMessage key={message.id} {...message} />
+					)}
+					{/*<ChatMessage />
+					<ChatMessage />
+					<ChatMessage />
+					<ChatMessage />
+					<ChatMessage bySelf={true} />
+					<ChatMessage bySelf={true} />
+					<ChatMessage bySelf={true} />*/}
+				</div>
+				<div className="x-chat-footer">
+					<ListItem
+						className="x-chat-ops"
+						config={[
+							{
+								mode: "inlineBlock",
+								component: () =>
+									<div className="x-chat-ops-icon">
+										<Icon type="android" />
+									</div>
+							},
+							{
+								mode: "inlineBlock",
+								component: () =>
+									<div className="x-chat-ops-icon">
+										<Icon type="apple" />
+									</div>
+							},
+							{
+								mode: "inlineBlock",
+								component: () =>
+									<div className="x-chat-ops-icon">
+										<Icon type="windows" />
+									</div>
+							},
+							{
+								mode: "inlineBlock",
+								component: () =>
+									<div className="x-chat-ops-icon">
+										<Icon type="ie" />
+									</div>
+							}
+						]}
+					/>
+					<div className="x-list-item x-chat-send">
+						<Input
+							value={this.state.value}
+							onChange={this.handleChange}
+							onPressEnter={this.handleSend}
+							placeholder="Type a message"
+							addonAfter={<Icon type="setting" onClick={this.handleSend} />}
+							ref={node => (this.input = node)}
+						/>
+						{/*<TextArea rows={2} />*/}
+					</div>
+				</div>
 			</div>
-		</div>
-	)
+		)
+	}
 }
+
+// const Chat = ({
+// 	collapsed,
+// 	match,
+// 	history,
+// 	location
+// 	// form: { getFieldDecorator, validateFieldsAndScroll }
+// }) => {
+// 	const { selectItem, selectTab } = match.params
+// 	console.log(collapsed, selectTab, selectItem)
+
+// 	const back = () => {
+// 		const redirectPath = "/" + [selectTab].join("/") + location.search
+// 		history.push(redirectPath)
+// 	}
+// }
 
 // <p>
 // 				Have an account?
@@ -133,13 +237,13 @@ const Chat = ({
 // }
 
 export default connect(
-	({ login }) => ({
-		login: {
-			loginLoading: false
-		}
+	({ login, entities }) => ({
+		message: entities.message.asMutable()
 	}),
 	dispatch => ({
-		doLogin: (username, password) => {}
-		// dispatch(LoginActions.login(username, password))
+		sendTxtMessage: (chatType, id, message) =>
+			dispatch(MessageActions.sendTxtMessage(chatType, id, message)),
+		sendImgMessage: (chatType, id, message, source) =>
+			dispatch(MessageActions.sendImgMessage(chatType, id, message, source))
 	})
 )(Chat)

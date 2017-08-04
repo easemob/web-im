@@ -110,11 +110,12 @@ class DefaultLayout extends Component {
 
 	render() {
 		const { collapsed, selectTab, selectItem, headerTabs } = this.state
+		const { login } = this.props
 		console.log(selectItem, selectTab)
 		return (
 			<Layout>
 				<Header className="header">
-					<HeaderOps />
+					<HeaderOps title={login.username} />
 					<HeaderTab
 						collapsed={collapsed}
 						items={headerTabs}
@@ -161,8 +162,9 @@ class DefaultLayout extends Component {
 
 export default withRouter(
 	connect(
-		({ breakpoint, entities }) => ({
-			breakpoint
+		({ breakpoint, entities, login }) => ({
+			breakpoint,
+			login
 		}),
 		dispatch => ({})
 	)(DefaultLayout)

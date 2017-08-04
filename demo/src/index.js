@@ -16,6 +16,9 @@ import { Provider } from "react-redux"
 import { store } from "@/redux"
 import App from "./App"
 
+var FastClick = require("fastclick")
+FastClick.attach(document.body)
+
 const rootEl = document.getElementById("root")
 const render = Component =>
 	ReactDOM.render(
