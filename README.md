@@ -108,4 +108,68 @@ https://storybook.js.org/configurations
 
 1. http://localhost:3000/#/login?username=lwz2 当前页面刷新会无法登陆
 2. multi login 互相踢的问题
+3. 如何进制body的滚动，并且让内部滚动区域更加流畅
+4. fixed元素错位的问题
+
+
+### redux
+
+```json
+
+{
+	// ui相关
+	ui: [
+		// ui通用：比如loading
+		common: {
+			fetching:false
+		},
+		login: {
+			username: '',
+			password: '',
+			isSigned: false,
+		},
+		register: { },
+		contactInfo: { },
+	],
+	im: [],
+	// 数据实体
+	entities: {
+		roster: {
+			byName: {
+				{
+					jid, name, subscription, groups?
+				}
+			},
+			names: ['lwz2'...],
+			// 好友列表在此，因为好友列表来源于roster，息息相关
+			friends: [],
+		},
+		// 订阅通知
+		subscribe: {
+			byFrom: {}
+		},
+		room: {},
+		group: {
+			byId: {},
+			names: []
+		},
+		members: {
+			byName: [],
+			byGroupId: []
+		}
+		blacklist: {},
+		message: {
+			byId: {}
+			chat: {
+				[chatId]: [messageId1, messageId2]
+			},
+			groupChat: {
+				[chatId]: {}
+			},
+		}
+	}
+}
+```
+
+
 

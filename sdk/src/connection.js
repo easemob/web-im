@@ -12,7 +12,7 @@ var Strophe = window.Strophe
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
-let logMessage = function(message) {}
+var logMessage = function(message) {}
 
 if (window.XDomainRequest) {
     // not support ie8 send is not a function , canot 
