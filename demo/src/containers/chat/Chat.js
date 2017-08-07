@@ -155,39 +155,23 @@ class Chat extends React.Component {
 					<ChatMessage bySelf={true} />*/}
 				</div>
 				<div className="x-chat-footer">
-					<ListItem
-						className="x-chat-ops"
-						config={[
-							{
-								mode: "inlineBlock",
-								component: () =>
-									<div className="x-chat-ops-icon">
-										<Icon type="android" />
-									</div>
-							},
-							{
-								mode: "inlineBlock",
-								component: () =>
-									<div className="x-chat-ops-icon">
-										<Icon type="apple" />
-									</div>
-							},
-							{
-								mode: "inlineBlock",
-								component: () =>
-									<div className="x-chat-ops-icon">
-										<Icon type="windows" />
-									</div>
-							},
-							{
-								mode: "inlineBlock",
-								component: () =>
-									<div className="x-chat-ops-icon">
-										<Icon type="ie" />
-									</div>
-							}
-						]}
-					/>
+					<div className="x-list-item x-chat-ops">
+						<div className="x-chat-ops-icon ib">
+							<i className="icon-smile" />
+						</div>
+						<div className="x-chat-ops-icon ib">
+							<i className="icon-circle" />
+						</div>
+						<div className="x-chat-ops-icon ib">
+							<i className="icon-file-code" />
+						</div>
+						<div className="x-chat-ops-icon ib">
+							<i className="icon-phone" />
+						</div>
+						<div className="x-chat-ops-icon ib">
+							<i className="icon-videocam" />
+						</div>
+					</div>
 					<div className="x-list-item x-chat-send">
 						<Input
 							value={this.state.value}

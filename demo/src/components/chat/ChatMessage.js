@@ -2,6 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import classNames from "classnames"
 import moment from "moment"
+import { Badge } from "antd"
 import { renderTime } from "@/utils"
 
 export default ({ bySelf, from, time, body }) => {

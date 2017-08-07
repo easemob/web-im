@@ -26,19 +26,23 @@ class DefaultLayout extends Component {
 			headerTabs: [
 				{
 					key: "contact",
-					name: "Chat"
+					name: "Chat",
+					icon: "icon-comment"
 				},
 				{
 					key: "group",
-					name: "Groups"
+					name: "Groups",
+					icon: "icon-chat"
 				},
 				{
 					key: "room",
-					name: "Chat Rooms"
+					name: "Chat Rooms",
+					icon: "icon-users"
 				},
 				{
 					key: "friends",
-					name: "Friends"
+					name: "Friends",
+					icon: "icon-address-book"
 				}
 			],
 			contactItems: []

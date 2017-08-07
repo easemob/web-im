@@ -1,6 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { Menu, Icon } from "antd"
+import { Menu, Icon, Badge } from "antd"
 import ContactHead from "./ContactHead"
 
 const SubMenu = Menu.SubMenu
@@ -19,6 +19,16 @@ const ContactItem = ({ chatType, items, collapse, hasLogo, ...rest }) => {
 			<div className="nav-text">
 				<p>
 					{item.name}
+
+					{/*<Badge
+						count={109}
+						style={{
+							backgroundColor: "#87d068",
+							marginLeft: 10,
+							verticalAlign: "middle"
+						}}
+					/>
+					*/}
 				</p>
 				<p className="nav-text-desc">
 					{item.latestMessage}

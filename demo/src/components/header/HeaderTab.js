@@ -10,9 +10,13 @@ const HeaderTab = ({ collapsed, items, ...rest }) => {
 	const tabsLen = tabs.length
 	const tabCls = collapsed ? `ant-col-${Math.floor(24 / tabsLen)}` : ""
 
-	const tabsItem = tabs.map(({ key, name }) =>
+	const tabsItem = tabs.map(({ key, name, icon }) =>
 		<Menu.Item key={key} className={tabCls}>
-			<Icon type="user" style={{ fontSize: 20, marginRight: 12 }} />
+			{/*<Icon type="user" style={{ fontSize: 20, marginRight: 12 }} />*/}
+			<i
+				className={icon}
+				style={{ fontSize: 20, marginRight: 12, verticalAlign: "middle" }}
+			/>
 			{collapsed
 				? ""
 				: <span className="nav-text">
