@@ -395,6 +395,7 @@ var _loginCallback = function (status, msg, conn) {
 
     if (msg === 'conflict') {
         conflict = true;
+        conn.close();
     }
 
     if (status == Strophe.Status.CONNFAIL) {

@@ -10,12 +10,11 @@ WebIM.config = {
     /*
      * XMPP server
      */
-    xmppURL: '118.193.28.212:31093',
+    xmppURL: 'im-api.easemob.com',
     /*
      * Backend REST API URL
      */
-    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
-    apiURL: 'http://118.193.28.212:31999',
+    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
     /*
      * Application AppKey
      */
@@ -103,11 +102,7 @@ WebIM.config = {
      * {type:'aes',mode: 'ebc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(ebc)
      * {type:'aes',mode: 'cbc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(cbc)
      */
-    // encrypt: {
-    //     type: 'none'
-    // }
-
     encrypt: {
-        type: 'aes', mode: 'ebc', key: '123456789easemob', iv: '0000000000000000'
+        type: 'none'
     }
 };
