@@ -13,5 +13,11 @@ export default {
 	logo: "",
 	SIDER_COL_BREAK: "sm", //md
 	SIDER_COL_WIDTH: 80,
-	SIDER_WIDTH: 350
+	SIDER_WIDTH: 350,
+	imgType: {
+		gif: 1,
+		bmp: 1,
+		jpg: 1,
+		png: 1
+	}
 }

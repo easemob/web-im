@@ -113,3 +113,4 @@ if (config.reduxMatchMedia) {
 export default {
 	store
 }
+

@@ -20,7 +20,7 @@ class DefaultLayout extends Component {
 		console.log(selectTab, selectItem)
 
 		this.state = {
-			collapsed: breakpoint[SIDER_COL_BREAK] || false,
+			collapsed: breakpoint['SIDER_COL_BREAK'] || false,
 			selectTab: selectTab,
 			selectItem: selectItem,
 			headerTabs: [

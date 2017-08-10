@@ -11,15 +11,20 @@ import styles from "./style/index.less"
 import LoginActions from "@/redux/LoginRedux"
 import MessageActions from "@/redux/MessageRedux"
 import WebIM from "@/config/WebIM"
+import { message } from "antd"
+
 const { TextArea } = Input
 const FormItem = Form.Item
 
 const chatType = {
-	contact: "chat"
+	contact: "chat",
+	groups: "chatRoom",
+	room: "chatRoom"
 }
 
 class Chat extends React.Component {
 	input = null
+	image = null
 
 	constructor() {
 		super()
@@ -28,6 +33,7 @@ class Chat extends React.Component {
 		}
 		this.handleSend = this.handleSend.bind(this)
 		this.handleChange = this.handleChange.bind(this)
+		this.pictureChange = this.pictureChange.bind(this)
 	}
 
 	scollBottom() {
@@ -37,12 +43,45 @@ class Chat extends React.Component {
 		}, 0)
 	}
 
+	pictureChange(e) {
+		const { match } = this.props
+		const { selectItem, selectTab } = match.params
+		const isRoom = chatType[selectTab] == "chatRoom"
+
+		// console.log(e, e.target)
+		let file = WebIM.utils.getFileUrl(e.target)
+		console.log(file)
+
+		if (!file.filename) {
+			this.image.value = null
+			return false
+		}
+
+		if (!config.imgType[file.filetype.toLowerCase()]) {
+			this.image.value = null
+			// todo i18n
+			return message.error("invalid type : " + file.filetype, 1)
+		}
+
+		this.props.sendImgMessage(
+			chatType[selectTab],
+			selectItem,
+			{ isRoom },
+			file,
+			() => {
+				this.image.value = null
+			}
+		)
+		//
+	}
+
 	handleChange(e) {
 		const value = e.target.value.trim()
 		this.setState({
 			value
 		})
 	}
+
 	handleSend(e) {
 		console.log(this.state.value)
 		const {
@@ -159,8 +198,18 @@ class Chat extends React.Component {
 						<div className="x-chat-ops-icon ib">
 							<i className="icon-smile" />
 						</div>
-						<div className="x-chat-ops-icon ib">
+						{/**/}
+						<div
+							className="x-chat-ops-icon ib"
+							onClick={() => this.image && this.image.click()}
+						>
 							<i className="icon-circle" />
+							<input
+								ref={node => (this.image = node)}
+								onChange={this.pictureChange}
+								type="file"
+								className="hide"
+							/>
 						</div>
 						<div className="x-chat-ops-icon ib">
 							<i className="icon-file-code" />
