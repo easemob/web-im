@@ -21,7 +21,7 @@ export default ({ bySelf, from, time, body }) => {
 	} else if (body.type == "img") {
 		content = (
 			<div className="x-message-img">
-				<img src={body.url} width="100%" />
+				<img src={body.url} width="100%"/>
 			</div>
 		)
 	}
