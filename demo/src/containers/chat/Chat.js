@@ -250,18 +250,21 @@ class Chat extends React.Component {
 							<ChatEmoji onSelect={this.handleEmojiSelect} />
 						</div>
 						{/* 图片上传 image upload*/}
-						<div
+						<label
+							for="uploadImage"
 							className="x-chat-ops-icon ib"
-							onClick={() => this.image && this.image.click()}
+							onClick={() =>
+								this.image && this.image.focus() && this.image.click()}
 						>
 							<i className="icon-circle" />
 							<input
+								id="uploadImage"
 								ref={node => (this.image = node)}
 								onChange={this.pictureChange}
 								type="file"
 								className="hide"
 							/>
-						</div>
+						</label>
 						<div className="x-chat-ops-icon ib">
 							<i className="icon-file-code" />
 						</div>
