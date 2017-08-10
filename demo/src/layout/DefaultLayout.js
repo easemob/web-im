@@ -20,7 +20,7 @@ class DefaultLayout extends Component {
 		console.log(selectTab, selectItem)
 
 		this.state = {
-			collapsed: breakpoint['SIDER_COL_BREAK'] || false,
+			collapsed: breakpoint[SIDER_COL_BREAK],
 			selectTab: selectTab,
 			selectItem: selectItem,
 			headerTabs: [
@@ -53,6 +53,7 @@ class DefaultLayout extends Component {
 	}
 
 	toggle = collapsed => {
+		console.log("collapsed", collapsed)
 		this.setState({
 			collapsed
 		})
@@ -99,9 +100,11 @@ class DefaultLayout extends Component {
 		const { breakpoint, location } = this.props
 		const nextBeakpoint = nextProps.breakpoint
 
-		if (breakpoint[SIDER_COL_BREAK] != nextBeakpoint[SIDER_COL_BREAK]) {
-			this.toggle(nextBeakpoint[SIDER_COL_BREAK])
-		}
+		// if (breakpoint[SIDER_COL_BREAK] != nextBeakpoint[SIDER_COL_BREAK]) {
+		console.log(breakpoint, "---1")
+
+		this.toggle(nextBeakpoint[SIDER_COL_BREAK])
+		// }
 
 		if (location.pathname != nextProps.location.pathname) {
 			this.props = nextProps
