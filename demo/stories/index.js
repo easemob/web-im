@@ -268,27 +268,10 @@ storiesOf("ListItem", module).add("item", () =>
 /**
  *  
  */
-storiesOf("Dropdown", module).add("item", (...args) => {
-	const m = (
-		<Menu>
-			<Menu.Item key="0">
-				<ChatEmoji />
-			</Menu.Item>
-		</Menu>
-	)
-
+storiesOf("Dropdown", module).add("chatemoji", (...args) => {
 	return (
-		<div style={{ position: "absolute", right: 0, bottom: 0 }}>
-			<Dropdown
-				overlay={m}
-				placement="topLeft"
-				trigger={["click"]}
-				onVisibleChange={v => {
-					console.log(v)
-				}}
-			>
-				<Button>bottomLeft</Button>
-			</Dropdown>
+		<div style={{ position: "absolute", left: 0, bottom: 0 }}>
+			<ChatEmoji />
 		</div>
 	)
 })

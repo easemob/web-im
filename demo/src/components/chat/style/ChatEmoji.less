@@ -1,0 +1,18 @@
+@import (reference) "~antd/dist/antd.less";
+@x-emoji-prefix-cls: ~"x-emoji";
+
+.@{x-emoji-prefix-cls} {
+	box-shadow: 0 0 4px 0 rgba(173, 185, 193, 0.5);
+	// box-sizing: content-box;
+	// padding: 23px 25px 0;
+
+	.ant-dropdown-menu-item-disabled ant-dropdown-menu-item {
+		cursor: pointer;
+	}
+
+	.ant-dropdown-menu-item {
+		// width: 50px;
+		padding: 5px;
+		box-sizing: content-box;
+	}
+}

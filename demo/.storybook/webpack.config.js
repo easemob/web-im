@@ -1,9 +1,32 @@
 const path = require("path")
 const autoprefixer = require("autoprefixer")
 
+function resolve(dir) {
+	return path.join(__dirname, "..", dir)
+}
+
+console.log(resolve("src"))
+
 module.exports = {
+	resolve: {
+		alias: {
+			"@": resolve("src")
+		}
+	},
 	module: {
 		rules: [
+			{
+				test: /\.woff$|\.woff2$|\.eot$|\.ttf$|\.svg$|\.png$/,
+				loader: require.resolve("file-loader"),
+				options: {
+					name: "static/media/[name].[hash:8].[ext]"
+				}
+			},
+			// {
+			// 	test: /\.png$/,
+			// 	loader: require.resolve("url-loader"),
+			// 	options: {}
+			// },
 			{
 				test: /\.scss$/,
 				loaders: ["style-loader", "css-loader", "sass-loader"],

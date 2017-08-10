@@ -7,6 +7,7 @@ import { Button, Row, Form, Input, Icon } from "antd"
 import { config } from "@/config"
 import ListItem from "@/components/list/ListItem"
 import ChatMessage from "@/components/chat/ChatMessage"
+import ChatEmoji from "@/components/chat/ChatEmoji"
 import styles from "./style/index.less"
 import LoginActions from "@/redux/LoginRedux"
 import MessageActions from "@/redux/MessageRedux"
@@ -34,6 +35,9 @@ class Chat extends React.Component {
 		this.handleSend = this.handleSend.bind(this)
 		this.handleChange = this.handleChange.bind(this)
 		this.pictureChange = this.pictureChange.bind(this)
+		this.handleEmojiSelect = this.handleEmojiSelect.bind(this)
+		this.handleEmojiCancel = this.handleEmojiCancel.bind(this)
+		this.handleKey = this.handleKey.bind(this)
 	}
 
 	scollBottom() {
@@ -75,11 +79,46 @@ class Chat extends React.Component {
 		//
 	}
 
-	handleChange(e) {
-		const value = e.target.value.trim()
+	handleEmojiSelect(v) {
 		this.setState({
-			value
+			value: (this.state.value || "") + v.key
 		})
+		this.input.focus()
+	}
+
+	handleEmojiCancel() {
+		if (!this.state.value) return
+		const arr = this.state.value.split("")
+		const len = arr.length
+		let newValue = ""
+
+		if (arr[len - 1] != "]") {
+			arr.pop()
+			newValue = arr.join("")
+		} else {
+			const index = arr.lastIndexOf("[")
+			newValue = arr.splice(0, index).join("")
+		}
+
+		this.setState({
+			value: newValue
+		})
+	}
+
+	handleChange(e) {
+		// 场景1：正常+ -
+		// 场景2：从中间位置+ - -> 如果删除一个字符后字符串匹配，则非中间位置
+		// 场景3：删除操作可以从textInput直接编辑，适应于以上情况
+		const v = e.target.value.trim()
+		const splitValue = this.state.value ? this.state.value.split("") : []
+		splitValue.pop()
+		if (v == splitValue.join("")) {
+			this.handleEmojiCancel()
+		} else {
+			this.setState({
+				value: v
+			})
+		}
 	}
 
 	handleSend(e) {
@@ -107,6 +146,12 @@ class Chat extends React.Component {
 		this.input.focus()
 	}
 
+	handleKey(e) {
+		if (e.keyCode == 8 || e.keycode == 46) {
+			this.handleEmojiCancel()
+		}
+	}
+
 	componentWillReceiveProps(nextProps) {
 		// setTimeout(this.scollBottom, 0)
 		// this.scollBottom()
@@ -118,6 +163,11 @@ class Chat extends React.Component {
 
 	componentDidMount() {
 		this.scollBottom()
+
+		// document.addEventListener("keydown", this.handleKey)
+	}
+	componentWillUnmount() {
+		// document.removeEventListener("keydown", this.handleKey)
 	}
 
 	render() {
@@ -195,10 +245,11 @@ class Chat extends React.Component {
 				</div>
 				<div className="x-chat-footer">
 					<div className="x-list-item x-chat-ops">
+						{/* emoji*/}
 						<div className="x-chat-ops-icon ib">
-							<i className="icon-smile" />
+							<ChatEmoji onSelect={this.handleEmojiSelect} />
 						</div>
-						{/**/}
+						{/* 图片上传 image upload*/}
 						<div
 							className="x-chat-ops-icon ib"
 							onClick={() => this.image && this.image.click()}

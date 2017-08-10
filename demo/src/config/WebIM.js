@@ -3,6 +3,7 @@ import "script-loader!easemob-websdk/dist/strophe-1.2.8-g.js"
 /* eslint-enable */
 import websdk from "easemob-websdk"
 import config from "./WebIMConfig"
+import emoji from "./emoji"
 import Api from "axios"
 
 // init DOMParser / document for strophe and sdk
@@ -94,5 +95,6 @@ export let api = Api.create(
 )
 
 WebIM.api = api
+WebIM.emoji = emoji
 
 export default WebIM
