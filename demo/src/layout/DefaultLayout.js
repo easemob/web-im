@@ -27,22 +27,22 @@ class DefaultLayout extends Component {
 				{
 					key: "contact",
 					name: "Chat",
-					icon: "icon-comment"
+					icon: "fontello icon-comment"
 				},
 				{
 					key: "group",
 					name: "Groups",
-					icon: "icon-chat"
+					icon: "fontello icon-chat"
 				},
 				{
 					key: "room",
 					name: "Chat Rooms",
-					icon: "icon-users"
+					icon: "fontello icon-users"
 				},
 				{
 					key: "friends",
 					name: "Friends",
-					icon: "icon-address-book"
+					icon: "fontello icon-address-book"
 				}
 			],
 			contactItems: []

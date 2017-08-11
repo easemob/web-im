@@ -20,8 +20,10 @@
 }
 */
 
-[class^="icon-"]:before,
-[class*=" icon-"]:before {
+/* [class^="icon-"]:before, */
+/* [class*=" icon-"]:before  */
+
+.fontello {
 	font-family: "fontello";
 	font-style: normal;
 	font-weight: normal;

@@ -76,7 +76,7 @@ class ChatEmoji extends React.Component {
 					<a className="ant-dropdown-link" href="#">
 						{/*<Icon type="down" />*/}
 						<i
-							className="icon-smile"
+							className="iconfont icon-smile"
 							style={{ color: "rgba(0, 0, 0, 0.65)" }}
 						/>
 					</a>

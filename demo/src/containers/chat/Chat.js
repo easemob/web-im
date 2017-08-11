@@ -251,12 +251,12 @@ class Chat extends React.Component {
 						</div>
 						{/* 图片上传 image upload*/}
 						<label
-							for="uploadImage"
+							htmlFor="uploadImage"
 							className="x-chat-ops-icon ib"
 							onClick={() =>
 								this.image && this.image.focus() && this.image.click()}
 						>
-							<i className="icon-circle" />
+							<i className="iconfont icon-picture" />
 							<input
 								id="uploadImage"
 								ref={node => (this.image = node)}
@@ -265,6 +265,7 @@ class Chat extends React.Component {
 								className="hide"
 							/>
 						</label>
+						{/*
 						<div className="x-chat-ops-icon ib">
 							<i className="icon-file-code" />
 						</div>
@@ -274,6 +275,7 @@ class Chat extends React.Component {
 						<div className="x-chat-ops-icon ib">
 							<i className="icon-videocam" />
 						</div>
+						*/}
 					</div>
 					<div className="x-list-item x-chat-send">
 						<Input
