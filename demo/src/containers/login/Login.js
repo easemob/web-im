@@ -35,7 +35,7 @@ const Login = ({
 	return (
 		<div className="form x-login">
 			<div className="logo">
-				<img alt={"logo"} src={config.logo} />
+				<i className="iconfont icon-hyphenate" />
 				<span>
 					{config.name}
 				</span>

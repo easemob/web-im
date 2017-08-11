@@ -1,11 +1,15 @@
 {
   "main.css": "static/css/main.81f18bf0.css",
   "main.css.map": "static/css/main.81f18bf0.css.map",
-  "main.js": "static/js/main.9134514b.js",
-  "main.js.map": "static/js/main.9134514b.js.map",
+  "main.js": "static/js/main.8a8c7e78.js",
+  "main.js.map": "static/js/main.8a8c7e78.js.map",
   "static/media/fontello.eot?89851421": "static/media/fontello.1864b7c9.eot",
   "static/media/fontello.svg?89851421": "static/media/fontello.a2f6284e.svg",
   "static/media/fontello.ttf?89851421": "static/media/fontello.8b23dfe6.ttf",
   "static/media/fontello.woff2?89851421": "static/media/fontello.5a5efac2.woff2",
-  "static/media/fontello.woff?89851421": "static/media/fontello.817fee82.woff"
+  "static/media/fontello.woff?89851421": "static/media/fontello.817fee82.woff",
+  "static/media/iconfont.eot?t=1502420030127": "static/media/iconfont.1becee56.eot",
+  "static/media/iconfont.svg?t=1502420030127": "static/media/iconfont.73634d56.svg",
+  "static/media/iconfont.ttf?t=1502420030127": "static/media/iconfont.af9c5b89.ttf",
+  "static/media/iconfont.woff?t=1502420030127": "static/media/iconfont.e657d531.woff"
 }

@@ -283,7 +283,13 @@ class Chat extends React.Component {
 							onChange={this.handleChange}
 							onPressEnter={this.handleSend}
 							placeholder="Type a message"
-							addonAfter={<Icon type="setting" onClick={this.handleSend} />}
+							addonAfter={
+								<i
+									className="fontello icon-paper-plane"
+									onClick={this.handleSend}
+									style={{ cursor: "pointer" }}
+								/>
+							}
 							ref={node => (this.input = node)}
 						/>
 						{/*<TextArea rows={2} />*/}

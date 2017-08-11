@@ -37,12 +37,12 @@ class DefaultLayout extends Component {
 				{
 					key: "room",
 					name: "Chat Rooms",
-					icon: "fontello icon-users"
+					icon: "fontello icon-users-1"
 				},
 				{
 					key: "friends",
 					name: "Friends",
-					icon: "fontello icon-address-book"
+					icon: "fontello icon-address-book-1"
 				}
 			],
 			contactItems: []

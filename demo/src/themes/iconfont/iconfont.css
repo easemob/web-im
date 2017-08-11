@@ -1,10 +1,10 @@
 
 @font-face {font-family: "iconfont";
-  src: url('iconfont.eot?t=1502420030127'); /* IE9*/
-  src: url('iconfont.eot?t=1502420030127#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('iconfont.woff?t=1502420030127') format('woff'), /* chrome, firefox */
-  url('iconfont.ttf?t=1502420030127') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
-  url('iconfont.svg?t=1502420030127#iconfont') format('svg'); /* iOS 4.1- */
+  src: url('iconfont.eot?t=1502424015968'); /* IE9*/
+  src: url('iconfont.eot?t=1502424015968#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('iconfont.woff?t=1502424015968') format('woff'), /* chrome, firefox */
+  url('iconfont.ttf?t=1502424015968') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('iconfont.svg?t=1502424015968#iconfont') format('svg'); /* iOS 4.1- */
 }
 
 .iconfont {
@@ -74,4 +74,6 @@
 .icon-user:before { content: "\e6d1"; }
 
 .icon-users:before { content: "\e6d2"; }
+
+.icon-hyphenate:before { content: "\e6d3"; }
 
