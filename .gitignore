@@ -13,4 +13,4 @@ demo/javascript/dist/demo-*.js
 sdk/dist/websdk-*.js
 sdk/dist/websdk-*.js.map
 webrtc/dist/webrtc-*.js
-demo/build/*
+demo/build
