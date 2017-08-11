@@ -4,187 +4,56 @@
 
 更多关于环信的开发文档请见：https://docs.easemob.com
 
-### 安装方法
-1. 在/demo下执行npm i
-2. 在/sdk下执行npm link
-3. 在根目录下执行npm link easemob-websdk
-4. 在/demo下执行npm start
+## Install 安装
+1. 在/demo下执行 `npm i`
+2. 在/sdk下执行 `npm link`
+3. 在根目录下执行 `npm link easemob-websdk`
+4. 运行demo，在/demo下执行 `npm start`
 
-### 常见问题
-- 如果在npm i的过程中遇到
+## 项目组成
+- create-react-app 初始工具包
+- react-router 路由
+- react-redux 数据流
+- react-thunk 异步请求
+- ant-design 组件库
+- storybook 
 
-```
-> phantomjs-prebuilt@2.1.14 install /Users/will/work/my-project/node_modules/phantomjs-prebuilt
-> node install.js
+## todo
 
-PhantomJS not found on PATH
-Downloading https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-macosx.zip
-Saving to /var/folders/mh/2ptfthxj2qb49jscj1b0gjsm0000gn/T/phantomjs/phantomjs-2.1.1-macosx.zip
-Receiving...
-
-Error making request.
-Error: connect ETIMEDOUT 54.231.113.227:443
-    at Object.exports._errnoException (util.js:1018:11)
-    at exports._exceptionWithHostPort (util.js:1041:20)
-    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1090:14)
-```
-这个问题，可以尝试PHANTOMJS_CDNURL=https://npm.taobao.org/mirrors/phantomjs/ npm install --save-dev phantomjs-prebuilt来解决
-
-- 执行npm start时如果出现
-
-```
-> demo@0.1.0 start /Users/wenke/www/web-im/demo
-> node scripts/start.js
-
-/Users/wenke/www/web-im/demo/scripts/start.js:23
-const {
-      ^
-
-SyntaxError: Unexpected token {
-    at exports.runInThisContext (vm.js:53:16)
-    at Module._compile (module.js:373:25)
-    at Object.Module._extensions..js (module.js:416:10)
-    at Module.load (module.js:343:32)
-    at Function.Module._load (module.js:300:12)
-    at Function.Module.runMain (module.js:441:10)
-    at startup (node.js:139:18)
-    at node.js:974:3
-```
-请检查node版本是否是v6.0+
-
-### create-react-app
-
-https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#code-splitting
-
-## Ant Design
-
-- how to custom theme ?
-    - how to custom theme dynamically
-- how to make responsive component ? see: Sider.tsx
-- ie9 pollyfill 
-
-
-https://github.com/ant-design
-
-### 自定义antd样式
-
-参考：https://ant.design/docs/react/customize-theme-cn
-
-1. 组件按需引入
-    - 文件修改并不会触发页面刷新
-    - 适合prod时使用
-    - theme.js And webpack
-2. 全部导入 
-    - 资源多
-    - 按照正常的加载less的逻辑
-    - 文件修改会触发页面刷新
-    - 适合开发时使用
-    - theme.less
-
-## 路由 react-router
-
-- code splitting with webpack ?
-- how to do auth ?
-- how to add transition ?
-
-https://react-guide.github.io/react-router-cn/
-https://github.com/ReactTraining/react-router
-https://github.com/thejameskyle/react-loadable
-https://reacttraining.com/react-router/web/guides/code-splitting/code-splitting-server-rendering
-
-## react-bits
-
-- HOC ?
-
-https://github.com/vasanthk/react-bits
-
-
-## ant-admin
-
-
-https://github.com/zuiidea/antd-admin/blob/master/src/router.js
-
-
-## Tips
-
-### media-match
-
-- how to do media query in component ?
-
-
-### 布局
-
-position: abasolute; 浮动层，不占用内容区域大小
-所以sider和footer都这种浮动层，的父级元素必须是最外层决定内容大小的元素比如body
-relative的父级不能是内容的大小，因为内容区可能很小，会影响sider和footer的大小
-
-body: min-height: 1000px
-
-
-## storybook
-
-```
-npm i -g @storybook/cli
-getstorybook
-yarn run storybook
-```
-
-https://github.com/storybooks/storybook/tree/master/lib/cli
-https://storybook.js.org/configurations
-
-
-## 结构设计
-
-1. 路由 / layout 如何更好的组合
-    - layout设计
-        - 有外层的时候
-        - 无外层接口的时候
-            - 登陆
-    - 如何做身份校验
-    - 如何引入进度条
-
-
-
-### eslint
-"eslintConfig": {
-    "extends": "react-app"
-},
-
-
-### todo
-
-1. http://localhost:3000/#/login?username=lwz2 当前页面刷新会无法登陆
+1. /login?username=lwz2 当前页面刷新会无法登陆
 2. multi login 互相踢的问题
-3. 如何进制body的滚动，并且让内部滚动区域更加流畅
-4. fixed元素错位的问题
+3. fixed元素错位的问题
+4. 如何做[code-splitting](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#code-splitting)
 
-
-### redux
+### redux state
 
 ```json
-
 {
-	// ui相关
-	ui: [
-		// ui通用：比如loading
-		common: {
-			fetching:false
-		},
-		login: {
-			username: '',
-			password: '',
-			isSigned: false,
-		},
-		register: { },
-		contactInfo: { },
-	],
+	// ------- 响应式断点 ---------
+	//xs: "480px",
+	//sm: "768px",
+ 	//md: "992px",
+	//lg: "1200px",
+	//xl: "1600px"
+	breakpoint: {
+		sm: true
+	},
+	// ------ ui 相关 ------------
+	common: {
+		fetching:false
+	},
+	login: {
+		username: '',
+		password: '',
+		isSigned: false,
+	},
 	im: [],
-	// 数据实体
+	// ------ 数据实体 -------
 	entities: {
 		roster: {
 			byName: {
-				{
-					jid, name, subscription, groups?
+				[name]: {
+					jid, name, subscription, groups
 				}
 			},
 			names: ['lwz2'...],
