@@ -26,14 +26,46 @@ const HeaderTab = ({collapse, title, ...rest}) => {
         </SubMenu>
     )
 
-
-    const logout = () => {
-        console.log('test')
-        // History.replace("/login")
+    const onMenuSettingsClick = function ({key}) {
+        switch (key) {
+            case '0':
+                console.log('好友黑名单');
+                break;
+            case '1':
+                console.log('退出');
+                break;
+        }
     }
 
-    const menu = (
-        <Menu>
+    const menuSettings = (
+        <Menu onClick={onMenuSettingsClick}>
+            <Menu.Item key="0">
+                <span>好友黑名单</span>
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item key="1">
+                <span>退出</span>
+            </Menu.Item>
+        </Menu>
+    )
+
+
+    const onMenuAddClick = function ({key}) {
+        switch (key) {
+            case '0':
+                console.log('添加好友');
+                break;
+            case '1':
+                console.log('申请加入公开群');
+                break;
+            case '2':
+                console.log('创建群组');
+                break;
+        }
+    }
+
+    const menuAdd = (
+        <Menu onClick={onMenuAddClick}>
             <Menu.Item key="0">
                 <span>添加好友</span>
             </Menu.Item>
@@ -41,15 +73,12 @@ const HeaderTab = ({collapse, title, ...rest}) => {
                 <span>申请加入公开群</span>
             </Menu.Item>
             <Menu.Item key="2">
-                <span>好友黑名单</span>
-            </Menu.Item>
-            <Menu.Item key="3">
                 <span>创建群组</span>
             </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item key="4"><span onClick={logout}>退出</span></Menu.Item>
         </Menu>
-    );
+    )
+
+
     return (
         <ListItem
             className="headerBg"
@@ -65,7 +94,7 @@ const HeaderTab = ({collapse, title, ...rest}) => {
                                 color: "#fff"
                             }}
                         >
-                            <Dropdown overlay={menu} trigger={['click']}>
+                            <Dropdown overlay={menuSettings} trigger={['click']}>
                                 <Icon type="setting"/>
                             </Dropdown>
                             {/*<Icon type="setting" onClick={logout }/>*/}
@@ -82,7 +111,9 @@ const HeaderTab = ({collapse, title, ...rest}) => {
                     mode: "right",
                     component: () =>
                         <span style={{fontSize: 24, lineHeight: "50px", color: "#fff"}}>
+                                <Dropdown overlay={menuAdd} trigger={['click']}>
                                 <Icon type="plus-circle-o"/>
+                            </Dropdown>
                                 </span>
                 }
             ]}
