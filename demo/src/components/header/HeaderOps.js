@@ -8,23 +8,6 @@ const SubMenu = Menu.SubMenu
 const MenuItemGroup = Menu.ItemGroup
 
 const HeaderTab = ({collapse, title, ...rest}) => {
-    const tabs = ["Contacts", "Chat", "Public"]
-    const tabsLen = tabs.length
-    const tabCls = collapse ? "" : `ant-col-${Math.floor(24 / tabsLen)}`
-
-    const tabsItem = tabs.map(name =>
-        <Menu.Item key={name} className={tabCls}>
-			<span className="nav-text">
-				{name}
-			</span>
-        </Menu.Item>
-    )
-
-    const tabsColItem = (
-        <SubMenu title={<Icon type="bars"/>} className="collapse">
-            {tabsItem}
-        </SubMenu>
-    )
 
     const onMenuSettingsClick = function ({key}) {
         switch (key) {
@@ -33,24 +16,30 @@ const HeaderTab = ({collapse, title, ...rest}) => {
                 break;
             case '1':
                 console.log('退出');
+                History.replace('/login')
                 break;
         }
     }
 
+    const tabsLeft = [
+        ["0", "好友黑名单", "minus-circle-o"],
+        ["1", "退出", "logout"],
+    ]
+
+    const tabsLeftItem = tabsLeft.map(([key, name, icon]) =>
+        <Menu.Item key={key}>
+            <span><Icon type={icon}/> <span>{name}</span></span>
+        </Menu.Item>
+    )
+
     const menuSettings = (
         <Menu onClick={onMenuSettingsClick}>
-            <Menu.Item key="0">
-                <span>好友黑名单</span>
-            </Menu.Item>
-            <Menu.Divider />
-            <Menu.Item key="1">
-                <span>退出</span>
-            </Menu.Item>
+            {tabsLeftItem}
         </Menu>
     )
 
 
-    const onMenuAddClick = function ({key}) {
+    const onMenuRihghtClick = function ({key}) {
         switch (key) {
             case '0':
                 console.log('添加好友');
@@ -64,22 +53,28 @@ const HeaderTab = ({collapse, title, ...rest}) => {
         }
     }
 
-    const menuAdd = (
-        <Menu onClick={onMenuAddClick}>
-            <Menu.Item key="0">
-                <span>添加好友</span>
-            </Menu.Item>
-            <Menu.Item key="1">
-                <span>申请加入公开群</span>
-            </Menu.Item>
-            <Menu.Item key="2">
-                <span>创建群组</span>
-            </Menu.Item>
+    const tabsRight = [
+        ["0", "添加好友", "user-add"],
+        ["1", "申请加入公开群", "plus-circle-o"],
+        ["2", "创建群组", "usergroup-add"],
+    ]
+
+
+    const tabsRihghtItem = tabsRight.map(([key, name, icon]) =>
+        <Menu.Item key={key}>
+            <span><Icon type={icon}/> <span>{name}</span></span>
+        </Menu.Item>
+    )
+
+    const menuRihght = (
+        <Menu onClick={onMenuRihghtClick}>
+            {tabsRihghtItem}
         </Menu>
     )
 
 
     return (
+
         <ListItem
             className="headerBg"
             config={[
@@ -97,7 +92,6 @@ const HeaderTab = ({collapse, title, ...rest}) => {
                             <Dropdown overlay={menuSettings} trigger={['click']}>
                                 <Icon type="setting"/>
                             </Dropdown>
-                            {/*<Icon type="setting" onClick={logout }/>*/}
                         </div >
                 },
                 {
@@ -111,10 +105,10 @@ const HeaderTab = ({collapse, title, ...rest}) => {
                     mode: "right",
                     component: () =>
                         <span style={{fontSize: 24, lineHeight: "50px", color: "#fff"}}>
-                                <Dropdown overlay={menuAdd} trigger={['click']}>
-                                <Icon type="plus-circle-o"/>
-                            </Dropdown>
-                                </span>
+                                <Dropdown overlay={menuRihght} trigger={['click']}>
+                                    <Icon type="plus-circle-o"/>
+                                </Dropdown>
+                        </span>
                 }
             ]}
         />
