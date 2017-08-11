@@ -4,21 +4,26 @@
 
 更多关于环信的开发文档请见：https://docs.easemob.com
 
-## Install 安装
-1. 在/demo下执行 `npm i`
-2. 在/sdk下执行 `npm link`
-3. 在根目录下执行 `npm link easemob-websdk`
-4. 运行demo，在/demo下执行 `npm start`
+## 安装
+
+1. 初始化安装
+	1. 在/demo下执行 `npm i`
+2. 如果需要同时编辑sdk
+	1. 在/sdk下执行 `npm link`
+	1. 在根目录下执行 `npm link easemob-websdk`
+3. 运行demo
+	1. 运行demo，在/demo下执行 `npm start` （nodejs 6+）
+	
 
 ## 项目组成
 - create-react-app 初始工具包
-- react-router 路由
+- react-router 路由
 - react-redux 数据流
 - react-thunk 异步请求
 - ant-design 组件库
 - storybook 
 
-## todo
+## TODO
 
 1. /login?username=lwz2 当前页面刷新会无法登陆
 2. multi login 互相踢的问题
@@ -27,7 +32,7 @@
 
 ### redux state
 
-```json
+```
 {
 	// ------- 响应式断点 ---------
 	//xs: "480px",
