@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import {Menu, Dropdown, Icon} from "antd"
 import ListItem from "@/components/list/ListItem"
 import History from "@/utils/history"
+import WebIM from "@/config/WebIM"
 
 const SubMenu = Menu.SubMenu
 const MenuItemGroup = Menu.ItemGroup
@@ -15,7 +16,9 @@ const HeaderTab = ({collapse, title, ...rest}) => {
                 console.log('好友黑名单');
                 break;
             case '1':
-                console.log('退出');
+                if (WebIM.conn.isOpened()) {
+                    WebIM.conn.close("logout")
+                }
                 History.replace('/login')
                 break;
         }
