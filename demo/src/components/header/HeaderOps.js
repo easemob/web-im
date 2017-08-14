@@ -5,8 +5,6 @@ import ListItem from "@/components/list/ListItem"
 import History from "@/utils/history"
 import WebIM from "@/config/WebIM"
 
-const SubMenu = Menu.SubMenu
-const MenuItemGroup = Menu.ItemGroup
 
 const HeaderTab = ({collapse, title, ...rest}) => {
 
@@ -25,8 +23,8 @@ const HeaderTab = ({collapse, title, ...rest}) => {
     }
 
     const tabsLeft = [
-        ["0", "好友黑名单", "minus-circle-o"],
-        ["1", "退出", "logout"],
+        // ["0", "好友黑名单", "minus-circle-o"],
+        ["1", `退出(${title})`, "logout"],
     ]
 
     const tabsLeftItem = tabsLeft.map(([key, name, icon]) =>
@@ -57,9 +55,9 @@ const HeaderTab = ({collapse, title, ...rest}) => {
     }
 
     const tabsRight = [
-        ["0", "添加好友", "user-add"],
-        ["1", "申请加入公开群", "plus-circle-o"],
-        ["2", "创建群组", "usergroup-add"],
+        // ["0", "添加好友", "user-add"],
+        // ["1", "申请加入公开群", "plus-circle-o"],
+        // ["2", "创建群组", "usergroup-add"],
     ]
 
 
