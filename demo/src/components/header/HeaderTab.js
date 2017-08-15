@@ -6,7 +6,7 @@ const SubMenu = Menu.SubMenu
 const MenuItemGroup = Menu.ItemGroup
 
 const HeaderTab = ({collapsed, items, ...rest}) => {
-    const tabs = items || []
+    const tabs = items || ["Friend", "Group", "ChatRoom", "Friends"]
     const tabsLen = tabs.length
     const tabCls = collapsed ? `ant-col-${Math.floor(24 / tabsLen)}` : ""
 

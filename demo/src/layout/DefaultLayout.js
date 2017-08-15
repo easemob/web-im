@@ -113,13 +113,10 @@ class DefaultLayout extends Component {
         }
     }
 
-    //
-    //
 
     render() {
         const {collapsed, selectTab, selectItem, headerTabs} = this.state
         const {login} = this.props
-        console.log(selectItem, selectTab)
         return (
             <Layout>
                 <Header className="header">
