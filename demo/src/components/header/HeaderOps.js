@@ -1,12 +1,21 @@
 import React from "react"
 import PropTypes from "prop-types"
+import {connect} from "react-redux"
 import {Menu, Dropdown, Icon} from "antd"
 import ListItem from "@/components/list/ListItem"
 import History from "@/utils/history"
 import WebIM from "@/config/WebIM"
+import WebIMActions from "@/redux/WebIMRedux"
 
+const HeaderOps = ({title, doLogout}) => {
 
-const HeaderTab = ({collapse, title, ...rest}) => {
+    const handleLogout = function () {
+        console.log('handleLogout')
+        console.log('title', title)
+
+        doLogout()
+
+    }
 
     const onMenuSettingsClick = function ({key}) {
         switch (key) {
@@ -14,21 +23,21 @@ const HeaderTab = ({collapse, title, ...rest}) => {
                 console.log('好友黑名单');
                 break;
             case '1':
-                if (WebIM.conn.isOpened()) {
-                    WebIM.conn.close("logout")
-                }
-                History.replace('/login')
+                handleLogout()
+
+                // History.replace('/login')
                 break;
         }
     }
 
+
     const tabsLeft = [
-        // ["0", "好友黑名单", "minus-circle-o"],
+        ["0", "好友黑名单", "minus-circle-o"],
         ["1", `退出(${title})`, "logout"],
     ]
 
     const tabsLeftItem = tabsLeft.map(([key, name, icon]) =>
-        <Menu.Item key={key}>
+        <Menu.Item key={key} onClick={this.ttt}>
             <span><Icon type={icon}/> <span>{name}</span></span>
         </Menu.Item>
     )
@@ -75,7 +84,6 @@ const HeaderTab = ({collapse, title, ...rest}) => {
 
 
     return (
-
         <ListItem
             className="headerBg"
             config={[
@@ -116,9 +124,15 @@ const HeaderTab = ({collapse, title, ...rest}) => {
     )
 }
 
-HeaderTab.propTypes = {
+HeaderOps.propTypes = {
     collapse: PropTypes.bool
     // menuOptions: PropTypes.array.isRequired,
 }
 
-export default HeaderTab
+
+export default connect(
+    ({state}) => ({}),
+    dispatch => ({
+        doLogout: () => dispatch(WebIMActions.logout())
+    })
+)(HeaderOps)
