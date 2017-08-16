@@ -67,6 +67,7 @@ if (window.localStorage) {
 }
 
 Strophe.Websocket.prototype._onMessage = function (message) {
+    logMessage(message);
     var elem, data;
     // check for closing stream
     // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
@@ -103,7 +104,7 @@ Strophe.Websocket.prototype._onMessage = function (message) {
     } else {
         data = this._streamWrap(message.data);
         elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
-
+        // console.log(elem)
 
         if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
             return;
@@ -366,8 +367,11 @@ var _getAESKey = function (options, conn) {
         _login(options, conn);
     };
     var error = function (res, xhr, msg) {
-        console.log('error')
+        console.log('rest _getAESKey error')
         console.log(res)
+        conn.encrypt.mode = "ecb";
+        global_mode = "ecb";
+        _login(options, conn);
 
     };
 
@@ -386,6 +390,69 @@ var _getAESKey = function (options, conn) {
     _utils.ajax(options2);
 
 };
+
+
+var rsa_encrypt = function (target, pub_key) {
+    // 创建 RSA 对象
+    var crypt = new JSEncrypt();
+
+    crypt.setKey(pub_key);
+
+    var encrypted = crypt.encrypt(target);
+
+    return encrypted;
+
+}
+
+var aes_encrypt = function (target, pub_key) {
+    // conn.encrypt.mode = CryptoJS.mode.CBC;
+    // conn.encrypt.key = CryptoJS.enc.Utf8.parse(pub_key);
+    // conn.encrypt.iv = CryptoJS.enc.Utf8.parse('0000000000000000');
+    // global_mode = resp.data.mode.toLowerCase();
+    // global_key = CryptoJS.enc.Utf8.parse(resp.data.key);
+    // global_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
+
+    var option = {
+        iv: CryptoJS.enc.Utf8.parse('0000000000000000'),
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    };
+    var encryptedData = CryptoJS.AES.encrypt(target, CryptoJS.enc.Utf8.parse(pub_key), option);
+
+    return encryptedData.toString();
+
+}
+
+var aes_encrypt = function (target, pub_key) {
+    // conn.encrypt.mode = CryptoJS.mode.CBC;
+    // conn.encrypt.key = CryptoJS.enc.Utf8.parse(pub_key);
+    // conn.encrypt.iv = CryptoJS.enc.Utf8.parse('0000000000000000');
+    // global_mode = resp.data.mode.toLowerCase();
+    // global_key = CryptoJS.enc.Utf8.parse(resp.data.key);
+    // global_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
+
+    var option = {
+        iv: CryptoJS.enc.Utf8.parse('0000000000000000'),
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    };
+    var encryptedData = CryptoJS.AES.encrypt(target, CryptoJS.enc.Utf8.parse(pub_key), option);
+
+    return encryptedData.toString();
+
+}
+
+
+var getRandomKey = function (conn, pub_key) {
+    var local_private_key = new Array(conn.context.userId, new Date().getTime(), Math.random()).join("_")
+    //rsa 返回的 已经是base4加密过的字符串了
+    var encryped = rsa_encrypt(local_private_key, pub_key)
+
+    // private_key = atob(private_key)
+
+    return encryped
+}
+
 
 var _login = function (options, conn) {
     var accessToken = options.access_token || '';
@@ -3655,11 +3722,149 @@ WebIM.doQuery = function (str, suc, fail) {
     );
 };
 
+var test_num = 0;
+// ENCRYPT_NONE     = 0;
+// ENCRYPT_AES_128_CBC = 1; //defaule encryption type.
+// ENCRYPT_AES_256_CBC = 2; //
+
+//<iq type='set' id='_bind_auth_2' xmlns='jabber:client'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>webim</resource>
+//    <encrypt_type>ENCRYPT_NONE</encrypt_type><encrypt_key></encrypt_key></bind></iq>
+
+
+//<iq type='set' id='_bind_auth_2' xmlns='jabber:client'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>webim</resource>
+//    <encrypt_type>ENCRYPT_128</encrypt_type><encrypt_key>dfgdfg</encrypt_key></bind></iq>
+Strophe.Connection.prototype._sasl_auth1_cb = function (elem) {
+    // save stream:features for future usage
+    this.features = elem;
+    var i, child;
+    for (i = 0; i < elem.childNodes.length; i++) {
+        child = elem.childNodes[i];
+        if (child.nodeName == 'bind') {
+            this.do_bind = true;
+        }
+
+        if (child.nodeName == 'session') {
+            this.do_session = true;
+        }
+    }
+
+    if (!this.do_bind) {
+        this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+        return false;
+    } else {
+        this._addSysHandler(this._sasl_bind_cb.bind(this), null, null,
+            null, "_bind_auth_2");
+
+        // let key = getRandomKey(Demo.conn)
+        // console.log(key)
+        var resource = Strophe.getResourceFromJid(this.jid);
+        if (resource) {
+            this.send($iq({type: "set", id: "_bind_auth_2"})
+                .c('bind', {xmlns: Strophe.NS.BIND})
+                .c('resource', {}).t(resource)
+                .up()
+                .c('encrypt_type', {}).t("ENCRYPT_NONE")
+                .up()
+                .c('encrypt_key', {}).t('')
+                .up()
+                .tree());
+        } else {
+            this.send($iq({type: "set", id: "_bind_auth_2"})
+                .c('bind', {xmlns: Strophe.NS.BIND})
+                .tree());
+        }
+    }
+    return false;
+};
+
+//<iq type='error' xmlns='jabber:client' id='_bind_auth_2'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>webim</resource><encrypt_type>ENCRYPT_NONE</encrypt_type><encrypt_key/></bind><error code='413' type='auth'><fail-encrypt xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/><text xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>-----BEGIN PUBLIC KEY-----
+//   MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDJPMdGcWfQ4JAY0IWY/Z+umUF7
+//    J48Lk0yY/XjTG8d1Pbqio8t/4lGhNem3obefXe4KpRGjNUZ6kVKwebyUmAsdT1iC
+//    jTI1ZbcUXVPwoE8IiYIP6mGEgdvzDr4ly8yBRHYFn8WMyeP+4KsQHuyQmZ54VToS
+//    1G9JW9CECTofxALqrQIDAQAB
+//    -----END PUBLIC KEY-----
+//</text></error></iq>
+
+Strophe.Connection.prototype._sasl_bind_cb = function (elem) {
+    console.log(elem)
+    if (elem.getAttribute("type") == "error") {
+        var errors = elem.getElementsByTagName("error");
+        console.log(errors, errors[0].getAttribute("code"))
+        var code = errors[0].getAttribute("code")
+        if (code == "413" && test_num == 0) {
+            var texts = elem.getElementsByTagName("text");
+            console.log(texts)
+            var pub_key = Strophe.getText(texts[0])
+            console.log('pub_key', pub_key)
+            this._addSysHandler(this._sasl_bind_cb.bind(this), null, null,
+                null, "_bind_auth_2");
+
+            let encrypt_key = getRandomKey(Demo.conn, pub_key)
+            console.log('encrypt_key', encrypt_key)
+            var resource = Strophe.getResourceFromJid(this.jid);
+            if (resource) {
+                this.send($iq({type: "set", id: "_bind_auth_2"})
+                    .c('bind', {xmlns: Strophe.NS.BIND})
+                    .c('resource', {}).t(resource)
+                    .up()
+                    .c('encrypt_type', {}).t("ENCRYPT_AES_128_CBC")
+                    .up()
+                    .c('encrypt_key', {}).t(encrypt_key)
+                    .up()
+                    .tree());
+            } else {
+                this.send($iq({type: "set", id: "_bind_auth_2"})
+                    .c('bind', {xmlns: Strophe.NS.BIND})
+                    .tree());
+            }
+            test_num++
+        } else {
+            Strophe.info("SASL binding failed.");
+            var conflict = elem.getElementsByTagName("conflict"), condition;
+            if (conflict.length > 0) {
+                condition = 'conflict';
+            }
+            this._changeConnectStatus(Strophe.Status.AUTHFAIL, condition);
+            return false;
+        }
+
+    }
+
+    // TODO - need to grab errors
+    var bind = elem.getElementsByTagName("bind");
+    var jidNode;
+    if (bind.length > 0) {
+        // Grab jid
+        jidNode = bind[0].getElementsByTagName("jid");
+        if (jidNode.length > 0) {
+            this.jid = Strophe.getText(jidNode[0]);
+
+            if (this.do_session) {
+                this._addSysHandler(this._sasl_session_cb.bind(this),
+                    null, null, null, "_session_auth_2");
+
+                this.send($iq({type: "set", id: "_session_auth_2"})
+                    .c('session', {xmlns: Strophe.NS.SESSION})
+                    .tree());
+            } else {
+                this.authenticated = true;
+                this._changeConnectStatus(Strophe.Status.CONNECTED, null);
+            }
+        }
+    } else {
+        Strophe.info("SASL binding failed.");
+        this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+        return false;
+    }
+};
 /**************************** debug ****************************/
+function logMessage(message) {
+    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
+}
 
 if (WebIM && WebIM.config.isDebug) {
     Strophe.Connection.prototype.rawOutput = function (data) {
-        // console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
+        console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
     }
 }
 
@@ -3668,6 +3873,9 @@ if (WebIM && WebIM.config && WebIM.config.isSandBox) {
     WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
 }
 
+WebIM.config.apiURL = '//118.193.28.212:31080';
+WebIM.config.xmppURL = '118.193.28.212:31293';   //加密版本
+// WebIM.config.xmppURL = '118.193.28.212:31093';  //非加密版本
 
 module.exports = WebIM;
 
