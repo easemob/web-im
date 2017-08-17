@@ -50,7 +50,7 @@ WebIM.config = {
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
      */
-    isDebug: false,
+    isDebug: true,
     /**
      * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
      * won't auto connect if autoReconnectNumMax=0.
@@ -104,5 +104,29 @@ WebIM.config = {
      */
     encrypt: {
         type: 'none'
+    },
+
+    /**
+     * When localStore set as true, user messages will try to be saved localy (default: localStorage)
+     * @type {Boolean}
+     */
+    saveLocaly: true,
+
+    /**
+     * Will be used as prefix of the key while saveing/loading msg from storage.
+     * WARNING: DON'T change it after running.
+     */
+    localKeyPrefix: '__easemob__',
+
+    /**
+     * Will encrypt message while saving to storage.
+     * Current only support aes as cbc mode. // 2017-8-17
+     * {type:'none'}   no encrypt
+     * {type:'base64'} encrypt with base64
+     * {type:'aes',mode: 'ebc',key: '123456789easemob',iv: '0000000000000000', padding: 'pkcs7'} encrypt with aes(ebc)
+     * {type:'aes',mode: 'cbc',key: '123456789easemob',iv: '0000000000000000', padding: 'pkcs7'} encrypt with aes(cbc)
+     */
+    localEncrypt: {
+        type: {type:'aes',mode: 'cbc',key: '123456789easemob',iv: '0000000000000000', padding: 'pkcs7'}
     }
 };

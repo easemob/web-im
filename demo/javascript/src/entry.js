@@ -4,6 +4,7 @@ require('../../stylesheet/demo.scss');
 var Api = require('./api');
 var Emoji = require('./components/chat/emoji');
 var Language = require('./components/language');
+var utils = require('./utils').utils;
 
 // import emoji
 WebIM.Emoji = Emoji;
@@ -119,6 +120,8 @@ Demo.chatState = {
 
 Demo.orgName = WebIM.config.appkey.split('#')[0];
 Demo.appName = WebIM.config.appkey.split('#')[1];
+
+Demo.needSaveMessageToStorage = WebIM.config.saveLocaly && utils.isStorageAvailable();
 
 // initialize webIM connection
 Demo.conn = new WebIM.connection({

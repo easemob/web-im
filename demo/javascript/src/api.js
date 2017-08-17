@@ -9,6 +9,8 @@ var locMsg = require('./components/message/loc');
 var audioMsg = require('./components/message/audio');
 var videoMsg = require('./components/message/video');
 var Notify = require('./components/common/notify');
+var utils = require('./utils').utils;
+
 var _ = require('underscore');
 var CryptoJS = require('crypto-js');
 
@@ -287,6 +289,72 @@ module.exports = {
         this.render(this.node);
     },
 
+    prepareCrypt: function() {
+        var type = WebIM.config.localEncrypt.type;
+        var aes_key = CryptoJS.enc.Utf8.parse(type.key);
+        var aes_iv = CryptoJS.enc.Utf8.parse(type.iv);
+        var padding = type.padding.toLowerCase();
+        padding = padding.charAt(0).toUpperCase() + padding.slice(1);
+        var option = {
+            iv: aes_iv,
+            mode: CryptoJS.mode[type.mode.toUpperCase()],
+            padding: CryptoJS.pad[padding]
+        };
+        return {
+            aesKey: aes_key,
+            option: option
+        };
+    },
+
+    encryptMsg: function (msg) {
+        var aes = this.prepareCrypt();
+        var encryptedData = CryptoJS.AES.encrypt(JSON.stringify(msg), aes.aesKey, aes.option);
+        return encryptedData.toString();
+    },
+
+    decryptMsg: function (data) {
+        var aes = this.prepareCrypt();
+        var decryptedData = CryptoJS.AES.decrypt(data, aes.aesKey, aes.option);
+        return decryptedData.toString(CryptoJS.enc.Utf8);
+    },
+
+    saveChatToStorage: function(user, msg) {
+        if (!user) return;
+        if (Demo.needSaveMessageToStorage) {
+            var key = WebIM.config.localKeyPrefix + user;
+            var storedMessages = utils.getItemFromStorage(key);
+            adfad
+
+            if (storedMessages && Array.isArray(storedMessages)) {
+                storedMessages.push(this.encryptMsg(msg))
+            } else {
+                storedMessages = [this.encryptMsg(msg)];
+            }
+            utils.setItemToStorage(key, storedMessages);
+        }
+    },
+
+    loadChatFromStorage: function(user) {
+        if (!user) return [];
+        var _this = this;
+        var key = WebIM.config.localKeyPrefix + user;
+        var data = utils.getItemFromStorage(key);
+
+        if (!Array.isArray(data)) return [];
+        return data.reduce(function(acc, val) {
+            var msg = '';
+            try {
+                msg = _this.decryptMsg(val);
+                msg = JSON.parse(msg);
+            } catch (error) {
+                // NOP
+            } finally {
+                acc.push(msg);
+            }
+            return acc;
+        }, []);
+    },
+
     addToChatRecord: function (msg, type, status) {
         var data = msg.data || msg.msg || '';
         var brief = this.getBrief(data, type);
@@ -307,12 +375,15 @@ module.exports = {
         Demo.chatRecord[targetId].briefType = type;
 
         Demo.chatRecord[targetId].messages[id] = {message: msg, type: type, status: status};
+
+        this.saveChatToStorage(Demo.user, msg);
     },
 
     releaseChatRecord: function (targetId) {
         var targetId = targetId || Demo.selected;
         if (Demo.first) {
             Demo.first = false;
+
             for (var i in Demo.chatRecord) {
                 targetId = i;
                 if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
@@ -332,7 +403,9 @@ module.exports = {
             }
             return;
         }
+
         if (targetId) {
+            
             if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
                 if (document.getElementById('wrapper' + targetId))
                     document.getElementById('wrapper' + targetId).innerHTML = '';
@@ -345,6 +418,16 @@ module.exports = {
                         Demo.chatRecord[targetId].messages[i].type,
                         Demo.chatRecord[targetId].messages[i].status,
                         i);
+                }
+            } else if (Demo.needSaveMessageToStorage) {
+                var messages = this.loadChatFromStorage(Demo.user);
+                for (var j = 0; j < messages.length; j++) {
+                    var message = messages[j];
+                    Demo.api.appendMsg(
+                        message,
+                        message.type,
+                        message.status
+                    );
                 }
             }
         }
