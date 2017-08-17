@@ -325,7 +325,7 @@ module.exports = {
             var storedMessages = utils.getItemFromStorage(key);
 
             if (storedMessages && Array.isArray(storedMessages)) {
-                storedMessages.push(this.encryptMsg(msg))
+                storedMessages.push(this.encryptMsg(msg));
             } else {
                 storedMessages = [this.encryptMsg(msg)];
             }
