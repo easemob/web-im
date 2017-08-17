@@ -258,6 +258,16 @@ var CryptoJS = require('crypto-js');
                 , ext: message.ext || {}
             };
             var jsonstr = _utils.stringify(json);
+            if (message.type === 'txt' && conn.encrypt.enabled) {
+                var option = {
+                    iv: conn.context.aes_iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                };
+                var encryptedData = CryptoJS.AES.encrypt(jsonstr, conn.context.aes_key, option);
+                console.log(conn.context.aes_key_str, jsonstr, encryptedData.toString())
+                jsonstr = encryptedData.toString();
+            }
             dom = $msg({
                 type: message.group || 'chat'
                 , to: message.toJid

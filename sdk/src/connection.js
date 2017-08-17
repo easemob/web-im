@@ -395,14 +395,14 @@ var rsa_encrypt = function (target, pub_key) {
 
 
 var getRandomKey = function (conn, pub_key) {
-    aes_key_str = new Array(new Date().getTime(), Math.random().toString().substr(2, 2)).join("_")
-    console.log('aes_key_str', aes_key_str)
+    conn.context.aes_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
+    conn.context.aes_key_str = new Array(new Date().getTime(), Math.random().toString().substr(2, 2)).join("_")
+    console.log('aes_key_str', conn.context.aes_key_str)
 
-    aes_key = CryptoJS.enc.Utf8.parse(aes_key_str);
+    conn.context.aes_key = CryptoJS.enc.Utf8.parse(conn.context.aes_key_str);
 
     //rsa 返回的 已经是base4加密过的字符串了
-    var encryped = rsa_encrypt(aes_key_str, pub_key)
-
+    var encryped = rsa_encrypt(conn.context.aes_key_str, pub_key)
 
 
     return encryped
@@ -1948,20 +1948,7 @@ connection.prototype.getUniqueId = function (prefix) {
 connection.prototype.send = function (messageSource) {
     var self = this;
     var message = messageSource;
-    if (message.type === 'txt' && (self.encrypt.type === 'base64' || self.encrypt.type === 'aes')) {
-        message = _.clone(messageSource);
-        if (self.encrypt.enabled) {
-            var option = {
-                iv: aes_iv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            };
 
-            var encryptedData = CryptoJS.AES.encrypt(message.msg, aes_key, option);
-            console.log(aes_key_str, message.msg, encryptedData.toString())
-            message.msg = encryptedData.toString();
-        }
-    }
     if (this.isWindowSDK) {
         WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
             function (response) {
