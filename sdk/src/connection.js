@@ -7,9 +7,10 @@ var _msgHash = {};
 var Queue = require('./queue').Queue;
 var CryptoJS = require('crypto-js');
 var _ = require('underscore');
-var global_mode = '';
-var global_key = '';
-var global_iv = '';
+
+var aes_key_str = '';
+var aes_key = '';
+var aes_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -133,20 +134,13 @@ Strophe.Websocket.prototype._onMessage = function (message) {
                     if (WebIM.config.encrypt.type === 'base64') {
                         text = atob(text);
                     } else if (WebIM.config.encrypt.type === 'aes') {
-                        option = {};
-                        if (global_mode === 'cbc') {
-                            option = {
-                                iv: global_iv,
-                                mode: CryptoJS.mode.CBC,
-                                padding: CryptoJS.pad.Pkcs7
-                            }
-                        } else if (global_mode === 'ecb') {
-                            option = {
-                                mode: CryptoJS.mode.ECB,
-                                padding: CryptoJS.pad.Pkcs7
-                            }
+                        option = {
+                            iv: aes_iv,
+                            mode: CryptoJS.mode.CBC,
+                            padding: CryptoJS.pad.Pkcs7
                         }
-                        decryptedData = CryptoJS.AES.decrypt(text, global_key, option);
+
+                        decryptedData = CryptoJS.AES.decrypt(text, aes_key, option);
                         text = decryptedData.toString(CryptoJS.enc.Utf8);
 
                         // console.log('text', text)
@@ -360,17 +354,12 @@ var _getAESKey = function (options, conn) {
         //{"algorithm": "AES", "mode": "ECB", "padding": "PKCS5Padding", "key": "easemob@@easemob"}
         conn.encrypt.mode = resp.data.mode.toLowerCase();
         conn.encrypt.key = CryptoJS.enc.Utf8.parse(resp.data.key);
-        conn.encrypt.iv = CryptoJS.enc.Utf8.parse('0000000000000000');
-        global_mode = resp.data.mode.toLowerCase();
-        global_key = CryptoJS.enc.Utf8.parse(resp.data.key);
-        global_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
         _login(options, conn);
     };
     var error = function (res, xhr, msg) {
         console.log('rest _getAESKey error')
         console.log(res)
-        conn.encrypt.mode = "ecb";
-        global_mode = "ecb";
+        conn.encrypt.mode = "cbc";
         _login(options, conn);
 
     };
@@ -404,51 +393,17 @@ var rsa_encrypt = function (target, pub_key) {
 
 }
 
-var aes_encrypt = function (target, pub_key) {
-    // conn.encrypt.mode = CryptoJS.mode.CBC;
-    // conn.encrypt.key = CryptoJS.enc.Utf8.parse(pub_key);
-    // conn.encrypt.iv = CryptoJS.enc.Utf8.parse('0000000000000000');
-    // global_mode = resp.data.mode.toLowerCase();
-    // global_key = CryptoJS.enc.Utf8.parse(resp.data.key);
-    // global_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
-
-    var option = {
-        iv: CryptoJS.enc.Utf8.parse('0000000000000000'),
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7
-    };
-    var encryptedData = CryptoJS.AES.encrypt(target, CryptoJS.enc.Utf8.parse(pub_key), option);
-
-    return encryptedData.toString();
-
-}
-
-var aes_encrypt = function (target, pub_key) {
-    // conn.encrypt.mode = CryptoJS.mode.CBC;
-    // conn.encrypt.key = CryptoJS.enc.Utf8.parse(pub_key);
-    // conn.encrypt.iv = CryptoJS.enc.Utf8.parse('0000000000000000');
-    // global_mode = resp.data.mode.toLowerCase();
-    // global_key = CryptoJS.enc.Utf8.parse(resp.data.key);
-    // global_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
-
-    var option = {
-        iv: CryptoJS.enc.Utf8.parse('0000000000000000'),
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7
-    };
-    var encryptedData = CryptoJS.AES.encrypt(target, CryptoJS.enc.Utf8.parse(pub_key), option);
-
-    return encryptedData.toString();
-
-}
-
 
 var getRandomKey = function (conn, pub_key) {
-    var local_private_key = new Array(conn.context.userId, new Date().getTime(), Math.random()).join("_")
-    //rsa 返回的 已经是base4加密过的字符串了
-    var encryped = rsa_encrypt(local_private_key, pub_key)
+    aes_key_str = new Array(new Date().getTime(), Math.random().toString().substr(2, 2)).join("_")
+    console.log('aes_key_str', aes_key_str)
 
-    // private_key = atob(private_key)
+    aes_key = CryptoJS.enc.Utf8.parse(aes_key_str);
+
+    //rsa 返回的 已经是base4加密过的字符串了
+    var encryped = rsa_encrypt(aes_key_str, pub_key)
+
+
 
     return encryped
 }
@@ -467,7 +422,7 @@ var _login = function (options, conn) {
     conn.context.accessToken = options.access_token;
     conn.context.accessTokenExpires = options.expires_in;
 
-    if (conn.encrypt.type === 'aes' && !conn.encrypt.mode) {
+    if (WebIM.config.encrypt.enabled && !conn.encrypt.mode) {
         _getAESKey(options, conn)
         return
     }
@@ -1648,27 +1603,14 @@ connection.prototype.handleMessage = function (msginfo) {
             switch (type) {
                 case 'txt':
                     var receiveMsg = msgBody.msg;
-                    if (self.encrypt.type === 'base64') {
-                        receiveMsg = atob(receiveMsg);
-                    } else if (self.encrypt.type === 'aes') {
-                        var key = self.encrypt.key
-                        var iv = self.encrypt.iv
-                        var mode = self.encrypt.mode
-                        var option = {};
-                        if (mode === 'cbc') {
-                            option = {
-                                iv: iv,
-                                mode: CryptoJS.mode.CBC,
-                                padding: CryptoJS.pad.Pkcs7
-                            }
-                        } else if (mode === 'ecb') {
-                            option = {
-                                mode: CryptoJS.mode.ECB,
-                                padding: CryptoJS.pad.Pkcs7
-                            }
+                    if (self.encrypt.enabled) {
+                        var option = {
+                            iv: aes_iv,
+                            mode: CryptoJS.mode.CBC,
+                            padding: CryptoJS.pad.Pkcs7
                         }
                         var encryptedBase64Str = receiveMsg;
-                        var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+                        var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, aes_key, option);
                         var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
                         receiveMsg = decryptedStr;
                     }
@@ -2008,28 +1950,15 @@ connection.prototype.send = function (messageSource) {
     var message = messageSource;
     if (message.type === 'txt' && (self.encrypt.type === 'base64' || self.encrypt.type === 'aes')) {
         message = _.clone(messageSource);
-        if (self.encrypt.type === 'base64') {
-            message.msg = btoa(message.msg);
-        } else if (self.encrypt.type === 'aes') {
-            // console.log(this.encrypt)
-            var key = self.encrypt.key;
-            var iv = self.encrypt.iv;
-            var mode = self.encrypt.mode;
-            var option = {};
-            if (mode === 'cbc') {
-                option = {
-                    iv: iv,
-                    mode: CryptoJS.mode.CBC,
-                    padding: CryptoJS.pad.Pkcs7
-                };
-            } else if (mode === 'ecb') {
-                option = {
-                    mode: CryptoJS.mode.ECB,
-                    padding: CryptoJS.pad.Pkcs7
-                }
-            }
-            var encryptedData = CryptoJS.AES.encrypt(message.msg, key, option);
+        if (self.encrypt.enabled) {
+            var option = {
+                iv: aes_iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            };
 
+            var encryptedData = CryptoJS.AES.encrypt(message.msg, aes_key, option);
+            console.log(aes_key_str, message.msg, encryptedData.toString())
             message.msg = encryptedData.toString();
         }
     }

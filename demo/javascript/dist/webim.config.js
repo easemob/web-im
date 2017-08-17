@@ -112,6 +112,7 @@ WebIM.config = {
      * {type:'aes',mode: 'cbc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(cbc)
      */
     encrypt: {
+        enabled: true,
         type: 'aes'
     }
 };
