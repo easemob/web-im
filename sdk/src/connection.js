@@ -8,9 +8,6 @@ var Queue = require('./queue').Queue;
 var CryptoJS = require('crypto-js');
 var _ = require('underscore');
 
-var aes_key_str = '';
-var aes_key = '';
-var aes_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -103,7 +100,37 @@ Strophe.Websocket.prototype._onMessage = function (message) {
             return;
         }
     } else {
-        data = this._streamWrap(message.data);
+        var data_decrypted = null
+        if (WebIM.config.encrypt.enabled) {
+            // var test = "<message xmlns='jabber:client' from='easemob-demo#chatdemoui_wenke@easemob.com/webim' to='easemob-demo#chatdemoui_wk01@easemob.com' id='366706821974458436' type='chat'><body>4hdALtL5l9I93HKQaxaYoTbWXPh8IDCFBRfOHMkGYDQg93YYgzHi3N5zR6tRmoOJsFVzI4n+KYmjMHKKd27La6fL5vzcoVrDSxvVR4HddZgoIOyg61UfdkYiblflqbvGKHN3Y7/KRn9rGPaUQy00LQ==</body></message>"
+            // test = "<message type='chat' to='hyphenatedemo#hyphenatedemo_zzf3@easemob.com' id='WEBIM_3691a307fb2' xmlns='jabber:client'><body>{'from':'zzf1','to':'zzf3','bodies':[{}],'ext':{'weichat':{'originType':'webim'}}}</body><body>351158306766586140</body><acked>{'xmlns':'urn:xmpp:receipts','id':'351158306766586140'}</acked></message>"
+            // console.log(message.data)
+
+            let pos1 = message.data.indexOf("<body>") + 6
+            let pos2 = message.data.indexOf("</body>")
+            if (pos1 > 6 && pos2 > 6) {
+                var body = message.data.substr(pos1, pos2 - pos1)
+
+                var option = {
+                    iv: WebIM.config.encrypt.aes_iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }
+
+                var decryptedData = CryptoJS.AES.decrypt(body, WebIM.config.encrypt.aes_key, option);
+                body = decryptedData.toString(CryptoJS.enc.Utf8);
+
+                // message.data 是只读的 直接修改message.data=temp 会报错:
+                // Uncaught TypeError: Cannot assign to read only property 'data' of object '#<MessageEvent>'
+                data_decrypted = new Array(message.data.substr(0, pos1), body, message.data.substr(pos2)).join("")
+                console.log(data_decrypted)
+            }
+        }
+        if (data_decrypted) {
+            data = this._streamWrap(data_decrypted);
+        } else {
+            data = this._streamWrap(message.data);
+        }
         elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
         // console.log(elem)
 
@@ -123,40 +150,40 @@ Strophe.Websocket.prototype._onMessage = function (message) {
         }
 
         //log aes message into localstorage
-        if (message.data.indexOf('msg') > 0 && message.data.indexOf('type') > 0) {
-            var body, objValue, text, option, decryptedData
-            body = elem.getElementsByTagName('body')[0];
-            if (body && body.innerHTML) {
-                objValue = JSON.parse(body.innerHTML)
-                // console.log('objValue', objValue)
-                if (objValue.bodies[0].type === 'txt') {
-                    text = objValue.bodies[0].msg;
-                    if (WebIM.config.encrypt.type === 'base64') {
-                        text = atob(text);
-                    } else if (WebIM.config.encrypt.type === 'aes') {
-                        option = {
-                            iv: aes_iv,
-                            mode: CryptoJS.mode.CBC,
-                            padding: CryptoJS.pad.Pkcs7
-                        }
-
-                        decryptedData = CryptoJS.AES.decrypt(text, aes_key, option);
-                        text = decryptedData.toString(CryptoJS.enc.Utf8);
-
-                        // console.log('text', text)
-                        if (WebIM && WebIM.config.isDebug && window.localStorage) {
-                            window.localStorage.setItem(recv_num++, text)
-                        }
-
-                    }
-                }
-            }
-            body = null
-            objValue = null
-            text = null
-            option = null
-            decryptedData = null
-        }
+        // if (message.data.indexOf('msg') > 0 && message.data.indexOf('type') > 0) {
+        //     var body, objValue, text, option, decryptedData
+        //     body = elem.getElementsByTagName('body')[0];
+        //     if (body && body.innerHTML) {
+        //         objValue = JSON.parse(body.innerHTML)
+        //         // console.log('objValue', objValue)
+        //         if (objValue.bodies[0].type === 'txt') {
+        //             text = objValue.bodies[0].msg;
+        //             if (WebIM.config.encrypt.type === 'base64') {
+        //                 text = atob(text);
+        //             } else if (WebIM.config.encrypt.type === 'aes') {
+        //                 option = {
+        //                     iv: aes_iv,
+        //                     mode: CryptoJS.mode.CBC,
+        //                     padding: CryptoJS.pad.Pkcs7
+        //                 }
+        //
+        //                 decryptedData = CryptoJS.AES.decrypt(text, aes_key, option);
+        //                 text = decryptedData.toString(CryptoJS.enc.Utf8);
+        //
+        //                 // console.log('text', text)
+        //                 if (WebIM && WebIM.config.isDebug && window.localStorage) {
+        //                     window.localStorage.setItem(recv_num++, text)
+        //                 }
+        //
+        //             }
+        //         }
+        //     }
+        //     body = null
+        //     objValue = null
+        //     text = null
+        //     option = null
+        //     decryptedData = null
+        // }
     }
 
     this._conn._dataRecv(elem, message.data);
@@ -401,6 +428,10 @@ var getRandomKey = function (conn, pub_key) {
 
     conn.context.aes_key = CryptoJS.enc.Utf8.parse(conn.context.aes_key_str);
 
+    WebIM.config.encrypt.aes_iv = conn.context.aes_iv
+    WebIM.config.encrypt.aes_key_str = conn.context.aes_key_str
+    WebIM.config.encrypt.aes_key = conn.context.aes_key
+
     //rsa 返回的 已经是base4加密过的字符串了
     var encryped = rsa_encrypt(conn.context.aes_key_str, pub_key)
 
@@ -422,10 +453,10 @@ var _login = function (options, conn) {
     conn.context.accessToken = options.access_token;
     conn.context.accessTokenExpires = options.expires_in;
 
-    if (WebIM.config.encrypt.enabled && !conn.encrypt.mode) {
-        _getAESKey(options, conn)
-        return
-    }
+    // if (WebIM.config.encrypt.enabled && !conn.encrypt.mode) {
+    //     _getAESKey(options, conn)
+    //     return
+    // }
 
 
     var stropheConn = null;
@@ -790,7 +821,7 @@ var connection = function (options) {
     this.apiUrl = options.apiUrl || '';
     this.context.apiUrl = this.apiUrl;
     this.isWindowSDK = options.isWindowSDK || false;
-    this.encrypt = options.encrypt || {encrypt: {type: 'none'}};
+    this.encrypt = options.encrypt;
     this.delivery = options.delivery || false;
     this.user = '';
     this.orgName = '';
@@ -1603,17 +1634,17 @@ connection.prototype.handleMessage = function (msginfo) {
             switch (type) {
                 case 'txt':
                     var receiveMsg = msgBody.msg;
-                    if (self.encrypt.enabled) {
-                        var option = {
-                            iv: aes_iv,
-                            mode: CryptoJS.mode.CBC,
-                            padding: CryptoJS.pad.Pkcs7
-                        }
-                        var encryptedBase64Str = receiveMsg;
-                        var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, aes_key, option);
-                        var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
-                        receiveMsg = decryptedStr;
-                    }
+                    // if (self.encrypt.enabled) {
+                    //     var option = {
+                    //         iv: aes_iv,
+                    //         mode: CryptoJS.mode.CBC,
+                    //         padding: CryptoJS.pad.Pkcs7
+                    //     }
+                    //     var encryptedBase64Str = receiveMsg;
+                    //     var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, aes_key, option);
+                    //     var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+                    //     receiveMsg = decryptedStr;
+                    // }
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
                     if (emojibody.isemoji) {
                         var msg = {
@@ -3702,21 +3733,16 @@ Strophe.Connection.prototype._sasl_auth1_cb = function (elem) {
 //</text></error></iq>
 
 Strophe.Connection.prototype._sasl_bind_cb = function (elem) {
-    console.log(elem)
     if (elem.getAttribute("type") == "error") {
         var errors = elem.getElementsByTagName("error");
-        console.log(errors, errors[0].getAttribute("code"))
         var code = errors[0].getAttribute("code")
         if (code == "413" && test_num == 0) {
             var texts = elem.getElementsByTagName("text");
-            console.log(texts)
             var pub_key = Strophe.getText(texts[0])
-            console.log('pub_key', pub_key)
             this._addSysHandler(this._sasl_bind_cb.bind(this), null, null,
                 null, "_bind_auth_2");
 
             let encrypt_key = getRandomKey(Demo.conn, pub_key)
-            console.log('encrypt_key', encrypt_key)
             var resource = Strophe.getResourceFromJid(this.jid);
             if (resource) {
                 this.send($iq({type: "set", id: "_bind_auth_2"})
