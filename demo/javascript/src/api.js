@@ -323,7 +323,6 @@ module.exports = {
         if (Demo.needSaveMessageToStorage) {
             var key = WebIM.config.localKeyPrefix + user;
             var storedMessages = utils.getItemFromStorage(key);
-            adfad
 
             if (storedMessages && Array.isArray(storedMessages)) {
                 storedMessages.push(this.encryptMsg(msg))
@@ -405,7 +404,7 @@ module.exports = {
         }
 
         if (targetId) {
-            
+
             if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
                 if (document.getElementById('wrapper' + targetId))
                     document.getElementById('wrapper' + targetId).innerHTML = '';
