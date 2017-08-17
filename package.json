@@ -19,6 +19,8 @@
     "crypto-js": "^3.1.9-1",
     "css-loader": "*",
     "enzyme": "^2.8.2",
+    "eslint": "^4.4.1",
+    "eslint-plugin-react": "^7.2.1",
     "file-loader": "*",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "gulp": "latest",
