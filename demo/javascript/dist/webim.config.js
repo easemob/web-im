@@ -61,12 +61,12 @@ WebIM.config = {
      * isSandBox=false: xmppURL: 'im-api.easemob.com',          apiURL: '//a1.easemob.com',
      * @parameter {Boolean} true or false
      */
-    isSandBox: false,
+    isSandBox: true,
     /**
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
      */
-    isDebug: true,
+    isDebug: false,
     /**
      * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
      * won't auto connect if autoReconnectNumMax=0.
@@ -105,14 +105,9 @@ WebIM.config = {
     read: true,
 
     /**
-     * Will encrypt text message and emoji message
-     * {type:'none'}   no encrypt
-     * {type:'base64'} encrypt with base64
-     * {type:'aes',mode: 'ebc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(ebc)
-     * {type:'aes',mode: 'cbc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(cbc)
+     * Whether encrypt/decrypt the message during transfer
      */
     encrypt: {
         enabled: true,
-        type: 'aes'
     }
 };

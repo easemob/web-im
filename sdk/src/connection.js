@@ -102,12 +102,9 @@ Strophe.Websocket.prototype._onMessage = function (message) {
     } else {
         var data_decrypted = null
         if (WebIM.config.encrypt.enabled) {
-            // var test = "<message xmlns='jabber:client' from='easemob-demo#chatdemoui_wenke@easemob.com/webim' to='easemob-demo#chatdemoui_wk01@easemob.com' id='366706821974458436' type='chat'><body>4hdALtL5l9I93HKQaxaYoTbWXPh8IDCFBRfOHMkGYDQg93YYgzHi3N5zR6tRmoOJsFVzI4n+KYmjMHKKd27La6fL5vzcoVrDSxvVR4HddZgoIOyg61UfdkYiblflqbvGKHN3Y7/KRn9rGPaUQy00LQ==</body></message>"
-            // test = "<message type='chat' to='hyphenatedemo#hyphenatedemo_zzf3@easemob.com' id='WEBIM_3691a307fb2' xmlns='jabber:client'><body>{'from':'zzf1','to':'zzf3','bodies':[{}],'ext':{'weichat':{'originType':'webim'}}}</body><body>351158306766586140</body><acked>{'xmlns':'urn:xmpp:receipts','id':'351158306766586140'}</acked></message>"
-            // console.log(message.data)
 
-            let pos1 = message.data.indexOf("<body>") + 6
-            let pos2 = message.data.indexOf("</body>")
+            var pos1 = message.data.indexOf("<body>") + 6
+            var pos2 = message.data.indexOf("</body>")
             if (pos1 > 6 && pos2 > 6) {
                 var body = message.data.substr(pos1, pos2 - pos1)
 
@@ -123,7 +120,7 @@ Strophe.Websocket.prototype._onMessage = function (message) {
                 // message.data 是只读的 直接修改message.data=temp 会报错:
                 // Uncaught TypeError: Cannot assign to read only property 'data' of object '#<MessageEvent>'
                 data_decrypted = new Array(message.data.substr(0, pos1), body, message.data.substr(pos2)).join("")
-                console.log(data_decrypted)
+                body = null
             }
         }
         if (data_decrypted) {
@@ -131,7 +128,11 @@ Strophe.Websocket.prototype._onMessage = function (message) {
         } else {
             data = this._streamWrap(message.data);
         }
+
+
         elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
+        data_decrypted = null
+        data = null
         // console.log(elem)
 
         if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
@@ -149,41 +150,6 @@ Strophe.Websocket.prototype._onMessage = function (message) {
             return;
         }
 
-        //log aes message into localstorage
-        // if (message.data.indexOf('msg') > 0 && message.data.indexOf('type') > 0) {
-        //     var body, objValue, text, option, decryptedData
-        //     body = elem.getElementsByTagName('body')[0];
-        //     if (body && body.innerHTML) {
-        //         objValue = JSON.parse(body.innerHTML)
-        //         // console.log('objValue', objValue)
-        //         if (objValue.bodies[0].type === 'txt') {
-        //             text = objValue.bodies[0].msg;
-        //             if (WebIM.config.encrypt.type === 'base64') {
-        //                 text = atob(text);
-        //             } else if (WebIM.config.encrypt.type === 'aes') {
-        //                 option = {
-        //                     iv: aes_iv,
-        //                     mode: CryptoJS.mode.CBC,
-        //                     padding: CryptoJS.pad.Pkcs7
-        //                 }
-        //
-        //                 decryptedData = CryptoJS.AES.decrypt(text, aes_key, option);
-        //                 text = decryptedData.toString(CryptoJS.enc.Utf8);
-        //
-        //                 // console.log('text', text)
-        //                 if (WebIM && WebIM.config.isDebug && window.localStorage) {
-        //                     window.localStorage.setItem(recv_num++, text)
-        //                 }
-        //
-        //             }
-        //         }
-        //     }
-        //     body = null
-        //     objValue = null
-        //     text = null
-        //     option = null
-        //     decryptedData = null
-        // }
     }
 
     this._conn._dataRecv(elem, message.data);
@@ -424,7 +390,6 @@ var rsa_encrypt = function (target, pub_key) {
 var getRandomKey = function (conn, pub_key) {
     conn.context.aes_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
     conn.context.aes_key_str = new Array(new Date().getTime(), Math.random().toString().substr(2, 2)).join("_")
-    console.log('aes_key_str', conn.context.aes_key_str)
 
     conn.context.aes_key = CryptoJS.enc.Utf8.parse(conn.context.aes_key_str);
 
@@ -1634,17 +1599,7 @@ connection.prototype.handleMessage = function (msginfo) {
             switch (type) {
                 case 'txt':
                     var receiveMsg = msgBody.msg;
-                    // if (self.encrypt.enabled) {
-                    //     var option = {
-                    //         iv: aes_iv,
-                    //         mode: CryptoJS.mode.CBC,
-                    //         padding: CryptoJS.pad.Pkcs7
-                    //     }
-                    //     var encryptedBase64Str = receiveMsg;
-                    //     var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, aes_key, option);
-                    //     var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
-                    //     receiveMsg = decryptedStr;
-                    // }
+
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
                     if (emojibody.isemoji) {
                         var msg = {
@@ -3811,13 +3766,11 @@ if (WebIM && WebIM.config.isDebug) {
 }
 
 if (WebIM && WebIM.config && WebIM.config.isSandBox) {
-    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '-sandbox.easemob.');
-    WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
+    // WebIM.config.xmppURL = '118.193.28.212:31093';  //非加密版本
+    WebIM.config.xmppURL = '118.193.28.212:31293';   //加密版本
+    WebIM.config.apiURL = '//118.193.28.212:31080';
 }
 
-WebIM.config.apiURL = '//118.193.28.212:31080';
-WebIM.config.xmppURL = '118.193.28.212:31293';   //加密版本
-// WebIM.config.xmppURL = '118.193.28.212:31093';  //非加密版本
 
 module.exports = WebIM;
 

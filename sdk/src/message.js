@@ -265,8 +265,8 @@ var CryptoJS = require('crypto-js');
                     padding: CryptoJS.pad.Pkcs7
                 };
                 var encryptedData = CryptoJS.AES.encrypt(jsonstr, conn.context.aes_key, option);
-                console.log(conn.context.aes_key_str, jsonstr, encryptedData.toString())
                 jsonstr = encryptedData.toString();
+                encryptedData = null
             }
             dom = $msg({
                 type: message.group || 'chat'
@@ -274,7 +274,7 @@ var CryptoJS = require('crypto-js');
                 , id: message.id
                 , xmlns: 'jabber:client'
             }).c('body').t(jsonstr);
-
+            jsonstr = null
             if (message.roomType) {
                 dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
             }
