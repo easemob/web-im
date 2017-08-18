@@ -50,7 +50,7 @@ WebIM.config = {
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
      */
-    isDebug: true,
+    isDebug: false,
     /**
      * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
      * won't auto connect if autoReconnectNumMax=0.
@@ -117,6 +117,11 @@ WebIM.config = {
      * WARNING: DON'T change it after running.
      */
     localKeyPrefix: '__easemob__',
+
+    /**
+     * how many messages stored as one group in storage.
+     */
+    localPageSize: 10,
 
     /**
      * Will encrypt message while saving to storage.

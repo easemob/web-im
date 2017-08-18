@@ -321,37 +321,61 @@ module.exports = {
     saveChatToStorage: function(user, msg) {
         if (!user) return;
         if (Demo.needSaveMessageToStorage) {
-            var key = WebIM.config.localKeyPrefix + user;
-            var storedMessages = utils.getItemFromStorage(key);
+            var key = WebIM.config.localKeyPrefix + msg.id;
+            utils.setItemToStorage(key, this.encryptMsg(msg));
 
-            if (storedMessages && Array.isArray(storedMessages)) {
-                storedMessages.push(this.encryptMsg(msg));
+            /**
+             * {prefix}__{msg.id}: {encrypted msg}
+             * {prefix}__{use}__message_group_pointer__ : 2
+             * {prefix}__{use}__message_group_0__ : [{prefix}__{msg.id}]
+             * {prefix}__{use}__message_group_1__ : [{prefix}__{msg.id}]
+             * {prefix}__{use}__message_group_2__ : [{prefix}__{msg.id}]
+             */
+            var userStoreMessageGroupPointer = utils.getItemFromStorage(WebIM.config.localKeyPrefix + user + '__message_group_pointer__') || 0;
+            var currentUserStoreMessageGroup = utils.getItemFromStorage(WebIM.config.localKeyPrefix + user + '__message_group_' + userStoreMessageGroupPointer + '__');
+            if (currentUserStoreMessageGroup && Array.isArray(currentUserStoreMessageGroup)) {
+                if (currentUserStoreMessageGroup.length < WebIM.config.localPageSize) {
+                    currentUserStoreMessageGroup.push(key);
+                    utils.setItemToStorage(WebIM.config.localKeyPrefix + user + '__message_group_' + userStoreMessageGroupPointer + '__', currentUserStoreMessageGroup);
+                } else {
+                    // new group
+                    userStoreMessageGroupPointer++;
+                    currentUserStoreMessageGroup = [key];
+                    utils.setItemToStorage(WebIM.config.localKeyPrefix + user + '__message_group_' + userStoreMessageGroupPointer + '__', currentUserStoreMessageGroup);
+                    utils.setItemToStorage(WebIM.config.localKeyPrefix + user + '__message_group_pointer__', userStoreMessageGroupPointer);
+                }
             } else {
-                storedMessages = [this.encryptMsg(msg)];
+                currentUserStoreMessageGroup = [key];
+                utils.setItemToStorage(WebIM.config.localKeyPrefix + user + '__message_group_' + userStoreMessageGroupPointer + '__', currentUserStoreMessageGroup);
+                utils.setItemToStorage(WebIM.config.localKeyPrefix + user + '__message_group_pointer__', userStoreMessageGroupPointer);
             }
-            utils.setItemToStorage(key, storedMessages);
         }
     },
 
-    loadChatFromStorage: function(user) {
+    loadChatFromStorage: function(user, page) {
         if (!user) return [];
-        var _this = this;
-        var key = WebIM.config.localKeyPrefix + user;
-        var data = utils.getItemFromStorage(key);
+        if (!page) page = 0;
+        var key = WebIM.config.localKeyPrefix + user + '__message_group_' + page + '__';
+        var group = utils.getItemFromStorage(key);
 
-        if (!Array.isArray(data)) return [];
-        return data.reduce(function(acc, val) {
-            var msg = '';
-            try {
-                msg = _this.decryptMsg(val);
-                msg = JSON.parse(msg);
-            } catch (error) {
-                // NOP
-            } finally {
-                acc.push(msg);
-            }
-            return acc;
-        }, []);
+        var result = [];
+        if (group && Array.isArray(group)) {
+            result = group.reduce((acc, val) => {
+                let encrypted = utils.getItemFromStorage(val);
+                // acc.push(this.decryptMsg(encrypted));
+                var msg = '';
+                try {
+                    msg = this.decryptMsg(encrypted);
+                    msg = JSON.parse(msg);
+                } catch (e) {
+                    // NOP
+                } finally {
+                    acc.push(msg);
+                }
+                return acc;
+            }, []);
+        }
+        return result;
     },
 
     addToChatRecord: function (msg, type, status) {
@@ -419,14 +443,31 @@ module.exports = {
                         i);
                 }
             } else if (Demo.needSaveMessageToStorage) {
-                var messages = this.loadChatFromStorage(Demo.user);
-                for (var j = 0; j < messages.length; j++) {
-                    var message = messages[j];
-                    Demo.api.appendMsg(
-                        message,
-                        message.type,
-                        message.status
-                    );
+                // var currentLocalPage = -1;
+                var currentLocalPointer = utils.getItemFromStorage(WebIM.config.localKeyPrefix + Demo.user + '__message_group_pointer__');
+                // Demo.currentLocalPage < 0 ? Demo.currentLocalPage = currentLocalPointer : Demo.currentLocalPage--;
+                if (Demo.currentLocalPage < 0) {
+                    Demo.currentLocalPage = currentLocalPointer;
+                } else if (Demo.currentLocalPage > 0) {
+                    Demo.currentLocalPage--;
+                } else {
+                    Demo.isLocalPageEnd = true;
+                }
+
+                if (!Demo.isLocalPageEnd) {
+                    var messageGroup = this.loadChatFromStorage(Demo.user, Demo.currentLocalPage);
+                    var prependMessageGroup = function (msgGroup) {
+                        for (var j = msgGroup.length - 1; j >= 0 ; j--) {
+                            var msg = msgGroup[j];
+                            Demo.api.appendMsg(msg, msg.type, msg.status, i, 'prepend');
+                        }
+                    };
+                    prependMessageGroup(messageGroup);
+                    if (messageGroup.length < WebIM.config.localPageSize) {
+                        Demo.currentLocalPage--;
+                        var prevMessageGroup = this.loadChatFromStorage(Demo.user, Demo.currentLocalPage);
+                        prependMessageGroup(prevMessageGroup, 'prepend');
+                    }
                 }
             }
         }
@@ -486,7 +527,8 @@ module.exports = {
         return brief;
     },
 
-    appendMsg: function (msg, type, status, nid) {
+    appendMsg: function (msg, type, status, nid, mode) {
+        if (!mode) mode = 'append';
         if (Demo.first) {
             return;
         }
@@ -534,7 +576,8 @@ module.exports = {
                             errorText: msg.errorText,
                             id: msg.id,
                             status: status,
-                            nid: nid
+                            mode: mode,
+                            nid: nid,
                         }, this.sentByMe);
                         break;
                     case 'emoji':
@@ -546,6 +589,7 @@ module.exports = {
                             errorText: msg.errorText,
                             id: msg.id,
                             status: status,
+                            mode: mode,
                             nid: nid
                         }, this.sentByMe);
                         break;

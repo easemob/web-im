@@ -444,6 +444,26 @@ module.exports = React.createClass({
         this.setState({memberShowStatus: false});
     },
 
+    onScroll: function () {
+        var scrollTop = this.refs.wrapper.scrollTop;
+        // console.log(scrollTop);
+        if (scrollTop <= 0) {
+            var loadingDOM = document.createElement('div')
+                , loadingImgDOM = document.createElement('img');
+            loadingImgDOM.src = 'demo/images/loading.gif';
+            loadingDOM.ref = 'loading';
+            loadingDOM.style = 'width: 100%;text-align: center;';
+            loadingDOM.appendChild(loadingImgDOM);
+            var wrapper = this.refs.wrapper
+                , firstChild = wrapper.firstChild;
+            firstChild ? wrapper.insertBefore(loadingDOM, firstChild) : wrapper.appendChild(loadingDOM);
+            setTimeout(() => {
+                wrapper.removeChild(loadingDOM);
+            }, 1000);
+            Demo.api.releaseChatRecord();
+        }
+    },
+
     render: function () {
         var className = this.props.roomId ? ' dib' : ' hide',
             props = {
@@ -593,6 +613,7 @@ module.exports = React.createClass({
                 </ul>
                 <div id={this.props.id}
                      ref='wrapper'
+                     onScroll={this.onScroll}
                      className='webim-chatwindow-msg'>
                 </div>
                 <SendWrapper send={this.send}{...props}/>

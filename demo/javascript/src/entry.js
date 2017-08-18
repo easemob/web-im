@@ -122,6 +122,8 @@ Demo.orgName = WebIM.config.appkey.split('#')[0];
 Demo.appName = WebIM.config.appkey.split('#')[1];
 
 Demo.needSaveMessageToStorage = WebIM.config.saveLocaly && utils.isStorageAvailable();
+Demo.currentLocalPage = -1;
+Demo.isLocalPageEnd = false;
 
 // initialize webIM connection
 Demo.conn = new WebIM.connection({

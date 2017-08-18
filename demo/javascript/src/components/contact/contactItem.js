@@ -35,6 +35,8 @@ module.exports = React.createClass({
 
     update: function () {
         Demo.chatingCate = Demo.selectedCate;
+        Demo.currentLocalPage = -1;
+        Demo.isLocalPageEnd = false;
 
         if (this.refs['i']) {
             var count = this.refs['i'].getAttribute('data-count') / 1;
