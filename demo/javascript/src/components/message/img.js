@@ -93,12 +93,19 @@ module.exports = function (options, sentByMe) {
         errorText: options.errorText,
         id: options.id || '',
         status: options.status || 'Undelivered',
+        mode: options.mode || 'append', // append or prepend
         nid: options.nid || ''
     };
 
     var node = document.createElement('div');
     node.className = 'webim-msg-container rel';
-    options.wrapper.appendChild(node);
+
+    var firstChild = options.wrapper.firstChild;
+    if (props.mode === 'prepend' && firstChild) {
+        options.wrapper.insertBefore(node, firstChild);
+    } else {
+        options.wrapper.appendChild(node);
+    }
 
     Demo.api.scrollIntoView(node);
 

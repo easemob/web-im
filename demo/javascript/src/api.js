@@ -459,7 +459,9 @@ module.exports = {
                     var prependMessageGroup = function (msgGroup) {
                         for (var j = msgGroup.length - 1; j >= 0 ; j--) {
                             var msg = msgGroup[j];
-                            Demo.api.appendMsg(msg, msg.type, msg.status, i, 'prepend');
+                            if (['txt', 'emoji', 'img'].indexOf(msg.type) !== -1) {
+                                Demo.api.appendMsg(msg, msg.type, msg.status, i, 'prepend');
+                            }
                         }
                     };
                     prependMessageGroup(messageGroup);
@@ -626,6 +628,7 @@ module.exports = {
                                 error: msg.error,
                                 errorText: msg.errorText,
                                 status: status,
+                                mode: mode,
                                 nid: nid
                             }, this.sentByMe);
                         }
