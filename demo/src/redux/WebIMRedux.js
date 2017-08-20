@@ -93,6 +93,13 @@ WebIM.conn.listen({
             history.push("/login")
             return
         }
+        // 7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+        if (error.type == WebIM.statusCode.WEBIM_CONNCTION_SERVER_CLOSE_ERROR) {
+            console.log("WEBIM_CONNCTION_SERVER_CLOSE_ERROR")
+            message.error("client-side network offline")
+            history.push("/login")
+            return
+        }
         // 8: offline by multi login
         if (error.type == WebIM.statusCode.WEBIM_CONNCTION_SERVER_ERROR) {
             console.log("WEBIM_CONNCTION_SERVER_ERROR")
@@ -108,8 +115,9 @@ WebIM.conn.listen({
     },
     // 连接断开
     onClosed: msg => {
-        console.log("onClosed")
+        console.log("onClosed", msg)
         msg.msg && message.error(msg.msg)
+
     },
     // 更新黑名单
     onBlacklistUpdate: list => {
@@ -143,7 +151,7 @@ const {Types, Creators} = createActions({
 
             // dispatch({type: "USER_LOGOUT"})
 
-            // NavigationActions.login({ type: ActionConst.REPLACE })
+            // NavigationActions.login({type: ActionConst.REPLACE})
         }
     }
 })

@@ -18,7 +18,7 @@
     Module not found: Can't resolve 'easemob-websdk/dist/strophe-1.2.8-g.js' in '<YourRootDir>/demo/src/config'
     ```
 3. 运行demo
-	1. 运行demo，在/demo下执行 `npm start` （node 版本要求6+）
+	1. 运行demo，在/demo下执行 `npm start` （requires node@>=6）
 	
 
 ## 项目组成
@@ -35,7 +35,8 @@
 2. multi login 互相踢的问题
 3. fixed元素错位的问题
 4. 如何做[code-splitting](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#code-splitting)
-
+5. [createActions](https://github.com/infinitered/reduxsauce) 利用可选的第二个参数，加上prefix，通过namespace区分模块，这样多人开发的时候，每人负责一个模块，不会出现TYPE名字冲突.
+   
 ### redux state
 
 ```

@@ -24,8 +24,6 @@ const HeaderOps = ({title, doLogout}) => {
                 break;
             case '1':
                 handleLogout()
-
-                // History.replace('/login')
                 break;
         }
     }
