@@ -11,8 +11,14 @@
 2. 如果需要同时编辑sdk
 	1. 在/sdk下执行 `npm link`
 	1. 在根目录下执行 `npm link easemob-websdk`
+
+    ```
+    否则会报错:
+    ./src/config/WebIM.js
+    Module not found: Can't resolve 'easemob-websdk/dist/strophe-1.2.8-g.js' in '<YourRootDir>/demo/src/config'
+    ```
 3. 运行demo
-	1. 运行demo，在/demo下执行 `npm start` （nodejs 6+）
+	1. 运行demo，在/demo下执行 `npm start` （node 版本要求6+）
 	
 
 ## 项目组成
