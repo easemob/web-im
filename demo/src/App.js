@@ -10,8 +10,8 @@ import {
     withRouter
 } from "react-router-dom"
 import Layout from "@/layout/DefaultLayout"
-import Login from "@/containers/login/Login"
-import Signup from "@/containers/login/Signup"
+import Login from "@/containers/loginregister/Login"
+import Register from "@/containers/loginregister/Register"
 import Chat from "@/containers/chat/Chat"
 import WebIMActions from "@/redux/WebIMRedux"
 import LoginActions from "@/redux/LoginRedux"
@@ -83,7 +83,7 @@ class App extends Component {
         return (
             <Switch>
                 <Route exact path="/login" component={Login}/>
-                <Route exact path="/signup" component={Signup}/>
+                <Route exact path="/register" component={Register}/>
                 <Route path="/" children={authorizedComponent}/>
             </Switch>
         )

@@ -17,7 +17,6 @@ const {Types, Creators} = createActions({
     registerSuccess: ["json"],
     registerFailure: ["registerError"],
     jumpRegister: null,
-    jumpLogin: null,
     logout: null,
 
     // ------------- async -----------------
@@ -168,10 +167,6 @@ export const jumpRegister = (state) => {
 }
 
 
-export const jumpLogin = (state) => {
-    history.push("/login")
-    return state
-}
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -184,7 +179,6 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.REGISTER_FAILURE]: registerFailure,
     [Types.LOGOUT]: logout,
     [Types.JUMP_REGISTER]: jumpRegister,
-    [Types.JUMP_LOGIN]: jumpLogin,
 })
 
 /* ------------- Selectors ------------- */

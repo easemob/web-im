@@ -4,7 +4,7 @@ import {connect} from "react-redux"
 import {Button, Row, Form, Input} from "antd"
 import {config} from "@/config"
 import styles from "./index.less"
-import LoginActions from "@/redux/LoginRedux"
+import RegisterActions from "@/redux/RegisterRedux"
 import WebIM from "@/config/WebIM"
 
 const FormItem = Form.Item
@@ -24,7 +24,6 @@ const Register = ({
                 return
             }
             console.log(values)
-            // dispatch({ type: "login/login", payload: values })
             // doLogin(values.username, values.password)
         })
     }
@@ -106,6 +105,6 @@ export default    connect(
     }),
     dispatch => ({
         jumpLogin: () =>
-            dispatch(LoginActions.jumpLogin())
+            dispatch(RegisterActions.jumpLogin())
     })
 )(Form.create()(Register))

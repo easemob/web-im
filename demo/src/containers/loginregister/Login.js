@@ -25,7 +25,6 @@ const Login = ({
                 return
             }
             console.log(values)
-            // dispatch({ type: "login/login", payload: values })
             doLogin(values.username, values.password)
         })
     }
