@@ -20,10 +20,10 @@ new WebpackDevServer(webpack(config), {
         poll: true,
     }
     // headers: { 'Access-Control-Allow-Origin': '*' }
-}).listen(3000, 'localhost', function (err, result) {
+}).listen(3001, 'localhost', function (err, result) {
     if (err) {
         return console.log(err);
     }
 
-    console.log('Listening at http://localhost:3000/');
+    console.log('Listening at http://localhost:3001/');
 });
