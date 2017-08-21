@@ -9,17 +9,20 @@ import WebIM from "@/config/WebIM"
 
 const FormItem = Form.Item
 
-const Login = ({
-                   login,
-                   doLogin,
-                   toSignup,
-                   form: {getFieldDecorator, validateFieldsAndScroll}
-               }) => {
-
+const Signup = ({
+                    login,
+                    doLogin,
+                    toSignin,
+                    form: {getFieldDecorator, validateFieldsAndScroll}
+                }) => {
+    // close connection
+    if (WebIM.conn.isOpened()) {
+        WebIM.conn.close("logout")
+    }
 
     const {loginLoading} = login
 
-    const handleOk = () => {
+    function handleOk() {
         validateFieldsAndScroll((errors, values) => {
             if (errors) {
                 return
@@ -30,7 +33,7 @@ const Login = ({
         })
     }
 
-
+    //
     return (
         <div className="form x-login">
             <div className="logo">
@@ -78,21 +81,22 @@ const Login = ({
                         onClick={handleOk}
                         loading={loginLoading}
                     >
-                        Sign in
+                        Sign up
                     </Button>
                 </Row>
             </form>
             <div className="extra">
                 <p>
-                    New around here?
-                    <span onClick={toSignup}>Sign Up</span>
+                    Have an account?
+                    <span onClick={toSignin}>Sign In</span>
                 </p>
             </div>
         </div>
     )
 }
 
-Login.propTypes = {
+
+Signup.propTypes = {
     form: PropTypes.object,
     login: PropTypes.object,
     dispatch: PropTypes.func
@@ -107,7 +111,7 @@ export default    connect(
     dispatch => ({
         doLogin: (username, password) =>
             dispatch(LoginActions.login(username, password)),
-        toSignup: () =>
-            dispatch(LoginActions.signup())
+        toSignin: () =>
+            dispatch(LoginActions.signin())
     })
-)(Form.create()(Login))
+)(Form.create()(Signup))

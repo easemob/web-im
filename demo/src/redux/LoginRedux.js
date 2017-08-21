@@ -5,7 +5,7 @@ import Immutable from "seamless-immutable"
 import WebIM, {api} from "@/config/WebIM"
 import Cookie from "js-cookie"
 import {message} from "antd"
-
+import {history} from "@/utils"
 /* ------------- Types and Action Creators ------------- */
 
 const {Types, Creators} = createActions({
@@ -16,6 +16,8 @@ const {Types, Creators} = createActions({
     registerRequest: ["username", "password"],
     registerSuccess: ["json"],
     registerFailure: ["registerError"],
+    signup: null,
+    signin: null,
     logout: null,
 
     // ------------- async -----------------
@@ -111,6 +113,7 @@ export const INITIAL_STATE = Immutable({
 
 /* ------------- Reducers ------------- */
 export const setLoginToken = (state = INITIAL_STATE, {username, token}) => {
+    console.log('setLoginToken')
     Cookie.set("web_im_" + username, token)
     return Immutable.merge(state, {
         username: username,
@@ -154,8 +157,21 @@ export const registerFailure = (state = INITIAL_STATE, {registerError}) => {
 }
 
 // we've logged out
-export const logout = state => INITIAL_STATE
+export const logout = (state = INITIAL_STATE) => {
+    console.log('reducer logout')
+    return state
+}
 
+export const signup = (state) => {
+    history.push("/signup")
+    return state
+}
+
+
+export const signin = (state) => {
+    history.push("/login")
+    return state
+}
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -166,7 +182,9 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.REGISTER_REQUEST]: registerRequest,
     [Types.REGISTER_SUCCESS]: registerSuccess,
     [Types.REGISTER_FAILURE]: registerFailure,
-    [Types.LOGOUT]: logout
+    [Types.LOGOUT]: logout,
+    [Types.SIGNUP]: signup,
+    [Types.SIGNIN]: signin,
 })
 
 /* ------------- Selectors ------------- */

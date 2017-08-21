@@ -96,8 +96,9 @@ WebIM.conn.listen({
         // 7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
         if (error.type == WebIM.statusCode.WEBIM_CONNCTION_SERVER_CLOSE_ERROR) {
             console.log("WEBIM_CONNCTION_SERVER_CLOSE_ERROR")
-            message.error("client-side network offline")
-            history.push("/login")
+            //TODO 需要加判断 如果是logout 就不显示错误信息
+            // message.error("client-side network offline")
+
             return
         }
         // 8: offline by multi login
@@ -116,7 +117,8 @@ WebIM.conn.listen({
     // 连接断开
     onClosed: msg => {
         console.log("onClosed", msg)
-        msg.msg && message.error(msg.msg)
+        // msg.msg && message.error(msg.msg)
+        store.dispatch(Creators.logoutSuccess())
 
     },
     // 更新黑名单
@@ -139,19 +141,19 @@ WebIM.conn.listen({
 const {Types, Creators} = createActions({
     subscribe: ["msg"],
     removeSubscribe: ["name"],
+    logoutSuccess: null,
+    signin: null,
+
     // ----------------async------------------
     // 登出
     logout: () => {
         return (dispatch, state) => {
             console.log('bbb')
+            message.success("logout success")
             dispatch(CommonActions.fetching())
             if (WebIM.conn.isOpened()) {
                 WebIM.conn.close("logout")
             }
-
-            // dispatch({type: "USER_LOGOUT"})
-
-            // NavigationActions.login({type: ActionConst.REPLACE})
         }
     }
 })
@@ -185,11 +187,26 @@ export const removeSubscribe = (state, {name}) => {
     })
 }
 
+export const logoutSuccess = (state) => {
+    console.log('logoutSuccess', state)
+    history.push("/login")
+    return state
+}
+
+export const signin = (state) => {
+    history.push("/login")
+    return state
+}
+
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
     [Types.SUBSCRIBE]: subscribe,
-    [Types.REMOVE_SUBSCRIBE]: removeSubscribe
+    [Types.REMOVE_SUBSCRIBE]: removeSubscribe,
+    [Types.LOGOUT_SUCCESS]: logoutSuccess,
+    [Types.SIGNIN]: signin,
+
 })
 
 /* ------------- Selectors ------------- */

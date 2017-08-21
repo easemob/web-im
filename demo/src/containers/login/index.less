@@ -1,100 +1,102 @@
 @import (reference) '../../themes/theme.less';
 
 .form {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	margin: -144px 0 0 -177.5px;
-	// width: 320px;
-	// height: 320px;
-	padding: 40px;
-	// box-shadow: 0 0 100px rgba(0, 0, 0, .08);
-	width: 355px;
-	height: auto;
-	border-radius: 2px;
-	background-color: #ffffff;
-	border: solid 0.5px #adb9c1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -144px 0 0 -177.5px;
+  // width: 320px;
+  // height: 320px;
+  padding: 40px;
+  // box-shadow: 0 0 100px rgba(0, 0, 0, .08);
+  width: 355px;
+  height: auto;
+  border-radius: 2px;
+  background-color: #ffffff;
+  border: solid 0.5px #adb9c1;
 
-	button {
-		width: 100%;
-	}
+  button {
+    width: 100%;
+  }
 
-	p {
-		color: rgb(204, 204, 204);
-		text-align: center;
-		margin-top: 16px;
+  p {
+    color: rgb(204, 204, 204);
+    text-align: center;
+    margin-top: 16px;
 
-		span {
-			&:first-child {
-				margin-right: 16px;
-			}
-		}
-	}
+    span {
+      &:first-child {
+        margin-right: 16px;
+      }
+    }
+  }
 }
 
 .logo {
-	text-align: center;
-	cursor: pointer;
-	margin-bottom: 30px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 30px;
 
-	.icon-hyphenate {
-		width: 100%;
-		margin-right: 8px;
-		position: absolute;
-		font-size: 40px;
-		top: -100px;
-		left: 0;
-		right: 0;
-		color: #3dcb91;
-	}
+  .icon-hyphenate {
+    width: 100%;
+    margin-right: 8px;
+    position: absolute;
+    font-size: 40px;
+    top: -100px;
+    left: 0;
+    right: 0;
+    color: #3dcb91;
+  }
 
-	span {
-		vertical-align: text-bottom;
-		font-size: 16px;
-		// text-transform: uppercase;
-		display: inline-block;
-		font-weight: bold;
-		font-size: 18px;
-		line-height: 1;
-	}
+  span {
+    vertical-align: text-bottom;
+    font-size: 16px;
+    // text-transform: uppercase;
+    display: inline-block;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1;
+  }
 }
 
 .ant-spin-container,
 .ant-spin-nested-loading {
-	height: 100%;
+  height: 100%;
 }
 
 // -------- Rewrite antd input ---------------
 .x-login {
-	.ant-input {
-		padding: 13px 20px;
-		font-size: 14px;
-		line-height: 1;
-		height: auto;
-	}
+  .ant-input {
+    padding: 13px 20px;
+    font-size: 14px;
+    line-height: 1;
+    height: auto;
+  }
 
-	.has-feedback:after {
-		top: 7px;
-	}
+  .has-feedback:after {
+    top: 7px;
+  }
 
-	.ant-btn {
-		height: auto;
-		padding: 13px;
-		line-height: 1;
-	}
+  .ant-btn {
+    height: auto;
+    padding: 13px;
+    line-height: 1;
+  }
 
-	.extra {
-		position: absolute;
-		bottom: -44px;
-		left: 0;
-		right: 0;
-		text-align: center;
-		color: #707e89;
+  .extra {
+    position: absolute;
+    bottom: -44px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: #707e89;
+    font-size: 14px;
 
-		span {
-			color: @primary-color;
-			margin-left: 3px;
-			cursor: pointer;
-		}
-	}
+    span {
+      color: @primary-color;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+  }
 }

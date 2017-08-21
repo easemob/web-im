@@ -35,8 +35,8 @@
 2. multi login 互相踢的问题
 3. fixed元素错位的问题
 4. 如何做[code-splitting](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md#code-splitting)
-5. [createActions](https://github.com/infinitered/reduxsauce) 利用可选的第二个参数，加上prefix，通过namespace区分模块，这样多人开发的时候，每人负责一个模块，不会出现TYPE名字冲突.
-   
+  
+ 
 ### redux state
 
 ```
