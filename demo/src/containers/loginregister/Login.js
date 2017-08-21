@@ -9,20 +9,17 @@ import WebIM from "@/config/WebIM"
 
 const FormItem = Form.Item
 
-const Signup = ({
-                    login,
-                    doLogin,
-                    toSignin,
-                    form: {getFieldDecorator, validateFieldsAndScroll}
-                }) => {
-    // close connection
-    if (WebIM.conn.isOpened()) {
-        WebIM.conn.close("logout")
-    }
+const Login = ({
+                   login,
+                   doLogin,
+                   jumpRegister,
+                   form: {getFieldDecorator, validateFieldsAndScroll}
+               }) => {
+
 
     const {loginLoading} = login
 
-    function handleOk() {
+    const handleOk = () => {
         validateFieldsAndScroll((errors, values) => {
             if (errors) {
                 return
@@ -33,7 +30,7 @@ const Signup = ({
         })
     }
 
-    //
+
     return (
         <div className="form x-login">
             <div className="logo">
@@ -81,22 +78,21 @@ const Signup = ({
                         onClick={handleOk}
                         loading={loginLoading}
                     >
-                        Sign up
+                        Sign in
                     </Button>
                 </Row>
             </form>
             <div className="extra">
                 <p>
-                    Have an account?
-                    <span onClick={toSignin}>Sign In</span>
+                    New around here?
+                    <span onClick={jumpRegister}>Sign Up</span>
                 </p>
             </div>
         </div>
     )
 }
 
-
-Signup.propTypes = {
+Login.propTypes = {
     form: PropTypes.object,
     login: PropTypes.object,
     dispatch: PropTypes.func
@@ -111,7 +107,7 @@ export default    connect(
     dispatch => ({
         doLogin: (username, password) =>
             dispatch(LoginActions.login(username, password)),
-        toSignin: () =>
-            dispatch(LoginActions.signin())
+        jumpRegister: () =>
+            dispatch(LoginActions.jumpRegister())
     })
-)(Form.create()(Signup))
+)(Form.create()(Login))

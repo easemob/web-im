@@ -9,28 +9,27 @@ import WebIM from "@/config/WebIM"
 
 const FormItem = Form.Item
 
-const Login = ({
-                   login,
-                   doLogin,
-                   toSignup,
-                   form: {getFieldDecorator, validateFieldsAndScroll}
-               }) => {
+const Register = ({
+                      login,
+                      jumpLogin,
+                      form: {getFieldDecorator, validateFieldsAndScroll}
+                  }) => {
 
 
     const {loginLoading} = login
 
-    const handleOk = () => {
+    function handleOk() {
         validateFieldsAndScroll((errors, values) => {
             if (errors) {
                 return
             }
             console.log(values)
             // dispatch({ type: "login/login", payload: values })
-            doLogin(values.username, values.password)
+            // doLogin(values.username, values.password)
         })
     }
 
-
+    //
     return (
         <div className="form x-login">
             <div className="logo">
@@ -78,21 +77,22 @@ const Login = ({
                         onClick={handleOk}
                         loading={loginLoading}
                     >
-                        Sign in
+                        Sign up
                     </Button>
                 </Row>
             </form>
             <div className="extra">
                 <p>
-                    New around here?
-                    <span onClick={toSignup}>Sign Up</span>
+                    Have an account?
+                    <span onClick={jumpLogin}>Sign In</span>
                 </p>
             </div>
         </div>
     )
 }
 
-Login.propTypes = {
+
+Register.propTypes = {
     form: PropTypes.object,
     login: PropTypes.object,
     dispatch: PropTypes.func
@@ -105,9 +105,7 @@ export default    connect(
         }
     }),
     dispatch => ({
-        doLogin: (username, password) =>
-            dispatch(LoginActions.login(username, password)),
-        toSignup: () =>
-            dispatch(LoginActions.signup())
+        jumpLogin: () =>
+            dispatch(LoginActions.jumpLogin())
     })
-)(Form.create()(Login))
+)(Form.create()(Register))
