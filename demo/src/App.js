@@ -70,22 +70,25 @@ class App extends Component {
     }
 
     render() {
-        const {isLogin, token} = this.props
+        const {isLogin, token, isLoading} = this.props
         const {hasToken} = this.state
-        console.log('App render:', hasToken, isLogin, debug)
+        console.log('App render:', isLogin, token, isLoading, hasToken)
         if (!isLogin && hasToken && !debug) return <Loading />
 
         const authorizedComponent = (
             <AuthorizedComponent {...this.props} token={token} Layout={Layout}/>
         )
 
-        // console.log("logged")
         return (
-            <Switch>
-                <Route exact path="/login" component={Login}/>
-                <Route exact path="/register" component={Register}/>
-                <Route path="/" children={authorizedComponent}/>
-            </Switch>
+            <div>
+                <Loading show={isLoading}/>
+                <Switch>
+                    <Route exact path="/login" component={Login}/>
+                    <Route exact path="/register" component={Register}/>
+                    <Route path="/" children={authorizedComponent}/>
+                </Switch>
+            </div>
+
         )
     }
 }
@@ -95,7 +98,8 @@ export default withRouter(
         ({breakpoint, login}) => ({
             breakpoint,
             token: login.token,
-            isLogin: login.isLogin
+            isLogin: login.isLogin,
+            isLoading: login.fetching,
         }),
         dispatch => ({
             loginByToken: (username, token) =>

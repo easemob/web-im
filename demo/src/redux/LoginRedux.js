@@ -14,6 +14,7 @@ import {store} from "@/redux"
 const {Types, Creators} = createActions({
     setLoginToken: ["username", "token"],
     setLoging: ["username", "password", "token"],
+    stopLoging: null,
     setLoginSuccess: ["username"],
     loginFailure: ["error"],
     jumpRegister: null,
@@ -105,6 +106,12 @@ export const setLoging = (state = INITIAL_STATE,
     })
 }
 
+export const stopLoging = (state = INITIAL_STATE) => {
+    return Immutable.merge(state, {
+        fetching: false,
+    })
+}
+
 // we've successfully logged in
 export const setLoginSuccess = state => {
     return Immutable.merge(state, {isLogin: true})
@@ -112,7 +119,7 @@ export const setLoginSuccess = state => {
 
 // we've had a problem logging in
 export const failure = (state, {error}) => {
-    return Immutable.merge(state, {fetching: false, error: error})
+    return Immutable.merge(state, {error: error})
 }
 
 
@@ -133,6 +140,7 @@ export const jumpRegister = (state) => {
 export const reducer = createReducer(INITIAL_STATE, {
     [Types.SET_LOGIN_TOKEN]: setLoginToken,
     [Types.SET_LOGING]: setLoging,
+    [Types.STOP_LOGING]: stopLoging,
     [Types.SET_LOGIN_SUCCESS]: setLoginSuccess,
     [Types.LOGIN_FAILURE]: failure,
     [Types.LOGOUT]: logout,

@@ -42,6 +42,7 @@ WebIM.conn.listen({
         // 获取群组列表
         store.dispatch(GroupActions.getGroups())
 
+        store.dispatch(LoginActions.stopLoging())
         // refresh page
         hash.indexOf(redirectUrl) === -1 && history.push(redirectUrl)
     },
