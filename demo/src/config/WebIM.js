@@ -5,6 +5,8 @@ import websdk from "easemob-websdk"
 import config from "./WebIMConfig"
 import emoji from "./emoji"
 import Api from "axios"
+import {message} from "antd"
+
 
 // init DOMParser / document for strophe and sdk
 // window.WebIM.config.isDebug = true
@@ -90,11 +92,40 @@ WebIM.conn = new WebIM.connection({
     autoReconnectInterval: WebIM.config.autoReconnectInterval
 })
 
-//https://a1.easemob.com/easemob-demo/chatdemoui/users
 let appKeyPair = WebIM.config.appkey.split("#")
-export let api = Api.create(
-    `${WebIM.config.apiURL}/${appKeyPair[0]}/${appKeyPair[1]}`
-)
+export let api = Api.create({
+    baseURL: `${WebIM.config.apiURL}/${appKeyPair[0]}/${appKeyPair[1]}`,
+    validateStatus: function (status) {
+        return true
+    },
+})
+
+function requestFail(data) {
+    if (data.data && data.data.error_description) {
+        data.msg = data.data.error_description
+    } else if (data.data && data.data.data && data.data.data.error_description) {
+        data.msg = data.data.data.error_description
+    }
+    message.error("Error:" + data.status + ", " + data.msg)
+    return Promise.reject(data);
+}
+
+api.interceptors.response.use(function (resp) {
+    if (resp.status >= 300) {
+        return requestFail(resp);
+    }
+    if (resp.data && resp.data.status && resp.data.status !== 200) {
+        return requestFail(resp.data);
+    }
+    if (resp.data && resp.data.data) {
+        resp.data = resp.data.data
+    }
+    return resp
+}, function (error) {
+    console.log(error)
+
+});
+
 
 WebIM.api = api
 WebIM.emoji = emoji

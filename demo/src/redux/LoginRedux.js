@@ -13,42 +13,11 @@ const {Types, Creators} = createActions({
     setLoging: ["username", "password", "token"],
     setLoginSuccess: ["username"],
     loginFailure: ["error"],
-    registerRequest: ["username", "password"],
-    registerSuccess: ["json"],
-    registerFailure: ["registerError"],
     jumpRegister: null,
     logout: null,
 
     // ------------- async -----------------
-    register: (username, password) => {
-        return (dispatch, getState) => {
-            let options = {
-                username: username.trim().toLowerCase(),
-                password: password,
-                nickname: username.trim().toLowerCase()
-            }
-            // console.log(options)
-            dispatch(Creators.registerRequest(username, password))
 
-            // must be https for mac policy
-            return api
-                .register(options)
-                .then(({data}) => {
-                    if (data.error) {
-                        // Alert.alert('Error', data.error_description)
-                        dispatch(Creators.registerFailure(data))
-                        return Promise.reject()
-                    }
-
-                    // Alert.alert('Success')
-                    dispatch(Creators.registerSuccess(data))
-                    // NavigationActions.login()
-                })
-                .catch(() => {
-                    console.log("error")
-                })
-        }
-    },
     login: (username, password) => {
         return (dispatch, getState) => {
             dispatch(Creators.setLoging(username, password, null))
@@ -142,18 +111,6 @@ export const failure = (state, {error}) => {
     return Immutable.merge(state, {fetching: false, error: error})
 }
 
-export const registerRequest = (state = INITIAL_STATE,
-                                {username, password}) => {
-    return Immutable.merge(state, {username, password, fetching: true})
-}
-
-export const registerSuccess = (state = INITIAL_STATE, {json}) => {
-    return Immutable.merge(state, {fetching: false, json, registerError: null})
-}
-
-export const registerFailure = (state = INITIAL_STATE, {registerError}) => {
-    return Immutable.merge(state, {fetching: false, registerError})
-}
 
 // we've logged out
 export const logout = (state = INITIAL_STATE) => {
@@ -174,9 +131,6 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.SET_LOGING]: setLoging,
     [Types.SET_LOGIN_SUCCESS]: setLoginSuccess,
     [Types.LOGIN_FAILURE]: failure,
-    [Types.REGISTER_REQUEST]: registerRequest,
-    [Types.REGISTER_SUCCESS]: registerSuccess,
-    [Types.REGISTER_FAILURE]: registerFailure,
     [Types.LOGOUT]: logout,
     [Types.JUMP_REGISTER]: jumpRegister,
 })

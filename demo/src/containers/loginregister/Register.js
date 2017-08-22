@@ -11,6 +11,7 @@ const FormItem = Form.Item
 
 const Register = ({
                       login,
+                      doRegister,
                       jumpLogin,
                       form: {getFieldDecorator, validateFieldsAndScroll}
                   }) => {
@@ -24,7 +25,7 @@ const Register = ({
                 return
             }
             console.log(values)
-            // doLogin(values.username, values.password)
+            doRegister(values.username, values.password, values.nickname)
         })
     }
 
@@ -69,6 +70,15 @@ const Register = ({
                         />
                     )}
                 </FormItem>
+                <FormItem hasFeedback>
+                    {getFieldDecorator("nickname")(
+                        <Input
+                            size="large"
+                            onPressEnter={handleOk}
+                            placeholder="Nickname"
+                        />
+                    )}
+                </FormItem>
                 <Row>
                     <Button
                         type="primary"
@@ -104,6 +114,8 @@ export default    connect(
         }
     }),
     dispatch => ({
+        doRegister: (username, password, nickname) =>
+            dispatch(RegisterActions.register(username, password, nickname)),
         jumpLogin: () =>
             dispatch(RegisterActions.jumpLogin())
     })
