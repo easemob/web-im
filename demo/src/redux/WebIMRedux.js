@@ -154,8 +154,8 @@ const {Types, Creators} = createActions({
     // 登出
     logout: () => {
         return (dispatch, state) => {
-            console.log('bbb')
-            message.success("logout success")
+            let I18N = store.getState().i18n.translations[store.getState().i18n.locale]
+            message.success(I18N.logoutSuccessfully)
             dispatch(CommonActions.fetching())
             if (WebIM.conn.isOpened()) {
                 WebIM.conn.close("logout")

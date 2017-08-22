@@ -6,6 +6,7 @@ import WebIM, {api} from "@/config/WebIM"
 import Cookie from "js-cookie"
 import {message} from "antd"
 import {history} from "@/utils"
+import {store} from "@/redux"
 /* ------------- Types and Action Creators ------------- */
 
 const {Types, Creators} = createActions({
@@ -57,7 +58,8 @@ export const registerRequest = (state = INITIAL_STATE,
 }
 
 export const registerSuccess = (state = INITIAL_STATE, {username}) => {
-    message.success(username + " register successed!")
+    let I18N = store.getState().i18n.translations[store.getState().i18n.locale]
+    message.success(username + ", " + I18N.signUpSuccessfully)
     history.push("/login")
     return Immutable.merge(state, {fetching: false, registerError: null})
 }

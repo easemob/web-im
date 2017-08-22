@@ -6,6 +6,8 @@ export const us = {
     nickname: 'Nickname',
     signUp: 'Sign Up',
     signUpSuccessfully: 'You\'ve signed up successfully!',
+    loginSuccessfully: 'You\'ve login successfully!',
+    logoutSuccessfully: 'You\'ve logout successfully!',
     notEmpty: 'cannot be empty',
     request: 'want to add you as a friend',
     add: 'Add',

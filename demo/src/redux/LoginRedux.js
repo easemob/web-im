@@ -6,6 +6,9 @@ import WebIM, {api} from "@/config/WebIM"
 import Cookie from "js-cookie"
 import {message} from "antd"
 import {history} from "@/utils"
+import {store} from "@/redux"
+
+
 /* ------------- Types and Action Creators ------------- */
 
 const {Types, Creators} = createActions({
@@ -32,7 +35,8 @@ const {Types, Creators} = createActions({
                 //  accessToken: password,
                 appKey: WebIM.config.appkey,
                 success(token) {
-                    message.success("login success", 1)
+                    let I18N = store.getState().i18n.translations[store.getState().i18n.locale]
+                    message.success(I18N.loginSuccessfully, 1)
 
                     dispatch(Creators.setLoginToken(username, token.access_token))
                     dispatch(Creators.setLoginSuccess(username))
