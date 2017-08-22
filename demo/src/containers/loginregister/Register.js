@@ -10,6 +10,7 @@ import WebIM from "@/config/WebIM"
 const FormItem = Form.Item
 
 const Register = ({
+                      I18N,
                       login,
                       doRegister,
                       jumpLogin,
@@ -24,7 +25,6 @@ const Register = ({
             if (errors) {
                 return
             }
-            console.log(values)
             doRegister(values.username, values.password, values.nickname)
         })
     }
@@ -50,7 +50,7 @@ const Register = ({
                         <Input
                             size="large"
                             onPressEnter={handleOk}
-                            placeholder="Username"
+                            placeholder={I18N.username}
                         />
                     )}
                 </FormItem>
@@ -66,7 +66,7 @@ const Register = ({
                             size="large"
                             type="password"
                             onPressEnter={handleOk}
-                            placeholder="Password"
+                            placeholder={I18N.password}
                         />
                     )}
                 </FormItem>
@@ -75,7 +75,7 @@ const Register = ({
                         <Input
                             size="large"
                             onPressEnter={handleOk}
-                            placeholder="Nickname"
+                            placeholder={I18N.nickname}
                         />
                     )}
                 </FormItem>
@@ -86,14 +86,14 @@ const Register = ({
                         onClick={handleOk}
                         loading={loginLoading}
                     >
-                        Sign up
+                        {I18N.signUp}
                     </Button>
                 </Row>
             </form>
             <div className="extra">
                 <p>
-                    Have an account?
-                    <span onClick={jumpLogin}>Sign In</span>
+                    {I18N.haveaccount}
+                    <span onClick={jumpLogin}>{I18N.signIn}</span>
                 </p>
             </div>
         </div>
@@ -108,7 +108,8 @@ Register.propTypes = {
 }
 
 export default    connect(
-    ({login}) => ({
+    ({i18n, login}) => ({
+        I18N: i18n.locale && i18n.translations && i18n.translations[i18n.locale] || {},
         login: {
             loginLoading: false
         }
