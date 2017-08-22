@@ -30,8 +30,6 @@ const {Types, Creators} = createActions({
                 .then(({data}) => {
                     dispatch(Creators.registerSuccess(username))
                 })
-                .catch((e) => {
-                })
         }
     },
 })

@@ -71,6 +71,11 @@ let config = {
      * webrtc supports WebKit and https only
      */
     isWebRTC: /WebKit/.test(navigator.userAgent) && /^https\:$/.test(window.location.protocol),
+    /**
+     *  cn: chinese
+     *  us: english
+     */
+    i18n: 'cn',
     /*
      * Set to auto sign-in
      */

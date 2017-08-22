@@ -10,6 +10,7 @@ import WebIM from "@/config/WebIM"
 const FormItem = Form.Item
 
 const Login = ({
+                   I18N,
                    login,
                    doLogin,
                    doLoginByToken,
@@ -55,7 +56,7 @@ const Login = ({
                         <Input
                             size="large"
                             onPressEnter={handleOk}
-                            placeholder="Username"
+                            placeholder={I18N.username}
                         />
                     )}
                 </FormItem>
@@ -71,13 +72,13 @@ const Login = ({
                             size="large"
                             type="password"
                             onPressEnter={handleOk}
-                            placeholder="Password"
+                            placeholder={I18N.password}
                         />
                     )}
                 </FormItem>
                 <FormItem hasFeedback>
                     {getFieldDecorator("type")(
-                        <Checkbox>use token</Checkbox>
+                        <Checkbox>{I18N.tokenSignin}</Checkbox>
                     )}
                 </FormItem>
                 <Row>
@@ -87,14 +88,14 @@ const Login = ({
                         onClick={handleOk}
                         loading={loginLoading}
                     >
-                        Sign in
+                        {I18N.signIn}
                     </Button>
                 </Row>
             </form>
             <div className="extra">
                 <p>
-                    New around here?
-                    <span onClick={jumpRegister}>Sign Up</span>
+                    {I18N.noaccount}
+                    <span onClick={jumpRegister}>{I18N.signUp}</span>
                 </p>
             </div>
         </div>
@@ -108,7 +109,8 @@ Login.propTypes = {
 }
 
 export default    connect(
-    ({login}) => ({
+    ({login, i18n}) => ({
+        I18N: i18n.locale && i18n.translations && i18n.translations[i18n.locale] || {},
         login: {
             loginLoading: false
         }

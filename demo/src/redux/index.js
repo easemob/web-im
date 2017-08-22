@@ -2,6 +2,9 @@ import {createStore, applyMiddleware, compose, combineReducers} from "redux"
 import {config} from "@/config"
 import {forEach} from "lodash"
 import thunkMiddleware from "redux-thunk"
+import {loadTranslations, setLocale, syncTranslationWithStore, i18nReducer} from 'react-redux-i18n';
+import {translationsObject} from '@/config/i18n/index.js';
+import WebIMConfig from "@/config/WebIMConfig"
 
 // todo media query pollyfill
 import {breakpointReducer, combinedReducer, MATCH_MEDIA} from "./IndexRedux"
@@ -42,7 +45,8 @@ const rootReducer = combineReducers({
     login: require("./LoginRedux").reducer,
     register: require("./RegisterRedux").reducer,
     contacts: require("./ContactsScreenRedux").reducer,
-    im: require("./WebIMRedux").reducer
+    im: require("./WebIMRedux").reducer,
+    i18n: i18nReducer,
     // entities: combineReducers({
     //   roster: require('./RosterRedux').reducer,
     //   group: require('./GroupRedux').reducer,
@@ -70,6 +74,11 @@ const appReducer = (state = initState, action) => {
 export const store = createStore(appReducer, composeEnhancers(...enhancers))
 
 // store.subscribe(() => console.log(store.getState()))
+
+syncTranslationWithStore(store)
+store.dispatch(loadTranslations(translationsObject));
+store.dispatch(setLocale(WebIMConfig.i18n));
+
 
 /* ------------- Media Query ------------- */
 // matchMedia polyfill for
