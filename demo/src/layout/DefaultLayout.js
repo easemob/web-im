@@ -1,4 +1,5 @@
 import React, {Component} from "react"
+import ReactDOM from 'react-dom'
 import {Icon} from "antd"
 import Layout from "./Layout"
 import {connect} from "react-redux"
@@ -9,6 +10,7 @@ import Chat from "@/containers/chat/Chat"
 import HeaderTab from "@/components/header/HeaderTab"
 import HeaderOps from "@/components/header/HeaderOps"
 import {config} from "@/config"
+import utils from '@/utils'
 
 const {SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH, RIGHT_SIDER_WIDTH} = config
 const {Header, Content, Footer, Sider, RightSider} = Layout
@@ -48,8 +50,13 @@ class DefaultLayout extends Component {
             contactItems: []
         }
 
+        // rightSiderOffset: RIGHT_SIDER_WIDTH * -1,
+        
+        this.props['rightSiderOffset'] = -1 * RIGHT_SIDER_WIDTH;
+
         this.changeItem = this.changeItem.bind(this)
         this.changeTab = this.changeTab.bind(this)
+        this.handleClick = this.handleClick.bind(this)
     }
 
     toggle = collapsed => {
@@ -87,6 +94,20 @@ class DefaultLayout extends Component {
         })
     }
 
+    handleClick(e) {
+        console.log('/////////');
+        e.preventDefault();
+        console.log(this.props.rightSiderOffset);
+        // this.setState({rightSiderOffset: })
+        // if (utils.isDescendant(ReactDOM.findDOMNode(this.refs.rightSider), e.target) || utils.isDescendant(e.target, ReactDOM.findDOMNode(this.refs.rightSider))) {
+        if (utils.isDescendant(this.refs.rightSider, e.target) || utils.isDescendant(e.target, this.refs.rightSider)) {
+            console.log('clicked');
+        } else {
+            // hide right side bar
+            // this.setState({rightSiderOffset: 0})
+        }
+    }
+
     componentDidMount() {
         // this.setSelectStatus()
     }
@@ -116,9 +137,9 @@ class DefaultLayout extends Component {
 
     render() {
         const {collapsed, selectTab, selectItem, headerTabs} = this.state
-        const {login} = this.props
+        const {login, rightSiderOffset} = this.props
         return (
-            <Layout>
+            <Layout onClick={this.handleClick}>
                 <Header className="header">
                     <HeaderOps title={login.username}/>
                     <HeaderTab
@@ -156,8 +177,8 @@ class DefaultLayout extends Component {
                             render={props => <Chat collapsed={collapsed} {...props} />}
                         />
                     </Content>
-                    <div className="x-layout-right-sider" style={{width: `${RIGHT_SIDER_WIDTH}px`}}>
-                        <RightSider></RightSider>
+                    <div className="x-layout-right-sider" style={{width: `${RIGHT_SIDER_WIDTH}px`, marginLeft: `${rightSiderOffset}px`}}>
+                        <RightSider ref="rightSider"></RightSider>
                     </div>
                     {/*<Footer style={{ textAlign: "center" }}>
                      Ant Design ©2016 Created by Ant UED

@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import GroupInfo from '@/components/group/groupInfo';
+import GroupMembers from '@/components/group/groupMembers';
 import {config} from '@/config';
 
 class RightSider extends React.Component {
@@ -23,7 +24,10 @@ class RightSider extends React.Component {
     render() {
         const joinPermission = {a: 'aa'};
         return (
-            <GroupInfo title="Group Info" name="bernard" owner="adsf" description="asdf" joinPermission="joinPermission"></GroupInfo>
+            <div>
+                <GroupInfo title="Group Info" name="bernard" owner="adsf" description="asdf" joinPermission="joinPermission"></GroupInfo>
+                <GroupMembers title="Members" name="bernard" owner="adsf" description="asdf" joinPermission="joinPermission"></GroupMembers>
+            </div>
         );
     }
 };

@@ -11,13 +11,13 @@ class GroupInfo extends React.Component {
         return (
             <Card title={title} bordered={false} noHovering={true}>
                 <h3>Group Name</h3>
-                <p className='gray'>{name}</p>
+                <p className='gray fs-117em'>{name}</p>
                 <h3>Owner</h3>
-                <p className='gray'>{owner}</p>
+                <p className='gray fs-117em'>{owner}</p>
                 <h3>Description</h3>
-                <p className='gray'>{description}</p>
+                <p className='gray fs-117em'>{description}</p>
                 <h3>Permission to join</h3>
-                <p className='gray'>{joinPermission}</p>
+                <p className='gray fs-117em'>{joinPermission}</p>
             </Card>
         );
     }
