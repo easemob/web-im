@@ -93,6 +93,12 @@ WebIM.conn.listen({
             history.push("/login")
             return
         }
+        // 2: token 登录失败
+        if (error.type == WebIM.statusCode.WEBIM_CONNCTION_AUTH_ERROR) {
+            message.error("WEBIM_CONNCTION_AUTH_ERROR")
+
+            return
+        }
         // 7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
         if (error.type == WebIM.statusCode.WEBIM_CONNCTION_SERVER_CLOSE_ERROR) {
             console.log("WEBIM_CONNCTION_SERVER_CLOSE_ERROR")

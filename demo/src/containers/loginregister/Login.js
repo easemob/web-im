@@ -1,7 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import {connect} from "react-redux"
-import {Button, Row, Form, Input} from "antd"
+import {Button, Row, Form, Input, Checkbox} from "antd"
 import {config} from "@/config"
 import styles from "./index.less"
 import LoginActions from "@/redux/LoginRedux"
@@ -12,6 +12,7 @@ const FormItem = Form.Item
 const Login = ({
                    login,
                    doLogin,
+                   doLoginByToken,
                    jumpRegister,
                    form: {getFieldDecorator, validateFieldsAndScroll}
                }) => {
@@ -25,7 +26,11 @@ const Login = ({
                 return
             }
             console.log(values)
-            doLogin(values.username, values.password)
+            if (values.type) {
+                doLoginByToken(values.username, values.password)
+            } else {
+                doLogin(values.username, values.password)
+            }
         })
     }
 
@@ -70,6 +75,11 @@ const Login = ({
                         />
                     )}
                 </FormItem>
+                <FormItem hasFeedback>
+                    {getFieldDecorator("type")(
+                        <Checkbox>use token</Checkbox>
+                    )}
+                </FormItem>
                 <Row>
                     <Button
                         type="primary"
@@ -106,6 +116,8 @@ export default    connect(
     dispatch => ({
         doLogin: (username, password) =>
             dispatch(LoginActions.login(username, password)),
+        doLoginByToken: (username, token) =>
+            dispatch(LoginActions.loginByToken(username, token)),
         jumpRegister: () =>
             dispatch(LoginActions.jumpRegister())
     })
