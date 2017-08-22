@@ -1,6 +1,7 @@
 import React from "react"
 import classNames from "classnames"
 import Sider from "./Sider"
+import RightSider from "./RightSider"
 
 function generator(props) {
 	return BacicComponent => {
@@ -60,5 +61,6 @@ Layout.Header = Header
 Layout.Footer = Footer
 Layout.Content = Content
 Layout.Sider = Sider
+Layout.RightSider = RightSider
 
 export default Layout

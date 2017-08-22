@@ -14,6 +14,7 @@ export default {
 	SIDER_COL_BREAK: "sm", //md
 	SIDER_COL_WIDTH: 80,
 	SIDER_WIDTH: 350,
+	RIGHT_SIDER_WIDTH: 280,
 	imgType: {
 		gif: 1,
 		bmp: 1,

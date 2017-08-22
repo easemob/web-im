@@ -10,8 +10,8 @@ import HeaderTab from "@/components/header/HeaderTab"
 import HeaderOps from "@/components/header/HeaderOps"
 import {config} from "@/config"
 
-const {SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH} = config
-const {Header, Content, Footer, Sider} = Layout
+const {SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH, RIGHT_SIDER_WIDTH} = config
+const {Header, Content, Footer, Sider, RightSider} = Layout
 
 class DefaultLayout extends Component {
     constructor({breakpoint, match}) {
@@ -156,6 +156,9 @@ class DefaultLayout extends Component {
                             render={props => <Chat collapsed={collapsed} {...props} />}
                         />
                     </Content>
+                    <div className="x-layout-right-sider" style={{width: `${RIGHT_SIDER_WIDTH}px`}}>
+                        <RightSider></RightSider>
+                    </div>
                     {/*<Footer style={{ textAlign: "center" }}>
                      Ant Design ©2016 Created by Ant UED
                      </Footer>*/}
