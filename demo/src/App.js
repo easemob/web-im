@@ -20,7 +20,7 @@ import utils from "@/utils"
 const debug = false
 
 const AuthorizedComponent = ({token, Layout, ...rest}) => {
-    // console.log("auth", token)
+    console.log("auth", token)
     if (!token && !debug) {
         return <Redirect to="/login"/>
     }
