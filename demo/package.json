@@ -108,8 +108,5 @@
       "react-app"
     ]
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "theme": "./src/theme.js"
 }
