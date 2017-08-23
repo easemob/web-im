@@ -1,6 +1,6 @@
 import React from "react"
 import classNames from "classnames"
-import Sider from "./Sider"
+// import Sider from "./Sider"
 
 function generator(props) {
 	return BacicComponent => {
@@ -9,7 +9,7 @@ function generator(props) {
 			static Header
 			static Footer
 			static Content
-			static Sider
+			// static Sider
 
 			render() {
 				const { prefixCls } = props
@@ -59,6 +59,6 @@ const Content = generator({
 Layout.Header = Header
 Layout.Footer = Footer
 Layout.Content = Content
-Layout.Sider = Sider
+// Layout.Sider = Sider
 
 export default Layout

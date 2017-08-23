@@ -41,6 +41,8 @@ const rootReducer = combineReducers({
 	entities: combineReducers({
 		roster: require("./RosterRedux").reducer,
 		group: require("./GroupRedux").reducer,
+		chatroom: require("./ChatRoomRedux").reducer,
+		stranger: require("./StrangerRedux").reducer,
 		groupMember: require("./GroupMemberRedux").reducer,
 		subscribe: require("./SubscribeRedux").reducer,
 		blacklist: require("./BlacklistRedux").reducer,
@@ -52,20 +54,6 @@ const rootReducer = combineReducers({
 	contacts: require("./ContactsScreenRedux").reducer,
 	im: require("./WebIMRedux").reducer,
 	i18n: i18nReducer
-	// entities: combineReducers({
-	//   roster: require('./RosterRedux').reducer,
-	//   group: require('./GroupRedux').reducer,
-	//   groupMember: require('./GroupMemberRedux').reducer,
-	//   subscribe: require('./SubscribeRedux').reducer,
-	//   blacklist: require('./BlacklistRedux').reducer,
-	//   message: require('./MessageRedux').reducer,
-	// }),
-	// ui: combineReducers({
-	//   common: require('./CommonRedux').reducer,
-	//   login: require('./LoginRedux').reducer,
-	//   contacts: require('./ContactsScreenRedux').reducer,
-	// }),
-	// im: require('./WebIMRedux').reducer
 })
 
 /* ------------- Global Reducers ------------- */

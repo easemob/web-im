@@ -1,21 +1,26 @@
 import {createReducer, createActions} from "reduxsauce"
 import Immutable from "seamless-immutable"
 import {WebIM} from "@/config"
-
 /* ------------- Types and Action Creators ------------- */
 
 const {Types, Creators} = createActions({
-    updateGroupInfo: ["info"],
-    updateGroup: ["groups"],
+
+    updateChatRooms: ["rooms"],
     // ---------------async------------------
-    getGroups: () => {
+    getChatRooms: () => {
         return (dispatch, getState) => {
-            WebIM.conn.listRooms({
-                success: function (rooms) {
-                    dispatch(Creators.updateGroup(rooms))
+            // console.log('getChatRooms', getState())
+            let pagenum = 1
+            let pagesize = 10
+            WebIM.conn.getChatRooms({
+                apiUrl: WebIM.config.apiURL,
+                pagenum: pagenum,
+                pagesize: pagesize,
+                success: function (resp) {
+                    // console.log('aa', resp)
+                    resp.data && dispatch(Creators.updateChatRooms(resp.data))
                 },
                 error: function (e) {
-                    WebIM.conn.setPresence()
                 }
             })
         }
@@ -34,13 +39,14 @@ export const INITIAL_STATE = Immutable({
 })
 
 /* ------------- Reducers ------------- */
-// [{jid,name,roomId}] groups
-export const updateGroup = (state, {groups}) => {
+export const updateChatRooms = (state, {rooms}) => {
     let byName = {}
     let byId = {}
-    groups.forEach(v => {
-        byName[v.name] = v
-        byId[v.roomId] = v
+    rooms.forEach(v => {
+        if (v.name && v.id) {
+            byName[v.name] = v
+            byId[v.id] = v
+        }
     })
     return state.merge({
         byName,
@@ -49,27 +55,11 @@ export const updateGroup = (state, {groups}) => {
     })
 }
 
-// [{affiliations,description,maxusers,name,occupants,owner}] info
-export const updateGroupInfo = (state, {info}) => {
-    // let byName = {}
-    // let byId = {}
-    // state.group.forEach((v) => {
-    //   byName[v.name] = v
-    //   byId[v.roomId] = v
-    // })
-    // return state.merge({
-    //   byName,
-    //   byId,
-    //   names: Object.keys(byName)
-    // })
-    state.group.byName[info.name]
-    return {}
-}
 
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
-    [Types.UPDATE_GROUP]: updateGroup
+    [Types.UPDATE_CHAT_ROOMS]: updateChatRooms
 })
 
 /* ------------- Selectors ------------- */
