@@ -19,11 +19,6 @@ const { Types, Creators } = createActions({
 				to: name,
 				message: "[resp:true]"
 			})
-
-			WebIM.conn.subscribe({
-				to: name,
-				message: "[resp:true]"
-			})
 		}
 	},
 	// 拒绝好友请求
@@ -51,20 +46,12 @@ export const INITIAL_STATE = Immutable({
 /* ------------- Reducers ------------- */
 
 export const subscribe = (state, { msg }) => {
-	return state.merge(
-		{
-			byFrom: Immutable(state.byFrom).set(msg.from, msg)
-		},
-		{ deep: true }
-	)
+	return Immutable.setIn(state, ["byFrom", msg.from], msg)
 }
 
 export const removeSubscribe = (state, { name }) => {
-	let subs = state.byFrom.asMutable()
-	delete subs[name]
-	return state.merge({
-		byFrom: Immutable(subs)
-	})
+	let byFrom = Immutable.without(state.byFrom, name)
+	return Immutable.set(state, ["byFrom"], byFrom)
 }
 
 /* ------------- Hookup Reducers To Types ------------- */

@@ -1,6 +1,7 @@
 import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
 import WebIM from "@/config/WebIM"
+import { I18n } from "react-redux-i18n"
 
 import CommonActions from "@/redux/CommonRedux"
 
@@ -46,9 +47,10 @@ const { Types, Creators } = createActions({
 	// 添加联系人
 	addContact: id => {
 		return (dispatch, getState) => {
+			const u = getState().login.username
 			WebIM.conn.subscribe({
 				to: id,
-				message: "" //I18n.t("request")
+				message: u + I18n.t("request")
 			})
 		}
 	}

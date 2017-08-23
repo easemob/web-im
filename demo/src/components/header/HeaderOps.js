@@ -1,136 +1,178 @@
-import React from "react"
+import React, { Component } from "react"
 import PropTypes from "prop-types"
-import {connect} from "react-redux"
-import {Menu, Dropdown, Icon} from "antd"
+import { connect } from "react-redux"
+import { Menu, Dropdown, Icon } from "antd"
 import ListItem from "@/components/list/ListItem"
 import History from "@/utils/history"
 import WebIM from "@/config/WebIM"
 import WebIMActions from "@/redux/WebIMRedux"
+import "./style/HeaderOps.less"
+import _ from "lodash"
 
-const HeaderOps = ({title, doLogout}) => {
+import AddFriendsModal from "@/components/friend/AddFriendsModal"
+import FriendsRequestModal from "@/components/friend/FriendsRequestModal"
+import ModalComponent from "@/components/common/ModalComponent"
 
-    const handleLogout = function () {
-        console.log('handleLogout')
-        console.log('title', title)
+class HeaderOps extends Component {
+	constructor(props) {
+		super()
 
-        doLogout()
+		this.state = {
+			showAddFriendsModal: false
+		}
+		this.onMenuSettingsClick = this.onMenuSettingsClick.bind(this)
+		this.onMenuRightClick = this.onMenuRightClick.bind(this)
+		this.handleLogout = this.handleLogout.bind(this)
+	}
 
-    }
+	handleLogout() {
+		console.log("handleLogout")
 
-    const onMenuSettingsClick = function ({key}) {
-        switch (key) {
-            case '0':
-                console.log('好友黑名单');
-                break;
-            case '1':
-                handleLogout()
-                break;
-        }
-    }
+		this.props.doLogout()
+	}
 
+	onMenuSettingsClick({ key }) {
+		switch (key) {
+			case "0":
+				console.log("好友黑名单")
+				break
+			case "1":
+				this.handleLogout()
+				break
+		}
+	}
 
-    const tabsLeft = [
-        ["0", "好友黑名单", "minus-circle-o"],
-        ["1", `退出(${title})`, "logout"],
-    ]
+	onMenuRightClick({ key }) {
+		switch (key) {
+			case "0":
+				console.log("添加好友")
+				this.setState({
+					showAddFriendsModal: true
+				})
+				break
+			case "1":
+				console.log("申请加入公开群")
+				break
+			case "2":
+				console.log("创建群组")
+				break
+		}
+	}
 
-    const tabsLeftItem = tabsLeft.map(([key, name, icon]) =>
-        <Menu.Item key={key} onClick={this.ttt}>
-            <span><Icon type={icon}/> <span>{name}</span></span>
-        </Menu.Item>
-    )
+	render() {
+		const { title, doLogout, subscribes } = this.props
+		const { showAddFriendsModal } = this.state
 
-    const menuSettings = (
-        <Menu onClick={onMenuSettingsClick}>
-            {tabsLeftItem}
-        </Menu>
-    )
+		const tabsLeft = [
+			["0", "好友黑名单", "minus-circle-o"],
+			["1", `退出(${title})`, "logout"]
+		]
 
+		const tabsRight = [
+			["0", "添加好友", "user-add"],
+			["1", "申请加入公开群", "plus-circle-o"],
+			["2", "创建群组", "usergroup-add"]
+		]
 
-    const onMenuRihghtClick = function ({key}) {
-        switch (key) {
-            case '0':
-                console.log('添加好友');
-                break;
-            case '1':
-                console.log('申请加入公开群');
-                break;
-            case '2':
-                console.log('创建群组');
-                break;
-        }
-    }
+		const tabsLeftItem = tabsLeft.map(([key, name, icon]) =>
+			<Menu.Item key={key}>
+				<span>
+					<Icon type={icon} /> <span>{name}</span>
+				</span>
+			</Menu.Item>
+		)
 
-    const tabsRight = [
-        // ["0", "添加好友", "user-add"],
-        // ["1", "申请加入公开群", "plus-circle-o"],
-        // ["2", "创建群组", "usergroup-add"],
-    ]
+		const tabsRightItem = tabsRight.map(([key, name, icon]) =>
+			<Menu.Item key={key}>
+				<span>
+					<Icon type={icon} /> <span>{name}</span>
+				</span>
+			</Menu.Item>
+		)
 
+		const menuSettings = (
+			<Menu
+				className="x-header-ops__dropmenu"
+				onClick={this.onMenuSettingsClick}
+			>
+				{tabsLeftItem}
+			</Menu>
+		)
 
-    const tabsRihghtItem = tabsRight.map(([key, name, icon]) =>
-        <Menu.Item key={key}>
-            <span><Icon type={icon}/> <span>{name}</span></span>
-        </Menu.Item>
-    )
+		const menuRight = (
+			<Menu className="x-header-ops__dropmenu" onClick={this.onMenuRightClick}>
+				{tabsRightItem}
+			</Menu>
+		)
+		// console.log("subscribes", _.isEmpty, subscribes)
 
-    const menuRihght = (
-        <Menu onClick={onMenuRihghtClick}>
-            {tabsRihghtItem}
-        </Menu>
-    )
-
-
-    return (
-        <ListItem
-            className="headerBg"
-            config={[
-                {
-                    mode: "left",
-                    component: () =>
-                        <div
-                            style={{
-                                margin: "0 12px 0 0",
-                                fontSize: 24,
-                                lineHeight: "50px",
-                                color: "#fff"
-                            }}
-                        >
-                            <Dropdown overlay={menuSettings} trigger={['click']}>
-                                <Icon type="setting"/>
-                            </Dropdown>
-                        </div >
-                },
-                {
-                    mode: "left",
-                    component: () =>
-                        <div style={{lineHeight: "50px", color: "#fff"}}>
-                            {title}
-                        </div>
-                },
-                {
-                    mode: "right",
-                    component: () =>
-                        <span style={{fontSize: 24, lineHeight: "50px", color: "#fff"}}>
-                                <Dropdown overlay={menuRihght} trigger={['click']}>
-                                    <Icon type="plus-circle-o"/>
-                                </Dropdown>
-                        </span>
-                }
-            ]}
-        />
-    )
+		return (
+			<div id="x-header-ops" className="x-list-item headerBg">
+				<div
+					className="fl"
+					style={{
+						margin: "0 12px 0 0",
+						fontSize: 24,
+						lineHeight: "50px",
+						color: "#fff",
+						cursor: "pointer"
+					}}
+				>
+					<Dropdown
+						overlay={menuSettings}
+						trigger={["click"]}
+						style={{ position: "absolute" }}
+					>
+						<Icon type="setting" />
+					</Dropdown>
+				</div>
+				<div className="fl" style={{ lineHeight: "50px", color: "#fff" }}>
+					{title}
+				</div>
+				<div
+					className="fr"
+					style={{
+						fontSize: 24,
+						lineHeight: "50px",
+						color: "#fff",
+						cursor: "pointer"
+					}}
+				>
+					<Dropdown overlay={menuRight} trigger={["click"]}>
+						<Icon type="plus-circle-o" />
+					</Dropdown>
+				</div>
+				{
+					<ModalComponent
+						width={460}
+						title="Add Friends"
+						visible={showAddFriendsModal}
+						component={AddFriendsModal}
+					/>
+				}
+				{
+					<ModalComponent
+						width={460}
+						title="Friends Request"
+						visible={!_.isEmpty(subscribes)}
+						component={FriendsRequestModal}
+					/>
+				}
+			</div>
+		)
+	}
 }
 
 HeaderOps.propTypes = {
-    collapse: PropTypes.bool
-    // menuOptions: PropTypes.array.isRequired,
+	collapse: PropTypes.bool
+	// menuOptions: PropTypes.array.isRequired,
 }
 
-
 export default connect(
-    ({state}) => ({}),
-    dispatch => ({
-        doLogout: () => dispatch(WebIMActions.logout())
-    })
+	({ entities }) => ({
+		subscribes: entities.subscribe.byFrom
+	}),
+	dispatch => ({
+		doLogout: () => dispatch(WebIMActions.logout())
+	})
 )(HeaderOps)
