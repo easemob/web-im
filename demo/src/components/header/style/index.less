@@ -3,57 +3,58 @@
 @menu-prefix-cls: ~"@{ant-prefix}-menu";
 
 #x-header-tab.@{menu-prefix-cls} {
-	text-align: center;
-	// width: 350px;
-	background-color: #000;
-	color: #adb9c1;
-	height: 50px;
+    text-align: center;
+    // width: 350px;
+    background-color: #000;
+    color: #adb9c1;
+    height: 50px;
 
-	&-horizontal &-item,
-	&-horizontal &-submenu {
-		top: 0;
-	}
+    &-horizontal &-item,
+    &-horizontal &-submenu {
+        top: 0;
+    }
 
-	&-horizontal {
-		> .@{menu-prefix-cls}-item {
-			border-bottom-width: 3px;
-			background-color: #000;
-			margin-top: 0;
+    &-horizontal {
+        > .@{menu-prefix-cls}-item {
+            border-bottom-width: 3px;
+            background-color: #000;
+            margin-top: 0;
+            top: -1px;
 
-			&:hover,
-			&-active,
-			&-open,
-			&-selected {
-				// border-bottom-width: 3px;
-				// border-bottom: 1px solid transparent;
-				color: #fff;
-				// background-color: #00ba6e;
-			}
-		}
-	}
+            &:hover,
+            &-active,
+            &-open,
+            &-selected {
+                // border-bottom-width: 3px;
+                // border-bottom: 1px solid transparent;
+                color: #fff;
+                // background-color: #00ba6e;
+            }
+        }
+    }
 
-	.@{menu-prefix-cls}-item {
-		box-sizing: border-box;
-		padding: 0 22px;
-		line-height: 46px;
-	}
+    .@{menu-prefix-cls}-item {
+        box-sizing: border-box;
+        padding: 0 22px;
+        line-height: 46px;
+    }
 
-	// &-item,
-	// &-submenu-title {
-	// }
+    // &-item,
+    // &-submenu-title {
+    // }
 
-	.anticon {
-		margin-right: 0;
-		vertical-align: middle;
-	}
+    .anticon {
+        margin-right: 0;
+        vertical-align: middle;
+    }
 
-	.collapse {
-		width: 100%;
-		text-align: left;
-	}
+    .collapse {
+        width: 100%;
+        text-align: left;
+    }
 
-	.nav-text {
-		font-size: 14px;
-		vertical-align: middle;
-	}
+    .nav-text {
+        font-size: 14px;
+        vertical-align: middle;
+    }
 }
