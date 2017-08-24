@@ -110,6 +110,8 @@ WebIM.config = {
     /**
      * Whether encrypt/decrypt the message during transfer
      */
-    encrypt: false,
+    encrypt: {
+        enabled: true
+    }
 
 };

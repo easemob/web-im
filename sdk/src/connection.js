@@ -101,7 +101,7 @@ Strophe.Websocket.prototype._onMessage = function (message) {
         }
     } else {
         var data_decrypted = null
-        if (WebIM.config.encrypt) {
+        if (WebIM.config.encrypt.enabled) {
 
             var pos1 = message.data.indexOf("<body>") + 6
             var pos2 = message.data.indexOf("</body>")
@@ -388,6 +388,7 @@ var rsa_encrypt = function (target, pub_key) {
 
 
 var getRandomKey = function (conn, pub_key) {
+
     conn.context.aes_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
     conn.context.aes_key_str = new Array(new Date().getTime(), Math.random().toString().substr(2, 2)).join("_")
 
@@ -3656,7 +3657,7 @@ Strophe.Connection.prototype._sasl_auth1_cb = function (elem) {
         // console.log(key)
         var resource = Strophe.getResourceFromJid(this.jid);
         if (resource) {
-            if (WebIM.config.encrypt) {
+            if (WebIM.config.encrypt.enabled) {
                 this.send($iq({type: "set", id: "_bind_auth_2"})
                     .c('bind', {xmlns: Strophe.NS.BIND})
                     .c('resource', {}).t(resource)
@@ -3701,9 +3702,10 @@ Strophe.Connection.prototype._sasl_bind_cb = function (elem) {
                 null, "_bind_auth_2");
 
             let encrypt_key = getRandomKey(Demo.conn, pub_key)
+
             var resource = Strophe.getResourceFromJid(this.jid);
             if (resource) {
-                if (WebIM.config.encrypt) {
+                if (WebIM.config.encrypt.enabled) {
                     this.send($iq({type: "set", id: "_bind_auth_2"})
                         .c('bind', {xmlns: Strophe.NS.BIND})
                         .c('resource', {}).t(resource)
