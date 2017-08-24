@@ -12,7 +12,8 @@ var Strophe = window.Strophe
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
-var logMessage = function(message) {}
+var logMessage = function (message) {
+}
 
 if (window.XDomainRequest) {
     // not support ie8 send is not a function , canot 
@@ -1292,6 +1293,13 @@ connection.prototype.handlePresence = function (msginfo) {
                 info.mid = info.fromJid.split('/');
                 info.mid = info.mid[info.mid.length - 1];
                 info.type = 'memberJoinPublicGroupSuccess';
+                var roomtype = msginfo.getElementsByTagName('roomtype');
+                if (roomtype && roomtype.length > 0) {
+                    var type = roomtype[0].getAttribute('type');
+                    if (type == 'chatroom') {
+                        info.type = 'memberJoinChatRoomSuccess';
+                    }
+                }
             }
         } else if (decline && decline.length) {
             isDecline = true;
@@ -3734,13 +3742,13 @@ WebIM.debug = function (bool) {
     Strophe.Connection.prototype.rawOutput = function (data) {
         bool && console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
     }
-    
+
 }
 
 if (WebIM && WebIM.config && WebIM.config.isSandBox) {
-        WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '-sandbox.easemob.');
-        WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
-    }
+    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '-sandbox.easemob.');
+    WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
+}
 
 module.exports = WebIM;
 

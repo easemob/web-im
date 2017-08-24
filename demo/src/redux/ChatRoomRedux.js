@@ -24,6 +24,20 @@ const {Types, Creators} = createActions({
                 }
             })
         }
+    },
+    joinChatRoom: (roomId) => {
+        return (dispatch, getState) => {
+            WebIM.conn.joinChatRoom({
+                roomId: roomId
+            })
+        }
+    },
+    quitChatRoom: (roomId) => {
+        return (dispatch, getState) => {
+            WebIM.conn.quitChatRoom({
+                roomId: roomId
+            })
+        }
     }
 })
 

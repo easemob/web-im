@@ -51,7 +51,7 @@ WebIM.conn.listen({
     },
     // 出席消息
     onPresence: msg => {
-        console.debug("onPresence", msg, store.getState())
+        // console.log("onPresence", msg, store.getState())
         switch (msg.type) {
             case "subscribe":
                 // 加好友时双向订阅过程，所以当对方同意添加好友的时候
@@ -79,6 +79,14 @@ WebIM.conn.listen({
                     message.warning(msg.from + " " + I18n.t("unsubscribed"))
                 }
                 break
+            case 'memberJoinPublicGroupSuccess':
+                message.success(msg.mid + '已成功加入群组' + msg.from);
+                break;
+            case 'memberJoinChatRoomSuccess':
+                message.success(msg.mid + '已成功加入聊天室' + msg.from);
+                break;
+            case 'leaveChatRoom':// Leave the chat room
+                break;
         }
     },
     // 各种异常

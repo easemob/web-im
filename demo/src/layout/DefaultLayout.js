@@ -6,6 +6,7 @@ import {connect} from "react-redux"
 import {withRouter, Route} from "react-router-dom"
 import dottie from 'dottie'
 //import ContactItem from "@/components/contact/ContactItem"
+import ChatRoomActions from "@/redux/ChatRoomRedux"
 import Contact from "@/containers/contact/Contact"
 import Chat from "@/containers/chat/Chat"
 import HeaderTab from "@/components/header/HeaderTab"
@@ -83,7 +84,7 @@ class DefaultLayout extends Component {
         const {selectItem, selectTab} = this.state
         const redirectPath = "/" + [selectTab, e.key].join("/")
         if (selectItem == e.key) return
-        
+
         // if (selectItem !== e.key && selectTab === 'group') {
 
         if (selectTab === 'group') {
@@ -103,11 +104,11 @@ class DefaultLayout extends Component {
         if (selectTab == "chatroom") {
             //quit previous chatroom
             if (selectItem) {
-                console.log('quit', selectItem)
+                this.props.quitChatRoom(selectItem)
             }
 
             // join chatroom
-            console.log('join', e.key)
+            this.props.joinChatRoom(e.key)
         }
 
         history.push(redirectPath + location.search)
@@ -222,6 +223,10 @@ export default withRouter(
         dispatch => ({
             getGroupMember: (id) => dispatch(GroupMemberActions.getGroupMember(id)),
             switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset}))
+            joinChatRoom: (roomId) =>
+                dispatch(ChatRoomActions.joinChatRoom(roomId)),
+            quitChatRoom: (roomId) =>
+                dispatch(ChatRoomActions.quitChatRoom(roomId)),
         })
     )(DefaultLayout)
 )
