@@ -200,37 +200,28 @@ class Chat extends React.Component {
 
 		return (
 			<div className="x-chat">
-				<ListItem
-					className="x-chat-header"
-					config={[
-						{
-							mode: "left",
-							component: () =>
-								<div>
-									{collapsed
-										? <Icon
-												type="arrow-left"
-												onClick={back}
-												style={{
-													cursor: "pointer",
-													fontSize: 20,
-													verticalAlign: "middle",
-													marginRight: 10
-												}}
-											/>
-										: null}
-									{selectItem}
-								</div>
-						},
-						{
-							mode: "right",
-							component: () =>
-								<span style={{ color: "#8798a4" }}>
-									<Icon type="ellipsis" />
-								</span>
-						}
-					]}
-				/>
+				<div className="x-list-item x-chat-header">
+					<div className="fl">
+						{collapsed
+							? <Icon
+									type="arrow-left"
+									onClick={back}
+									style={{
+										cursor: "pointer",
+										fontSize: 20,
+										verticalAlign: "middle",
+										marginRight: 10
+									}}
+								/>
+							: null}
+						{selectItem}
+					</div>
+					<div className="fr">
+						<span style={{ color: "#8798a4", cursor: "pointer" }}>
+							<Icon type="ellipsis" />
+						</span>
+					</div>
+				</div>
 				<div className="x-chat-content" ref="x-chat-content">
 					{messageList.map(message =>
 						<ChatMessage key={message.id} {...message} />
@@ -289,7 +280,7 @@ class Chat extends React.Component {
 							// 		onClick={this.handleSend}
 							// 		style={{ cursor: "pointer" }}
 							// 	/>
-                            // }
+							// }
 							ref={node => (this.input = node)}
 						/>
 						{/*<TextArea rows={2} />*/}

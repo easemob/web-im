@@ -12,13 +12,15 @@ import _ from "lodash"
 import AddFriendsModal from "@/components/friend/AddFriendsModal"
 import FriendsRequestModal from "@/components/friend/FriendsRequestModal"
 import ModalComponent from "@/components/common/ModalComponent"
+import AddGroupModal from "@/components/group/AddGroupModal"
 
 class HeaderOps extends Component {
 	constructor(props) {
 		super()
 
 		this.state = {
-			showAddFriendsModal: false
+			showAddFriendsModal: false,
+			showAddGroupModal: false
 		}
 		this.onMenuSettingsClick = this.onMenuSettingsClick.bind(this)
 		this.onMenuRightClick = this.onMenuRightClick.bind(this)
@@ -55,13 +57,16 @@ class HeaderOps extends Component {
 				break
 			case "2":
 				console.log("创建群组")
+				this.setState({
+					showAddGroupModal: true
+				})
 				break
 		}
 	}
 
 	render() {
 		const { title, doLogout, subscribes } = this.props
-		const { showAddFriendsModal } = this.state
+		const { showAddFriendsModal, showAddGroupModal } = this.state
 
 		const tabsLeft = [
 			["0", "好友黑名单", "minus-circle-o"],
@@ -156,6 +161,14 @@ class HeaderOps extends Component {
 						title="Friends Request"
 						visible={!_.isEmpty(subscribes)}
 						component={FriendsRequestModal}
+					/>
+				}
+				{
+					<ModalComponent
+						width={460}
+						title="Create Group"
+						visible={showAddGroupModal}
+						component={AddGroupModal}
 					/>
 				}
 			</div>

@@ -7,7 +7,7 @@ import "./style/ModalComponent.less"
 export default class ModalComponent extends React.Component {
 	constructor(props) {
 		super()
-		this.state = { visible: props.visible }
+		this.state = { visible: props.visible, title: props.title }
 	}
 
 	showModal = () => {
@@ -28,9 +28,16 @@ export default class ModalComponent extends React.Component {
 		})
 	}
 
+	onChangeTitle = v => {
+		this.setState({
+			title: v
+		})
+	}
+
 	componentWillReceiveProps(nextProps) {
 		this.setState({
-			visible: nextProps.visible
+			visible: nextProps.visible,
+			title: nextProps.title
 		})
 	}
 
@@ -44,13 +51,14 @@ export default class ModalComponent extends React.Component {
 				<Modal
 					width={this.props.width}
 					className="x-modal x-modal__nofooter"
-					title={this.props.title}
+					title={this.state.title}
 					visible={this.state.visible}
 					onOk={this.handleOk}
 					onCancel={this.handleCancel}
 				>
 					{
 						<this.props.component
+							onChangeTitle={this.onChangeTitle}
 							onOk={this.handleOk}
 							onCancel={this.handleCancel}
 						/>
