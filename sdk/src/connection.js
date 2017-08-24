@@ -3620,7 +3620,6 @@ WebIM.doQuery = function (str, suc, fail) {
     );
 };
 
-var test_num = 0;
 // ENCRYPT_NONE     = 0;
 // ENCRYPT_AES_128_CBC = 1; //defaule encryption type.
 // ENCRYPT_AES_256_CBC = 2; //
@@ -3695,7 +3694,7 @@ Strophe.Connection.prototype._sasl_bind_cb = function (elem) {
     if (elem.getAttribute("type") == "error") {
         var errors = elem.getElementsByTagName("error");
         var code = errors[0].getAttribute("code")
-        if (code == "413" && test_num == 0) {
+        if (code == "413") {
             var texts = elem.getElementsByTagName("text");
             var pub_key = Strophe.getText(texts[0])
             this._addSysHandler(this._sasl_bind_cb.bind(this), null, null,
@@ -3727,7 +3726,6 @@ Strophe.Connection.prototype._sasl_bind_cb = function (elem) {
                     .c('bind', {xmlns: Strophe.NS.BIND})
                     .tree());
             }
-            test_num++
         } else {
             Strophe.info("SASL binding failed.");
             var conflict = elem.getElementsByTagName("conflict"), condition;
