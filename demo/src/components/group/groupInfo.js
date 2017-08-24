@@ -145,7 +145,7 @@ class GroupInfo extends React.Component {
 
     render() {
         const { title, name, owner, description, joinPermission, room } = this.props
-        const isLoading = _.get(this.props, 'entities.group.isLoading', false)
+    const isLoading = _.get(this.props, 'entities.group.isLoading', false)
         const blacklist = _.get(this.props, `entities.group.byId.${room.roomId}.blacklist`, [])
 
         const menu = (
@@ -208,6 +208,9 @@ class GroupInfo extends React.Component {
                     okText="关闭"
                     onOk={this.handleCloseBlacklistModal}
                     onCancel={this.handleCloseBlacklistModal}
+                    footer={[
+                        <Button key="submit" type="primary" onClick={this.handleCloseBlacklistModal}>关闭</Button>
+                    ]}
                 >
                     {table}
                 </Modal>
