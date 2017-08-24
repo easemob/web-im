@@ -3,8 +3,6 @@ import {connect} from "react-redux"
 import _ from 'lodash'
 import Immutable from "seamless-immutable"
 import { Button, Card, Col, Dropdown, Form, Icon, Input, Menu, Modal, Row, Table, Tooltip } from 'antd';
-import ModalComponent from '@/components/common/ModalComponent';
-import InviteToGroupModal from '@/components/group/InviteToGroupModal';
 import GroupActions from '@/redux/GroupRedux';
 import './style/index.less';
 
