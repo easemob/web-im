@@ -46,10 +46,26 @@ const {Types, Creators} = createActions({
             })
         }
     },
-    dissolveGroup: (groupId) => {
+    dissolveGroup: (group) => {
         return (dispatch, getState) => {
             dispatch(Creators.setLoading({isLoading: true}))
             WebIM.conn.dissolveGroup({
+                groupId: group.groupId,
+                success: () => {
+                    dispatch(Creators.setLoading(false))
+                    dispatch(Creators.setLoadingFailed(false))
+                },
+                error: (e) => {
+                    dispatch(Creators.setLoading(false))
+                    dispatch(Creators.setLoadingFailed(true))
+                }
+            })
+        }
+    },
+    getGroupBlackList: (groupId) => {
+        return (dispatch, getState) => {
+            dispatch(Creators.setLoading({isLoading: true}))
+            WebIM.conn.getGroupBlacklistNew({
                 groupId,
                 success: () => {
                     dispatch(Creators.setLoading(false))
@@ -156,6 +172,17 @@ export const dissolveGroup = (state, {info}) => {
     // const names = Immutable.without(state.names, info.groupName)
 }
 
+export const getGroupBlackList = (state, { groupId, groupName, blackList }) => {
+    let byName = deepcopy(state.byName)
+    Object.assign(byName[groupName], { blackList })
+    let byId = deepcopy(state.byId)
+    Object.assign(byId[groupId], { blackList})
+    return state.merge({
+        byId,
+        byName
+    })
+}
+
 export const switchRightSider = (state, {width}) => {
 	console.log(width);
 	const {rightSiderOffset} = width;
@@ -173,6 +200,7 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.UPDATE_GROUP_INFO]: updateGroupInfo,
     // [Types.UPDATE_GROUP_INFO]: updateGroup,
     [Types.DISSOLVE_GROUP]: dissolveGroup,
+    [Types.GET_GROUP_BLACK_LIST]: getGroupBlackList,
 	[Types.SWITCH_RIGHT_SIDER]: switchRightSider
 })
 
