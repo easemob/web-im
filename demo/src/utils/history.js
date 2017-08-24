@@ -1,2 +1,9 @@
 import { createBrowserHistory, createHashHistory } from "history"
-export default createBrowserHistory()
+// console.log(location.pathname)
+// export default createBrowserHistory(
+// 	{
+// 		// basename: "/easemob/web-im/demo/build/"
+// 	}
+// )
+
+export default createHashHistory()
