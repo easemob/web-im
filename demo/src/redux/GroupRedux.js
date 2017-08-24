@@ -9,6 +9,7 @@ const {Types, Creators} = createActions({
     // updateGroupInfo: ["info"],
     setLoading: ["isLoading"],
     setLoadingFailed: ['loadingFailed'],
+    setBlackList: ['group'],
     updateGroup: ["groups"],
 	switchRightSider: ['width'],
     // ---------------async------------------
@@ -62,14 +63,16 @@ const {Types, Creators} = createActions({
             })
         }
     },
-    getGroupBlackList: (groupId) => {
+    getGroupBlackList: (groupId, groupName) => {
         return (dispatch, getState) => {
             dispatch(Creators.setLoading({isLoading: true}))
             WebIM.conn.getGroupBlacklistNew({
                 groupId,
-                success: () => {
+                success: (blackList) => {
+                    const group = { groupId, groupName, blackList }
                     dispatch(Creators.setLoading(false))
                     dispatch(Creators.setLoadingFailed(false))
+                    dispatch(Creators.setBlackList({ group }))
                 },
                 error: (e) => {
                     dispatch(Creators.setLoading(false))
@@ -172,11 +175,20 @@ export const dissolveGroup = (state, {info}) => {
     // const names = Immutable.without(state.names, info.groupName)
 }
 
-export const getGroupBlackList = (state, { groupId, groupName, blackList }) => {
+/**
+ * 
+ * @param {*} state 
+ * @param {Object} group 
+ * @param {Number} group.groupId
+ * @param {String} group.groupName
+ * @param {Array} group.blackList
+ */
+export const setBlackList = (state, { group }) => {
     let byName = deepcopy(state.byName)
-    Object.assign(byName[groupName], { blackList })
+    const { blackList} = group
+    Object.assign(byName[group.groupName], { blackList })
     let byId = deepcopy(state.byId)
-    Object.assign(byId[groupId], { blackList})
+    Object.assign(byId[group.groupId], { blackList})
     return state.merge({
         byId,
         byName
@@ -198,9 +210,8 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.SET_LOADING_FAILED]: setLoadingFailed,
     [Types.UPDATE_GROUP]: updateGroup,
     [Types.UPDATE_GROUP_INFO]: updateGroupInfo,
-    // [Types.UPDATE_GROUP_INFO]: updateGroup,
     [Types.DISSOLVE_GROUP]: dissolveGroup,
-    [Types.GET_GROUP_BLACK_LIST]: getGroupBlackList,
+    [Types.SET_BLACK_LIST]: setBlackList,
 	[Types.SWITCH_RIGHT_SIDER]: switchRightSider
 })
 
