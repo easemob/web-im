@@ -3,7 +3,7 @@ import {connect} from "react-redux"
 import dottie from 'dottie'
 import Immutable from "seamless-immutable"
 
-import { Card, Col, Form, Icon, Input, Modal, Tooltip } from 'antd';
+import { Card, Col, Dropdown, Form, Icon, Input, Menu, Modal, Tooltip } from 'antd';
 import GroupActions from '@/redux/GroupRedux'
 import './style/index.less';
 
@@ -46,6 +46,7 @@ class GroupInfo extends React.Component {
         this.showModal = this.showModal.bind(this)
         this.handleModalOk = this.handleModalOk.bind(this)
         this.saveFormRef = this.saveFormRef.bind(this)
+        this.handleDissolveGroup = this.handleDissolveGroup.bind(this)
     }
 
     handleSiderClick() {
@@ -101,12 +102,37 @@ class GroupInfo extends React.Component {
         this.form = form
     }
 
+    handleDissolveGroup() {
+        const { room } = this.props;
+        this.props.dissolveGroup(room.roomId)
+    }
+
     render() {
         const { title, name, owner, description, joinPermission } = this.props
         const isLoading = dottie.get(this.props, 'entities.group.isLoading', false)
+
+        const menu = (
+            <Menu>
+                <Menu.Item>
+                    <Tooltip title="修改群组" placement="left"><i className="iconfont icon-pencil" onClick={this.showModal}></i> 修改群组</Tooltip> 
+                </Menu.Item>
+                <Menu.Item>
+                    <Tooltip title="群组黑名单" placement="left"><i className="iconfont icon-trash"></i> 群组黑名单</Tooltip> 
+                </Menu.Item>
+                <Menu.Item>
+                    <Tooltip title="解散群组" placement="left"><i className="iconfont icon-trash"></i> 解散群组</Tooltip> 
+                </Menu.Item>
+            </Menu>
+        )
+
         return (
             <Card title={title} extra={<Tooltip title="关闭" placement="left"><Icon type="close-circle-o" onClick={this.handleSiderClick} /></Tooltip>} bordered={false} noHovering={true}>
-                <h3>Group Name <span className="fr"><Tooltip title="修改群组" placement="left"><i className="iconfont icon-pencil" onClick={this.showModal}></i></Tooltip> <Tooltip title="解散群组" placement="left"><i className="iconfont icon-trash"></i></Tooltip></span></h3>
+                <h3>
+                    Group Name
+                    <span className="fr">
+                        <Dropdown overlay={menu}><Icon type="setting" /></Dropdown>
+                    </span>
+                </h3>
                 <p className='gray fs-117em'>{this.props.room.name}</p>
                 <GroupInfoForm
                     ref={this.saveFormRef}
@@ -125,6 +151,7 @@ export default connect(
     ({entities}) => ({entities}),
     dispatch => ({
         updateGroupInfo: (info) => dispatch(GroupActions.updateGroupInfo(info)),
+        dissolveGroup: (roomId) => dispatch(GroupActions.dissolveGroup(roomId)),
         switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset}))
     })
 )(GroupInfo)
