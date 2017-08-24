@@ -37,6 +37,7 @@ class GroupInfo extends React.Component {
         super()
         this.state = {
             visible: false,
+            blackListVisible: false,
             newName: ''
         }
 
@@ -47,6 +48,8 @@ class GroupInfo extends React.Component {
         this.handleModalOk = this.handleModalOk.bind(this)
         this.saveFormRef = this.saveFormRef.bind(this)
         this.handleDissolveGroup = this.handleDissolveGroup.bind(this)
+        this.handleGetBlackList = this.handleGetBlackList.bind(this)
+        this.handleMenuClick = this.handleMenuClick.bind(this)
     }
 
     handleSiderClick() {
@@ -107,22 +110,57 @@ class GroupInfo extends React.Component {
         this.props.dissolveGroup(room.roomId)
     }
 
+    handleMenuClick({ item, key, selectedKeys }) {
+        console.log(key)
+        switch (key) {
+            case '1':
+                this.showModal();
+                break;
+            case '2':
+                this.handleGetBlackList();
+                break;
+            default:
+                break;
+        }
+    }
+
+    handleGetBlackList() {
+        const { room } = this.props
+        // this.setState({ blackListVisible: true })
+        const blackListModal = Modal.info({
+            title: '群组黑名单',
+            content: (
+                <div>blacklist</div>
+            ),
+            onOk() { blackListModal.destroy() }
+        })
+        this.props.getGroupBlackList(room.roomId, room.name)
+    }
+
     render() {
         const { title, name, owner, description, joinPermission } = this.props
         const isLoading = dottie.get(this.props, 'entities.group.isLoading', false)
 
         const menu = (
-            <Menu>
-                <Menu.Item>
-                    <Tooltip title="修改群组" placement="left"><i className="iconfont icon-pencil" onClick={this.showModal}></i> 修改群组</Tooltip> 
+            <Menu onClick={this.handleMenuClick}>
+                <Menu.Item key="1">
+                    <Tooltip title="修改群组" placement="left"><i className="iconfont icon-pencil"></i> 修改群组</Tooltip> 
                 </Menu.Item>
-                <Menu.Item>
-                    <Tooltip title="群组黑名单" placement="left"><i className="iconfont icon-trash"></i> 群组黑名单</Tooltip> 
+                <Menu.Item key="2">
+                    <Tooltip title="群组黑名单" placement="left"><Icon type="frown" /> 群组黑名单</Tooltip> 
                 </Menu.Item>
-                <Menu.Item>
-                    <Tooltip title="解散群组" placement="left"><i className="iconfont icon-trash"></i> 解散群组</Tooltip> 
+                <Menu.Item key="3">
+                    <Tooltip title="解散群组" placement="left"><Icon type="poweroff" /> 解散群组</Tooltip> 
                 </Menu.Item>
             </Menu>
+        )
+
+        const blackListModal = (
+            <Modal
+                visible={this.state.blackListVisible}
+            >
+                {/* // */}
+            </Modal>
         )
 
         return (
@@ -152,6 +190,7 @@ export default connect(
     dispatch => ({
         updateGroupInfo: (info) => dispatch(GroupActions.updateGroupInfo(info)),
         dissolveGroup: (roomId) => dispatch(GroupActions.dissolveGroup(roomId)),
+        getGroupBlackList: (groupId, groupName) => dispatch(GroupActions.getGroupBlackList(groupId, groupName)),
         switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset}))
     })
 )(GroupInfo)
