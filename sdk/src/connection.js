@@ -3765,11 +3765,11 @@ if (WebIM && WebIM.config.isDebug) {
     }
 }
 
-if (WebIM && WebIM.config && WebIM.config.isSandBox) {
-    // WebIM.config.xmppURL = '118.193.28.212:31093';  //非加密版本
-    WebIM.config.xmppURL = '118.193.28.212:31293';   //加密版本
-    WebIM.config.apiURL = '//118.193.28.212:31080';
-}
+// if (WebIM && WebIM.config && WebIM.config.isSandBox) {
+//     // WebIM.config.xmppURL = '118.193.28.212:31093';  //非加密版本
+//     WebIM.config.xmppURL = '118.193.28.212:31293';   //加密版本
+//     WebIM.config.apiURL = '//118.193.28.212:31080';
+// }
 
 
 module.exports = WebIM;
