@@ -1,7 +1,8 @@
 import {createReducer, createActions} from "reduxsauce"
 import Immutable from "seamless-immutable"
 import deepcopy from 'deepcopy'
-import {WebIM} from "@/config"
+import WebIM from "@/config/WebIM"
+import _ from "lodash"
 
 /* ------------- Types and Action Creators ------------- */
 
@@ -15,6 +16,7 @@ const {Types, Creators} = createActions({
     // ---------------async------------------
     getGroups: () => {
         return (dispatch, getState) => {
+
             WebIM.conn.listRooms({
                 success: function (rooms) {
                     dispatch(Creators.updateGroup(rooms))
@@ -63,16 +65,18 @@ const {Types, Creators} = createActions({
             })
         }
     },
-    getGroupBlackList: (groupId, groupName) => {
+    getGroupBlackList: (groupId) => {
         return (dispatch, getState) => {
             dispatch(Creators.setLoading({isLoading: true}))
+            
             WebIM.conn.getGroupBlacklistNew({
                 groupId,
-                success: (blackList) => {
-                    const group = { groupId, groupName, blackList }
+                success: (response) => {
+                    const blacklist = response.data
+                    const group = { groupId, blacklist }
                     dispatch(Creators.setLoading(false))
                     dispatch(Creators.setLoadingFailed(false))
-                    dispatch(Creators.setBlackList({ group }))
+                    dispatch(Creators.setBlackList(group))
                 },
                 error: (e) => {
                     dispatch(Creators.setLoading(false))
@@ -184,14 +188,11 @@ export const dissolveGroup = (state, {info}) => {
  * @param {Array} group.blackList
  */
 export const setBlackList = (state, { group }) => {
-    let byName = deepcopy(state.byName)
-    const { blackList} = group
-    Object.assign(byName[group.groupName], { blackList })
+    const { blacklist } = group
     let byId = deepcopy(state.byId)
-    Object.assign(byId[group.groupId], { blackList})
+    _.assign(byId[group.groupId], { blacklist })
     return state.merge({
-        byId,
-        byName
+        byId
     })
 }
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import {connect} from "react-redux"
-import dottie from 'dottie'
+import _ from 'lodash'
 import Immutable from "seamless-immutable"
-
-import { Card, Col, Dropdown, Form, Icon, Input, Menu, Modal, Tooltip } from 'antd';
+import { Card, Col, Dropdown, Form, Icon, Input, Menu, Modal, Table, Tooltip } from 'antd';
+import ModalComponent from '@/components/common/ModalComponent';
 import GroupActions from '@/redux/GroupRedux'
 import './style/index.less';
 
@@ -50,6 +50,7 @@ class GroupInfo extends React.Component {
         this.handleDissolveGroup = this.handleDissolveGroup.bind(this)
         this.handleGetBlackList = this.handleGetBlackList.bind(this)
         this.handleMenuClick = this.handleMenuClick.bind(this)
+        this.handleCloseBlacklistModal = this.handleCloseBlacklistModal.bind(this)
     }
 
     handleSiderClick() {
@@ -97,6 +98,10 @@ class GroupInfo extends React.Component {
         // this.props.updateGroupInfo({info})
     }
 
+    handleCloseBlacklistModal() {
+        this.setState({ blackListVisible: false })
+    }
+
     handleCancel() {
         this.setState({ visible: false })
     }
@@ -126,20 +131,14 @@ class GroupInfo extends React.Component {
 
     handleGetBlackList() {
         const { room } = this.props
-        // this.setState({ blackListVisible: true })
-        const blackListModal = Modal.info({
-            title: '群组黑名单',
-            content: (
-                <div>blacklist</div>
-            ),
-            onOk() { blackListModal.destroy() }
-        })
-        this.props.getGroupBlackList(room.roomId, room.name)
+        this.props.getGroupBlackList(room.roomId)
+        this.setState({ blackListVisible: true })
     }
 
     render() {
-        const { title, name, owner, description, joinPermission } = this.props
-        const isLoading = dottie.get(this.props, 'entities.group.isLoading', false)
+        const { title, name, owner, description, joinPermission, room } = this.props
+        const isLoading = _.get(this.props, 'entities.group.isLoading', false)
+        const blacklist = _.get(this.props, `entities.group.byId.${room.roomId}.blacklist`, [])
 
         const menu = (
             <Menu onClick={this.handleMenuClick}>
@@ -155,12 +154,19 @@ class GroupInfo extends React.Component {
             </Menu>
         )
 
-        const blackListModal = (
-            <Modal
-                visible={this.state.blackListVisible}
-            >
-                {/* // */}
-            </Modal>
+        const columns = [{
+            title: 'Name',
+            key: 'name',
+            dataIndex: 'name'
+        }]
+
+        const ds = _.reduce(blacklist, (result, val, key) => {
+            result.push({ name: val })
+            return result
+        }, [])
+        
+        const table = (
+            <Table columns={columns} dataSource={ds} showHeader={false} />
         )
 
         return (
@@ -175,11 +181,19 @@ class GroupInfo extends React.Component {
                 <GroupInfoForm
                     ref={this.saveFormRef}
                     visible={this.state.visible}
-                    loading={isLoading}
                     onCancel={this.handleCancel}
                     onCreate={this.handleCreate}
                 >
                 </GroupInfoForm>
+                <Modal
+                    title="群组黑名单"
+                    visible={this.state.blackListVisible}
+                    okText="关闭"
+                    onOk={this.handleCloseBlacklistModal}
+                    onCancel={this.handleCloseBlacklistModal}
+                >
+                    {table}
+                </Modal>
             </Card>
         )
     }
