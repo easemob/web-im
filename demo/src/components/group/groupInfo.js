@@ -188,7 +188,7 @@ class GroupInfo extends React.Component {
                 <h3>
                     Group Name
                     <span className="fr">
-                        <Dropdown overlay={menu} trigger="click"><Icon type="setting" /></Dropdown>
+                        <Dropdown overlay={menu} trigger={['click']}><Icon type="setting" /></Dropdown>
                     </span>
                 </h3>
                 <p className='gray fs-117em'>{this.props.room.name}</p>
