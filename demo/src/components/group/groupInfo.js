@@ -1,26 +1,130 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { Card } from 'antd';
+import {connect} from "react-redux"
+import dottie from 'dottie'
+import Immutable from "seamless-immutable"
+
+import { Card, Col, Form, Icon, Input, Modal, Tooltip } from 'antd';
+import GroupActions from '@/redux/GroupRedux'
 import './style/index.less';
 
+const GroupInfoForm = Form.create()((props) => {
+    const { visible, onCancel, onCreate, form, loading } = props;
+    const { getFieldDecorator } = form;
+    return (
+        <Modal
+            visible={visible}
+            title="修改群组"
+            okText="修改"
+            confirmLoading={loading}
+            onCancel={onCancel}
+            onOk={onCreate}
+        >
+            <Form layout="vertical">
+                <Form.Item label="群组名称">
+                    {getFieldDecorator('name', {
+                        rules: [{ required: true, message: '请输入群组名称' }]
+                    })(
+                        <Input />
+                    )}
+                </Form.Item>
+            </Form>
+        </Modal>
+    );
+});
+
 class GroupInfo extends React.Component {
+    constructor() {
+        super()
+        this.state = {
+            visible: false,
+            newName: ''
+        }
+
+        this.handleSiderClick = this.handleSiderClick.bind(this)
+        this.handleCreate = this.handleCreate.bind(this)
+        this.handleCancel = this.handleCancel.bind(this)
+        this.showModal = this.showModal.bind(this)
+        this.handleModalOk = this.handleModalOk.bind(this)
+        this.saveFormRef = this.saveFormRef.bind(this)
+    }
+
+    handleSiderClick() {
+        const obj = Immutable({ a: { aa: { aaa: 1111 } } })
+        console.log(obj.a.aa, obj.a)
+        // const aa = Immutable.without(obj.a.aa, 'aaa')
+        // const a = Immutable.without(obj.a, 'aa')
+        const aa = obj.a.aa.without('aaa')
+        const a = obj.a.without('aa')
+        console.log(aa)
+        console.log(a)
+        console.log('~~~~~~')
+        this.props.switchRightSider({rightSiderOffset: 0})
+    }
+
+    handleCreate() {
+        const form = this.form
+        form.validateFieldsAndScroll((err, values) => {
+            if (err) { return }
+            console.log(values);
+            const { room } = this.props;
+            const info = {
+                id: room.roomId,
+                name: room.name,
+                newName: values.name
+            }
+            console.log(room, info)
+            this.setState({visible: false})
+            this.props.updateGroupInfo(info)
+        })
+    }
+
+    showModal() {
+        this.setState({ visible: true })
+    }
+
+    handleModalOk() {
+        console.log(this.props.form)
+        console.log(this.refs.form)
+        this.props.form.validateFieldsAndScroll((errors, values) => {
+            if (errors) {return}
+            console.log(values)
+        })
+        // const info = {}
+        // this.props.updateGroupInfo({info})
+    }
+
+    handleCancel() {
+        this.setState({ visible: false })
+    }
+
+    saveFormRef(form) {
+        this.form = form
+    }
 
     render() {
-        const { title, name, owner, description, joinPermission } = this.props;
+        const { title, name, owner, description, joinPermission } = this.props
+        const isLoading = dottie.get(this.props, 'entities.group.isLoading', false)
         return (
-            <Card title={title} bordered={false} noHovering={true}>
-                <h3>Group Name</h3>
-                <p className='gray fs-117em'>{name}</p>
-                <h3>Owner</h3>
-                <p className='gray fs-117em'>{owner}</p>
-                <h3>Description</h3>
-                <p className='gray fs-117em'>{description}</p>
-                <h3>Permission to join</h3>
-                <p className='gray fs-117em'>{joinPermission}</p>
+            <Card title={title} extra={<Tooltip title="关闭" placement="left"><Icon type="close-circle-o" onClick={this.handleSiderClick} /></Tooltip>} bordered={false} noHovering={true}>
+                <h3>Group Name <span className="fr"><Tooltip title="修改群组" placement="left"><i className="iconfont icon-pencil" onClick={this.showModal}></i></Tooltip> <Tooltip title="解散群组" placement="left"><i className="iconfont icon-trash"></i></Tooltip></span></h3>
+                <p className='gray fs-117em'>{this.props.room.name}</p>
+                <GroupInfoForm
+                    ref={this.saveFormRef}
+                    visible={this.state.visible}
+                    loading={isLoading}
+                    onCancel={this.handleCancel}
+                    onCreate={this.handleCreate}
+                >
+                </GroupInfoForm>
             </Card>
-        );
+        )
     }
 }
 
-export default GroupInfo;
+export default connect(
+    ({entities}) => ({entities}),
+    dispatch => ({
+        updateGroupInfo: (info) => dispatch(GroupActions.updateGroupInfo(info)),
+        switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset}))
+    })
+)(GroupInfo)

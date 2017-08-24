@@ -1,17 +1,26 @@
 import React from 'react';
-import {Card} from 'antd';
+import {connect} from "react-redux";
+import {Card, Menu} from 'antd';
+import dottie from 'dottie';
 import './style/index.less';
 
 class GroupMembers extends React.Component {
     render () {
+        const {entities, roomId} = this.props;
+        const members = dottie.get(entities, `groupMember.${roomId}.names`, []);
+        console.log(members, roomId);
+        console.log('&&&&&&&');
+        // const memberList = members.
         return (
             <Card title="Members" bordered={false} noHovering={true}>
-                <div>
-                    <span className="fs-117em">Han</span><span className="gray fs-117em fr">Admin</span>
-                </div>
+                <Menu className="group-member-list">
+                    {members.map((val, idx) => <Menu.Item key={idx} className="group-member-item"><span>{val}</span></Menu.Item>)}
+                </Menu>
             </Card>
         );
     }
 }
 
-export default GroupMembers;
+export default connect(
+    ({entities}) => ({entities})
+)(GroupMembers);

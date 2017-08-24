@@ -4,11 +4,14 @@ import {Icon} from "antd"
 import Layout from "./Layout"
 import {connect} from "react-redux"
 import {withRouter, Route} from "react-router-dom"
+import dottie from 'dottie'
 //import ContactItem from "@/components/contact/ContactItem"
 import Contact from "@/containers/contact/Contact"
 import Chat from "@/containers/chat/Chat"
 import HeaderTab from "@/components/header/HeaderTab"
 import HeaderOps from "@/components/header/HeaderOps"
+import GroupActions from '@/redux/GroupRedux'
+import GroupMemberActions from '@/redux/GroupMemberRedux'
 import {config} from "@/config"
 import utils from '@/utils'
 
@@ -47,19 +50,18 @@ class DefaultLayout extends Component {
                     icon: "fontello icon-address-book-1"
                 }
             ],
+            rightSiderOffset: -1 * RIGHT_SIDER_WIDTH,
+            roomId: NaN,
+            room: {},
             contactItems: []
         }
 
-        // rightSiderOffset: RIGHT_SIDER_WIDTH * -1,
-        
-        this.props['rightSiderOffset'] = -1 * RIGHT_SIDER_WIDTH;
-
         this.changeItem = this.changeItem.bind(this)
         this.changeTab = this.changeTab.bind(this)
-        this.handleClick = this.handleClick.bind(this)
+        this.handleCloseRightSiderClick = this.handleCloseRightSiderClick.bind(this)
     }
 
-    toggle = collapsed => {
+    toggle(collapsed) {
         console.log("collapsed", collapsed)
         this.setState({
             collapsed
@@ -77,10 +79,24 @@ class DefaultLayout extends Component {
 
     // 切换联系人
     changeItem(e) {
-        const {history, location} = this.props
+        const {history, location, entities} = this.props
         const {selectItem, selectTab} = this.state
         const redirectPath = "/" + [selectTab, e.key].join("/")
         if (selectTab == e.key) return
+        // if (selectItem !== e.key && selectTab === 'group') {
+        if (selectTab === 'group') {
+            const id = dottie.get(entities, `group.byName.${e.key}.roomId`)
+            if (id) {
+                console.log(e.key)
+                console.log(selectItem)
+                this.setState({roomId: id})
+                const room = dottie.get(entities, `group.byId.${id}`, {})
+                console.log(room)
+                console.log('######')
+                this.setState({room})
+                this.props.getGroupMember(id)    
+            }
+        }
         history.push(redirectPath + location.search)
     }
 
@@ -94,18 +110,10 @@ class DefaultLayout extends Component {
         })
     }
 
-    handleClick(e) {
-        console.log('/////////');
+    handleCloseRightSiderClick(e) {
         e.preventDefault();
-        console.log(this.props.rightSiderOffset);
-        // this.setState({rightSiderOffset: })
-        // if (utils.isDescendant(ReactDOM.findDOMNode(this.refs.rightSider), e.target) || utils.isDescendant(e.target, ReactDOM.findDOMNode(this.refs.rightSider))) {
-        if (utils.isDescendant(this.refs.rightSider, e.target) || utils.isDescendant(e.target, this.refs.rightSider)) {
-            console.log('clicked');
-        } else {
-            // hide right side bar
-            // this.setState({rightSiderOffset: 0})
-        }
+        console.log(e.target);
+        this.props.switchRightSider({rightSiderOffset: 0});
     }
 
     componentDidMount() {
@@ -136,10 +144,10 @@ class DefaultLayout extends Component {
 
 
     render() {
-        const {collapsed, selectTab, selectItem, headerTabs} = this.state
-        const {login, rightSiderOffset} = this.props
+        const {collapsed, selectTab, selectItem, headerTabs, roomId} = this.state
+        const {login, entities: { group: { rightSiderOffset }}} = this.props
         return (
-            <Layout onClick={this.handleClick}>
+            <Layout>
                 <Header className="header">
                     <HeaderOps title={login.username}/>
                     <HeaderTab
@@ -178,7 +186,7 @@ class DefaultLayout extends Component {
                         />
                     </Content>
                     <div className="x-layout-right-sider" style={{width: `${RIGHT_SIDER_WIDTH}px`, marginLeft: `${rightSiderOffset}px`}}>
-                        <RightSider ref="rightSider"></RightSider>
+                        <RightSider roomId={roomId} room={this.state.room} ref="rightSider"></RightSider>
                     </div>
                     {/*<Footer style={{ textAlign: "center" }}>
                      Ant Design ©2016 Created by Ant UED
@@ -193,9 +201,13 @@ export default withRouter(
     connect(
         ({breakpoint, entities, login}) => ({
             breakpoint,
-            login
+            entities,
+            login,
         }),
-        dispatch => ({})
+        dispatch => ({
+            getGroupMember: (id) => dispatch(GroupMemberActions.getGroupMember(id)),
+            switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset}))
+        })
     )(DefaultLayout)
 )
 

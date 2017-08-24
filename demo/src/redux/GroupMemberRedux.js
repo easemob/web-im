@@ -12,6 +12,8 @@ const { Types, Creators } = createActions({
 			WebIM.conn.queryRoomMember({
 				roomId: id,
 				success: function(members) {
+                    console.log(members);
+                    console.log('$$$$$')
 					dispatch(Creators.updateGroupMember(id, members))
 				},
 				error: function() {}
