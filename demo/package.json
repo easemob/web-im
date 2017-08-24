@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
 	"name": "demo",
 	"version": "0.1.0",
 	"private": true,
@@ -102,3 +103,123 @@
 	},
 	"theme": "./src/theme.js"
 }
+=======
+    "name": "demo",
+    "version": "0.1.0",
+    "private": true,
+    "devDependencies": {
+        "@storybook/react": "^3.1.9",
+        "babel-plugin-import": "^1.2.1",
+        "less": "^2.7.2",
+        "less-loader": "^4.0.5",
+        "less-vars-to-js": "^1.1.2",
+        "react-redux-i18n": "^1.9.0"
+    },
+    "dependencies": {
+        "ansi-styles": "^3.2.0",
+        "antd": "^2.12.0",
+        "autoprefixer": "7.1.1",
+        "axios": "^0.16.2",
+        "babel-core": "6.25.0",
+        "babel-eslint": "7.2.3",
+        "babel-jest": "20.0.3",
+        "babel-loader": "7.0.0",
+        "babel-polyfill": "^6.26.0",
+        "babel-preset-react-app": "^3.0.1",
+        "babel-runtime": "6.23.0",
+        "case-sensitive-paths-webpack-plugin": "2.1.1",
+        "chalk": "1.1.3",
+        "css-loader": "0.28.4",
+		"deepcopy": "^0.6.3",
+        "dotenv": "4.0.0",
+        "eruda": "^1.2.5",
+		"dottie": "^2.0.0",
+        "eslint": "3.19.0",
+        "eslint-config-react-app": "^1.0.5",
+        "eslint-loader": "1.7.1",
+        "eslint-plugin-flowtype": "2.34.0",
+        "eslint-plugin-import": "2.2.0",
+        "eslint-plugin-jsx-a11y": "5.0.3",
+        "eslint-plugin-react": "^7.3.0",
+        "extract-text-webpack-plugin": "2.1.2",
+        "fastclick": "^1.0.6",
+        "file-loader": "0.11.2",
+        "fs-extra": "3.0.1",
+        "html-webpack-plugin": "2.29.0",
+        "jest": "20.0.4",
+        "js-cookie": "^2.1.4",
+        "nprogress": "^0.2.0",
+        "object-assign": "4.1.1",
+        "postcss-flexbugs-fixes": "3.0.0",
+        "postcss-loader": "2.0.6",
+        "promise": "7.1.1",
+        "react": "^15.6.1",
+        "react-dev-utils": "^3.0.2",
+        "react-dom": "^15.6.1",
+        "react-error-overlay": "^1.0.9",
+        "react-loadable": "^4.0.3",
+        "react-redux": "^5.0.5",
+        "react-router-dom": "^4.1.1",
+        "redux": "^3.7.2",
+        "redux-thunk": "^2.2.0",
+        "reduxsauce": "^0.6.0",
+        "script-loader": "^0.7.0",
+        "seamless-immutable": "^7.1.2",
+        "style-loader": "0.18.2",
+        "sw-precache-webpack-plugin": "0.11.3",
+        "url-loader": "0.5.9",
+        "webpack": "2.6.1",
+        "webpack-dev-server": "2.5.0",
+        "webpack-manifest-plugin": "1.1.0",
+        "whatwg-fetch": "2.0.3"
+    },
+    "scripts": {
+        "start": "node scripts/start.js",
+        "build": "node scripts/build.js",
+        "test": "node scripts/test.js --env=jsdom",
+        "storybook": "start-storybook -p 6006",
+        "build-storybook": "build-storybook"
+    },
+    "jest": {
+        "collectCoverageFrom": [
+            "src/**/*.{js,jsx}"
+        ],
+        "setupFiles": [
+            "<rootDir>/config/polyfills.js"
+        ],
+        "testMatch": [
+            "<rootDir>/src/**/__tests__/**/*.js?(x)",
+            "<rootDir>/src/**/?(*.)(spec|test).js?(x)"
+        ],
+        "testEnvironment": "node",
+        "testURL": "http://localhost",
+        "transform": {
+            "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
+            "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+            "^(?!.*\\.(js|jsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+        },
+        "transformIgnorePatterns": [
+            "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+        ],
+        "moduleNameMapper": {
+            "^react-native$": "react-native-web"
+        },
+        "moduleFileExtensions": [
+            "web.js",
+            "js",
+            "json",
+            "web.jsx",
+            "jsx"
+        ]
+    },
+    "babel": {
+        "presets": [
+            "react-app"
+        ]
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "theme": "./src/theme.js"
+}
+>>>>>>> fb54aa8ae52a9fe80353377f4e95a2fbc16aa017

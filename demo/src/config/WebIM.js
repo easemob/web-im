@@ -89,6 +89,11 @@ WebIM.conn = new WebIM.connection({
 	autoReconnectInterval: WebIM.config.autoReconnectInterval
 })
 
+// 为了兼容老版
+if (!WebIM.conn.apiUrl) {
+    WebIM.conn.apiUrl = WebIM.config.apiURL    
+}
+
 let appKeyPair = WebIM.config.appkey.split("#")
 export let api = Api.create({
 	baseURL: `${WebIM.config.apiURL}/${appKeyPair[0]}/${appKeyPair[1]}`,

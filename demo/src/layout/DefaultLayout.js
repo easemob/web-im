@@ -1,17 +1,22 @@
 import React, {Component} from "react"
+import ReactDOM from 'react-dom'
 import {Icon} from "antd"
 import Layout from "./Layout"
 import {connect} from "react-redux"
 import {withRouter, Route} from "react-router-dom"
+import dottie from 'dottie'
 //import ContactItem from "@/components/contact/ContactItem"
 import Contact from "@/containers/contact/Contact"
 import Chat from "@/containers/chat/Chat"
 import HeaderTab from "@/components/header/HeaderTab"
 import HeaderOps from "@/components/header/HeaderOps"
+import GroupActions from '@/redux/GroupRedux'
+import GroupMemberActions from '@/redux/GroupMemberRedux'
 import {config} from "@/config"
+import utils from '@/utils'
 
-const {SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH} = config
-const {Header, Content, Footer, Sider} = Layout
+const {SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH, RIGHT_SIDER_WIDTH} = config
+const {Header, Content, Footer, Sider, RightSider} = Layout
 
 class DefaultLayout extends Component {
     constructor({breakpoint, match}) {
@@ -44,14 +49,18 @@ class DefaultLayout extends Component {
                     icon: "fontello icon-address-book-1"
                 }
             ],
+            rightSiderOffset: -1 * RIGHT_SIDER_WIDTH,
+            roomId: NaN,
+            room: {},
             contactItems: []
         }
 
         this.changeItem = this.changeItem.bind(this)
         this.changeTab = this.changeTab.bind(this)
+        this.handleCloseRightSiderClick = this.handleCloseRightSiderClick.bind(this)
     }
 
-    toggle = collapsed => {
+    toggle(collapsed) {
         console.log("collapsed", collapsed)
         this.setState({
             collapsed
@@ -69,10 +78,24 @@ class DefaultLayout extends Component {
 
     // 切换联系人
     changeItem(e) {
-        const {history, location} = this.props
+        const {history, location, entities} = this.props
         const {selectItem, selectTab} = this.state
         const redirectPath = "/" + [selectTab, e.key].join("/")
         if (selectTab == e.key) return
+        // if (selectItem !== e.key && selectTab === 'group') {
+        if (selectTab === 'group') {
+            const id = dottie.get(entities, `group.byName.${e.key}.roomId`)
+            if (id) {
+                console.log(e.key)
+                console.log(selectItem)
+                this.setState({roomId: id})
+                const room = dottie.get(entities, `group.byId.${id}`, {})
+                console.log(room)
+                console.log('######')
+                this.setState({room})
+                this.props.getGroupMember(id)    
+            }
+        }
         history.push(redirectPath + location.search)
     }
 
@@ -84,6 +107,12 @@ class DefaultLayout extends Component {
             selectTab,
             selectItem
         })
+    }
+
+    handleCloseRightSiderClick(e) {
+        e.preventDefault();
+        console.log(e.target);
+        this.props.switchRightSider({rightSiderOffset: 0});
     }
 
     componentDidMount() {
@@ -113,8 +142,8 @@ class DefaultLayout extends Component {
     }
 
     render() {
-        const {collapsed, selectTab, selectItem, headerTabs} = this.state
-        const {login} = this.props
+        const {collapsed, selectTab, selectItem, headerTabs, roomId} = this.state
+        const {login, entities: { group: { rightSiderOffset }}} = this.props
         return (
             <Layout>
                 <Header className="header">
@@ -154,6 +183,9 @@ class DefaultLayout extends Component {
                             render={props => <Chat collapsed={collapsed} {...props} />}
                         />
                     </Content>
+                    <div className="x-layout-right-sider" style={{width: `${RIGHT_SIDER_WIDTH}px`, marginLeft: `${rightSiderOffset}px`}}>
+                        <RightSider roomId={roomId} room={this.state.room} ref="rightSider"></RightSider>
+                    </div>
                     {/*<Footer style={{ textAlign: "center" }}>
                      Ant Design ©2016 Created by Ant UED
                      </Footer>*/}
@@ -167,8 +199,12 @@ export default withRouter(
     connect(
         ({breakpoint, entities, login}) => ({
             breakpoint,
-            login
+            entities,
+            login,
         }),
-        dispatch => ({})
+        dispatch => ({
+            getGroupMember: (id) => dispatch(GroupMemberActions.getGroupMember(id)),
+            switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset}))
+        })
     )(DefaultLayout)
 )

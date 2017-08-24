@@ -11,6 +11,7 @@ import ChatEmoji from "@/components/chat/ChatEmoji"
 import styles from "./style/index.less"
 import LoginActions from "@/redux/LoginRedux"
 import MessageActions from "@/redux/MessageRedux"
+import GroupActions from "@/redux/GroupRedux"
 import WebIM from "@/config/WebIM"
 import { message } from "antd"
 
@@ -24,12 +25,15 @@ const chatType = {
 }
 
 class Chat extends React.Component {
-	input = null
-	image = null
+	input = null // eslint-disable-line
+	image = null // eslint-disable-line
 
-	constructor() {
+	constructor({ match }) {
 		super()
+		const { selectTab, selectItem = "" } = match.params
 		this.state = {
+			selectTab,
+			selectItem,
 			value: ""
 		}
 		this.handleSend = this.handleSend.bind(this)
@@ -38,6 +42,7 @@ class Chat extends React.Component {
 		this.handleEmojiSelect = this.handleEmojiSelect.bind(this)
 		this.handleEmojiCancel = this.handleEmojiCancel.bind(this)
 		this.handleKey = this.handleKey.bind(this)
+		this.handleRightIconClick = this.handleRightIconClick.bind(this)
 	}
 
 	scollBottom() {
@@ -152,6 +157,20 @@ class Chat extends React.Component {
 		}
 	}
 
+	/**
+     * 右上角按钮点击事件
+     * 
+     * @memberof Chat
+     */
+	handleRightIconClick() {
+		const { selectTab } = this.state
+		if (selectTab === "group") {
+			// 显示群组侧边栏
+			const rightSiderOffset = -1 * config.RIGHT_SIDER_WIDTH
+			this.props.switchRightSider({ rightSiderOffset })
+		}
+	}
+
 	componentWillReceiveProps(nextProps) {
 		// setTimeout(this.scollBottom, 0)
 		// this.scollBottom()
@@ -218,7 +237,7 @@ class Chat extends React.Component {
 					</div>
 					<div className="fr">
 						<span style={{ color: "#8798a4", cursor: "pointer" }}>
-							<Icon type="ellipsis" />
+							<Icon type="ellipsis" onClick={this.handleRightIconClick} />
 						</span>
 					</div>
 				</div>
@@ -327,6 +346,8 @@ export default connect(
 		message: entities.message.asMutable()
 	}),
 	dispatch => ({
+		switchRightSider: ({ rightSiderOffset }) =>
+			dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
 		sendTxtMessage: (chatType, id, message) =>
 			dispatch(MessageActions.sendTxtMessage(chatType, id, message)),
 		sendImgMessage: (chatType, id, message, source) =>
