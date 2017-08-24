@@ -101,7 +101,7 @@ Strophe.Websocket.prototype._onMessage = function (message) {
         }
     } else {
         var data_decrypted = null
-        if (WebIM.config.encrypt.enabled) {
+        if (WebIM.config.encrypt) {
 
             var pos1 = message.data.indexOf("<body>") + 6
             var pos2 = message.data.indexOf("</body>")
@@ -417,11 +417,6 @@ var _login = function (options, conn) {
     }
     conn.context.accessToken = options.access_token;
     conn.context.accessTokenExpires = options.expires_in;
-
-    // if (WebIM.config.encrypt.enabled && !conn.encrypt.mode) {
-    //     _getAESKey(options, conn)
-    //     return
-    // }
 
 
     var stropheConn = null;
@@ -3661,15 +3656,23 @@ Strophe.Connection.prototype._sasl_auth1_cb = function (elem) {
         // console.log(key)
         var resource = Strophe.getResourceFromJid(this.jid);
         if (resource) {
-            this.send($iq({type: "set", id: "_bind_auth_2"})
-                .c('bind', {xmlns: Strophe.NS.BIND})
-                .c('resource', {}).t(resource)
-                .up()
-                .c('encrypt_type', {}).t("ENCRYPT_NONE")
-                .up()
-                .c('encrypt_key', {}).t('')
-                .up()
-                .tree());
+            if (WebIM.config.encrypt) {
+                this.send($iq({type: "set", id: "_bind_auth_2"})
+                    .c('bind', {xmlns: Strophe.NS.BIND})
+                    .c('resource', {}).t(resource)
+                    .up()
+                    .c('encrypt_type', {}).t("ENCRYPT_NONE")
+                    .up()
+                    .c('encrypt_key', {}).t('')
+                    .up()
+                    .tree());
+            } else {
+                this.send($iq({type: "set", id: "_bind_auth_2"})
+                    .c('bind', {xmlns: Strophe.NS.BIND})
+                    .c('resource', {}).t(resource)
+                    .up()
+                    .tree());
+            }
         } else {
             this.send($iq({type: "set", id: "_bind_auth_2"})
                 .c('bind', {xmlns: Strophe.NS.BIND})
@@ -3700,15 +3703,23 @@ Strophe.Connection.prototype._sasl_bind_cb = function (elem) {
             let encrypt_key = getRandomKey(Demo.conn, pub_key)
             var resource = Strophe.getResourceFromJid(this.jid);
             if (resource) {
-                this.send($iq({type: "set", id: "_bind_auth_2"})
-                    .c('bind', {xmlns: Strophe.NS.BIND})
-                    .c('resource', {}).t(resource)
-                    .up()
-                    .c('encrypt_type', {}).t("ENCRYPT_AES_128_CBC")
-                    .up()
-                    .c('encrypt_key', {}).t(encrypt_key)
-                    .up()
-                    .tree());
+                if (WebIM.config.encrypt) {
+                    this.send($iq({type: "set", id: "_bind_auth_2"})
+                        .c('bind', {xmlns: Strophe.NS.BIND})
+                        .c('resource', {}).t(resource)
+                        .up()
+                        .c('encrypt_type', {}).t("ENCRYPT_AES_128_CBC")
+                        .up()
+                        .c('encrypt_key', {}).t(encrypt_key)
+                        .up()
+                        .tree());
+                } else {
+                    this.send($iq({type: "set", id: "_bind_auth_2"})
+                        .c('bind', {xmlns: Strophe.NS.BIND})
+                        .c('resource', {}).t(resource)
+                        .up()
+                        .tree());
+                }
             } else {
                 this.send($iq({type: "set", id: "_bind_auth_2"})
                     .c('bind', {xmlns: Strophe.NS.BIND})

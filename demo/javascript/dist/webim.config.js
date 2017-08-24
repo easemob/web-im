@@ -10,15 +10,15 @@ WebIM.config = {
     /*
      * XMPP server
      */
-    xmppURL: 'im-api.easemob.com',
-    // xmppURL: '118.193.28.212:31093',  //非加密版本
+    // xmppURL: 'im-api.easemob.com',
+    xmppURL: '118.193.28.212:31093',  //非加密版本
     // xmppURL: '118.193.28.212:31293',  //加密版本
 
     /*
      * Backend REST API URL
      */
-    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
-    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//118.193.28.212:31080',
+    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
+    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//118.193.28.212:31080',
 
     /*
      * Application AppKey
@@ -110,7 +110,6 @@ WebIM.config = {
     /**
      * Whether encrypt/decrypt the message during transfer
      */
-    encrypt: {
-        enabled: true,
-    }
+    encrypt: false,
+
 };
