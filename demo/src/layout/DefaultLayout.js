@@ -222,7 +222,7 @@ export default withRouter(
         }),
         dispatch => ({
             getGroupMember: (id) => dispatch(GroupMemberActions.getGroupMember(id)),
-            switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset}))
+            switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset})),
             joinChatRoom: (roomId) =>
                 dispatch(ChatRoomActions.joinChatRoom(roomId)),
             quitChatRoom: (roomId) =>
