@@ -8,9 +8,6 @@ class GroupMembers extends React.Component {
     render () {
         const {entities, roomId} = this.props;
         const members = dottie.get(entities, `groupMember.${roomId}.names`, []);
-        console.log(members, roomId);
-        console.log('&&&&&&&');
-        // const memberList = members.
         return (
             <Card title="Members" bordered={false} noHovering={true}>
                 <Menu className="group-member-list">

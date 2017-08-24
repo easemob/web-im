@@ -2,12 +2,13 @@ import {createReducer, createActions} from "reduxsauce"
 import Immutable from "seamless-immutable"
 import deepcopy from 'deepcopy'
 import WebIM from "@/config/WebIM"
+import {history} from "@/utils"
 import _ from "lodash"
 
 /* ------------- Types and Action Creators ------------- */
 
 const {Types, Creators} = createActions({
-    // updateGroupInfo: ["info"],
+    updateGroupInfo: ["info"],
     setLoading: ["isLoading"],
     setLoadingFailed: ['loadingFailed'],
     setBlackList: ['group'],
@@ -27,21 +28,21 @@ const {Types, Creators} = createActions({
             })
         }
     },
-    updateGroupInfo: (info) => {
+    updateGroupInfoAsync: (info) => {
         return (dispatch, getState) => {
             dispatch(Creators.setLoading({isLoading: true}))
             WebIM.conn.modifyGroup({
                 groupId: info.id,
                 groupName: info.name,
-                // description: info.description
-                success: (group) => {
-                    console.log(group)
-                    // dispatch(Creators.updateGroup([group]))
+                description: info.description || '',
+                success: (response) => {
+                    const info = response.data // <-- !!!
                     dispatch(Creators.setLoading(false))
                     dispatch(Creators.setLoadingFailed(false))
+                    dispatch(Creators.updateGroupInfo(info))
+                    // history.push('/group/')
                 },
                 error: (e) => {
-                    console.log(e.message)
                     dispatch(Creators.setLoading(false))
                     dispatch(Creators.setLoadingFailed(true))
                     WebIM.conn.setPresence()
@@ -72,11 +73,29 @@ const {Types, Creators} = createActions({
             WebIM.conn.getGroupBlacklistNew({
                 groupId,
                 success: (response) => {
-                    const blacklist = response.data
+                    const blacklist = response.data // <-- !!!
                     const group = { groupId, blacklist }
                     dispatch(Creators.setLoading(false))
                     dispatch(Creators.setLoadingFailed(false))
                     dispatch(Creators.setBlackList(group))
+                },
+                error: (e) => {
+                    dispatch(Creators.setLoading(false))
+                    dispatch(Creators.setLoadingFailed(true))
+                }
+            })
+        }
+    },
+    inviteToGroup: (groupId, users) => {
+        return (dispatch, getState) => {
+            dispatch(Creators.setLoading({isLoading: true}))
+            WebIM.conn.inviteToGroup({
+                groupId,
+                users,
+                success: (response) => {
+                    // let data = response.data <-- !!!
+                    dispatch(Creators.setLoading(false))
+                    dispatch(Creators.setLoadingFailed(false))
                 },
                 error: (e) => {
                     dispatch(Creators.setLoading(false))
@@ -142,19 +161,19 @@ export const updateGroupInfo = (state, {info}) => {
     //   names: Object.keys(byName)
     // })
     
-    // state.group.byName[info.name]
-    // return {}
-    const byName = deepcopy(state.byName)
-    byName[info.newName] = deepcopy(byName[info.name])
-    delete byName[info.name]
-    const byId = deepcopy(state.byId)
-    byId[info.id].name = info.newName
+    state.group.byName[info.name]
+    return {}
+    // const byName = deepcopy(state.byName)
+    // byName[info.newName] = deepcopy(byName[info.name])
+    // delete byName[info.name]
+    // const byId = deepcopy(state.byId)
+    // byId[info.id].name = info.newName
     
-    return state.merge({
-        byName,
-        byId,
-        names: Object.keys(byName).sort()
-    })
+    // return state.merge({
+    //     byName,
+    //     byId,
+    //     names: Object.keys(byName).sort()
+    // })
 }
 
 /**
@@ -197,9 +216,7 @@ export const setBlackList = (state, { group }) => {
 }
 
 export const switchRightSider = (state, {width}) => {
-	console.log(width);
 	const {rightSiderOffset} = width;
-	console.log(rightSiderOffset);
 	return state.merge({
 		rightSiderOffset
 	});
