@@ -33,25 +33,24 @@ export default Creators
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-    byName: {},
+    // byName: {},
     byId: {},
     names: []
 })
 
 /* ------------- Reducers ------------- */
 export const updateChatRooms = (state, {rooms}) => {
-    let byName = {}
+    // let byName = {}
     let byId = {}
+    let names = []
     rooms.forEach(v => {
-        if (v.name && v.id) {
-            byName[v.name] = v
-            byId[v.id] = v
-        }
+        // byName[v.name] = v
+        byId[v.id] = v
+        names.push(v.name + '_#-#_' + v.id)
     })
     return state.merge({
-        byName,
-        byId,
-        names: Object.keys(byName).sort()
+        byId: byId,
+        names: names.sort()
     })
 }
 

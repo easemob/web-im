@@ -61,7 +61,7 @@ class App extends Component {
     render() {
         const {isLogin, token, isLoading} = this.props
         const {hasToken} = this.state
-        console.log('App render:', isLogin, token, isLoading, hasToken)
+        // console.log('App render:', isLogin, token, isLoading, hasToken)
         if (!isLogin && hasToken && !debug) return <Loading />
 
         const authorizedComponent = (

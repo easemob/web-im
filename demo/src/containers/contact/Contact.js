@@ -46,9 +46,11 @@ const Contact = ({
             })
             break
         case "chatroom":
-            chatroom.names.forEach((name, index) => {
+            chatroom.names.forEach((v, index) => {
+                let temp = v.split("_#-#_")
                 items[index] = {
-                    name,
+                    name: temp[0],
+                    id: temp[1],
                     latestMessage: "",
                     latestTime: ""
                 }

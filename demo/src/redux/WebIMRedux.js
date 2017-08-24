@@ -180,7 +180,7 @@ export const INITIAL_STATE = Immutable({
 /* ------------- Reducers ------------- */
 
 export const logoutSuccess = state => {
-    console.log("logoutSuccess", state)
+    // console.log("logoutSuccess", state)
     history.push("/login")
     return state
 }

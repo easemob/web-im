@@ -60,8 +60,9 @@ class DefaultLayout extends Component {
         this.handleCloseRightSiderClick = this.handleCloseRightSiderClick.bind(this)
     }
 
-    toggle(collapsed) {
-        console.log("collapsed", collapsed)
+
+    toggle = collapsed => {
+        // console.log("collapsed", collapsed)
         this.setState({
             collapsed
         })
@@ -81,28 +82,43 @@ class DefaultLayout extends Component {
         const {history, location, entities} = this.props
         const {selectItem, selectTab} = this.state
         const redirectPath = "/" + [selectTab, e.key].join("/")
-        if (selectTab == e.key) return
+        if (selectItem == e.key) return
+        
         // if (selectItem !== e.key && selectTab === 'group') {
+
         if (selectTab === 'group') {
             const id = dottie.get(entities, `group.byName.${e.key}.roomId`)
             if (id) {
-                console.log(e.key)
-                console.log(selectItem)
+                // console.log(e.key)
+                // console.log(selectItem)
                 this.setState({roomId: id})
                 const room = dottie.get(entities, `group.byId.${id}`, {})
-                console.log(room)
-                console.log('######')
+                // console.log(room)
+                // console.log('######')
                 this.setState({room})
-                this.props.getGroupMember(id)    
+                this.props.getGroupMember(id)
             }
         }
+
+        if (selectTab == "chatroom") {
+            //quit previous chatroom
+            if (selectItem) {
+                console.log('quit', selectItem)
+            }
+
+            // join chatroom
+            console.log('join', e.key)
+        }
+
         history.push(redirectPath + location.search)
+
+
     }
 
     setSelectStatus() {
         const {history, location, match} = this.props
         const {selectTab, selectItem = ""} = match.params
-        console.log(match)
+        // console.log(match)
         this.setState({
             selectTab,
             selectItem
@@ -120,30 +136,30 @@ class DefaultLayout extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(
-            "componentWillReceiveProps",
-            this.props.location.pathname,
-            nextProps.location.pathname
-        )
+        // console.log(
+        //     "componentWillReceiveProps",
+        //     this.props.location.pathname,
+        //     nextProps.location.pathname
+        // )
         const {breakpoint, location} = this.props
         const nextBeakpoint = nextProps.breakpoint
 
         // if (breakpoint[SIDER_COL_BREAK] != nextBeakpoint[SIDER_COL_BREAK]) {
-        console.log(breakpoint, "---1")
+        // console.log(breakpoint, "---1")
 
         this.toggle(nextBeakpoint[SIDER_COL_BREAK])
         // }
 
         if (location.pathname != nextProps.location.pathname) {
             this.props = nextProps
-            console.log("componentWillReceiveProps", location)
+            // console.log("componentWillReceiveProps", location)
             this.setSelectStatus()
         }
     }
 
     render() {
         const {collapsed, selectTab, selectItem, headerTabs, roomId} = this.state
-        const {login, entities: { group: { rightSiderOffset }}} = this.props
+        const {login, entities: {group: {rightSiderOffset}}} = this.props
         return (
             <Layout>
                 <Header className="header">
@@ -183,7 +199,8 @@ class DefaultLayout extends Component {
                             render={props => <Chat collapsed={collapsed} {...props} />}
                         />
                     </Content>
-                    <div className="x-layout-right-sider" style={{width: `${RIGHT_SIDER_WIDTH}px`, marginLeft: `${rightSiderOffset}px`}}>
+                    <div className="x-layout-right-sider"
+                         style={{width: `${RIGHT_SIDER_WIDTH}px`, marginLeft: `${rightSiderOffset}px`}}>
                         <RightSider roomId={roomId} room={this.state.room} ref="rightSider"></RightSider>
                     </div>
                     {/*<Footer style={{ textAlign: "center" }}>

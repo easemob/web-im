@@ -21,7 +21,7 @@ const FormItem = Form.Item
 const chatType = {
 	contact: "chat",
 	groups: "chatRoom",
-	room: "chatRoom"
+    chatroom: "chatRoom"
 }
 
 class Chat extends React.Component {
@@ -195,7 +195,8 @@ class Chat extends React.Component {
 			match,
 			history,
 			location,
-			message
+			message,
+            chatroom
 			// form: { getFieldDecorator, validateFieldsAndScroll }
 		} = this.props
 
@@ -209,12 +210,16 @@ class Chat extends React.Component {
 
 		const { byId = {}, chat = {} } = message
 		let messageList = []
+        let name = selectItem
 		switch (selectTab) {
 			case "contact":
 				messageList = chat[selectItem] || []
 				messageList = messageList.map(id => byId[id] || {})
 				// console.log(messageList)
 				break
+            case "chatroom":
+                name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
+                break
 		}
 
 		return (
@@ -233,7 +238,7 @@ class Chat extends React.Component {
 									}}
 								/>
 							: null}
-						{selectItem}
+						{name}
 					</div>
 					<div className="fr">
 						<span style={{ color: "#8798a4", cursor: "pointer" }}>
@@ -343,7 +348,8 @@ class Chat extends React.Component {
 
 export default connect(
 	({ login, entities }) => ({
-		message: entities.message.asMutable()
+		message: entities.message.asMutable(),
+        chatroom: entities.chatroom
 	}),
 	dispatch => ({
 		switchRightSider: ({ rightSiderOffset }) =>
