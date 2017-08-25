@@ -58,11 +58,11 @@ class GroupMembers extends React.Component {
         }]
         const data = members.map(val => {return {name: val, key: val}})
         return (
-            <Card title="Members" bordered={false} noHovering={true}>
+            <Card title="Members" bordered={false} noHovering={true} className="group-member-wrapper">
                 {/* <Menu className="group-member-list">
                     {members.map((val, idx) => <Menu.Item key={idx} className="group-member-item"><span>{val}</span></Menu.Item>)}
                 </Menu> */}
-                <Table columns={columns} dataSource={data} showHeader={false} pagination={false} scroll={{y:300}}></Table>
+                <Table columns={columns} dataSource={data} showHeader={false} pagination={false} scroll={{y:300}} className="group-member-list"></Table>
             </Card>
         );
     }
