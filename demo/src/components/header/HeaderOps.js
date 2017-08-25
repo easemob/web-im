@@ -13,6 +13,7 @@ import AddFriendsModal from "@/components/friend/AddFriendsModal"
 import FriendsRequestModal from "@/components/friend/FriendsRequestModal"
 import ModalComponent from "@/components/common/ModalComponent"
 import AddGroupModal from "@/components/group/AddGroupModal"
+import BlacklistModal from "@/components/blacklist/BlacklistModal"
 
 class HeaderOps extends Component {
 	constructor(props) {
@@ -20,6 +21,7 @@ class HeaderOps extends Component {
 
 		this.state = {
 			showAddFriendsModal: false,
+			showBlacklistModal: false,
 			showAddGroupModal: false
 		}
 		this.onMenuSettingsClick = this.onMenuSettingsClick.bind(this)
@@ -37,6 +39,9 @@ class HeaderOps extends Component {
 		switch (key) {
 			case "0":
 				console.log("好友黑名单")
+				this.setState({
+					showBlacklistModal: true
+				})
 				break
 			case "1":
 				this.handleLogout()
@@ -66,7 +71,11 @@ class HeaderOps extends Component {
 
 	render() {
 		const { title, doLogout, subscribes } = this.props
-		const { showAddFriendsModal, showAddGroupModal } = this.state
+		const {
+			showAddFriendsModal,
+			showAddGroupModal,
+			showBlacklistModal
+		} = this.state
 
 		const tabsLeft = [
 			["0", "好友黑名单", "minus-circle-o"],
@@ -169,6 +178,14 @@ class HeaderOps extends Component {
 						title="Create Group"
 						visible={showAddGroupModal}
 						component={AddGroupModal}
+					/>
+				}
+				{
+					<ModalComponent
+						width={460}
+						title="Blocked"
+						visible={showBlacklistModal}
+						component={BlacklistModal}
 					/>
 				}
 			</div>

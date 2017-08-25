@@ -3,7 +3,7 @@ import ReactDOM from "react-dom"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
-import { Button, Row, Form, Input, Icon } from "antd"
+import { Button, Row, Form, Input, Icon, Dropdown, Menu } from "antd"
 import { config } from "@/config"
 import ListItem from "@/components/list/ListItem"
 import ChatMessage from "@/components/chat/ChatMessage"
@@ -12,6 +12,8 @@ import styles from "./style/index.less"
 import LoginActions from "@/redux/LoginRedux"
 import MessageActions from "@/redux/MessageRedux"
 import GroupActions from "@/redux/GroupRedux"
+import RosterActions from "@/redux/RosterRedux"
+import BlacklistActions from "@/redux/BlacklistRedux"
 import WebIM from "@/config/WebIM"
 import { message } from "antd"
 
@@ -21,16 +23,18 @@ const FormItem = Form.Item
 const chatType = {
 	contact: "chat",
 	groups: "chatRoom",
-    chatroom: "chatRoom"
+	chatroom: "chatRoom"
 }
 
 class Chat extends React.Component {
 	input = null // eslint-disable-line
 	image = null // eslint-disable-line
+	timer = null
 
 	constructor({ match }) {
 		super()
 		const { selectTab, selectItem = "" } = match.params
+		console.log(selectItem, selectTab)
 		this.state = {
 			selectTab,
 			selectItem,
@@ -43,12 +47,13 @@ class Chat extends React.Component {
 		this.handleEmojiCancel = this.handleEmojiCancel.bind(this)
 		this.handleKey = this.handleKey.bind(this)
 		this.handleRightIconClick = this.handleRightIconClick.bind(this)
+		this.onMenuContactClick = this.onMenuContactClick.bind(this)
 	}
 
 	scollBottom() {
-		const dom = this.refs["x-chat-content"]
-		setTimeout(function() {
-			dom.scrollTop = dom.scrollHeight
+		this.timer = setTimeout(() => {
+			// const dom = this.refs["x-chat-content"]
+			// dom.scrollTop = dom.scrollHeight
 		}, 0)
 	}
 
@@ -171,22 +176,62 @@ class Chat extends React.Component {
 		}
 	}
 
+	renderContactMenu() {
+		const tabsRight = [["0", "Block", ""], ["1", "Delete", ""]]
+
+		const tabsLeftItem = tabsRight.map(([key, name, icon]) =>
+			<Menu.Item key={key}>
+				<span>
+					<span>
+						{name}
+					</span>
+				</span>
+			</Menu.Item>
+		)
+
+		const menuSettings = (
+			<Menu
+				className="x-header-ops__dropmenu"
+				onClick={this.onMenuContactClick}
+			>
+				{tabsLeftItem}
+			</Menu>
+		)
+
+		return menuSettings
+	}
+
+	onMenuContactClick({ key }) {
+		const { match } = this.props
+		const { selectItem, selectTab } = match.params
+		switch (key) {
+			case "0":
+				// 屏蔽
+				this.props.doAddBlacklist(selectItem)
+				break
+			case "1":
+				// 删除
+				this.props.removeContact(selectItem)
+				break
+		}
+	}
+
 	componentWillReceiveProps(nextProps) {
 		// setTimeout(this.scollBottom, 0)
 		// this.scollBottom()
 	}
 
 	componentDidUpdate() {
-		this.scollBottom()
+		// this.scollBottom()
 	}
 
 	componentDidMount() {
-		this.scollBottom()
-
+		// this.scollBottom()
 		// document.addEventListener("keydown", this.handleKey)
 	}
 	componentWillUnmount() {
 		// document.removeEventListener("keydown", this.handleKey)
+		if (this.timer) clearTimeout(this.timer)
 	}
 
 	render() {
@@ -196,7 +241,9 @@ class Chat extends React.Component {
 			history,
 			location,
 			message,
-            chatroom
+			chatroom,
+			roster,
+			blacklist
 			// form: { getFieldDecorator, validateFieldsAndScroll }
 		} = this.props
 
@@ -210,16 +257,21 @@ class Chat extends React.Component {
 
 		const { byId = {}, chat = {} } = message
 		let messageList = []
-        let name = selectItem
+		let name = selectItem
 		switch (selectTab) {
 			case "contact":
+				// console.log(selectItem, selectItem in roster.byName, "---contact---")
+				// console.log(roster, roster.byName)
+				const byName = (roster && roster.byName) || {}
+				if (!(selectItem in byName)) return null
+				if (blacklist.names.indexOf(name) !== -1) return null
 				messageList = chat[selectItem] || []
 				messageList = messageList.map(id => byId[id] || {})
 				// console.log(messageList)
 				break
-            case "chatroom":
-                name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
-                break
+			case "chatroom":
+				name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
+				break
 		}
 
 		return (
@@ -242,7 +294,14 @@ class Chat extends React.Component {
 					</div>
 					<div className="fr">
 						<span style={{ color: "#8798a4", cursor: "pointer" }}>
-							<Icon type="ellipsis" onClick={this.handleRightIconClick} />
+							{selectTab === "contact"
+								? <Dropdown
+										overlay={this.renderContactMenu()}
+										trigger={["click"]}
+									>
+										<Icon type="ellipsis" />
+									</Dropdown>
+								: <Icon type="ellipsis" onClick={this.handleRightIconClick} />}
 						</span>
 					</div>
 				</div>
@@ -348,8 +407,10 @@ class Chat extends React.Component {
 
 export default connect(
 	({ login, entities }) => ({
-		message: entities.message.asMutable(),
-        chatroom: entities.chatroom
+		message: entities.message,
+		roster: entities.roster,
+		chatroom: entities.chatroom,
+		blacklist: entities.blacklist
 	}),
 	dispatch => ({
 		switchRightSider: ({ rightSiderOffset }) =>
@@ -357,6 +418,8 @@ export default connect(
 		sendTxtMessage: (chatType, id, message) =>
 			dispatch(MessageActions.sendTxtMessage(chatType, id, message)),
 		sendImgMessage: (chatType, id, message, source) =>
-			dispatch(MessageActions.sendImgMessage(chatType, id, message, source))
+			dispatch(MessageActions.sendImgMessage(chatType, id, message, source)),
+		removeContact: id => dispatch(RosterActions.removeContact(id)),
+		doAddBlacklist: id => dispatch(BlacklistActions.doAddBlacklist(id))
 	})
 )(Chat)
