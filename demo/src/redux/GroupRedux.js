@@ -1,6 +1,5 @@
 import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
-import deepcopy from "deepcopy"
 import WebIM from "@/config/WebIM"
 import { history } from "@/utils"
 import _ from "lodash"
@@ -15,6 +14,7 @@ const { Types, Creators } = createActions({
     removeGroupBlockSingle: ['payload'],
 	updateGroup: ["groups"],
     dissolveGroup: ['group'],
+    switchRightSider: ['width'],
 	// ---------------async------------------
 	createGroups: options => {
 		return (dispatch, getState) => {
