@@ -37,11 +37,11 @@ const { Types, Creators } = createActions({
 		return (dispatch, getState) => {
 			dispatch(Creators.setLoading({ isLoading: true }))
 			WebIM.conn.modifyGroup({
-				groupId: info.id,
-				groupName: info.name,
-				description: info.description || "",
+				groupId: info.groupId,
+				groupName: info.groupName,
+				// description: info.description,
 				success: response => {
-					const info = response.data // <-- !!!
+					// const info = response.data // <-- !!!
 					dispatch(Creators.setLoading(false))
 					dispatch(Creators.setLoadingFailed(false))
 					dispatch(Creators.updateGroupInfo(info))
@@ -50,7 +50,7 @@ const { Types, Creators } = createActions({
 				error: e => {
 					dispatch(Creators.setLoading(false))
 					dispatch(Creators.setLoadingFailed(true))
-					WebIM.conn.setPresence()
+					// WebIM.conn.setPresence()
 				}
 			})
 		}
@@ -185,33 +185,24 @@ export const updateGroup = (state, { groups }) => {
 	})
 }
 
-// [{affiliations,description,maxusers,name,occupants,owner,id,newName}] info
+/**
+ * 
+ * @param {*} state 
+ * @param {Object} info 
+ * @param {String|Number} info.groupId
+ * @param {String} info.groupName
+ * @param {String} info.description
+ */
 export const updateGroupInfo = (state, { info }) => {
-	// let byName = {}
-	// let byId = {}
-	// state.group.forEach((v) => {
-	//   byName[v.name] = v
-	//   byId[v.roomId] = v
-	// })
-	// return state.merge({
-	//   byName,
-	//   byId,
-	//   names: Object.keys(byName)
-	// })
-
-	state.group.byName[info.name]
-	return {}
-	// const byName = deepcopy(state.byName)
-	// byName[info.newName] = deepcopy(byName[info.name])
-	// delete byName[info.name]
-	// const byId = deepcopy(state.byId)
-	// byId[info.id].name = info.newName
-
-	// return state.merge({
-	//     byName,
-	//     byId,
-	//     names: Object.keys(byName).sort()
-	// })
+    const group = state.getIn(['byId', info.groupId])
+    const oldName = group.name
+    const newGroup = group.set('name', info.groupName)
+    const byName = state.getIn(['byName']).without(oldName).setIn([info.groupName], newGroup)
+    
+    return state
+            .set('byName', byName)
+            .setIn(['byId', info.groupId, 'name'], info.groupName)
+            .set('names', Object.keys(byName).sort())
 }
 
 /**

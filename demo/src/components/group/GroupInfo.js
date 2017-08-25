@@ -70,10 +70,10 @@ class GroupInfo extends React.Component {
             if (err) { return }
             const { room } = this.props;
             const info = {
-                id: room.roomId,
-                name: values.name,
-                description: values.description || ''
+                groupId: room.roomId,
+                groupName: values.name
             }
+            if (!_.isEmpty(values.description)) _.merge(info, {description: values.description})
             this.setState({visible: false})
             this.props.updateGroupInfoAsync(info)
         })
