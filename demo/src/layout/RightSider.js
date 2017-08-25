@@ -1,8 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import {connect} from 'react-redux';
-import GroupInfo from '@/components/group/groupInfo';
-import GroupMembers from '@/components/group/groupMembers';
+import GroupInfo from '@/components/group/GroupInfo';
+import GroupMembers from '@/components/group/GroupMembers';
 import {config} from '@/config';
 
 class RightSider extends React.Component {
