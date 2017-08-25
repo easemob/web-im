@@ -22,8 +22,8 @@ const FormItem = Form.Item
 
 const chatType = {
     contact: "chat",
-    groups: "chatRoom",
-    chatroom: "chatRoom"
+    groups: "groupChat",
+    chatroom: "chatroom"
 }
 
 class Chat extends React.Component {
@@ -132,7 +132,7 @@ class Chat extends React.Component {
     }
 
     handleSend(e) {
-        console.log(this.state.value)
+        // console.log(this.state.value)
         const {
             match,
             message

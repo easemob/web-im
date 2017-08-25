@@ -109,17 +109,19 @@ const {Types, Creators} = createActions({
     updateMessageStatus: ["message", "status"],
     // ---------------async------------------
     sendTxtMessage: (chatType, chatId, message = {}) => {
+        // console.log('sendTxtMessage', chatType, chatId, message)
         return (dispatch, getState) => {
             const pMessage = parseFromLocal(chatType, chatId, message, "txt")
             const {body, id, to} = pMessage
             const {type, msg} = body
             const msgObj = new WebIM.message(type, id)
-            console.log(pMessage)
+            const chatroom = chatType === 'chatroom';
+            // console.log(pMessage)
             msgObj.set({
                 //TODO: cate type == 'chatrooms'
                 msg,
                 to,
-                roomType: false,
+                roomType: chatroom,
                 success: function () {
                     dispatch(Creators.updateMessageStatus(pMessage, "sent"))
                 },
@@ -129,9 +131,9 @@ const {Types, Creators} = createActions({
             })
 
             // TODO: 群组聊天需要梳理此参数的逻辑
-            // if (type !== 'chat') {
-            //   msgObj.setGroup('groupchat');
-            // }
+            if (chatType !== 'chat') {
+                msgObj.setGroup('groupchat');
+            }
 
             WebIM.conn.send(msgObj.body)
             dispatch(Creators.addMessage(pMessage, type))
@@ -277,7 +279,6 @@ export const INITIAL_STATE = Immutable({
  * @returns {*}
  */
 export const addMessage = (state, {message, bodyType = "txt"}) => {
-    console.log('addMessage', message, bodyType)
     !message.status && (message = parseFromServer(message, bodyType))
     const {username = ""} = state.user || {}
     const {type, id, to, status} = message
