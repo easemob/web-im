@@ -12,8 +12,9 @@ const { Types, Creators } = createActions({
 	setLoading: ["isLoading"],
 	setLoadingFailed: ["loadingFailed"],
 	setBlackList: ["group"],
+    removeGroupBlockSingle: ['payload'],
 	updateGroup: ["groups"],
-	switchRightSider: ["width"],
+    dissolveGroup: ['group'],
 	// ---------------async------------------
 	createGroups: options => {
 		return (dispatch, getState) => {
@@ -54,14 +55,17 @@ const { Types, Creators } = createActions({
 			})
 		}
 	},
-	dissolveGroup: group => {
+    dissolveGroupAsync: (group) => {
 		return (dispatch, getState) => {
-			dispatch(Creators.setLoading({ isLoading: true }))
+            dispatch(Creators.setLoading(true))
 			WebIM.conn.dissolveGroup({
 				groupId: group.groupId,
 				success: () => {
+                    let {groupId, groupName} = group
+                    let payload = {groupId, groupName}
 					dispatch(Creators.setLoading(false))
 					dispatch(Creators.setLoadingFailed(false))
+                    dispatch(Creators.dissolveGroup(payload))
 				},
 				error: e => {
 					dispatch(Creators.setLoading(false))
@@ -72,7 +76,7 @@ const { Types, Creators } = createActions({
 	},
 	getGroupBlackList: groupId => {
 		return (dispatch, getState) => {
-			dispatch(Creators.setLoading({ isLoading: true }))
+            dispatch(Creators.setLoading(true))
 
 			WebIM.conn.getGroupBlacklistNew({
 				groupId,
@@ -92,7 +96,7 @@ const { Types, Creators } = createActions({
 	},
 	inviteToGroup: (groupId, users) => {
 		return (dispatch, getState) => {
-			dispatch(Creators.setLoading({ isLoading: true }))
+            dispatch(Creators.setLoading(true))
 			WebIM.conn.inviteToGroup({
 				groupId,
 				users,
@@ -107,6 +111,26 @@ const { Types, Creators } = createActions({
 				}
 			})
 		}
+    },
+    removeGroupBlockSingleAsync: (groupId, username) => {
+        return (dispatch, getState) => {
+            dispatch(Creators.setLoading(true))
+            WebIM.conn.removeGroupBlockSingle({
+                groupId,
+                username,
+                success: (response) => {
+                    let {groupId, user} = response.data
+                    let payload = {groupId, user}
+                    dispatch(Creators.setLoading(false))
+                    dispatch(Creators.setLoadingFailed(false))
+                    dispatch(Creators.removeGroupBlockSingle(payload))
+                },
+                error: (e) => {
+                    dispatch(Creators.setLoading(false))
+                    dispatch(Creators.setLoadingFailed(true))
+                }
+            })
+        }
 	}
 })
 
@@ -183,23 +207,18 @@ export const updateGroupInfo = (state, { info }) => {
 /**
  * 
  * @param {Object} state 
- * @param {Object} info
- * @param {String|Number} info.groupId
- * @param {String} info.groupName
+ * @param {Object} payload
+ * @param {String|Number} payload.groupId
+ * @param {String} payload.groupName
  */
-export const dissolveGroup = (state, { info }) => {
-	let byName = deepcopy(state.byName)
-	delete byName[info.groupName]
-	let byId = deepcopy(state.byId)
-	delete byId[info.groupId]
+export const dissolveGroup = (state, {payload}) => {
+    let byId = state.getIn(['byId']).without(payload.groupId)
+    let byName = state.getIn(['byName']).without(payload.groupName)
 	return state.merge({
-		byName,
 		byId,
+        byName,
 		names: Object.keys(byName).sort()
 	})
-	// const byName = Immutable.without(state.byName, info.groupName)
-	// const byId = Immutable.without(state.byId, info.groupId)
-	// const names = Immutable.without(state.names, info.groupName)
 }
 
 /**
@@ -208,15 +227,15 @@ export const dissolveGroup = (state, { info }) => {
  * @param {Object} group 
  * @param {Number} group.groupId
  * @param {String} group.groupName
- * @param {Array} group.blackList
+ * @param {Array[String]} group.blackList
  */
-export const setBlackList = (state, { group }) => {
-	const { blacklist } = group
-	let byId = deepcopy(state.byId)
-	_.assign(byId[group.groupId], { blacklist })
-	return state.merge({
-		byId
-	})
+export const setBlackList = (state, { payload }) => {
+    return state.setIn(['byId', payload.groupId, 'blacklist'], payload.blacklist)
+}
+
+export const removeGroupBlockSingle = (state, { payload }) => {
+    let blacklist = state.getIn(['byId', payload.groupId, 'blacklist']).filter(val => val !== payload.user)
+    return state.setIn(['byId', payload.groupId, 'blacklist'], blacklist)
 }
 
 export const switchRightSider = (state, { width }) => {
@@ -225,6 +244,7 @@ export const switchRightSider = (state, { width }) => {
 		rightSiderOffset
 	})
 }
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -234,6 +254,7 @@ export const reducer = createReducer(INITIAL_STATE, {
 	[Types.UPDATE_GROUP_INFO]: updateGroupInfo,
 	[Types.DISSOLVE_GROUP]: dissolveGroup,
 	[Types.SET_BLACK_LIST]: setBlackList,
+    [Types.REMOVE_GROUP_BLOCK_SINGLE]: removeGroupBlockSingle,
 	[Types.SWITCH_RIGHT_SIDER]: switchRightSider
 })
 

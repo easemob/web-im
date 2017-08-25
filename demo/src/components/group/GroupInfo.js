@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux"
 import _ from 'lodash'
 import Immutable from "seamless-immutable"
-import { Button, Card, Col, Dropdown, Form, Icon, Input, Menu, Modal, Row, Table, Tooltip } from 'antd';
+import { Button, Card, Col, Dropdown, Form, Icon, Input, Menu, Modal, Popconfirm, Row, Table, Tooltip } from 'antd';
 import GroupActions from '@/redux/GroupRedux';
 import './style/index.less';
 
@@ -105,7 +105,7 @@ class GroupInfo extends React.Component {
 
     handleDissolveGroup() {
         const { room } = this.props;
-        this.props.dissolveGroup(room.roomId)
+        this.props.dissolveGroupAsync(room.roomId)
     }
 
     handleMenuClick({ item, key, selectedKeys }) {
@@ -143,9 +143,11 @@ class GroupInfo extends React.Component {
         this.setState({showInviteToGroupModal: false})
     }
 
+    onRemoveGroupBlockSingle = (user) => this.props.removeGroupBlockSingleAsync({groupId: this.props.room.roomId})
+
     render() {
         const { title, name, owner, description, joinPermission, room } = this.props
-    const isLoading = _.get(this.props, 'entities.group.isLoading', false)
+        const isLoading = _.get(this.props, 'entities.group.isLoading', false)
         const blacklist = _.get(this.props, `entities.group.byId.${room.roomId}.blacklist`, [])
 
         const menu = (
@@ -168,17 +170,30 @@ class GroupInfo extends React.Component {
             </Menu>
         )
 
-        const columns = [{
-            title: 'Name',
-            key: 'name',
-            dataIndex: 'name'
-        }]
-
         const ds = _.reduce(blacklist, (result, val, key) => {
             result.push({ name: val })
             return result
         }, [])
-        
+
+        const columns = [{
+            title: 'Name',
+            key: 'name',
+            dataIndex: 'name'
+        }, {
+            title: 'Action',
+            key: 'action',
+            render:  (text, record) => {
+                return (
+                    ds.length > 0 ?
+                    (
+                        <Popconfirm title="Sure to remove from group black list" onConfirm={() => this.onRemoveGroupBlockSingle(record.name)}>
+                            <a href="#">移出黑名单</a>
+                        </Popconfirm>
+                    ) : null
+                )
+            }
+        }]        
+
         const table = (
             <Table columns={columns} dataSource={ds} showHeader={false} />
         )
@@ -251,7 +266,7 @@ export default connect(
     ({entities}) => ({entities}),
     dispatch => ({
         updateGroupInfoAsync: (info) => dispatch(GroupActions.updateGroupInfoAsync(info)),
-        dissolveGroup: (roomId) => dispatch(GroupActions.dissolveGroup(roomId)),
+        dissolveGroupAsync: (roomId) => dispatch(GroupActions.dissolveGroupAsync(roomId)),
         getGroupBlackList: (groupId, groupName) => dispatch(GroupActions.getGroupBlackList(groupId, groupName)),
         inviteToGroup: (groupId, users) => dispatch(GroupActions.inviteToGroup(groupId, users)),
         switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset}))
