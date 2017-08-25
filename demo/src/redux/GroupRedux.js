@@ -229,8 +229,8 @@ export const dissolveGroup = (state, {payload}) => {
  * @param {String} group.groupName
  * @param {Array[String]} group.blackList
  */
-export const setBlackList = (state, { payload }) => {
-    return state.setIn(['byId', payload.groupId, 'blacklist'], payload.blacklist)
+export const setBlackList = (state, { group }) => {
+    return state.setIn(['byId', group.groupId, 'blacklist'], group.blacklist)
 }
 
 export const removeGroupBlockSingle = (state, { payload }) => {

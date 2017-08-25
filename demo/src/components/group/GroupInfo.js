@@ -151,11 +151,11 @@ class GroupInfo extends React.Component {
 
         const menu = (
             <Menu onClick={this.handleMenuClick}>
-                <Menu.Item key="1">
+                {/* <Menu.Item key="1">
                     <Tooltip title="管理群成员" placement="left"><i className="iconfont icon-pencil"></i> 管理群成员</Tooltip> 
-                </Menu.Item>
+                </Menu.Item> */}
                 <Menu.Item key="2">
-                    <Tooltip title="添加群成员" placement="left"><i className="iconfont icon-pencil"></i> 添加群成员</Tooltip> 
+                    <Tooltip title="添加群成员" placement="left"><i className="iconfont icon-users"></i> 添加群成员</Tooltip> 
                 </Menu.Item>
                 <Menu.Item key="3">
                     <Tooltip title="修改群信息" placement="left"><i className="iconfont icon-pencil"></i> 修改群信息</Tooltip> 
@@ -191,7 +191,7 @@ class GroupInfo extends React.Component {
         }]        
 
         const table = (
-            <Table columns={columns} dataSource={ds} rowKey="name" showHeader={false} />
+            <Table columns={columns} dataSource={ds} rowKey="name" showHeader={false} size="small" />
         )
 
         return (
