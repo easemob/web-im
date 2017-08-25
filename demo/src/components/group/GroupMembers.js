@@ -1,13 +1,13 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {Card, Menu, Table} from 'antd';
-import dottie from 'dottie';
+import _ from 'lodash';
 import './style/index.less';
 
 class GroupMembers extends React.Component {
     render () {
         const {entities, roomId} = this.props;
-        const members = dottie.get(entities, `groupMember.${roomId}.names`, []);
+        const members = _.get(entities, `groupMember.${roomId}.names`, []);
         const columns = [{
             title: 'Name',
             key: 'name',
