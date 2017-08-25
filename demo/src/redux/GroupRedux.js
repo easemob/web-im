@@ -2,6 +2,7 @@ import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
 import WebIM from "@/config/WebIM"
 import { history } from "@/utils"
+import GroupMemberActions from '@/redux/GroupMemberRedux'
 import _ from "lodash"
 
 /* ------------- Types and Action Creators ------------- */
@@ -15,7 +16,8 @@ const { Types, Creators } = createActions({
 	updateGroup: ["groups"],
     dissolveGroup: ['group'],
     switchRightSider: ['width'],
-	// ---------------async------------------
+    groupBlockSingle: ['groupId', 'username'],
+    // ---------------async------------------
 	createGroups: options => {
 		return (dispatch, getState) => {
 			WebIM.conn.createGroupNew(options)
@@ -55,17 +57,15 @@ const { Types, Creators } = createActions({
 			})
 		}
 	},
-    dissolveGroupAsync: (group) => {
+    dissolveGroupAsync: ({groupId, groupName}) => {
 		return (dispatch, getState) => {
             dispatch(Creators.setLoading(true))
 			WebIM.conn.dissolveGroup({
-				groupId: group.groupId,
+				groupId,
 				success: () => {
-                    let {groupId, groupName} = group
-                    let payload = {groupId, groupName}
 					dispatch(Creators.setLoading(false))
 					dispatch(Creators.setLoadingFailed(false))
-                    dispatch(Creators.dissolveGroup(payload))
+                    dispatch(Creators.dissolveGroup({groupId, groupName}))
 				},
 				error: e => {
 					dispatch(Creators.setLoading(false))
@@ -74,7 +74,7 @@ const { Types, Creators } = createActions({
 			})
 		}
 	},
-	getGroupBlackList: groupId => {
+	getGroupBlackListAsync: groupId => {
 		return (dispatch, getState) => {
             dispatch(Creators.setLoading(true))
 
@@ -94,7 +94,7 @@ const { Types, Creators } = createActions({
 			})
 		}
 	},
-	inviteToGroup: (groupId, users) => {
+	inviteToGroupAsync: (groupId, users) => {
 		return (dispatch, getState) => {
             dispatch(Creators.setLoading(true))
 			WebIM.conn.inviteToGroup({
@@ -137,8 +137,16 @@ const { Types, Creators } = createActions({
             WebIM.conn.groupBlockSingle({
                 groupId,
                 username,
-                success: (response) => console.log(response),
-                error: (e) => console.log(`an error found while invoking resultful mute: ${e.message}`)
+                success: (response) => {
+                    dispatch(Creators.setLoading(false))
+                    dispatch(Creators.setLoadingFailed(false))
+                    dispatch(GroupMemberActions.removeMemberFromGroup(groupId, username))
+                },
+                error: (e) => {
+                    console.log(`an error found while invoking resultful mute: ${e.message}`)
+                    dispatch(Creators.setLoading(false))
+                    dispatch(Creators.setLoadingFailed(true))
+                }
             })
         }
     }
@@ -256,7 +264,7 @@ export const reducer = createReducer(INITIAL_STATE, {
 	[Types.DISSOLVE_GROUP]: dissolveGroup,
 	[Types.SET_BLACK_LIST]: setBlackList,
     [Types.REMOVE_GROUP_BLOCK_SINGLE]: removeGroupBlockSingle,
-	[Types.SWITCH_RIGHT_SIDER]: switchRightSider
+    [Types.SWITCH_RIGHT_SIDER]: switchRightSider
 })
 
 /* ------------- Selectors ------------- */

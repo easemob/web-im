@@ -47,24 +47,11 @@ class GroupInfo extends React.Component {
             blackListVisible: false,
             showInviteToGroupModal: false
         }
-
-        this.handleSiderClick = this.handleSiderClick.bind(this)
-        this.handleCreate = this.handleCreate.bind(this)
-        this.handleCancel = this.handleCancel.bind(this)
-        this.showModal = this.showModal.bind(this)
-        this.handleModalOk = this.handleModalOk.bind(this)
-        this.saveFormRef = this.saveFormRef.bind(this)
-        // this.handleDissolveGroup = this.handleDissolveGroup.bind(this)
-        this.handleGetBlackList = this.handleGetBlackList.bind(this)
-        // this.handleMenuClick = this.handleMenuClick.bind(this)
-        this.handleCloseBlacklistModal = this.handleCloseBlacklistModal.bind(this)
     }
 
-    handleSiderClick() {
-        this.props.switchRightSider({rightSiderOffset: 0})
-    }
+    handleSiderClick = () => this.props.switchRightSider({rightSiderOffset: 0})
 
-    handleCreate() {
+    handleCreate = () => {
         const form = this.form
         form.validateFieldsAndScroll((err, values) => {
             if (err) { return }
@@ -79,29 +66,19 @@ class GroupInfo extends React.Component {
         })
     }
 
-    showModal() {
-        this.setState({ visible: true })
-    }
+    showModal = () => this.setState({ visible: true })
 
-    handleModalOk() {
+    handleModalOk = () => {
         this.props.form.validateFieldsAndScroll((errors, values) => {
             if (errors) {return}
         })
-        // const info = {}
-        // this.props.updateGroupInfoAsync({info})
     }
 
-    handleCloseBlacklistModal() {
-        this.setState({ blackListVisible: false })
-    }
+    handleCloseBlacklistModal = () => this.setState({ blackListVisible: false })
 
-    handleCancel() {
-        this.setState({ visible: false })
-    }
+    handleCancel = () => this.setState({ visible: false })
 
-    saveFormRef(form) {
-        this.form = form
-    }
+    saveFormRef = (form) => this.form = form
 
     handleDissolveGroup = () => this.props.dissolveGroupAsync(this.props.room.roomId)
 
@@ -116,7 +93,7 @@ class GroupInfo extends React.Component {
                 this.showModal();
                 break;
             case '4':
-                this.props.getGroupBlackList(this.props.room.roomId)
+                this.props.getGroupBlackListAsync(this.props.room.roomId)
                 this.setState({blackListVisible: true})
                 break;
             case '5':
@@ -127,9 +104,9 @@ class GroupInfo extends React.Component {
         }
     }
     
-    handleGetBlackList() {
+    handleGetBlackList = () => {
         const { room } = this.props
-        this.props.getGroupBlackList(room.roomId)
+        this.props.getGroupBlackListAsync(room.roomId)
         this.setState({ blackListVisible: true })
     }
 
@@ -138,7 +115,7 @@ class GroupInfo extends React.Component {
     add = () => {
         const value = this.state.users
         if (!value || value.length === 0) return
-        this.props.inviteToGroup(this.props.room.roomId, value)
+        this.props.inviteToGroupAsync(this.props.room.roomId, value)
         this.setState({showInviteToGroupModal: false})
     }
 
@@ -263,8 +240,8 @@ export default connect(
     dispatch => ({
         updateGroupInfoAsync: (info) => dispatch(GroupActions.updateGroupInfoAsync(info)),
         dissolveGroupAsync: (roomId) => dispatch(GroupActions.dissolveGroupAsync(roomId)),
-        getGroupBlackList: (groupId) => dispatch(GroupActions.getGroupBlackList(groupId)),
-        inviteToGroup: (groupId, users) => dispatch(GroupActions.inviteToGroup(groupId, users)),
+        getGroupBlackListAsync: (groupId) => dispatch(GroupActions.getGroupBlackListAsync(groupId)),
+        inviteToGroupAsync: (groupId, users) => dispatch(GroupActions.inviteToGroupAsync(groupId, users)),
         switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset}))
     })
 )(GroupInfo)

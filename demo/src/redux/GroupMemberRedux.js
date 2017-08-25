@@ -5,7 +5,8 @@ import { WebIM } from "@/config"
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-	updateGroupMember: ["id", "members"],
+    updateGroupMember: ["id", "members"],
+    removeMemberFromGroup: ["id", "username"],
 	// ---------------async------------------
 	getGroupMember: id => {
 		return (dispatch, getState) => {
@@ -57,7 +58,7 @@ const { Types, Creators } = createActions({
             WebIM.conn.removeSingleGroupMember({
                 groupId,
                 username,
-                success: (response) => console.log(response),
+                success: (response) => dispatch(Creators.removeMemberFromGroup(groupId, username)),
                 error: (e) => console.log(`an error found while invoking resultful removeSingleGroupMember: ${e.message}`)
             })
         }
@@ -85,6 +86,13 @@ export const updateGroupMember = (state, { id, members }) => {
 			names: Object.keys(byName).sort()
 		}
 	})
+}
+
+export const removeMemberFromGroup = (state, { id, username }) => {
+    let byName = state.getIn(['groupMember', id, 'byName']).without(username)
+    return state
+            .setIn(['groupMember', id, 'byName'], byName)
+            .setIn(['groupMember', id, 'names'], Object.keys(byName).sort())
 }
 
 /* ------------- Hookup Reducers To Types ------------- */
