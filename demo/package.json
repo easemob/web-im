@@ -73,7 +73,8 @@
         "build": "node scripts/build.js",
         "test": "node scripts/test.js --env=jsdom",
         "storybook": "start-storybook -p 6006",
-        "build-storybook": "build-storybook"
+        "build-storybook": "build-storybook",
+        "build-watch": "NODE_ENV=production webpack --config config/webpack.config.prod.js  --watch --output-path ./build/"
     },
     "jest": {
         "collectCoverageFrom": [

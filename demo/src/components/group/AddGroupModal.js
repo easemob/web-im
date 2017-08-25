@@ -2,8 +2,8 @@ import React from "react"
 import PropTypes from "prop-types"
 import classNames from "classnames"
 import { connect } from "react-redux"
-import { Input, Button, Row, Col, Form, Radio, Checkbox } from "antd"
-import SubscribeActions from "@/redux/SubscribeRedux"
+import { Input, Button, Row, Col, Form, Radio, Checkbox, message } from "antd"
+import GroupActions from "@/redux/GroupRedux"
 import { I18n } from "react-redux-i18n"
 import _ from "lodash"
 import "./style/AddGrouModal.less"
@@ -14,7 +14,8 @@ const FormItem = Form.Item
 
 class AddGroupModal extends React.Component {
 	state = {
-		name: ""
+		name: "",
+		screen: 1
 	}
 
 	onChangeName = e => {
@@ -26,6 +27,43 @@ class AddGroupModal extends React.Component {
 		this.props.form.validateFields((err, values) => {
 			if (!err) {
 				console.log("Received values of form: ", values)
+				const {
+					name,
+					description,
+					members,
+					type,
+					canJoin,
+					allowInvite = true
+				} = values
+				if (!name) {
+					return message.error("Please input Group Name !", 1)
+				}
+
+				if (!description) {
+					return message.error("Please enter description ！", 1)
+				}
+
+				//message.success(I18N.loginSuccessfully, 1)
+				this.props.createGroups({
+					data: {
+						groupname: name,
+						desc: description,
+						members: members,
+						public: type === "public",
+						approval: canJoin === "yes",
+						allowinvites: allowInvite
+					},
+					success: () => {
+						console.log("success")
+						message.success(`Group ${name} created`)
+						this.props.getGroups()
+						this.props.onCancel()
+					},
+					error: () => {
+						// console.log("error")
+						// message.error(`Group ${name} failed`)
+					}
+				})
 			}
 		})
 	}
@@ -33,27 +71,51 @@ class AddGroupModal extends React.Component {
 	onCheck = e => {}
 
 	render() {
-		const { name } = this.state
+		const { name, screen } = this.state
 		const { getFieldDecorator } = this.props.form
+		const { roster } = this.props
 		const requests = []
 
-		const options = [
-			{ label: "Apple", value: "Apple" },
-			{ label: "Pear", value: "Pear" },
-			{ label: "Orange", value: "Orange" }
-		]
+		const items = []
+		const options = []
+		roster.friends.forEach((name, index) => {
+			items[index] = {
+				name
+			}
+
+			options[index] = { label: name, value: name }
+		})
+
+		// const options = [
+		// 	{ label: "Apple", value: "Apple" },
+		// 	{ label: "Pear", value: "Pear" },
+		// 	{ label: "Orange", value: "Orange" },
+		// 	{ label: "Orange", value: "1" },
+		// 	{ label: "Orange", value: "2" },
+		// 	{ label: "Orange", value: "3" },
+		// 	{ label: "Orange", value: "4" },
+		// 	{ label: "Orange", value: "5" },
+		// 	{ label: "Orange", value: "13" },
+		// 	{ label: "Orange", value: "6" },
+		// 	{ label: "Orange", value: "7" },
+		// 	{ label: "Orange", value: "8" },
+		// 	{ label: "Orange", value: "9" },
+		// 	{ label: "Orange", value: "11" },
+		// 	{ label: "Orange", value: "12" }
+		// ]
+		// console.log(this.props.form.getFieldValue("type"))
 
 		return (
 			<Form onSubmit={this.handleSubmit} className="x-add-group">
-				<div style={{ display: "none" }}>
+				<div style={{ display: screen === 1 ? "block" : "none" }}>
 					<FormItem>
 						{getFieldDecorator("name", {
-							rules: [{ required: true, message: "Please input Group Name !" }]
+							rules: [{ message: "Please input Group Name !" }]
 						})(<Input placeholder="Group Name" />)}
 					</FormItem>
 					<FormItem>
 						{getFieldDecorator("description", {
-							rules: [{ required: true, message: "Please enter description ！" }]
+							rules: [{ message: "Please enter description ！" }]
 						})(
 							<Input.TextArea
 								placeholder="Enter description"
@@ -63,7 +125,7 @@ class AddGroupModal extends React.Component {
 					</FormItem>
 					<FormItem style={{ marginBottom: 10 }}>
 						<p>Group Type</p>
-						{getFieldDecorator("type", { initialValue: "private" })(
+						{getFieldDecorator("type", { initialValue: "public" })(
 							<RadioGroup>
 								<Radio style={{ width: 100 }} value="private">
 									Private
@@ -74,6 +136,13 @@ class AddGroupModal extends React.Component {
 							</RadioGroup>
 						)}
 					</FormItem>
+					{this.props.form.getFieldValue("type") === "private" &&
+						<FormItem style={{ marginBottom: 10 }}>
+							{getFieldDecorator("allowInvite", {
+								valuePropName: "checked",
+								initialValue: true
+							})(<Checkbox>Allow invite</Checkbox>)}
+						</FormItem>}
 
 					<FormItem style={{ marginBottom: 10 }}>
 						<p>Permission to join</p>
@@ -97,25 +166,36 @@ class AddGroupModal extends React.Component {
 							}}
 							className="fr"
 							type="primary"
-							onClick={() => {}}
+							onClick={() =>
+								this.setState({
+									screen: 2
+								})}
 						>
 							Next
 						</Button>
 					</div>
 				</div>
-				<div className="x-add-group-members">
-					<FormItem>
-						{getFieldDecorator("members")(
-							<CheckboxGroup
-								style={{ display: "block" }}
-								options={options}
-								defaultValue={["Pear"]}
-								onChange={this.onCheck}
-							/>
-						)}
-					</FormItem>
+				<div style={{ display: screen === 2 ? "block" : "none" }}>
+					<div className="x-add-group-members">
+						<FormItem>
+							{getFieldDecorator("members", { initialValue: [] })(
+								<CheckboxGroup
+									style={{ display: "block" }}
+									options={options}
+									onChange={this.onCheck}
+								/>
+							)}
+						</FormItem>
+					</div>
 					<div style={{ overflow: "hidden" }}>
-						<div className="fl" style={{ cursor: "pointer" }}>
+						<div
+							className="fl"
+							style={{ cursor: "pointer" }}
+							onClick={() =>
+								this.setState({
+									screen: 1
+								})}
+						>
 							<i className="iconfont icon-arrow-left" /> back
 						</div>
 						<Button
@@ -126,9 +206,9 @@ class AddGroupModal extends React.Component {
 							}}
 							className="fr"
 							type="primary"
-							onClick={() => {}}
+							htmlType="submit"
 						>
-							Next
+							Create
 						</Button>
 					</div>
 				</div>
@@ -139,10 +219,10 @@ class AddGroupModal extends React.Component {
 
 export default connect(
 	({ entities }) => ({
-		data: entities.subscribe.byFrom
+		roster: entities.roster
 	}),
 	dispatch => ({
-		acceptSubscribe: id => dispatch(SubscribeActions.acceptSubscribe(id)),
-		declineSubscribe: id => dispatch(SubscribeActions.declineSubscribe(id))
+		createGroups: options => dispatch(GroupActions.createGroups(options)),
+		getGroups: options => dispatch(GroupActions.getGroups(options))
 	})
 )(Form.create()(AddGroupModal))
