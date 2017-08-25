@@ -13,7 +13,7 @@ class GroupMembers extends React.Component {
             key: 'name',
             dataIndex: 'name'
         }]
-        const data = members.map(val => { return {name: val} })
+        const data = members.map(val => {return {name: val, key: val}})
         return (
             <Card title="Members" bordered={false} noHovering={true}>
                 {/* <Menu className="group-member-list">

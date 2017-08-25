@@ -54,9 +54,9 @@ class GroupInfo extends React.Component {
         this.showModal = this.showModal.bind(this)
         this.handleModalOk = this.handleModalOk.bind(this)
         this.saveFormRef = this.saveFormRef.bind(this)
-        this.handleDissolveGroup = this.handleDissolveGroup.bind(this)
+        // this.handleDissolveGroup = this.handleDissolveGroup.bind(this)
         this.handleGetBlackList = this.handleGetBlackList.bind(this)
-        this.handleMenuClick = this.handleMenuClick.bind(this)
+        // this.handleMenuClick = this.handleMenuClick.bind(this)
         this.handleCloseBlacklistModal = this.handleCloseBlacklistModal.bind(this)
     }
 
@@ -103,12 +103,9 @@ class GroupInfo extends React.Component {
         this.form = form
     }
 
-    handleDissolveGroup() {
-        const { room } = this.props;
-        this.props.dissolveGroupAsync(room.roomId)
-    }
+    handleDissolveGroup = () => this.props.dissolveGroupAsync(this.props.room.roomId)
 
-    handleMenuClick({ item, key, selectedKeys }) {
+    handleMenuClick = ({item, key, selectedKeys}) => {
         switch (key) {
             case '1':
                 break;
@@ -119,15 +116,17 @@ class GroupInfo extends React.Component {
                 this.showModal();
                 break;
             case '4':
-                this.handleGetBlackList();
+                this.props.getGroupBlackList(this.props.room.roomId)
+                this.setState({blackListVisible: true})
                 break;
             case '5':
+                this.props.dissolveGroupAsync(this.props.room.roomId)
                 break;
             default:
                 break;
         }
     }
-
+    
     handleGetBlackList() {
         const { room } = this.props
         this.props.getGroupBlackList(room.roomId)
@@ -170,10 +169,7 @@ class GroupInfo extends React.Component {
             </Menu>
         )
 
-        const ds = _.reduce(blacklist, (result, val, key) => {
-            result.push({ name: val })
-            return result
-        }, [])
+        const ds = _.map(blacklist, (val) => {return {name: val, key: val}})
 
         const columns = [{
             title: 'Name',
@@ -187,7 +183,7 @@ class GroupInfo extends React.Component {
                     ds.length > 0 ?
                     (
                         <Popconfirm title="Sure to remove from group black list" onConfirm={() => this.onRemoveGroupBlockSingle(record.name)}>
-                            <a href="#">移出黑名单</a>
+                            <a href="#" className="fr">移出黑名单</a>
                         </Popconfirm>
                     ) : null
                 )
@@ -195,7 +191,7 @@ class GroupInfo extends React.Component {
         }]        
 
         const table = (
-            <Table columns={columns} dataSource={ds} showHeader={false} />
+            <Table columns={columns} dataSource={ds} rowKey="name" showHeader={false} />
         )
 
         return (
@@ -267,7 +263,7 @@ export default connect(
     dispatch => ({
         updateGroupInfoAsync: (info) => dispatch(GroupActions.updateGroupInfoAsync(info)),
         dissolveGroupAsync: (roomId) => dispatch(GroupActions.dissolveGroupAsync(roomId)),
-        getGroupBlackList: (groupId, groupName) => dispatch(GroupActions.getGroupBlackList(groupId, groupName)),
+        getGroupBlackList: (groupId) => dispatch(GroupActions.getGroupBlackList(groupId)),
         inviteToGroup: (groupId, users) => dispatch(GroupActions.inviteToGroup(groupId, users)),
         switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset}))
     })
