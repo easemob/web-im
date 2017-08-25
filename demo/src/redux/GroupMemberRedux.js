@@ -17,7 +17,51 @@ const { Types, Creators } = createActions({
 				error: function() {}
 			})
 		}
-	}
+    },
+    setAdminAsync: (groupId, username) => {
+        return (dispatch, getState) => {
+            WebIM.conn.setAdmin({
+                groupId,
+                username,
+                success: (response) => {
+                    console.log(response)
+                    // dispatch(Creators.)
+                },
+                error: (e) => console.log(`an error found while invoking restful setAdmin: ${e.message}`)
+            })
+        }
+    },
+    muteAsync: (groupId, username, muteDuration) => {
+        return (dispatch, getState) => {
+            WebIM.conn.mute({
+                groupId,
+                username,
+                muteDuration,
+                success: (response) => console.log(response),
+                error: (e) => console.log(`an error found while invoking resultful mute: ${e.message}`)
+            })
+        }
+    },
+    removeAdminAsync: (groupId, username) => {
+        return (dispatch, getState) => {
+            WebIM.conn.removeAdmin({
+                groupId,
+                username,
+                success: (response) => console.log(response),
+                error: (e) => console.log(`an error found while invoking resultful removeAdmin: ${e.message}`)
+            })
+        }
+    },
+    removeSingleGroupMemberAsync: (groupId, username) => {
+        return (dispatch, getState) => {
+            WebIM.conn.removeSingleGroupMember({
+                groupId,
+                username,
+                success: (response) => console.log(response),
+                error: (e) => console.log(`an error found while invoking resultful removeSingleGroupMember: ${e.message}`)
+            })
+        }
+    }
 })
 
 export const GroupMemberTypes = Types

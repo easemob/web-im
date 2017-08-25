@@ -131,7 +131,17 @@ const { Types, Creators } = createActions({
                 }
             })
         }
-	}
+	},
+    groupBlockSingleAsync: (groupId, username) => {
+        return (dispatch, getState) => {
+            WebIM.conn.groupBlockSingle({
+                groupId,
+                username,
+                success: (response) => console.log(response),
+                error: (e) => console.log(`an error found while invoking resultful mute: ${e.message}`)
+            })
+        }
+    }
 })
 
 export const GroupsTypes = Types
