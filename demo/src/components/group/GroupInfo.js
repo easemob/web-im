@@ -2,6 +2,7 @@ import React from "react"
 import { connect } from "react-redux"
 import _ from "lodash"
 import Immutable from "seamless-immutable"
+import { I18n } from "react-redux-i18n"
 import {
     Button,
     Card,
@@ -26,16 +27,18 @@ const GroupInfoForm = Form.create()(props => {
     return (
         <Modal
             visible={visible}
-            title="修改群组"
-            okText="修改"
+            title={I18n.t("modifyGroupInfo")}
+            okText={I18n.t("modify")}
             confirmLoading={loading}
             onCancel={onCancel}
             onOk={onCreate}
         >
             <Form>
-                <Form.Item label="群组名称">
+                <Form.Item label={I18n.t("groupName")}>
                     {getFieldDecorator("name", {
-                        rules: [{ required: true, message: "请输入群组名称" }]
+                        rules: [
+                            { required: true, message: I18n.t("groupName") }
+                        ]
                     })(<Input />)}
                 </Form.Item>
                 {/* <Form.Item label="群组简介">
@@ -154,35 +157,45 @@ class GroupInfo extends React.Component {
         return isAdmin
             ? <Menu onClick={this.handleMenuClick}>
                   <Menu.Item key="2">
-                      <Tooltip title="添加群成员" placement="left">
-                          <i className="iconfont icon-users" /> 添加群成员
+                      <Tooltip title={I18n.t("inviteToGroup")} placement="left">
+                          <i className="iconfont icon-users" />{" "}
+                          {I18n.t("inviteToGroup")}
                       </Tooltip>
                   </Menu.Item>
                   <Menu.Item key="3">
-                      <Tooltip title="修改群信息" placement="left">
-                          <i className="iconfont icon-pencil" /> 修改群信息
+                      <Tooltip
+                          title={I18n.t("modifyGroupInfo")}
+                          placement="left"
+                      >
+                          <i className="iconfont icon-pencil" />{" "}
+                          {I18n.t("modifyGroupInfo")}
                       </Tooltip>
                   </Menu.Item>
                   <Menu.Item key="4">
-                      <Tooltip title="群组黑名单" placement="left">
-                          <Icon type="frown" /> 群组黑名单
+                      <Tooltip
+                          title={I18n.t("groupBlacklist")}
+                          placement="left"
+                      >
+                          <Icon type="frown" /> {I18n.t("groupBlacklist")}
                       </Tooltip>
                   </Menu.Item>
                   <Menu.Item key="5">
-                      <Tooltip title="解散群组" placement="left">
-                          <Icon type="poweroff" /> 解散群组
+                      <Tooltip title={I18n.t("dissovleGroup")} placement="left">
+                          <Icon type="poweroff" /> {I18n.t("dissovleGroup")}
                       </Tooltip>
                   </Menu.Item>
               </Menu>
             : <Menu onClick={this.handleMenuClick}>
                   <Menu.Item key="2">
-                      <Tooltip title="添加群成员" placement="left">
-                          <i className="iconfont icon-users" /> 添加群成员
+                      <Tooltip title={I18n.t("inviteToGroup")} placement="left">
+                          <i className="iconfont icon-users" />{" "}
+                          {I18n.t("inviteToGroup")}
                       </Tooltip>
                   </Menu.Item>
                   <Menu.Item key="6">
-                      <Tooltip title="退出群组" placement="left">
-                          <i className="iconfont icon-exit" /> 退出群组
+                      <Tooltip title={I18n.t("quitGroup")} placement="left">
+                          <i className="iconfont icon-exit" />{" "}
+                          {I18n.t("quitGroup")}
                       </Tooltip>
                   </Menu.Item>
               </Menu>
@@ -223,12 +236,16 @@ class GroupInfo extends React.Component {
                 render: (text, record) => {
                     return ds.length > 0
                         ? <Popconfirm
-                              title="Sure to remove from group black list"
+                              title={
+                                  I18n.t("confirm") +
+                                  " " +
+                                  I18n.t("removeFromGroupBlackList")
+                              }
                               onConfirm={() =>
                                   this.onRemoveGroupBlockSingle(record.name)}
                           >
                               <a href="#" className="fr">
-                                  移出黑名单
+                                  {I18n.t("removeFromGroupBlackList")}
                               </a>
                           </Popconfirm>
                         : null
@@ -250,7 +267,7 @@ class GroupInfo extends React.Component {
             <Card
                 title={title}
                 extra={
-                    <Tooltip title="关闭" placement="left">
+                    <Tooltip title={I18n.t("close")} placement="left">
                         <Icon
                             type="close-circle-o"
                             onClick={this.handleSiderClick}
@@ -261,7 +278,7 @@ class GroupInfo extends React.Component {
                 noHovering={true}
             >
                 <h3>
-                    Group Name
+                    {I18n.t("groupName")}
                     <span className="fr">
                         <Dropdown overlay={menu} trigger={["click"]}>
                             <Icon type="setting" />
@@ -281,9 +298,9 @@ class GroupInfo extends React.Component {
                     onCreate={this.handleCreate}
                 />
                 <Modal
-                    title="群组黑名单"
+                    title={I18n.t("groupBlacklist")}
                     visible={this.state.blackListVisible}
-                    okText="关闭"
+                    okText={I18n.t("close")}
                     onOk={this.handleCloseBlacklistModal}
                     onCancel={this.handleCloseBlacklistModal}
                     footer={[
@@ -292,7 +309,7 @@ class GroupInfo extends React.Component {
                             type="primary"
                             onClick={this.handleCloseBlacklistModal}
                         >
-                            关闭
+                            {I18n.t("close")}
                         </Button>
                     ]}
                 >
@@ -300,7 +317,7 @@ class GroupInfo extends React.Component {
                 </Modal>
                 <Modal
                     width={460}
-                    title="添加群成员"
+                    title={I18n.t("inviteToGroup")}
                     visible={this.state.showInviteToGroupModal}
                     footer={null}
                 >
@@ -308,7 +325,7 @@ class GroupInfo extends React.Component {
                         <Col span={20}>
                             <Input
                                 size="large"
-                                placeholder="用户名"
+                                placeholder={I18n.t("username")}
                                 onChange={this.onChangeUsers}
                             />
                         </Col>
@@ -319,20 +336,11 @@ class GroupInfo extends React.Component {
                                 type="primary"
                                 onClick={this.add}
                             >
-                                Add
+                                {I18n.t("invite")}
                             </Button>
                         </Col>
                     </Row>
                 </Modal>
-                {/* {
-                    <ModalComponent
-                        width={460}
-                        title="添加群成员"
-                        visible={this.state.showInviteToGroupModal}
-                        groupId={room.roomId}
-                        component={InviteToGroupModal}
-                    />
-                } */}
             </Card>
         )
     }
