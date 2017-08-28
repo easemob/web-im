@@ -22,7 +22,7 @@ const FormItem = Form.Item
 
 const chatType = {
     contact: "chat",
-    groups: "groupChat",
+    group: "groupchat",
     chatroom: "chatroom"
 }
 
@@ -233,6 +233,7 @@ class Chat extends React.Component {
             history,
             location,
             message,
+            group,
             chatroom,
             roster,
             blacklist
@@ -252,19 +253,20 @@ class Chat extends React.Component {
         let name = selectItem
         switch (selectTab) {
             case "contact":
-                // console.log(selectItem, selectItem in roster.byName, "---contact---")
-                // console.log(roster, roster.byName)
                 const byName = (roster && roster.byName) || {}
                 if (!(selectItem in byName)) return null
                 if (blacklist.names.indexOf(name) !== -1) return null
                 messageList = chat[selectItem] || []
                 messageList = messageList.map(id => byId[id] || {})
-                // console.log(messageList)
+                break
+            case "group":
+                name = group.byId[selectItem].name || group.byId[selectItem].id
+                messageList = message["groupchat"][selectItem] || []
+                messageList = messageList.map(id => byId[id] || {})
                 break
             case "chatroom":
                 name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
                 messageList = message["chatroom"][selectItem] || []
-                console.log("chatroom ", selectItem, byId, messageList)
                 messageList = messageList.map(id => byId[id] || {})
                 break
         }
@@ -394,6 +396,7 @@ export default connect(
     ({ login, entities }) => ({
         message: entities.message.asMutable(),
         roster: entities.roster,
+        group: entities.group,
         chatroom: entities.chatroom,
         blacklist: entities.blacklist
     }),

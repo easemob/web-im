@@ -1,4 +1,4 @@
-import {createReducer, createActions} from "reduxsauce"
+import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
 import WebIM from "@/config/WebIM"
 //
@@ -104,7 +104,7 @@ function copy(message, tpl) {
     return obj
 }
 
-const {Types, Creators} = createActions({
+const { Types, Creators } = createActions({
     addMessage: ["message", "bodyType"],
     updateMessageStatus: ["message", "status"],
     // ---------------async------------------
@@ -112,39 +112,34 @@ const {Types, Creators} = createActions({
         // console.log('sendTxtMessage', chatType, chatId, message)
         return (dispatch, getState) => {
             const pMessage = parseFromLocal(chatType, chatId, message, "txt")
-            const {body, id, to} = pMessage
-            const {type, msg} = body
+            const { body, id, to } = pMessage
+            const { type, msg } = body
             const msgObj = new WebIM.message(type, id)
-            const chatroom = chatType === 'chatroom';
+            const chatroom = chatType === "chatroom"
             // console.log(pMessage)
             msgObj.set({
                 //TODO: cate type == 'chatrooms'
                 msg,
                 to,
                 roomType: chatroom,
-                success: function () {
+                success: function() {
                     dispatch(Creators.updateMessageStatus(pMessage, "sent"))
                 },
-                fail: function () {
+                fail: function() {
                     dispatch(Creators.updateMessageStatus(pMessage, "fail"))
                 }
             })
 
             // TODO: 群组聊天需要梳理此参数的逻辑
-            if (chatType !== 'chat') {
-                msgObj.setGroup('groupchat');
+            if (chatType !== "chat") {
+                msgObj.setGroup("groupchat")
             }
 
             WebIM.conn.send(msgObj.body)
             dispatch(Creators.addMessage(pMessage, type))
         }
     },
-    sendImgMessage: (chatType,
-                     chatId,
-                     message = {},
-                     source = {},
-                     callback = () => {
-                     }) => {
+    sendImgMessage: (chatType, chatId, message = {}, source = {}, callback = () => {}) => {
         return (dispatch, getState) => {
             let pMessage = null
             const id = WebIM.conn.getUniqueId()
@@ -170,14 +165,14 @@ const {Types, Creators} = createActions({
                 // },
                 to,
                 roomType: message.isRoom,
-                onFileUploadError: function (error) {
+                onFileUploadError: function(error) {
                     console.log(error)
                     // dispatch(Creators.updateMessageStatus(pMessage, "fail"))
                     pMessage.body.status = "fail"
                     dispatch(Creators.updateMessageStatus(pMessage, "fail"))
                     callback()
                 },
-                onFileUploadComplete: function (data) {
+                onFileUploadComplete: function(data) {
                     console.log(data)
                     let url = data.uri + "/" + data.entities[0].uuid
                     pMessage.body.url = url
@@ -185,7 +180,7 @@ const {Types, Creators} = createActions({
                     dispatch(Creators.updateMessageStatus(pMessage, "sent"))
                     callback()
                 },
-                success: function (id) {
+                success: function(id) {
                     console.log(id)
                 }
             })
@@ -265,7 +260,7 @@ export default Creators
 export const INITIAL_STATE = Immutable({
     byId: {},
     chat: {},
-    groupChat: {},
+    groupchat: {},
     chatroom: {},
     extra: {}
 })
@@ -278,10 +273,10 @@ export const INITIAL_STATE = Immutable({
  * @param bodyType enum [txt]
  * @returns {*}
  */
-export const addMessage = (state, {message, bodyType = "txt"}) => {
+export const addMessage = (state, { message, bodyType = "txt" }) => {
     !message.status && (message = parseFromServer(message, bodyType))
-    const {username = ""} = state.user || {}
-    const {type, id, to, status} = message
+    const { username = "" } = state.user || {}
+    const { type, id, to, status } = message
     //避免messageId重复添加造成render错误
     if (Immutable.getIn(state, ["byId", id])) {
         return state
@@ -298,8 +293,7 @@ export const addMessage = (state, {message, bodyType = "txt"}) => {
         time: +new Date(),
         status: status
     })
-    const chatData =
-        state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
+    const chatData = state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
     chatData.push(id)
 
     state = state.setIn([type, chatId], chatData)
@@ -313,12 +307,10 @@ export const addMessage = (state, {message, bodyType = "txt"}) => {
  * @param status enum [sending, sent ,fail]
  * @returns {*}
  */
-export const updateMessageStatus = (state, {message, status = ""}) => {
-    const {id} = message
+export const updateMessageStatus = (state, { message, status = "" }) => {
+    const { id } = message
 
-    return state
-        .setIn(["byId", id, "status"], status)
-        .setIn(["byId", id, "time"], +new Date())
+    return state.setIn(["byId", id, "status"], status).setIn(["byId", id, "time"], +new Date())
 }
 
 /* ------------- Hookup Reducers To Types ------------- */
