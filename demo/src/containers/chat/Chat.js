@@ -1,10 +1,10 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import PropTypes from "prop-types"
-import {connect} from "react-redux"
-import {withRouter} from "react-router-dom"
-import {Button, Row, Form, Input, Icon, Dropdown, Menu} from "antd"
-import {config} from "@/config"
+import { connect } from "react-redux"
+import { withRouter } from "react-router-dom"
+import { Button, Row, Form, Input, Icon, Dropdown, Menu } from "antd"
+import { config } from "@/config"
 import ListItem from "@/components/list/ListItem"
 import ChatMessage from "@/components/chat/ChatMessage"
 import ChatEmoji from "@/components/chat/ChatEmoji"
@@ -15,9 +15,9 @@ import GroupActions from "@/redux/GroupRedux"
 import RosterActions from "@/redux/RosterRedux"
 import BlacklistActions from "@/redux/BlacklistRedux"
 import WebIM from "@/config/WebIM"
-import {message} from "antd"
+import { message } from "antd"
 
-const {TextArea} = Input
+const { TextArea } = Input
 const FormItem = Form.Item
 
 const chatType = {
@@ -31,9 +31,9 @@ class Chat extends React.Component {
     image = null // eslint-disable-line
     timer = null
 
-    constructor({match}) {
+    constructor({ match }) {
         super()
-        const {selectTab, selectItem = ""} = match.params
+        const { selectTab, selectItem = "" } = match.params
         console.log(selectItem, selectTab)
         this.state = {
             selectTab,
@@ -52,14 +52,14 @@ class Chat extends React.Component {
 
     scollBottom() {
         const dom = this.refs["x-chat-content"]
-        setTimeout(function () {
+        setTimeout(function() {
             dom.scrollTop = dom.scrollHeight
         }, 0)
     }
 
     pictureChange(e) {
-        const {match} = this.props
-        const {selectItem, selectTab} = match.params
+        const { match } = this.props
+        const { selectItem, selectTab } = match.params
         const isRoom = chatType[selectTab] == "chatroom"
 
         // console.log(e, e.target)
@@ -77,15 +77,9 @@ class Chat extends React.Component {
             return message.error("invalid type : " + file.filetype, 1)
         }
 
-        this.props.sendImgMessage(
-            chatType[selectTab],
-            selectItem,
-            {isRoom},
-            file,
-            () => {
-                this.image.value = null
-            }
-        )
+        this.props.sendImgMessage(chatType[selectTab], selectItem, { isRoom }, file, () => {
+            this.image.value = null
+        })
         //
     }
 
@@ -138,8 +132,8 @@ class Chat extends React.Component {
             message
             // form: { getFieldDecorator, validateFieldsAndScroll }
         } = this.props
-        const {selectItem, selectTab} = match.params
-        const {value} = this.state
+        const { selectItem, selectTab } = match.params
+        const { value } = this.state
         if (!value) return
         this.props.sendTxtMessage(chatType[selectTab], selectItem, {
             msg: value
@@ -168,11 +162,11 @@ class Chat extends React.Component {
      * @memberof Chat
      */
     handleRightIconClick() {
-        const {selectTab} = this.state
+        const { selectTab } = this.state
         if (selectTab === "group") {
             // 显示群组侧边栏
             const rightSiderOffset = -1 * config.RIGHT_SIDER_WIDTH
-            this.props.switchRightSider({rightSiderOffset})
+            this.props.switchRightSider({ rightSiderOffset })
         }
     }
 
@@ -181,19 +175,16 @@ class Chat extends React.Component {
 
         const tabsLeftItem = tabsRight.map(([key, name, icon]) =>
             <Menu.Item key={key}>
-				<span>
-					<span>
-						{name}
-					</span>
-				</span>
+                <span>
+                    <span>
+                        {name}
+                    </span>
+                </span>
             </Menu.Item>
         )
 
         const menuSettings = (
-            <Menu
-                className="x-header-ops__dropmenu"
-                onClick={this.onMenuContactClick}
-            >
+            <Menu className="x-header-ops__dropmenu" onClick={this.onMenuContactClick}>
                 {tabsLeftItem}
             </Menu>
         )
@@ -201,9 +192,9 @@ class Chat extends React.Component {
         return menuSettings
     }
 
-    onMenuContactClick({key}) {
-        const {match} = this.props
-        const {selectItem, selectTab} = match.params
+    onMenuContactClick({ key }) {
+        const { match } = this.props
+        const { selectItem, selectTab } = match.params
         switch (key) {
             case "0":
                 // 屏蔽
@@ -248,7 +239,7 @@ class Chat extends React.Component {
             // form: { getFieldDecorator, validateFieldsAndScroll }
         } = this.props
 
-        const {selectItem, selectTab} = match.params
+        const { selectItem, selectTab } = match.params
         // console.log(collapsed, selectTab, selectItem)
 
         const back = () => {
@@ -256,7 +247,7 @@ class Chat extends React.Component {
             history.push(redirectPath)
         }
 
-        const {byId = {}, chat = {}} = message
+        const { byId = {}, chat = {} } = message
         let messageList = []
         let name = selectItem
         switch (selectTab) {
@@ -284,28 +275,26 @@ class Chat extends React.Component {
                     <div className="fl">
                         {collapsed
                             ? <Icon
-                                type="arrow-left"
-                                onClick={back}
-                                style={{
-                                    cursor: "pointer",
-                                    fontSize: 20,
-                                    verticalAlign: "middle",
-                                    marginRight: 10
-                                }}
-                            />
+                                  type="arrow-left"
+                                  onClick={back}
+                                  style={{
+                                      cursor: "pointer",
+                                      fontSize: 20,
+                                      verticalAlign: "middle",
+                                      marginRight: 10
+                                  }}
+                              />
                             : null}
                         {name}
                     </div>
                     <div className="fr">
-						<span style={{color: "#8798a4", cursor: "pointer"}}>
-							<Icon type="ellipsis" onClick={this.handleRightIconClick}/>
-						</span>
+                        <span style={{ color: "#8798a4", cursor: "pointer" }}>
+                            <Icon type="ellipsis" onClick={this.handleRightIconClick} />
+                        </span>
                     </div>
                 </div>
                 <div className="x-chat-content" ref="x-chat-content">
-                    {messageList.map(message =>
-                        <ChatMessage key={message.id} {...message} />
-                    )}
+                    {messageList.map(message => <ChatMessage key={message.id} {...message} />)}
                     {/*<ChatMessage />
                      <ChatMessage />
                      <ChatMessage />
@@ -318,16 +307,15 @@ class Chat extends React.Component {
                     <div className="x-list-item x-chat-ops">
                         {/* emoji*/}
                         <div className="x-chat-ops-icon ib">
-                            <ChatEmoji onSelect={this.handleEmojiSelect}/>
+                            <ChatEmoji onSelect={this.handleEmojiSelect} />
                         </div>
                         {/* 图片上传 image upload*/}
                         <label
                             htmlFor="uploadImage"
                             className="x-chat-ops-icon ib"
-                            onClick={() =>
-                            this.image && this.image.focus() && this.image.click()}
+                            onClick={() => this.image && this.image.focus() && this.image.click()}
                         >
-                            <i className="iconfont icon-picture"/>
+                            <i className="iconfont icon-picture" />
                             <input
                                 id="uploadImage"
                                 ref={node => (this.image = node)}
@@ -358,7 +346,7 @@ class Chat extends React.Component {
                                 <i
                                     className="fontello icon-paper-plane"
                                     onClick={this.handleSend}
-                                    style={{cursor: "pointer"}}
+                                    style={{ cursor: "pointer" }}
                                 />
                             }
                             ref={node => (this.input = node)}
@@ -403,17 +391,15 @@ class Chat extends React.Component {
 // }
 
 export default connect(
-    ({login, entities}) => ({
+    ({ login, entities }) => ({
         message: entities.message.asMutable(),
         roster: entities.roster,
         chatroom: entities.chatroom,
         blacklist: entities.blacklist
     }),
     dispatch => ({
-        switchRightSider: ({rightSiderOffset}) =>
-            dispatch(GroupActions.switchRightSider({rightSiderOffset})),
-        sendTxtMessage: (chatType, id, message) =>
-            dispatch(MessageActions.sendTxtMessage(chatType, id, message)),
+        switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
+        sendTxtMessage: (chatType, id, message) => dispatch(MessageActions.sendTxtMessage(chatType, id, message)),
         sendImgMessage: (chatType, id, message, source) =>
             dispatch(MessageActions.sendImgMessage(chatType, id, message, source)),
         removeContact: id => dispatch(RosterActions.removeContact(id)),
