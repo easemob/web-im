@@ -16,7 +16,12 @@ import GroupMemberActions from "@/redux/GroupMemberRedux"
 import { config } from "@/config"
 import utils from "@/utils"
 
-const { SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH, RIGHT_SIDER_WIDTH } = config
+const {
+    SIDER_COL_BREAK,
+    SIDER_COL_WIDTH,
+    SIDER_WIDTH,
+    RIGHT_SIDER_WIDTH
+} = config
 const { Header, Content, Footer, Sider, RightSider } = Layout
 
 class DefaultLayout extends Component {
@@ -58,7 +63,9 @@ class DefaultLayout extends Component {
 
         this.changeItem = this.changeItem.bind(this)
         this.changeTab = this.changeTab.bind(this)
-        this.handleCloseRightSiderClick = this.handleCloseRightSiderClick.bind(this)
+        this.handleCloseRightSiderClick = this.handleCloseRightSiderClick.bind(
+            this
+        )
     }
 
     toggle = collapsed => {
@@ -93,7 +100,8 @@ class DefaultLayout extends Component {
                 this.setState({ roomId: id })
                 const room = dottie.get(entities, `group.byId.${id}`, {})
                 this.setState({ room })
-                this.props.getGroupMember(id)
+                // this.props.getGroupMember(id)
+                this.props.listGroupMemberAsync({ groupId: id })
             }
         }
 
@@ -153,7 +161,13 @@ class DefaultLayout extends Component {
     }
 
     render() {
-        const { collapsed, selectTab, selectItem, headerTabs, roomId } = this.state
+        const {
+            collapsed,
+            selectTab,
+            selectItem,
+            headerTabs,
+            roomId
+        } = this.state
         const { login, entities: { group: { rightSiderOffset } } } = this.props
         return (
             <Layout>
@@ -187,14 +201,22 @@ class DefaultLayout extends Component {
                     >
                         <Route
                             path="/:selectTab/:selectItem"
-                            render={props => <Chat collapsed={collapsed} {...props} />}
+                            render={props =>
+                                <Chat collapsed={collapsed} {...props} />}
                         />
                     </Content>
                     <div
                         className="x-layout-right-sider"
-                        style={{ width: `${RIGHT_SIDER_WIDTH}px`, marginLeft: `${rightSiderOffset}px` }}
+                        style={{
+                            width: `${RIGHT_SIDER_WIDTH}px`,
+                            marginLeft: `${rightSiderOffset}px`
+                        }}
                     >
-                        <RightSider roomId={roomId} room={this.state.room} ref="rightSider" />
+                        <RightSider
+                            roomId={roomId}
+                            room={this.state.room}
+                            ref="rightSider"
+                        />
                     </div>
                     {/*<Footer style={{ textAlign: "center" }}>
                      Ant Design ©2016 Created by Ant UED
@@ -213,10 +235,16 @@ export default withRouter(
             login
         }),
         dispatch => ({
-            getGroupMember: id => dispatch(GroupMemberActions.getGroupMember(id)),
-            switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
-            joinChatRoom: roomId => dispatch(ChatRoomActions.joinChatRoom(roomId)),
-            quitChatRoom: roomId => dispatch(ChatRoomActions.quitChatRoom(roomId))
+            getGroupMember: id =>
+                dispatch(GroupMemberActions.getGroupMember(id)),
+            listGroupMemberAsync: opt =>
+                dispatch(GroupMemberActions.listGroupMemberAsync(opt)),
+            switchRightSider: ({ rightSiderOffset }) =>
+                dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
+            joinChatRoom: roomId =>
+                dispatch(ChatRoomActions.joinChatRoom(roomId)),
+            quitChatRoom: roomId =>
+                dispatch(ChatRoomActions.quitChatRoom(roomId))
         })
     )(DefaultLayout)
 )
