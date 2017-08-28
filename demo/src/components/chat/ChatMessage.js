@@ -7,6 +7,7 @@ import {renderTime} from "@/utils"
 import emoji from "@/config/emoji"
 import { Card } from "antd"
 import Audio from "@/components/chat/Audio"
+import WebIM from "@/config/WebIM"
 
 const renderTxt = txt => {
     // 替换不能直接用replace，必须以数组组合的方式，因为混合着dom元素
