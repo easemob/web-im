@@ -4,7 +4,7 @@ import { Icon } from "antd"
 import Layout from "./Layout"
 import { connect } from "react-redux"
 import { withRouter, Route } from "react-router-dom"
-import dottie from "dottie"
+import _ from "lodash"
 //import ContactItem from "@/components/contact/ContactItem"
 import ChatRoomActions from "@/redux/ChatRoomRedux"
 import Contact from "@/containers/contact/Contact"
@@ -95,13 +95,13 @@ class DefaultLayout extends Component {
         // if (selectItem !== e.key && selectTab === 'group') {
 
         if (selectTab === "group") {
-            const id = selectItem
-            if (id) {
-                this.setState({ roomId: id })
-                const room = dottie.get(entities, `group.byId.${id}`, {})
+            const groupId = e.key
+            if (groupId) {
+                this.setState({ roomId: groupId })
+                const room = _.get(entities, `group.byId.${groupId}`, {})
                 this.setState({ room })
                 // this.props.getGroupMember(id)
-                this.props.listGroupMemberAsync({ groupId: id })
+                this.props.listGroupMemberAsync({ groupId })
             }
         }
 
@@ -190,7 +190,11 @@ class DefaultLayout extends Component {
                             left: selectItem && collapsed ? "-100%" : 0
                         }}
                     >
-                        <Contact collapsed={false} onClick={this.changeItem} selectedKeys={[selectItem]} />
+                        <Contact
+                            collapsed={false}
+                            onClick={this.changeItem}
+                            selectedKeys={[selectItem]}
+                        />
                     </div>
                     <Content
                         className="x-layout-chat"

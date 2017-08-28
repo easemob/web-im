@@ -140,10 +140,17 @@ const { Types, Creators } = createActions({
                 success: response => {
                     dispatch(Creators.setLoading(false))
                     dispatch(Creators.setLoadingFailed(false))
-                    dispatch(GroupMemberActions.removeMemberFromGroup(groupId, username))
+                    dispatch(
+                        GroupMemberActions.removeMemberFromGroup(
+                            groupId,
+                            username
+                        )
+                    )
                 },
                 error: e => {
-                    console.log(`an error found while invoking resultful mute: ${e.message}`)
+                    console.log(
+                        `an error found while invoking resultful mute: ${e.message}`
+                    )
                     dispatch(Creators.setLoading(false))
                     dispatch(Creators.setLoadingFailed(true))
                 }
@@ -208,12 +215,18 @@ export const updateGroupInfo = (state, { info }) => {
     const group = state.getIn(["byId", info.groupId])
     const oldName = group.name
     const newGroup = group.set("name", info.groupName)
-    const byName = state.getIn(["byName"]).without(oldName).setIn([info.groupName], newGroup)
+    const names = state.getIn(["names"])
 
-    return state
-        .set("byName", byName)
-        .setIn(["byId", info.groupId, "name"], info.groupName)
-        .set("names", Object.keys(byName).sort())
+    names.splice(names.indexOf(oldName))
+    names.push(info.groupName, 1)
+    // const byName = state.getIn(["byName"]).without(oldName).setIn([info.groupName], newGroup)
+
+    return (
+        state
+            // .set("byName", byName)
+            .setIn(["byId", info.groupId, "name"], info.groupName)
+            .set("names", names.sort())
+    )
 }
 
 /**
@@ -225,11 +238,13 @@ export const updateGroupInfo = (state, { info }) => {
  */
 export const dissolveGroup = (state, { payload }) => {
     let byId = state.getIn(["byId"]).without(payload.groupId)
-    let byName = state.getIn(["byName"]).without(payload.groupName)
+    // let byName = state.getIn(["byName"]).without(payload.groupName)
+    const names = state.getIn(["names"])
+    names.splice(names.indexOf(payload.groupName), 1)
     return state.merge({
         byId,
-        byName,
-        names: Object.keys(byName).sort()
+        // byName,
+        names: names.sort()
     })
 }
 
@@ -246,7 +261,9 @@ export const setBlackList = (state, { group }) => {
 }
 
 export const removeGroupBlockSingle = (state, { payload }) => {
-    let blacklist = state.getIn(["byId", payload.groupId, "blacklist"]).filter(val => val !== payload.user)
+    let blacklist = state
+        .getIn(["byId", payload.groupId, "blacklist"])
+        .filter(val => val !== payload.user)
     return state.setIn(["byId", payload.groupId, "blacklist"], blacklist)
 }
 
