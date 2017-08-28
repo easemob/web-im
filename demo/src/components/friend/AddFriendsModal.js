@@ -21,6 +21,7 @@ class AddFriendsModal extends React.Component {
 		this.props.addContact(value)
 		this.props.onCancel && this.props.onCancel()
 	}
+
 	onChangeUserName = e => {
 		this.setState({ userName: e.target.value })
 	}

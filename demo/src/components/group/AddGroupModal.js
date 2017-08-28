@@ -52,6 +52,7 @@ class AddGroupModal extends React.Component {
 						public: type === "public",
 						approval: canJoin === "yes",
 						allowinvites: allowInvite
+						// invite_need_confirm 默认是member 确认后才会加群
 					},
 					success: () => {
 						console.log("success")

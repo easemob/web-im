@@ -15,3 +15,4 @@ sdk/dist/websdk-*.js.map
 webrtc/dist/webrtc-*.js
 demo/build
 demo/remote_docker_restart.sh
+*.orig

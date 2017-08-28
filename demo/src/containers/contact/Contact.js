@@ -1,27 +1,16 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {connect} from "react-redux"
-import {withRouter} from "react-router-dom"
+import { connect } from "react-redux"
+import { withRouter } from "react-router-dom"
 import ContactItem from "@/components/contact/ContactItem"
 import utils from "@/utils"
 
-const Contact = ({
-                     history,
-                     match,
-                     location,
-                     roster,
-                     group,
-                     chatroom,
-                     stranger,
-                     message,
-                     ...rest
-                 }) => {
-
-    const {pathname} = location
+const Contact = ({ history, match, location, roster, group, chatroom, stranger, message, blacklist, ...rest }) => {
+    const { pathname } = location
     const paths = pathname.split("/")
     const chatType = paths[1]
     const chatId = paths[2]
-    const {byId, chat} = message
+    const { byId, chat } = message
 
     // console.log(history, match, location, pathname, chatType, chatId)
 
@@ -29,6 +18,7 @@ const Contact = ({
     switch (chatType) {
         case "contact":
             roster.friends.forEach((name, index) => {
+                if (blacklist.names.indexOf(name) !== -1) return
                 const info = utils.getLatestInfo(name, byId, chat)
                 items[index] = {
                     name,
@@ -37,9 +27,11 @@ const Contact = ({
             })
             break
         case "group":
-            group.names.forEach((name, index) => {
+            group.names.forEach((v, index) => {
+                let temp = v.split("_#-#_")
                 items[index] = {
-                    name,
+                    name: temp[0],
+                    id: temp[1],
                     latestMessage: "",
                     latestTime: ""
                 }
@@ -70,7 +62,7 @@ const Contact = ({
 
     return (
         <div>
-            <ContactItem {...rest} items={items} chatType={chatType}/>
+            <ContactItem {...rest} items={items} chatType={chatType} />
         </div>
     )
 }
@@ -82,16 +74,16 @@ Contact.propTypes = {
 
 export default withRouter(
     connect(
-        ({entities}) => ({
+        ({ entities }) => ({
             roster: entities.roster,
             group: entities.group,
             chatroom: entities.chatroom,
             stranger: entities.stranger,
-            message: entities.message
+            message: entities.message,
+            blacklist: entities.blacklist
         }),
         dispatch => ({
-            doLogin: (username, password) => {
-            }
+            doLogin: (username, password) => {}
             // dispatch(LoginActions.login(username, password))
         })
     )(Contact)

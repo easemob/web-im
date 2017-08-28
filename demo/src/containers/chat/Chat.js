@@ -3,7 +3,7 @@ import ReactDOM from "react-dom"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
-import { Button, Row, Form, Input, Icon } from "antd"
+import { Button, Row, Form, Input, Icon, Dropdown, Menu } from "antd"
 import { config } from "@/config"
 import ListItem from "@/components/list/ListItem"
 import ChatMessage from "@/components/chat/ChatMessage"
@@ -12,6 +12,8 @@ import styles from "./style/index.less"
 import LoginActions from "@/redux/LoginRedux"
 import MessageActions from "@/redux/MessageRedux"
 import GroupActions from "@/redux/GroupRedux"
+import RosterActions from "@/redux/RosterRedux"
+import BlacklistActions from "@/redux/BlacklistRedux"
 import WebIM from "@/config/WebIM"
 import { message } from "antd"
 
@@ -20,13 +22,14 @@ const FormItem = Form.Item
 
 const chatType = {
     contact: "chat",
-    groups: "chatRoom",
-    chatroom: "chatRoom"
+    group: "groupchat",
+    chatroom: "chatroom"
 }
 
 class Chat extends React.Component {
     input = null // eslint-disable-line
     image = null // eslint-disable-line
+    timer = null
 
     constructor({ match }) {
         super()
@@ -44,6 +47,7 @@ class Chat extends React.Component {
         this.handleEmojiCancel = this.handleEmojiCancel.bind(this)
         this.handleKey = this.handleKey.bind(this)
         this.handleRightIconClick = this.handleRightIconClick.bind(this)
+        this.onMenuContactClick = this.onMenuContactClick.bind(this)
     }
 
     scollBottom() {
@@ -56,7 +60,7 @@ class Chat extends React.Component {
     pictureChange(e) {
         const { match } = this.props
         const { selectItem, selectTab } = match.params
-        const isRoom = chatType[selectTab] == "chatRoom"
+        const isRoom = chatType[selectTab] == "chatroom"
 
         // console.log(e, e.target)
         let file = WebIM.utils.getFileUrl(e.target)
@@ -141,7 +145,7 @@ class Chat extends React.Component {
     }
 
     handleSend(e) {
-        console.log(this.state.value)
+        // console.log(this.state.value)
         const {
             match,
             message
@@ -185,6 +189,43 @@ class Chat extends React.Component {
         }
     }
 
+    renderContactMenu() {
+        const tabsRight = [["0", "Block", ""], ["1", "Delete", ""]]
+
+        const tabsLeftItem = tabsRight.map(([key, name, icon]) =>
+            <Menu.Item key={key}>
+                <span>
+                    <span>
+                        {name}
+                    </span>
+                </span>
+            </Menu.Item>
+        )
+
+        const menuSettings = (
+            <Menu className="x-header-ops__dropmenu" onClick={this.onMenuContactClick}>
+                {tabsLeftItem}
+            </Menu>
+        )
+
+        return menuSettings
+    }
+
+    onMenuContactClick({ key }) {
+        const { match } = this.props
+        const { selectItem, selectTab } = match.params
+        switch (key) {
+            case "0":
+                // 屏蔽
+                this.props.doAddBlacklist(selectItem)
+                break
+            case "1":
+                // 删除
+                this.props.removeContact(selectItem)
+                break
+        }
+    }
+
     componentWillReceiveProps(nextProps) {
         // setTimeout(this.scollBottom, 0)
         // this.scollBottom()
@@ -196,12 +237,12 @@ class Chat extends React.Component {
 
     componentDidMount() {
         this.scollBottom()
-
         // document.addEventListener("keydown", this.handleKey)
     }
 
     componentWillUnmount() {
         // document.removeEventListener("keydown", this.handleKey)
+        if (this.timer) clearTimeout(this.timer)
     }
 
     render() {
@@ -211,7 +252,10 @@ class Chat extends React.Component {
             history,
             location,
             message,
-            chatroom
+            group,
+            chatroom,
+            roster,
+            blacklist
             // form: { getFieldDecorator, validateFieldsAndScroll }
         } = this.props
 
@@ -228,12 +272,21 @@ class Chat extends React.Component {
         let name = selectItem
         switch (selectTab) {
             case "contact":
+                const byName = (roster && roster.byName) || {}
+                if (!(selectItem in byName)) return null
+                if (blacklist.names.indexOf(name) !== -1) return null
                 messageList = chat[selectItem] || []
                 messageList = messageList.map(id => byId[id] || {})
-                // console.log(messageList)
+                break
+            case "group":
+                name = group.byId[selectItem].name || group.byId[selectItem].id
+                messageList = message["groupchat"][selectItem] || []
+                messageList = messageList.map(id => byId[id] || {})
                 break
             case "chatroom":
                 name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
+                messageList = message["chatroom"][selectItem] || []
+                messageList = messageList.map(id => byId[id] || {})
                 break
         }
 
@@ -325,13 +378,13 @@ class Chat extends React.Component {
                             onChange={this.handleChange}
                             onPressEnter={this.handleSend}
                             placeholder="Type a message"
-                            // addonAfter={
-                            // 	<i
-                            // 		className="fontello icon-paper-plane"
-                            // 		onClick={this.handleSend}
-                            // 		style={{ cursor: "pointer" }}
-                            // 	/>
-                            // }
+                            addonAfter={
+                                <i
+                                    className="fontello icon-paper-plane"
+                                    onClick={this.handleSend}
+                                    style={{ cursor: "pointer" }}
+                                />
+                            }
                             ref={node => (this.input = node)}
                         />
                         {/*<TextArea rows={2} />*/}
@@ -376,7 +429,10 @@ class Chat extends React.Component {
 export default connect(
     ({ login, entities }) => ({
         message: entities.message.asMutable(),
-        chatroom: entities.chatroom
+        roster: entities.roster,
+        group: entities.group,
+        chatroom: entities.chatroom,
+        blacklist: entities.blacklist
     }),
     dispatch => ({
         switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
@@ -384,6 +440,8 @@ export default connect(
         sendImgMessage: (chatType, id, message, source) =>
             dispatch(MessageActions.sendImgMessage(chatType, id, message, source)),
         sendFileMessage: (chatType, id, message, source) =>
-            dispatch(MessageActions.sendFileMessage(chatType, id, message, source))
+            dispatch(MessageActions.sendFileMessage(chatType, id, message, source)),
+        removeContact: id => dispatch(RosterActions.removeContact(id)),
+        doAddBlacklist: id => dispatch(BlacklistActions.doAddBlacklist(id))
     })
 )(Chat)

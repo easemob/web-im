@@ -2,8 +2,8 @@ import React from "react"
 import PropTypes from "prop-types"
 import classNames from "classnames"
 import moment from "moment"
-import { Badge } from "antd"
-import { renderTime } from "@/utils"
+import {Badge} from "antd"
+import {renderTime} from "@/utils"
 import emoji from "@/config/emoji"
 import { Card } from "antd"
 import Audio from "@/components/chat/Audio"
@@ -22,7 +22,9 @@ const renderTxt = txt => {
         }
         if (match[1] in emoji.map) {
             const v = emoji.map[match[1]]
-            rnTxt.push(<img src={require(`../../themes/faces/${v}`)} width={20} height={20} />)
+            rnTxt.push(
+                <img key={WebIM.conn.getUniqueId()} src={require(`../../themes/faces/${v}`)} width={20} height={20}/>
+            )
         } else {
             rnTxt.push(match[1])
         }

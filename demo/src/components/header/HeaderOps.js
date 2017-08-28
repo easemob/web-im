@@ -13,179 +13,223 @@ import AddFriendsModal from "@/components/friend/AddFriendsModal"
 import FriendsRequestModal from "@/components/friend/FriendsRequestModal"
 import ModalComponent from "@/components/common/ModalComponent"
 import AddGroupModal from "@/components/group/AddGroupModal"
+import BlacklistModal from "@/components/blacklist/BlacklistModal"
+import JoinGroupModal from "@/components/group/JoinGroupModal"
+import GroupRequestModal from "@/components/group/GroupRequestModal"
 
 class HeaderOps extends Component {
-	constructor(props) {
-		super()
+    constructor(props) {
+        super()
 
-		this.state = {
-			showAddFriendsModal: false,
-			showAddGroupModal: false
-		}
-		this.onMenuSettingsClick = this.onMenuSettingsClick.bind(this)
-		this.onMenuRightClick = this.onMenuRightClick.bind(this)
-		this.handleLogout = this.handleLogout.bind(this)
-	}
+        this.state = {
+            modal: ""
+        }
 
-	handleLogout() {
-		console.log("handleLogout")
+        // showAddFriendsModal: false,
+        // showBlacklistModal: false,
+        // showAddGroupModal: false,
+        // showJoinGroupModal: false
+        this.onMenuSettingsClick = this.onMenuSettingsClick.bind(this)
+        this.onMenuRightClick = this.onMenuRightClick.bind(this)
+        this.handleLogout = this.handleLogout.bind(this)
+    }
 
-		this.props.doLogout()
-	}
+    handleLogout() {
+        console.log("handleLogout")
 
-	onMenuSettingsClick({ key }) {
-		switch (key) {
-			case "0":
-				console.log("好友黑名单")
-				break
-			case "1":
-				this.handleLogout()
-				break
-		}
-	}
+        this.props.doLogout()
+    }
 
-	onMenuRightClick({ key }) {
-		switch (key) {
-			case "0":
-				console.log("添加好友")
-				this.setState({
-					showAddFriendsModal: true
-				})
-				break
-			case "1":
-				console.log("申请加入公开群")
-				break
-			case "2":
-				console.log("创建群组")
-				this.setState({
-					showAddGroupModal: true
-				})
-				break
-		}
-	}
+    onMenuSettingsClick({ key }) {
+        switch (key) {
+            case "0":
+                console.log("好友黑名单")
+                this.setState({
+                    modal: "showBlacklistModal"
+                })
+                break
+            case "1":
+                this.handleLogout()
+                break
+        }
+    }
 
-	render() {
-		const { title, doLogout, subscribes } = this.props
-		const { showAddFriendsModal, showAddGroupModal } = this.state
+    onMenuRightClick({ key }) {
+        switch (key) {
+            case "0":
+                console.log("添加好友")
+                this.setState({
+                    modal: "showAddFriendsModal"
+                })
+                break
+            case "1":
+                console.log("申请加入公开群")
+                this.setState({
+                    modal: "showJoinGroupModal"
+                })
+                break
+            case "2":
+                console.log("创建群组")
+                this.setState({
+                    modal: "showAddGroupModal"
+                })
+                break
+        }
+    }
 
-		const tabsLeft = [
-			["0", "好友黑名单", "minus-circle-o"],
-			["1", `退出(${title})`, "logout"]
-		]
+    render() {
+        const { title, doLogout, subscribes, groupRequests } = this.props
+        const { modal } = this.state
 
-		const tabsRight = [
-			["0", "添加好友", "user-add"],
-			["1", "申请加入公开群", "plus-circle-o"],
-			["2", "创建群组", "usergroup-add"]
-		]
+        const tabsLeft = [
+            ["0", "好友黑名单", "minus-circle-o"],
+            ["1", `退出(${title})`, "logout"]
+        ]
 
-		const tabsLeftItem = tabsLeft.map(([key, name, icon]) =>
-			<Menu.Item key={key}>
-				<span>
-					<Icon type={icon} /> <span>{name}</span>
-				</span>
-			</Menu.Item>
-		)
+        const tabsRight = [
+            ["0", "添加好友", "user-add"],
+            ["1", "申请加入公开群", "plus-circle-o"],
+            ["2", "创建群组", "usergroup-add"]
+        ]
 
-		const tabsRightItem = tabsRight.map(([key, name, icon]) =>
-			<Menu.Item key={key}>
-				<span>
-					<Icon type={icon} /> <span>{name}</span>
-				</span>
-			</Menu.Item>
-		)
+        const tabsLeftItem = tabsLeft.map(([key, name, icon]) =>
+            <Menu.Item key={key}>
+                <span>
+                    <Icon type={icon} /> <span>{name}</span>
+                </span>
+            </Menu.Item>
+        )
 
-		const menuSettings = (
-			<Menu
-				className="x-header-ops__dropmenu"
-				onClick={this.onMenuSettingsClick}
-			>
-				{tabsLeftItem}
-			</Menu>
-		)
+        const tabsRightItem = tabsRight.map(([key, name, icon]) =>
+            <Menu.Item key={key}>
+                <span>
+                    <Icon type={icon} /> <span>{name}</span>
+                </span>
+            </Menu.Item>
+        )
 
-		const menuRight = (
-			<Menu className="x-header-ops__dropmenu" onClick={this.onMenuRightClick}>
-				{tabsRightItem}
-			</Menu>
-		)
-		// console.log("subscribes", _.isEmpty, subscribes)
+        const menuSettings = (
+            <Menu
+                className="x-header-ops__dropmenu"
+                onClick={this.onMenuSettingsClick}
+            >
+                {tabsLeftItem}
+            </Menu>
+        )
 
-		return (
-			<div id="x-header-ops" className="x-list-item headerBg">
-				<div
-					className="fl"
-					style={{
-						margin: "0 12px 0 0",
-						fontSize: 24,
-						lineHeight: "50px",
-						color: "#fff",
-						cursor: "pointer"
-					}}
-				>
-					<Dropdown
-						overlay={menuSettings}
-						trigger={["click"]}
-						style={{ position: "absolute" }}
-					>
-						<Icon type="setting" />
-					</Dropdown>
-				</div>
-				<div className="fl" style={{ lineHeight: "50px", color: "#fff" }}>
-					{title}
-				</div>
-				<div
-					className="fr"
-					style={{
-						fontSize: 24,
-						lineHeight: "50px",
-						color: "#fff",
-						cursor: "pointer"
-					}}
-				>
-					<Dropdown overlay={menuRight} trigger={["click"]}>
-						<Icon type="plus-circle-o" />
-					</Dropdown>
-				</div>
-				{
-					<ModalComponent
-						width={460}
-						title="Add Friends"
-						visible={showAddFriendsModal}
-						component={AddFriendsModal}
-					/>
-				}
-				{
-					<ModalComponent
-						width={460}
-						title="Friends Request"
-						visible={!_.isEmpty(subscribes)}
-						component={FriendsRequestModal}
-					/>
-				}
-				{
-					<ModalComponent
-						width={460}
-						title="Create Group"
-						visible={showAddGroupModal}
-						component={AddGroupModal}
-					/>
-				}
-			</div>
-		)
-	}
+        const menuRight = (
+            <Menu
+                className="x-header-ops__dropmenu"
+                onClick={this.onMenuRightClick}
+            >
+                {tabsRightItem}
+            </Menu>
+        )
+        // console.log("subscribes", _.isEmpty, subscribes)
+
+        return (
+            <div id="x-header-ops" className="x-list-item headerBg">
+                <div
+                    className="fl"
+                    style={{
+                        margin: "0 12px 0 0",
+                        fontSize: 24,
+                        lineHeight: "50px",
+                        color: "#fff",
+                        cursor: "pointer"
+                    }}
+                >
+                    <Dropdown
+                        overlay={menuSettings}
+                        trigger={["click"]}
+                        style={{ position: "absolute" }}
+                    >
+                        <Icon type="setting" />
+                    </Dropdown>
+                </div>
+                <div
+                    className="fl"
+                    style={{ lineHeight: "50px", color: "#fff" }}
+                >
+                    {title}
+                </div>
+                <div
+                    className="fr"
+                    style={{
+                        fontSize: 24,
+                        lineHeight: "50px",
+                        color: "#fff",
+                        cursor: "pointer"
+                    }}
+                >
+                    <Dropdown overlay={menuRight} trigger={["click"]}>
+                        <Icon type="plus-circle-o" />
+                    </Dropdown>
+                </div>
+                {
+                    <ModalComponent
+                        width={460}
+                        title="Add Friends"
+                        visible={modal === "showAddFriendsModal"}
+                        component={AddFriendsModal}
+                    />
+                }
+                {
+                    <ModalComponent
+                        width={460}
+                        title="Friends Request"
+                        visible={!_.isEmpty(subscribes)}
+                        component={FriendsRequestModal}
+                    />
+                }
+                {
+                    <ModalComponent
+                        width={460}
+                        title="Create Group"
+                        visible={modal === "showAddGroupModal"}
+                        component={AddGroupModal}
+                    />
+                }
+                {
+                    <ModalComponent
+                        width={460}
+                        title="Blocked"
+                        visible={modal === "showBlacklistModal"}
+                        component={BlacklistModal}
+                    />
+                }
+                {
+                    <ModalComponent
+                        width={460}
+                        title="Join Group"
+                        visible={modal === "showJoinGroupModal"}
+                        component={JoinGroupModal}
+                    />
+                }
+                {
+                    <ModalComponent
+                        width={460}
+                        title="Group Request"
+                        visible={!_.isEmpty(groupRequests)}
+                        component={GroupRequestModal}
+                    />
+                }
+            </div>
+        )
+    }
 }
 
 HeaderOps.propTypes = {
-	collapse: PropTypes.bool
-	// menuOptions: PropTypes.array.isRequired,
+    collapse: PropTypes.bool
+    // menuOptions: PropTypes.array.isRequired,
 }
 
 export default connect(
-	({ entities }) => ({
-		subscribes: entities.subscribe.byFrom
-	}),
-	dispatch => ({
-		doLogout: () => dispatch(WebIMActions.logout())
-	})
+    ({ entities }) => ({
+        subscribes: entities.subscribe.byFrom,
+        groupRequests: entities.groupRequest.byGid
+    }),
+    dispatch => ({
+        doLogout: () => dispatch(WebIMActions.logout())
+    })
 )(HeaderOps)

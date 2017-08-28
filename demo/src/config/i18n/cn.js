@@ -42,5 +42,7 @@ export const cn = {
 	// 订阅
 	refuse: "拒绝了您的请求",
 	subscribed: "已订阅",
-	unsubscribed: "已退订"
+	unsubscribed: "已退订",
+	// 搜索
+	search: "搜索"
 }

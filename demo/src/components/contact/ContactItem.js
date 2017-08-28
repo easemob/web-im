@@ -1,21 +1,19 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {Menu, Icon, Badge} from "antd"
+import { Menu, Icon, Badge } from "antd"
 import ContactHead from "./ContactHead"
 
 const SubMenu = Menu.SubMenu
 const MenuItemGroup = Menu.ItemGroup
 
-const ContactItem = ({chatType, items, collapse, hasLogo, ...rest}) => {
+const ContactItem = ({ chatType, items, collapse, hasLogo, ...rest }) => {
     const tabs = items //["Contacts", "Chat", "Public"]
     const tabsLen = tabs.length
     const tabCls = collapse ? "" : ``
 
     const tabsItem = tabs.map(item =>
-        <Menu.Item key={(chatType == "chatroom") ? item.id : item.name} className={tabCls}>
-            {hasLogo
-                ? <ContactHead className="fl nav-img" name="test" width={50}/>
-                : ""}
+        <Menu.Item key={chatType == "chatroom" || chatType == "group" ? item.id : item.name} className={tabCls}>
+            {hasLogo ? <ContactHead className="fl nav-img" name="test" width={50} /> : ""}
             <div className="nav-text">
                 <p>
                     {item.name}
@@ -41,13 +39,7 @@ const ContactItem = ({chatType, items, collapse, hasLogo, ...rest}) => {
     )
 
     return (
-        <Menu
-            id="x-contact-item"
-            mode={"inline"}
-            inlineIndent={24}
-            {...rest}
-            inlineCollapsed={false}
-        >
+        <Menu id="x-contact-item" mode={"inline"} inlineIndent={24} {...rest} inlineCollapsed={false}>
             {tabsItem}
         </Menu>
     )

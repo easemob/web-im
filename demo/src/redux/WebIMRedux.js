@@ -9,6 +9,7 @@ import ChatRoomActions from "@/redux/ChatRoomRedux"
 import SubscribeActions from "@/redux/SubscribeRedux"
 import BlacklistActions from "@/redux/BlacklistRedux"
 import MessageActions from "@/redux/MessageRedux"
+import GroupRequestActions from "@/redux/GroupRequestRedux"
 import { store } from "@/redux"
 import { history } from "@/utils"
 import utils from "@/utils"
@@ -36,7 +37,7 @@ WebIM.conn.listen({
         // 通知登陆成功
         store.dispatch(LoginActions.setLoginSuccess())
         // 获取黑名单列表
-        // store.dispatch(BlacklistActions.getBlacklist())
+        store.dispatch(BlacklistActions.getBlacklist())
         // 获取群组列表
         store.dispatch(GroupActions.getGroups())
         // 获取群组列表
@@ -50,6 +51,30 @@ WebIM.conn.listen({
     onPresence: msg => {
         // console.log("onPresence", msg, store.getState())
         switch (msg.type) {
+            case "joinGroupNotifications":
+                store.dispatch(GroupRequestActions.addGroupRequest(msg))
+                break
+            case "leaveGroup": // dismissed by admin
+                message.error(
+                    `${msg.kicked ||
+                        "You"} have been dismissed by ${msg.actor || "admin"} .`
+                )
+                store.dispatch(GroupActions.getGroups())
+                break
+            case "joinPublicGroupSuccess":
+                message.success("加入群组" + msg.from + "成功！")
+                store.dispatch(GroupActions.getGroups())
+                break
+            case "joinPublicGroupDeclined":
+                message.error(msg.owner + "拒绝了您加入" + msg.gid + "的请求")
+                break
+            case "joinChatRoomSuccess": // Join the chat room successfully
+                // Demo.currentChatroom = msg.from;
+                break
+            case "reachChatRoomCapacity": // Failed to join the chat room
+                // Demo.currentChatroom = null;
+                message.error("Fail to Join the group")
+                break
             case "subscribe":
                 // 加好友时双向订阅过程，所以当对方同意添加好友的时候
                 // 会有一步对方自动订阅本人的操作，这步操作是自动发起
@@ -96,7 +121,10 @@ WebIM.conn.listen({
                 WebIM.conn.autoReconnectNumTotal,
                 WebIM.conn.autoReconnectNumMax
             )
-            if (WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax) {
+            if (
+                WebIM.conn.autoReconnectNumTotal <
+                WebIM.conn.autoReconnectNumMax
+            ) {
                 return
             }
             message.error("server-side close the websocket connection")
@@ -170,7 +198,9 @@ const { Types, Creators } = createActions({
     // 登出
     logout: () => {
         return (dispatch, state) => {
-            let I18N = store.getState().i18n.translations[store.getState().i18n.locale]
+            let I18N = store.getState().i18n.translations[
+                store.getState().i18n.locale
+            ]
             message.success(I18N.logoutSuccessfully)
             dispatch(CommonActions.fetching())
             if (WebIM.conn.isOpened()) {

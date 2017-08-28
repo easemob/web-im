@@ -1,28 +1,33 @@
-import React, {Component} from "react"
-import ReactDOM from 'react-dom'
-import {Icon} from "antd"
+import React, { Component } from "react"
+import ReactDOM from "react-dom"
+import { Icon } from "antd"
 import Layout from "./Layout"
-import {connect} from "react-redux"
-import {withRouter, Route} from "react-router-dom"
-import dottie from 'dottie'
+import { connect } from "react-redux"
+import { withRouter, Route } from "react-router-dom"
+import _ from "lodash"
 //import ContactItem from "@/components/contact/ContactItem"
 import ChatRoomActions from "@/redux/ChatRoomRedux"
 import Contact from "@/containers/contact/Contact"
 import Chat from "@/containers/chat/Chat"
 import HeaderTab from "@/components/header/HeaderTab"
 import HeaderOps from "@/components/header/HeaderOps"
-import GroupActions from '@/redux/GroupRedux'
-import GroupMemberActions from '@/redux/GroupMemberRedux'
-import {config} from "@/config"
-import utils from '@/utils'
+import GroupActions from "@/redux/GroupRedux"
+import GroupMemberActions from "@/redux/GroupMemberRedux"
+import { config } from "@/config"
+import utils from "@/utils"
 
-const {SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH, RIGHT_SIDER_WIDTH} = config
-const {Header, Content, Footer, Sider, RightSider} = Layout
+const {
+    SIDER_COL_BREAK,
+    SIDER_COL_WIDTH,
+    SIDER_WIDTH,
+    RIGHT_SIDER_WIDTH
+} = config
+const { Header, Content, Footer, Sider, RightSider } = Layout
 
 class DefaultLayout extends Component {
-    constructor({breakpoint, match}) {
+    constructor({ breakpoint, match }) {
         super()
-        const {selectTab, selectItem = ""} = match.params
+        const { selectTab, selectItem = "" } = match.params
 
         this.state = {
             collapsed: breakpoint[SIDER_COL_BREAK],
@@ -58,9 +63,10 @@ class DefaultLayout extends Component {
 
         this.changeItem = this.changeItem.bind(this)
         this.changeTab = this.changeTab.bind(this)
-        this.handleCloseRightSiderClick = this.handleCloseRightSiderClick.bind(this)
+        this.handleCloseRightSiderClick = this.handleCloseRightSiderClick.bind(
+            this
+        )
     }
-
 
     toggle = collapsed => {
         // console.log("collapsed", collapsed)
@@ -71,8 +77,8 @@ class DefaultLayout extends Component {
 
     // 切换聊天类型
     changeTab(e) {
-        const {history, location} = this.props
-        const {selectItem, selectTab} = this.state
+        const { history, location } = this.props
+        const { selectItem, selectTab } = this.state
         const redirectPath = "/" + [e.key].join("/")
         if (selectTab == e.key) return
         history.push(redirectPath + location.search)
@@ -80,24 +86,22 @@ class DefaultLayout extends Component {
 
     // 切换联系人
     changeItem(e) {
-        const {history, location, entities} = this.props
-        const {selectItem, selectTab} = this.state
+        console.log("changeItem", e)
+        const { history, location, entities } = this.props
+        const { selectItem, selectTab } = this.state
         const redirectPath = "/" + [selectTab, e.key].join("/")
         if (selectItem == e.key) return
 
         // if (selectItem !== e.key && selectTab === 'group') {
 
-        if (selectTab === 'group') {
-            const id = dottie.get(entities, `group.byName.${e.key}.roomId`)
-            if (id) {
-                // console.log(e.key)
-                // console.log(selectItem)
-                this.setState({roomId: id})
-                const room = dottie.get(entities, `group.byId.${id}`, {})
-                // console.log(room)
-                // console.log('######')
-                this.setState({room})
-                this.props.getGroupMember(id)
+        if (selectTab === "group") {
+            const groupId = e.key
+            if (groupId) {
+                this.setState({ roomId: groupId })
+                const room = _.get(entities, `group.byId.${groupId}`, {})
+                this.setState({ room })
+                // this.props.getGroupMember(id)
+                this.props.listGroupMemberAsync({ groupId })
             }
         }
 
@@ -112,13 +116,11 @@ class DefaultLayout extends Component {
         }
 
         history.push(redirectPath + location.search)
-
-
     }
 
     setSelectStatus() {
-        const {history, location, match} = this.props
-        const {selectTab, selectItem = ""} = match.params
+        const { history, location, match } = this.props
+        const { selectTab, selectItem = "" } = match.params
         // console.log(match)
         this.setState({
             selectTab,
@@ -127,9 +129,9 @@ class DefaultLayout extends Component {
     }
 
     handleCloseRightSiderClick(e) {
-        e.preventDefault();
-        console.log(e.target);
-        this.props.switchRightSider({rightSiderOffset: 0});
+        e.preventDefault()
+        console.log(e.target)
+        this.props.switchRightSider({ rightSiderOffset: 0 })
     }
 
     componentDidMount() {
@@ -142,7 +144,7 @@ class DefaultLayout extends Component {
         //     this.props.location.pathname,
         //     nextProps.location.pathname
         // )
-        const {breakpoint, location} = this.props
+        const { breakpoint, location } = this.props
         const nextBeakpoint = nextProps.breakpoint
 
         // if (breakpoint[SIDER_COL_BREAK] != nextBeakpoint[SIDER_COL_BREAK]) {
@@ -159,12 +161,18 @@ class DefaultLayout extends Component {
     }
 
     render() {
-        const {collapsed, selectTab, selectItem, headerTabs, roomId} = this.state
-        const {login, entities: {group: {rightSiderOffset}}} = this.props
+        const {
+            collapsed,
+            selectTab,
+            selectItem,
+            headerTabs,
+            roomId
+        } = this.state
+        const { login, entities: { group: { rightSiderOffset } } } = this.props
         return (
             <Layout>
                 <Header className="header">
-                    <HeaderOps title={login.username}/>
+                    <HeaderOps title={login.username} />
                     <HeaderTab
                         collapsed={collapsed}
                         items={headerTabs}
@@ -197,12 +205,22 @@ class DefaultLayout extends Component {
                     >
                         <Route
                             path="/:selectTab/:selectItem"
-                            render={props => <Chat collapsed={collapsed} {...props} />}
+                            render={props =>
+                                <Chat collapsed={collapsed} {...props} />}
                         />
                     </Content>
-                    <div className="x-layout-right-sider"
-                         style={{width: `${RIGHT_SIDER_WIDTH}px`, marginLeft: `${rightSiderOffset}px`}}>
-                        <RightSider roomId={roomId} room={this.state.room} ref="rightSider"></RightSider>
+                    <div
+                        className="x-layout-right-sider"
+                        style={{
+                            width: `${RIGHT_SIDER_WIDTH}px`,
+                            marginLeft: `${rightSiderOffset}px`
+                        }}
+                    >
+                        <RightSider
+                            roomId={roomId}
+                            room={this.state.room}
+                            ref="rightSider"
+                        />
                     </div>
                     {/*<Footer style={{ textAlign: "center" }}>
                      Ant Design ©2016 Created by Ant UED
@@ -215,18 +233,22 @@ class DefaultLayout extends Component {
 
 export default withRouter(
     connect(
-        ({breakpoint, entities, login}) => ({
+        ({ breakpoint, entities, login }) => ({
             breakpoint,
             entities,
-            login,
+            login
         }),
         dispatch => ({
-            getGroupMember: (id) => dispatch(GroupMemberActions.getGroupMember(id)),
-            switchRightSider: ({rightSiderOffset}) => dispatch(GroupActions.switchRightSider({rightSiderOffset})),
-            joinChatRoom: (roomId) =>
+            getGroupMember: id =>
+                dispatch(GroupMemberActions.getGroupMember(id)),
+            listGroupMemberAsync: opt =>
+                dispatch(GroupMemberActions.listGroupMemberAsync(opt)),
+            switchRightSider: ({ rightSiderOffset }) =>
+                dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
+            joinChatRoom: roomId =>
                 dispatch(ChatRoomActions.joinChatRoom(roomId)),
-            quitChatRoom: (roomId) =>
-                dispatch(ChatRoomActions.quitChatRoom(roomId)),
+            quitChatRoom: roomId =>
+                dispatch(ChatRoomActions.quitChatRoom(roomId))
         })
     )(DefaultLayout)
 )
