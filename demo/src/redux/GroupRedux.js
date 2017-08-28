@@ -156,6 +156,21 @@ const { Types, Creators } = createActions({
                 }
             })
         }
+    },
+    joinGroup: options => {
+        return (dispatch, getState) => {
+            WebIM.conn.joinGroup(options)
+        }
+    },
+    listGroups: options => {
+        return (dispatch, getState) => {
+            WebIM.conn.listGroups(options)
+        }
+    },
+    getGroupInfo: options => {
+        return (dispatch, getState) => {
+            WebIM.conn.getGroupInfo(options)
+        }
     }
 })
 
