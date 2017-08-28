@@ -51,8 +51,9 @@ class Chat extends React.Component {
     }
 
     scollBottom() {
-        const dom = this.refs["x-chat-content"]
-        setTimeout(function() {
+        setTimeout(() => {
+            const dom = this.refs["x-chat-content"]
+            if (!ReactDOM.findDOMNode(dom)) return
             dom.scrollTop = dom.scrollHeight
         }, 0)
     }
@@ -77,9 +78,15 @@ class Chat extends React.Component {
             return message.error("invalid type : " + file.filetype, 1)
         }
 
-        this.props.sendImgMessage(chatType[selectTab], selectItem, { isRoom }, file, () => {
-            this.image.value = null
-        })
+        this.props.sendImgMessage(
+            chatType[selectTab],
+            selectItem,
+            { isRoom },
+            file,
+            () => {
+                this.image.value = null
+            }
+        )
         //
     }
 
@@ -203,7 +210,10 @@ class Chat extends React.Component {
         )
 
         const menuSettings = (
-            <Menu className="x-header-ops__dropmenu" onClick={this.onMenuContactClick}>
+            <Menu
+                className="x-header-ops__dropmenu"
+                onClick={this.onMenuContactClick}
+            >
                 {tabsLeftItem}
             </Menu>
         )
@@ -284,7 +294,9 @@ class Chat extends React.Component {
                 messageList = messageList.map(id => byId[id] || {})
                 break
             case "chatroom":
-                name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
+                name =
+                    chatroom.byId[selectItem].name ||
+                    chatroom.byId[selectItem].id
                 messageList = message["chatroom"][selectItem] || []
                 messageList = messageList.map(id => byId[id] || {})
                 break
@@ -310,12 +322,24 @@ class Chat extends React.Component {
                     </div>
                     <div className="fr">
                         <span style={{ color: "#8798a4", cursor: "pointer" }}>
-                            <Icon type="ellipsis" onClick={this.handleRightIconClick} />
+                            {selectTab === "contact"
+                                ? <Dropdown
+                                      overlay={this.renderContactMenu()}
+                                      trigger={["click"]}
+                                  >
+                                      <Icon type="ellipsis" />
+                                  </Dropdown>
+                                : <Icon
+                                      type="ellipsis"
+                                      onClick={this.handleRightIconClick}
+                                  />}
                         </span>
                     </div>
                 </div>
                 <div className="x-chat-content" ref="x-chat-content">
-                    {messageList.map(message => <ChatMessage key={message.id} {...message} />)}
+                    {messageList.map(message =>
+                        <ChatMessage key={message.id} {...message} />
+                    )}
                     {/*<ChatMessage />
                      <ChatMessage />
                      <ChatMessage />
@@ -334,7 +358,10 @@ class Chat extends React.Component {
                         <label
                             htmlFor="uploadImage"
                             className="x-chat-ops-icon ib"
-                            onClick={() => this.image && this.image.focus() && this.image.click()}
+                            onClick={() =>
+                                this.image &&
+                                this.image.focus() &&
+                                this.image.click()}
                         >
                             <i className="iconfont icon-picture" />
                             <input
@@ -435,8 +462,10 @@ export default connect(
         blacklist: entities.blacklist
     }),
     dispatch => ({
-        switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
-        sendTxtMessage: (chatType, id, message) => dispatch(MessageActions.sendTxtMessage(chatType, id, message)),
+        switchRightSider: ({ rightSiderOffset }) =>
+            dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
+        sendTxtMessage: (chatType, id, message) =>
+            dispatch(MessageActions.sendTxtMessage(chatType, id, message)),
         sendImgMessage: (chatType, id, message, source) =>
             dispatch(MessageActions.sendImgMessage(chatType, id, message, source)),
         sendFileMessage: (chatType, id, message, source) =>

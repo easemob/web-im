@@ -2578,7 +2578,7 @@ connection.prototype.closed = function () {
 
 // used for blacklist
 function _parsePrivacy(iq) {
-    var list = [];
+    var list = {};
     var items = iq.getElementsByTagName('item');
 
     if (items) {
