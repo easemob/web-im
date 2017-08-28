@@ -1,74 +1,119 @@
 @import (reference) "~antd/dist/antd.less";
+
 @x-message-prefix-cls: ~"x-message";
 
 .@{x-message-prefix-cls} {
-	&-group {
-		padding-top: 3px;
-		font-size: @font-size-lg;
-		line-height: @line-height-base;
-	}
+    &-group {
+        padding-top: 3px;
+        font-size: @font-size-lg;
+        line-height: @line-height-base;
+    }
 
-	&-user {
-		font-size: @font-size-lg;
-		line-height: @line-height-base;
-		color: #1c2238;
-	}
+    &-user {
+        font-size: @font-size-lg;
+        line-height: @line-height-base;
+        color: #1c2238;
+    }
 
-	&-content {
-	}
+    &-content {
+    }
 
-	&-text {
-		display: inline-block;
-		padding: 13px 15px;
-		margin-top: 11px;
-		border-radius: 100px;
-		border: 1px solid #eceff1;
-		min-width: 100px;
-	}
+    &-text {
+        display: inline-block;
+        padding: 13px 15px;
+        margin-top: 11px;
+        border-radius: 100px;
+        border: 1px solid #eceff1;
+        min-width: 100px;
+    }
 
-	&-img {
-		max-width: 60%;
-	}
+    &-img {
+        max-width: 60%;
+    }
 
-	&-time {
-		margin-left: 2px;
-		margin-top: 3px;
-		font-size: @font-size-base;
-		color: #888c98;
-		// font-weight: lighter;
-	}
+    &-video {
+        max-width: 60%;
+    }
 
-	&-status {
-		margin: 0 15px;
-	}
+    &-audio {
+        max-width: 60%;
+        button {
+            width: 100px;
+            text-align: left;
+            font-size: 17px;
+        }
+    }
 
-	&-right {
-		text-align: right;
+    &-file {
+        overflow: hidden;
+        h3 {
+            max-width: 100%;
+            font-size: 15px;
+            height: 20px;
+            line-height: 20px;
+            font-weight: 500;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #999;
+            text-align: left;
+        }
+        a {
+            color: #999999;
+            text-align: right;
+            display: block;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    }
 
-		.@{x-message-prefix-cls} {
-			&-img {
-				float: right;
-			}
+    &-time {
+        margin-left: 2px;
+        margin-top: 3px;
+        font-size: @font-size-base;
+        color: #888c98;
+        // font-weight: lighter;
+    }
 
-			&-content {
-				overflow: hidden;
-			}
-			&-text {
-				float: right;
-				max-width: 80%;
-				text-align: left;
-				background: #eceff1;
-				word-wrap: break-word;
-			}
-			&-user {
-				text-align: right;
-				display: none;
-			}
-			&-time {
-				text-align: right;
-			}
-			&-status {
-			}
-		}
-	}
+    &-status {
+        margin: 0 15px;
+    }
+
+    &-right {
+        text-align: right;
+
+        .@{x-message-prefix-cls} {
+            &-img {
+                float: right;
+            }
+
+            &-content {
+                overflow: hidden;
+            }
+            &-text {
+                float: right;
+                max-width: 80%;
+                text-align: left;
+                background: #eceff1;
+                word-wrap: break-word;
+            }
+            &-user {
+                text-align: right;
+                display: none;
+            }
+            &-time {
+                text-align: right;
+            }
+            &-status {
+            }
+        }
+        .ant-card {
+            float: right;
+        }
+    }
 }

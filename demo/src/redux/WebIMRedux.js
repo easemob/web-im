@@ -1,4 +1,4 @@
-import {createReducer, createActions} from "reduxsauce"
+import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
 import WebIM from "@/config/WebIM"
 import CommonActions from "@/redux/CommonRedux"
@@ -9,12 +9,12 @@ import ChatRoomActions from "@/redux/ChatRoomRedux"
 import SubscribeActions from "@/redux/SubscribeRedux"
 import BlacklistActions from "@/redux/BlacklistRedux"
 import MessageActions from "@/redux/MessageRedux"
-import {store} from "@/redux"
-import {history} from "@/utils"
+import { store } from "@/redux"
+import { history } from "@/utils"
 import utils from "@/utils"
-import {I18n} from "react-redux-i18n"
+import { I18n } from "react-redux-i18n"
 
-import {message} from "antd"
+import { message } from "antd"
 
 WebIM.conn.listen({
     // xmpp连接成功
@@ -24,10 +24,7 @@ WebIM.conn.listen({
         const hash = utils.getHash()
         console.log(history)
         // todo 所有不需要默认登陆的path都需要配置
-        const path =
-            history.location.pathname.indexOf("login") !== -1
-                ? "/contact"
-                : history.location.pathname
+        const path = history.location.pathname.indexOf("login") !== -1 ? "/contact" : history.location.pathname
         const redirectUrl = `${path}?username=${username}`
 
         // 出席后才能接受推送消息
@@ -79,14 +76,14 @@ WebIM.conn.listen({
                     message.warning(msg.from + " " + I18n.t("unsubscribed"))
                 }
                 break
-            case 'memberJoinPublicGroupSuccess':
-                message.success(msg.mid + '已成功加入群组' + msg.from);
-                break;
-            case 'memberJoinChatRoomSuccess':
-                message.success(msg.mid + '已成功加入聊天室' + msg.from);
-                break;
-            case 'leaveChatRoom':// Leave the chat room
-                break;
+            case "memberJoinPublicGroupSuccess":
+                message.success(msg.mid + "已成功加入群组" + msg.from)
+                break
+            case "memberJoinChatRoomSuccess":
+                message.success(msg.mid + "已成功加入聊天室" + msg.from)
+                break
+            case "leaveChatRoom": // Leave the chat room
+                break
         }
     },
     // 各种异常
@@ -151,12 +148,21 @@ WebIM.conn.listen({
     onPictureMessage: message => {
         console.log("onPictureMessage", message)
         store.dispatch(MessageActions.addMessage(message, "img"))
+    },
+    onFileMessage: message => {
+        store.dispatch(MessageActions.addMessage(message, "file"))
+    },
+    onAudioMessage: message => {
+        store.dispatch(MessageActions.addAudioMessage(message, "audio"))
+    },
+    onVideoMessage: message => {
+        store.dispatch(MessageActions.addMessage(message, "video"))
     }
 })
 
 /* ------------- Types and Action Creators ------------- */
 
-const {Types, Creators} = createActions({
+const { Types, Creators } = createActions({
     logoutSuccess: null,
     signin: null,
 
@@ -164,9 +170,7 @@ const {Types, Creators} = createActions({
     // 登出
     logout: () => {
         return (dispatch, state) => {
-            let I18N = store.getState().i18n.translations[
-                store.getState().i18n.locale
-                ]
+            let I18N = store.getState().i18n.translations[store.getState().i18n.locale]
             message.success(I18N.logoutSuccessfully)
             dispatch(CommonActions.fetching())
             if (WebIM.conn.isOpened()) {
