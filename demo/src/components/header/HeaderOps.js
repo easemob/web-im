@@ -83,11 +83,7 @@ class HeaderOps extends Component {
         const { modal } = this.state
 
         const tabsLeft = [
-            [
-                "0",
-                `${I18n.t("friends")}${I18n.t("blacklist")}`,
-                "minus-circle-o"
-            ],
+            ["0", `${I18n.t("friends")}${I18n.t("blacklist")}`, "minus-circle-o"],
             ["1", `${I18n.t("quit")}(${title})`, "logout"]
         ]
 
@@ -114,19 +110,13 @@ class HeaderOps extends Component {
         )
 
         const menuSettings = (
-            <Menu
-                className="x-header-ops__dropmenu"
-                onClick={this.onMenuSettingsClick}
-            >
+            <Menu className="x-header-ops__dropmenu" onClick={this.onMenuSettingsClick}>
                 {tabsLeftItem}
             </Menu>
         )
 
         const menuRight = (
-            <Menu
-                className="x-header-ops__dropmenu"
-                onClick={this.onMenuRightClick}
-            >
+            <Menu className="x-header-ops__dropmenu" onClick={this.onMenuRightClick}>
                 {tabsRightItem}
             </Menu>
         )
@@ -144,18 +134,11 @@ class HeaderOps extends Component {
                         cursor: "pointer"
                     }}
                 >
-                    <Dropdown
-                        overlay={menuSettings}
-                        trigger={["click"]}
-                        style={{ position: "absolute" }}
-                    >
+                    <Dropdown overlay={menuSettings} trigger={["click"]} style={{ position: "absolute" }}>
                         <Icon type="setting" />
                     </Dropdown>
                 </div>
-                <div
-                    className="fl"
-                    style={{ lineHeight: "50px", color: "#fff" }}
-                >
+                <div className="fl" style={{ lineHeight: "50px", color: "#fff" }}>
                     {title}
                 </div>
                 <div
@@ -167,7 +150,7 @@ class HeaderOps extends Component {
                         cursor: "pointer"
                     }}
                 >
-                    <Dropdown overlay={menuRight} trigger={["click"]}>
+                    <Dropdown overlay={menuRight} placement="bottomRight" trigger={["click"]}>
                         <Icon type="plus-circle-o" />
                     </Dropdown>
                 </div>

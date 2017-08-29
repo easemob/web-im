@@ -77,10 +77,7 @@ class Chat extends React.Component {
         if (!config.imgType[file.filetype.toLowerCase()]) {
             this.image.value = null
             // todo i18n
-            return message.error(
-                `${I18n.t("invalidType")}: ${file.filetype}`,
-                1
-            )
+            return message.error(`${I18n.t("invalidType")}: ${file.filetype}`, 1)
         }
 
         this.props.sendImgMessage(chatType[selectTab], selectItem, { isRoom }, file, () => {
@@ -103,15 +100,9 @@ class Chat extends React.Component {
             return false
         }
 
-        this.props.sendFileMessage(
-            chatType[selectTab],
-            selectItem,
-            { isRoom },
-            file,
-            () => {
-                this.image.value = null
-            }
-        )
+        this.props.sendFileMessage(chatType[selectTab], selectItem, { isRoom }, file, () => {
+            this.image.value = null
+        })
     }
 
     handleEmojiSelect(v) {
@@ -202,10 +193,7 @@ class Chat extends React.Component {
     }
 
     renderContactMenu() {
-        const tabsRight = [
-            ["0", `${I18n.t("block")}`, ""],
-            ["1", `${I18n.t("delAFriend")}`, ""]
-        ]
+        const tabsRight = [["0", `${I18n.t("block")}`, ""], ["1", `${I18n.t("delAFriend")}`, ""]]
 
         const tabsLeftItem = tabsRight.map(([key, name, icon]) =>
             <Menu.Item key={key}>
@@ -331,7 +319,11 @@ class Chat extends React.Component {
                     <div className="fr">
                         <span style={{ color: "#8798a4", cursor: "pointer" }}>
                             {selectTab === "contact"
-                                ? <Dropdown overlay={this.renderContactMenu()} trigger={["click"]}>
+                                ? <Dropdown
+                                      overlay={this.renderContactMenu()}
+                                      placement="bottomRight"
+                                      trigger={["click"]}
+                                  >
                                       <Icon type="ellipsis" />
                                   </Dropdown>
                                 : <Icon type="ellipsis" onClick={this.handleRightIconClick} />}
@@ -373,10 +365,7 @@ class Chat extends React.Component {
                         <label
                             htmlFor="uploadFile"
                             className="x-chat-ops-icon ib"
-                            onClick={() =>
-                                this.file &&
-                                this.file.focus() &&
-                                this.file.click()}
+                            onClick={() => this.file && this.file.focus() && this.file.click()}
                         >
                             <i className="icon iconfont icon-file-empty" />
                             <input
@@ -466,13 +455,9 @@ export default connect(
         switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
         sendTxtMessage: (chatType, id, message) => dispatch(MessageActions.sendTxtMessage(chatType, id, message)),
         sendImgMessage: (chatType, id, message, source) =>
-            dispatch(
-                MessageActions.sendImgMessage(chatType, id, message, source)
-            ),
+            dispatch(MessageActions.sendImgMessage(chatType, id, message, source)),
         sendFileMessage: (chatType, id, message, source) =>
-            dispatch(
-                MessageActions.sendFileMessage(chatType, id, message, source)
-            ),
+            dispatch(MessageActions.sendFileMessage(chatType, id, message, source)),
         removeContact: id => dispatch(RosterActions.removeContact(id)),
         doAddBlacklist: id => dispatch(BlacklistActions.doAddBlacklist(id))
     })
