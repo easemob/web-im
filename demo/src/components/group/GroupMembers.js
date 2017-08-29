@@ -3,6 +3,7 @@ import { connect } from "react-redux"
 import Immutable from "seamless-immutable"
 import { Card, Icon, Menu, Popconfirm, Table, Tooltip } from "antd"
 import _ from "lodash"
+import { I18n } from "react-redux-i18n"
 import GroupActions from "@/redux/GroupRedux"
 import GroupMemberActions from "@/redux/GroupMemberRedux"
 import "./style/index.less"
@@ -71,53 +72,86 @@ class GroupMembers extends React.Component {
                         ? <span className="fr">
                               {/* <Dropdown overlay={memberActionMenu} trigger={['click']}><Icon type="info-circle-o" /></Dropdown> */}
                               <Popconfirm
-                                  title="确认设为管理员吗？"
+                                  title={
+                                      I18n.t("confirm") +
+                                      " " +
+                                      I18n.t("setAdmin")
+                                  }
                                   onConfirm={() =>
                                       this.setAdmin(roomId, record.name)}
                               >
-                                  <Tooltip title="设为管理员" placement="left">
+                                  <Tooltip
+                                      title={I18n.t("setAdmin")}
+                                      placement="left"
+                                  >
                                       <Icon type="arrow-up" />
                                   </Tooltip>
                               </Popconfirm>
                               <Popconfirm
-                                  title="确认移除管理员吗？"
+                                  title={
+                                      I18n.t("confirm") +
+                                      " " +
+                                      I18n.t("removeAdmin")
+                                  }
                                   onConfirm={() =>
                                       this.removeAdmin(roomId, record.name)}
                               >
-                                  <Tooltip title="移除管理员" placement="left">
+                                  <Tooltip
+                                      title={I18n.t("removeAdmin")}
+                                      placement="left"
+                                  >
                                       <Icon type="arrow-down" />
                                   </Tooltip>
                               </Popconfirm>
                               <Popconfirm
-                                  title="确认禁言吗？"
+                                  title={
+                                      I18n.t("confirm") + " " + I18n.t("mute")
+                                  }
                                   onConfirm={() =>
                                       this.mute(roomId, record.name)}
                               >
-                                  <Tooltip title="禁言" placement="left">
+                                  <Tooltip
+                                      title={I18n.t("mute")}
+                                      placement="left"
+                                  >
                                       <Icon type="lock" />
                                   </Tooltip>
                               </Popconfirm>
                               <Popconfirm
-                                  title="确认加入群黑名单吗？"
+                                  title={
+                                      I18n.t("confirm") +
+                                      " " +
+                                      I18n.t("groupBlockSingle")
+                                  }
                                   onConfirm={() =>
                                       this.groupBlockSingle(
                                           roomId,
                                           record.name
                                       )}
                               >
-                                  <Tooltip title="加入群黑名单" placement="left">
+                                  <Tooltip
+                                      title={I18n.t("groupBlockSingle")}
+                                      placement="left"
+                                  >
                                       <Icon type="frown-o" />
                                   </Tooltip>
                               </Popconfirm>
                               <Popconfirm
-                                  title="确认从本群移除吗？"
+                                  title={
+                                      I18n.t("confirm") +
+                                      " " +
+                                      I18n.t("removeSingleGroupMember")
+                                  }
                                   onConfirm={() =>
                                       this.removeSingleGroupMember(
                                           roomId,
                                           record.name
                                       )}
                               >
-                                  <Tooltip title="从本群移除" placement="left">
+                                  <Tooltip
+                                      title={I18n.t("removeSingleGroupMember")}
+                                      placement="left"
+                                  >
                                       <Icon type="usergroup-delete" />
                                   </Tooltip>
                               </Popconfirm>
@@ -128,7 +162,7 @@ class GroupMembers extends React.Component {
         ]
         return (
             <Card
-                title="Members"
+                title={I18n.t("members")}
                 bordered={false}
                 noHovering={true}
                 className="group-member-wrapper"

@@ -136,13 +136,16 @@ export const INITIAL_STATE = Immutable({})
  * @param {Object} members[][]
  */
 export const updateGroupMember = (state, { groupId, members }) => {
-    // const group = []
-    // _.each(members, val => {
-    //     _.each(val, (k, v) => group.push({ name: k, affiliation: v }))
-    // })
     const byName = {}
     _.each(members, val => {
-        _.each(val, (v, k) => (byName[v] = { affiliation: k }))
+        _.each(val, (v, k) =>
+            _.merge(byName, {
+                [v]: {
+                    name: v,
+                    affiliation: k
+                }
+            })
+        )
     })
     const group = { byName, names: Object.keys(byName).sort() }
     return state.merge({ [groupId]: group })
