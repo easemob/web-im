@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
+import { I18n } from "react-redux-i18n"
 import { Button, Row, Form, Input, Icon, Dropdown, Menu } from "antd"
 import { config } from "@/config"
 import ListItem from "@/components/list/ListItem"
@@ -75,7 +76,10 @@ class Chat extends React.Component {
         if (!config.imgType[file.filetype.toLowerCase()]) {
             this.image.value = null
             // todo i18n
-            return message.error("invalid type : " + file.filetype, 1)
+            return message.error(
+                `${I18n.t("invalidType")}: ${file.filetype}`,
+                1
+            )
         }
 
         this.props.sendImgMessage(
@@ -104,9 +108,15 @@ class Chat extends React.Component {
             return false
         }
 
-        this.props.sendFileMessage(chatType[selectTab], selectItem, { isRoom }, file, () => {
-            this.image.value = null
-        })
+        this.props.sendFileMessage(
+            chatType[selectTab],
+            selectItem,
+            { isRoom },
+            file,
+            () => {
+                this.image.value = null
+            }
+        )
     }
 
     handleEmojiSelect(v) {
@@ -197,7 +207,10 @@ class Chat extends React.Component {
     }
 
     renderContactMenu() {
-        const tabsRight = [["0", "Block", ""], ["1", "Delete", ""]]
+        const tabsRight = [
+            ["0", `${I18n.t("block")}`, ""],
+            ["1", `${I18n.t("delAFriend")}`, ""]
+        ]
 
         const tabsLeftItem = tabsRight.map(([key, name, icon]) =>
             <Menu.Item key={key}>
@@ -376,7 +389,10 @@ class Chat extends React.Component {
                         <label
                             htmlFor="uploadFile"
                             className="x-chat-ops-icon ib"
-                            onClick={() => this.file && this.file.focus() && this.file.click()}
+                            onClick={() =>
+                                this.file &&
+                                this.file.focus() &&
+                                this.file.click()}
                         >
                             <i className="icon iconfont icon-file-empty" />
                             <input
@@ -404,7 +420,7 @@ class Chat extends React.Component {
                             value={this.state.value}
                             onChange={this.handleChange}
                             onPressEnter={this.handleSend}
-                            placeholder="Type a message"
+                            placeholder={I18n.t("message")}
                             addonAfter={
                                 <i
                                     className="fontello icon-paper-plane"
@@ -467,9 +483,13 @@ export default connect(
         sendTxtMessage: (chatType, id, message) =>
             dispatch(MessageActions.sendTxtMessage(chatType, id, message)),
         sendImgMessage: (chatType, id, message, source) =>
-            dispatch(MessageActions.sendImgMessage(chatType, id, message, source)),
+            dispatch(
+                MessageActions.sendImgMessage(chatType, id, message, source)
+            ),
         sendFileMessage: (chatType, id, message, source) =>
-            dispatch(MessageActions.sendFileMessage(chatType, id, message, source)),
+            dispatch(
+                MessageActions.sendFileMessage(chatType, id, message, source)
+            ),
         removeContact: id => dispatch(RosterActions.removeContact(id)),
         doAddBlacklist: id => dispatch(BlacklistActions.doAddBlacklist(id))
     })

@@ -56,24 +56,26 @@ WebIM.conn.listen({
                 break
             case "leaveGroup": // dismissed by admin
                 message.error(
-                    `${msg.kicked ||
-                        "You"} have been dismissed by ${msg.actor || "admin"} .`
+                    `${msg.kicked || I18n.t("you")} ${I18n.t("dismissed")}${I18n.t("by")}${msg.actor ||
+                        I18n.t("admin")} .`
                 )
                 store.dispatch(GroupActions.getGroups())
                 break
             case "joinPublicGroupSuccess":
-                message.success("加入群组" + msg.from + "成功！")
+                message.success(`${I18n.t("joinGroup")} ${msg.from} ${I18n.t("successfully")}`)
                 store.dispatch(GroupActions.getGroups())
                 break
             case "joinPublicGroupDeclined":
-                message.error(msg.owner + "拒绝了您加入" + msg.gid + "的请求")
+                message.error(
+                    `${I18n.t("join")}${I18n.t("group")}${msg.gid}${I18n.t("refuse")}${I18n.t("by")}${msg.owner}`
+                )
                 break
             case "joinChatRoomSuccess": // Join the chat room successfully
                 // Demo.currentChatroom = msg.from;
                 break
             case "reachChatRoomCapacity": // Failed to join the chat room
                 // Demo.currentChatroom = null;
-                message.error("Fail to Join the group")
+                message.error(`${I18n.t("joinGroup")}${I18n.t("failed")}`)
                 break
             case "subscribe":
                 // 加好友时双向订阅过程，所以当对方同意添加好友的时候
@@ -102,10 +104,10 @@ WebIM.conn.listen({
                 }
                 break
             case "memberJoinPublicGroupSuccess":
-                message.success(msg.mid + "已成功加入群组" + msg.from)
+                message.success(`${msg.mid}${I18n.t("join")}${I18n.t("group")}${msg.from}${I18n.t("successfully")}`)
                 break
             case "memberJoinChatRoomSuccess":
-                message.success(msg.mid + "已成功加入聊天室" + msg.from)
+                message.success(`${msg.mid}${I18n.t("join")}${I18n.t("chatroom")}${msg.from}${I18n.t("successfully")}`)
                 break
             case "leaveChatRoom": // Leave the chat room
                 break
@@ -121,19 +123,16 @@ WebIM.conn.listen({
                 WebIM.conn.autoReconnectNumTotal,
                 WebIM.conn.autoReconnectNumMax
             )
-            if (
-                WebIM.conn.autoReconnectNumTotal <
-                WebIM.conn.autoReconnectNumMax
-            ) {
+            if (WebIM.conn.autoReconnectNumTotal < WebIM.conn.autoReconnectNumMax) {
                 return
             }
-            message.error("server-side close the websocket connection")
+            message.error(`${I18n.t("serverSideCloseWebsocketConnection")}`)
             history.push("/login")
             return
         }
         // 2: token 登录失败
         if (error.type == WebIM.statusCode.WEBIM_CONNCTION_AUTH_ERROR) {
-            message.error("WEBIM_CONNCTION_AUTH_ERROR")
+            message.error(`${I18n.t("webIMConnectionAuthError")}`)
 
             return
         }
@@ -148,7 +147,7 @@ WebIM.conn.listen({
         // 8: offline by multi login
         if (error.type == WebIM.statusCode.WEBIM_CONNCTION_SERVER_ERROR) {
             console.log("WEBIM_CONNCTION_SERVER_ERROR")
-            message.error("offline by multi login")
+            message.error(`${I18n.t("offlineByMultiLogin")}`)
             history.push("/login")
             return
         }
@@ -198,9 +197,7 @@ const { Types, Creators } = createActions({
     // 登出
     logout: () => {
         return (dispatch, state) => {
-            let I18N = store.getState().i18n.translations[
-                store.getState().i18n.locale
-            ]
+            let I18N = store.getState().i18n.translations[store.getState().i18n.locale]
             message.success(I18N.logoutSuccessfully)
             dispatch(CommonActions.fetching())
             if (WebIM.conn.isOpened()) {

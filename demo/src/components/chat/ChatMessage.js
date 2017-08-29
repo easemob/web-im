@@ -2,8 +2,9 @@ import React from "react"
 import PropTypes from "prop-types"
 import classNames from "classnames"
 import moment from "moment"
-import {Badge} from "antd"
-import {renderTime} from "@/utils"
+import { I18n } from "react-redux-i18n"
+import { Badge } from "antd"
+import { renderTime } from "@/utils"
 import emoji from "@/config/emoji"
 import { Card } from "antd"
 import Audio from "@/components/chat/Audio"
@@ -24,7 +25,12 @@ const renderTxt = txt => {
         if (match[1] in emoji.map) {
             const v = emoji.map[match[1]]
             rnTxt.push(
-                <img key={WebIM.conn.getUniqueId()} src={require(`../../themes/faces/${v}`)} width={20} height={20}/>
+                <img
+                    key={WebIM.conn.getUniqueId()}
+                    src={require(`../../themes/faces/${v}`)}
+                    width={20}
+                    height={20}
+                />
             )
         } else {
             rnTxt.push(match[1])
@@ -52,17 +58,26 @@ export default ({ bySelf, from, time, body }) => {
     } else if (body.type == "img") {
         content = (
             <div className="x-message-img">
-                <img src={body.url} width="100%" style={{ verticalAlign: "middle" }} />
+                <img
+                    src={body.url}
+                    width="100%"
+                    style={{ verticalAlign: "middle" }}
+                />
             </div>
         )
     } else if (body.type == "file") {
         const readablizeBytes = bytes => {
             let s = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
             var e = Math.floor(Math.log(bytes) / Math.log(1024))
-            return (bytes / Math.pow(1024, Math.floor(e))).toFixed(2) + " " + s[e]
+            return (
+                (bytes / Math.pow(1024, Math.floor(e))).toFixed(2) + " " + s[e]
+            )
         }
         content = (
-            <Card title="文件" style={{ width: 240, margin: "2px 2px 2px 0" }}>
+            <Card
+                title={I18n.t("file")}
+                style={{ width: 240, margin: "2px 2px 2px 0" }}
+            >
                 <div className="x-message-file">
                     <h3 title={body.filename}>
                         {body.filename}
@@ -75,7 +90,7 @@ export default ({ bySelf, from, time, body }) => {
                         </div>
                         <div className="ant-col-12">
                             <a href={body.url} download={body.filename}>
-                                点击下载
+                                {I18n.t("download")}
                             </a>
                         </div>
                     </div>

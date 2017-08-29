@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 import { Icon } from "antd"
 import Layout from "./Layout"
 import { connect } from "react-redux"
+import { I18n } from "react-redux-i18n"
 import { withRouter, Route } from "react-router-dom"
 import _ from "lodash"
 //import ContactItem from "@/components/contact/ContactItem"
@@ -36,22 +37,22 @@ class DefaultLayout extends Component {
             headerTabs: [
                 {
                     key: "contact",
-                    name: "Contact",
+                    name: `${I18n.t("friends")}`,
                     icon: "fontello icon-comment"
                 },
                 {
                     key: "group",
-                    name: "Group",
+                    name: `${I18n.t("groups")}`,
                     icon: "fontello icon-chat"
                 },
                 {
                     key: "chatroom",
-                    name: "ChatRoom",
+                    name: `${I18n.t("chatrooms")}`,
                     icon: "fontello icon-users-1"
                 },
                 {
                     key: "stranger",
-                    name: "Stranger",
+                    name: `${I18n.t("strangers")}`,
                     icon: "fontello icon-address-book-1"
                 }
             ],

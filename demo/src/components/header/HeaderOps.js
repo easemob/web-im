@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Menu, Dropdown, Icon } from "antd"
+import { I18n } from "react-redux-i18n"
 import ListItem from "@/components/list/ListItem"
 import History from "@/utils/history"
 import WebIM from "@/config/WebIM"
@@ -82,14 +83,18 @@ class HeaderOps extends Component {
         const { modal } = this.state
 
         const tabsLeft = [
-            ["0", "好友黑名单", "minus-circle-o"],
-            ["1", `退出(${title})`, "logout"]
+            [
+                "0",
+                `${I18n.t("friends")}${I18n.t("blacklist")}`,
+                "minus-circle-o"
+            ],
+            ["1", `${I18n.t("quit")}(${title})`, "logout"]
         ]
 
         const tabsRight = [
-            ["0", "添加好友", "user-add"],
-            ["1", "申请加入公开群", "plus-circle-o"],
-            ["2", "创建群组", "usergroup-add"]
+            ["0", I18n.t("addAFriend"), "user-add"],
+            ["1", I18n.t("joinGroup"), "plus-circle-o"],
+            ["2", I18n.t("createGroup"), "usergroup-add"]
         ]
 
         const tabsLeftItem = tabsLeft.map(([key, name, icon]) =>
@@ -169,7 +174,7 @@ class HeaderOps extends Component {
                 {
                     <ModalComponent
                         width={460}
-                        title="Add Friends"
+                        title={I18n.t("addAFriend")}
                         visible={modal === "showAddFriendsModal"}
                         component={AddFriendsModal}
                     />
@@ -177,7 +182,7 @@ class HeaderOps extends Component {
                 {
                     <ModalComponent
                         width={460}
-                        title="Friends Request"
+                        title={I18n.t("request")}
                         visible={!_.isEmpty(subscribes)}
                         component={FriendsRequestModal}
                     />
@@ -185,7 +190,7 @@ class HeaderOps extends Component {
                 {
                     <ModalComponent
                         width={460}
-                        title="Create Group"
+                        title={I18n.t("createGroup")}
                         visible={modal === "showAddGroupModal"}
                         component={AddGroupModal}
                     />
@@ -193,7 +198,7 @@ class HeaderOps extends Component {
                 {
                     <ModalComponent
                         width={460}
-                        title="Blocked"
+                        title={I18n.t("blacklist")}
                         visible={modal === "showBlacklistModal"}
                         component={BlacklistModal}
                     />
@@ -201,7 +206,7 @@ class HeaderOps extends Component {
                 {
                     <ModalComponent
                         width={460}
-                        title="Join Group"
+                        title={I18n.t("joinGroup")}
                         visible={modal === "showJoinGroupModal"}
                         component={JoinGroupModal}
                     />
@@ -209,7 +214,7 @@ class HeaderOps extends Component {
                 {
                     <ModalComponent
                         width={460}
-                        title="Group Request"
+                        title={I18n.t("groupRequest")}
                         visible={!_.isEmpty(groupRequests)}
                         component={GroupRequestModal}
                     />
