@@ -37,50 +37,47 @@ class FriendsRequestModal extends React.Component {
             },
             error: function(e) {}
         }
-        this.props.rejectJoinGroup(gid, options)
+        this.props.agreeJoinGroup(gid, options)
     }
 
     render() {
         const requests = []
 
-        _.forEach(
-            this.props.groupRequests,
-            ({ from, status, toNick, reason, gid }) => {
-                requests.push(
-                    <Row key={from}>
-                        <Col span={14}>
-                            {from + " applys to join into group: " + toNick}
-                            <p>
-                                {reason}
-                            </p>
-                        </Col>
-                        <Col span={10}>
-                            <Button
-                                style={{
-                                    height: 32,
-                                    marginLeft: 10
-                                }}
-                                className="fr"
-                                type="primary"
-                                onClick={() => this.onRefuse(gid)}
-                            >
-                                {I18n.t("agree")}
-                            </Button>
-                            <Button
-                                style={{
-                                    height: 32
-                                }}
-                                className="fr"
-                                type="danger"
-                                onClick={() => this.onAgree(gid)}
-                            >
-                                {I18n.t("reject")}
-                            </Button>
-                        </Col>
-                    </Row>
-                )
-            }
-        )
+        _.forEach(this.props.groupRequests, ({ from, status, toNick, reason, gid }) => {
+            requests.push(
+                <Row key={from}>
+                    <Col span={14}>
+                        {`${from}${I18n.t("apply")}${I18n.t("joinGroup")}${toNick}`}
+                        <p>
+                            {reason}
+                        </p>
+                    </Col>
+                    <Col span={10}>
+                        <Button
+                            style={{
+                                height: 32,
+                                marginLeft: 10
+                            }}
+                            className="fr"
+                            type="primary"
+                            onClick={() => this.onAgree(gid)}
+                        >
+                            {I18n.t("agree")}
+                        </Button>
+                        <Button
+                            style={{
+                                height: 32
+                            }}
+                            className="fr"
+                            type="danger"
+                            onClick={() => this.onRefuse(gid)}
+                        >
+                            {I18n.t("reject")}
+                        </Button>
+                    </Col>
+                </Row>
+            )
+        })
 
         return (
             <div>
@@ -95,9 +92,7 @@ export default connect(
         groupRequests: entities.groupRequest.byGid
     }),
     dispatch => ({
-        agreeJoinGroup: (gid, options) =>
-            dispatch(GroupRequestActions.agreeJoinGroup(gid, options)),
-        rejectJoinGroup: (gid, options) =>
-            dispatch(GroupRequestActions.rejectJoinGroup(gid, options))
+        agreeJoinGroup: (gid, options) => dispatch(GroupRequestActions.agreeJoinGroup(gid, options)),
+        rejectJoinGroup: (gid, options) => dispatch(GroupRequestActions.rejectJoinGroup(gid, options))
     })
 )(FriendsRequestModal)
