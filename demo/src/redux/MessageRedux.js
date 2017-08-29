@@ -203,8 +203,7 @@ const { Types, Creators } = createActions({
                 }
             })
 
-            // TODO: 群组聊天需要梳理此参数的逻辑
-            if (chatType !== "chat") {
+            if (chatType == "groupchat" || chatType == "chatroom") {
                 msgObj.setGroup("groupchat")
             }
 

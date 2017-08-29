@@ -171,6 +171,7 @@ WebIM.conn.listen({
     // 文本信息
     onTextMessage: message => {
         console.log("onTextMessage", message)
+        //陌生人消息需要更新 entities.stranger.names[]
         const { type, to } = message
         if (type == "chat") {
             const username = WebIM.conn.context.userId
@@ -179,7 +180,6 @@ WebIM.conn.listen({
             const chatId = bySelf || type !== "chat" ? to : from
             if (!store.getState().entities.roster.byName[chatId]) {
                 store.dispatch(StrangerActions.updateStranger(chatId))
-                return
             }
         }
         store.dispatch(MessageActions.addMessage(message, "txt"))

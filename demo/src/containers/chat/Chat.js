@@ -24,7 +24,8 @@ const FormItem = Form.Item
 const chatType = {
     contact: "chat",
     group: "groupchat",
-    chatroom: "chatroom"
+    chatroom: "chatroom",
+    stranger: "stranger"
 }
 
 class Chat extends React.Component {
@@ -268,6 +269,7 @@ class Chat extends React.Component {
             message,
             group,
             chatroom,
+            stranger,
             roster,
             blacklist
             // form: { getFieldDecorator, validateFieldsAndScroll }
@@ -300,6 +302,10 @@ class Chat extends React.Component {
             case "chatroom":
                 name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
                 messageList = message["chatroom"][selectItem] || []
+                messageList = messageList.map(id => byId[id] || {})
+                break
+            case "stranger":
+                messageList = message["stranger"][selectItem] || []
                 messageList = messageList.map(id => byId[id] || {})
                 break
         }
@@ -453,6 +459,7 @@ export default connect(
         roster: entities.roster,
         group: entities.group,
         chatroom: entities.chatroom,
+        stranger: entities.stranger,
         blacklist: entities.blacklist
     }),
     dispatch => ({
