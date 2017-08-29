@@ -11,6 +11,7 @@ import {
 } from "react-router-dom"
 import Layout from "@/layout/DefaultLayout"
 import Login from "@/containers/loginregister/Login"
+import ChinaMobile from "@/containers/chinamobile/Chinamobile"
 import Register from "@/containers/loginregister/Register"
 import LoginActions from "@/redux/LoginRedux"
 import Loading from "@/components/common/LoadingComponent"
@@ -74,6 +75,7 @@ class App extends Component {
                 <Switch>
                     <Route exact path="/login" component={Login}/>
                     <Route exact path="/register" component={Register}/>
+                    <Route path="/cnm" component={ChinaMobile}/>
                     <Route path="/" children={authorizedComponent}/>
                 </Switch>
             </div>

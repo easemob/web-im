@@ -1,0 +1,41 @@
+@import (reference) "~antd/dist/antd.less";
+
+@layout-prefix-cls-c: ~"ant-layout";
+
+body {
+    min-height: 100%;
+    background-color: #ececec;
+    position: relative;
+    // 根据内容大小扩充高度
+    height: auto;
+}
+
+.@{layout-prefix-cls-c} {
+    overflow: auto;
+
+    &-header {
+        background-color: #837d8c;
+        //background-color: blue;
+    }
+    
+    &-content {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 64px;
+        bottom: 66px;
+        background: #fff;
+        padding: 0 16px;
+        overflow: scroll;
+        -webkit-overflow-scrolling: touch;
+        -webkit-transform: translate3d(0, 0, 0);
+    }
+    
+    &-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background-color: #f2f2f2;
+        right: 0;
+     }
+}
