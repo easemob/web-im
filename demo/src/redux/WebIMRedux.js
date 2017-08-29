@@ -6,6 +6,7 @@ import RosterActions from "@/redux/RosterRedux"
 import LoginActions from "@/redux/LoginRedux"
 import GroupActions from "@/redux/GroupRedux"
 import ChatRoomActions from "@/redux/ChatRoomRedux"
+import StrangerActions from "@/redux/StrangerRedux"
 import SubscribeActions from "@/redux/SubscribeRedux"
 import BlacklistActions from "@/redux/BlacklistRedux"
 import MessageActions from "@/redux/MessageRedux"
@@ -170,6 +171,17 @@ WebIM.conn.listen({
     // 文本信息
     onTextMessage: message => {
         console.log("onTextMessage", message)
+        const { type, to } = message
+        if (type == "chat") {
+            const username = WebIM.conn.context.userId
+            const from = message.from || username
+            const bySelf = from == username
+            const chatId = bySelf || type !== "chat" ? to : from
+            if (!store.getState().entities.roster.byName[chatId]) {
+                store.dispatch(StrangerActions.updateStranger(chatId))
+                return
+            }
+        }
         store.dispatch(MessageActions.addMessage(message, "txt"))
     },
     onPictureMessage: message => {

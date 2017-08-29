@@ -1,13 +1,12 @@
-import {createReducer, createActions} from "reduxsauce"
+import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
-import {WebIM} from "@/config"
+import _ from "lodash"
 
 /* ------------- Types and Action Creators ------------- */
 
-const {Types, Creators} = createActions({
-    updateStranger: ["stranger"],
+const { Types, Creators } = createActions({
+    updateStranger: ["stranger"]
     // ---------------async------------------
-
 })
 
 export const GroupsTypes = Types
@@ -16,23 +15,18 @@ export default Creators
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-    byName: {},
-    byId: {},
     names: []
 })
 
 /* ------------- Reducers ------------- */
 
-export const updateStranger = (state, {stranger}) => {
-    let byName = {}
-    let byId = {}
-    byName[stranger.name] = stranger
-    byId[stranger.roomId] = stranger
-    return state.merge({
-        byName,
-        byId,
-        names: Object.keys(byName).sort()
-    })
+export const updateStranger = (state, { stranger }) => {
+    let names = state.names.asMutable()
+    if (!_.includes(names, stranger)) {
+        names.push(stranger)
+    }
+    state = state.set("names", names)
+    return state
 }
 
 /* ------------- Hookup Reducers To Types ------------- */

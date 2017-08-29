@@ -1,7 +1,8 @@
 import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
 import WebIM from "@/config/WebIM"
-//
+import { store } from "@/redux"
+
 // roomType true 聊天室chatroom | false 群组group
 // chatType singleChat 单聊 | chatRoom 群组或聊天室
 // setGroup called when chatType=chatRoom set to 'groupchat'
@@ -350,58 +351,6 @@ const { Types, Creators } = createActions({
             WebIM.utils.download.call(WebIM.conn, options)
         }
     }
-    // sendImgMessageByNative: (chatType, chatId, message = {}, source = {}) => {
-    // 	return (dispatch, getState) => {
-    // 		let pMessage = null
-    // 		const id = WebIM.conn.getUniqueId()
-    // 		const type = "img"
-    // 		const to = chatId
-    // 		const msgObj = new WebIM.message(type, id)
-    // 		msgObj.set({
-    // 			apiUrl: WebIM.config.apiURL,
-    // 			ext: {
-    // 				file_length: source.fileSize,
-    // 				filename: source.fileName || "",
-    // 				filetype: source.fileName && source.fileName.split(".").pop(),
-    // 				width: source.width,
-    // 				height: source.height
-    // 			},
-    // 			file: {
-    // 				data: {
-    // 					uri: source.uri,
-    // 					type: "application/octet-stream",
-    // 					name: source.fileName
-    // 				}
-    // 			},
-    // 			to,
-    // 			roomType: "",
-    // 			onFileUploadError: function(error) {
-    // 				console.log(error)
-    // 				dispatch(Creators.updateMessageStatus(pMessage, "fail"))
-    // 			},
-    // 			onFileUploadComplete: function(data) {
-    // 				console.log(data)
-    // 				let url = data.uri + "/" + data.entities[0].uuid
-    // 				dispatch(Creators.updateMessageStatus(pMessage, "sent"))
-    // 			},
-    // 			success: function(id) {
-    // 				console.log(id)
-    // 			}
-    // 		})
-
-    // 		// TODO: 群组聊天需要梳理此参数的逻辑
-    // 		// if (type !== 'chat') {
-    // 		//   msgObj.setGroup('groupchat');
-    // 		// }
-
-    // 		WebIM.conn.send(msgObj.body)
-    // 		pMessage = parseFromLocal(chatType, chatId, msgObj.body, "img")
-    // 		// uri只记录在本地
-    // 		pMessage.body.uri = source.uri
-    // 		// console.log('pMessage', pMessage, pMessage.body.uri)
-    // 		dispatch(Creators.addMessage(pMessage, type))
-    // 	}
-    // }
 })
 
 export const MessageTypes = Types
@@ -414,6 +363,7 @@ export const INITIAL_STATE = Immutable({
     chat: {},
     groupchat: {},
     chatroom: {},
+    stranger: {},
     extra: {}
 })
 
@@ -428,7 +378,8 @@ export const INITIAL_STATE = Immutable({
 export const addMessage = (state, { message, bodyType = "txt" }) => {
     !message.status && (message = parseFromServer(message, bodyType))
     const { username = "" } = state.user || {}
-    const { type, id, to, status } = message
+    const { id, to, status } = message
+    let { type } = message
     //避免messageId重复添加造成render错误
     if (Immutable.getIn(state, ["byId", id])) {
         return state
@@ -445,6 +396,10 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         time: +new Date(),
         status: status
     })
+
+    if (type == "chat" && !store.getState().entities.roster.byName[chatId]) {
+        type = "stranger"
+    }
     const chatData = state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
     chatData.push(id)
 
