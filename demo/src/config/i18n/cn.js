@@ -74,6 +74,7 @@ export const cn = {
     removeSingleGroupMember: "从本群移除",
     // 陌生人
     addFriend: "加为好友",
+    addFriendMessage: "添加好友申请已发出,等待对方同意",
     // 搜索
     search: "搜索",
     // 系统

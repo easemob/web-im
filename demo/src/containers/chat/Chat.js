@@ -215,14 +215,16 @@ class Chat extends React.Component {
             ]
         }
 
-        const tabsItem = tabs.map(([key, name, icon]) => (
+        const tabsItem = tabs.map(([key, name, icon]) =>
             <Menu.Item key={key}>
                 <i className={icon} style={{ fontSize: 20, marginRight: 12, verticalAlign: "middle" }} />
                 <span>
-                    <span>{name}</span>
+                    <span>
+                        {name}
+                    </span>
                 </span>
             </Menu.Item>
-        ))
+        )
         const menuSettings = (
             <Menu className="x-header-ops__dropmenu" onClick={this.onMenuContactClick}>
                 {tabsItem}
@@ -246,7 +248,8 @@ class Chat extends React.Component {
                 break
             case "2":
                 // 加为好友
-                this.props.addFriend(selectItem)
+                this.props.addContact(selectItem)
+                message.success(`${I18n.t("addFriendMessage")}`)
                 break
             case "3":
                 // 删除
@@ -342,33 +345,31 @@ class Chat extends React.Component {
             <div className="x-chat">
                 <div className="x-list-item x-chat-header">
                     <div className="fl">
-                        {collapsed ? (
-                            <Icon
-                                type="arrow-left"
-                                onClick={back}
-                                style={{
-                                    cursor: "pointer",
-                                    fontSize: 20,
-                                    verticalAlign: "middle",
-                                    marginRight: 10
-                                }}
-                            />
-                        ) : null}
+                        {collapsed
+                            ? <Icon
+                                  type="arrow-left"
+                                  onClick={back}
+                                  style={{
+                                      cursor: "pointer",
+                                      fontSize: 20,
+                                      verticalAlign: "middle",
+                                      marginRight: 10
+                                  }}
+                              />
+                            : null}
                         {name}
                     </div>
                     <div className="fr">
                         <span style={{ color: "#8798a4", cursor: "pointer" }}>
-                            {selectTab === "contact" || selectTab === "stranger" ? (
-                                <Dropdown
-                                    overlay={this.renderContactMenu(selectTab)}
-                                    placement="bottomRight"
-                                    trigger={["click"]}
-                                >
-                                    <Icon type="ellipsis" />
-                                </Dropdown>
-                            ) : (
-                                <Icon type="ellipsis" onClick={this.handleRightIconClick} />
-                            )}
+                            {selectTab === "contact" || selectTab === "stranger"
+                                ? <Dropdown
+                                      overlay={this.renderContactMenu(selectTab)}
+                                      placement="bottomRight"
+                                      trigger={["click"]}
+                                  >
+                                      <Icon type="ellipsis" />
+                                  </Dropdown>
+                                : <Icon type="ellipsis" onClick={this.handleRightIconClick} />}
                         </span>
                     </div>
                 </div>
@@ -501,7 +502,7 @@ export default connect(
         sendFileMessage: (chatType, id, message, source) =>
             dispatch(MessageActions.sendFileMessage(chatType, id, message, source)),
         removeContact: id => dispatch(RosterActions.removeContact(id)),
-        addFriend: id => dispatch(StrangerActions.addFriend(id)),
+        addContact: id => dispatch(RosterActions.addContact(id)),
         deleteStranger: id => dispatch(StrangerActions.deleteStranger(id)),
         doAddBlacklist: id => dispatch(BlacklistActions.doAddBlacklist(id))
     })

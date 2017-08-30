@@ -7,7 +7,6 @@ import { parseFromServer } from "@/redux/MessageRedux"
 
 const { Types, Creators } = createActions({
     updateStrangerMessage: ["stranger", "message", "bodyType"],
-    addFriend: ["stranger"],
     deleteStranger: ["stranger"]
     // ---------------async------------------
 })
@@ -24,7 +23,8 @@ export const INITIAL_STATE = Immutable({
 /* ------------- Reducers ------------- */
 
 export const updateStrangerMessage = (state, { stranger, message, bodyType = "txt" }) => {
-    //TODO: 在MessageRedux中封装一个函数 export给这里直接调用,避免逻辑重复
+    // TODO: 接收好友请求之后，需要把陌生人含消息，挪到roster里面去
+    // TODO: 在MessageRedux中封装一个函数 export给这里直接调用,避免逻辑重复
     !message.status && (message = parseFromServer(message, bodyType))
     const { username = "" } = state.user || {}
     const { id, to, status } = message
@@ -46,11 +46,6 @@ export const updateStrangerMessage = (state, { stranger, message, bodyType = "tx
     return state
 }
 
-export const addFriend = (state, { stranger }) => {
-    console.log("addFriend", stranger)
-    return state
-}
-
 export const deleteStranger = (state, { stranger }) => {
     let byId = state.byId.asMutable()
     delete byId[stranger]
@@ -61,7 +56,6 @@ export const deleteStranger = (state, { stranger }) => {
 
 export const reducer = createReducer(INITIAL_STATE, {
     [Types.UPDATE_STRANGER_MESSAGE]: updateStrangerMessage,
-    [Types.ADD_FRIEND]: addFriend,
     [Types.DELETE_STRANGER]: deleteStranger
 })
 

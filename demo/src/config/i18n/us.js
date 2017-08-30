@@ -74,6 +74,7 @@ export const us = {
     removeSingleGroupMember: "Remove member from group",
     // 陌生人
     addFriend: "Add Friend",
+    addFriendMessage: "Application send out, please wait for approval",
     // 搜索
     search: "search",
     // system
