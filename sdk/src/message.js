@@ -260,11 +260,11 @@ var CryptoJS = require('crypto-js');
             var jsonstr = _utils.stringify(json);
             if (conn.encrypt.enabled) {
                 var option = {
-                    iv: conn.context.aes_iv,
+                    iv: conn.encrypt.aes_iv,
                     mode: CryptoJS.mode.CBC,
                     padding: CryptoJS.pad.Pkcs7
                 };
-                var encryptedData = CryptoJS.AES.encrypt(jsonstr, conn.context.aes_key, option);
+                var encryptedData = CryptoJS.AES.encrypt(jsonstr, conn.encrypt.aes_key, option);
                 jsonstr = encryptedData.toString();
                 encryptedData = null
             }

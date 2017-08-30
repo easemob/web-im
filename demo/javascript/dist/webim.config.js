@@ -105,13 +105,6 @@ WebIM.config = {
      * sender, in order to tell the sender the message has been read.
      * See call back function onReadMessage
      */
-    read: true,
-
-    /**
-     * Whether encrypt/decrypt the message during transfer
-     */
-    encrypt: {
-        enabled: true
-    }
+    read: true
 
 };

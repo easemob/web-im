@@ -101,7 +101,7 @@ Strophe.Websocket.prototype._onMessage = function (message) {
         }
     } else {
         var data_decrypted = null
-        if (WebIM.config.encrypt.enabled) {
+        if (this._conn.options.encrypt.enabled) {
 
             var pos1 = message.data.indexOf("<body>") + 6
             var pos2 = message.data.indexOf("</body>")
@@ -109,12 +109,12 @@ Strophe.Websocket.prototype._onMessage = function (message) {
                 var body = message.data.substr(pos1, pos2 - pos1)
 
                 var option = {
-                    iv: WebIM.config.encrypt.aes_iv,
+                    iv: this._conn.options.encrypt.aes_iv,
                     mode: CryptoJS.mode.CBC,
                     padding: CryptoJS.pad.Pkcs7
                 }
 
-                var decryptedData = CryptoJS.AES.decrypt(body, WebIM.config.encrypt.aes_key, option);
+                var decryptedData = CryptoJS.AES.decrypt(body, this._conn.options.encrypt.aes_key, option);
                 body = decryptedData.toString(CryptoJS.enc.Utf8);
 
                 // message.data 是只读的 直接修改message.data=temp 会报错:
@@ -389,17 +389,13 @@ var rsa_encrypt = function (target, pub_key) {
 
 var getRandomKey = function (conn, pub_key) {
 
-    conn.context.aes_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
-    conn.context.aes_key_str = new Array(new Date().getTime(), Math.random().toString().substr(2, 2)).join("_")
+    conn.encrypt.aes_iv = CryptoJS.enc.Utf8.parse('0000000000000000');
+    conn.encrypt.aes_key_str = new Array(new Date().getTime(), Math.random().toString().substr(2, 2)).join("_")
+    conn.encrypt.aes_key = CryptoJS.enc.Utf8.parse(conn.encrypt.aes_key_str);
 
-    conn.context.aes_key = CryptoJS.enc.Utf8.parse(conn.context.aes_key_str);
-
-    WebIM.config.encrypt.aes_iv = conn.context.aes_iv
-    WebIM.config.encrypt.aes_key_str = conn.context.aes_key_str
-    WebIM.config.encrypt.aes_key = conn.context.aes_key
 
     //rsa 返回的 已经是base4加密过的字符串了
-    var encryped = rsa_encrypt(conn.context.aes_key_str, pub_key)
+    var encryped = rsa_encrypt(conn.encrypt.aes_key_str, pub_key)
 
 
     return encryped
@@ -782,7 +778,6 @@ var connection = function (options) {
     this.apiUrl = options.apiUrl || '';
     this.context.apiUrl = this.apiUrl;
     this.isWindowSDK = options.isWindowSDK || false;
-    this.encrypt = options.encrypt;
     this.delivery = options.delivery || false;
     this.user = '';
     this.orgName = '';
@@ -800,6 +795,7 @@ var connection = function (options) {
     this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
 
     this.groupOption = {};
+    this.encrypt = {enabled: false};
 };
 
 connection.prototype.registerUser = function (options) {
@@ -916,7 +912,8 @@ connection.prototype.getStrophe = function () {
     var stropheConn = new Strophe.Connection(this.url, {
         inactivity: this.inactivity,
         maxRetries: this.maxRetries,
-        pollingTime: this.pollingTime
+        pollingTime: this.pollingTime,
+        encrypt: this.encrypt
     });
     return stropheConn;
 };
@@ -3656,23 +3653,17 @@ Strophe.Connection.prototype._sasl_auth1_cb = function (elem) {
         // console.log(key)
         var resource = Strophe.getResourceFromJid(this.jid);
         if (resource) {
-            if (WebIM.config.encrypt.enabled) {
-                this.send($iq({type: "set", id: "_bind_auth_2"})
-                    .c('bind', {xmlns: Strophe.NS.BIND})
-                    .c('resource', {}).t(resource)
-                    .up()
-                    .c('encrypt_type', {}).t("ENCRYPT_NONE")
-                    .up()
-                    .c('encrypt_key', {}).t('')
-                    .up()
-                    .tree());
-            } else {
-                this.send($iq({type: "set", id: "_bind_auth_2"})
-                    .c('bind', {xmlns: Strophe.NS.BIND})
-                    .c('resource', {}).t(resource)
-                    .up()
-                    .tree());
-            }
+            this.options.encrypt.enabled = false;
+            // 新版发ENCRYPT_NONE  旧版不发  以服务器的加密与否为准
+            this.send($iq({type: "set", id: "_bind_auth_2"})
+                .c('bind', {xmlns: Strophe.NS.BIND})
+                .c('resource', {}).t(resource)
+                .up()
+                .c('encrypt_type', {}).t("ENCRYPT_NONE")
+                .up()
+                .c('encrypt_key', {}).t('')
+                .up()
+                .tree());
         } else {
             this.send($iq({type: "set", id: "_bind_auth_2"})
                 .c('bind', {xmlns: Strophe.NS.BIND})
@@ -3695,6 +3686,7 @@ Strophe.Connection.prototype._sasl_bind_cb = function (elem) {
         var errors = elem.getElementsByTagName("error");
         var code = errors[0].getAttribute("code")
         if (code == "412") {
+            this.options.encrypt.enabled = true;
             var texts = elem.getElementsByTagName("text");
             var pub_key = Strophe.getText(texts[0])
             this._addSysHandler(this._sasl_bind_cb.bind(this), null, null,
@@ -3704,7 +3696,7 @@ Strophe.Connection.prototype._sasl_bind_cb = function (elem) {
 
             var resource = Strophe.getResourceFromJid(this.jid);
             if (resource) {
-                if (WebIM.config.encrypt.enabled) {
+                if (this.options.encrypt.enabled) {
                     this.send($iq({type: "set", id: "_bind_auth_2"})
                         .c('bind', {xmlns: Strophe.NS.BIND})
                         .c('resource', {}).t(resource)
