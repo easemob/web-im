@@ -56,7 +56,7 @@ export const cn = {
     unsubscribed: "已退订",
     // 群组
     createGroup: "创建群组",
-    joinGroup: "申请加入公开群",
+    joinGroup: "申请加入群",
     groupInfo: "群信息",
     groupName: "群组名称",
     inviteToGroup: "邀请群成员",
@@ -75,6 +75,7 @@ export const cn = {
     // 搜索
     search: "搜索",
     // 系统
+    apply: "申请",
     offline: "离线",
     group: "群组",
     chatroom: "聊天室",

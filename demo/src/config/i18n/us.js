@@ -56,7 +56,7 @@ export const us = {
     unsubscribed: "Unsubscribed",
     // group
     createGroup: "Create group",
-    joinGroup: "Join group",
+    joinGroup: "join group",
     groupInfo: "Group Info",
     groupName: "Group Name",
     inviteToGroup: "Invite to join group",
@@ -75,6 +75,7 @@ export const us = {
     // 搜索
     search: "search",
     // system
+    apply: "apply to",
     offline: "Offline",
     group: "group",
     chatroom: "chatroom",
