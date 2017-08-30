@@ -3682,7 +3682,7 @@ Strophe.Connection.prototype._sasl_auth1_cb = function (elem) {
     return false;
 };
 
-//<iq type='error' xmlns='jabber:client' id='_bind_auth_2'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>webim</resource><encrypt_type>ENCRYPT_NONE</encrypt_type><encrypt_key/></bind><error code='413' type='auth'><fail-encrypt xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/><text xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>-----BEGIN PUBLIC KEY-----
+//<iq type='error' xmlns='jabber:client' id='_bind_auth_2'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>webim</resource><encrypt_type>ENCRYPT_NONE</encrypt_type><encrypt_key/></bind><error code='412' type='auth'><fail-encrypt xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/><text xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>-----BEGIN PUBLIC KEY-----
 //   MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDJPMdGcWfQ4JAY0IWY/Z+umUF7
 //    J48Lk0yY/XjTG8d1Pbqio8t/4lGhNem3obefXe4KpRGjNUZ6kVKwebyUmAsdT1iC
 //    jTI1ZbcUXVPwoE8IiYIP6mGEgdvzDr4ly8yBRHYFn8WMyeP+4KsQHuyQmZ54VToS
@@ -3694,7 +3694,7 @@ Strophe.Connection.prototype._sasl_bind_cb = function (elem) {
     if (elem.getAttribute("type") == "error") {
         var errors = elem.getElementsByTagName("error");
         var code = errors[0].getAttribute("code")
-        if (code == "413") {
+        if (code == "412") {
             var texts = elem.getElementsByTagName("text");
             var pub_key = Strophe.getText(texts[0])
             this._addSysHandler(this._sasl_bind_cb.bind(this), null, null,
