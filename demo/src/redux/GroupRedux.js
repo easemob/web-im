@@ -4,6 +4,7 @@ import WebIM from "@/config/WebIM"
 import { history } from "@/utils"
 import GroupMemberActions from "@/redux/GroupMemberRedux"
 import _ from "lodash"
+import { config } from "@/config"
 
 /* ------------- Types and Action Creators ------------- */
 
@@ -13,6 +14,7 @@ const { Types, Creators } = createActions({
     setLoadingFailed: ["loadingFailed"],
     setBlackList: ["group"],
     removeGroupBlockSingle: ["payload"],
+    deleteGroup: ["groupId"],
     updateGroup: ["groups"],
     dissolveGroup: ["group"],
     switchRightSider: ["width"],
@@ -140,20 +142,27 @@ const { Types, Creators } = createActions({
                 success: response => {
                     dispatch(Creators.setLoading(false))
                     dispatch(Creators.setLoadingFailed(false))
-                    dispatch(
-                        GroupMemberActions.removeMemberFromGroup(
-                            groupId,
-                            username
-                        )
-                    )
+                    dispatch(GroupMemberActions.removeMemberFromGroup(groupId, username))
                 },
                 error: e => {
-                    console.log(
-                        `an error found while invoking resultful mute: ${e.message}`
-                    )
+                    console.log(`an error found while invoking resultful mute: ${e.message}`)
                     dispatch(Creators.setLoading(false))
                     dispatch(Creators.setLoadingFailed(true))
                 }
+            })
+        }
+    },
+    quitGroupAsync: (groupId, username) => {
+        return (dispatch, getState) => {
+            WebIM.conn.quitGroup({
+                groupId,
+                success: response => {
+                    dispatch(Creators.switchRightSider({ rightSiderOffset: 0 }))
+                    dispatch(GroupMemberActions.removeMemberFromGroup(groupId, username))
+                    dispatch(Creators.deleteGroup(groupId))
+                    history.push("/group")
+                },
+                error: e => console.log(`an error found while invoking resultful quitGroup: ${e.message}`)
             })
         }
     },
@@ -188,6 +197,15 @@ export const INITIAL_STATE = Immutable({
 })
 
 /* ------------- Reducers ------------- */
+export const deleteGroup = (state, { groupId }) => {
+    const byId = state.getIn(["byId"]).without(groupId)
+    const names = []
+    _.forEach(byId, (v, k) => {
+        names.push(v.name)
+    })
+    return state.merge({ byId, names })
+}
+
 export const setLoading = (state, { isLoading }) => {
     return state.merge({
         isLoading
@@ -276,9 +294,7 @@ export const setBlackList = (state, { group }) => {
 }
 
 export const removeGroupBlockSingle = (state, { payload }) => {
-    let blacklist = state
-        .getIn(["byId", payload.groupId, "blacklist"])
-        .filter(val => val !== payload.user)
+    let blacklist = state.getIn(["byId", payload.groupId, "blacklist"]).filter(val => val !== payload.user)
     return state.setIn(["byId", payload.groupId, "blacklist"], blacklist)
 }
 
@@ -292,6 +308,7 @@ export const switchRightSider = (state, { width }) => {
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
+    [Types.DELETE_GROUP]: deleteGroup,
     [Types.SET_LOADING]: setLoading,
     [Types.SET_LOADING_FAILED]: setLoadingFailed,
     [Types.UPDATE_GROUP]: updateGroup,

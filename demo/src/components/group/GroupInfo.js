@@ -3,21 +3,7 @@ import { connect } from "react-redux"
 import _ from "lodash"
 import Immutable from "seamless-immutable"
 import { I18n } from "react-redux-i18n"
-import {
-    Button,
-    Card,
-    Col,
-    Dropdown,
-    Form,
-    Icon,
-    Input,
-    Menu,
-    Modal,
-    Popconfirm,
-    Row,
-    Table,
-    Tooltip
-} from "antd"
+import { Button, Card, Col, Dropdown, Form, Icon, Input, Menu, Modal, Popconfirm, Row, Table, Tooltip } from "antd"
 import GroupActions from "@/redux/GroupRedux"
 import "./style/index.less"
 
@@ -36,9 +22,7 @@ const GroupInfoForm = Form.create()(props => {
             <Form>
                 <Form.Item label={I18n.t("groupName")}>
                     {getFieldDecorator("name", {
-                        rules: [
-                            { required: true, message: I18n.t("groupName") }
-                        ]
+                        rules: [{ required: true, message: I18n.t("groupName") }]
                     })(<Input />)}
                 </Form.Item>
                 {/* <Form.Item label="群组简介">
@@ -64,8 +48,7 @@ class GroupInfo extends React.Component {
         }
     }
 
-    handleSiderClick = () =>
-        this.props.switchRightSider({ rightSiderOffset: 0 })
+    handleSiderClick = () => this.props.switchRightSider({ rightSiderOffset: 0 })
 
     handleCreate = () => {
         const form = this.form
@@ -78,8 +61,7 @@ class GroupInfo extends React.Component {
                 groupId: room.roomId,
                 groupName: values.name
             }
-            if (!_.isEmpty(values.description))
-                _.merge(info, { description: values.description })
+            if (!_.isEmpty(values.description)) _.merge(info, { description: values.description })
             this.setState({ visible: false })
             this.props.updateGroupInfoAsync(info)
         })
@@ -101,8 +83,7 @@ class GroupInfo extends React.Component {
 
     saveFormRef = form => (this.form = form)
 
-    handleDissolveGroup = () =>
-        this.props.dissolveGroupAsync(this.props.room.roomId)
+    handleDissolveGroup = () => this.props.dissolveGroupAsync(this.props.room.roomId)
 
     handleMenuClick = ({ item, key, selectedKeys }) => {
         switch (key) {
@@ -120,6 +101,11 @@ class GroupInfo extends React.Component {
                 break
             case "5":
                 this.props.dissolveGroupAsync(this.props.room.roomId)
+                break
+            case "6":
+                const { login } = this.props
+                const username = _.get(login, "username")
+                this.props.quitGroupAsync(this.props.room.roomId, username)
                 break
             default:
                 break
@@ -148,34 +134,25 @@ class GroupInfo extends React.Component {
 
     renderGroupOperationMenu = () => {
         const { login, entities, room } = this.props
-        const user = _.get(
-            entities,
-            `groupMember.${room.roomId}.byName.${_.get(login, "username")}`,
-            { name: null, affiliation: null }
-        )
+        const user = _.get(entities, `groupMember.${room.roomId}.byName.${_.get(login, "username")}`, {
+            name: null,
+            affiliation: null
+        })
         const isAdmin = user.affiliation === "owner"
         return isAdmin
             ? <Menu onClick={this.handleMenuClick}>
                   <Menu.Item key="2">
                       <Tooltip title={I18n.t("inviteToGroup")} placement="left">
-                          <i className="iconfont icon-users" />{" "}
-                          {I18n.t("inviteToGroup")}
+                          <i className="iconfont icon-users" /> {I18n.t("inviteToGroup")}
                       </Tooltip>
                   </Menu.Item>
                   <Menu.Item key="3">
-                      <Tooltip
-                          title={I18n.t("modifyGroupInfo")}
-                          placement="left"
-                      >
-                          <i className="iconfont icon-pencil" />{" "}
-                          {I18n.t("modifyGroupInfo")}
+                      <Tooltip title={I18n.t("modifyGroupInfo")} placement="left">
+                          <i className="iconfont icon-pencil" /> {I18n.t("modifyGroupInfo")}
                       </Tooltip>
                   </Menu.Item>
                   <Menu.Item key="4">
-                      <Tooltip
-                          title={I18n.t("groupBlacklist")}
-                          placement="left"
-                      >
+                      <Tooltip title={I18n.t("groupBlacklist")} placement="left">
                           <Icon type="frown" /> {I18n.t("groupBlacklist")}
                       </Tooltip>
                   </Menu.Item>
@@ -188,14 +165,12 @@ class GroupInfo extends React.Component {
             : <Menu onClick={this.handleMenuClick}>
                   <Menu.Item key="2">
                       <Tooltip title={I18n.t("inviteToGroup")} placement="left">
-                          <i className="iconfont icon-users" />{" "}
-                          {I18n.t("inviteToGroup")}
+                          <i className="iconfont icon-users" /> {I18n.t("inviteToGroup")}
                       </Tooltip>
                   </Menu.Item>
                   <Menu.Item key="6">
                       <Tooltip title={I18n.t("quitGroup")} placement="left">
-                          <i className="iconfont icon-exit" />{" "}
-                          {I18n.t("quitGroup")}
+                          <i className="iconfont icon-exit" /> {I18n.t("quitGroup")}
                       </Tooltip>
                   </Menu.Item>
               </Menu>
@@ -212,11 +187,7 @@ class GroupInfo extends React.Component {
             // entities
         } = this.props
         const isLoading = _.get(this.props, "entities.group.isLoading", false)
-        const blacklist = _.get(
-            this.props,
-            `entities.group.byId.${room.roomId}.blacklist`,
-            []
-        )
+        const blacklist = _.get(this.props, `entities.group.byId.${room.roomId}.blacklist`, [])
 
         const menu = this.renderGroupOperationMenu()
 
@@ -236,13 +207,8 @@ class GroupInfo extends React.Component {
                 render: (text, record) => {
                     return ds.length > 0
                         ? <Popconfirm
-                              title={
-                                  I18n.t("confirm") +
-                                  " " +
-                                  I18n.t("removeFromGroupBlackList")
-                              }
-                              onConfirm={() =>
-                                  this.onRemoveGroupBlockSingle(record.name)}
+                              title={I18n.t("confirm") + " " + I18n.t("removeFromGroupBlackList")}
+                              onConfirm={() => this.onRemoveGroupBlockSingle(record.name)}
                           >
                               <a href="#" className="fr">
                                   {I18n.t("removeFromGroupBlackList")}
@@ -253,25 +219,14 @@ class GroupInfo extends React.Component {
             }
         ]
 
-        const table = (
-            <Table
-                columns={columns}
-                dataSource={ds}
-                rowKey="name"
-                showHeader={false}
-                size="small"
-            />
-        )
+        const table = <Table columns={columns} dataSource={ds} rowKey="name" showHeader={false} size="small" />
 
         return (
             <Card
                 title={title}
                 extra={
                     <Tooltip title={I18n.t("close")} placement="left">
-                        <Icon
-                            type="close-circle-o"
-                            onClick={this.handleSiderClick}
-                        />
+                        <Icon type="close-circle-o" onClick={this.handleSiderClick} />
                     </Tooltip>
                 }
                 bordered={false}
@@ -304,11 +259,7 @@ class GroupInfo extends React.Component {
                     onOk={this.handleCloseBlacklistModal}
                     onCancel={this.handleCloseBlacklistModal}
                     footer={[
-                        <Button
-                            key="submit"
-                            type="primary"
-                            onClick={this.handleCloseBlacklistModal}
-                        >
+                        <Button key="submit" type="primary" onClick={this.handleCloseBlacklistModal}>
                             {I18n.t("close")}
                         </Button>
                     ]}
@@ -323,19 +274,10 @@ class GroupInfo extends React.Component {
                 >
                     <Row>
                         <Col span={20}>
-                            <Input
-                                size="large"
-                                placeholder={I18n.t("username")}
-                                onChange={this.onChangeUsers}
-                            />
+                            <Input size="large" placeholder={I18n.t("username")} onChange={this.onChangeUsers} />
                         </Col>
                         <Col span={4}>
-                            <Button
-                                style={{ height: 32 }}
-                                className="fr"
-                                type="primary"
-                                onClick={this.add}
-                            >
+                            <Button style={{ height: 32 }} className="fr" type="primary" onClick={this.add}>
                                 {I18n.t("invite")}
                             </Button>
                         </Col>
@@ -349,15 +291,11 @@ class GroupInfo extends React.Component {
 export default connect(
     ({ entities, login }) => ({ entities, login }),
     dispatch => ({
-        updateGroupInfoAsync: info =>
-            dispatch(GroupActions.updateGroupInfoAsync(info)),
-        dissolveGroupAsync: roomId =>
-            dispatch(GroupActions.dissolveGroupAsync(roomId)),
-        getGroupBlackListAsync: groupId =>
-            dispatch(GroupActions.getGroupBlackListAsync(groupId)),
-        inviteToGroupAsync: (groupId, users) =>
-            dispatch(GroupActions.inviteToGroupAsync(groupId, users)),
-        switchRightSider: ({ rightSiderOffset }) =>
-            dispatch(GroupActions.switchRightSider({ rightSiderOffset }))
+        updateGroupInfoAsync: info => dispatch(GroupActions.updateGroupInfoAsync(info)),
+        dissolveGroupAsync: roomId => dispatch(GroupActions.dissolveGroupAsync(roomId)),
+        getGroupBlackListAsync: groupId => dispatch(GroupActions.getGroupBlackListAsync(groupId)),
+        inviteToGroupAsync: (groupId, users) => dispatch(GroupActions.inviteToGroupAsync(groupId, users)),
+        quitGroupAsync: (groupId, username) => dispatch(GroupActions.quitGroupAsync(groupId, username)),
+        switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset }))
     })
 )(GroupInfo)
