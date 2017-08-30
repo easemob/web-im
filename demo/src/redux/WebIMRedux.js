@@ -178,6 +178,7 @@ WebIM.conn.listen({
             const from = message.from || username
             const bySelf = from == username
             const chatId = bySelf || type !== "chat" ? to : from
+            console.log("chatId", chatId)
             if (!store.getState().entities.roster.byName[chatId]) {
                 store.dispatch(StrangerActions.updateStranger(chatId))
             }

@@ -1,4 +1,4 @@
-'use strict'
+"use strict"
 
 /**
  * git do not control webim.config.js
@@ -10,26 +10,26 @@
 
 // for react native
 let location = {
-    protocol: 'https'
+    protocol: "https"
 }
 
 let config = {
     /*
      * XMPP server
      */
-    xmppURL: 'im-api.easemob.com',
+    xmppURL: "im-api.easemob.com",
     // xmppURL: '172.17.2.139:5280',
     /*
      * Backend REST API URL
      */
     // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
     // ios must be https!!! by lwz
-    apiURL: 'https://a1.easemob.com',
+    apiURL: "https://a1.easemob.com",
     // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//172.17.3.155:8080',
     /*
      * Application AppKey
      */
-    appkey: 'easemob-demo#chatdemoui',
+    appkey: "easemob-demo#chatdemoui",
     /*
      * Whether to use HTTPS
      * @parameter {Boolean} true or false
@@ -56,7 +56,7 @@ let config = {
      * Whether to console.log in strophe.log()
      * @parameter {Boolean} true or false
      */
-    isDebug: true,
+    isDebug: false,
     /**
      * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
      * won't auto connect if autoReconnectNumMax=0.
@@ -75,7 +75,7 @@ let config = {
      *  cn: chinese
      *  us: english
      */
-    i18n: 'cn',
+    i18n: "cn",
     /*
      * Set to auto sign-in
      */

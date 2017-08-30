@@ -17,45 +17,55 @@ const Contact = ({ history, match, location, roster, group, chatroom, stranger, 
     const items = []
     switch (chatType) {
         case "contact":
-            roster.friends.forEach((name, index) => {
-                if (blacklist.names.indexOf(name) !== -1) return
-                const info = utils.getLatestInfo(name, byId, chat)
-                items[index] = {
-                    name,
-                    ...info
-                }
-            })
+            roster &&
+                roster.friends &&
+                roster.friends.forEach((name, index) => {
+                    if (blacklist.names.indexOf(name) !== -1) return
+                    const info = utils.getLatestInfo(name, byId, chat)
+                    items[index] = {
+                        name,
+                        ...info
+                    }
+                })
             break
         case "group":
-            group.names.forEach((v, index) => {
-                let temp = v.split("_#-#_")
-                items[index] = {
-                    name: temp[0],
-                    id: temp[1],
-                    latestMessage: "",
-                    latestTime: ""
-                }
-            })
+            group &&
+                group.names &&
+                group.names.forEach((v, index) => {
+                    let temp = v.split("_#-#_")
+                    items[index] = {
+                        name: temp[0],
+                        id: temp[1],
+                        latestMessage: "",
+                        latestTime: ""
+                    }
+                })
             break
         case "chatroom":
-            chatroom.names.forEach((v, index) => {
-                let temp = v.split("_#-#_")
-                items[index] = {
-                    name: temp[0],
-                    id: temp[1],
-                    latestMessage: "",
-                    latestTime: ""
-                }
-            })
+            chatroom &&
+                chatroom.names &&
+                chatroom.names.forEach((v, index) => {
+                    let temp = v.split("_#-#_")
+                    items[index] = {
+                        name: temp[0],
+                        id: temp[1],
+                        latestMessage: "",
+                        latestTime: ""
+                    }
+                })
             break
         case "stranger":
-            stranger.names.forEach((name, index) => {
-                items[index] = {
-                    name,
-                    latestMessage: "",
-                    latestTime: ""
-                }
-            })
+            if (stranger && stranger.byId) {
+                const names = Object.keys(stranger.byId)
+                names.length &&
+                    names.sort().forEach((name, index) => {
+                        items[index] = {
+                            name,
+                            latestMessage: "",
+                            latestTime: ""
+                        }
+                    })
+            }
             break
     }
     // console.log(chatType, chatId, items)

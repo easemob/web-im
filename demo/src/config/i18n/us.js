@@ -72,6 +72,8 @@ export const us = {
     mute: "Mute",
     groupBlockSingle: "Block member to group blacklist",
     removeSingleGroupMember: "Remove member from group",
+    // 陌生人
+    addFriend: "Add Friend",
     // 搜索
     search: "search",
     // system

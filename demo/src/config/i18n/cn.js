@@ -72,6 +72,8 @@ export const cn = {
     mute: "禁言",
     groupBlockSingle: "加入群黑名单",
     removeSingleGroupMember: "从本群移除",
+    // 陌生人
+    addFriend: "加为好友",
     // 搜索
     search: "搜索",
     // 系统

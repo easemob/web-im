@@ -13,6 +13,7 @@ import styles from "./style/index.less"
 import LoginActions from "@/redux/LoginRedux"
 import MessageActions from "@/redux/MessageRedux"
 import GroupActions from "@/redux/GroupRedux"
+import StrangerActions from "@/redux/StrangerRedux"
 import RosterActions from "@/redux/RosterRedux"
 import BlacklistActions from "@/redux/BlacklistRedux"
 import WebIM from "@/config/WebIM"
@@ -192,11 +193,24 @@ class Chat extends React.Component {
         }
     }
 
-    renderContactMenu() {
-        const tabsRight = [["0", `${I18n.t("block")}`, ""], ["1", `${I18n.t("delAFriend")}`, ""]]
+    renderContactMenu(selectTab) {
+        let tabs = null
+        if (selectTab == "contact") {
+            tabs = [
+                ["0", `${I18n.t("block")}`, "iconfont icon-circle-minus"],
+                ["1", `${I18n.t("delAFriend")}`, "iconfont icon-trash"]
+            ]
+        } else {
+            // stranger
+            tabs = [
+                ["2", `${I18n.t("addFriend")}`, "anticon anticon-user-add"],
+                ["3", `${I18n.t("delete")}`, "iconfont icon-trash"]
+            ]
+        }
 
-        const tabsLeftItem = tabsRight.map(([key, name, icon]) =>
+        const tabsItem = tabs.map(([key, name, icon]) =>
             <Menu.Item key={key}>
+                <i className={icon} style={{ fontSize: 20, marginRight: 12, verticalAlign: "middle" }} />
                 <span>
                     <span>
                         {name}
@@ -204,10 +218,9 @@ class Chat extends React.Component {
                 </span>
             </Menu.Item>
         )
-
         const menuSettings = (
             <Menu className="x-header-ops__dropmenu" onClick={this.onMenuContactClick}>
-                {tabsLeftItem}
+                {tabsItem}
             </Menu>
         )
 
@@ -219,12 +232,20 @@ class Chat extends React.Component {
         const { selectItem, selectTab } = match.params
         switch (key) {
             case "0":
-                // 屏蔽
+                // 屏蔽好友
                 this.props.doAddBlacklist(selectItem)
                 break
             case "1":
-                // 删除
+                // 删除好友
                 this.props.removeContact(selectItem)
+                break
+            case "2":
+                // 加为好友
+                this.props.addFriend(selectItem)
+                break
+            case "3":
+                // 删除
+                this.props.deleteStranger(selectItem)
                 break
         }
     }
@@ -274,28 +295,37 @@ class Chat extends React.Component {
         const { byId = {}, chat = {} } = message
         let messageList = []
         let name = selectItem
-        switch (selectTab) {
-            case "contact":
-                const byName = (roster && roster.byName) || {}
-                if (!(selectItem in byName)) return null
-                if (blacklist.names.indexOf(name) !== -1) return null
-                messageList = chat[selectItem] || []
-                messageList = messageList.map(id => byId[id] || {})
-                break
-            case "group":
-                name = group.byId[selectItem].name || group.byId[selectItem].id
-                messageList = message["groupchat"][selectItem] || []
-                messageList = messageList.map(id => byId[id] || {})
-                break
-            case "chatroom":
-                name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
-                messageList = message["chatroom"][selectItem] || []
-                messageList = messageList.map(id => byId[id] || {})
-                break
-            case "stranger":
-                messageList = message["stranger"][selectItem] || []
-                messageList = messageList.map(id => byId[id] || {})
-                break
+        let byId2 = null // TODO: byName 删除，只保留 byId
+        try {
+            switch (selectTab) {
+                case "contact":
+                    const byName = (roster && roster.byName) || {}
+                    if (!(selectItem in byName)) return null
+                    if (blacklist.names.indexOf(name) !== -1) return null
+                    messageList = chat[selectItem] || []
+                    messageList = messageList.map(id => byId[id] || {})
+                    break
+                case "group":
+                    byId2 = (group && group.byId) || {}
+                    if (!(selectItem in byId2)) return null
+                    name = group.byId[selectItem].name || group.byId[selectItem].id
+                    messageList = message["groupchat"][selectItem] || []
+                    messageList = messageList.map(id => byId[id] || {})
+                    break
+                case "chatroom":
+                    byId2 = (chatroom && chatroom.byId) || {}
+                    if (!(selectItem in byId2)) return null
+                    name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
+                    messageList = message["chatroom"][selectItem] || []
+                    messageList = messageList.map(id => byId[id] || {})
+                    break
+                case "stranger":
+                    messageList = message["stranger"][selectItem] || []
+                    messageList = messageList.map(id => byId[id] || {})
+                    break
+            }
+        } catch (e) {
+            console.log(e)
         }
 
         return (
@@ -318,9 +348,9 @@ class Chat extends React.Component {
                     </div>
                     <div className="fr">
                         <span style={{ color: "#8798a4", cursor: "pointer" }}>
-                            {selectTab === "contact"
+                            {selectTab === "contact" || selectTab === "stranger"
                                 ? <Dropdown
-                                      overlay={this.renderContactMenu()}
+                                      overlay={this.renderContactMenu(selectTab)}
                                       placement="bottomRight"
                                       trigger={["click"]}
                                   >
@@ -459,6 +489,8 @@ export default connect(
         sendFileMessage: (chatType, id, message, source) =>
             dispatch(MessageActions.sendFileMessage(chatType, id, message, source)),
         removeContact: id => dispatch(RosterActions.removeContact(id)),
+        addFriend: id => dispatch(StrangerActions.addFriend(id)),
+        deleteStranger: id => dispatch(StrangerActions.deleteStranger(id)),
         doAddBlacklist: id => dispatch(BlacklistActions.doAddBlacklist(id))
     })
 )(Chat)
