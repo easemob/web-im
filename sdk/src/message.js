@@ -258,7 +258,7 @@ var CryptoJS = require('crypto-js');
                 , ext: message.ext || {}
             };
             var jsonstr = _utils.stringify(json);
-            if (conn.encrypt) {
+            if (conn.encrypt.enabled) {
                 var option = {
                     iv: conn.context.aes_iv,
                     mode: CryptoJS.mode.CBC,
