@@ -8,7 +8,7 @@ import { I18n } from "react-redux-i18n"
 import _ from "lodash"
 import GroupRequestActions from "@/redux/GroupRequestRedux"
 
-class FriendsRequestModal extends React.Component {
+class GroupRequestModal extends React.Component {
     state = {
         toNick: "",
         groupName: "",
@@ -95,4 +95,4 @@ export default connect(
         agreeJoinGroup: (gid, options) => dispatch(GroupRequestActions.agreeJoinGroup(gid, options)),
         rejectJoinGroup: (gid, options) => dispatch(GroupRequestActions.rejectJoinGroup(gid, options))
     })
-)(FriendsRequestModal)
+)(GroupRequestModal)

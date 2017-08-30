@@ -197,6 +197,12 @@ WebIM.conn.listen({
     },
     onVideoMessage: message => {
         store.dispatch(MessageActions.addMessage(message, "video"))
+    },
+    onInviteMessage: msg => {
+        console.log("onInviteMessage", msg)
+        store.dispatch(GroupRequestActions.addGroupRequest(msg))
+        store.dispatch(GroupActions.getGroups())
+        message.success(`${msg.from}${I18n.t("invite")}${I18n.t("you")}${I18n.t("join")}${msg.roomid}`)
     }
 })
 
