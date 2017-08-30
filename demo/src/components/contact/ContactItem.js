@@ -15,22 +15,24 @@ const ContactItem = ({ chatType, items, collapse, hasLogo, ...rest }) => {
         <Menu.Item key={chatType == "chatroom" || chatType == "group" ? item.id : item.name} className={tabCls}>
             {hasLogo ? <ContactHead className="fl nav-img" name="test" width={50} /> : ""}
             <div className="nav-text">
-                <p>
+                <div>
                     {item.name}
 
-                    {/*<Badge
-                     count={109}
-                     style={{
-                     backgroundColor: "#87d068",
-                     marginLeft: 10,
-                     verticalAlign: "middle"
-                     }}
-                     />
-                     */}
-                </p>
-                <p className="nav-text-desc">
+                    {/*
+                        <Badge
+                        count={109}
+                        style={{
+                            backgroundColor: "#87d068",
+                            marginLeft: 10,
+                            verticalAlign: "middle"
+                        }}
+                    />
+                    */}
+                    {chatType === "group" ? <Badge count={item.unread} style={{ marginLeft: 10 }} /> : ""}
+                </div>
+                <div className="nav-text-desc">
                     {item.latestMessage}
-                </p>
+                </div>
             </div>
             <div className="nav-op">
                 {item.latestTime}

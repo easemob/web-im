@@ -180,6 +180,7 @@ function copy(message, tpl) {
 const { Types, Creators } = createActions({
     addMessage: ["message", "bodyType"],
     updateMessageStatus: ["message", "status"],
+    clearUnread: ["groupId"],
     // ---------------async------------------
     sendTxtMessage: (chatType, chatId, message = {}) => {
         // console.log('sendTxtMessage', chatType, chatId, message)
@@ -363,7 +364,8 @@ export const INITIAL_STATE = Immutable({
     groupchat: {},
     chatroom: {},
     stranger: {},
-    extra: {}
+    extra: {},
+    unread: {}
 })
 
 /* ------------- Reducers ------------- */
@@ -399,6 +401,12 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
     const chatData = state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
     chatData.push(id)
 
+    if (type === "groupchat" && message.from !== username) {
+        let count = state.getIn(["unread", to], 0)
+        count++
+        state = state.setIn(["unread", to], count)
+    }
+
     state = state.setIn([type, chatId], chatData)
     return state
 }
@@ -416,11 +424,16 @@ export const updateMessageStatus = (state, { message, status = "" }) => {
     return state.setIn(["byId", id, "status"], status).setIn(["byId", id, "time"], +new Date())
 }
 
+export const clearUnread = (state, { groupId }) => {
+    return state.setIn(["unread", groupId], 0)
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
     [Types.ADD_MESSAGE]: addMessage,
-    [Types.UPDATE_MESSAGE_STATUS]: updateMessageStatus
+    [Types.UPDATE_MESSAGE_STATUS]: updateMessageStatus,
+    [Types.CLEAR_UNREAD]: clearUnread
 })
 
 /* ------------- Selectors ------------- */

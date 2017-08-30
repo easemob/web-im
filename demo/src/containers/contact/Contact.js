@@ -2,6 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
+import _ from "lodash"
 import ContactItem from "@/components/contact/ContactItem"
 import utils from "@/utils"
 
@@ -32,10 +33,12 @@ const Contact = ({ history, match, location, roster, group, chatroom, stranger, 
             group &&
                 group.names &&
                 group.names.forEach((v, index) => {
-                    let temp = v.split("_#-#_")
+                    let [name, id] = v.split("_#-#_")
+                    let unread = _.get(message, `unread.${id}`, 0)
                     items[index] = {
-                        name: temp[0],
-                        id: temp[1],
+                        name,
+                        id,
+                        unread,
                         latestMessage: "",
                         latestTime: ""
                     }
@@ -45,10 +48,10 @@ const Contact = ({ history, match, location, roster, group, chatroom, stranger, 
             chatroom &&
                 chatroom.names &&
                 chatroom.names.forEach((v, index) => {
-                    let temp = v.split("_#-#_")
+                    let [name, id] = v.split("_#-#_")
                     items[index] = {
-                        name: temp[0],
-                        id: temp[1],
+                        name,
+                        id,
                         latestMessage: "",
                         latestTime: ""
                     }

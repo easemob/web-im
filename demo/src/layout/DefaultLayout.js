@@ -14,6 +14,7 @@ import HeaderTab from "@/components/header/HeaderTab"
 import HeaderOps from "@/components/header/HeaderOps"
 import GroupActions from "@/redux/GroupRedux"
 import GroupMemberActions from "@/redux/GroupMemberRedux"
+import MessageActions from "@/redux/MessageRedux"
 import { config } from "@/config"
 import utils from "@/utils"
 
@@ -95,17 +96,29 @@ class DefaultLayout extends Component {
         const { history, location, entities } = this.props
         const { selectItem, selectTab } = this.state
         const redirectPath = "/" + [selectTab, e.key].join("/")
-        if (selectItem == e.key) return
+        if (selectItem == e.key) {
+            if (selectTab === "group") {
+                const groupId = e.key
+                if (groupId) {
+                    this.props.clearUnread(groupId)
+                    this.setState({ roomId: groupId })
+                    const room = _.get(entities, `group.byId.${groupId}`, {})
+                    this.setState({ room })
+                    this.props.listGroupMemberAsync({ groupId })
+                }
+            }
+            return
+        }
 
         // if (selectItem !== e.key && selectTab === 'group') {
 
         if (selectTab === "group") {
             const groupId = e.key
             if (groupId) {
+                this.props.clearUnread(groupId)
                 this.setState({ roomId: groupId })
                 const room = _.get(entities, `group.byId.${groupId}`, {})
                 this.setState({ room })
-                // this.props.getGroupMember(id)
                 this.props.listGroupMemberAsync({ groupId })
             }
         }
@@ -164,7 +177,8 @@ class DefaultLayout extends Component {
 
     render() {
         const { collapsed, selectTab, selectItem, headerTabs, roomId } = this.state
-        const { login, entities: { group: { rightSiderOffset } } } = this.props
+        const { login, rightSiderOffset, unread } = this.props
+        console.log(_.isEmpty(unread), Object.keys(unread))
         // console.log("----", selectItem, collapsed, SIDER_COL_BREAK)
         console.log("-----", login)
 
@@ -178,6 +192,7 @@ class DefaultLayout extends Component {
                         collapsed={collapsed}
                         items={headerTabs}
                         selectedKeys={[selectTab]}
+                        hadUnread={_.filter(unread, (v, k) => v > 0).length > 0}
                         onClick={this.changeTab}
                     />
                 </Header>
@@ -228,14 +243,17 @@ export default withRouter(
         ({ breakpoint, entities, login }) => ({
             breakpoint,
             entities,
-            login
+            login,
+            rightSiderOffset: entities.group.rightSiderOffset,
+            unread: entities.message.unread
         }),
         dispatch => ({
             getGroupMember: id => dispatch(GroupMemberActions.getGroupMember(id)),
             listGroupMemberAsync: opt => dispatch(GroupMemberActions.listGroupMemberAsync(opt)),
             switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
             joinChatRoom: roomId => dispatch(ChatRoomActions.joinChatRoom(roomId)),
-            quitChatRoom: roomId => dispatch(ChatRoomActions.quitChatRoom(roomId))
+            quitChatRoom: roomId => dispatch(ChatRoomActions.quitChatRoom(roomId)),
+            clearUnread: groupId => dispatch(MessageActions.clearUnread(groupId))
         })
     )(DefaultLayout)
 )

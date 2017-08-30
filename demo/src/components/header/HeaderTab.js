@@ -1,30 +1,32 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {Menu, Icon} from "antd"
+import { Menu, Icon, Badge } from "antd"
+import _ from "lodash"
+import "./style/HeaderTab.less"
 
 const SubMenu = Menu.SubMenu
 const MenuItemGroup = Menu.ItemGroup
 
-const HeaderTab = ({collapsed, items, ...rest}) => {
+const HeaderTab = ({ collapsed, items, hadUnread, ...rest }) => {
     const tabs = items || {}
     const tabsLen = tabs.length
     const tabCls = collapsed ? `ant-col-${Math.floor(24 / tabsLen)}` : ""
 
-    const tabsItem = tabs.map(({key, name, icon}) =>
+    const tabsItem = tabs.map(({ key, name, icon }) =>
         <Menu.Item key={key} className={tabCls}>
             {/*<Icon type="user" style={{ fontSize: 20, marginRight: 12 }} />*/}
-            <i
-                className={icon}
-                style={{fontSize: 20, marginRight: 12, verticalAlign: "middle"}}
-            />
+            {key === "group" && hadUnread
+                ? <Badge dot style={{ marginRight: 12 }} className="x-header-tab__badge">
+                      <i className={icon} style={{ fontSize: 20, marginRight: -9, verticalAlign: "middle" }} />
+                  </Badge>
+                : <i className={icon} style={{ fontSize: 20, marginRight: 12, verticalAlign: "middle" }} />}
             {collapsed
                 ? ""
                 : <span className="nav-text">
-						{name}
-					</span>}
+                      {name}
+                  </span>}
         </Menu.Item>
     )
-
 
     // const tabsColItem = (
     // 	<SubMenu title={<Icon type="bars" />} className="collapsed">
@@ -33,7 +35,7 @@ const HeaderTab = ({collapsed, items, ...rest}) => {
     // )
 
     return (
-        <Menu {...rest} id="x-header-tab" mode="horizontal">
+        <Menu {...rest} id="x-header-tab" mode="horizontal" className="x-header-tab__menu">
             {tabsItem}
         </Menu>
     )
