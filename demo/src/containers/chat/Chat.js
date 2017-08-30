@@ -51,6 +51,13 @@ class Chat extends React.Component {
         this.handleKey = this.handleKey.bind(this)
         this.handleRightIconClick = this.handleRightIconClick.bind(this)
         this.onMenuContactClick = this.onMenuContactClick.bind(this)
+
+        //console.log("---chat.js--")
+        //const a = {}
+        // const b = a.b.c
+        //console.log("-----")
+
+        // throw new Error("1")
     }
 
     scollBottom() {
@@ -64,7 +71,7 @@ class Chat extends React.Component {
     pictureChange(e) {
         const { match } = this.props
         const { selectItem, selectTab } = match.params
-        const isRoom = chatType[selectTab] == "chatroom"
+        const isRoom = chatType[selectTab] == "chatroom" || chatType[selectTab] == "groupchat"
 
         // console.log(e, e.target)
         let file = WebIM.utils.getFileUrl(e.target)
@@ -90,7 +97,7 @@ class Chat extends React.Component {
     fileChange(e) {
         const { match } = this.props
         const { selectItem, selectTab } = match.params
-        const isRoom = chatType[selectTab] == "chatRoom"
+        const isRoom = chatType[selectTab] == "chatroom" || chatType[selectTab] == "groupchat"
 
         // console.log(e, e.target)
         let file = WebIM.utils.getFileUrl(e.target)
@@ -208,16 +215,14 @@ class Chat extends React.Component {
             ]
         }
 
-        const tabsItem = tabs.map(([key, name, icon]) =>
+        const tabsItem = tabs.map(([key, name, icon]) => (
             <Menu.Item key={key}>
                 <i className={icon} style={{ fontSize: 20, marginRight: 12, verticalAlign: "middle" }} />
                 <span>
-                    <span>
-                        {name}
-                    </span>
+                    <span>{name}</span>
                 </span>
             </Menu.Item>
-        )
+        ))
         const menuSettings = (
             <Menu className="x-header-ops__dropmenu" onClick={this.onMenuContactClick}>
                 {tabsItem}
@@ -261,6 +266,11 @@ class Chat extends React.Component {
 
     componentDidMount() {
         this.scollBottom()
+
+        // console.log("chat.js did mount")
+        // this.props.a = 2
+        // const a = {}
+        // const b = a.b.c
         // document.addEventListener("keydown", this.handleKey)
     }
 
@@ -332,31 +342,33 @@ class Chat extends React.Component {
             <div className="x-chat">
                 <div className="x-list-item x-chat-header">
                     <div className="fl">
-                        {collapsed
-                            ? <Icon
-                                  type="arrow-left"
-                                  onClick={back}
-                                  style={{
-                                      cursor: "pointer",
-                                      fontSize: 20,
-                                      verticalAlign: "middle",
-                                      marginRight: 10
-                                  }}
-                              />
-                            : null}
+                        {collapsed ? (
+                            <Icon
+                                type="arrow-left"
+                                onClick={back}
+                                style={{
+                                    cursor: "pointer",
+                                    fontSize: 20,
+                                    verticalAlign: "middle",
+                                    marginRight: 10
+                                }}
+                            />
+                        ) : null}
                         {name}
                     </div>
                     <div className="fr">
                         <span style={{ color: "#8798a4", cursor: "pointer" }}>
-                            {selectTab === "contact" || selectTab === "stranger"
-                                ? <Dropdown
-                                      overlay={this.renderContactMenu(selectTab)}
-                                      placement="bottomRight"
-                                      trigger={["click"]}
-                                  >
-                                      <Icon type="ellipsis" />
-                                  </Dropdown>
-                                : <Icon type="ellipsis" onClick={this.handleRightIconClick} />}
+                            {selectTab === "contact" || selectTab === "stranger" ? (
+                                <Dropdown
+                                    overlay={this.renderContactMenu(selectTab)}
+                                    placement="bottomRight"
+                                    trigger={["click"]}
+                                >
+                                    <Icon type="ellipsis" />
+                                </Dropdown>
+                            ) : (
+                                <Icon type="ellipsis" onClick={this.handleRightIconClick} />
+                            )}
                         </span>
                     </div>
                 </div>

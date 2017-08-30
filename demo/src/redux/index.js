@@ -2,12 +2,7 @@ import { createStore, applyMiddleware, compose, combineReducers } from "redux"
 import { config } from "@/config"
 import { forEach } from "lodash"
 import thunkMiddleware from "redux-thunk"
-import {
-    loadTranslations,
-    setLocale,
-    syncTranslationWithStore,
-    i18nReducer
-} from "react-redux-i18n"
+import { loadTranslations, setLocale, syncTranslationWithStore, i18nReducer } from "react-redux-i18n"
 import { translationsObject } from "@/config/i18n/index.js"
 import WebIMConfig from "@/config/WebIMConfig"
 
@@ -23,6 +18,9 @@ const composeEnhancers =
 
 const enhancers = []
 
+// const customMiddleware = store => next => action => {
+//     next({ ...action, getState: store.getState })
+// }
 const middlewares = [thunkMiddleware]
 
 enhancers.push(applyMiddleware(...middlewares))

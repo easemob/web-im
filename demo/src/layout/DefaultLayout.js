@@ -25,6 +25,11 @@ class DefaultLayout extends Component {
         super()
         const { selectTab, selectItem = "" } = match.params
 
+        const a = {}
+        // const b = a.b.c
+
+        // console.log(selectTab, selectItem, "-----")
+
         this.state = {
             collapsed: breakpoint[SIDER_COL_BREAK],
             selectTab: selectTab,
@@ -60,6 +65,11 @@ class DefaultLayout extends Component {
         this.changeItem = this.changeItem.bind(this)
         this.changeTab = this.changeTab.bind(this)
         this.handleCloseRightSiderClick = this.handleCloseRightSiderClick.bind(this)
+
+        // throw new Error("1")
+        // throw new Error("crap")
+        // this.props.c = 1
+        // console.log(messageList, "---")
     }
 
     toggle = collapsed => {
@@ -115,6 +125,7 @@ class DefaultLayout extends Component {
 
     setSelectStatus() {
         const { history, location, match } = this.props
+        // console.log(location.patchname, match)
         const { selectTab, selectItem = "" } = match.params
         // console.log(match)
         this.setState({
@@ -134,11 +145,7 @@ class DefaultLayout extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        // console.log(
-        //     "componentWillReceiveProps",
-        //     this.props.location.pathname,
-        //     nextProps.location.pathname
-        // )
+        // console.log("componentWillReceiveProps", this.props.location.pathname, nextProps.location.pathname)
         const { breakpoint, location } = this.props
         const nextBeakpoint = nextProps.breakpoint
 
@@ -158,6 +165,11 @@ class DefaultLayout extends Component {
     render() {
         const { collapsed, selectTab, selectItem, headerTabs, roomId } = this.state
         const { login, entities: { group: { rightSiderOffset } } } = this.props
+        // console.log("----", selectItem, collapsed, SIDER_COL_BREAK)
+        console.log("-----", login)
+
+        // if (true) return <div>123</div>
+
         return (
             <Layout>
                 <Header className="header">

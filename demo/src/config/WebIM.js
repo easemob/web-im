@@ -14,7 +14,7 @@ console.group = console.group || function() {}
 console.groupEnd = console.groupEnd || function() {}
 
 let WebIM = (window.WebIM = websdk)
-WebIM.debug(true)
+WebIM.debug(false)
 window.WebIM.config = config
 // is react native
 // window.DOMParser = xmldom.DOMParser
@@ -62,8 +62,8 @@ window.WebIM.config = config
  */
 WebIM.config.autoSignIn = false
 if (WebIM.config.autoSignIn) {
-	WebIM.config.autoSignInName = "liuwz"
-	WebIM.config.autoSignInPwd = "1"
+    WebIM.config.autoSignInName = "liuwz"
+    WebIM.config.autoSignInPwd = "1"
 }
 
 // var stropheConn = new window.Strophe.Connection("ws://im-api.easemob.com/ws/", {
@@ -80,54 +80,54 @@ if (WebIM.config.autoSignIn) {
 //   }, stropheConn.wait, stropheConn.hold);
 
 WebIM.conn = new WebIM.connection({
-	isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
-	https: WebIM.config.https,
-	url: WebIM.config.xmppURL,
-	isAutoLogin: false,
-	heartBeatWait: WebIM.config.heartBeatWait,
-	autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
-	autoReconnectInterval: WebIM.config.autoReconnectInterval
+    isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
+    https: WebIM.config.https,
+    url: WebIM.config.xmppURL,
+    isAutoLogin: false,
+    heartBeatWait: WebIM.config.heartBeatWait,
+    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+    autoReconnectInterval: WebIM.config.autoReconnectInterval
 })
 
 // 为了兼容老版
 if (!WebIM.conn.apiUrl) {
-    WebIM.conn.apiUrl = WebIM.config.apiURL    
+    WebIM.conn.apiUrl = WebIM.config.apiURL
 }
 
 let appKeyPair = WebIM.config.appkey.split("#")
 export let api = Api.create({
-	baseURL: `${WebIM.config.apiURL}/${appKeyPair[0]}/${appKeyPair[1]}`,
-	validateStatus: function(status) {
-		return true
-	}
+    baseURL: `${WebIM.config.apiURL}/${appKeyPair[0]}/${appKeyPair[1]}`,
+    validateStatus: function(status) {
+        return true
+    }
 })
 
 function requestFail(data) {
-	if (data.data && data.data.error_description) {
-		data.msg = data.data.error_description
-	} else if (data.data && data.data.data && data.data.data.error_description) {
-		data.msg = data.data.data.error_description
-	}
-	message.error("Error:" + data.status + ", " + data.msg)
-	return Promise.reject(data)
+    if (data.data && data.data.error_description) {
+        data.msg = data.data.error_description
+    } else if (data.data && data.data.data && data.data.data.error_description) {
+        data.msg = data.data.data.error_description
+    }
+    message.error("Error:" + data.status + ", " + data.msg)
+    return Promise.reject(data)
 }
 
 api.interceptors.response.use(
-	function(resp) {
-		if (resp.status >= 300) {
-			return requestFail(resp)
-		}
-		if (resp.data && resp.data.status && resp.data.status !== 200) {
-			return requestFail(resp.data)
-		}
-		if (resp.data && resp.data.data) {
-			resp.data = resp.data.data
-		}
-		return resp
-	},
-	function(error) {
-		console.log(error)
-	}
+    function(resp) {
+        if (resp.status >= 300) {
+            return requestFail(resp)
+        }
+        if (resp.data && resp.data.status && resp.data.status !== 200) {
+            return requestFail(resp.data)
+        }
+        if (resp.data && resp.data.data) {
+            resp.data = resp.data.data
+        }
+        return resp
+    },
+    function(error) {
+        console.log(error)
+    }
 )
 
 WebIM.api = api
