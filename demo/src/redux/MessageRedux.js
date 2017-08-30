@@ -103,7 +103,7 @@ function parseFromLocal(type, to, message = {}, bodyType) {
     }
 }
 // 统一消息格式：服务端
-function parseFromServer(message = {}, bodyType) {
+export const parseFromServer = (message = {}, bodyType) => {
     let ext = message.ext || {}
     let obj = copy(message, msgTpl.base)
     // body 包含：所有message实体信息都放到body当中，与base区分开
@@ -396,9 +396,6 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         status: status
     })
 
-    if (type == "chat" && !store.getState().entities.roster.byName[chatId]) {
-        type = "stranger"
-    }
     const chatData = state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
     chatData.push(id)
 

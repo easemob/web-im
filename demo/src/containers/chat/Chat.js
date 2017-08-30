@@ -330,8 +330,8 @@ class Chat extends React.Component {
                     messageList = messageList.map(id => byId[id] || {})
                     break
                 case "stranger":
-                    messageList = message["stranger"][selectItem] || []
-                    messageList = messageList.map(id => byId[id] || {})
+                    messageList = stranger["byId"][selectItem] || {}
+                    messageList = Object.values(messageList)
                     break
             }
         } catch (e) {
