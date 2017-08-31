@@ -17,7 +17,10 @@ const HeaderTab = ({ collapsed, items, hadUnread, ...rest }) => {
             {/*<Icon type="user" style={{ fontSize: 20, marginRight: 12 }} />*/}
             {key === "group" && hadUnread
                 ? <Badge dot style={{ marginRight: 12 }} className="x-header-tab__badge">
-                      <i className={icon} style={{ fontSize: 20, marginRight: -9, verticalAlign: "middle" }} />
+                      <i
+                          className={icon}
+                          style={{ fontSize: 20, marginRight: -5, marginTop: -4, verticalAlign: "middle" }}
+                      />
                   </Badge>
                 : <i className={icon} style={{ fontSize: 20, marginRight: 12, verticalAlign: "middle" }} />}
             {collapsed
