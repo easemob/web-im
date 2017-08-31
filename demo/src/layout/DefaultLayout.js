@@ -86,6 +86,15 @@ class DefaultLayout extends Component {
         const { selectItem, selectTab } = this.state
         const redirectPath = "/" + [e.key].join("/")
         if (selectTab == e.key) return
+        console.log(e.key, this.props.isGetGroupAlready)
+        if (e.key == "group" && !this.props.common.isGetGroupAlready) {
+            // 获取群组列表
+            this.props.getGroups()
+        }
+        if (e.key == "chatroom" && !this.props.common.isGetChatRoomAlready) {
+            // 获取聊天室列表
+            this.props.getChatRooms()
+        }
         this.props.switchRightSider({ rightSiderOffset: 0 })
         history.push(redirectPath + location.search)
     }
@@ -240,10 +249,11 @@ class DefaultLayout extends Component {
 
 export default withRouter(
     connect(
-        ({ breakpoint, entities, login }) => ({
+        ({ breakpoint, entities, login, common }) => ({
             breakpoint,
             entities,
             login,
+            common,
             rightSiderOffset: entities.group.rightSiderOffset,
             unread: entities.message.unread
         }),
@@ -253,7 +263,9 @@ export default withRouter(
             switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
             joinChatRoom: roomId => dispatch(ChatRoomActions.joinChatRoom(roomId)),
             quitChatRoom: roomId => dispatch(ChatRoomActions.quitChatRoom(roomId)),
-            clearUnread: groupId => dispatch(MessageActions.clearUnread(groupId))
+            clearUnread: groupId => dispatch(MessageActions.clearUnread(groupId)),
+            getGroups: () => dispatch(GroupActions.getGroups()),
+            getChatRooms: () => dispatch(ChatRoomActions.getChatRooms())
         })
     )(DefaultLayout)
 )

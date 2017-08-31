@@ -3,8 +3,10 @@ import Immutable from "seamless-immutable"
 import WebIM from "@/config/WebIM"
 import { history } from "@/utils"
 import GroupMemberActions from "@/redux/GroupMemberRedux"
+import CommonActions from "@/redux/CommonRedux"
 import _ from "lodash"
 import { config } from "@/config"
+import { store } from "@/redux"
 
 /* ------------- Types and Action Creators ------------- */
 
@@ -27,6 +29,7 @@ const { Types, Creators } = createActions({
     },
     getGroups: () => {
         return (dispatch, getState) => {
+            store.dispatch(CommonActions.getGroupAlready())
             WebIM.conn.listRooms({
                 success: function(rooms) {
                     dispatch(Creators.updateGroup(rooms))

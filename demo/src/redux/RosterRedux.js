@@ -12,12 +12,15 @@ const { Types, Creators } = createActions({
     // 获取好友列表
     getContacts: () => {
         return (dispatch, getState) => {
+            dispatch(CommonActions.fetching())
             WebIM.conn.getRoster({
                 success: roster => {
                     dispatch(Creators.updateRoster(roster))
+                    dispatch(CommonActions.fetched())
                 },
                 error: error => {
                     //TODO ERROR
+                    dispatch(CommonActions.fetched())
                 }
             })
         }
@@ -40,6 +43,7 @@ const { Types, Creators } = createActions({
                 },
                 error: function() {
                     //TODO ERROR
+                    dispatch(CommonActions.fetched())
                 }
             })
         }

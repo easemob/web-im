@@ -40,9 +40,9 @@ WebIM.conn.listen({
         // 获取黑名单列表
         store.dispatch(BlacklistActions.getBlacklist())
         // 获取群组列表
-        store.dispatch(GroupActions.getGroups())
-        // 获取群组列表
-        store.dispatch(ChatRoomActions.getChatRooms())
+        // store.dispatch(GroupActions.getGroups())
+        // 获取聊天室列表
+        // store.dispatch(ChatRoomActions.getChatRooms())
 
         store.dispatch(LoginActions.stopLoging())
         // refresh page
@@ -232,9 +232,7 @@ export default Creators
 
 /* ------------- Initial State ------------- */
 
-export const INITIAL_STATE = Immutable({
-    msgs: {}
-})
+export const INITIAL_STATE = Immutable({})
 
 /* ------------- Reducers ------------- */
 
