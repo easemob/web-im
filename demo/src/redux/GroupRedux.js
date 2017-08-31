@@ -223,7 +223,8 @@ export const updateGroup = (state, { groups }) => {
     let byId = {}
     let names = []
     groups.forEach(v => {
-        ;(byId[v.roomId] = v), names.push(v.name + "_#-#_" + v.roomId)
+        byId[v.roomId] = v
+        names.push(v.name + "_#-#_" + v.roomId)
     })
     return state.merge({
         byId,
