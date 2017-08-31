@@ -60,6 +60,7 @@ const { Types, Creators } = createActions({
         }
     },
     dissolveGroupAsync: ({ groupId, groupName }) => {
+        debugger
         return (dispatch, getState) => {
             dispatch(Creators.setLoading(true))
             WebIM.conn.dissolveGroup({
@@ -245,20 +246,21 @@ export const updateGroupInfo = (state, { info }) => {
     const names = state.getIn(["names"]).asMutable()
     names.splice(names.indexOf(oldName), 1, newName)
 
-    return state.setIn(["byId", info.groupId, "name"], info.groupName).set("names", names)
+    return state.setIn(["byId", info.groupId, "name"], info.groupName).set("names", names.sort())
 }
 
 /**
  * 
  * @param {Object} state 
- * @param {Object} payload
- * @param {String|Number} payload.groupId
- * @param {String} payload.groupName
+ * @param {Object} group
+ * @param {String|Number} group.groupId
+ * @param {String} group.groupName
  */
-export const dissolveGroup = (state, { payload }) => {
-    let byId = state.getIn(["byId"]).without(payload.groupId)
-    const names = state.getIn(["names"])
-    names.splice(names.indexOf(payload.groupName), 1)
+export const dissolveGroup = (state, { group }) => {
+    const { groupId, groupName } = group
+    let byId = state.getIn(["byId"]).without(groupId)
+    const names = state.getIn(["names"]).asMutable()
+    names.splice(names.indexOf(`${groupName}_#-#_${groupId}`), 1)
     return state.merge({
         byId,
         names: names.sort()

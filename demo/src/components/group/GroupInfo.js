@@ -100,7 +100,9 @@ class GroupInfo extends React.Component {
                 this.setState({ blackListVisible: true })
                 break
             case "5":
-                this.props.dissolveGroupAsync(this.props.room.roomId)
+                const { roomId, name } = this.props.room
+                this.props.switchRightSider({ rightSiderOffset: 0 })
+                this.props.dissolveGroupAsync({ groupId: roomId, groupName: name })
                 break
             case "6":
                 const { login } = this.props
@@ -292,7 +294,8 @@ export default connect(
     ({ entities, login }) => ({ entities, login }),
     dispatch => ({
         updateGroupInfoAsync: info => dispatch(GroupActions.updateGroupInfoAsync(info)),
-        dissolveGroupAsync: roomId => dispatch(GroupActions.dissolveGroupAsync(roomId)),
+        dissolveGroupAsync: ({ groupId, groupName }) =>
+            dispatch(GroupActions.dissolveGroupAsync({ groupId, groupName })),
         getGroupBlackListAsync: groupId => dispatch(GroupActions.getGroupBlackListAsync(groupId)),
         inviteToGroupAsync: (groupId, users) => dispatch(GroupActions.inviteToGroupAsync(groupId, users)),
         quitGroupAsync: (groupId, username) => dispatch(GroupActions.quitGroupAsync(groupId, username)),
