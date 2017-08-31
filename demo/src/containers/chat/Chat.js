@@ -18,6 +18,7 @@ import RosterActions from "@/redux/RosterRedux"
 import BlacklistActions from "@/redux/BlacklistRedux"
 import WebIM from "@/config/WebIM"
 import { message } from "antd"
+import { history } from "@/utils"
 
 const { TextArea } = Input
 const FormItem = Form.Item
@@ -237,10 +238,12 @@ class Chat extends React.Component {
     onMenuContactClick({ key }) {
         const { match } = this.props
         const { selectItem, selectTab } = match.params
+        const search = history.location.search
         switch (key) {
             case "0":
                 // 屏蔽好友
                 this.props.doAddBlacklist(selectItem)
+                history.push("/contact" + search)
                 break
             case "1":
                 // 删除好友
@@ -254,6 +257,7 @@ class Chat extends React.Component {
             case "3":
                 // 删除
                 this.props.deleteStranger(selectItem)
+                history.push("/stranger" + search)
                 break
         }
     }
