@@ -191,7 +191,6 @@ export const INITIAL_STATE = Immutable({
     loadingFailed: false,
     isLoading: false,
     rightSiderOffset: 0,
-    byName: {},
     byId: {},
     names: []
 })
@@ -220,18 +219,13 @@ export const setLoadingFailed = (state, { loadingFailed }) => {
 
 // [{jid,name,roomId}] groups
 export const updateGroup = (state, { groups }) => {
-    let byName = {}
     let byId = {}
     let names = []
     groups.forEach(v => {
-        byName[v.name] = v
-        byId[v.roomId] = v
-        names.push(v.name + "_#-#_" + v.roomId)
+        ;(byId[v.roomId] = v), names.push(v.name + "_#-#_" + v.roomId)
     })
     return state.merge({
-        byName,
         byId,
-        // names: Object.keys(byName).sort()
         names: names.sort()
     })
 }
@@ -252,14 +246,8 @@ export const updateGroupInfo = (state, { info }) => {
 
     names.splice(names.indexOf(oldName))
     names.push(info.groupName, 1)
-    // const byName = state.getIn(["byName"]).without(oldName).setIn([info.groupName], newGroup)
 
-    return (
-        state
-            // .set("byName", byName)
-            .setIn(["byId", info.groupId, "name"], info.groupName)
-            .set("names", names.sort())
-    )
+    return state.setIn(["byId", info.groupId, "name"], info.groupName).set("names", names.sort())
 }
 
 /**
@@ -271,12 +259,10 @@ export const updateGroupInfo = (state, { info }) => {
  */
 export const dissolveGroup = (state, { payload }) => {
     let byId = state.getIn(["byId"]).without(payload.groupId)
-    // let byName = state.getIn(["byName"]).without(payload.groupName)
     const names = state.getIn(["names"])
     names.splice(names.indexOf(payload.groupName), 1)
     return state.merge({
         byId,
-        // byName,
         names: names.sort()
     })
 }
