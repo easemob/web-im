@@ -21,7 +21,7 @@ class BlacklistModal extends React.Component {
                     {name}
                     <i
                         style={{
-                            cursor: "pointer"
+                            cursor: "pointer", "margin-right": "16px"
                         }}
                         className="fr iconfont icon-circle-minus"
                         onClick={() => {
@@ -35,7 +35,9 @@ class BlacklistModal extends React.Component {
         return (
             <div className="x-blacklist">
                 <div className="x-blacklist-members">
-                    {items}
+                    <div className="force-overflow">
+                        {items}
+                    </div>
                 </div>
             </div>
         )

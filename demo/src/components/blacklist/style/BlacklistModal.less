@@ -1,9 +1,13 @@
 .x-blacklist {
-	.ant-checkbox-group-item {
-		display: block;
-	}
-	.x-blacklist-members {
-		max-height: 300px;
-		overflow: scroll;
-	}
+    .ant-checkbox-group-item {
+        display: block;
+    }
+    .x-blacklist-members {
+        height: 100px;
+        overflow-y: scroll;
+
+        .force-overflow {
+            min-height: 130px;
+        }
+    }
 }
