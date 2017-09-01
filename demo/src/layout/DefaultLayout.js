@@ -120,6 +120,8 @@ class DefaultLayout extends Component {
                 const room = _.get(entities, `group.byId.${groupId}`, {})
                 this.setState({ room })
                 this.props.listGroupMemberAsync({ groupId })
+                this.props.getMutedAsync(groupId)
+                this.props.getGroupAdminAsync(groupId)
             }
         }
 
@@ -255,7 +257,10 @@ export default withRouter(
             joinChatRoom: roomId => dispatch(ChatRoomActions.joinChatRoom(roomId)),
             quitChatRoom: roomId => dispatch(ChatRoomActions.quitChatRoom(roomId)),
             clearUnread: groupId => dispatch(MessageActions.clearUnread(groupId)),
-
+            getGroups: () => dispatch(GroupActions.getGroups()),
+            getChatRooms: () => dispatch(ChatRoomActions.getChatRooms()),
+            getMutedAsync: groupId => dispatch(GroupMemberActions.getMutedAsync(groupId)),
+            getGroupAdminAsync: groupId => dispatch(GroupMemberActions.getGroupAdminAsync(groupId))
         })
     )(DefaultLayout)
 )
