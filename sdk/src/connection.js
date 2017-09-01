@@ -49,7 +49,6 @@ Strophe.Connection.prototype._sasl_auth1_cb = function (elem) {
             //     .c('bind', {xmlns: Strophe.NS.BIND})
             //     .c('resource', {}).t(resource).tree());
             var device_uuid = "device_uuid";
-            console.log('strophe option=', this.options)
             if (this.options.isMultiLoginSessions) {
                 device_uuid = new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000)
             }
