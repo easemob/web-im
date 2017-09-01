@@ -144,7 +144,7 @@ class Chat extends React.Component {
         // 场景1：正常+ -
         // 场景2：从中间位置+ - -> 如果删除一个字符后字符串匹配，则非中间位置
         // 场景3：删除操作可以从textInput直接编辑，适应于以上情况
-        const v = e.target.value.trim()
+        const v = e.target.value
         const splitValue = this.state.value ? this.state.value.split("") : []
         splitValue.pop()
         if (v == splitValue.join("")) {
@@ -205,18 +205,18 @@ class Chat extends React.Component {
         let tabs = null
         if (selectTab == "contact") {
             tabs = [
-                ["0", `${I18n.t("block")}`, "iconfont icon-circle-minus"],
-                ["1", `${I18n.t("delAFriend")}`, "iconfont icon-trash"]
+                [ "0", `${I18n.t("block")}`, "iconfont icon-circle-minus" ],
+                [ "1", `${I18n.t("delAFriend")}`, "iconfont icon-trash" ]
             ]
         } else {
             // stranger
             tabs = [
-                ["2", `${I18n.t("addFriend")}`, "anticon anticon-user-add"],
-                ["3", `${I18n.t("delete")}`, "iconfont icon-trash"]
+                [ "2", `${I18n.t("addFriend")}`, "anticon anticon-user-add" ],
+                [ "3", `${I18n.t("delete")}`, "iconfont icon-trash" ]
             ]
         }
 
-        const tabsItem = tabs.map(([key, name, icon]) =>
+        const tabsItem = tabs.map(([ key, name, icon ]) =>
             <Menu.Item key={key}>
                 <i className={icon} style={{ fontSize: 20, marginRight: 12, verticalAlign: "middle" }} />
                 <span>
@@ -240,25 +240,25 @@ class Chat extends React.Component {
         const { selectItem, selectTab } = match.params
         const search = history.location.search
         switch (key) {
-            case "0":
-                // 屏蔽好友
-                this.props.doAddBlacklist(selectItem)
-                history.push("/contact" + search)
-                break
-            case "1":
-                // 删除好友
-                this.props.removeContact(selectItem)
-                break
-            case "2":
-                // 加为好友
-                this.props.addContact(selectItem)
-                message.success(`${I18n.t("addFriendMessage")}`)
-                break
-            case "3":
-                // 删除
-                this.props.deleteStranger(selectItem)
-                history.push("/stranger" + search)
-                break
+        case "0":
+            // 屏蔽好友
+            this.props.doAddBlacklist(selectItem)
+            history.push("/contact" + search)
+            break
+        case "1":
+            // 删除好友
+            this.props.removeContact(selectItem)
+            break
+        case "2":
+            // 加为好友
+            this.props.addContact(selectItem)
+            message.success(`${I18n.t("addFriendMessage")}`)
+            break
+        case "3":
+            // 删除
+            this.props.deleteStranger(selectItem)
+            history.push("/stranger" + search)
+            break
         }
     }
 
@@ -305,7 +305,7 @@ class Chat extends React.Component {
         console.log(collapsed, selectTab, selectItem)
 
         const back = () => {
-            const redirectPath = "/" + [selectTab].join("/") + location.search
+            const redirectPath = "/" + [ selectTab ].join("/") + location.search
             history.push(redirectPath)
         }
 
@@ -315,31 +315,31 @@ class Chat extends React.Component {
         let byId2 = null // TODO: byName 删除，只保留 byId
         try {
             switch (selectTab) {
-                case "contact":
-                    const byName = (roster && roster.byName) || {}
-                    if (!(selectItem in byName)) return null
-                    if (blacklist.names.indexOf(name) !== -1) return null
-                    messageList = chat[selectItem] || []
-                    messageList = messageList.map(id => byId[id] || {})
-                    break
-                case "group":
-                    byId2 = (group && group.byId) || {}
-                    if (!(selectItem in byId2)) return null
-                    name = group.byId[selectItem].name || group.byId[selectItem].id
-                    messageList = message["groupchat"][selectItem] || []
-                    messageList = messageList.map(id => byId[id] || {})
-                    break
-                case "chatroom":
-                    byId2 = (chatroom && chatroom.byId) || {}
-                    if (!(selectItem in byId2)) return null
-                    name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
-                    messageList = message["chatroom"][selectItem] || []
-                    messageList = messageList.map(id => byId[id] || {})
-                    break
-                case "stranger":
-                    messageList = stranger["byId"][selectItem] || {}
-                    messageList = Object.values(messageList)
-                    break
+            case "contact":
+                const byName = (roster && roster.byName) || {}
+                if (!(selectItem in byName)) return null
+                if (blacklist.names.indexOf(name) !== -1) return null
+                messageList = chat[selectItem] || []
+                messageList = messageList.map(id => byId[id] || {})
+                break
+            case "group":
+                byId2 = (group && group.byId) || {}
+                if (!(selectItem in byId2)) return null
+                name = group.byId[selectItem].name || group.byId[selectItem].id
+                messageList = message["groupchat"][selectItem] || []
+                messageList = messageList.map(id => byId[id] || {})
+                break
+            case "chatroom":
+                byId2 = (chatroom && chatroom.byId) || {}
+                if (!(selectItem in byId2)) return null
+                name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
+                messageList = message["chatroom"][selectItem] || []
+                messageList = messageList.map(id => byId[id] || {})
+                break
+            case "stranger":
+                messageList = stranger["byId"][selectItem] || {}
+                messageList = Object.values(messageList)
+                break
             }
         } catch (e) {
             console.log(e)
@@ -351,15 +351,15 @@ class Chat extends React.Component {
                     <div className="fl">
                         {collapsed
                             ? <Icon
-                                  type="arrow-left"
-                                  onClick={back}
-                                  style={{
-                                      cursor: "pointer",
-                                      fontSize: 20,
-                                      verticalAlign: "middle",
-                                      marginRight: 10
-                                  }}
-                              />
+                                type="arrow-left"
+                                onClick={back}
+                                style={{
+                                    cursor: "pointer",
+                                    fontSize: 20,
+                                    verticalAlign: "middle",
+                                    marginRight: 10
+                                }}
+                            />
                             : null}
                         {name}
                     </div>
@@ -367,12 +367,12 @@ class Chat extends React.Component {
                         <span style={{ color: "#8798a4", cursor: "pointer" }}>
                             {selectTab === "contact" || selectTab === "stranger"
                                 ? <Dropdown
-                                      overlay={this.renderContactMenu(selectTab)}
-                                      placement="bottomRight"
-                                      trigger={["click"]}
-                                  >
-                                      <Icon type="ellipsis" />
-                                  </Dropdown>
+                                    overlay={this.renderContactMenu(selectTab)}
+                                    placement="bottomRight"
+                                    trigger={[ "click" ]}
+                                >
+                                    <Icon type="ellipsis" />
+                                </Dropdown>
                                 : <Icon type="ellipsis" onClick={this.handleRightIconClick} />}
                         </span>
                     </div>
