@@ -49,7 +49,8 @@ export const cn = {
     haveaccount: "已有账号?",
     you: "你",
     admin: "管理员",
-    dismissed: "被踢出",
+    dismissed: "已被踢出",
+    muted: "已被禁言",
     // 订阅
     refuse: "请求被拒绝",
     subscribed: "已订阅",

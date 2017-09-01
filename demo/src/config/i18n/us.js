@@ -50,6 +50,7 @@ export const us = {
     you: "You",
     admin: "admin",
     dismissed: "had been dismissed",
+    muted: "had been muted",
     // 订阅
     refuse: "Refused",
     subscribed: "Subscribed",
