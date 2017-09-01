@@ -52,66 +52,66 @@ WebIM.conn.listen({
     onPresence: msg => {
         // console.log("onPresence", msg, store.getState())
         switch (msg.type) {
-            case "joinGroupNotifications":
-                store.dispatch(GroupRequestActions.addGroupRequest(msg))
-                break
-            case "leaveGroup": // dismissed by admin
-                message.error(
-                    `${msg.kicked || I18n.t("you")} ${I18n.t("dismissed")}${I18n.t("by")}${msg.actor ||
-                        I18n.t("admin")} .`
-                )
-                store.dispatch(GroupActions.getGroups())
-                break
-            case "joinPublicGroupSuccess":
-                message.success(`${I18n.t("joinGroup")} ${msg.from} ${I18n.t("successfully")}`)
-                store.dispatch(GroupActions.getGroups())
-                break
-            case "joinPublicGroupDeclined":
-                message.error(
-                    `${I18n.t("join")}${I18n.t("group")}${msg.gid}${I18n.t("refuse")}${I18n.t("by")}${msg.owner}`
-                )
-                break
-            case "joinChatRoomSuccess": // Join the chat room successfully
-                // Demo.currentChatroom = msg.from;
-                break
-            case "reachChatRoomCapacity": // Failed to join the chat room
-                // Demo.currentChatroom = null;
-                message.error(`${I18n.t("joinGroup")}${I18n.t("failed")}`)
-                break
-            case "subscribe":
-                // 加好友时双向订阅过程，所以当对方同意添加好友的时候
-                // 会有一步对方自动订阅本人的操作，这步操作是自动发起
-                // 不需要通知提示，所以此处通过state=[resp:true]标示
-                if (msg.status === "[resp:true]") {
-                    return
-                }
+        case "joinGroupNotifications":
+            store.dispatch(GroupRequestActions.addGroupRequest(msg))
+            break
+        case "leaveGroup": // dismissed by admin
+            message.error(
+                `${msg.kicked || I18n.t("you")} ${I18n.t("dismissed")}${I18n.t("by")}${msg.actor ||
+                    I18n.t("admin")} .`
+            )
+            store.dispatch(GroupActions.getGroups())
+            break
+        case "joinPublicGroupSuccess":
+            message.success(`${I18n.t("joinGroup")} ${msg.from} ${I18n.t("successfully")}`)
+            store.dispatch(GroupActions.getGroups())
+            break
+        case "joinPublicGroupDeclined":
+            message.error(
+                `${I18n.t("join")}${I18n.t("group")}${msg.gid}${I18n.t("refuse")}${I18n.t("by")}${msg.owner}`
+            )
+            break
+        case "joinChatRoomSuccess": // Join the chat room successfully
+            // Demo.currentChatroom = msg.from;
+            break
+        case "reachChatRoomCapacity": // Failed to join the chat room
+            // Demo.currentChatroom = null;
+            message.error(`${I18n.t("joinGroup")}${I18n.t("failed")}`)
+            break
+        case "subscribe":
+            // 加好友时双向订阅过程，所以当对方同意添加好友的时候
+            // 会有一步对方自动订阅本人的操作，这步操作是自动发起
+            // 不需要通知提示，所以此处通过state=[resp:true]标示
+            if (msg.status === "[resp:true]") {
+                return
+            }
 
-                store.dispatch(SubscribeActions.addSubscribe(msg))
-                break
-            case "subscribed":
-                store.dispatch(RosterActions.getContacts())
-                // Alert.alert(msg.from + " " + I18n.t("subscribed"))
-                message.warning(msg.from + "" + I18n.t("subscribed"))
-                break
-            case "unsubscribe": // The sender deletes a friend.
-            case "unsubscribed": // The other party has removed you from the friend list.
-                // 好友退订消息
-                store.dispatch(RosterActions.getContacts())
-                // Alert.alert(msg.from + " " + I18n.t("unsubscribed"))
-                if ("code" in msg) {
-                    message.warning(msg.from + " " + I18n.t("refuse"))
-                } else {
-                    message.warning(msg.from + " " + I18n.t("unsubscribed"))
-                }
-                break
-            case "memberJoinPublicGroupSuccess":
-                message.success(`${msg.mid}${I18n.t("join")}${I18n.t("group")}${msg.from}${I18n.t("successfully")}`)
-                break
-            case "memberJoinChatRoomSuccess":
-                message.success(`${msg.mid}${I18n.t("join")}${I18n.t("chatroom")}${msg.from}${I18n.t("successfully")}`)
-                break
-            case "leaveChatRoom": // Leave the chat room
-                break
+            store.dispatch(SubscribeActions.addSubscribe(msg))
+            break
+        case "subscribed":
+            store.dispatch(RosterActions.getContacts())
+            // Alert.alert(msg.from + " " + I18n.t("subscribed"))
+            message.warning(msg.from + "" + I18n.t("subscribed"))
+            break
+        case "unsubscribe": // The sender deletes a friend.
+        case "unsubscribed": // The other party has removed you from the friend list.
+            // 好友退订消息
+            store.dispatch(RosterActions.getContacts())
+            // Alert.alert(msg.from + " " + I18n.t("unsubscribed"))
+            if ("code" in msg) {
+                message.warning(msg.from + " " + I18n.t("refuse"))
+            } else {
+                message.warning(msg.from + " " + I18n.t("unsubscribed"))
+            }
+            break
+        case "memberJoinPublicGroupSuccess":
+            message.success(`${msg.mid}${I18n.t("join")}${I18n.t("group")}${msg.from}${I18n.t("successfully")}`)
+            break
+        case "memberJoinChatRoomSuccess":
+            message.success(`${msg.mid}${I18n.t("join")}${I18n.t("chatroom")}${msg.from}${I18n.t("successfully")}`)
+            break
+        case "leaveChatRoom": // Leave the chat room
+            break
         }
     },
     // 各种异常

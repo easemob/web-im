@@ -17,7 +17,7 @@ import {Provider} from "react-redux"
 import {store} from "@/redux"
 import App from "./App"
 // fix android browsers compatibilities
-import 'babel-polyfill'
+import "babel-polyfill"
 
 var FastClick = require("fastclick")
 FastClick.attach(document.body)
