@@ -5,35 +5,47 @@ import { withRouter } from "react-router-dom"
 import _ from "lodash"
 import ContactItem from "@/components/contact/ContactItem"
 import utils from "@/utils"
+import GroupActions from "@/redux/GroupRedux"
+import ChatRoomActions from "@/redux/ChatRoomRedux"
 
-const Contact = ({ history, match, location, roster, group, chatroom, stranger, message, blacklist, ...rest }) => {
-    const { pathname } = location
+const Contact = ({
+    history, match, common, location, roster, group, chatroom, stranger, message, blacklist, getGroups, getChatRooms, ...rest
+}) => {
+    const {
+        pathname
+    } = location
     const paths = pathname.split("/")
     const chatType = paths[1]
     const chatId = paths[2]
-    const { byId, chat } = message
+    const {
+        byId, chat
+    } = message
 
     // console.log(history, match, location, pathname, chatType, chatId)
 
     const items = []
     switch (chatType) {
-        case "contact":
-            roster &&
-                roster.friends &&
-                roster.friends.forEach((name, index) => {
-                    if (blacklist.names.indexOf(name) !== -1) return
-                    const info = utils.getLatestInfo(name, byId, chat)
-                    items[index] = {
-                        name,
-                        ...info
-                    }
-                })
-            break
-        case "group":
+    case "contact":
+        roster &&
+            roster.friends &&
+            roster.friends.forEach((name, index) => {
+                if (blacklist.names.indexOf(name) !== -1) return
+                const info = utils.getLatestInfo(name, byId, chat)
+                items[index] = {
+                    name,
+                    ...info
+                }
+            })
+        break
+    case "group":
+        if (!common.isGetGroupAlready) {
+            // 获取群组列表
+            getGroups()
+        } else {
             group &&
                 group.names &&
                 group.names.forEach((v, index) => {
-                    let [name, id] = v.split("_#-#_")
+                    let [ name, id ] = v.split("_#-#_")
                     let unread = _.get(message, `unread.${id}`, 0)
                     items[index] = {
                         name,
@@ -43,12 +55,17 @@ const Contact = ({ history, match, location, roster, group, chatroom, stranger, 
                         latestTime: ""
                     }
                 })
-            break
-        case "chatroom":
+        }
+        break
+    case "chatroom":
+        if (!common.isGetChatRoomAlready) {
+            // 获取聊天室列表
+            getChatRooms()
+        } else {
             chatroom &&
                 chatroom.names &&
                 chatroom.names.forEach((v, index) => {
-                    let [name, id] = v.split("_#-#_")
+                    let [ name, id ] = v.split("_#-#_")
                     items[index] = {
                         name,
                         id,
@@ -56,26 +73,27 @@ const Contact = ({ history, match, location, roster, group, chatroom, stranger, 
                         latestTime: ""
                     }
                 })
-            break
-        case "stranger":
-            if (stranger && stranger.byId) {
-                const names = Object.keys(stranger.byId)
-                names.length &&
-                    names.sort().forEach((name, index) => {
-                        items[index] = {
-                            name,
-                            latestMessage: "",
-                            latestTime: ""
-                        }
-                    })
-            }
-            break
+        }
+        break
+    case "stranger":
+        if (stranger && stranger.byId) {
+            const names = Object.keys(stranger.byId)
+            names.length &&
+                names.sort().forEach((name, index) => {
+                    items[index] = {
+                        name,
+                        latestMessage: "",
+                        latestTime: ""
+                    }
+                })
+        }
+        break
     }
     // console.log(chatType, chatId, items)
 
     return (
         <div>
-            <ContactItem {...rest} items={items} chatType={chatType} />
+            <ContactItem {...rest} items={items} chatType={chatType}/>
         </div>
     )
 }
@@ -87,7 +105,10 @@ Contact.propTypes = {
 
 export default withRouter(
     connect(
-        ({ entities }) => ({
+        ({
+            entities, common
+        }) => ({
+            common,
             roster: entities.roster,
             group: entities.group,
             chatroom: entities.chatroom,
@@ -96,8 +117,10 @@ export default withRouter(
             blacklist: entities.blacklist
         }),
         dispatch => ({
-            doLogin: (username, password) => {}
-            // dispatch(LoginActions.login(username, password))
+            doLogin: (username, password) => {
+            },
+            getGroups: () => dispatch(GroupActions.getGroups()),
+            getChatRooms: () => dispatch(ChatRoomActions.getChatRooms())
         })
     )(Contact)
 )

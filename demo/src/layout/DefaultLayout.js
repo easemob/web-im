@@ -84,17 +84,8 @@ class DefaultLayout extends Component {
     changeTab(e) {
         const { history, location } = this.props
         const { selectItem, selectTab } = this.state
-        const redirectPath = "/" + [e.key].join("/")
+        const redirectPath = "/" + [ e.key ].join("/")
         if (selectTab == e.key) return
-        console.log(e.key, this.props.isGetGroupAlready)
-        if (e.key == "group" && !this.props.common.isGetGroupAlready) {
-            // 获取群组列表
-            this.props.getGroups()
-        }
-        if (e.key == "chatroom" && !this.props.common.isGetChatRoomAlready) {
-            // 获取聊天室列表
-            this.props.getChatRooms()
-        }
         this.props.switchRightSider({ rightSiderOffset: 0 })
         history.push(redirectPath + location.search)
     }
@@ -104,7 +95,7 @@ class DefaultLayout extends Component {
         console.log("changeItem", e)
         const { history, location, entities } = this.props
         const { selectItem, selectTab } = this.state
-        const redirectPath = "/" + [selectTab, e.key].join("/")
+        const redirectPath = "/" + [ selectTab, e.key ].join("/")
         if (selectItem == e.key) {
             if (selectTab === "group") {
                 const groupId = e.key
@@ -196,11 +187,11 @@ class DefaultLayout extends Component {
         return (
             <Layout>
                 <Header className="header">
-                    <HeaderOps title={login.username} />
+                    <HeaderOps title={login.username}/>
                     <HeaderTab
                         collapsed={collapsed}
                         items={headerTabs}
-                        selectedKeys={[selectTab]}
+                        selectedKeys={[ selectTab ]}
                         hadUnread={_.filter(unread, (v, k) => v > 0).length > 0}
                         onClick={this.changeTab}
                     />
@@ -215,13 +206,13 @@ class DefaultLayout extends Component {
                             left: selectItem && collapsed ? "-100%" : 0
                         }}
                     >
-                        <Contact collapsed={false} onClick={this.changeItem} selectedKeys={[selectItem]} />
+                        <Contact collapsed={false} onClick={this.changeItem} selectedKeys={[ selectItem ]}/>
                     </div>
                     <Content
                         className="x-layout-chat"
                         style={{
                             overflow: "scroll",
-                            margin: collapsed ? `0` : `0 0 0 ${SIDER_WIDTH}px`
+                            margin: collapsed ? "0" : `0 0 0 ${SIDER_WIDTH}px`
                         }}
                     >
                         <Route
@@ -236,7 +227,7 @@ class DefaultLayout extends Component {
                             marginLeft: `${rightSiderOffset}px`
                         }}
                     >
-                        <RightSider roomId={roomId} room={this.state.room} ref="rightSider" />
+                        <RightSider roomId={roomId} room={this.state.room} ref="rightSider"/>
                     </div>
                     {/*<Footer style={{ textAlign: "center" }}>
                      Ant Design ©2016 Created by Ant UED
@@ -264,8 +255,7 @@ export default withRouter(
             joinChatRoom: roomId => dispatch(ChatRoomActions.joinChatRoom(roomId)),
             quitChatRoom: roomId => dispatch(ChatRoomActions.quitChatRoom(roomId)),
             clearUnread: groupId => dispatch(MessageActions.clearUnread(groupId)),
-            getGroups: () => dispatch(GroupActions.getGroups()),
-            getChatRooms: () => dispatch(ChatRoomActions.getChatRooms())
+
         })
     )(DefaultLayout)
 )
