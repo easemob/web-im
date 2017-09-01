@@ -9,10 +9,6 @@ import GroupMemberActions from "@/redux/GroupMemberRedux"
 import "./style/index.less"
 
 class GroupMembers extends React.Component {
-    constructor(props) {
-        super(props)
-    }
-
     setAdmin = (groupId, name) => this.props.setAdminAsync(groupId, name)
 
     removeAdmin = (groupId, name) => this.props.removeAdminAsync(groupId, name)
@@ -72,58 +68,100 @@ class GroupMembers extends React.Component {
                         record.name !== owner && // owner
                         (isOwner || isAdmin)
                     // return data.length > 0 && (isAdmin || (isOwner && owner !== record.name))
+                    const AdminIcons = (props) => {
+                        const { admins, record } = props
+                        return _.includes(admins, record.name)
+                            ? <Popconfirm
+                                title={I18n.t("confirm") + " " + I18n.t("removeAdmin")}
+                                onConfirm={() => this.removeAdmin(roomId, record.name)}
+                            >
+                                <Tooltip title={I18n.t("removeAdmin")} placement="left">
+                                    <Icon type="arrow-down" />
+                                </Tooltip>
+                            </Popconfirm>
+                            : <Popconfirm
+                                title={I18n.t("confirm") + " " + I18n.t("setAdmin")}
+                                onConfirm={() => this.setAdmin(roomId, record.name)}
+                            >
+                                <Tooltip title={I18n.t("setAdmin")} placement="left">
+                                    <Icon type="arrow-up" />
+                                </Tooltip>
+                            </Popconfirm>
+                    }
+                    const MuteIcons = (props) => {
+                        const { muted, record } = props
+                        return _.hasIn(muted, [ "byName", record.name ])
+                            ? <Popconfirm
+                                title={I18n.t("confirm") + " " + I18n.t("removeMute")}
+                                onConfirm={() => this.removeMute(roomId, record.name)}
+                            >
+                                <Tooltip title={I18n.t("removeMute")} placement="left">
+                                    <Icon type="unlock" />
+                                </Tooltip>
+                            </Popconfirm>
+                            : <Popconfirm
+                                title={I18n.t("confirm") + " " + I18n.t("mute")}
+                                onConfirm={() => this.mute(roomId, record.name)}
+                            >
+                                <Tooltip title={I18n.t("mute")} placement="left">
+                                    <Icon type="lock" />
+                                </Tooltip>
+                            </Popconfirm>
+                    }
                     return data.length > 0 && canOperate
                         ? <span className="fr">
-                              {/* <Dropdown overlay={memberActionMenu} trigger={['click']}><Icon type="info-circle-o" /></Dropdown> */}
-                              <Popconfirm
-                                  title={I18n.t("confirm") + " " + I18n.t("setAdmin")}
-                                  onConfirm={() => this.setAdmin(roomId, record.name)}
-                              >
-                                  <Tooltip title={I18n.t("setAdmin")} placement="left">
-                                      <Icon type="arrow-up" />
-                                  </Tooltip>
-                              </Popconfirm>
-                              <Popconfirm
-                                  title={I18n.t("confirm") + " " + I18n.t("removeAdmin")}
-                                  onConfirm={() => this.removeAdmin(roomId, record.name)}
-                              >
-                                  <Tooltip title={I18n.t("removeAdmin")} placement="left">
-                                      <Icon type="arrow-down" />
-                                  </Tooltip>
-                              </Popconfirm>
-                              <Popconfirm
-                                  title={I18n.t("confirm") + " " + I18n.t("mute")}
-                                  onConfirm={() => this.mute(roomId, record.name)}
-                              >
-                                  <Tooltip title={I18n.t("mute")} placement="left">
-                                      <Icon type="lock" />
-                                  </Tooltip>
-                              </Popconfirm>
-                              <Popconfirm
-                                  title={I18n.t("confirm") + " " + I18n.t("removeMute")}
-                                  onConfirm={() => this.removeMute(roomId, record.name)}
-                              >
-                                  <Tooltip title={I18n.t("removeMute")} placement="left">
-                                      <Icon type="unlock" />
-                                  </Tooltip>
-                              </Popconfirm>
-                              <Popconfirm
-                                  title={I18n.t("confirm") + " " + I18n.t("groupBlockSingle")}
-                                  onConfirm={() => this.groupBlockSingle(roomId, record.name)}
-                              >
-                                  <Tooltip title={I18n.t("groupBlockSingle")} placement="left">
-                                      <Icon type="frown-o" />
-                                  </Tooltip>
-                              </Popconfirm>
-                              <Popconfirm
-                                  title={I18n.t("confirm") + " " + I18n.t("removeSingleGroupMember")}
-                                  onConfirm={() => this.removeSingleGroupMember(roomId, record.name)}
-                              >
-                                  <Tooltip title={I18n.t("removeSingleGroupMember")} placement="left">
-                                      <Icon type="usergroup-delete" />
-                                  </Tooltip>
-                              </Popconfirm>
-                          </span>
+                            {/* <Dropdown overlay={memberActionMenu} trigger={['click']}><Icon type="info-circle-o" /></Dropdown> */}
+                            {/* <Popconfirm
+                                title={I18n.t("confirm") + " " + I18n.t("setAdmin")}
+                                onConfirm={() => this.setAdmin(roomId, record.name)}
+                            >
+                                <Tooltip title={I18n.t("setAdmin")} placement="left">
+                                    <Icon type="arrow-up" />
+                                </Tooltip>
+                            </Popconfirm>
+                            <Popconfirm
+                                title={I18n.t("confirm") + " " + I18n.t("removeAdmin")}
+                                onConfirm={() => this.removeAdmin(roomId, record.name)}
+                            >
+                                <Tooltip title={I18n.t("removeAdmin")} placement="left">
+                                    <Icon type="arrow-down" />
+                                </Tooltip>
+                            </Popconfirm> */}
+                            <AdminIcons record={record} admins={admins} />
+                            {/* <Popconfirm
+                                title={I18n.t("confirm") + " " + I18n.t("mute")}
+                                onConfirm={() => this.mute(roomId, record.name)}
+                            >
+                                <Tooltip title={I18n.t("mute")} placement="left">
+                                    <Icon type="lock" />
+                                </Tooltip>
+                            </Popconfirm>
+                            <Popconfirm
+                                title={I18n.t("confirm") + " " + I18n.t("removeMute")}
+                                onConfirm={() => this.removeMute(roomId, record.name)}
+                            >
+                                <Tooltip title={I18n.t("removeMute")} placement="left">
+                                    <Icon type="unlock" />
+                                </Tooltip>
+                            </Popconfirm> */}
+                            <MuteIcons record={record} muted={muted} />
+                            <Popconfirm
+                                title={I18n.t("confirm") + " " + I18n.t("groupBlockSingle")}
+                                onConfirm={() => this.groupBlockSingle(roomId, record.name)}
+                            >
+                                <Tooltip title={I18n.t("groupBlockSingle")} placement="left">
+                                    <Icon type="frown-o" />
+                                </Tooltip>
+                            </Popconfirm>
+                            <Popconfirm
+                                title={I18n.t("confirm") + " " + I18n.t("removeSingleGroupMember")}
+                                onConfirm={() => this.removeSingleGroupMember(roomId, record.name)}
+                            >
+                                <Tooltip title={I18n.t("removeSingleGroupMember")} placement="left">
+                                    <Icon type="usergroup-delete" />
+                                </Tooltip>
+                            </Popconfirm>
+                        </span>
                         : null
                 }
             }

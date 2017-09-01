@@ -6,21 +6,21 @@ import { WebIM } from "@/config"
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-    updateAdmin: ["groupId", "admins"],
-    operateAdmin: ["groupId", "admins", "operation"],
-    updateMuted: ["groupId", "muted"],
-    operateMuted: ["groupId", "muted", "operation"],
-    updateGroupMember: ["groupId", "members"],
-    removeMemberFromGroup: ["id", "username"],
+    updateAdmin: [ "groupId", "admins" ],
+    operateAdmin: [ "groupId", "admin", "operation" ],
+    updateMuted: [ "groupId", "muted" ],
+    operateMuted: [ "groupId", "muted", "operation" ],
+    updateGroupMember: [ "groupId", "members" ],
+    removeMemberFromGroup: [ "id", "username" ],
     // ---------------async------------------
     getGroupMember: id => {
         return (dispatch, getState) => {
             WebIM.conn.queryRoomMember({
                 roomId: id,
-                success: function(members) {
+                success: function (members) {
                     dispatch(Creators.updateGroupMember(id, members))
                 },
-                error: function() {}
+                error: function () { }
             })
         }
     },
@@ -53,8 +53,7 @@ const { Types, Creators } = createActions({
                     //        result: 'success'
                     //    }
                     // }
-                    console.log(response)
-                    // dispatch(Creators.)
+                    dispatch(Creators.operateAdmin(groupId, response.data.newadmin, "add"))
                 },
                 error: e => console.log(`an error found while invoking restful setAdmin: ${e}`)
             })
@@ -79,7 +78,7 @@ const { Types, Creators } = createActions({
             WebIM.conn.removeAdmin({
                 groupId,
                 username,
-                success: response => console.log(response),
+                success: response => dispatch(Creators.operateAdmin(groupId, response.data.oldadmin, "del")),
                 error: e => console.log(`an error found while invoking resultful removeAdmin: ${e}`)
             })
         }
@@ -176,25 +175,30 @@ export const updateGroupMember = (state, { groupId, members }) => {
         },
         {}
     )
-    const group = state.getIn([groupId], Immutable({})).merge({ byName, names: Object.keys(byName).sort() })
+    const group = state.getIn([ groupId ], Immutable({})).merge({ byName, names: Object.keys(byName).sort() })
     return state.merge({ [groupId]: group })
 }
 
 export const removeMemberFromGroup = (state, { id, username }) => {
-    let byName = state.getIn(["groupMember", id, "byName"]).without(username)
+    let byName = state.getIn([ "groupMember", id, "byName" ]).without(username)
     return state
-        .setIn(["groupMember", id, "byName"], byName)
-        .setIn(["groupMember", id, "names"], Object.keys(byName).sort())
+        .setIn([ "groupMember", id, "byName" ], byName)
+        .setIn([ "groupMember", id, "names" ], Object.keys(byName).sort())
 }
 
 export const updateAdmin = (state, { groupId, admins }) => {
-    const group = state.getIn([groupId]).merge({ admins: admins })
+    const group = state.getIn([ groupId ], Immutable({})).merge({ admins })
     // group = group.set("admins", admins)
     return state.merge({ [groupId]: group })
 }
 
-export const operateAdmin = (state, { groupId, admins }) => {
-    // const admins = state.getIn([groupId, ])
+export const operateAdmin = (state, { groupId, admin, operation }) => {
+    let admins = state.getIn([ groupId, "admins" ], Immutable([])).asMutable()
+    operation === "add"
+        ? admins = _.uniq(_.concat(admins, admin))
+        : admins = _.without(admins, admin)
+    const group = state.getIn([ groupId ]).merge({ admins })
+    return state.merge({ [groupId]: group })
 }
 
 export const updateMuted = (state, { groupId, muted }) => {
@@ -204,30 +208,26 @@ export const updateMuted = (state, { groupId, muted }) => {
             return acc
         }, {})
         .value()
-    const group = state.getIn([groupId], Immutable({})).merge({ muted: { byName } })
+    const group = state.getIn([ groupId ], Immutable({})).merge({ muted: { byName } })
     return state.merge({ [groupId]: group })
 }
 
+/**
+ * 
+ * @param {*} state 
+ * @param {String|Number} groupId
+ * @param {Array[Object]} muted
+ * @param {Number} muted[].expire
+ * @param {Boolean} muted[].result
+ * @param {String} muted[].user
+ * @param {String} operation 'add' | 'del'
+ */
 export const operateMuted = (state, { groupId, muted, operation }) => {
-    let byName = state.getIn([groupId, "muted", "byName"])
-    // const mutedNames = _.map(muted, val => val.user)
-    if (_.isEmpty(byName)) return state
-    // let newMuted = byName
-    // if (operation === 'add') {
-    //     _.forEach(muted, user => byName.merge)
-    // } else {
-    //     // newMuted = _.omitBy(byName, val => _.includes(mutedNames, val.user))
-    //     _.forEach(muted, user => byName = byName.without(user.name))
-    // }
+    let byName = state.getIn([ groupId, "muted", "byName" ], Immutable({}))
     operation === "add"
         ? _.forEach(muted, val => (byName = byName.merge({ [val.user]: _.omit(val, "result") })))
         : _.forEach(muted, val => (byName = byName.without(val.user)))
-    // _.forEach(muted, user => {
-    //     operation === "add"
-    //         ? (byName = byName.merge({ [user.name]: { expire: user.expire, user: user.name } }))
-    //         : (byName = byName.without(user.name))
-    // })
-    return state.setIn([groupId, "muted", "byName"], byName)
+    return state.setIn([ groupId, "muted", "byName" ], byName)
 }
 /* ------------- Hookup Reducers To Types ------------- */
 
