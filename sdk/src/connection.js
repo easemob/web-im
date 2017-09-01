@@ -21,6 +21,63 @@ if (window.XDomainRequest) {
     // };
 }
 
+Strophe.Connection.prototype._sasl_auth1_cb = function (elem) {
+    // save stream:features for future usage
+    this.features = elem;
+    var i, child;
+    for (i = 0; i < elem.childNodes.length; i++) {
+        child = elem.childNodes[i];
+        if (child.nodeName == 'bind') {
+            this.do_bind = true;
+        }
+
+        if (child.nodeName == 'session') {
+            this.do_session = true;
+        }
+    }
+
+    if (!this.do_bind) {
+        this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+        return false;
+    } else {
+        this._addSysHandler(this._sasl_bind_cb.bind(this), null, null,
+            null, "_bind_auth_2");
+
+        var resource = Strophe.getResourceFromJid(this.jid);
+        if (resource) {
+            // this.send($iq({type: "set", id: "_bind_auth_2"})
+            //     .c('bind', {xmlns: Strophe.NS.BIND})
+            //     .c('resource', {}).t(resource).tree());
+            var device_uuid = "device_uuid";
+            console.log('strophe option=', this.options)
+            if (this.options.isMultiLoginSessions) {
+                device_uuid = new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000)
+            }
+            try {
+                this.send(
+                    $iq({type: "set", id: "_bind_auth_2"})
+                        .c('bind', {xmlns: Strophe.NS.BIND})
+                        .c('resource', {}).t(resource)
+                        .up()
+                        .c('os').t('webim')
+                        .up()
+                        .c('device_uuid').t(device_uuid)
+                        .up()
+                        .c('is_manual_login').t('true')
+                        .tree()
+                );
+            } catch (e) {
+                console.log("Bind Error: ", e.message);
+            }
+        } else {
+            this.send($iq({type: "set", id: "_bind_auth_2"})
+                .c('bind', {xmlns: Strophe.NS.BIND})
+                .tree());
+        }
+    }
+    return false;
+};
+
 Strophe.Request.prototype._newXHR = function () {
     var xhr = _utils.xmlrequest(true);
     if (xhr.overrideMimeType) {
@@ -625,9 +682,7 @@ var _validCheck = function (options, conn) {
     var jid = appKey + '_' + user.toLowerCase() + '@' + conn.domain,
         resource = options.resource || 'webim';
 
-    if (conn.isMultiLoginSessions) {
-        resource += user + new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000);
-    }
+
     conn.context.jid = jid + '/' + resource;
     conn.context.userId = user;
     conn.context.appKey = appKey;
@@ -897,6 +952,7 @@ connection.prototype.getStrophe = function () {
     }
 
     var stropheConn = new Strophe.Connection(this.url, {
+        isMultiLoginSessions: this.isMultiLoginSessions,
         inactivity: this.inactivity,
         maxRetries: this.maxRetries,
         pollingTime: this.pollingTime
