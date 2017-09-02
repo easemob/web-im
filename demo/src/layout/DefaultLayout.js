@@ -182,11 +182,13 @@ class DefaultLayout extends Component {
     render() {
         const { collapsed, selectTab, selectItem, headerTabs, roomId } = this.state
         const { login, rightSiderOffset, unread } = this.props
-        console.log(_.isEmpty(unread), Object.keys(unread))
-        // console.log("----", selectItem, collapsed, SIDER_COL_BREAK)
-        console.log("-----", login)
+        const typeMap = { contact: "chat", group: "groupchat", chatroom: "chatroom", stranger: "stranger" }
+        const hadUnread = { contact: false, group: false, chatroom: false, stranger: false }
+        _.forEach(typeMap, (v, k) => {
+            const m = _.get(unread, v)
+            if (!_.isEmpty(m) && _.chain(m).values().sum().value() > 0 ) hadUnread[k] = true      
+        })
 
-        // if (true) return <div>123</div>
 
         return (
             <Layout>
@@ -196,7 +198,7 @@ class DefaultLayout extends Component {
                         collapsed={collapsed}
                         items={headerTabs}
                         selectedKeys={[ selectTab ]}
-                        hadUnread={_.filter(unread, (v, k) => v > 0).length > 0}
+                        hadUnread={hadUnread}
                         onClick={this.changeTab}
                     />
                 </Header>
@@ -250,7 +252,7 @@ export default withRouter(
             login,
             common,
             rightSiderOffset: entities.group.rightSiderOffset,
-            unread: entities.message.unread
+            unread: entities.unreadMessage
         }),
         dispatch => ({
             getGroupMember: id => dispatch(GroupMemberActions.getGroupMember(id)),
