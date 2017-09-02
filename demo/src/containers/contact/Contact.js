@@ -49,7 +49,7 @@ const Contact = ({
                 group.names.forEach((v, index) => {
                     let [ name, id ] = v.split("_#-#_")
                     // let unread = _.get(message, `unread.${id}`, 0)
-                    const count = _.get(unread, name, 0)
+                    const count = _.get(unread, id, 0)
                     items[index] = {
                         name,
                         id,
@@ -69,7 +69,7 @@ const Contact = ({
                 chatroom.names &&
                 chatroom.names.forEach((v, index) => {
                     let [ name, id ] = v.split("_#-#_")
-                    const count = _.get(unread, name, 0)
+                    const count = _.get(unread, id, 0)
                     items[index] = {
                         name,
                         id,
