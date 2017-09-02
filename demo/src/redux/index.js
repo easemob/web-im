@@ -21,7 +21,7 @@ const enhancers = []
 // const customMiddleware = store => next => action => {
 //     next({ ...action, getState: store.getState })
 // }
-const middlewares = [thunkMiddleware]
+const middlewares = [ thunkMiddleware ]
 
 enhancers.push(applyMiddleware(...middlewares))
 
@@ -45,7 +45,8 @@ const rootReducer = combineReducers({
         subscribe: require("./SubscribeRedux").reducer,
         blacklist: require("./BlacklistRedux").reducer,
         message: require("./MessageRedux").reducer,
-        groupRequest: require("./GroupRequestRedux").reducer
+        groupRequest: require("./GroupRequestRedux").reducer,
+        unreadMessage: require("./UnreadMessageRedux").reducer
     }),
     common: require("./CommonRedux").reducer,
     login: require("./LoginRedux").reducer,

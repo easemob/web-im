@@ -1,5 +1,6 @@
 import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
+import _ from "lodash"
 import WebIM from "@/config/WebIM"
 import CommonActions from "@/redux/CommonRedux"
 import RosterActions from "@/redux/RosterRedux"
@@ -10,6 +11,8 @@ import StrangerActions from "@/redux/StrangerRedux"
 import SubscribeActions from "@/redux/SubscribeRedux"
 import BlacklistActions from "@/redux/BlacklistRedux"
 import MessageActions from "@/redux/MessageRedux"
+import DemoActions from "@/redux/DemoRedux"
+import UnreadMessageActions from "@/redux/UnreadMessageRedux"
 import GroupRequestActions from "@/redux/GroupRequestRedux"
 import { store } from "@/redux"
 import { history } from "@/utils"
@@ -173,10 +176,13 @@ WebIM.conn.listen({
         console.log("onTextMessage", message)
         //陌生人消息需要特殊处理:同时更新stranger列表和将消息放在用户名下面
         const { type, to } = message
-        if (type == "chat") {
-            const username = WebIM.conn.context.userId
-            const from = message.from || username
-            const bySelf = from == username
+        const username = WebIM.conn.context.userId
+        const from = message.from || username
+        const bySelf = from === username
+        // if (!bySelf) store.dispatch(UnreadMessageActions.increaseUnread)
+        const unreadFrom = _.includes([ "groupchat", "chatroom" ], type) ? to : from
+        store.dispatch(UnreadMessageActions.increaseUnread(type, unreadFrom))
+        if (type === "chat") {
             const chatId = bySelf || type !== "chat" ? to : from
             console.log("chatId", chatId)
             if (!store.getState().entities.roster.byName[chatId]) {
