@@ -212,7 +212,7 @@ class DefaultLayout extends Component {
                             left: selectItem && collapsed ? "-100%" : 0
                         }}
                     >
-                        <Contact collapsed={false} onClick={this.changeItem} selectedKeys={[ selectItem ]}/>
+                        <Contact collapsed={false} onClick={this.changeItem} selectedKeys={[ selectItem ]} unread={_.get(unread, typeMap[selectTab], {})} />
                     </div>
                     <Content
                         className="x-layout-chat"

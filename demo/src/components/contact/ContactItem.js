@@ -9,7 +9,7 @@ const MenuItemGroup = Menu.ItemGroup
 const ContactItem = ({ chatType, items, collapse, hasLogo, ...rest }) => {
     const tabs = items //["Contacts", "Chat", "Public"]
     const tabsLen = tabs.length
-    const tabCls = collapse ? "" : ``
+    const tabCls = collapse ? "" : ""
 
     const tabsItem = tabs.map(item =>
         <Menu.Item key={chatType == "chatroom" || chatType == "group" ? item.id : item.name} className={tabCls}>
@@ -28,7 +28,8 @@ const ContactItem = ({ chatType, items, collapse, hasLogo, ...rest }) => {
                         }}
                     />
                     */}
-                    {chatType === "group" ? <Badge count={item.unread} style={{ marginLeft: 10 }} /> : ""}
+                    {/* {chatType === "group" ? <Badge count={item.unread} style={{ marginLeft: 10 }} /> : ""} */}
+                    <Badge count={item.unread} style={{ marginLeft: 10 }} />
                 </div>
                 <div className="nav-text-desc">
                     {item.latestMessage}

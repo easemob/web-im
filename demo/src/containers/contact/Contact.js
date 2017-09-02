@@ -9,7 +9,7 @@ import GroupActions from "@/redux/GroupRedux"
 import ChatRoomActions from "@/redux/ChatRoomRedux"
 
 const Contact = ({
-    history, match, common, location, roster, group, chatroom, stranger, message, blacklist, getGroups, getChatRooms, ...rest
+    history, match, common, location, roster, group, chatroom, stranger, message, blacklist, getGroups, getChatRooms, unread, ...rest
 }) => {
     const {
         pathname
@@ -31,8 +31,10 @@ const Contact = ({
             roster.friends.forEach((name, index) => {
                 if (blacklist.names.indexOf(name) !== -1) return
                 const info = utils.getLatestInfo(name, byId, chat)
+                const count = _.get(unread, name, 0)
                 items[index] = {
                     name,
+                    unread: count,
                     ...info
                 }
             })
@@ -46,11 +48,12 @@ const Contact = ({
                 group.names &&
                 group.names.forEach((v, index) => {
                     let [ name, id ] = v.split("_#-#_")
-                    let unread = _.get(message, `unread.${id}`, 0)
+                    // let unread = _.get(message, `unread.${id}`, 0)
+                    const count = _.get(unread, name, 0)
                     items[index] = {
                         name,
                         id,
-                        unread,
+                        unread: count,
                         latestMessage: "",
                         latestTime: ""
                     }
@@ -66,9 +69,11 @@ const Contact = ({
                 chatroom.names &&
                 chatroom.names.forEach((v, index) => {
                     let [ name, id ] = v.split("_#-#_")
+                    const count = _.get(unread, name, 0)
                     items[index] = {
                         name,
                         id,
+                        unread: count,
                         latestMessage: "",
                         latestTime: ""
                     }
@@ -80,8 +85,10 @@ const Contact = ({
             const names = Object.keys(stranger.byId)
             names.length &&
                 names.sort().forEach((name, index) => {
+                    const count = _.get(unread, name, 0)
                     items[index] = {
                         name,
+                        unread: count, 
                         latestMessage: "",
                         latestTime: ""
                     }
