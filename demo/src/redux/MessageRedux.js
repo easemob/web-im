@@ -110,62 +110,62 @@ export const parseFromServer = (message = {}, bodyType) => {
     // body 包含：ext 存放用户自定义信息，比如图片大小、宽高等
     let body = copy(message, msgTpl[bodyType])
     switch (bodyType) {
-        case "txt":
-            return {
-                ...obj,
-                status: "sent",
-                body: {
-                    ...body,
-                    ...ext,
-                    msg: message.data,
-                    type: "txt"
-                }
+    case "txt":
+        return {
+            ...obj,
+            status: "sent",
+            body: {
+                ...body,
+                ...ext,
+                msg: message.data,
+                type: "txt"
             }
-            break
-        case "img":
-            return {
-                ...obj,
-                status: "sent",
-                body: {
-                    ...body,
-                    ...ext,
-                    type: "img"
-                }
+        }
+        break
+    case "img":
+        return {
+            ...obj,
+            status: "sent",
+            body: {
+                ...body,
+                ...ext,
+                type: "img"
             }
-            break
-        case "file":
-            return {
-                ...obj,
-                status: "sent",
-                body: {
-                    ...body,
-                    ...ext,
-                    type: "file"
-                }
+        }
+        break
+    case "file":
+        return {
+            ...obj,
+            status: "sent",
+            body: {
+                ...body,
+                ...ext,
+                type: "file"
             }
-            break
-        case "audio":
-            return {
-                ...obj,
-                status: "sent",
-                body: {
-                    ...body,
-                    ...ext,
-                    type: "audio"
-                }
+        }
+        break
+    case "audio":
+        return {
+            ...obj,
+            status: "sent",
+            body: {
+                ...body,
+                ...ext,
+                type: "audio"
             }
-            break
-        case "video":
-            return {
-                ...obj,
-                status: "sent",
-                body: {
-                    ...body,
-                    ...ext,
-                    type: "video"
-                }
+        }
+        break
+    case "video":
+        return {
+            ...obj,
+            status: "sent",
+            body: {
+                ...body,
+                ...ext,
+                type: "video"
             }
-            break
+        }
+        break
     }
 }
 
@@ -178,9 +178,10 @@ function copy(message, tpl) {
 }
 
 const { Types, Creators } = createActions({
-    addMessage: ["message", "bodyType"],
-    updateMessageStatus: ["message", "status"],
-    clearUnread: ["groupId"],
+    addMessage: [ "message", "bodyType" ],
+    updateMessageStatus: [ "message", "status" ],
+    clearMessage: [ "chatType", "id" ],
+    clearUnread: [ "groupId" ],
     // ---------------async------------------
     sendTxtMessage: (chatType, chatId, message = {}) => {
         // console.log('sendTxtMessage', chatType, chatId, message)
@@ -382,7 +383,7 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
     const { id, to, status } = message
     let { type } = message
     //避免messageId重复添加造成render错误
-    if (Immutable.getIn(state, ["byId", id])) {
+    if (Immutable.getIn(state, [ "byId", id ])) {
         return state
     }
     // 消息来源：没有from默认即为当前用户发送
@@ -391,7 +392,7 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
     const bySelf = from == username
     // 房间id：自己发送或者不是单聊的时候，是接收人的ID， 否则是发送人的ID
     const chatId = bySelf || type !== "chat" ? to : from
-    state = state.setIn(["byId", id], {
+    state = state.setIn([ "byId", id ], {
         ...message,
         bySelf,
         time: +new Date(),
@@ -402,12 +403,12 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
     chatData.push(id)
 
     if (type === "groupchat" && message.from !== username) {
-        let count = state.getIn(["unread", to], 0)
+        let count = state.getIn([ "unread", to ], 0)
         count++
-        state = state.setIn(["unread", to], count)
+        state = state.setIn([ "unread", to ], count)
     }
 
-    state = state.setIn([type, chatId], chatData)
+    state = state.setIn([ type, chatId ], chatData)
     return state
 }
 
@@ -421,11 +422,15 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
 export const updateMessageStatus = (state, { message, status = "" }) => {
     const { id } = message
 
-    return state.setIn(["byId", id, "status"], status).setIn(["byId", id, "time"], +new Date())
+    return state.setIn([ "byId", id, "status" ], status).setIn([ "byId", id, "time" ], +new Date())
+}
+
+export const clearMessage = (state, { chatType, id }) => {
+    return chatType ? state.setIn([ chatType, id ], {}) : state
 }
 
 export const clearUnread = (state, { groupId }) => {
-    return state.setIn(["unread", groupId], 0)
+    return state.setIn([ "unread", groupId ], 0)
 }
 
 /* ------------- Hookup Reducers To Types ------------- */
@@ -433,6 +438,7 @@ export const clearUnread = (state, { groupId }) => {
 export const reducer = createReducer(INITIAL_STATE, {
     [Types.ADD_MESSAGE]: addMessage,
     [Types.UPDATE_MESSAGE_STATUS]: updateMessageStatus,
+    [Types.CLEAR_MESSAGE]: clearMessage,
     [Types.CLEAR_UNREAD]: clearUnread
 })
 

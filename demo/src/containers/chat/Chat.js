@@ -4,6 +4,7 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router-dom"
 import { I18n } from "react-redux-i18n"
+import _ from "lodash"
 import { Button, Row, Form, Input, Icon, Dropdown, Menu } from "antd"
 import { config } from "@/config"
 import ListItem from "@/components/list/ListItem"
@@ -262,6 +263,14 @@ class Chat extends React.Component {
         }
     }
 
+    onClearMessage = () => {
+        const { selectItem, selectTab } = _.get(this.props, [ "match", "params" ], {})
+        console.log(selectItem, selectTab)
+        const chatTypes = { "contact": "chat", "group": "groupchat", "chatroom": "chatroom", "stranger": "" }
+        const chatType = chatTypes[selectTab]
+        this.props.clearMessage(chatType, selectItem)
+    }
+
     componentWillReceiveProps(nextProps) {
         // setTimeout(this.scollBottom, 0)
         // this.scollBottom()
@@ -337,7 +346,7 @@ class Chat extends React.Component {
                 messageList = messageList.map(id => byId[id] || {})
                 break
             case "stranger":
-                messageList = stranger["byId"][selectItem] || {}
+                messageList = stranger["byId"][selectItem] || []
                 messageList = Object.values(messageList)
                 break
             }
@@ -378,7 +387,7 @@ class Chat extends React.Component {
                     </div>
                 </div>
                 <div className="x-chat-content" ref="x-chat-content">
-                    {messageList.map(message => <ChatMessage key={message.id} {...message} />)}
+                    {_.map(messageList, message => <ChatMessage key={message.id} {...message} />)}
                     {/*<ChatMessage />
                      <ChatMessage />
                      <ChatMessage />
@@ -422,6 +431,9 @@ class Chat extends React.Component {
                                 type="file"
                                 className="hide"
                             />
+                        </label>
+                        <label htmlFor="clearMessage" onClick={this.onClearMessage}>
+                            <i className="icon iconfont icon-trash"></i>
                         </label>
                         {/*
                          <div className="x-chat-ops-icon ib">
@@ -505,6 +517,7 @@ export default connect(
             dispatch(MessageActions.sendImgMessage(chatType, id, message, source)),
         sendFileMessage: (chatType, id, message, source) =>
             dispatch(MessageActions.sendFileMessage(chatType, id, message, source)),
+        clearMessage: (chatType, id) => dispatch(MessageActions.clearMessage(chatType, id)),
         removeContact: id => dispatch(RosterActions.removeContact(id)),
         addContact: id => dispatch(RosterActions.addContact(id)),
         deleteStranger: id => dispatch(StrangerActions.deleteStranger(id)),

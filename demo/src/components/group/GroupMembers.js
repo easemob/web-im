@@ -50,7 +50,9 @@ class GroupMembers extends React.Component {
                     isOwner = true
                 }
             }
-            return { name: key, key, affiliation }
+            const isAdmin = _.includes(admins, key)
+            const isMuted = _.includes(muted, key)
+            return { name: key, key, affiliation, isAdmin, isMuted }
         })
         const columns = [
             {
@@ -62,11 +64,11 @@ class GroupMembers extends React.Component {
                 title: "Action",
                 key: "action",
                 render: (text, record) => {
-                    const isAdmin = _.includes(admins, currentUser)
+                    // const isAdmin = _.includes(admins, currentUser)
                     const canOperate =
                         record.name !== currentUser && // self
                         record.name !== owner && // owner
-                        (isOwner || isAdmin)
+                        (isOwner || _.includes(admins, currentUser))
                     // return data.length > 0 && (isAdmin || (isOwner && owner !== record.name))
                     const AdminIcons = (props) => {
                         const { admins, record } = props
@@ -109,7 +111,7 @@ class GroupMembers extends React.Component {
                             </Popconfirm>
                     }
                     return data.length > 0 && canOperate
-                        ? <span className="fr">
+                        ? <span className="fr">{record.isAdmin}
                             {/* <Dropdown overlay={memberActionMenu} trigger={['click']}><Icon type="info-circle-o" /></Dropdown> */}
                             {/* <Popconfirm
                                 title={I18n.t("confirm") + " " + I18n.t("setAdmin")}
@@ -177,7 +179,6 @@ class GroupMembers extends React.Component {
                     showHeader={false}
                     pagination={false}
                     scroll={{ y: 300 }}
-                    style={{ width: "100%" }}
                     className="group-member-list"
                 />
             </Card>
