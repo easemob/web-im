@@ -15,7 +15,7 @@ class HeaderTab extends React.Component {
         const hadUnread = { contact: false, group: false, chatroom: false, stranger: false }
         _.forEach(typeMap, (v, k) => {
             const m = _.get(unread, v)
-            if (!_.isEmpty(m) && _.chain(m).values().sum().value() > 0) hadUnread[k] = true
+            if (!_.isEmpty(m)) hadUnread[k] = true
         })
 
         const tabs = items || {}
