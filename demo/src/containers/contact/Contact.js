@@ -8,30 +8,26 @@ import utils from "@/utils"
 import GroupActions from "@/redux/GroupRedux"
 import ChatRoomActions from "@/redux/ChatRoomRedux"
 
-const Contact = ({
-    history, match, common, location, roster, group, chatroom, stranger, message, blacklist, getGroups, getChatRooms, unread, ...rest
-}) => {
-    const {
-        pathname
-    } = location
+const Contact = ({ history, match, common, location, roster, group, chatroom, stranger, message, blacklist, getGroups, getChatRooms, ...rest }) => {
+    const { pathname } = location
     const paths = pathname.split("/")
     const chatType = paths[1]
     const chatId = paths[2]
-    const {
-        byId, chat
-    } = message
+
 
     // console.log(history, match, location, pathname, chatType, chatId)
 
     const items = []
     switch (chatType) {
     case "contact":
+        const { byId, chat } = message
         roster &&
             roster.friends &&
             roster.friends.forEach((name, index) => {
                 if (blacklist.names.indexOf(name) !== -1) return
                 // const info = utils.getLatestInfo(name, byId, chat)
-                const count = _.get(unread, name, 0)
+                const count = message.getIn([ "unread", "chat", name ], 0)
+                console.log(name, count)
                 items[index] = {
                     name,
                     unread: count,
@@ -48,7 +44,7 @@ const Contact = ({
                 group.names &&
                 group.names.forEach((v, index) => {
                     let [ name, id ] = v.split("_#-#_")
-                    const count = _.get(unread, id, 0)
+                    const count = message.getIn([ "unread", "groupchat", name ], 0)
                     items[index] = {
                         name,
                         id,
@@ -68,7 +64,7 @@ const Contact = ({
                 chatroom.names &&
                 chatroom.names.forEach((v, index) => {
                     let [ name, id ] = v.split("_#-#_")
-                    const count = _.get(unread, id, 0)
+                    const count = message.getIn([ "unread", "chatroom", name ], 0)
                     items[index] = {
                         name,
                         id,
@@ -84,7 +80,7 @@ const Contact = ({
             const names = Object.keys(stranger.byId)
             names.length &&
                 names.sort().forEach((name, index) => {
-                    const count = _.get(unread, name, 0)
+                    const count = message.getIn([ "unread", "stranger", name ], 0)
                     items[index] = {
                         name,
                         unread: count,
@@ -118,7 +114,7 @@ export default withRouter(
             chatroom: entities.chatroom,
             stranger: entities.stranger,
             message: entities.message,
-            blacklist: entities.blacklist
+            blacklist: entities.blacklist,
         }),
         dispatch => ({
             doLogin: (username, password) => {

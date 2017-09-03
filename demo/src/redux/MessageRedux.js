@@ -183,7 +183,7 @@ const { Types, Creators } = createActions({
     updateMessageStatus: [ "message", "status" ],
     demo: [ "chatType" ],
     clearMessage: [ "chatType", "id" ],
-    clearUnread: [ "groupId" ],
+    clearUnread: [ "chatType", "id" ],
     // ---------------async------------------
     sendTxtMessage: (chatType, chatId, message = {}) => {
         // console.log('sendTxtMessage', chatType, chatId, message)
@@ -370,7 +370,12 @@ export const INITIAL_STATE = Immutable({
     chatroom: {},
     stranger: {},
     extra: {},
-    unread: {}
+    unread: {
+        chat: {},
+        groupchat: {},
+        chatroom: {},
+        stranger: {},
+    }
 })
 
 /* ------------- Reducers ------------- */
@@ -434,8 +439,11 @@ export const clearMessage = (state, { chatType, id }) => {
     return chatType ? state.setIn([ chatType, id ], {}) : state
 }
 
-export const clearUnread = (state, { groupId }) => {
-    return state.setIn([ "unread", groupId ], 0)
+export const clearUnread = (state, { chatType, id }) => {
+    console.log("clearUnread", chatType, id)
+    let unread = state["unread"][chatType].asMutable()
+    delete unread[id]
+    return state.setIn([ "unread", chatType ], unread)
 }
 
 /* ------------- Hookup Reducers To Types ------------- */

@@ -96,14 +96,17 @@ class DefaultLayout extends Component {
         const { history, location, group } = this.props
         const { selectItem, selectTab } = this.state
         const redirectPath = "/" + [ selectTab, e.key ].join("/")
+
         if (selectItem == e.key) {
             return
         }
+        
+        const typeMap = { contact: "chat", group: "groupchat", chatroom: "chatroom", stranger: "stranger" }
+        this.props.clearUnread(typeMap[selectTab], e.key)
 
         if (selectTab === "group") {
             const groupId = e.key
             if (groupId) {
-                this.props.clearUnread(groupId)
                 this.setState({ roomId: groupId })
                 const room = _.get(group, `byId.${groupId}`, {})
                 this.setState({ room })
@@ -238,7 +241,7 @@ export default withRouter(
             switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
             joinChatRoom: roomId => dispatch(ChatRoomActions.joinChatRoom(roomId)),
             quitChatRoom: roomId => dispatch(ChatRoomActions.quitChatRoom(roomId)),
-            clearUnread: groupId => dispatch(MessageActions.clearUnread(groupId)),
+            clearUnread: (chatType, id) => dispatch(MessageActions.clearUnread(chatType, id)),
             getGroups: () => dispatch(GroupActions.getGroups()),
             getChatRooms: () => dispatch(ChatRoomActions.getChatRooms()),
             getMutedAsync: groupId => dispatch(GroupMemberActions.getMutedAsync(groupId)),
