@@ -24,7 +24,7 @@ const LoadableMyComponent2 = AsyncComponents({
 
 // const AsyncApp = asyncComponent(() => import("./App"))
 
-const Routes = function ({history, app}) {
+const Routes = function ({ history, app }) {
     return (
         <Switch>
             <Route exact path="/login" component={LoadableMyComponent2}/>

@@ -22,7 +22,7 @@ const GroupInfoForm = Form.create()(props => {
             <Form>
                 <Form.Item label={I18n.t("groupName")}>
                     {getFieldDecorator("name", {
-                        rules: [{ required: true, message: I18n.t("groupName") }]
+                        rules: [ { required: true, message: I18n.t("groupName") } ]
                     })(<Input />)}
                 </Form.Item>
                 {/* <Form.Item label="群组简介">
@@ -87,30 +87,30 @@ class GroupInfo extends React.Component {
 
     handleMenuClick = ({ item, key, selectedKeys }) => {
         switch (key) {
-            case "1":
-                break
-            case "2":
-                this.setState({ showInviteToGroupModal: true })
-                break
-            case "3":
-                this.showModal()
-                break
-            case "4":
-                this.props.getGroupBlackListAsync(this.props.room.roomId)
-                this.setState({ blackListVisible: true })
-                break
-            case "5":
-                const { roomId, name } = this.props.room
-                this.props.switchRightSider({ rightSiderOffset: 0 })
-                this.props.dissolveGroupAsync({ groupId: roomId, groupName: name })
-                break
-            case "6":
-                const { login } = this.props
-                const username = _.get(login, "username")
-                this.props.quitGroupAsync(this.props.room.roomId, username)
-                break
-            default:
-                break
+        case "1":
+            break
+        case "2":
+            this.setState({ showInviteToGroupModal: true })
+            break
+        case "3":
+            this.showModal()
+            break
+        case "4":
+            this.props.getGroupBlackListAsync(this.props.room.roomId)
+            this.setState({ blackListVisible: true })
+            break
+        case "5":
+            const { roomId, name } = this.props.room
+            this.props.switchRightSider({ rightSiderOffset: 0 })
+            this.props.dissolveGroupAsync({ groupId: roomId, groupName: name })
+            break
+        case "6":
+            const { login } = this.props
+            const username = _.get(login, "username")
+            this.props.quitGroupAsync(this.props.room.roomId, username)
+            break
+        default:
+            break
         }
     }
 
@@ -120,7 +120,7 @@ class GroupInfo extends React.Component {
         this.setState({ blackListVisible: true })
     }
 
-    onChangeUsers = e => this.setState({ users: [e.target.value] })
+    onChangeUsers = e => this.setState({ users: [ e.target.value ] })
 
     add = () => {
         const value = this.state.users
@@ -143,39 +143,39 @@ class GroupInfo extends React.Component {
         const isAdmin = user.affiliation === "owner"
         return isAdmin
             ? <Menu onClick={this.handleMenuClick}>
-                  <Menu.Item key="2">
-                      <Tooltip title={I18n.t("inviteToGroup")} placement="left">
-                          <i className="iconfont icon-users" /> {I18n.t("inviteToGroup")}
-                      </Tooltip>
-                  </Menu.Item>
-                  <Menu.Item key="3">
-                      <Tooltip title={I18n.t("modifyGroupInfo")} placement="left">
-                          <i className="iconfont icon-pencil" /> {I18n.t("modifyGroupInfo")}
-                      </Tooltip>
-                  </Menu.Item>
-                  <Menu.Item key="4">
-                      <Tooltip title={I18n.t("groupBlacklist")} placement="left">
-                          <Icon type="frown" /> {I18n.t("groupBlacklist")}
-                      </Tooltip>
-                  </Menu.Item>
-                  <Menu.Item key="5">
-                      <Tooltip title={I18n.t("dissovleGroup")} placement="left">
-                          <Icon type="poweroff" /> {I18n.t("dissovleGroup")}
-                      </Tooltip>
-                  </Menu.Item>
-              </Menu>
+                <Menu.Item key="2">
+                    <Tooltip title={I18n.t("inviteToGroup")} placement="left">
+                        <i className="iconfont icon-users" /> {I18n.t("inviteToGroup")}
+                    </Tooltip>
+                </Menu.Item>
+                <Menu.Item key="3">
+                    <Tooltip title={I18n.t("modifyGroupInfo")} placement="left">
+                        <i className="iconfont icon-pencil" /> {I18n.t("modifyGroupInfo")}
+                    </Tooltip>
+                </Menu.Item>
+                <Menu.Item key="4">
+                    <Tooltip title={I18n.t("groupBlacklist")} placement="left">
+                        <Icon type="frown" /> {I18n.t("groupBlacklist")}
+                    </Tooltip>
+                </Menu.Item>
+                <Menu.Item key="5">
+                    <Tooltip title={I18n.t("dissovleGroup")} placement="left">
+                        <Icon type="poweroff" /> {I18n.t("dissovleGroup")}
+                    </Tooltip>
+                </Menu.Item>
+            </Menu>
             : <Menu onClick={this.handleMenuClick}>
-                  <Menu.Item key="2">
-                      <Tooltip title={I18n.t("inviteToGroup")} placement="left">
-                          <i className="iconfont icon-users" /> {I18n.t("inviteToGroup")}
-                      </Tooltip>
-                  </Menu.Item>
-                  <Menu.Item key="6">
-                      <Tooltip title={I18n.t("quitGroup")} placement="left">
-                          <i className="iconfont icon-exit" /> {I18n.t("quitGroup")}
-                      </Tooltip>
-                  </Menu.Item>
-              </Menu>
+                <Menu.Item key="2">
+                    <Tooltip title={I18n.t("inviteToGroup")} placement="left">
+                        <i className="iconfont icon-users" /> {I18n.t("inviteToGroup")}
+                    </Tooltip>
+                </Menu.Item>
+                <Menu.Item key="6">
+                    <Tooltip title={I18n.t("quitGroup")} placement="left">
+                        <i className="iconfont icon-exit" /> {I18n.t("quitGroup")}
+                    </Tooltip>
+                </Menu.Item>
+            </Menu>
     }
 
     render() {
@@ -209,13 +209,13 @@ class GroupInfo extends React.Component {
                 render: (text, record) => {
                     return ds.length > 0
                         ? <Popconfirm
-                              title={I18n.t("confirm") + " " + I18n.t("removeFromGroupBlackList")}
-                              onConfirm={() => this.onRemoveGroupBlockSingle(record.name)}
-                          >
-                              <a href="#" className="fr">
-                                  {I18n.t("removeFromGroupBlackList")}
-                              </a>
-                          </Popconfirm>
+                            title={I18n.t("confirm") + " " + I18n.t("removeFromGroupBlackList")}
+                            onConfirm={() => this.onRemoveGroupBlockSingle(record.name)}
+                        >
+                            <a href="#" className="fr">
+                                {I18n.t("removeFromGroupBlackList")}
+                            </a>
+                        </Popconfirm>
                         : null
                 }
             }
@@ -237,7 +237,7 @@ class GroupInfo extends React.Component {
                 <h3>
                     {I18n.t("groupName")}
                     <span className="fr">
-                        <Dropdown overlay={menu} trigger={["click"]}>
+                        <Dropdown overlay={menu} trigger={[ "click" ]}>
                             <Icon type="setting" />
                         </Dropdown>
                     </span>

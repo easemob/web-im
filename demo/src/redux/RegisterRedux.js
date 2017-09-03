@@ -1,20 +1,20 @@
 // @flow
 
-import {createReducer, createActions} from "reduxsauce"
+import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
-import WebIM, {api} from "@/config/WebIM"
+import WebIM, { api } from "@/config/WebIM"
 import Cookie from "js-cookie"
-import {message} from "antd"
-import {history} from "@/utils"
-import {store} from "@/redux"
+import { message } from "antd"
+import { history } from "@/utils"
+import { store } from "@/redux"
 /* ------------- Types and Action Creators ------------- */
 
-const {Types, Creators} = createActions({
+const { Types, Creators } = createActions({
 
     jumpLogin: null,
-    registerRequest: ["username", "password", "nickname"],
-    registerSuccess: ["username"],
-    registerFailure: ["registerError"],
+    registerRequest: [ "username", "password", "nickname" ],
+    registerSuccess: [ "username" ],
+    registerFailure: [ "registerError" ],
     // ------------- async -----------------
 
     register: (username, password, nickname) => {
@@ -28,7 +28,7 @@ const {Types, Creators} = createActions({
 
             return api
                 .post("/users", options)
-                .then(({data}) => {
+                .then(({ data }) => {
                     dispatch(Creators.registerSuccess(username))
                 })
         }
@@ -53,20 +53,20 @@ export const register = (state = INITIAL_STATE) => {
 }
 
 export const registerRequest = (state = INITIAL_STATE,
-                                {username, password}) => {
-    return Immutable.merge(state, {username, password, fetching: true})
+    { username, password }) => {
+    return Immutable.merge(state, { username, password, fetching: true })
 }
 
-export const registerSuccess = (state = INITIAL_STATE, {username}) => {
+export const registerSuccess = (state = INITIAL_STATE, { username }) => {
     let I18N = store.getState().i18n.translations[store.getState().i18n.locale]
     message.success(username + ", " + I18N.signUpSuccessfully)
     history.push("/login")
-    return Immutable.merge(state, {fetching: false, registerError: null})
+    return Immutable.merge(state, { fetching: false, registerError: null })
 }
 
-export const registerFailure = (state = INITIAL_STATE, {registerError}) => {
-    console.log('registerFailure', registerError)
-    return Immutable.merge(state, {fetching: false, registerError})
+export const registerFailure = (state = INITIAL_STATE, { registerError }) => {
+    console.log("registerFailure", registerError)
+    return Immutable.merge(state, { fetching: false, registerError })
 }
 
 /* ------------- Hookup Reducers To Types ------------- */

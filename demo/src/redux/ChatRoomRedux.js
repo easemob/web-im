@@ -6,7 +6,7 @@ import CommonActions from "@/redux/CommonRedux"
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-    updateChatRooms: ["rooms"],
+    updateChatRooms: [ "rooms" ],
     // ---------------async------------------
     getChatRooms: () => {
         return (dispatch, getState) => {

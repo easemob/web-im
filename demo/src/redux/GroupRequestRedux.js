@@ -7,8 +7,8 @@ import WebIM from "@/config/WebIM"
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-    addGroupRequest: ["msg"],
-    removeGroupRequest: ["gid"],
+    addGroupRequest: [ "msg" ],
+    removeGroupRequest: [ "gid" ],
     // ----------------async------------------
     // 接受好友请求
     agreeJoinGroup: (gid, options) => {
@@ -39,12 +39,12 @@ export const INITIAL_STATE = Immutable({
 /* ------------- Reducers ------------- */
 
 export const addGroupRequest = (state, { msg }) => {
-    return Immutable.setIn(state, ["byGid", msg.gid], msg)
+    return Immutable.setIn(state, [ "byGid", msg.gid ], msg)
 }
 
 export const removeGroupRequest = (state, { gid }) => {
     let byGid = Immutable.without(state.byGid, gid)
-    return Immutable.set(state, ["byGid"], byGid)
+    return Immutable.set(state, [ "byGid" ], byGid)
 }
 
 /* ------------- Hookup Reducers To Types ------------- */

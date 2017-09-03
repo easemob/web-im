@@ -11,16 +11,16 @@ import { store } from "@/redux"
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-    updateGroupInfo: ["info"],
-    setLoading: ["isLoading"],
-    setLoadingFailed: ["loadingFailed"],
-    setBlackList: ["group"],
-    removeGroupBlockSingle: ["payload"],
-    deleteGroup: ["groupId"],
-    updateGroup: ["groups"],
-    dissolveGroup: ["group"],
-    switchRightSider: ["width"],
-    groupBlockSingle: ["groupId", "username"],
+    updateGroupInfo: [ "info" ],
+    setLoading: [ "isLoading" ],
+    setLoadingFailed: [ "loadingFailed" ],
+    setBlackList: [ "group" ],
+    removeGroupBlockSingle: [ "payload" ],
+    deleteGroup: [ "groupId" ],
+    updateGroup: [ "groups" ],
+    dissolveGroup: [ "group" ],
+    switchRightSider: [ "width" ],
+    groupBlockSingle: [ "groupId", "username" ],
     // ---------------async------------------
     createGroups: options => {
         return (dispatch, getState) => {
@@ -201,7 +201,7 @@ export const INITIAL_STATE = Immutable({
 
 /* ------------- Reducers ------------- */
 export const deleteGroup = (state, { groupId }) => {
-    const byId = state.getIn(["byId"]).without(groupId)
+    const byId = state.getIn([ "byId" ]).without(groupId)
     const names = []
     _.forEach(byId, (v, k) => {
         names.push(v.name)
@@ -244,13 +244,13 @@ export const updateGroup = (state, { groups }) => {
  * @param {String} info.description
  */
 export const updateGroupInfo = (state, { info }) => {
-    const group = state.getIn(["byId", info.groupId])
+    const group = state.getIn([ "byId", info.groupId ])
     const oldName = `${group.name}_#-#_${group.roomId}`
     const newName = `${info.groupName}_#-#_${group.roomId}`
-    const names = state.getIn(["names"]).asMutable()
+    const names = state.getIn([ "names" ]).asMutable()
     names.splice(names.indexOf(oldName), 1, newName)
 
-    return state.setIn(["byId", info.groupId, "name"], info.groupName).set("names", names.sort())
+    return state.setIn([ "byId", info.groupId, "name" ], info.groupName).set("names", names.sort())
 }
 
 /**
@@ -262,8 +262,8 @@ export const updateGroupInfo = (state, { info }) => {
  */
 export const dissolveGroup = (state, { group }) => {
     const { groupId, groupName } = group
-    let byId = state.getIn(["byId"]).without(groupId)
-    const names = state.getIn(["names"]).asMutable()
+    let byId = state.getIn([ "byId" ]).without(groupId)
+    const names = state.getIn([ "names" ]).asMutable()
     names.splice(names.indexOf(`${groupName}_#-#_${groupId}`), 1)
     return state.merge({
         byId,
@@ -280,12 +280,12 @@ export const dissolveGroup = (state, { group }) => {
  * @param {Array[String]} group.blackList
  */
 export const setBlackList = (state, { group }) => {
-    return state.setIn(["byId", group.groupId, "blacklist"], group.blacklist)
+    return state.setIn([ "byId", group.groupId, "blacklist" ], group.blacklist)
 }
 
 export const removeGroupBlockSingle = (state, { payload }) => {
-    let blacklist = state.getIn(["byId", payload.groupId, "blacklist"]).filter(val => val !== payload.user)
-    return state.setIn(["byId", payload.groupId, "blacklist"], blacklist)
+    let blacklist = state.getIn([ "byId", payload.groupId, "blacklist" ]).filter(val => val !== payload.user)
+    return state.setIn([ "byId", payload.groupId, "blacklist" ], blacklist)
 }
 
 export const switchRightSider = (state, { width }) => {

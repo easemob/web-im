@@ -61,12 +61,12 @@ export default {
     },
     isDescendant(parent, child) {
         let node = child.parentNode
-		while (node) {
+        while (node) {
             if (node === parent) {
                 return true
-			}
+            }
             node = node.parent
-		}
+        }
         return false
-	}
+    }
 }

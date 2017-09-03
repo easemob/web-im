@@ -1,12 +1,12 @@
 // @flow
 
-import {createReducer, createActions} from 'reduxsauce'
-import Immutable from 'seamless-immutable'
+import { createReducer, createActions } from "reduxsauce"
+import Immutable from "seamless-immutable"
 
 /* ------------- Types and Action Creators ------------- */
 
-const {Types, Creators} = createActions({
-  nop: null
+const { Types, Creators } = createActions({
+    nop: null
 })
 
 export const ContactsTypes = Types

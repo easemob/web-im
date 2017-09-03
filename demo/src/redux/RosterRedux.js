@@ -7,7 +7,7 @@ import CommonActions from "@/redux/CommonRedux"
 
 /* ------------- Types and Action Creators ------------- */
 const { Types, Creators } = createActions({
-    updateRoster: ["roster"],
+    updateRoster: [ "roster" ],
     // ----------------async------------------
     // 获取好友列表
     getContacts: () => {

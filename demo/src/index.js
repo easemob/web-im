@@ -5,7 +5,7 @@ import ReactDOM from "react-dom"
 import "./App.css"
 import "./themes/theme.less"
 import registerServiceWorker from "./registerServiceWorker"
-import {history} from "@/utils"
+import { history } from "@/utils"
 
 import {
     // BrowserRouter as Router,
@@ -13,8 +13,8 @@ import {
     Router
 } from "react-router-dom"
 // redux
-import {Provider} from "react-redux"
-import {store} from "@/redux"
+import { Provider } from "react-redux"
+import { store } from "@/redux"
 import App from "./App"
 // fix android browsers compatibilities
 import "babel-polyfill"

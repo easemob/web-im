@@ -67,7 +67,7 @@ export default ({ bySelf, from, time, body }) => {
         )
     } else if (body.type == "file") {
         const readablizeBytes = bytes => {
-            let s = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
+            let s = [ "Bytes", "KB", "MB", "GB", "TB", "PB" ]
             var e = Math.floor(Math.log(bytes) / Math.log(1024))
             return (
                 (bytes / Math.pow(1024, Math.floor(e))).toFixed(2) + " " + s[e]
@@ -121,11 +121,11 @@ export default ({ bySelf, from, time, body }) => {
             </div>
             {bySelf
                 ? <div className="x-message-time">
-                      <span className="x-message-status" /> {localFormat}
-                  </div>
+                    <span className="x-message-status" /> {localFormat}
+                </div>
                 : <div className="x-message-time">
-                      {localFormat} <span className="x-message-status" />
-                  </div>}
+                    {localFormat} <span className="x-message-status" />
+                </div>}
         </div>
     )
 }

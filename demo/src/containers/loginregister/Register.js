@@ -1,8 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {connect} from "react-redux"
-import {Button, Row, Form, Input} from "antd"
-import {config} from "@/config"
+import { connect } from "react-redux"
+import { Button, Row, Form, Input } from "antd"
+import { config } from "@/config"
 import styles from "./index.less"
 import RegisterActions from "@/redux/RegisterRedux"
 import WebIM from "@/config/WebIM"
@@ -10,15 +10,15 @@ import WebIM from "@/config/WebIM"
 const FormItem = Form.Item
 
 const Register = ({
-                      I18N,
-                      login,
-                      doRegister,
-                      jumpLogin,
-                      form: {getFieldDecorator, validateFieldsAndScroll}
-                  }) => {
+    I18N,
+    login,
+    doRegister,
+    jumpLogin,
+    form: { getFieldDecorator, validateFieldsAndScroll }
+}) => {
 
 
-    const {loginLoading} = login
+    const { loginLoading } = login
 
     function handleOk() {
         validateFieldsAndScroll((errors, values) => {
@@ -35,8 +35,8 @@ const Register = ({
             <div className="logo">
                 <i className="iconfont icon-hyphenate"/>
                 <span>
-					{config.name}
-				</span>
+                    {config.name}
+                </span>
             </div>
             <form>
                 <FormItem hasFeedback>
@@ -108,7 +108,7 @@ Register.propTypes = {
 }
 
 export default    connect(
-    ({i18n, login}) => ({
+    ({ i18n, login }) => ({
         I18N: i18n.locale && i18n.translations && i18n.translations[i18n.locale] || {},
         login: {
             loginLoading: false

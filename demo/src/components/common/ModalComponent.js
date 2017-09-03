@@ -5,66 +5,66 @@ import { Modal } from "antd"
 import "./style/ModalComponent.less"
 
 export default class ModalComponent extends React.Component {
-	constructor(props) {
-		super()
-		this.state = { visible: props.visible, title: props.title }
-	}
+    constructor(props) {
+        super()
+        this.state = { visible: props.visible, title: props.title }
+    }
 
-	showModal = () => {
-		this.setState({
-			visible: true
-		})
-	}
-	handleOk = e => {
-		// console.log(e)
-		this.setState({
-			visible: false
-		})
-	}
-	handleCancel = e => {
-		// console.log(e)
-		this.setState({
-			visible: false
-		})
-	}
+ showModal = () => {
+     this.setState({
+         visible: true
+     })
+ }
+ handleOk = e => {
+     // console.log(e)
+     this.setState({
+         visible: false
+     })
+ }
+ handleCancel = e => {
+     // console.log(e)
+     this.setState({
+         visible: false
+     })
+ }
 
-	onChangeTitle = v => {
-		this.setState({
-			title: v
-		})
-	}
+ onChangeTitle = v => {
+     this.setState({
+         title: v
+     })
+ }
 
-	componentWillReceiveProps(nextProps) {
-		this.setState({
-			visible: nextProps.visible,
-			title: nextProps.title
-		})
-	}
+ componentWillReceiveProps(nextProps) {
+     this.setState({
+         visible: nextProps.visible,
+         title: nextProps.title
+     })
+ }
 
-	render() {
-		if (!this.state.visible) {
-			return null
-		}
+ render() {
+     if (!this.state.visible) {
+         return null
+     }
 
-		return (
-			<div>
-				<Modal
-					width={this.props.width}
-					className="x-modal x-modal__nofooter"
-					title={this.state.title}
-					visible={this.state.visible}
-					onOk={this.handleOk}
-					onCancel={this.handleCancel}
-				>
-					{
-						<this.props.component
-							onChangeTitle={this.onChangeTitle}
-							onOk={this.handleOk}
-							onCancel={this.handleCancel}
-						/>
-					}
-				</Modal>
-			</div>
-		)
-	}
+     return (
+         <div>
+             <Modal
+                 width={this.props.width}
+                 className="x-modal x-modal__nofooter"
+                 title={this.state.title}
+                 visible={this.state.visible}
+                 onOk={this.handleOk}
+                 onCancel={this.handleCancel}
+             >
+                 {
+                     <this.props.component
+                         onChangeTitle={this.onChangeTitle}
+                         onOk={this.handleOk}
+                         onCancel={this.handleCancel}
+                     />
+                 }
+             </Modal>
+         </div>
+     )
+ }
 }

@@ -8,7 +8,7 @@ import CommonActions from "./CommonRedux"
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-    updateBlacklist: ["list"],
+    updateBlacklist: [ "list" ],
     // ----------------async------------------
     // 更新黑名单列表
     getBlacklist: () => {

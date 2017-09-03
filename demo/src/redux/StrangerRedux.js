@@ -6,8 +6,8 @@ import { parseFromServer } from "@/redux/MessageRedux"
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-    updateStrangerMessage: ["stranger", "message", "bodyType"],
-    deleteStranger: ["stranger"]
+    updateStrangerMessage: [ "stranger", "message", "bodyType" ],
+    deleteStranger: [ "stranger" ]
     // ---------------async------------------
 })
 
@@ -37,7 +37,7 @@ export const updateStrangerMessage = (state, { stranger, message, bodyType = "tx
     // 房间id：自己发送或者不是单聊的时候，是接收人的ID， 否则是发送人的ID
     const chatId = bySelf || type !== "chat" ? to : from
 
-    state = state.setIn(["byId", stranger, id], {
+    state = state.setIn([ "byId", stranger, id ], {
         ...message,
         bySelf,
         time: +new Date(),

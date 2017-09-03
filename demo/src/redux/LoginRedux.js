@@ -1,22 +1,22 @@
 // @flow
 
-import {createReducer, createActions} from "reduxsauce"
+import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
-import WebIM, {api} from "@/config/WebIM"
+import WebIM, { api } from "@/config/WebIM"
 import Cookie from "js-cookie"
-import {message} from "antd"
-import {history} from "@/utils"
-import {store} from "@/redux"
+import { message } from "antd"
+import { history } from "@/utils"
+import { store } from "@/redux"
 
 
 /* ------------- Types and Action Creators ------------- */
 
-const {Types, Creators} = createActions({
-    setLoginToken: ["username", "token"],
-    setLoging: ["username", "password", "token"],
+const { Types, Creators } = createActions({
+    setLoginToken: [ "username", "token" ],
+    setLoging: [ "username", "password", "token" ],
     stopLoging: null,
-    setLoginSuccess: ["username"],
-    loginFailure: ["error"],
+    setLoginSuccess: [ "username" ],
+    loginFailure: [ "error" ],
     jumpRegister: null,
     logout: null,
 
@@ -85,8 +85,8 @@ export const INITIAL_STATE = Immutable({
 })
 
 /* ------------- Reducers ------------- */
-export const setLoginToken = (state = INITIAL_STATE, {username, token}) => {
-    console.log('setLoginToken')
+export const setLoginToken = (state = INITIAL_STATE, { username, token }) => {
+    console.log("setLoginToken")
     Cookie.set("web_im_" + username, token)
     return Immutable.merge(state, {
         username: username,
@@ -96,7 +96,7 @@ export const setLoginToken = (state = INITIAL_STATE, {username, token}) => {
 
 // we're attempting to login
 export const setLoging = (state = INITIAL_STATE,
-                          {username, password, token}) => {
+    { username, password, token }) => {
     return Immutable.merge(state, {
         username,
         password,
@@ -114,18 +114,18 @@ export const stopLoging = (state = INITIAL_STATE) => {
 
 // we've successfully logged in
 export const setLoginSuccess = state => {
-    return Immutable.merge(state, {isLogin: true})
+    return Immutable.merge(state, { isLogin: true })
 }
 
 // we've had a problem logging in
-export const failure = (state, {error}) => {
-    return Immutable.merge(state, {error: error})
+export const failure = (state, { error }) => {
+    return Immutable.merge(state, { error: error })
 }
 
 
 // we've logged out
 export const logout = (state = INITIAL_STATE) => {
-    console.log('reducer logout')
+    console.log("reducer logout")
     return state
 }
 

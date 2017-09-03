@@ -43,38 +43,38 @@ class HeaderOps extends Component {
 
     onMenuSettingsClick({ key }) {
         switch (key) {
-            case "0":
-                console.log("好友黑名单")
-                this.setState({
-                    modal: "showBlacklistModal"
-                })
-                break
-            case "1":
-                this.handleLogout()
-                break
+        case "0":
+            console.log("好友黑名单")
+            this.setState({
+                modal: "showBlacklistModal"
+            })
+            break
+        case "1":
+            this.handleLogout()
+            break
         }
     }
 
     onMenuRightClick({ key }) {
         switch (key) {
-            case "0":
-                console.log("添加好友")
-                this.setState({
-                    modal: "showAddFriendsModal"
-                })
-                break
-            case "1":
-                console.log("申请加入公开群")
-                this.setState({
-                    modal: "showJoinGroupModal"
-                })
-                break
-            case "2":
-                console.log("创建群组")
-                this.setState({
-                    modal: "showAddGroupModal"
-                })
-                break
+        case "0":
+            console.log("添加好友")
+            this.setState({
+                modal: "showAddFriendsModal"
+            })
+            break
+        case "1":
+            console.log("申请加入公开群")
+            this.setState({
+                modal: "showJoinGroupModal"
+            })
+            break
+        case "2":
+            console.log("创建群组")
+            this.setState({
+                modal: "showAddGroupModal"
+            })
+            break
         }
     }
 
@@ -83,17 +83,17 @@ class HeaderOps extends Component {
         const { modal } = this.state
 
         const tabsLeft = [
-            ["0", `${I18n.t("friends")}${I18n.t("blacklist")}`, "minus-circle-o"],
-            ["1", `${I18n.t("quit")}(${title})`, "logout"]
+            [ "0", `${I18n.t("friends")}${I18n.t("blacklist")}`, "minus-circle-o" ],
+            [ "1", `${I18n.t("quit")}(${title})`, "logout" ]
         ]
 
         const tabsRight = [
-            ["0", I18n.t("addAFriend"), "user-add"],
-            ["1", I18n.t("joinGroup"), "plus-circle-o"],
-            ["2", I18n.t("createGroup"), "usergroup-add"]
+            [ "0", I18n.t("addAFriend"), "user-add" ],
+            [ "1", I18n.t("joinGroup"), "plus-circle-o" ],
+            [ "2", I18n.t("createGroup"), "usergroup-add" ]
         ]
 
-        const tabsLeftItem = tabsLeft.map(([key, name, icon]) =>
+        const tabsLeftItem = tabsLeft.map(([ key, name, icon ]) =>
             <Menu.Item key={key}>
                 <span>
                     <Icon type={icon} /> <span>{name}</span>
@@ -101,7 +101,7 @@ class HeaderOps extends Component {
             </Menu.Item>
         )
 
-        const tabsRightItem = tabsRight.map(([key, name, icon]) =>
+        const tabsRightItem = tabsRight.map(([ key, name, icon ]) =>
             <Menu.Item key={key}>
                 <span>
                     <Icon type={icon} /> <span>{name}</span>
@@ -134,7 +134,7 @@ class HeaderOps extends Component {
                         cursor: "pointer"
                     }}
                 >
-                    <Dropdown overlay={menuSettings} trigger={["click"]} style={{ position: "absolute" }}>
+                    <Dropdown overlay={menuSettings} trigger={[ "click" ]} style={{ position: "absolute" }}>
                         <Icon type="setting" />
                     </Dropdown>
                 </div>
@@ -150,7 +150,7 @@ class HeaderOps extends Component {
                         cursor: "pointer"
                     }}
                 >
-                    <Dropdown overlay={menuRight} placement="bottomRight" trigger={["click"]}>
+                    <Dropdown overlay={menuRight} placement="bottomRight" trigger={[ "click" ]}>
                         <Icon type="plus-circle-o" />
                     </Dropdown>
                 </div>
