@@ -30,12 +30,12 @@ const Contact = ({
             roster.friends &&
             roster.friends.forEach((name, index) => {
                 if (blacklist.names.indexOf(name) !== -1) return
-                const info = utils.getLatestInfo(name, byId, chat)
+                // const info = utils.getLatestInfo(name, byId, chat)
                 const count = _.get(unread, name, 0)
                 items[index] = {
                     name,
                     unread: count,
-                    ...info
+                    // ...info
                 }
             })
         break
@@ -48,7 +48,6 @@ const Contact = ({
                 group.names &&
                 group.names.forEach((v, index) => {
                     let [ name, id ] = v.split("_#-#_")
-                    // let unread = _.get(message, `unread.${id}`, 0)
                     const count = _.get(unread, id, 0)
                     items[index] = {
                         name,
@@ -88,7 +87,7 @@ const Contact = ({
                     const count = _.get(unread, name, 0)
                     items[index] = {
                         name,
-                        unread: count, 
+                        unread: count,
                         latestMessage: "",
                         latestTime: ""
                     }
@@ -112,9 +111,7 @@ Contact.propTypes = {
 
 export default withRouter(
     connect(
-        ({
-            entities, common
-        }) => ({
+        ({ entities, common }) => ({
             common,
             roster: entities.roster,
             group: entities.group,

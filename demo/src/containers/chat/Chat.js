@@ -20,6 +20,8 @@ import BlacklistActions from "@/redux/BlacklistRedux"
 import WebIM from "@/config/WebIM"
 import { message } from "antd"
 import { history } from "@/utils"
+import getTabMessages from "@/selectors/ChatSelector"
+
 
 const { TextArea } = Input
 const FormItem = Form.Item
@@ -219,7 +221,7 @@ class Chat extends React.Component {
 
         const tabsItem = tabs.map(([ key, name, icon ]) =>
             <Menu.Item key={key}>
-                <i className={icon} style={{ fontSize: 20, marginRight: 12, verticalAlign: "middle" }} />
+                <i className={icon} style={{ fontSize: 20, marginRight: 12, verticalAlign: "middle" }}/>
                 <span>
                     <span>
                         {name}
@@ -301,12 +303,13 @@ class Chat extends React.Component {
             match,
             history,
             location,
-            message,
-            group,
-            chatroom,
-            stranger,
-            roster,
-            blacklist
+            // message,
+            // group,
+            // chatroom,
+            // stranger,
+            // roster,
+            // blacklist,
+            messageList2,
             // form: { getFieldDecorator, validateFieldsAndScroll }
         } = this.props
 
@@ -318,42 +321,42 @@ class Chat extends React.Component {
             history.push(redirectPath)
         }
 
-        const { byId = {}, chat = {} } = message
-        let messageList = []
+        // const { byId = {}, chat = {} } = message
+        // let messageList = []
         let name = selectItem
-        let byId2 = null // TODO: byName 删除，只保留 byId
-        try {
-            switch (selectTab) {
-            case "contact":
-                const byName = (roster && roster.byName) || {}
-                if (!(selectItem in byName)) return null
-                if (blacklist.names.indexOf(name) !== -1) return null
-                messageList = chat[selectItem] || []
-                messageList = messageList.map(id => byId[id] || {})
-                break
-            case "group":
-                byId2 = (group && group.byId) || {}
-                if (!(selectItem in byId2)) return null
-                name = group.byId[selectItem].name || group.byId[selectItem].id
-                messageList = message["groupchat"][selectItem] || []
-                messageList = messageList.map(id => byId[id] || {})
-                break
-            case "chatroom":
-                byId2 = (chatroom && chatroom.byId) || {}
-                if (!(selectItem in byId2)) return null
-                name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
-                messageList = message["chatroom"][selectItem] || []
-                messageList = messageList.map(id => byId[id] || {})
-                break
-            case "stranger":
-                messageList = stranger["byId"][selectItem] || []
-                messageList = Object.values(messageList)
-                break
-            }
-        } catch (e) {
-            console.log(e)
-        }
-
+        // let byId2 = null // TODO: byName 删除，只保留 byId
+        // try {
+        //     switch (selectTab) {
+        //     case "contact":
+        //         const byName = (roster && roster.byName) || {}
+        //         if (!(selectItem in byName)) return null
+        //         if (blacklist.names.indexOf(name) !== -1) return null
+        //         messageList = chat[selectItem] || []
+        //         messageList = messageList.map(id => byId[id] || {})
+        //         break
+        //     case "group":
+        //         byId2 = (group && group.byId) || {}
+        //         if (!(selectItem in byId2)) return null
+        //         name = group.byId[selectItem].name || group.byId[selectItem].id
+        //         messageList = message["groupchat"][selectItem] || []
+        //         messageList = messageList.map(id => byId[id] || {})
+        //         break
+        //     case "chatroom":
+        //         byId2 = (chatroom && chatroom.byId) || {}
+        //         if (!(selectItem in byId2)) return null
+        //         name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
+        //         messageList = message["chatroom"][selectItem] || []
+        //         messageList = messageList.map(id => byId[id] || {})
+        //         break
+        //     case "stranger":
+        //         messageList = stranger["byId"][selectItem] || []
+        //         messageList = Object.values(messageList)
+        //         break
+        //     }
+        // } catch (e) {
+        //     console.log(e)
+        // }
+        console.log("render chat", messageList2)
         return (
             <div className="x-chat">
                 <div className="x-list-item x-chat-header">
@@ -380,27 +383,20 @@ class Chat extends React.Component {
                                     placement="bottomRight"
                                     trigger={[ "click" ]}
                                 >
-                                    <Icon type="ellipsis" />
+                                    <Icon type="ellipsis"/>
                                 </Dropdown>
-                                : <Icon type="ellipsis" onClick={this.handleRightIconClick} />}
+                                : <Icon type="ellipsis" onClick={this.handleRightIconClick}/>}
                         </span>
                     </div>
                 </div>
                 <div className="x-chat-content" ref="x-chat-content">
-                    {_.map(messageList, message => <ChatMessage key={message.id} {...message} />)}
-                    {/*<ChatMessage />
-                     <ChatMessage />
-                     <ChatMessage />
-                     <ChatMessage />
-                     <ChatMessage bySelf={true} />
-                     <ChatMessage bySelf={true} />
-                     <ChatMessage bySelf={true} />*/}
+                    {messageList2 && messageList2.map(message => <ChatMessage key={message.id} {...message} />)}
                 </div>
                 <div className="x-chat-footer">
                     <div className="x-list-item x-chat-ops">
                         {/* emoji*/}
                         <div className="x-chat-ops-icon ib">
-                            <ChatEmoji onSelect={this.handleEmojiSelect} />
+                            <ChatEmoji onSelect={this.handleEmojiSelect}/>
                         </div>
                         {/* 图片上传 image upload*/}
                         <label
@@ -408,7 +404,7 @@ class Chat extends React.Component {
                             className="x-chat-ops-icon ib"
                             onClick={() => this.image && this.image.focus() && this.image.click()}
                         >
-                            <i className="iconfont icon-picture" />
+                            <i className="iconfont icon-picture"/>
                             <input
                                 id="uploadImage"
                                 ref={node => (this.image = node)}
@@ -423,7 +419,7 @@ class Chat extends React.Component {
                             className="x-chat-ops-icon ib"
                             onClick={() => this.file && this.file.focus() && this.file.click()}
                         >
-                            <i className="icon iconfont icon-file-empty" />
+                            <i className="icon iconfont icon-file-empty"/>
                             <input
                                 id="uploadFile"
                                 ref={node => (this.file = node)}
@@ -470,45 +466,15 @@ class Chat extends React.Component {
     }
 }
 
-// const Chat = ({
-// 	collapsed,
-// 	match,
-// 	history,
-// 	location
-// 	// form: { getFieldDecorator, validateFieldsAndScroll }
-// }) => {
-// 	const { selectItem, selectTab } = match.params
-// 	console.log(collapsed, selectTab, selectItem)
-
-// 	const back = () => {
-// 		const redirectPath = "/" + [selectTab].join("/") + location.search
-// 		history.push(redirectPath)
-// 	}
-// }
-
-// <p>
-// 				Have an account?
-// 				<span>Sign In</span>
-// 			</p>
-// 			<p>
-// 				New around here?
-// 				<span>Sign Up</span>
-// 			</p>
-
-// Login.propTypes = {
-// 	form: PropTypes.object,
-// 	login: PropTypes.object,
-// 	dispatch: PropTypes.func
-// }
-
 export default connect(
-    ({ login, entities }) => ({
-        message: entities.message.asMutable(),
-        roster: entities.roster,
-        group: entities.group,
-        chatroom: entities.chatroom,
-        stranger: entities.stranger,
-        blacklist: entities.blacklist
+    (state, props) => ({
+        // message: state.entities.message,
+        // roster: state.entities.roster,
+        // group: state.entities.group,
+        // chatroom: state.entities.chatroom,
+        // stranger: state.entities.stranger,
+        // blacklist: state.entities.blacklist,
+        messageList2: getTabMessages(state, props)
     }),
     dispatch => ({
         switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),

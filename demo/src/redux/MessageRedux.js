@@ -102,6 +102,7 @@ function parseFromLocal(type, to, message = {}, bodyType) {
         }
     }
 }
+
 // 统一消息格式：服务端
 export const parseFromServer = (message = {}, bodyType) => {
     let ext = message.ext || {}
@@ -198,10 +199,10 @@ const { Types, Creators } = createActions({
                 msg,
                 to,
                 roomType: chatroom,
-                success: function() {
+                success: function () {
                     dispatch(Creators.updateMessageStatus(pMessage, "sent"))
                 },
-                fail: function() {
+                fail: function () {
                     dispatch(Creators.updateMessageStatus(pMessage, "fail"))
                 }
             })
@@ -214,7 +215,8 @@ const { Types, Creators } = createActions({
             dispatch(Creators.addMessage(pMessage, type))
         }
     },
-    sendImgMessage: (chatType, chatId, message = {}, source = {}, callback = () => {}) => {
+    sendImgMessage: (chatType, chatId, message = {}, source = {}, callback = () => {
+    }) => {
         return (dispatch, getState) => {
             let pMessage = null
             const id = WebIM.conn.getUniqueId()
@@ -240,14 +242,14 @@ const { Types, Creators } = createActions({
                 // },
                 to,
                 roomType: message.isRoom,
-                onFileUploadError: function(error) {
+                onFileUploadError: function (error) {
                     console.log(error)
                     // dispatch(Creators.updateMessageStatus(pMessage, "fail"))
                     pMessage.body.status = "fail"
                     dispatch(Creators.updateMessageStatus(pMessage, "fail"))
                     callback()
                 },
-                onFileUploadComplete: function(data) {
+                onFileUploadComplete: function (data) {
                     console.log(data)
                     let url = data.uri + "/" + data.entities[0].uuid
                     pMessage.body.url = url
@@ -255,7 +257,7 @@ const { Types, Creators } = createActions({
                     dispatch(Creators.updateMessageStatus(pMessage, "sent"))
                     callback()
                 },
-                success: function(id) {
+                success: function (id) {
                     console.log(id)
                 }
             })
@@ -273,7 +275,8 @@ const { Types, Creators } = createActions({
             dispatch(Creators.addMessage(pMessage, type))
         }
     },
-    sendFileMessage: (chatType, chatId, message = {}, source = {}, callback = () => {}) => {
+    sendFileMessage: (chatType, chatId, message = {}, source = {}, callback = () => {
+    }) => {
         return (dispatch, getState) => {
             let pMessage = null
             const id = WebIM.conn.getUniqueId()
@@ -299,14 +302,14 @@ const { Types, Creators } = createActions({
                 // },
                 to,
                 roomType: message.isRoom,
-                onFileUploadError: function(error) {
+                onFileUploadError: function (error) {
                     console.log(error)
                     // dispatch(Creators.updateMessageStatus(pMessage, "fail"))
                     pMessage.body.status = "fail"
                     dispatch(Creators.updateMessageStatus(pMessage, "fail"))
                     callback()
                 },
-                onFileUploadComplete: function(data) {
+                onFileUploadComplete: function (data) {
                     console.log("Data: ", data)
                     let url = data.uri + "/" + data.entities[0].uuid
                     pMessage.body.url = url
@@ -314,7 +317,7 @@ const { Types, Creators } = createActions({
                     dispatch(Creators.updateMessageStatus(pMessage, "sent"))
                     callback()
                 },
-                success: function(id) {
+                success: function (id) {
                     console.log(id)
                 }
             })
@@ -341,12 +344,12 @@ const { Types, Creators } = createActions({
                 headers: {
                     Accept: "audio/mp3"
                 },
-                onFileDownloadComplete: function(response) {
+                onFileDownloadComplete: function (response) {
                     let objectUrl = WebIM.utils.parseDownloadResponse.call(WebIM.conn, response)
                     message.url = objectUrl
                     dispatch(Creators.addMessage(message, bodyType))
                 },
-                onFileDownloadError: function() {
+                onFileDownloadError: function () {
                     console.log("Audio Error")
                 }
             }
@@ -383,36 +386,34 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
     const { username = "" } = state.user || {}
     const { id, to, status } = message
     let { type } = message
-    //避免messageId重复添加造成render错误
-    if (Immutable.getIn(state, [ "byId", id ])) {
-        return state
-    }
+
     // 消息来源：没有from默认即为当前用户发送
     const from = message.from || username
     // 当前用户：标识为自己发送
     const bySelf = from == username
     // 房间id：自己发送或者不是单聊的时候，是接收人的ID， 否则是发送人的ID
     const chatId = bySelf || type !== "chat" ? to : from
-    state = state.setIn([ "byId", id ], {
+
+    // 陌生人修改type
+    if (type === "chat" && !store.getState().entities.roster.byName[chatId]) {
+        type = "stranger"
+    }
+
+    // 更新对应消息数组
+    const chatData = state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
+    chatData.push({
         ...message,
         bySelf,
         time: +new Date(),
         status: status
     })
 
-    const chatData = state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
-    chatData.push(id)
-
-    // if (type === "groupchat" && message.from !== username) {
-    //     let count = state.getIn([ "unread", to ], 0)
-    //     count++
-    //     state = state.setIn([ "unread", to ], count)
-    // }
-    let count = state.getIn([ "unread", type, to ], 0)
-    count++
-    state = state.setIn([ "unread", type, to ], count)
-
     state = state.setIn([ type, chatId ], chatData)
+
+    // 未读消息数
+    let count = state.getIn([ "unread", type, chatId ], 0)
+    state = state.setIn([ "unread", type, chatId ], ++count)
+
     return state
 }
 

@@ -93,33 +93,19 @@ class DefaultLayout extends Component {
     // 切换联系人
     changeItem(e) {
         console.log("changeItem", e)
-        const { history, location, entities } = this.props
+        const { history, location, group } = this.props
         const { selectItem, selectTab } = this.state
         const redirectPath = "/" + [ selectTab, e.key ].join("/")
         if (selectItem == e.key) {
-            if (selectTab === "group") {
-                const groupId = e.key
-                if (groupId) {
-                    this.props.clearUnread(groupId)
-                    this.setState({ roomId: groupId })
-                    const room = _.get(entities, `group.byId.${groupId}`, {})
-                    this.setState({ room })
-                    this.props.listGroupMemberAsync({ groupId })
-                    this.props.getMutedAsync(groupId)
-                    this.props.getGroupAdminAsync(groupId)
-                }
-            }
             return
         }
-
-        // if (selectItem !== e.key && selectTab === 'group') {
 
         if (selectTab === "group") {
             const groupId = e.key
             if (groupId) {
                 this.props.clearUnread(groupId)
                 this.setState({ roomId: groupId })
-                const room = _.get(entities, `group.byId.${groupId}`, {})
+                const room = _.get(group, `byId.${groupId}`, {})
                 this.setState({ room })
                 this.props.listGroupMemberAsync({ groupId })
                 this.props.getMutedAsync(groupId)
@@ -132,7 +118,6 @@ class DefaultLayout extends Component {
             if (selectItem) {
                 this.props.quitChatRoom(selectItem)
             }
-
             // join chatroom
             this.props.joinChatRoom(e.key)
         }
@@ -181,13 +166,7 @@ class DefaultLayout extends Component {
 
     render() {
         const { collapsed, selectTab, selectItem, headerTabs, roomId } = this.state
-        const { login, rightSiderOffset, unread } = this.props
-        const typeMap = { contact: "chat", group: "groupchat", chatroom: "chatroom", stranger: "stranger" }
-        const hadUnread = { contact: false, group: false, chatroom: false, stranger: false }
-        _.forEach(typeMap, (v, k) => {
-            const m = _.get(unread, v)
-            if (!_.isEmpty(m) && _.chain(m).values().sum().value() > 0 ) hadUnread[k] = true      
-        })
+        const { login, rightSiderOffset } = this.props
 
 
         return (
@@ -198,7 +177,6 @@ class DefaultLayout extends Component {
                         collapsed={collapsed}
                         items={headerTabs}
                         selectedKeys={[ selectTab ]}
-                        hadUnread={hadUnread}
                         onClick={this.changeTab}
                     />
                 </Header>
@@ -212,7 +190,8 @@ class DefaultLayout extends Component {
                             left: selectItem && collapsed ? "-100%" : 0
                         }}
                     >
-                        <Contact collapsed={false} onClick={this.changeItem} selectedKeys={[ selectItem ]} unread={_.get(unread, typeMap[selectTab], {})} />
+                        <Contact collapsed={false} onClick={this.changeItem} selectedKeys={[ selectItem ]}
+                        />
                     </div>
                     <Content
                         className="x-layout-chat"
@@ -248,11 +227,10 @@ export default withRouter(
     connect(
         ({ breakpoint, entities, login, common }) => ({
             breakpoint,
-            entities,
+            group: entities.group,
             login,
             common,
             rightSiderOffset: entities.group.rightSiderOffset,
-            unread: entities.unreadMessage
         }),
         dispatch => ({
             getGroupMember: id => dispatch(GroupMemberActions.getGroupMember(id)),

@@ -150,4 +150,4 @@ export const reducer = createReducer(INITIAL_STATE, {
 /* ------------- Selectors ------------- */
 
 // Is the current user logged in?
-export const isLoggedIn = loginState => loginState.username !== null
+export const isLoggedIn = state => state.username !== null

@@ -182,14 +182,14 @@ WebIM.conn.listen({
         // if (!bySelf) store.dispatch(UnreadMessageActions.increaseUnread)
         const unreadFrom = _.includes([ "groupchat", "chatroom" ], type) ? to : from
         store.dispatch(UnreadMessageActions.increaseUnread(type, unreadFrom))
-        if (type === "chat") {
-            const chatId = bySelf || type !== "chat" ? to : from
-            console.log("chatId", chatId)
-            if (!store.getState().entities.roster.byName[chatId]) {
-                store.dispatch(StrangerActions.updateStrangerMessage(chatId, message, "txt"))
-                return
-            }
-        }
+        // if (type === "chat") {
+        //     const chatId = bySelf || type !== "chat" ? to : from
+        //     console.log("chatId", chatId)
+        //     if (!store.getState().entities.roster.byName[chatId]) {
+        //         store.dispatch(StrangerActions.updateStrangerMessage(chatId, message, "txt"))
+        //         return
+        //     }
+        // }
         store.dispatch(MessageActions.addMessage(message, "txt"))
     },
     onPictureMessage: message => {
@@ -265,9 +265,6 @@ export const reducer = createReducer(INITIAL_STATE, {
 })
 
 /* ------------- Selectors ------------- */
-
-// Is the current user logged in?
-// export const isLoggedIn = (loginState: Object) => loginState.username !== null
 
 /** Constants: Connection Status Constants
  *  Connection status constants for use by the connection handler
