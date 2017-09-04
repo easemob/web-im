@@ -174,6 +174,18 @@ WebIM.conn.listen({
     onTextMessage: message => {
         console.log("onTextMessage", message)
         store.dispatch(MessageActions.addMessage(message, "txt"))
+        const { type, from, to } = message
+        switch (type) {
+        case "chat":
+            store.dispatch(RosterActions.removeRoster(from))
+            store.dispatch(RosterActions.prependRoster(from))
+            break
+        case "groupchat":
+            // store.dispatch
+            break
+        default:
+            break
+        }
     },
     onPictureMessage: message => {
         console.log("onPictureMessage", message)

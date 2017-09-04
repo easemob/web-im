@@ -1,5 +1,6 @@
 import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
+import _ from "lodash"
 import WebIM from "@/config/WebIM"
 import { I18n } from "react-redux-i18n"
 
@@ -8,6 +9,8 @@ import CommonActions from "@/redux/CommonRedux"
 /* ------------- Types and Action Creators ------------- */
 const { Types, Creators } = createActions({
     updateRoster: [ "roster" ],
+    prependRoster: [ "name" ],
+    removeRoster: [ "name" ],
     // ----------------async------------------
     // 获取好友列表
     getContacts: () => {
@@ -91,9 +94,23 @@ export const updateRoster = (state, { roster }) => {
     })
 }
 
+export const prependRoster = (state, { name }) => {
+    const friends = state.getIn([ "friends" ], Immutable([])).asMutable()
+    friends.unshift(name)
+    return state.merge({ friends })
+}
+
+export const removeRoster = (state, { name }) => {
+    let friends = state.getIn([ "friends" ], Immutable([])).asMutable()
+    friends = _.without(friends, name)
+    return state.merge({ friends })
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const reducer = createReducer(INITIAL_STATE, {
-    [Types.UPDATE_ROSTER]: updateRoster
+    [Types.UPDATE_ROSTER]: updateRoster,
+    [Types.PREPEND_ROSTER]: prependRoster,
+    [Types.REMOVE_ROSTER]: removeRoster
 })
 
 /* ------------- Selectors ------------- */
