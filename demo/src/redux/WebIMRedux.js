@@ -177,12 +177,13 @@ WebIM.conn.listen({
         const { type, from, to } = message
         switch (type) {
         case "chat":
-            store.dispatch(RosterActions.removeRoster(from))
-            store.dispatch(RosterActions.prependRoster(from))
+            store.dispatch(RosterActions.topRoster(from))
             break
         case "groupchat":
-            // store.dispatch
+            store.dispatch(GroupActions.topGroup(to))
             break
+        case "chatroom":
+            store.dispatch(ChatRoomActions.topChatroom(to))
         default:
             break
         }

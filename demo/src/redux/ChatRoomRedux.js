@@ -1,5 +1,6 @@
 import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
+import _ from "lodash"
 import { WebIM } from "@/config"
 import { store } from "@/redux"
 import CommonActions from "@/redux/CommonRedux"
@@ -7,6 +8,7 @@ import CommonActions from "@/redux/CommonRedux"
 
 const { Types, Creators } = createActions({
     updateChatRooms: [ "rooms" ],
+    topChatroom: [ "roomId" ],
     // ---------------async------------------
     getChatRooms: () => {
         return (dispatch, getState) => {
@@ -69,10 +71,24 @@ export const updateChatRooms = (state, { rooms }) => {
     })
 }
 
+export const topChatroom = (state, { roomId }) => {
+    let names = state.getIn([ "names" ], Immutable([])).asMutable()
+    for (let i = 0; i < names.length; i++) {
+        const name = names[i]
+        if (name.split("_#-#_")[1] === roomId) {
+            if (i === 0) return state // if already top, return directly
+            names = _.without(names, name)
+            names.unshift(name)
+            break
+        }
+    }
+    return state.merge({ names })
+}
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
-    [Types.UPDATE_CHAT_ROOMS]: updateChatRooms
+    [Types.UPDATE_CHAT_ROOMS]: updateChatRooms,
+    [Types.TOP_CHATROOM]: topChatroom
 })
 
 /* ------------- Selectors ------------- */

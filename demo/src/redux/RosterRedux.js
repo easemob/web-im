@@ -11,6 +11,7 @@ const { Types, Creators } = createActions({
     updateRoster: [ "roster" ],
     prependRoster: [ "name" ],
     removeRoster: [ "name" ],
+    topRoster: [ "name" ],
     // ----------------async------------------
     // 获取好友列表
     getContacts: () => {
@@ -106,9 +107,18 @@ export const removeRoster = (state, { name }) => {
     return state.merge({ friends })
 }
 
+export const topRoster = (state, { name }) => {
+    let friends = state.getIn([ "friends" ], Immutable([])).asMutable()
+    if (friends[0] === name) return state // if already top, return directly
+    friends = _.without(friends, name)
+    friends.unshift(name)
+    return state.merge({ friends })
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const reducer = createReducer(INITIAL_STATE, {
     [Types.UPDATE_ROSTER]: updateRoster,
+    [Types.TOP_ROSTER]: topRoster,
     [Types.PREPEND_ROSTER]: prependRoster,
     [Types.REMOVE_ROSTER]: removeRoster
 })

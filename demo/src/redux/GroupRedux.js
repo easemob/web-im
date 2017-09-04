@@ -21,6 +21,7 @@ const { Types, Creators } = createActions({
     dissolveGroup: [ "group" ],
     switchRightSider: [ "width" ],
     groupBlockSingle: [ "groupId", "username" ],
+    topGroup: [ "groupId" ],
     // ---------------async------------------
     createGroups: options => {
         return (dispatch, getState) => {
@@ -295,6 +296,20 @@ export const switchRightSider = (state, { width }) => {
     })
 }
 
+export const topGroup = (state, { groupId }) => {
+    let names = state.getIn([ "names" ], Immutable([])).asMutable()
+    for (let i = 0; i < names.length; i++) {
+        const name = names[i]
+        if (name.split("_#-#_")[1] === groupId) {
+            if (i === 0) return state // if already top, return directly
+            names = _.without(names, name)
+            names.unshift(name)
+            break
+        }
+    }
+    return state.merge({ names })
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -306,7 +321,8 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.DISSOLVE_GROUP]: dissolveGroup,
     [Types.SET_BLACK_LIST]: setBlackList,
     [Types.REMOVE_GROUP_BLOCK_SINGLE]: removeGroupBlockSingle,
-    [Types.SWITCH_RIGHT_SIDER]: switchRightSider
+    [Types.SWITCH_RIGHT_SIDER]: switchRightSider,
+    [Types.TOP_GROUP]: topGroup
 })
 
 /* ------------- Selectors ------------- */
