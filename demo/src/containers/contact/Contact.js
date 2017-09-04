@@ -17,6 +17,13 @@ const Contact = ({ history, match, common, location, roster, group, chatroom, st
 
     // console.log(history, match, location, pathname, chatType, chatId)
 
+    const chatTypes = {
+        "contact": "chat",
+        "group": "groupchat",
+        "chatroom": "chatroom",
+        "stranger": "stranger"
+    }
+
     const items = []
     switch (chatType) {
     case "contact":
@@ -25,13 +32,13 @@ const Contact = ({ history, match, common, location, roster, group, chatroom, st
             roster.friends &&
             roster.friends.forEach((name, index) => {
                 if (blacklist.names.indexOf(name) !== -1) return
-                // const info = utils.getLatestInfo(name, byId, chat)
+                const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], name ], []))
                 const count = message.getIn([ "unread", "chat", name ], 0)
                 console.log(name, count)
                 items[index] = {
                     name,
                     unread: count,
-                    // ...info
+                    ...info
                 }
             })
         break
@@ -44,13 +51,15 @@ const Contact = ({ history, match, common, location, roster, group, chatroom, st
                 group.names &&
                 group.names.forEach((v, index) => {
                     let [ name, id ] = v.split("_#-#_")
+                    const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], id ], []))
                     const count = message.getIn([ "unread", "groupchat", name ], 0)
                     items[index] = {
                         name,
                         id,
                         unread: count,
                         latestMessage: "",
-                        latestTime: ""
+                        latestTime: "",
+                        ...info
                     }
                 })
         }
@@ -64,13 +73,15 @@ const Contact = ({ history, match, common, location, roster, group, chatroom, st
                 chatroom.names &&
                 chatroom.names.forEach((v, index) => {
                     let [ name, id ] = v.split("_#-#_")
+                    const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], id ], []))
                     const count = message.getIn([ "unread", "chatroom", name ], 0)
                     items[index] = {
                         name,
                         id,
                         unread: count,
                         latestMessage: "",
-                        latestTime: ""
+                        latestTime: "",
+                        ...info
                     }
                 })
         }
@@ -80,12 +91,14 @@ const Contact = ({ history, match, common, location, roster, group, chatroom, st
             const names = Object.keys(stranger.byId)
             names.length &&
                 names.sort().forEach((name, index) => {
+                    const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], name ], []))
                     const count = message.getIn([ "unread", "stranger", name ], 0)
                     items[index] = {
                         name,
                         unread: count,
                         latestMessage: "",
-                        latestTime: ""
+                        latestTime: "",
+                        ...info
                     }
                 })
         }

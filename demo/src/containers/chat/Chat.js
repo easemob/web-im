@@ -268,7 +268,7 @@ class Chat extends React.Component {
     onClearMessage = () => {
         const { selectItem, selectTab } = _.get(this.props, [ "match", "params" ], {})
         console.log(selectItem, selectTab)
-        const chatTypes = { "contact": "chat", "group": "groupchat", "chatroom": "chatroom", "stranger": "" }
+        const chatTypes = { "contact": "chat", "group": "groupchat", "chatroom": "chatroom", "stranger": "stranger" }
         const chatType = chatTypes[selectTab]
         this.props.clearMessage(chatType, selectItem)
     }
@@ -303,14 +303,7 @@ class Chat extends React.Component {
             match,
             history,
             location,
-            // message,
-            // group,
-            // chatroom,
-            // stranger,
-            // roster,
-            // blacklist,
-            messageList2,
-            // form: { getFieldDecorator, validateFieldsAndScroll }
+            messageList,
         } = this.props
 
         const { selectItem, selectTab } = match.params
@@ -356,7 +349,7 @@ class Chat extends React.Component {
         // } catch (e) {
         //     console.log(e)
         // }
-        console.log("render chat", messageList2)
+        console.log("render chat", messageList)
         return (
             <div className="x-chat">
                 <div className="x-list-item x-chat-header">
@@ -390,7 +383,7 @@ class Chat extends React.Component {
                     </div>
                 </div>
                 <div className="x-chat-content" ref="x-chat-content">
-                    {messageList2 && messageList2.map(message => <ChatMessage key={message.id} {...message} />)}
+                    {messageList && messageList.map(message => <ChatMessage key={message.id} {...message} />)}
                 </div>
                 <div className="x-chat-footer">
                     <div className="x-list-item x-chat-ops">
@@ -468,13 +461,7 @@ class Chat extends React.Component {
 
 export default connect(
     (state, props) => ({
-        // message: state.entities.message,
-        // roster: state.entities.roster,
-        // group: state.entities.group,
-        // chatroom: state.entities.chatroom,
-        // stranger: state.entities.stranger,
-        // blacklist: state.entities.blacklist,
-        messageList2: getTabMessages(state, props)
+        messageList: getTabMessages(state, props)
     }),
     dispatch => ({
         switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),

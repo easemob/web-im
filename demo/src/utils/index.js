@@ -31,15 +31,11 @@ export default {
     getUserName() {
         return username
     },
-    getLatestInfo(name, byId, messageList) {
+    getLatestMessage(messageList) {
         let latestMessage = ""
         let latestTime = ""
-        if (messageList[name]) {
-            const id = messageList[name][messageList[name].length - 1]
-            const latestData = {
-                ...byId[id]
-            }
-            // todo
+        if (messageList.length > 0) {
+            const latestData = messageList[messageList.length - 1]
             const latestType = _.get(latestData, "body.type", "")
             // if (latestData.body.type == "txt") {
             // 	latestMessage = latestData.body.msg
@@ -47,7 +43,7 @@ export default {
             // 	latestMessage = "[image]"
             // }
             if (latestType === "txt") {
-                latestMessage = _.get(latestData,"body.msg", "")
+                latestMessage = _.get(latestData, "body.msg", "")
             } else if (latestType === "img") {
                 latestMessage = "[image]"
             }

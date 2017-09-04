@@ -440,10 +440,9 @@ export const clearMessage = (state, { chatType, id }) => {
 }
 
 export const clearUnread = (state, { chatType, id }) => {
-    console.log("clearUnread", chatType, id)
-    let unread = state["unread"][chatType].asMutable()
-    delete unread[id]
-    return state.setIn([ "unread", chatType ], unread)
+    let data = state["unread"][chatType].asMutable()
+    delete data[id]
+    return state.setIn([ "unread", chatType ], data)
 }
 
 /* ------------- Hookup Reducers To Types ------------- */
