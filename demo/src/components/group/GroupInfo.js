@@ -126,6 +126,10 @@ class GroupInfo extends React.Component {
         const value = this.state.users
         if (!value || value.length === 0) return
         this.props.inviteToGroupAsync(this.props.room.roomId, value)
+        this.closeInviteModal()
+    }
+
+    closeInviteModal = () => {
         this.setState({ showInviteToGroupModal: false })
     }
 
@@ -273,6 +277,7 @@ class GroupInfo extends React.Component {
                     title={I18n.t("inviteToGroup")}
                     visible={this.state.showInviteToGroupModal}
                     footer={null}
+                    onCancel={this.closeInviteModal}
                 >
                     <Row>
                         <Col span={20}>

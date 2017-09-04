@@ -1,3 +1,5 @@
+
+const _WIDTH = window.screen.availWidth > 350 ? 350 : window.screen.availWidth
 export default {
     // whether auto check media query and dispatch by redux or not ?
     reduxMatchMedia: true,
@@ -14,7 +16,7 @@ export default {
     SIDER_COL_BREAK: "sm", //md
     SIDER_COL_WIDTH: 80,
     SIDER_WIDTH: 350,
-    RIGHT_SIDER_WIDTH: 350,
+    RIGHT_SIDER_WIDTH: _WIDTH,
     imgType: {
         gif: 1,
         bmp: 1,
