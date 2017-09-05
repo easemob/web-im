@@ -414,8 +414,8 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         status: status
     })
 
-    const maxCacheSize = _.includes([ "group", "chatroom" ], type) ? WebIM.conn.groupMessageCacheSize : WebIM.conn.p2pMessageCacheSize
-    if (chatData.length > maxCacheSize) chatData.shift(chatData[0])
+    const maxCacheSize = _.includes([ "group", "chatroom" ], type) ? WebIM.config.groupMessageCacheSize : WebIM.config.p2pMessageCacheSize
+    if (chatData.length > maxCacheSize) chatData.splice(0, chatData.length - maxCacheSize)
 
     state = state.setIn([ type, chatId ], chatData)
 
