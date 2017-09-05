@@ -420,8 +420,10 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
     state = state.setIn([ type, chatId ], chatData)
 
     // 未读消息数
-    let count = state.getIn([ "unread", type, chatId ], 0)
-    state = state.setIn([ "unread", type, chatId ], ++count)
+    if (!bySelf) {
+        let count = state.getIn([ "unread", type, chatId ], 0)
+        state = state.setIn([ "unread", type, chatId ], ++count)
+    }
 
     return state
 }
