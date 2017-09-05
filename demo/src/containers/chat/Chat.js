@@ -284,17 +284,22 @@ class Chat extends React.Component {
 
     componentDidMount() {
         this.scollBottom()
-
-        // console.log("chat.js did mount")
-        // this.props.a = 2
-        // const a = {}
-        // const b = a.b.c
-        // document.addEventListener("keydown", this.handleKey)
     }
 
     componentWillUnmount() {
-        // document.removeEventListener("keydown", this.handleKey)
         if (this.timer) clearTimeout(this.timer)
+    }
+
+    callVideo() {
+        console.log("sendWrapper::callVideo")
+        // Demo.call.caller = Demo.user
+        // Demo.call.makeVideoCall(Demo.selected)
+    }
+
+    callVoice() {
+        console.log("sendWrapper::callVoice")
+        // Demo.call.caller = Demo.user
+        // Demo.call.makeVoiceCall(Demo.selected)
     }
 
     render() {
@@ -314,42 +319,20 @@ class Chat extends React.Component {
             history.push(redirectPath)
         }
 
-        // const { byId = {}, chat = {} } = message
-        // let messageList = []
         let name = selectItem
-        // let byId2 = null // TODO: byName 删除，只保留 byId
-        // try {
-        //     switch (selectTab) {
-        //     case "contact":
-        //         const byName = (roster && roster.byName) || {}
-        //         if (!(selectItem in byName)) return null
-        //         if (blacklist.names.indexOf(name) !== -1) return null
-        //         messageList = chat[selectItem] || []
-        //         messageList = messageList.map(id => byId[id] || {})
-        //         break
-        //     case "group":
-        //         byId2 = (group && group.byId) || {}
-        //         if (!(selectItem in byId2)) return null
-        //         name = group.byId[selectItem].name || group.byId[selectItem].id
-        //         messageList = message["groupchat"][selectItem] || []
-        //         messageList = messageList.map(id => byId[id] || {})
-        //         break
-        //     case "chatroom":
-        //         byId2 = (chatroom && chatroom.byId) || {}
-        //         if (!(selectItem in byId2)) return null
-        //         name = chatroom.byId[selectItem].name || chatroom.byId[selectItem].id
-        //         messageList = message["chatroom"][selectItem] || []
-        //         messageList = messageList.map(id => byId[id] || {})
-        //         break
-        //     case "stranger":
-        //         messageList = stranger["byId"][selectItem] || []
-        //         messageList = Object.values(messageList)
-        //         break
-        //     }
-        // } catch (e) {
-        //     console.log(e)
-        // }
-        console.log("render chat", messageList)
+        let webrtcButtons = []
+        if (WebIM.config.isWebRTC && selectTab === "contact") {
+            // webrtc video button
+            webrtcButtons.push(<label key="video" htmlFor="clearMessage" className="x-chat-ops-icon ib"
+                onClick={this.callVideo}>
+                <i className="icon iconfont icon-camera-video"></i>
+            </label>)
+            // webrtc audio button
+            webrtcButtons.push(<label key="audio" htmlFor="clearMessage" className="x-chat-ops-icon ib"
+                onClick={this.callVoice}>
+                <i className="icon iconfont icon-mic"></i>
+            </label>)
+        }
         return (
             <div className="x-chat">
                 <div className="x-list-item x-chat-header">
@@ -387,16 +370,15 @@ class Chat extends React.Component {
                 </div>
                 <div className="x-chat-footer">
                     <div className="x-list-item x-chat-ops">
-                        {/* emoji*/}
+                        {/* emoji */}
                         <div className="x-chat-ops-icon ib">
                             <ChatEmoji onSelect={this.handleEmojiSelect}/>
                         </div>
-                        {/* 图片上传 image upload*/}
+                        {/* image upload */}
                         <label
                             htmlFor="uploadImage"
                             className="x-chat-ops-icon ib"
-                            onClick={() => this.image && this.image.focus() && this.image.click()}
-                        >
+                            onClick={() => this.image && this.image.focus() && this.image.click()}>
                             <i className="iconfont icon-picture"/>
                             <input
                                 id="uploadImage"
@@ -406,12 +388,11 @@ class Chat extends React.Component {
                                 className="hide"
                             />
                         </label>
-                        {/* 文件上传 image upload*/}
+                        {/*  file upload*/}
                         <label
                             htmlFor="uploadFile"
                             className="x-chat-ops-icon ib"
-                            onClick={() => this.file && this.file.focus() && this.file.click()}
-                        >
+                            onClick={() => this.file && this.file.focus() && this.file.click()}>
                             <i className="icon iconfont icon-file-empty"/>
                             <input
                                 id="uploadFile"
@@ -421,20 +402,12 @@ class Chat extends React.Component {
                                 className="hide"
                             />
                         </label>
-                        <label htmlFor="clearMessage" onClick={this.onClearMessage}>
+                        {/* webrtc video && audio */}
+                        {webrtcButtons}
+                        {/* clear */}
+                        <label htmlFor="clearMessage" className="x-chat-ops-icon ib" onClick={this.onClearMessage}>
                             <i className="icon iconfont icon-trash"></i>
                         </label>
-                        {/*
-                         <div className="x-chat-ops-icon ib">
-                         <i className="icon-file-code" />
-                         </div>
-                         <div className="x-chat-ops-icon ib">
-                         <i className="icon-phone" />
-                         </div>
-                         <div className="x-chat-ops-icon ib">
-                         <i className="icon-videocam" />
-                         </div>
-                         */}
                     </div>
                     <div className="x-list-item x-chat-send">
                         <Input
@@ -466,10 +439,8 @@ export default connect(
     dispatch => ({
         switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset })),
         sendTxtMessage: (chatType, id, message) => dispatch(MessageActions.sendTxtMessage(chatType, id, message)),
-        sendImgMessage: (chatType, id, message, source) =>
-            dispatch(MessageActions.sendImgMessage(chatType, id, message, source)),
-        sendFileMessage: (chatType, id, message, source) =>
-            dispatch(MessageActions.sendFileMessage(chatType, id, message, source)),
+        sendImgMessage: (chatType, id, message, source) => dispatch(MessageActions.sendImgMessage(chatType, id, message, source)),
+        sendFileMessage: (chatType, id, message, source) => dispatch(MessageActions.sendFileMessage(chatType, id, message, source)),
         clearMessage: (chatType, id) => dispatch(MessageActions.clearMessage(chatType, id)),
         removeContact: id => dispatch(RosterActions.removeContact(id)),
         addContact: id => dispatch(RosterActions.addContact(id)),
