@@ -7,6 +7,8 @@ import { Button, Card, Col, Dropdown, Form, Icon, Input, Menu, Modal, Popconfirm
 import GroupActions from "@/redux/GroupRedux"
 import "./style/index.less"
 
+const iconStyle = { fontSize: 16 }
+
 const GroupInfoForm = Form.create()(props => {
     const { visible, onCancel, onCreate, form, loading } = props
     const { getFieldDecorator } = form
@@ -232,7 +234,7 @@ class GroupInfo extends React.Component {
                 title={title}
                 extra={
                     <Tooltip title={I18n.t("close")} placement="left">
-                        <Icon type="close-circle-o" onClick={this.handleSiderClick} />
+                        <Icon type="close-circle-o" onClick={this.handleSiderClick} style={iconStyle} />
                     </Tooltip>
                 }
                 bordered={false}
@@ -242,7 +244,7 @@ class GroupInfo extends React.Component {
                     {I18n.t("groupName")}
                     <span className="fr">
                         <Dropdown overlay={menu} trigger={[ "click" ]}>
-                            <Icon type="setting" />
+                            <Icon type="setting" style={iconStyle} />
                         </Dropdown>
                     </span>
                 </h3>

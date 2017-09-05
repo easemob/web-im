@@ -8,47 +8,7 @@ import GroupActions from "@/redux/GroupRedux"
 import GroupMemberActions from "@/redux/GroupMemberRedux"
 import "./style/index.less"
 
-
-
-const iconStyle = { fontSize: 16, marginLeft: 15 }
-
-class MemberSettingMenu extends React.Component {
-
-    constructor(props) {
-        super(props)
-        this.handleSetAdmin = this.props.handleSetAdmin
-    }
-    
-    onClick = ({ key }) => {
-        if (typeof this[key] === "function") {
-            this[key]()
-        }
-    }
-
-    render() {
-
-        const { handleSetAdmin, isAdmin } = this.props
-
-        const menu = (
-            <Menu onClick={ this.onClick }>
-                <Menu.Item key="handleSetAdmin">{I18n.t(isAdmin ? "removeAdmin" : "setAdmin")}</Menu.Item>
-                <Menu.Item key="2">{I18n.t("groupBlockSingle")}</Menu.Item>
-                <Menu.Item key="3">{I18n.t("removeSingleGroupMember")}</Menu.Item>
-            </Menu>
-        )
-
-        return (
-            <Dropdown overlay={menu} trigger={[ "click" ]}>
-                <a className="ant-dropdown-link" href="#menu">
-                    <Icon type="down" style={ iconStyle } />
-                </a>
-            </Dropdown>
-        )
-    }
-}
-
-
-
+const iconStyle = { fontSize: 16, marginRight: 15 }
 
 class GroupMembers extends React.Component {
     setAdmin = (groupId, name) => this.props.setAdminAsync(groupId, name)
@@ -154,27 +114,6 @@ class GroupMembers extends React.Component {
                     }
                     return data.length > 0 && canOperate
                         ? <span className="fr">{record.isAdmin}
-
-                            <MemberSettingMenu 
-                                roomid={roomId}
-                                isAdmin={_.includes(admins, record.name)}
-                                isMuted={true}
-                                handleSetAdmin={()=>{
-                                    if (_.includes(admins, record.name)) {
-                                        this.removeAdmin(roomId, record.name)
-                                    }  else {
-                                        this.setAdmin(roomId, record.name)
-                                    }
-                                }}
-
-                                handleSetMute={() => {
-                                    if (_.hasIn(muted, [ "byName", record.name ])) {
-                                        this.removeMute(roomId, record.name)
-                                    } else {
-                                        this.mute(roomId, record.name)
-                                    }
-                                }}
-                            />
 
                             {/* <Dropdown overlay={memberActionMenu} trigger={['click']}><Icon type="info-circle-o" /></Dropdown> */}
                             {/* <Popconfirm
