@@ -2,7 +2,7 @@
 
 import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
-import WebIM, { api } from "@/config/WebIM"
+import { api } from "@/config/WebIM"
 import Cookie from "js-cookie"
 import { message } from "antd"
 import { history } from "@/utils"

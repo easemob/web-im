@@ -3075,7 +3075,7 @@
              */
       _dataRecv: function (req, raw) {
         Strophe.info('_dataRecv called')
-        WebIM && WebIM.config.isDebug && Strophe.info(raw)
+        //WebIM && WebIM.config.isDebug && Strophe.info(raw)
         var elem = this._proto._reqToData(req)
         if (elem === null) {
           return

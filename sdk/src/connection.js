@@ -3745,11 +3745,6 @@ WebIM.debug = function (bool) {
 
 }
 
-if (WebIM && WebIM.config && WebIM.config.isSandBox) {
-    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '-sandbox.easemob.');
-    WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
-}
-
 module.exports = WebIM;
 
 if (module.hot) {
