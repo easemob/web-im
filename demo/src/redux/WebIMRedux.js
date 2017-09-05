@@ -184,6 +184,7 @@ WebIM.conn.listen({
             break
         case "chatroom":
             store.dispatch(ChatRoomActions.topChatroom(to))
+            break
         default:
             break
         }
@@ -191,15 +192,71 @@ WebIM.conn.listen({
     onPictureMessage: message => {
         console.log("onPictureMessage", message)
         store.dispatch(MessageActions.addMessage(message, "img"))
+        const { type, from, to } = message
+        switch (type) {
+        case "chat":
+            store.dispatch(RosterActions.topRoster(from))
+            break
+        case "groupchat":
+            store.dispatch(GroupActions.topGroup(to))
+            break
+        case "chatroom":
+            store.dispatch(ChatRoomActions.topChatroom(to))
+            break
+        default:
+            break
+        }
     },
     onFileMessage: message => {
         store.dispatch(MessageActions.addMessage(message, "file"))
+        const { type, from, to } = message
+        switch (type) {
+        case "chat":
+            store.dispatch(RosterActions.topRoster(from))
+            break
+        case "groupchat":
+            store.dispatch(GroupActions.topGroup(to))
+            break
+        case "chatroom":
+            store.dispatch(ChatRoomActions.topChatroom(to))
+            break
+        default:
+            break
+        }
     },
     onAudioMessage: message => {
         store.dispatch(MessageActions.addAudioMessage(message, "audio"))
+        const { type, from, to } = message
+        switch (type) {
+        case "chat":
+            store.dispatch(RosterActions.topRoster(from))
+            break
+        case "groupchat":
+            store.dispatch(GroupActions.topGroup(to))
+            break
+        case "chatroom":
+            store.dispatch(ChatRoomActions.topChatroom(to))
+            break
+        default:
+            break
+        }
     },
     onVideoMessage: message => {
         store.dispatch(MessageActions.addMessage(message, "video"))
+        const { type, from, to } = message
+        switch (type) {
+        case "chat":
+            store.dispatch(RosterActions.topRoster(from))
+            break
+        case "groupchat":
+            store.dispatch(GroupActions.topGroup(to))
+            break
+        case "chatroom":
+            store.dispatch(ChatRoomActions.topChatroom(to))
+            break
+        default:
+            break
+        }
     },
     onInviteMessage: msg => {
         console.log("onInviteMessage", msg)
