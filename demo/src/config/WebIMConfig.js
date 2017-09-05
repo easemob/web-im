@@ -79,7 +79,15 @@ let config = {
     /*
      * Set to auto sign-in
      */
-    isAutoLogin: true
+    isAutoLogin: true,
+    /**
+     * Size of message cache for person to person
+     */
+    p2pMessageCacheSize: 500,
+    /**
+     * Size of message cache for group chating like group, chatroom etc
+     */
+    groupMessageCacheSize: 200
 }
 
 export default config

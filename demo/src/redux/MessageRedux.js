@@ -1,5 +1,6 @@
 import { createReducer, createActions } from "reduxsauce"
 import Immutable from "seamless-immutable"
+import _ from "lodash"
 import WebIM from "@/config/WebIM"
 import { store } from "@/redux"
 
@@ -412,6 +413,9 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         time: +new Date(),
         status: status
     })
+
+    const maxCacheSize = _.includes([ "group", "chatroom" ], type) ? WebIM.conn.groupMessageCacheSize : WebIM.conn.p2pMessageCacheSize
+    if (chatData.length > maxCacheSize) chatData.shift(chatData[0])
 
     state = state.setIn([ type, chatId ], chatData)
 
