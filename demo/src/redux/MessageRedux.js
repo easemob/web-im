@@ -242,7 +242,7 @@ const { Types, Creators } = createActions({
                 // 	}
                 // },
                 to,
-                roomType: message.isRoom,
+                roomType: chatType === "chatroom",
                 onFileUploadError: function (error) {
                     console.log(error)
                     // dispatch(Creators.updateMessageStatus(pMessage, "fail"))
@@ -263,8 +263,8 @@ const { Types, Creators } = createActions({
                 }
             })
 
-            // TODO: 群组聊天需要梳理此参数的逻辑
-            if (message.isRoom) {
+            // 与 sendTextMessage 逻辑保持一致
+            if (chatType === "groupchat" || chatType === "chatroom") {
                 msgObj.setGroup("groupchat")
             }
 
@@ -302,7 +302,7 @@ const { Types, Creators } = createActions({
                 // 	}
                 // },
                 to,
-                roomType: message.isRoom,
+                roomType: chatType === "chatroom",
                 onFileUploadError: function (error) {
                     console.log(error)
                     // dispatch(Creators.updateMessageStatus(pMessage, "fail"))
@@ -323,8 +323,8 @@ const { Types, Creators } = createActions({
                 }
             })
 
-            // TODO: 群组聊天需要梳理此参数的逻辑
-            if (message.isRoom) {
+            // 与 sendTextMessage 逻辑保持一致
+            if (chatType === "groupchat" || chatType === "chatroom") {
                 msgObj.setGroup("groupchat")
             }
 
