@@ -379,7 +379,7 @@ var _login = function (options, conn) {
     conn.context.accessToken = options.access_token;
     conn.context.accessTokenExpires = options.expires_in;
     if (conn.isOpening() && conn.context.stropheConn) {
-        stropheConn = conn.context.stropheConn;
+        stropheConn = conn.getStrophe();
     } else if (conn.isOpened() && conn.context.stropheConn) {
         // return;
         stropheConn = conn.getStrophe();
