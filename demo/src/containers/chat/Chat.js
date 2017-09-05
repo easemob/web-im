@@ -284,20 +284,28 @@ class Chat extends React.Component {
 
     componentDidMount() {
         this.scollBottom()
+        console.log("componentDidMount", WebIM.config.isWebRTC, WebIM.WebRTC)
+        if (WebIM.config.isWebRTC && WebIM.WebRTC) {
+            console.log("dsd")
+            // this.initWebRTC();
+            // this.channel = new RTCChannel(this.refs.rtcWrapper);
+        }
     }
 
     componentWillUnmount() {
         if (this.timer) clearTimeout(this.timer)
     }
 
-    callVideo() {
-        console.log("sendWrapper::callVideo")
+    callVideo = () => {
+        const { selectItem } = _.get(this.props, [ "match", "params" ], {})
+        console.log("sendWrapper::callVideo", WebIM.conn.context.userId, selectItem)
         // Demo.call.caller = Demo.user
         // Demo.call.makeVideoCall(Demo.selected)
     }
 
-    callVoice() {
-        console.log("sendWrapper::callVoice")
+    callVoice = () => {
+        const { selectItem } = _.get(this.props, [ "match", "params" ], {})
+        console.log("sendWrapper::callVoice", WebIM.conn.context.userId, selectItem)
         // Demo.call.caller = Demo.user
         // Demo.call.makeVoiceCall(Demo.selected)
     }
@@ -427,6 +435,7 @@ class Chat extends React.Component {
                         {/*<TextArea rows={2} />*/}
                     </div>
                 </div>
+                <div ref="rtcWrapper"></div>
             </div>
         )
     }

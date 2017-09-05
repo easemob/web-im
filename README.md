@@ -17,7 +17,11 @@
     ./src/config/WebIM.js
     Module not found: Can't resolve 'easemob-websdk/dist/strophe-1.2.8-g.js' in '<YourRootDir>/demo/src/config'
     ```
-3. 运行demo
+3. 如果需要同时编辑sdk
+	1. 在/webrtc下执行 `npm link`
+	1. 在根目录下执行 `npm link easemob-webrtc`
+
+4. 运行demo
 	1. 运行demo，在/demo下执行 `npm start` （requires node@>=6）
 	
 
