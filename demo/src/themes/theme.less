@@ -1,6 +1,8 @@
-@import "~antd/dist/antd.less"; // 引入官方提供的 less 样式入口文件
+@import "~antd/dist/antd.less";
+// 引入官方提供的 less 样式入口文件
 @import "./css/fontello.css";
 @import "./iconfont/iconfont.css";
+@import "./font/iconfont.css";
 // @import "./theme.less"; // 引入官方提供的 less 样式入口文件
 
 // @btn-primary-bg: 000;
@@ -11,14 +13,14 @@
 
 @green-1: #00ba6e;
 // -------- Colors -----------
-@primary-color : @green-1;
-@info-color : @green-1;
-@success-color : @green-6;
-@error-color : @red-6;
-@highlight-color : @red-6;
-@warning-color : @yellow-6;
-@normal-color : #d9d9d9;
-@border-radius-base : 2px;
+@primary-color: @green-1;
+@info-color: @green-1;
+@success-color: @green-6;
+@error-color: @red-6;
+@highlight-color: @red-6;
+@warning-color: @yellow-6;
+@normal-color: #d9d9d9;
+@border-radius-base: 2px;
 
 // @btn-primary-color : #00ba6e;
 // @btn-primary-bg : #00ba6e;
@@ -36,31 +38,32 @@
 
 // default theme
 body {
-	.headerBg {
-		background-color: #000;
-	}
+    .headerBg {
+        background-color: #000;
+    }
 
-	// overflow: hidden;
-	// height: 100%;
-	// 禁止移动端下拉等touch操作的的缓动，是的整体和内部滚动区域冲突导致的滚动不明显
-	position: fixed;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
+    // overflow: hidden;
+    // height: 100%;
+    // 禁止移动端下拉等touch操作的的缓动，是的整体和内部滚动区域冲突导致的滚动不明显
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
+
 .hide {
-	display: none !important;
+    display: none !important;
 }
 
 input[type=file] {
-	position: absolute;
-	top: 0;
-	right: 0;
-	min-width: 100%;
-	min-height: 100%;
-	filter: alpha(opacity=0);
-	opacity: 0;
-	cursor: inherit;
-	display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    cursor: inherit;
+    display: block;
 }

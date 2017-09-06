@@ -8,144 +8,144 @@
 @menu-dark-submenu-bg: #333;
 
 body {
-	min-height: 100%;
-	background-color: #ececec;
-	position: relative;
-	// 根据内容大小扩充高度
-	height: auto;
+    min-height: 100%;
+    background-color: #ececec;
+    position: relative;
+    // 根据内容大小扩充高度
+    height: auto;
 }
 
 .@{layout-prefix-cls-x} {
-	// display: flex;
-	// flex-direction: column;
-	// flex: auto;
-	// position: relative;
-	overflow: auto;
-	background: @layout-body-background;
+    // display: flex;
+    // flex-direction: column;
+    // flex: auto;
+    // position: relative;
+    overflow: auto;
+    background: @layout-body-background;
 
-	&&-has-sider {
-		// flex-direction: row;
+    &&-has-sider {
+        // flex-direction: row;
 
-		.responsive {
-			margin-left: 200px;
-		}
-	}
+        .responsive {
+            margin-left: 200px;
+        }
+    }
 
-	&-header,
-	&-footer {
-		// flex: 0 0 auto;
-	}
+    &-header,
+    &-footer {
+        // flex: 0 0 auto;
+    }
 
-	&-header {
-		background: #000;
-		// padding: @layout-header-padding;
-		height: 100px;
-		line-height: @layout-header-height;
-		overflow: hidden;
-	}
+    &-header {
+        background: #000;
+        // padding: @layout-header-padding;
+        height: 100px;
+        line-height: @layout-header-height;
+        overflow: hidden;
+    }
 
-	&-footer {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		padding: @layout-footer-padding;
-		color: @text-color;
-		font-size: @font-size-base;
-	}
+    &-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: @layout-footer-padding;
+        color: @text-color;
+        font-size: @font-size-base;
+    }
 
-	&-main {
-		// flex: auto;
-		position: absolute;
-		top: 100px;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: 100;
-	}
+    &-main {
+        // flex: auto;
+        position: absolute;
+        top: 100px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 100;
+    }
 
-	&-chat {
-		// flex: auto;
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: 98;
-		transition: all .3s cubic-bezier(0.215, 0.61, 0.355, 1);
-	}
+    &-chat {
+        // flex: auto;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 98;
+        transition: all .3s cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
 
-	&-sider {
-		position: absolute;
-		top: 0px;
-		left: 0;
-		bottom: 0;
-		z-index: 99;
-		transition: all .3s @ease-out;
-		background: #fff;
-		border-right: 1px solid #d6dce0;
-		overflow-y: scroll;
+    &-sider {
+        position: absolute;
+        top: 0px;
+        left: 0;
+        bottom: 0;
+        //z-index: 99;
+        transition: all .3s @ease-out;
+        background: #fff;
+        border-right: 1px solid #d6dce0;
+        overflow-y: scroll;
 
-		/* fix firefox can't set width smaller than content on flex item */
-		min-width: 0;
+        /* fix firefox can't set width smaller than content on flex item */
+        min-width: 0;
 
-		&-has-trigger {
-			padding-bottom: @layout-trigger-height;
-		}
+        &-has-trigger {
+            padding-bottom: @layout-trigger-height;
+        }
 
-		&-right {
-			order: 1;
-		}
+        &-right {
+            order: 1;
+        }
 
-		&-trigger {
-			position: absolute;
-			text-align: center;
-			width: 100%;
-			bottom: 0;
-			cursor: pointer;
-			height: @layout-trigger-height;
-			line-height: @layout-trigger-height;
-			background: tint(@heading-color, 20%);
-			color: #fff;
-		}
+        &-trigger {
+            position: absolute;
+            text-align: center;
+            width: 100%;
+            bottom: 0;
+            cursor: pointer;
+            height: @layout-trigger-height;
+            line-height: @layout-trigger-height;
+            background: tint(@heading-color, 20%);
+            color: #fff;
+        }
 
-		&-zero-width {
-			& > * {
-				overflow: hidden;
-			}
+        &-zero-width {
+            & > * {
+                overflow: hidden;
+            }
 
-			&-trigger {
-				position: absolute;
-				top: @layout-header-height;
-				right: -@layout-zero-trigger-width;
-				text-align: center;
-				width: @layout-zero-trigger-width;
-				height: @layout-zero-trigger-height;
-				line-height: @layout-zero-trigger-height;
-				background: @layout-sider-background;
-				color: #fff;
-				font-size: @layout-zero-trigger-width / 2;
-				border-radius: 0 @border-radius-base @border-radius-base 0;
-				cursor: pointer;
-				transition: background .3s ease;
+            &-trigger {
+                position: absolute;
+                top: @layout-header-height;
+                right: -@layout-zero-trigger-width;
+                text-align: center;
+                width: @layout-zero-trigger-width;
+                height: @layout-zero-trigger-height;
+                line-height: @layout-zero-trigger-height;
+                background: @layout-sider-background;
+                color: #fff;
+                font-size: @layout-zero-trigger-width / 2;
+                border-radius: 0 @border-radius-base @border-radius-base 0;
+                cursor: pointer;
+                transition: background .3s ease;
 
-				&:hover {
-					background: tint(@layout-sider-background, 10%);
-				}
-			}
-		}
-	}
+                &:hover {
+                    background: tint(@layout-sider-background, 10%);
+                }
+            }
+        }
+    }
 
-	&-right-sider {
-		position: absolute;
-		top: 2px;
+    &-right-sider {
+        position: absolute;
+        top: 2px;
         left: 100%;
         bottom: 0;
-		z-index: 100;
-		background: #fff;
-		border-left: 1px solid #d6dce0;
-		min-width: 0;
+        z-index: 100;
+        background: #fff;
+        border-left: 1px solid #d6dce0;
+        min-width: 0;
 
-		transition: all .3s @ease-out;
-	}
+        transition: all .3s @ease-out;
+    }
 }
