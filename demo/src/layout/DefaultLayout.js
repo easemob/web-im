@@ -86,6 +86,10 @@ class DefaultLayout extends Component {
         const { selectItem, selectTab } = this.state
         const redirectPath = "/" + [ e.key ].join("/")
         if (selectTab == e.key) return
+        
+        // quite previous chatroom
+        if (selectItem) this.props.quitChatRoom(selectItem)
+            
         this.props.switchRightSider({ rightSiderOffset: 0 })
         history.push(redirectPath + location.search)
     }
@@ -117,10 +121,11 @@ class DefaultLayout extends Component {
         }
 
         if (selectTab == "chatroom") {
+            // moved to changeTab
             //quit previous chatroom
-            if (selectItem) {
-                this.props.quitChatRoom(selectItem)
-            }
+            // if (selectItem) {
+            //     this.props.quitChatRoom(selectItem)
+            // }
             // join chatroom
             this.props.joinChatRoom(e.key)
         }

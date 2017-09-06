@@ -405,6 +405,7 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         type = "stranger"
     }
 
+    // TODO: flowing may have bugs to be fixed
     // 更新对应消息数组
     const chatData = state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
     chatData.push({
