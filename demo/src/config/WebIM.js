@@ -34,7 +34,7 @@ if (!WebIM.conn.apiUrl) {
     WebIM.conn.apiUrl = WebIM.config.apiURL
 }
 
-websdk.debug(false)
+websdk.debug(true)
 
 const appKeyPair = WebIM.config.appkey.split("#")
 export let api = Api.create({

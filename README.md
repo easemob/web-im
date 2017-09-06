@@ -23,7 +23,7 @@
 
 4. 运行demo
 	1. 运行demo，在/demo下执行 `npm start` （requires node@>=6）
-	
+	PS: 如果需要调试webrtc，需要HTTPS协议 在/demo下执行 `HTTPS=true npm start`
 
 ## 项目组成
 - create-react-app 初始工具包

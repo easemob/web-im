@@ -1,9 +1,9 @@
 import WebIM from "@/config/WebIM"
+import "./style/webrtc.less"
 
 var React = require("react")
 var ReactDOM = require("react-dom")
 var Drag = require("./drag")
-
 var Channel = React.createClass({
     getInitialState: function () {
         return {
@@ -276,12 +276,12 @@ var Channel = React.createClass({
     }
 })
 
-export default function (dom) {
+export default (dom) => {
     this.dom = dom
     var me = this
     return {
         setLocal: function (stream, streamType) {
-            // console.log('channel setLocal', 'user=', WebIM.conn.context.userId, 'caller=', WebIM.call.caller, 'callee=', WebIM.call.callee);
+            console.log("channel setLocal", "user=", WebIM.conn.context.userId, "caller=", WebIM.call.caller, "callee=", WebIM.call.callee)
             this.localStream = stream
             var title = ""
             var hideAccept = false
@@ -299,7 +299,7 @@ export default function (dom) {
             )
         },
         setRemote: function (stream, streamType) {
-            // console.log('channel setRemote', 'user=', WebIM.conn.context.userId, 'caller=', WebIM.call.caller, 'callee=', WebIM.call.callee);
+            console.log("channel setRemote", "user=", WebIM.conn.context.userId, "caller=", WebIM.call.caller, "callee=", WebIM.call.callee)
             this.remoteStream = stream
             var title = ""
             var localFullRemoteCorner = false

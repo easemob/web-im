@@ -23,6 +23,7 @@ import { history } from "@/utils"
 import getTabMessages from "@/selectors/ChatSelector"
 import RTCChannel from "@/components/common/rtcChannel"
 
+
 const { TextArea } = Input
 const FormItem = Form.Item
 
@@ -290,6 +291,7 @@ class Chat extends React.Component {
         }
     }
 
+    channel = null
     rtcTimeoutID = null
 
     initWebRTC() {
@@ -434,7 +436,7 @@ class Chat extends React.Component {
         } = this.props
 
         const { selectItem, selectTab } = match.params
-        console.log(collapsed, selectTab, selectItem)
+        // console.log(collapsed, selectTab, selectItem)
 
         const back = () => {
             const redirectPath = "/" + [ selectTab ].join("/") + location.search
@@ -550,7 +552,7 @@ class Chat extends React.Component {
                         {/*<TextArea rows={2} />*/}
                     </div>
                 </div>
-                <div ref="rtcWrapper"></div>
+                <div className="webim-rtc" ref="rtcWrapper"></div>
             </div>
         )
     }
