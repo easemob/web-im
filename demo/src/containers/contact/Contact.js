@@ -7,8 +7,10 @@ import ContactItem from "@/components/contact/ContactItem"
 import utils from "@/utils"
 import GroupActions from "@/redux/GroupRedux"
 import ChatRoomActions from "@/redux/ChatRoomRedux"
+import getTabMessages from "@/selectors/ChatSelector"
+import getCurrentContacts from "@/selectors/ContactSelector"
 
-const Contact = ({ history, match, common, location, roster, group, chatroom, stranger, message, blacklist, getGroups, getChatRooms, ...rest }) => {
+const Contact = ({ history, match, common, location, contacts, group, chatroom, stranger, message, blacklist, getGroups, getChatRooms, ...rest }) => {
     const { pathname } = location
     const paths = pathname.split("/")
     const chatType = paths[1]
@@ -28,40 +30,35 @@ const Contact = ({ history, match, common, location, roster, group, chatroom, st
     switch (chatType) {
     case "contact":
         const { byId, chat } = message
-        roster &&
-            roster.friends &&
-            roster.friends.forEach((name, index) => {
-                if (blacklist.names.indexOf(name) !== -1) return
-                const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], name ], []))
-                const count = message.getIn([ "unread", "chat", name ], 0)
-                console.log(name, count)
-                items[index] = {
-                    name,
-                    unread: count,
-                    ...info
-                }
-            })
+        _.forEach(_.get(contacts, "friends", []), (name, index) => {
+            if (_.includes(blacklist.names, name)) return
+            const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], name ], []))
+            const count = message.getIn([ "unread", "chat", name ], 0)
+            items[index] = {
+                name,
+                unread: count,
+                ...info
+            }
+        })
         break
     case "group":
         if (!common.isGetGroupAlready) {
             // 获取群组列表
             getGroups()
         } else {
-            group &&
-                group.names &&
-                group.names.forEach((v, index) => {
-                    let [ name, id ] = v.split("_#-#_")
-                    const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], id ], []))
-                    const count = message.getIn([ "unread", "groupchat", name ], 0)
-                    items[index] = {
-                        name,
-                        id,
-                        unread: count,
-                        latestMessage: "",
-                        latestTime: "",
-                        ...info
-                    }
-                })
+            _.forEach(_.get(contacts, "names", []), (v, index) => {
+                const [ name, id ] = v.split("_#-#_")
+                const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], id ], []))
+                const count = message.getIn([ "unread", "groupchat", name ], 0)
+                items[index] = {
+                    name,
+                    id,
+                    unread: count,
+                    latestMessage: "",
+                    latestTime: "",
+                    ...info
+                }
+            })
         }
         break
     case "chatroom":
@@ -69,39 +66,37 @@ const Contact = ({ history, match, common, location, roster, group, chatroom, st
             // 获取聊天室列表
             getChatRooms()
         } else {
-            chatroom &&
-                chatroom.names &&
-                chatroom.names.forEach((v, index) => {
-                    let [ name, id ] = v.split("_#-#_")
-                    const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], id ], []))
-                    const count = message.getIn([ "unread", "chatroom", name ], 0)
-                    items[index] = {
-                        name,
-                        id,
-                        unread: count,
-                        latestMessage: "",
-                        latestTime: "",
-                        ...info
-                    }
-                })
+            _.forEach(_.get(contacts, "names", []), (v, index) => {
+                const [ name, id ] = v.split("_#-#_")
+                const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], id ], []))
+                const count = message.getIn([ "unread", "chatroom", name ], 0)
+                items[index] = {
+                    name,
+                    id,
+                    unread: count,
+                    latestMessage: "",
+                    latestTime: "",
+                    ...info
+                }
+            })
         }
         break
     case "stranger":
-        if (stranger && stranger.byId) {
-            const names = Object.keys(stranger.byId)
-            names.length &&
-                names.sort().forEach((name, index) => {
-                    const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], name ], []))
-                    const count = message.getIn([ "unread", "stranger", name ], 0)
-                    items[index] = {
-                        name,
-                        unread: count,
-                        latestMessage: "",
-                        latestTime: "",
-                        ...info
-                    }
-                })
-        }
+        _.forEach(_.get(contacts, "byId", []), (v, name) => {
+            // TODO: 目前的数据结构不利于实现最新未读置顶，可能需要改造 entities.stranger 结构
+            const info = utils.getLatestMessage(_.get(message, [ chatTypes[chatType], name ], []))
+            const count = message.getIn([ "unread", "stranger", name ], 0)
+            items.push({
+                name,
+                unread: count,
+                latestMessage: "",
+                latestTime: "",
+                ...info
+            })
+        })
+        break
+    default:
+        // 不加 default 的话，编辑器提醒辣眼睛
         break
     }
     // console.log(chatType, chatId, items)
@@ -120,14 +115,11 @@ Contact.propTypes = {
 
 export default withRouter(
     connect(
-        ({ entities, common }) => ({
-            common,
-            roster: entities.roster,
-            group: entities.group,
-            chatroom: entities.chatroom,
-            stranger: entities.stranger,
-            message: entities.message,
-            blacklist: entities.blacklist,
+        (state, props) => ({
+            common: state.common,
+            contacts: getCurrentContacts(state, props.match.params),
+            message: state.entities.message,
+            blacklist: state.entities.blacklist,
         }),
         dispatch => ({
             doLogin: (username, password) => {
