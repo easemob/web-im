@@ -488,7 +488,8 @@ class Chat extends React.Component {
                     </div>
                 </div>
                 <div className="x-chat-content" ref="x-chat-content">
-                    {messageList && messageList.map(message => <ChatMessage key={message.id} {...message} />)}
+                    {/* fixed bug of messageList.map(...) */}
+                    {_.map(messageList, message => <ChatMessage key={message.id} {...message} />)}
                 </div>
                 <div className="x-chat-footer">
                     <div className="x-list-item x-chat-ops">
