@@ -114,6 +114,14 @@ WebIM.conn.listen({
             break
         case "leaveChatRoom": // Leave the chat room
             break
+        case "addMute":
+            message.warning("you was muted", msg)
+            break
+        case "removeMute":
+            message.success("you was unmuted", msg)
+            break
+        default:
+            break
         }
     },
     // 各种异常
