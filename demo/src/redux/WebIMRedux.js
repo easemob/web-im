@@ -281,21 +281,7 @@ WebIM.conn.listen({
     },
     onMutedMessage: msg => {
         console.log("onMutedMessage", msg)
-        const state = store.getState()
-        const groupchat = _.get(state, [ "entities", "message", "groupchat" ])
-        for (let groupId in groupchat) {
-            if (groupchat.hasOwnProperty(groupId)) {
-                const element = groupchat[groupId]
-                const { mid } = msg
-                const found = _.find(element, { ext: { mid } })
-                if (found) {
-                    const { id } = found
-                    // store.dispatch(MessageActions.updateMessageStatus({ id }, "muted"))
-                    store.dispatch(MessageActions.muteMessage(id))
-                    break                    
-                }
-            }
-        }
+        store.dispatch(MessageActions.muteMessage(msg.mid))
         message.error(`${I18n.t("you")}${I18n.t("muted")}`)
     }
 })

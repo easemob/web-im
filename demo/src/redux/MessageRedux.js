@@ -183,7 +183,7 @@ const { Types, Creators } = createActions({
     addMessage: [ "message", "bodyType" ],
     updateMessageStatus: [ "message", "status" ],
     updateMessageMid: [ "id", "mid" ],
-    muteMessage: [ "id" ],
+    muteMessage: [ "mid" ],
     demo: [ "chatType" ],
     clearMessage: [ "chatType", "id" ],
     clearUnread: [ "chatType", "id" ],
@@ -473,13 +473,13 @@ export const updateMessageMid = (state, { id, mid }) => {
     return state
 }
 
-export const muteMessage = (state, { id }) => {
+export const muteMessage = (state, { mid }) => {
     const groupchat = state.getIn([ "groupchat" ])
     for (var groupId in groupchat) {
         if (groupchat.hasOwnProperty(groupId)) {
             // const m = groupchat[groupId];
             // const arr = m.asMutable()
-            const found = _.find(groupchat[groupId], { id })
+            const found = _.find(groupchat[groupId], { ext: { mid } })
             if (found) {
                 const msg = found.setIn([ "status" ], "muted")
                 const arr = groupchat[groupId].asMutable()

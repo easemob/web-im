@@ -42,11 +42,12 @@ const renderTxt = txt => {
     return rnTxt
 }
 
-export default ({ bySelf, from, time, body }) => {
+export default ({ bySelf, from, time, body, status }) => {
     // x-message-right
 
     const cls = classNames("x-message-group", bySelf ? "x-message-right" : "")
     const localFormat = renderTime(time)
+    const isMuted = status === "muted" ? true : false
 
     let content = null
     if (body.type == "txt") {
@@ -117,7 +118,7 @@ export default ({ bySelf, from, time, body }) => {
                 {from}
             </div>
             <div className="x-message-content">
-                {content}
+                { isMuted ? <i className="webim webim-j" style={{ color: "red", fontSize: "1.5em", fontWeight: 300 }}></i> : ""} {content}
             </div>
             {bySelf
                 ? <div className="x-message-time">
