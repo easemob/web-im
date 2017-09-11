@@ -182,6 +182,8 @@ function copy(message, tpl) {
 const { Types, Creators } = createActions({
     addMessage: [ "message", "bodyType" ],
     updateMessageStatus: [ "message", "status" ],
+    updateMessageMid: [ "id", "mid" ],
+    muteMessage: [ "id" ],
     demo: [ "chatType" ],
     clearMessage: [ "chatType", "id" ],
     clearUnread: [ "chatType", "id" ],
@@ -388,6 +390,7 @@ export const INITIAL_STATE = Immutable({
  * @returns {*}
  */
 export const addMessage = (state, { message, bodyType = "txt" }) => {
+    console.log("redux addMessage", message)
     !message.status && (message = parseFromServer(message, bodyType))
     const { username = "" } = state.user || {}
     const { id, to, status } = message
@@ -405,7 +408,7 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         type = "stranger"
     }
 
-    // TODO: flowing may have bugs to be fixed
+    // TODO: following may have bugs to be fixed
     // 更新对应消息数组
     const chatData = state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
     chatData.push({
@@ -452,11 +455,50 @@ export const clearUnread = (state, { chatType, id }) => {
     return state.setIn([ "unread", chatType ], data)
 }
 
+export const updateMessageMid = (state, { id, mid }) => {
+    const groupchat = state.getIn([ "groupchat" ])
+    for (let groupId in groupchat) {
+        if (groupchat.hasOwnProperty(groupId)) {
+            // const element = groupchat[groupId]
+            const found = _.find(groupchat[groupId], { id })
+            if (found) {
+                const msg = found.setIn([ "ext", "mid" ], mid)
+                const arr = groupchat[groupId].asMutable()
+                arr.splice(arr.indexOf(found), 1, msg)
+                state = state.setIn([ "groupchat", groupId ], arr)
+                break
+            }
+        }
+    }
+    return state
+}
+
+export const muteMessage = (state, { id }) => {
+    const groupchat = state.getIn([ "groupchat" ])
+    for (var groupId in groupchat) {
+        if (groupchat.hasOwnProperty(groupId)) {
+            // const m = groupchat[groupId];
+            // const arr = m.asMutable()
+            const found = _.find(groupchat[groupId], { id })
+            if (found) {
+                const msg = found.setIn([ "status" ], "muted")
+                const arr = groupchat[groupId].asMutable()
+                arr.splice(arr.indexOf(found), 1, msg)
+                state = state.setIn([ "groupchat", groupId ], arr)
+                break
+            }
+        }
+    }
+    return state
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
     [Types.ADD_MESSAGE]: addMessage,
     [Types.UPDATE_MESSAGE_STATUS]: updateMessageStatus,
+    [Types.UPDATE_MESSAGE_MID]: updateMessageMid,
+    [Types.MUTE_MESSAGE]: muteMessage,
     [Types.CLEAR_MESSAGE]: clearMessage,
     [Types.CLEAR_UNREAD]: clearUnread
 })

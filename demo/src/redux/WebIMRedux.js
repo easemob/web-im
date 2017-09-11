@@ -180,6 +180,11 @@ WebIM.conn.listen({
     onBlacklistUpdate: list => {
         store.dispatch(BlacklistActions.updateBlacklist(list))
     },
+    onReceivedMessage: message => {
+        console.log("onReceivedMessage", message)
+        const { id, mid } = message
+        store.dispatch(MessageActions.updateMessageMid(id, mid))
+    },
     // 文本信息
     onTextMessage: message => {
         console.log("onTextMessage", message)
@@ -276,6 +281,21 @@ WebIM.conn.listen({
     },
     onMutedMessage: msg => {
         console.log("onMutedMessage", msg)
+        const state = store.getState()
+        const groupchat = _.get(state, [ "entities", "message", "groupchat" ])
+        for (let groupId in groupchat) {
+            if (groupchat.hasOwnProperty(groupId)) {
+                const element = groupchat[groupId]
+                const { mid } = msg
+                const found = _.find(element, { ext: { mid } })
+                if (found) {
+                    const { id } = found
+                    // store.dispatch(MessageActions.updateMessageStatus({ id }, "muted"))
+                    store.dispatch(MessageActions.muteMessage(id))
+                    break                    
+                }
+            }
+        }
         message.error(`${I18n.t("you")}${I18n.t("muted")}`)
     }
 })
