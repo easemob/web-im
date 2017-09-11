@@ -114,9 +114,6 @@ class DefaultLayout extends Component {
                 this.setState({ roomId: groupId })
                 const room = _.get(group, `byId.${groupId}`, {})
                 this.setState({ room })
-                this.props.listGroupMemberAsync({ groupId })
-                this.props.getMutedAsync(groupId)
-                this.props.getGroupAdminAsync(groupId)
             }
         }
 

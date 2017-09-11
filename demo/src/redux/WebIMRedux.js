@@ -115,10 +115,12 @@ WebIM.conn.listen({
         case "leaveChatRoom": // Leave the chat room
             break
         case "addMute":
-            message.warning("you was muted", msg)
+            console.log("you was muted", msg)
+            message.warning(`you was muted: ${msg}`)
             break
         case "removeMute":
-            message.success("you was unmuted", msg)
+            console.log("you was unmuted", msg)
+            message.success(`you was unmuted: ${msg}`)
             break
         default:
             break

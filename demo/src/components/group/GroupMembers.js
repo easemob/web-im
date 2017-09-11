@@ -45,7 +45,6 @@ class GroupMembers extends React.Component {
 
         const data = _.map(members, (val, key) => {
             const { affiliation } = val
-            console.log(affiliation)
             if (affiliation === "owner") {
                 owner = key
                 if (key === currentUser) {

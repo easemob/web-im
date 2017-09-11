@@ -14,6 +14,7 @@ import styles from "./style/index.less"
 import LoginActions from "@/redux/LoginRedux"
 import MessageActions from "@/redux/MessageRedux"
 import GroupActions from "@/redux/GroupRedux"
+import GroupMemberActions from "@/redux/GroupMemberRedux"
 import StrangerActions from "@/redux/StrangerRedux"
 import RosterActions from "@/redux/RosterRedux"
 import BlacklistActions from "@/redux/BlacklistRedux"
@@ -283,11 +284,28 @@ class Chat extends React.Component {
         this.scollBottom()
     }
 
+    /**
+     * componentDidMount
+     * 
+     * @memberof Chat
+     * 
+     * Note: get group members, muted members and group admins when in a group.
+     * Especially recommend get muted members here. 
+     * Because, it will check current user in or not in muted list when sending a group message.
+     */
     componentDidMount() {
         this.scollBottom()
         if (WebIM.config.isWebRTC && WebIM.WebRTC) {
             this.initWebRTC()
             this.channel = new RTCChannel(this.refs.rtcWrapper)
+        }
+        
+        const { selectItem, selectTab } = _.get(this.props, [ "match", "params" ], {})
+        if (selectItem && selectTab === "group") {
+            const groupId = selectItem
+            this.props.listGroupMemberAsync({ groupId })
+            this.props.getMutedAsync(groupId)
+            this.props.getGroupAdminAsync(groupId)                
         }
     }
 
@@ -568,6 +586,9 @@ export default connect(
         sendImgMessage: (chatType, id, message, source) => dispatch(MessageActions.sendImgMessage(chatType, id, message, source)),
         sendFileMessage: (chatType, id, message, source) => dispatch(MessageActions.sendFileMessage(chatType, id, message, source)),
         clearMessage: (chatType, id) => dispatch(MessageActions.clearMessage(chatType, id)),
+        listGroupMemberAsync: opt => dispatch(GroupMemberActions.listGroupMemberAsync(opt)),
+        getMutedAsync: groupId => dispatch(GroupMemberActions.getMutedAsync(groupId)),
+        getGroupAdminAsync: groupId => dispatch(GroupMemberActions.getGroupAdminAsync(groupId)),
         removeContact: id => dispatch(RosterActions.removeContact(id)),
         addContact: id => dispatch(RosterActions.addContact(id)),
         deleteStranger: id => dispatch(StrangerActions.deleteStranger(id)),

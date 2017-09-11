@@ -169,7 +169,6 @@ export const updateGroupMember = (state, { groupId, members }) => {
             const { member, owner } = val
             const name = member || owner
             const affiliation = owner ? "owner" : "member"
-            // acc.push({ name, affiliation })
             acc[name] = { name, affiliation }
             return acc
         },
