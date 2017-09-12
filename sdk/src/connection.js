@@ -2003,10 +2003,7 @@ connection.prototype.handleDeliveredMessage = function (message) {
     var id = message.id;
     var body = message.getElementsByTagName('body');
     var mid = 0;
-    if (isNaN(body[0].innerHTML))
-        mid = body[1].innerHTML;
-    else
-        mid = body[0].innerHTML;
+    mid = body[0].innerHTML;
     var msg = {
         mid: mid
     };
@@ -2023,10 +2020,7 @@ connection.prototype.handleAckedMessage = function (message) {
     var id = message.id;
     var body = message.getElementsByTagName('body');
     var mid = 0;
-    if (isNaN(body[0].innerHTML))
-        mid = body[1].innerHTML;
-    else
-        mid = body[0].innerHTML;
+    mid = body[0].innerHTML;
     var msg = {
         mid: mid
     };
