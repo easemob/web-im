@@ -439,9 +439,23 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
  * @returns {*}
  */
 export const updateMessageStatus = (state, { message, status = "" }) => {
-    const { id } = message
+    const { id, to } = message
+    let { type } = message
+    const username = _.get(store.getState(), "login.username", "")
+    const mFrom = message.from || username
+    const bySelf = mFrom === username
+    const chatId = bySelf || type !== "chat" ? to : mFrom
+    const rosters = _.get(store.getState(), "entities.roster.byName")
+    if (type === "chat" && !_.includes(rosters, chatId)) {
+        type = "stranger"
+    }
 
-    return state.setIn([ "byId", id, "status" ], status).setIn([ "byId", id, "time" ], +new Date())
+    const messages = state.getIn([ type, chatId ], Immutable([])).asMutable()
+    const found = _.find(messages, { id })
+    const msg = found.setIn([ "status" ], status)
+    messages.splice(messages.indexOf(found), 1, msg)
+
+    return state.setIn([ type, chatId ], messages)
 }
 
 export const clearMessage = (state, { chatType, id }) => {
