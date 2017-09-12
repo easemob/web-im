@@ -31,6 +31,10 @@ WebIM.conn.listen({
         const path = history.location.pathname.indexOf("login") !== -1 ? "/contact" : history.location.pathname
         const redirectUrl = `${path}?username=${username}`
 
+        
+        // 获取本地储存的未读消息条目
+        store.dispatch(MessageActions.initUnread())
+        
         // 出席后才能接受推送消息
         // presence to be online
         WebIM.conn.setPresence()
