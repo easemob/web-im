@@ -1,6 +1,19 @@
 # 版本更新说明:
 
-## v1.4.12 @ 2017-07-17
+## v1.4.13 @ 2017-09-12
+
+###Feature
+
+* [sdk] 新增jsdoc
+
+###BugFix
+
+* [sdk]  ios(8.1)webview 已读和已送到回执异常
+* [sdk]  多设备登录异常
+* [demo] 多设备登录异常
+
+
+## v1.4.12 @ 2017-06-17
 
 ###Feature
 
@@ -213,7 +226,19 @@
 ---
 # ChangeLog:
 
-## v1.4.12 @ 2017-07-17
+## v1.4.13 @ 2017-09-12
+
+###Feature
+
+* [sdk] add jsdoc
+
+###BugFix
+
+* [sdk]  delevered/acked message bug in ios(8.1) webview 
+* [sdk]  multilogin bugs
+* [demo] multilogin bugs
+
+## v1.4.12 @ 2017-06-17
 
 ###Feature
 

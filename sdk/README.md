@@ -1,6 +1,18 @@
 # Changelog
 
-## v1.4.12 @ 2017-07-17
+## v1.4.13 @ 2017-09-12
+
+###Feature
+
+* [sdk] add jsdoc
+
+###BugFix
+
+* [sdk]  delevered/acked message bug in ios(8.1) webview 
+* [sdk]  multilogin bugs
+* [demo] multilogin bugs
+
+## v1.4.12 @ 2017-06-17
 
 ###Feature
 
@@ -22,7 +34,6 @@
 * [demo] Change window.history.pushState into window.location.href
 * [demo] Change window.location.href = xxxx into href.hash
 * [demo] Show the available operations to administrators
-
 
 ## v1.4.11 @ 2017-06-07
 
