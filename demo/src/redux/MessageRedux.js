@@ -428,6 +428,8 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         state = state.setIn([ "unread", type, chatId ], ++count)
     }
 
+    state = state.setIn([ "byId", id ], { type, chatId })
+
     return state
 }
 
@@ -439,22 +441,12 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
  * @returns {*}
  */
 export const updateMessageStatus = (state, { message, status = "" }) => {
-    const { id, to } = message
-    let { type } = message
-    const username = _.get(store.getState(), "login.username", "")
-    const mFrom = message.from || username
-    const bySelf = mFrom === username
-    const chatId = bySelf || type !== "chat" ? to : mFrom
-    const rosters = _.get(store.getState(), "entities.roster.byName")
-    if (type === "chat" && !_.includes(rosters, chatId)) {
-        type = "stranger"
-    }
-
-    const messages = state.getIn([ type, chatId ], Immutable([])).asMutable()
+    const { id } = message
+    const { type, chatId } = state.getIn([ "byId", id ])
+    const messages = state.getIn([ type, chatId ]).asMutable()
     const found = _.find(messages, { id })
     const msg = found.setIn([ "status" ], status)
     messages.splice(messages.indexOf(found), 1, msg)
-
     return state.setIn([ type, chatId ], messages)
 }
 
@@ -469,40 +461,17 @@ export const clearUnread = (state, { chatType, id }) => {
 }
 
 export const updateMessageMid = (state, { id, mid }) => {
-    const groupchat = state.getIn([ "groupchat" ])
-    for (let groupId in groupchat) {
-        if (groupchat.hasOwnProperty(groupId)) {
-            // const element = groupchat[groupId]
-            const found = _.find(groupchat[groupId], { id })
-            if (found) {
-                const msg = found.setIn([ "ext", "mid" ], mid)
-                const arr = groupchat[groupId].asMutable()
-                arr.splice(arr.indexOf(found), 1, msg)
-                state = state.setIn([ "groupchat", groupId ], arr)
-                break
-            }
-        }
-    }
-    return state
+    return state.setIn([ "byMid", mid ], { id })
 }
 
 export const muteMessage = (state, { mid }) => {
-    const groupchat = state.getIn([ "groupchat" ])
-    for (var groupId in groupchat) {
-        if (groupchat.hasOwnProperty(groupId)) {
-            // const m = groupchat[groupId];
-            // const arr = m.asMutable()
-            const found = _.find(groupchat[groupId], { ext: { mid } })
-            if (found) {
-                const msg = found.setIn([ "status" ], "muted")
-                const arr = groupchat[groupId].asMutable()
-                arr.splice(arr.indexOf(found), 1, msg)
-                state = state.setIn([ "groupchat", groupId ], arr)
-                break
-            }
-        }
-    }
-    return state
+    const { id } = state.getIn([ "byMid", mid ])
+    const { type, chatId } = state.getIn([ "byId", id ])
+    const messages = state.getIn([ type, chatId ]).asMutable()
+    const found = _.find(messages, { id })
+    const msg = found.setIn([ "status" ], "muted")
+    messages.splice(messages.indexOf(found), 1, msg)
+    return state.setIn([ type, chatId ], messages)
 }
 
 /* ------------- Hookup Reducers To Types ------------- */
