@@ -441,7 +441,8 @@ class Chat extends React.Component {
             const { selectItem, selectTab } = _.get(this.props, [ "match", "params" ], {})
             const chatTypes = { "contact": "chat", "group": "groupchat", "chatroom": "chatroom", "stranger": "stranger" }
             const chatType = chatTypes[selectTab]
-            this.props.fetchMessage(selectItem, chatType, this.props.messageList.length - 1)
+            // TODO: 暂时移除滚动查看更多消息
+            //this.props.fetchMessage(selectItem, chatType, this.props.messageList.length - 1)
         }
     }
 
