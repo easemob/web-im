@@ -470,18 +470,14 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
     }
 
     // 更新对应消息数组
-<<<<<<< Updated upstream
     const chatData = state.getIn([ type, chatId ], Immutable([])).asMutable()
-    chatData.push({
-=======
-    const chatData = state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
     const _message = {
->>>>>>> Stashed changes
         ...message,
         bySelf,
         time: +new Date(),
         status: status
     }
+
     chatData.push(_message)
 
     // 添加新消息到本地db，并加入未读状态：自己发的/不是来自当前聊天对象记 0，其它记 1
@@ -531,7 +527,7 @@ export const clearUnread = (state, { chatType, id }) => {
     return state.setIn([ "unread", chatType ], data)
 }
 
-<<<<<<< Updated upstream
+
 export const updateMessageMid = (state, { id, mid }) => {
     return state.setIn([ "byMid", mid ], { id })
 }
@@ -544,7 +540,8 @@ export const muteMessage = (state, { mid }) => {
     const msg = found.setIn([ "status" ], "muted")
     messages.splice(messages.indexOf(found), 1, msg)
     return state.setIn([ type, chatId ], messages)
-=======
+}
+
 export const initUnread = (state, { unreadList }) => {
     let data = state["unread"]
     data = Immutable.merge(data, unreadList)
@@ -556,7 +553,6 @@ export const fetchMessage = (state, { id, chatType, messages, offset }) => {
     data = data.concat(messages)
     //-----------------------
     return state.setIn([ chatType, id ], data)
->>>>>>> Stashed changes
 }
 
 /* ------------- Hookup Reducers To Types ------------- */
