@@ -794,6 +794,7 @@ var connection = function (options) {
     this.isWindowSDK = options.isWindowSDK || false;
     this.encrypt = options.encrypt || {encrypt: {type: 'none'}};
     this.delivery = options.delivery || false;
+    this.saveLocal = options.saveLocal || false;
     this.user = '';
     this.orgName = '';
     this.appName = '';
@@ -3175,6 +3176,9 @@ connection.prototype.closed = function () {
  * @param status {String} 消息状态
  */
 connection.prototype.addToLocal = function (message, type, status) {
+    if(!this.saveLocal){
+        return;
+    }
     var sendByMe = (typeof message.msg == 'string');
     if (!window.localStorage)
         return;
@@ -3284,7 +3288,7 @@ connection.prototype.decrypt = function (source) {
  * @returns {Array|*} 所有消息组成的数组
  */
 connection.prototype.getLocal = function () {
-    if (!window.localStorage)
+    if (!window.localStorage || !this.saveLocal)
         return;
     var user = this.user;
     var record = window.localStorage.getItem(user);

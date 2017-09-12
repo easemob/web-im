@@ -96,6 +96,13 @@ WebIM.config = {
     read: true,
 
     /**
+     * When a message sent or arrived, will save it into the localStorage,
+     * true: Store the chat record
+     * false: Don't store the chat record 
+     */
+    saveLocal: false,
+
+    /**
      * Will encrypt text message and emoji message
      * {type:'none'}   no encrypt
      * {type:'base64'} encrypt with base64
