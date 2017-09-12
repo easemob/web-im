@@ -408,9 +408,8 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         type = "stranger"
     }
 
-    // TODO: following may have bugs to be fixed
     // 更新对应消息数组
-    const chatData = state[type] && state[type][chatId] ? state[type][chatId].asMutable() : []
+    const chatData = state.getIn([ type, chatId ], Immutable([])).asMutable()
     chatData.push({
         ...message,
         bySelf,
@@ -446,7 +445,7 @@ export const updateMessageStatus = (state, { message, status = "" }) => {
 }
 
 export const clearMessage = (state, { chatType, id }) => {
-    return chatType ? state.setIn([ chatType, id ], {}) : state
+    return chatType ? state.setIn([ chatType, id ], []) : state
 }
 
 export const clearUnread = (state, { chatType, id }) => {
