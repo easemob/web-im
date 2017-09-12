@@ -392,7 +392,7 @@ export const INITIAL_STATE = Immutable({
 export const addMessage = (state, { message, bodyType = "txt" }) => {
     console.log("redux addMessage", message)
     !message.status && (message = parseFromServer(message, bodyType))
-    const { username = "" } = state.user || {}
+    const username = _.get(store.getState(), "login.username", "")
     const { id, to, status } = message
     let { type } = message
 
