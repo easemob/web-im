@@ -1,5 +1,18 @@
 # 版本更新说明:
 
+## v1.4.13 @ 2017-09-12
+
+###Feature
+
+* [sdk] 新增jsdoc
+
+###BugFix
+
+* [sdk]  ios(8.1)webview 已读和已送到回执异常
+* [sdk]  多设备登录异常
+* [demo] 多设备登录异常
+
+
 ## v1.4.12 @ 2017-06-17
 
 ###Feature
@@ -14,13 +27,13 @@
 ###BugFix
 
 * [sdk] 提升ie8的兼容性
-* [sdk] 强制不发送自己发送的消息的read ack
-* [demo] 修复建公开群需要审核，实际不需要审核的bug
+* [sdk] 自己发送的消息的已读ack，不再发送给自己
+* [demo] 新建需要审批的公有群，加入必须有审批流程
 * [demo] 鼠标悬浮在群禁言图标上出现提示信息"禁言"
 * [demo] demo.html中从cdn引入sdk
 * [demo] 修复无法准确统计离线消息数的bug
 * [demo] window.history.pushState在windows的chrome上有兼容性问题，统一改成window.location.href
-* [demo] window.location.href = xxxx，如果修改的是href.search参数(?a=x&b=y)时候, 如果遇到file://方式打开本地index.html会直接跳转页面，造成登录一直不成功，改成修改 href.hash 参数(#a=x&b=y)
+* [demo] window.location.href = xxxx，如果修改的是href.search参数(?a=x&b=y)时候, 如果遇到file方式打开本地index.html会直接跳转页面，造成登录一直不成功，改成修改 href.hash 参数(#a=x&b=y)
 * [demo] 将群管理员可操作的项目展示给管理员
 
 
@@ -212,6 +225,18 @@
    
 ---
 # ChangeLog:
+
+## v1.4.13 @ 2017-09-12
+
+###Feature
+
+* [sdk] add jsdoc
+
+###BugFix
+
+* [sdk]  delevered/acked message bug in ios(8.1) webview 
+* [sdk]  multilogin bugs
+* [demo] multilogin bugs
 
 ## v1.4.12 @ 2017-06-17
 

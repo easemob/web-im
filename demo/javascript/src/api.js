@@ -295,24 +295,21 @@ module.exports = {
         var targetId = this.sentByMe || msg.type !== 'chat' ? msg.to : msg.from;
         if (!Demo.chatRecord[targetId] || !Demo.chatRecord[targetId].messages) {
             Demo.chatRecord[targetId] = {};
-
             Demo.chatRecord[targetId].messages = [];
-
         } else if (Demo.chatRecord[targetId].messages.length >= Demo.maxChatRecordCount) {
-
             Demo.chatRecord[targetId].messages.shift();
-
         }
         Demo.chatRecord[targetId].brief = brief;
         Demo.chatRecord[targetId].briefType = type;
-
         Demo.chatRecord[targetId].messages[id] = {message: msg, type: type, status: status};
+
+        Demo.conn.addToLocal(msg, type, status);
     },
 
     releaseChatRecord: function (targetId) {
         var targetId = targetId || Demo.selected;
         if (Demo.first) {
-            Demo.first = false;
+            // Demo.first = false;
             for (var i in Demo.chatRecord) {
                 targetId = i;
                 if (Demo.chatRecord[targetId] && Demo.chatRecord[targetId].messages) {
@@ -405,9 +402,6 @@ module.exports = {
     },
 
     appendMsg: function (msg, type, status, nid) {
-        if (Demo.first) {
-            return;
-        }
         if (!msg || type === 'cmd') {
             return;
         }
@@ -639,6 +633,9 @@ module.exports = {
         this.appendBrief(targetId, brief);
 
         if (msg.type === 'cmd') {
+            return;
+        }
+        if (Demo.first) {
             return;
         }
         // show count

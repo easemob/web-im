@@ -1,5 +1,40 @@
 # Changelog
 
+## v1.4.13 @ 2017-09-12
+
+###Feature
+
+* [sdk] add jsdoc
+
+###BugFix
+
+* [sdk]  delevered/acked message bug in ios(8.1) webview 
+* [sdk]  multilogin bugs
+* [demo] multilogin bugs
+
+## v1.4.12 @ 2017-06-17
+
+###Feature
+
+* [sdk] Modify format of delivery ack and read ack
+* [sdk] Will auto reconnect and send the messages didn't sent when user send messages offline
+* [sdk] WebIM support multiple devices, add join chat room event
+* [sdk] Add "from" attribute for delivery ack and read ack
+* [demo] Add test case of rest interface
+* [demo] Upload file function for IE8 compatible in sdk/demo.html
+
+###BugFix
+
+* [sdk] Backward compatible for IE8
+* [sdk] Force not to send read ack to user self
+* [demo] Fix the bug of creating public group
+* [demo] Will show a message with "mute" when the mouse hover on the group mute icon
+* [demo] Quote sdk from cdn in demo.html
+* [demo] Correct the offline message amount
+* [demo] Change window.history.pushState into window.location.href
+* [demo] Change window.location.href = xxxx into href.hash
+* [demo] Show the available operations to administrators
+
 ## v1.4.11 @ 2017-06-07
 
 ###Feature
@@ -39,7 +74,7 @@
 
 * [sdk] Add a new friend will create spare subscription information
 * [sdk] Send messages continually will cause the problem of message id repetition
-* [sdk] Adapt size of pictures whild sdk and webim sending pictures to each other 
+* [sdk] Adapt size of pictures whild sdk and webim send``__``ing pictures to each other 
 * [demo] Optimize sdk/demo.html, fix the problem that some of dependent files can't be found
 * [demo] Fix the problem that off-line messages count not right
 

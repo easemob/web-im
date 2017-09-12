@@ -93,7 +93,14 @@ WebIM.config = {
      * sender, in order to tell the sender the message has been read.
      * See call back function onReadMessage
      */
-    read: false,
+    read: true,
+
+    /**
+     * When a message sent or arrived, will save it into the localStorage,
+     * true: Store the chat record
+     * false: Don't store the chat record 
+     */
+    saveLocal: false,
 
     /**
      * Will encrypt text message and emoji message

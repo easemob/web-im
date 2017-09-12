@@ -43,6 +43,7 @@ Demo.api = Api;
  */
 
 Demo.chatRecord = {};
+Demo.localChatRecord = {};
 // The max messages count of a dialog
 Demo.maxChatRecordCount = 20000;
 
@@ -133,7 +134,8 @@ Demo.conn = new WebIM.connection({
     isWindowSDK: WebIM.config.isWindowSDK,
     isAutoLogin: true,
     encrypt: WebIM.config.encrypt,
-    delivery: WebIM.config.delivery
+    delivery: WebIM.config.delivery,
+    saveLocal: WebIM.config.saveLocal
 });
 
 Demo.api.render(document.getElementById('demo'));
