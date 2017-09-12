@@ -5,6 +5,7 @@ import Immutable from "seamless-immutable"
 import { I18n } from "react-redux-i18n"
 import { Button, Card, Col, Dropdown, Form, Icon, Input, Menu, Modal, Popconfirm, Row, Table, Tooltip } from "antd"
 import GroupActions from "@/redux/GroupRedux"
+import GroupMemberActions from "@/redux/GroupMemberRedux"
 import "./style/index.less"
 
 const iconStyle = { fontSize: 16 }
@@ -136,13 +137,11 @@ class GroupInfo extends React.Component {
     }
 
     onRemoveGroupBlockSingle = user =>
-        this.props.removeGroupBlockSingleAsync({
-            groupId: this.props.room.roomId
-        })
+        this.props.removeGroupBlockSingleAsync(this.props.room.roomId, user)
 
     renderGroupOperationMenu = () => {
-        const { login, entities, room } = this.props
-        const user = _.get(entities, `groupMember.${room.roomId}.byName.${_.get(login, "username")}`, {
+        const { login, groupMember, room } = this.props
+        const user = _.get(groupMember, [ room.roomId, "byName", _.get(login, "username") ], {
             name: null,
             affiliation: null
         })
@@ -190,12 +189,13 @@ class GroupInfo extends React.Component {
             name,
             description,
             joinPermission,
-            room
+            room,
+            groupMember
             // login,
             // entities
         } = this.props
         const isLoading = _.get(this.props, "entities.group.isLoading", false)
-        const blacklist = _.get(this.props, `entities.group.byId.${room.roomId}.blacklist`, [])
+        const blacklist = _.get(groupMember, [ room.roomId, "blacklist" ], [])
 
         const menu = this.renderGroupOperationMenu()
 
@@ -298,14 +298,15 @@ class GroupInfo extends React.Component {
 }
 
 export default connect(
-    ({ entities, login }) => ({ entities, login }),
+    ({ entities, login }) => ({ login, groupMember: entities.groupMember }),
     dispatch => ({
         updateGroupInfoAsync: info => dispatch(GroupActions.updateGroupInfoAsync(info)),
         dissolveGroupAsync: ({ groupId, groupName }) =>
             dispatch(GroupActions.dissolveGroupAsync({ groupId, groupName })),
-        getGroupBlackListAsync: groupId => dispatch(GroupActions.getGroupBlackListAsync(groupId)),
+        getGroupBlackListAsync: groupId => dispatch(GroupMemberActions.getGroupBlackListAsync(groupId)),
+        removeGroupBlockSingleAsync: (groupId, username) => dispatch(GroupMemberActions.removeGroupBlockSingleAsync(groupId, username)),
         inviteToGroupAsync: (groupId, users) => dispatch(GroupActions.inviteToGroupAsync(groupId, users)),
-        quitGroupAsync: (groupId, username) => dispatch(GroupActions.quitGroupAsync(groupId, username)),
+        quitGroupAsync: (groupId, username) => dispatch(GroupMemberActions.quitGroupAsync(groupId, username)),
         switchRightSider: ({ rightSiderOffset }) => dispatch(GroupActions.switchRightSider({ rightSiderOffset }))
     })
 )(GroupInfo)

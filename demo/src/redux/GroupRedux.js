@@ -14,13 +14,10 @@ const { Types, Creators } = createActions({
     updateGroupInfo: [ "info" ],
     setLoading: [ "isLoading" ],
     setLoadingFailed: [ "loadingFailed" ],
-    setBlackList: [ "group" ],
-    removeGroupBlockSingle: [ "payload" ],
     deleteGroup: [ "groupId" ],
     updateGroup: [ "groups" ],
     dissolveGroup: [ "group" ],
     switchRightSider: [ "width" ],
-    groupBlockSingle: [ "groupId", "username" ],
     topGroup: [ "groupId" ],
     // ---------------async------------------
     createGroups: options => {
@@ -81,26 +78,6 @@ const { Types, Creators } = createActions({
             })
         }
     },
-    getGroupBlackListAsync: groupId => {
-        return (dispatch, getState) => {
-            dispatch(Creators.setLoading(true))
-
-            WebIM.conn.getGroupBlacklistNew({
-                groupId,
-                success: response => {
-                    const blacklist = response.data // <-- !!!
-                    const group = { groupId, blacklist }
-                    dispatch(Creators.setLoading(false))
-                    dispatch(Creators.setLoadingFailed(false))
-                    dispatch(Creators.setBlackList(group))
-                },
-                error: e => {
-                    dispatch(Creators.setLoading(false))
-                    dispatch(Creators.setLoadingFailed(true))
-                }
-            })
-        }
-    },
     inviteToGroupAsync: (groupId, users) => {
         return (dispatch, getState) => {
             dispatch(Creators.setLoading(true))
@@ -117,63 +94,6 @@ const { Types, Creators } = createActions({
                     dispatch(Creators.setLoadingFailed(true))
                 }
             })
-        }
-    },
-    removeGroupBlockSingleAsync: (groupId, username) => {
-        return (dispatch, getState) => {
-            dispatch(Creators.setLoading(true))
-            WebIM.conn.removeGroupBlockSingle({
-                groupId,
-                username,
-                success: response => {
-                    let { groupId, user } = response.data
-                    let payload = { groupId, user }
-                    dispatch(Creators.setLoading(false))
-                    dispatch(Creators.setLoadingFailed(false))
-                    dispatch(Creators.removeGroupBlockSingle(payload))
-                },
-                error: e => {
-                    dispatch(Creators.setLoading(false))
-                    dispatch(Creators.setLoadingFailed(true))
-                }
-            })
-        }
-    },
-    groupBlockSingleAsync: (groupId, username) => {
-        return (dispatch, getState) => {
-            WebIM.conn.groupBlockSingle({
-                groupId,
-                username,
-                success: response => {
-                    dispatch(Creators.setLoading(false))
-                    dispatch(Creators.setLoadingFailed(false))
-                    dispatch(GroupMemberActions.removeMemberFromGroup(groupId, username))
-                },
-                error: e => {
-                    console.log(`an error found while invoking resultful mute: ${e.message}`)
-                    dispatch(Creators.setLoading(false))
-                    dispatch(Creators.setLoadingFailed(true))
-                }
-            })
-        }
-    },
-    quitGroupAsync: (groupId, username) => {
-        return (dispatch, getState) => {
-            WebIM.conn.quitGroup({
-                groupId,
-                success: response => {
-                    dispatch(Creators.switchRightSider({ rightSiderOffset: 0 }))
-                    dispatch(GroupMemberActions.removeMemberFromGroup(groupId, username))
-                    dispatch(Creators.deleteGroup(groupId))
-                    history.push("/group")
-                },
-                error: e => console.log(`an error found while invoking resultful quitGroup: ${e.message}`)
-            })
-        }
-    },
-    joinGroup: options => {
-        return (dispatch, getState) => {
-            WebIM.conn.joinGroup(options)
         }
     },
     listGroups: options => {
@@ -272,23 +192,6 @@ export const dissolveGroup = (state, { group }) => {
     })
 }
 
-/**
- * 
- * @param {*} state 
- * @param {Object} group 
- * @param {Number} group.groupId
- * @param {String} group.groupName
- * @param {Array[String]} group.blackList
- */
-export const setBlackList = (state, { group }) => {
-    return state.setIn([ "byId", group.groupId, "blacklist" ], group.blacklist)
-}
-
-export const removeGroupBlockSingle = (state, { payload }) => {
-    let blacklist = state.getIn([ "byId", payload.groupId, "blacklist" ]).filter(val => val !== payload.user)
-    return state.setIn([ "byId", payload.groupId, "blacklist" ], blacklist)
-}
-
 export const switchRightSider = (state, { width }) => {
     const { rightSiderOffset } = width
     return state.merge({
@@ -319,8 +222,6 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.UPDATE_GROUP]: updateGroup,
     [Types.UPDATE_GROUP_INFO]: updateGroupInfo,
     [Types.DISSOLVE_GROUP]: dissolveGroup,
-    [Types.SET_BLACK_LIST]: setBlackList,
-    [Types.REMOVE_GROUP_BLOCK_SINGLE]: removeGroupBlockSingle,
     [Types.SWITCH_RIGHT_SIDER]: switchRightSider,
     [Types.TOP_GROUP]: topGroup
 })
