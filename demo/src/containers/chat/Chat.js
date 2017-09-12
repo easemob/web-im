@@ -298,15 +298,7 @@ class Chat extends React.Component {
         if (WebIM.config.isWebRTC && WebIM.WebRTC) {
             this.initWebRTC()
             this.channel = new RTCChannel(this.refs.rtcWrapper)
-        }
-        
-        const { selectItem, selectTab } = _.get(this.props, [ "match", "params" ], {})
-        if (selectItem && selectTab === "group") {
-            const groupId = selectItem
-            this.props.listGroupMemberAsync({ groupId })
-            this.props.getMutedAsync(groupId)
-            this.props.getGroupAdminAsync(groupId)                
-        }
+        }        
     }
 
     channel = null

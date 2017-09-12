@@ -24,7 +24,7 @@ class GroupMembers extends React.Component {
     removeSingleGroupMember = (groupId, name) => this.props.removeSingleGroupMemberAsync(groupId, name)
 
     render() {
-        const { entities, login, roomId, groupMember } = this.props
+        const { login, roomId, groupMember } = this.props
         // const memberActionMenu = (
         //     <Menu>
         //         <Menu.Item key="1">
@@ -189,13 +189,13 @@ class GroupMembers extends React.Component {
 }
 
 export default connect(
-    ({ entities, login }) => ({ entities, login, groupMember: entities.groupMember }),
+    ({ entities, login }) => ({ login, groupMember: entities.groupMember }),
     dispatch => ({
         setAdminAsync: (groupId, name) => dispatch(GroupMemberActions.setAdminAsync(groupId, name)),
         removeAdminAsync: (groupId, name) => dispatch(GroupMemberActions.removeAdminAsync(groupId, name)),
         muteAsync: (groupId, name) => dispatch(GroupMemberActions.muteAsync(groupId, name)),
         removeMuteAsync: (groupId, name) => dispatch(GroupMemberActions.removeMuteAsync(groupId, name)),
-        groupBlockSingleAsync: (groupId, name) => dispatch(GroupActions.groupBlockSingleAsync(groupId, name)),
+        groupBlockSingleAsync: (groupId, name) => dispatch(GroupMemberActions.groupBlockSingleAsync(groupId, name)),
         removeSingleGroupMemberAsync: (groupId, name) =>
             dispatch(GroupMemberActions.removeSingleGroupMemberAsync(groupId, name))
     })
