@@ -2030,6 +2030,7 @@
                 try {
                     result = this.handler(elem);
                 } catch (e) {
+                    console.log("Strophe runing callbacks error: ", e.message)
                     if (e.sourceURL) {
                         Strophe.fatal("error: " + this.handler +
                             " " + e.sourceURL + ":" +
