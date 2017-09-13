@@ -1,9 +1,9 @@
 /* eslint-disable */
 import "script-loader!easemob-websdk/dist/strophe-1.2.8-g.js"
 import "script-loader!easemob-webrtc/dist/adapter.js"
-import "script-loader!easemob-webrtc/dist/webrtc-1.4.11.js"
 /* eslint-enable */
 import websdk from "easemob-websdk"
+import webrtc from "easemob-webrtc"
 import config from "./WebIMConfig"
 import emoji from "./emoji"
 import Api from "axios"
@@ -76,7 +76,5 @@ api.interceptors.response.use(
 
 WebIM.api = api
 WebIM.emoji = emoji
-
-WebIM.config.isWebRTC = true
-
+WebIM.WebRTC = webrtc
 export default WebIM
