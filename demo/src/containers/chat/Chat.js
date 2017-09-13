@@ -21,6 +21,7 @@ import BlacklistActions from "@/redux/BlacklistRedux"
 import WebIM from "@/config/WebIM"
 import { message } from "antd"
 import { history } from "@/utils"
+import loglevel from "@/utils/loglevel"
 import getTabMessages from "@/selectors/ChatSelector"
 import RTCChannel from "@/components/common/rtcChannel"
 
@@ -447,6 +448,7 @@ class Chat extends React.Component {
     }
 
     render() {
+        loglevel.trace("chat component render")
         const {
             collapsed,
             match,
