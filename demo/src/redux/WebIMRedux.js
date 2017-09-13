@@ -14,14 +14,12 @@ import MessageActions from "@/redux/MessageRedux"
 import GroupRequestActions from "@/redux/GroupRequestRedux"
 import { store } from "@/redux"
 import { history } from "@/utils"
-import loglevel from "@/utils/loglevel"
 import utils from "@/utils"
 import { I18n } from "react-redux-i18n"
 
 import { message } from "antd"
 
-const logger = loglevel.getLogger(__filename)
-// const console = log
+const logger = WebIM.loglevel.getLogger("WebIMRedux")
 
 WebIM.conn.listen({
     // xmpp连接成功
@@ -62,6 +60,7 @@ WebIM.conn.listen({
         // console.log("onPresence", msg, store.getState())
         switch (msg.type) {
         case "joinGroupNotifications":
+            logger.info("joinGroupNotifications")
             store.dispatch(GroupRequestActions.addGroupRequest(msg))
             break
         case "leaveGroup": // dismissed by admin

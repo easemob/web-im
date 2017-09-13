@@ -194,6 +194,14 @@ class HeaderOps extends Component {
                         component={JoinGroupModal}
                     />
                 }
+                {
+                    <ModalComponent
+                        width={460}
+                        title={I18n.t("joinGroup")}
+                        visible={!_.isEmpty(groupRequests)}
+                        component={GroupRequestModal}
+                    />
+                }
             </div>
         )
     }

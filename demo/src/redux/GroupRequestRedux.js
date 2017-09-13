@@ -8,19 +8,19 @@ import WebIM from "@/config/WebIM"
 
 const { Types, Creators } = createActions({
     addGroupRequest: [ "msg" ],
-    removeGroupRequest: [ "gid" ],
+    removeGroupRequest: [ "gid", "applicant" ],
     // ----------------async------------------
     // 接受好友请求
     agreeJoinGroup: (gid, options) => {
         return (dispatch, getState) => {
-            dispatch(Creators.removeGroupRequest(gid))
+            dispatch(Creators.removeGroupRequest(gid, options.applicant))
 
             WebIM.conn.agreeJoinGroup(options)
         }
     },
     rejectJoinGroup: (gid, options) => {
         return (dispatch, getState) => {
-            dispatch(Creators.removeGroupRequest(gid))
+            dispatch(Creators.removeGroupRequest(gid, options.applicant))
 
             WebIM.conn.rejectJoinGroup(options)
         }
@@ -39,12 +39,12 @@ export const INITIAL_STATE = Immutable({
 /* ------------- Reducers ------------- */
 
 export const addGroupRequest = (state, { msg }) => {
-    return Immutable.setIn(state, [ "byGid", msg.gid ], msg)
+    return state.setIn([ "byGid", msg.gid, msg.from ], msg)
 }
 
-export const removeGroupRequest = (state, { gid }) => {
-    let byGid = Immutable.without(state.byGid, gid)
-    return Immutable.set(state, [ "byGid" ], byGid)
+export const removeGroupRequest = (state, { gid, applicant }) => {
+    const byGid = state.getIn([ "byGid", gid ], Immutable({})).without(applicant)
+    return state.setIn([ "byGid", gid ], byGid)
 }
 
 /* ------------- Hookup Reducers To Types ------------- */

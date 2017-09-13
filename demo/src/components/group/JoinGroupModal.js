@@ -4,6 +4,7 @@ import classNames from "classnames"
 import { connect } from "react-redux"
 import { Input, Button, Row, Col, Form, Radio, Checkbox, message } from "antd"
 import GroupActions from "@/redux/GroupRedux"
+import GroupMemberActions from "@/redux/GroupMemberRedux"
 import { I18n } from "react-redux-i18n"
 import _ from "lodash"
 import "./style/JoinGroupModal.less"
@@ -288,7 +289,7 @@ export default connect(
         roster: entities.roster
     }),
     dispatch => ({
-        joinGroup: options => dispatch(GroupActions.joinGroup(options)),
+        joinGroup: options => dispatch(GroupMemberActions.joinGroup(options)),
         listGroups: options => dispatch(GroupActions.listGroups(options)),
         getGroups: options => dispatch(GroupActions.getGroups(options)),
         getGroupInfo: options => dispatch(GroupActions.getGroupInfo(options))
