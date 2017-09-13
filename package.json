@@ -77,8 +77,6 @@
     "antd": "^2.1.0",
     "easemob-websdk": "^1.4.6",
     "es6-promise": "^4.1.0",
-    "loglevel": "^1.5.0",
-    "loglevel-plugin-prefix": "^0.5.3",
     "react": "0.14",
     "react-addons-test-utils": "0.14.8",
     "react-dom": "0.14.9",

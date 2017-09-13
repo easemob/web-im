@@ -65,7 +65,7 @@ class Chat extends React.Component {
         //console.log("-----")
 
         // throw new Error("1")
-        this.log = loglevel.getLogger("chat component")
+        this.logger = loglevel.getLogger("chat component")
     }
 
     scollBottom() {
@@ -449,7 +449,7 @@ class Chat extends React.Component {
     }
 
     render() {
-        this.log.info("chat component render")
+        this.logger.info("chat component render")
         const {
             collapsed,
             match,

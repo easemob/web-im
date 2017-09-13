@@ -4869,9 +4869,17 @@ lodash@^3.10.1:
   version "3.10.1"
   resolved "http://r.cnpmjs.org/lodash/download/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
 
+loglevel-plugin-prefix@^0.5.3:
+  version "0.5.3"
+  resolved "http://registry.npm.taobao.org/loglevel-plugin-prefix/download/loglevel-plugin-prefix-0.5.3.tgz#8e9131b96e4697a0dba517996f76b9e6c3f43210"
+
 loglevel@^1.4.1:
   version "1.4.1"
   resolved "http://r.cnpmjs.org/loglevel/download/loglevel-1.4.1.tgz#95b383f91a3c2756fd4ab093667e4309161f2bcd"
+
+loglevel@^1.5.0:
+  version "1.5.0"
+  resolved "http://registry.npm.taobao.org/loglevel/download/loglevel-1.5.0.tgz#3863984a2c326b986fbb965f378758a6dc8a4324"
 
 longest@^1.0.1:
   version "1.0.1"

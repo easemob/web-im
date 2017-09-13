@@ -15,10 +15,14 @@ import DemoActions from "@/redux/DemoRedux"
 import GroupRequestActions from "@/redux/GroupRequestRedux"
 import { store } from "@/redux"
 import { history } from "@/utils"
+import loglevel from "@/utils/loglevel"
 import utils from "@/utils"
 import { I18n } from "react-redux-i18n"
 
 import { message } from "antd"
+
+const logger = loglevel.getLogger(__filename)
+// const console = log
 
 WebIM.conn.listen({
     // xmpp连接成功
@@ -185,7 +189,7 @@ WebIM.conn.listen({
         store.dispatch(BlacklistActions.updateBlacklist(list))
     },
     onReceivedMessage: message => {
-        console.log("onReceivedMessage", message)
+        logger.info("onReceivedMessage", message)
         const { id, mid } = message
         store.dispatch(MessageActions.updateMessageMid(id, mid))
     },

@@ -103,7 +103,7 @@ let config = {
      * 5 actual logging methods, ordered and available:
      * 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'
      */
-    loglevel: "ERROR"
+    loglevel: "TRACE"
 }
 
 export default config
