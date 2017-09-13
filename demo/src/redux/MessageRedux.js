@@ -273,6 +273,9 @@ const { Types, Creators } = createActions({
 
             WebIM.conn.send(msgObj.body)
             pMessage = parseFromLocal(chatType, chatId, msgObj.body, "img")
+            // NOTE: parseFromLocal will overwrite original id of msgObj
+            // Recover it here.
+            pMessage.id = id
             // uri只记录在本地
             pMessage.body.url = source.url
             // console.log('pMessage', pMessage, pMessage.body.uri)
@@ -333,6 +336,9 @@ const { Types, Creators } = createActions({
 
             WebIM.conn.send(msgObj.body)
             pMessage = parseFromLocal(chatType, chatId, msgObj.body, "file")
+            // NOTE: parseFromLocal will overwrite original id of msgObj
+            // Recover it here.
+            pMessage.id = id
             // uri只记录在本地
             pMessage.body.url = source.url
             pMessage.body.file_length = source.data.size
@@ -533,13 +539,16 @@ export const updateMessageMid = (state, { id, mid }) => {
 }
 
 export const muteMessage = (state, { mid }) => {
-    const { id } = state.getIn([ "byMid", mid ])
-    const { type, chatId } = state.getIn([ "byId", id ])
-    const messages = state.getIn([ type, chatId ]).asMutable()
-    const found = _.find(messages, { id })
-    const msg = found.setIn([ "status" ], "muted")
-    messages.splice(messages.indexOf(found), 1, msg)
-    return state.setIn([ type, chatId ], messages)
+    const { id } = state.getIn([ "byMid", mid ], "")
+    const { type, chatId } = state.getIn([ "byId", id ], {})
+    if (type && chatId) {
+        const messages = state.getIn([ type, chatId ]).asMutable()
+        const found = _.find(messages, { id })
+        const msg = found.setIn([ "status" ], "muted")
+        messages.splice(messages.indexOf(found), 1, msg)
+        state = state.setIn([ type, chatId ], messages)
+    }
+    return state
 }
 
 export const initUnread = (state, { unreadList }) => {
