@@ -9,6 +9,7 @@ var CryptoJS = require('crypto-js');
 var _ = require('underscore');
 
 var Strophe = window.Strophe
+var isStropheLog;
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -49,6 +50,59 @@ Strophe.Websocket.prototype._closeSocket = function () {
     }
 };
 
+/** Function: log
+ *  User overrideable logging function.
+ *
+ *  This function is called whenever the Strophe library calls any
+ *  of the logging functions.  The default implementation of this
+ *  function does nothing.  If client code wishes to handle the logging
+ *  messages, it should override this with
+ *  > Strophe.log = function (level, msg) {
+     *  >   (user code here)
+     *  > };
+ *
+ *  Please note that data sent and received over the wire is logged
+ *  via Strophe.Connection.rawInput() and Strophe.Connection.rawOutput().
+ *
+ *  The different levels and their meanings are
+ *
+ *    DEBUG - Messages useful for debugging purposes.
+ *    INFO - Informational messages.  This is mostly information like
+ *      'disconnect was called' or 'SASL auth succeeded'.
+ *    WARN - Warnings about potential problems.  This is mostly used
+ *      to report transient connection errors like request timeouts.
+ *    ERROR - Some error occurred.
+ *    FATAL - A non-recoverable fatal error occurred.
+ *
+ *  Parameters:
+ *    (Integer) level - The log level of the log message.  This will
+ *      be one of the values in Strophe.LogLevel.
+ *    (String) msg - The log message.
+ */
+/* jshint ignore:start */
+Strophe.log =  function (level, msg) {
+    if(!isStropheLog){
+        return
+    }
+    switch(level){
+        case this.LogLevel.DEBUG:
+            console.debug(msg)
+            break;
+        case this.LogLevel.INFO:
+            console.info(msg);
+            break;
+        case this.LogLevel.WARN:
+            console.warn(msg);
+            break;
+        case this.LogLevel.ERROR:
+        case this.LogLevel.FATAL:
+            console.error(msg);
+            break;
+        default:
+            console.log(msg);
+    }
+    return;
+}
 
 /**
  *
@@ -696,6 +750,9 @@ var connection = function (options) {
     this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
 
     this.groupOption = {};
+    
+    // global params
+    isStropheLog = options.isStropheLog || false;
 };
 
 connection.prototype.registerUser = function (options) {

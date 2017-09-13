@@ -58,6 +58,11 @@ let config = {
      */
     isDebug: false,
     /**
+     * Whether to show logs in strophe
+     * @parameter {Boolean} true or false
+     */
+    isStropheLog: false,
+    /**
      * will auto connect the xmpp server autoReconnectNumMax times in background when client is offline.
      * won't auto connect if autoReconnectNumMax=0.
      */
