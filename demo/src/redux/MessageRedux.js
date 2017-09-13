@@ -491,7 +491,12 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
     AppDB.addMessage(_message, isUnread ? 1 : 0)
 
     const maxCacheSize = _.includes([ "group", "chatroom" ], type) ? WebIM.config.groupMessageCacheSize : WebIM.config.p2pMessageCacheSize
-    if (chatData.length > maxCacheSize) chatData.splice(0, chatData.length - maxCacheSize)
+    if (chatData.length > maxCacheSize) {
+        const deletedChats = chatData.splice(0, chatData.length - maxCacheSize)
+        let byId = state.getIn([ "byId" ])
+        byId = _.omit(byId, _.map(deletedChats, "id"))
+        state = state.setIn([ "byId" ], byId)     
+    }
 
     state = state.setIn([ type, chatId ], chatData)
 
