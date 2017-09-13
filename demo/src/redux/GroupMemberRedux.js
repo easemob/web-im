@@ -37,15 +37,17 @@ const { Types, Creators } = createActions({
     },
     quitGroupAsync: (groupId, username) => {
         return (dispatch, getState) => {
+            const logger = WebIM.loglevel.getLogger("Group Member Redux - quit group")
             WebIM.conn.quitGroup({
                 groupId,
                 success: response => {
-                    dispatch(Creators.switchRightSider({ rightSiderOffset: 0 }))
+                    logger.info(response)
+                    dispatch(GroupActions.switchRightSider({ rightSiderOffset: 0 }))
                     dispatch(Creators.operateGroupMember(groupId, username, "del"))
                     dispatch(GroupActions.deleteGroup(groupId))
                     history.push("/group")
                 },
-                error: e => console.log(`an error found while invoking resultful quitGroup: ${e.message}`)
+                error: e => logger.error(`an error found while invoking resultful quitGroup: ${e.message}`)
             })
         }
     },
@@ -205,7 +207,7 @@ const { Types, Creators } = createActions({
                 groupId,
                 success: response => {
                     const admins = response.data
-                    if (admins) dispatch(Creators.setAdmin(groupId, admins))
+                    if (admins) dispatch(Creators.setAdmins(groupId, admins))
                 },
                 error: e => console.log(`an error found while invoking resultful getGroupAdmin: ${e}`)
             })
