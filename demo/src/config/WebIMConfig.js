@@ -93,7 +93,12 @@ let config = {
     /**
      * Size of message cache for group chating like group, chatroom etc
      */
-    groupMessageCacheSize: 200
+    groupMessageCacheSize: 200,
+    /**
+     * 5 actual logging methods, ordered and available:
+     * 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'
+     */
+    loglevel: "ERROR"
 }
 
 export default config
