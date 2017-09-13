@@ -8,7 +8,7 @@ import config from "./WebIMConfig"
 import emoji from "./emoji"
 import Api from "axios"
 import { message } from "antd"
-
+import loglevel from "@/utils/loglevel"
 
 console = console || {}
 console.group = console.group || function () {}
@@ -18,6 +18,9 @@ console.groupEnd = console.groupEnd || function () {}
 let WebIM = window.WebIM || {}
 
 WebIM.config = config
+WebIM.loglevel = loglevel
+// replace all console.log with loglevel.info
+// console.log = loglevel.info
 
 WebIM.conn = new websdk.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
