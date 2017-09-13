@@ -11,7 +11,6 @@ import StrangerActions from "@/redux/StrangerRedux"
 import SubscribeActions from "@/redux/SubscribeRedux"
 import BlacklistActions from "@/redux/BlacklistRedux"
 import MessageActions from "@/redux/MessageRedux"
-import DemoActions from "@/redux/DemoRedux"
 import GroupRequestActions from "@/redux/GroupRequestRedux"
 import { store } from "@/redux"
 import { history } from "@/utils"
@@ -191,6 +190,7 @@ WebIM.conn.listen({
     onReceivedMessage: message => {
         logger.info("onReceivedMessage", message)
         const { id, mid } = message
+        store.dispatch(MessageActions.updateMessageStatus(message, "sent"))
         store.dispatch(MessageActions.updateMessageMid(id, mid))
     },
     // 文本信息
@@ -307,6 +307,7 @@ const { Types, Creators } = createActions({
             let I18N = store.getState().i18n.translations[store.getState().i18n.locale]
             message.success(I18N.logoutSuccessfully)
             dispatch(CommonActions.fetching())
+            dispatch(LoginActions.logout())
             if (WebIM.conn.isOpened()) {
                 WebIM.conn.close("logout")
             }

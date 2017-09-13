@@ -126,7 +126,7 @@ export const failure = (state, { error }) => {
 // we've logged out
 export const logout = (state = INITIAL_STATE) => {
     console.log("reducer logout")
-    return state
+    return state.merge({ username: null, password: null, token: null, isLogin: false })
 }
 
 export const jumpRegister = (state) => {
