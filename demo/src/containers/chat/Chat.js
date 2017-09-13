@@ -288,11 +288,11 @@ class Chat extends React.Component {
 
     /**
      * componentDidMount
-     * 
+     *
      * @memberof Chat
-     * 
+     *
      * Note: get group members, muted members and group admins when in a group.
-     * Especially recommend get muted members here. 
+     * Especially recommend get muted members here.
      * Because, it will check current user in or not in muted list when sending a group message.
      */
     componentDidMount() {
@@ -300,7 +300,7 @@ class Chat extends React.Component {
         if (WebIM.config.isWebRTC && WebIM.WebRTC) {
             this.initWebRTC()
             this.channel = new RTCChannel(this.refs.rtcWrapper)
-        }        
+        }
     }
 
     channel = null
@@ -313,6 +313,7 @@ class Chat extends React.Component {
         }
 
         var me = this
+
 
         WebIM.call = new WebIM.WebRTC.Call({
             connection: WebIM.conn,
@@ -417,6 +418,7 @@ class Chat extends React.Component {
                 }
             }
         })
+        WebIM.conn.registerConfrIQHandler && (WebIM.conn.registerConfrIQHandler())
 
     }
 
