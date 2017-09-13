@@ -436,6 +436,16 @@ class Chat extends React.Component {
         WebIM.call.makeVoiceCall(selectItem)
     }
 
+    handleScroll = (e) => {
+        if (e.target.scrollTop == 0) {
+            const { selectItem, selectTab } = _.get(this.props, [ "match", "params" ], {})
+            const chatTypes = { "contact": "chat", "group": "groupchat", "chatroom": "chatroom", "stranger": "stranger" }
+            const chatType = chatTypes[selectTab]
+            // TODO: 暂时移除滚动查看更多消息
+            //this.props.fetchMessage(selectItem, chatType, this.props.messageList.length - 1)
+        }
+    }
+
     render() {
         const {
             collapsed,
@@ -499,7 +509,7 @@ class Chat extends React.Component {
                         </span>
                     </div>
                 </div>
-                <div className="x-chat-content" ref="x-chat-content">
+                <div className="x-chat-content" ref="x-chat-content" onScroll={this.handleScroll}>
                     {/* fixed bug of messageList.map(...) */}
                     {_.map(messageList, message => <ChatMessage key={message.id} {...message} />)}
                 </div>
@@ -584,6 +594,7 @@ export default connect(
         removeContact: id => dispatch(RosterActions.removeContact(id)),
         addContact: id => dispatch(RosterActions.addContact(id)),
         deleteStranger: id => dispatch(StrangerActions.deleteStranger(id)),
-        doAddBlacklist: id => dispatch(BlacklistActions.doAddBlacklist(id))
+        doAddBlacklist: id => dispatch(BlacklistActions.doAddBlacklist(id)),
+        fetchMessage: (id, chatType, offset) => dispatch(MessageActions.fetchMessage(id, chatType, offset))
     })
 )(Chat)

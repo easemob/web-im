@@ -27,7 +27,8 @@ WebIM.conn = new websdk.connection({
     heartBeatWait: WebIM.config.heartBeatWait,
     autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
     autoReconnectInterval: WebIM.config.autoReconnectInterval,
-    isStropheLog: WebIM.config.isStropheLog
+    isStropheLog: WebIM.config.isStropheLog,
+    delivery: WebIM.config.delivery
 })
 
 // for downward compatibility 

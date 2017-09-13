@@ -90,6 +90,12 @@ let config = {
      */
     p2pMessageCacheSize: 500,
     /**
+     * When a message arrived, the receiver send an ack message to the
+     * sender, in order to tell the sender the message has delivered.
+     * See call back function onReceivedMessage
+     */
+    delivery: true,
+    /**
      * Size of message cache for group chating like group, chatroom etc
      */
     groupMessageCacheSize: 200

@@ -3,6 +3,7 @@ import Immutable from "seamless-immutable"
 import _ from "lodash"
 import WebIM from "@/config/WebIM"
 import { store } from "@/redux"
+import AppDB from "@/utils/AppDB"
 
 // roomType true 聊天室chatroom | false 群组group
 // chatType singleChat 单聊 | chatRoom 群组或聊天室
@@ -186,7 +187,7 @@ const { Types, Creators } = createActions({
     muteMessage: [ "mid" ],
     demo: [ "chatType" ],
     clearMessage: [ "chatType", "id" ],
-    clearUnread: [ "chatType", "id" ],
+    // clearUnread: [ "chatType", "id" ],
     // ---------------async------------------
     sendTxtMessage: (chatType, chatId, message = {}) => {
         // console.log('sendTxtMessage', chatType, chatId, message)
@@ -272,6 +273,9 @@ const { Types, Creators } = createActions({
 
             WebIM.conn.send(msgObj.body)
             pMessage = parseFromLocal(chatType, chatId, msgObj.body, "img")
+            // NOTE: parseFromLocal will overwrite original id of msgObj
+            // Recover it here.
+            pMessage.id = id
             // uri只记录在本地
             pMessage.body.url = source.url
             // console.log('pMessage', pMessage, pMessage.body.uri)
@@ -332,6 +336,9 @@ const { Types, Creators } = createActions({
 
             WebIM.conn.send(msgObj.body)
             pMessage = parseFromLocal(chatType, chatId, msgObj.body, "file")
+            // NOTE: parseFromLocal will overwrite original id of msgObj
+            // Recover it here.
+            pMessage.id = id
             // uri只记录在本地
             pMessage.body.url = source.url
             pMessage.body.file_length = source.data.size
@@ -357,6 +364,66 @@ const { Types, Creators } = createActions({
                 }
             }
             WebIM.utils.download.call(WebIM.conn, options)
+        }
+    },
+    initUnread: () => {
+        return (dispatch) => {
+            AppDB.getUnreadList().then(res => {
+
+                let collection = {
+                    "chat": {},
+                    "chatroom": {},
+                    "groupchat": {},
+                    "stranger": {}
+                }
+
+                // 整理未读消息数目
+                res.forEach((msg, index) => {
+                    if (!msg.error) {
+
+                        // 单聊消息来之对方，群聊来至群组id
+                        let type = msg.type
+                        let from = type === "chat" ? "from" : "to"
+                        let id = msg[from]
+                        if (collection[type][id]) {
+                            collection[type][id] += 1
+                        } else {
+                            collection[type][id] = 1
+                        }
+                    }
+                })
+
+                dispatch({
+                    "type": "INIT_UNREAD",
+                    "unreadList": collection
+                })
+            })
+        }
+    },
+
+    fetchMessage: (id, chatType, offset) => {
+        return (dispatch) => {
+            AppDB.getLatestMessage(id, chatType, offset).then(res => {
+                dispatch({
+                    "type": "FETCH_MESSAGE",
+                    "chatType": chatType,
+                    "id": id,
+                    "messages": res,
+                    "offset": offset
+                })
+            })
+        }
+    },
+
+    clearUnread: (chatType, id) => {
+        return (dispatch) => {
+            AppDB.readMessage(chatType, id).then(res => {
+                dispatch({
+                    "type": "CLEAR_UNREAD",
+                    "chatType": chatType,
+                    "id": id
+                })
+            })
         }
     }
 })
@@ -395,7 +462,7 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
     const username = _.get(store.getState(), "login.username", "")
     const { id, to, status } = message
     let { type } = message
-
+    console.log(message)
     // 消息来源：没有from默认即为当前用户发送
     const from = message.from || username
     // 当前用户：标识为自己发送
@@ -410,12 +477,18 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
 
     // 更新对应消息数组
     const chatData = state.getIn([ type, chatId ], Immutable([])).asMutable()
-    chatData.push({
+    const _message = {
         ...message,
         bySelf,
         time: +new Date(),
         status: status
-    })
+    }
+
+    chatData.push(_message)
+
+    // 添加新消息到本地db，并加入未读状态：自己发的/不是来自当前聊天对象记 0，其它记 1
+    const isUnread = !bySelf
+    AppDB.addMessage(_message, isUnread ? 1 : 0)
 
     const maxCacheSize = _.includes([ "group", "chatroom" ], type) ? WebIM.config.groupMessageCacheSize : WebIM.config.p2pMessageCacheSize
     if (chatData.length > maxCacheSize) chatData.splice(0, chatData.length - maxCacheSize)
@@ -428,6 +501,8 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         state = state.setIn([ "unread", type, chatId ], ++count)
     }
 
+    state = state.setIn([ "byId", id ], { type, chatId })
+
     return state
 }
 
@@ -439,22 +514,12 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
  * @returns {*}
  */
 export const updateMessageStatus = (state, { message, status = "" }) => {
-    const { id, to } = message
-    let { type } = message
-    const username = _.get(store.getState(), "login.username", "")
-    const mFrom = message.from || username
-    const bySelf = mFrom === username
-    const chatId = bySelf || type !== "chat" ? to : mFrom
-    const rosters = _.get(store.getState(), "entities.roster.byName")
-    if (type === "chat" && !_.includes(rosters, chatId)) {
-        type = "stranger"
-    }
-
-    const messages = state.getIn([ type, chatId ], Immutable([])).asMutable()
+    const { id } = message
+    const { type, chatId } = state.getIn([ "byId", id ])
+    const messages = state.getIn([ type, chatId ]).asMutable()
     const found = _.find(messages, { id })
     const msg = found.setIn([ "status" ], status)
     messages.splice(messages.indexOf(found), 1, msg)
-
     return state.setIn([ type, chatId ], messages)
 }
 
@@ -468,41 +533,35 @@ export const clearUnread = (state, { chatType, id }) => {
     return state.setIn([ "unread", chatType ], data)
 }
 
+
 export const updateMessageMid = (state, { id, mid }) => {
-    const groupchat = state.getIn([ "groupchat" ])
-    for (let groupId in groupchat) {
-        if (groupchat.hasOwnProperty(groupId)) {
-            // const element = groupchat[groupId]
-            const found = _.find(groupchat[groupId], { id })
-            if (found) {
-                const msg = found.setIn([ "ext", "mid" ], mid)
-                const arr = groupchat[groupId].asMutable()
-                arr.splice(arr.indexOf(found), 1, msg)
-                state = state.setIn([ "groupchat", groupId ], arr)
-                break
-            }
-        }
+    return state.setIn([ "byMid", mid ], { id })
+}
+
+export const muteMessage = (state, { mid }) => {
+    const { id } = state.getIn([ "byMid", mid ], "")
+    const { type, chatId } = state.getIn([ "byId", id ], {})
+    if (type && chatId) {
+        const messages = state.getIn([ type, chatId ]).asMutable()
+        const found = _.find(messages, { id })
+        const msg = found.setIn([ "status" ], "muted")
+        messages.splice(messages.indexOf(found), 1, msg)
+        state = state.setIn([ type, chatId ], messages)
     }
     return state
 }
 
-export const muteMessage = (state, { mid }) => {
-    const groupchat = state.getIn([ "groupchat" ])
-    for (var groupId in groupchat) {
-        if (groupchat.hasOwnProperty(groupId)) {
-            // const m = groupchat[groupId];
-            // const arr = m.asMutable()
-            const found = _.find(groupchat[groupId], { ext: { mid } })
-            if (found) {
-                const msg = found.setIn([ "status" ], "muted")
-                const arr = groupchat[groupId].asMutable()
-                arr.splice(arr.indexOf(found), 1, msg)
-                state = state.setIn([ "groupchat", groupId ], arr)
-                break
-            }
-        }
-    }
-    return state
+export const initUnread = (state, { unreadList }) => {
+    let data = state["unread"]
+    data = Immutable.merge(data, unreadList)
+    return state.setIn([ "unread" ], data)
+}
+
+export const fetchMessage = (state, { id, chatType, messages, offset }) => {
+    let data = state[chatType] && state[chatType][id] ? state[chatType][id].asMutable() : []
+    data = data.concat(messages)
+    //-----------------------
+    return state.setIn([ chatType, id ], data)
 }
 
 /* ------------- Hookup Reducers To Types ------------- */
@@ -513,7 +572,9 @@ export const reducer = createReducer(INITIAL_STATE, {
     [Types.UPDATE_MESSAGE_MID]: updateMessageMid,
     [Types.MUTE_MESSAGE]: muteMessage,
     [Types.CLEAR_MESSAGE]: clearMessage,
-    [Types.CLEAR_UNREAD]: clearUnread
+    [Types.CLEAR_UNREAD]: clearUnread,
+    [Types.INIT_UNREAD]: initUnread,
+    [Types.FETCH_MESSAGE]: fetchMessage
 })
 
 /* ------------- Selectors ------------- */

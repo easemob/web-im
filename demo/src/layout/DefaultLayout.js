@@ -21,6 +21,8 @@ import utils from "@/utils"
 const { SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH, RIGHT_SIDER_WIDTH } = config
 const { Header, Content, Footer, Sider, RightSider } = Layout
 
+let chat_message_status = {}
+
 class DefaultLayout extends Component {
     constructor({ breakpoint, match }) {
         super()
@@ -100,14 +102,21 @@ class DefaultLayout extends Component {
         const { history, location, group } = this.props
         const { selectItem, selectTab } = this.state
         const redirectPath = "/" + [ selectTab, e.key ].join("/")
+        const typeMap = { contact: "chat", group: "groupchat", chatroom: "chatroom", stranger: "stranger" }
+
+        if (!chat_message_status[e.key]) {
+            this.props.fetchMessage(e.key, typeMap[selectTab])
+            chat_message_status[e.key] = true
+        }
+
+        this.props.clearUnread(typeMap[selectTab], e.key)
+
+        console.log(chat_message_status)
 
         if (selectItem == e.key) {
             return
         }
-        
-        const typeMap = { contact: "chat", group: "groupchat", chatroom: "chatroom", stranger: "stranger" }
-        this.props.clearUnread(typeMap[selectTab], e.key)
-
+    
         if (selectTab === "group") {
             const groupId = e.key
             if (groupId) {
@@ -255,7 +264,8 @@ export default withRouter(
             getGroups: () => dispatch(GroupActions.getGroups()),
             getChatRooms: () => dispatch(ChatRoomActions.getChatRooms()),
             getMutedAsync: groupId => dispatch(GroupMemberActions.getMutedAsync(groupId)),
-            getGroupAdminAsync: groupId => dispatch(GroupMemberActions.getGroupAdminAsync(groupId))
+            getGroupAdminAsync: groupId => dispatch(GroupMemberActions.getGroupAdminAsync(groupId)),
+            fetchMessage: (id, chatType, offset) => dispatch(MessageActions.fetchMessage(id, chatType, offset))
         })
     )(DefaultLayout)
 )

@@ -2507,6 +2507,10 @@ detect-port-alt@1.1.3:
     address "^1.0.1"
     debug "^2.6.0"
 
+dexie@^2.0.0-rc.1:
+  version "2.0.0-rc.1"
+  resolved "http://registry.npm.taobao.org/dexie/download/dexie-2.0.0-rc.1.tgz#7e26c5fbc27a33dc4d951fa7baff219cf37ecce2"
+
 diff@^3.2.0:
   version "3.3.0"
   resolved "http://r.cnpmjs.org/diff/download/diff-3.3.0.tgz#056695150d7aa93237ca7e378ac3b1682b7963b9"
