@@ -1,5 +1,3 @@
-
-
 /**
  * git do not control webim.config.js
  * everyone should copy webim.config.js.demo to webim.config.js
@@ -80,7 +78,7 @@ let config = {
      *  cn: chinese
      *  us: english
      */
-    i18n: "cn",
+    i18n: "us",
     /*
      * Set to auto sign-in
      */
@@ -103,7 +101,7 @@ let config = {
      * 5 actual logging methods, ordered and available:
      * 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'
      */
-    loglevel: "TRACE"
+    loglevel: "ERROR"
 }
 
 export default config

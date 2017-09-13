@@ -1,5 +1,5 @@
 import WebIM from "@/config/WebIM"
-import "./style/webrtc.less"
+import "../common/style/webrtc.less"
 
 var React = require("react")
 var ReactDOM = require("react-dom")

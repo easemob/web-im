@@ -16,7 +16,6 @@ import GroupActions from "@/redux/GroupRedux"
 import GroupMemberActions from "@/redux/GroupMemberRedux"
 import MessageActions from "@/redux/MessageRedux"
 import { config } from "@/config"
-import utils from "@/utils"
 
 const { SIDER_COL_BREAK, SIDER_COL_WIDTH, SIDER_WIDTH, RIGHT_SIDER_WIDTH } = config
 const { Header, Content, Footer, Sider, RightSider } = Layout
@@ -28,8 +27,6 @@ class DefaultLayout extends Component {
         super()
         const { selectTab, selectItem = "" } = match.params
 
-        const a = {}
-        // const b = a.b.c
 
         // console.log(selectTab, selectItem, "-----")
 
@@ -88,10 +85,10 @@ class DefaultLayout extends Component {
         const { selectItem, selectTab } = this.state
         const redirectPath = "/" + [ e.key ].join("/")
         if (selectTab == e.key) return
-        
+
         // quite previous chatroom
         if (selectItem) this.props.quitChatRoom(selectItem)
-            
+
         this.props.switchRightSider({ rightSiderOffset: 0 })
         history.push(redirectPath + location.search)
     }
@@ -116,7 +113,7 @@ class DefaultLayout extends Component {
         if (selectItem == e.key) {
             return
         }
-    
+
         if (selectTab === "group") {
             const groupId = e.key
             if (groupId) {
@@ -128,9 +125,9 @@ class DefaultLayout extends Component {
                 // const groupId = selectItem
                 this.props.listGroupMemberAsync({ groupId })
                 this.props.getMutedAsync(groupId)
-                this.props.getGroupAdminAsync(groupId)                
+                this.props.getGroupAdminAsync(groupId)
                 // }
-        
+
             }
         }
 
@@ -167,6 +164,7 @@ class DefaultLayout extends Component {
     componentDidMount() {
         // this.setSelectStatus()
     }
+
 
     componentWillReceiveProps(nextProps) {
         // console.log("componentWillReceiveProps", this.props.location.pathname, nextProps.location.pathname)
@@ -241,6 +239,7 @@ class DefaultLayout extends Component {
                      </Footer>*/}
                 </Content>
             </Layout>
+
         )
     }
 }
