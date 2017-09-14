@@ -55,6 +55,8 @@ export const us = {
     refuse: "Refused",
     subscribed: "Subscribed",
     unsubscribed: "Unsubscribed",
+    read: "read",
+    unread: "unread",
     // group
     createGroup: "Create group",
     joinGroup: "join group",
@@ -88,6 +90,7 @@ export const us = {
     successfully: "Successfully",
     failed: "Failed",
     by: " by ",
+    sentFailed: "sent failed",
     serverSideCloseWebsocketConnection: "server-side close the websocket connection",
     webIMConnectionAuthError: "WebIM connection auth error",
     offlineByMultiLogin: "offline by multi login"

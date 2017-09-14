@@ -55,6 +55,8 @@ export const cn = {
     refuse: "请求被拒绝",
     subscribed: "已订阅",
     unsubscribed: "已退订",
+    read: "已读",
+    unread: "未读",
     // 群组
     createGroup: "创建群组",
     joinGroup: "申请加入群",
@@ -88,6 +90,7 @@ export const cn = {
     successfully: "成功",
     failed: "失败",
     by: "，操作人：",
+    sentFailed: "未送达",
     serverSideCloseWebsocketConnection: "服务端已关闭 websocket 链接",
     webIMConnectionAuthError: "WebIM 链接鉴权失败",
     offlineByMultiLogin: "多重登录，已离线"
