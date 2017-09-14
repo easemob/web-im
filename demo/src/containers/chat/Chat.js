@@ -26,6 +26,7 @@ import WebRTCModal from "@/components/webrtc/WebRTCModal"
 
 const { TextArea } = Input
 const FormItem = Form.Item
+const { PAGE_NUM } = config
 
 const chatType = {
     contact: "chat",
@@ -75,7 +76,6 @@ class Chat extends React.Component {
                 if (!ReactDOM.findDOMNode(dom)) return
                 dom.scrollTop = dom.scrollHeight
             }, 0)
-            this._not_scroll_bottom = false
         }
     }
 
@@ -269,6 +269,7 @@ class Chat extends React.Component {
             this.props.deleteStranger(selectItem)
             history.push("/stranger" + search)
             break
+        default:
         }
     }
 
@@ -302,7 +303,6 @@ class Chat extends React.Component {
         this.scollBottom()
 
     }
-
 
     componentWillUnmount() {
         if (this.timer) clearTimeout(this.timer)
@@ -339,11 +339,16 @@ class Chat extends React.Component {
                 const chatTypes = { "contact": "chat", "group": "groupchat", "chatroom": "chatroom", "stranger": "stranger" }
                 const chatType = chatTypes[selectTab]
                 
+                // 拉取更多历史消息
                 _this.props.fetchMessage(selectItem, chatType, offset, (res) => {
-                    if (res < 20) {
+                    
+                    // 拉取的数量少于20条说明消息说明没有了 
+                    if (res < PAGE_NUM) {
                         _this.setState({
                             isLoaded: true
                         })
+
+                        _this._not_scroll_bottom = false
                     }
                 })
     

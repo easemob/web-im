@@ -2,15 +2,15 @@
 
 // 数据结构
 import Dexie from "dexie"
-import utils from "@/utils"
-import config from "../config/WebIMConfig"
+import WebIMConfig from "@/config/WebIMConfig"
+import { config } from "@/config/"
 
-const DB_ENABLE = config.enableLocalStorage
+const DB_ENABLE = WebIMConfig.enableLocalStorage
 const DB_VERSION = "2.0"
 
 const TABLE_NAME = "webim_history"
 const TABLE_INDEX_KEYS = [ "id", "from", "to", "type", "isUnread", "status" ]
-const PAGE_NUM = 20
+const { PAGE_NUM } = config
 
 const AppDB = {
 
@@ -98,7 +98,7 @@ const AppDB = {
                 $_TABLE.where("id").equals(message.id).count().then(res => {
                     if (res === 0 ) {
                         message.isUnread = isUnread
-                        message.status = "send"
+                        message.status = "sent"
                         $_TABLE.add(message)
                             .then(res => resolve(res))
                             .catch(e => console.log("add messaga:", e))
@@ -106,6 +106,24 @@ const AppDB = {
                 })
             })
         }
+    },
+
+    // clear all messages of specified conversation
+    clearMessage(chatType, id) {
+        const $_TABLE = this.$_TABLE
+        return this.exec(resolve => {
+            $_TABLE.where("type")
+                .equals(chatType)
+                .filter(item => {
+                    if (chatType === "chat") {
+                        return item.from == id || item.to == id
+                    } else {
+                        return item.to == id
+                    }
+                })
+                .delete()
+                .then(res => resolve(res))
+        })
     }
 
 }

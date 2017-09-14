@@ -22,5 +22,7 @@ export default {
         bmp: 1,
         jpg: 1,
         png: 1
-    }
+    },
+    
+    PAGE_NUM: 20
 }

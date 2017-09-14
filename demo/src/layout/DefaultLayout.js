@@ -101,7 +101,7 @@ class DefaultLayout extends Component {
         const redirectPath = "/" + [ selectTab, e.key ].join("/")
         const typeMap = { contact: "chat", group: "groupchat", chatroom: "chatroom", stranger: "stranger" }
 
-        // chatroom will push recent messages auto
+        // chatroom will push recent messages automatically
         if (!chat_message_status[e.key] && typeMap[selectTab] !== "chatroom") {
             this.props.fetchMessage(e.key, typeMap[selectTab])
             chat_message_status[e.key] = true

@@ -186,7 +186,7 @@ const { Types, Creators } = createActions({
     updateMessageMid: [ "id", "mid" ],
     muteMessage: [ "mid" ],
     demo: [ "chatType" ],
-    clearMessage: [ "chatType", "id" ],
+    //clearMessage: [ "chatType", "id" ],
     // clearUnread: [ "chatType", "id" ],
     // ---------------async------------------
     sendTxtMessage: (chatType, chatId, message = {}) => {
@@ -420,11 +420,17 @@ const { Types, Creators } = createActions({
     clearUnread: (chatType, id) => {
         return (dispatch) => {
             dispatch({ "type": "CLEAR_UNREAD", "chatType": chatType, "id": id })
-            AppDB.readMessage(chatType, id).then(res => {
-
-            })
+            AppDB.readMessage(chatType, id).then(res => {})
         }
     },
+
+    clearMessage: (chatType, id) => {
+        return (dispatch) => {
+            dispatch({ "type": "CLEAR_MESSAGE", "chatType": chatType, "id": id })
+            AppDB.clearMessage(chatType, id).then(res => {})
+        }
+    },
+
     sendRead: msg => {
         return (dispatch) => {
             const msgObj = new WebIM.message("read", WebIM.conn.getUniqueId())
@@ -522,7 +528,7 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
     state = state.setIn([ type, chatId ], chatData)
 
     // 未读消息数
-    if (!bySelf) {
+    if (!bySelf && !isPushed) {
         let count = state.getIn([ "unread", type, chatId ], 0)
         state = state.setIn([ "unread", type, chatId ], ++count)
     }
