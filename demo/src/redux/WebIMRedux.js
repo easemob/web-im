@@ -191,12 +191,12 @@ WebIM.conn.listen({
     },
     onReadMessage: message => {
         logger.info("onReadMessage", message)
-        // store.dispatch(MessageActions.updateMessageStatus(message, "read"))
+        store.dispatch(MessageActions.updateMessageStatus(message, "read"))
     },
     onDeliveredMessage: message => {
         // 收到已送达回执
         logger.info("onDeliveredMessage", message)
-        store.dispatch(MessageActions.updateMessageStatus(message, "sent"))
+        // store.dispatch(MessageActions.updateMessageStatus(message, "sent"))
     },
     onReceivedMessage: message => {
         logger.info("onReceivedMessage", message)

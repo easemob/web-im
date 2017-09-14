@@ -540,7 +540,8 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
  * @returns {*}
  */
 export const updateMessageStatus = (state, { message, status = "" }) => {
-    const { id } = message
+    let { id } = message
+    if (_.isEmpty(id)) id = state.getIn([ "byMid", message.mid, "id" ])
     const { type, chatId } = state.getIn([ "byId", id ])
     const messages = state.getIn([ type, chatId ]).asMutable()
     const found = _.find(messages, { id })
