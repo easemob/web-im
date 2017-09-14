@@ -189,16 +189,25 @@ WebIM.conn.listen({
     onBlacklistUpdate: list => {
         store.dispatch(BlacklistActions.updateBlacklist(list))
     },
+    onReadMessage: message => {
+        logger.info("onReadMessage", message)
+        // store.dispatch(MessageActions.updateMessageStatus(message, "read"))
+    },
+    onDeliveredMessage: message => {
+        // 收到已送达回执
+        logger.info("onDeliveredMessage", message)
+        store.dispatch(MessageActions.updateMessageStatus(message, "sent"))
+    },
     onReceivedMessage: message => {
         logger.info("onReceivedMessage", message)
         const { id, mid } = message
-        store.dispatch(MessageActions.updateMessageStatus(message, "sent"))
         store.dispatch(MessageActions.updateMessageMid(id, mid))
     },
     // 文本信息
     onTextMessage: message => {
         console.log("onTextMessage", message)
         store.dispatch(MessageActions.addMessage(message, "txt"))
+        store.dispatch(MessageActions.sendRead(message))
         const { type, from, to } = message
         switch (type) {
         case "chat":
@@ -217,6 +226,7 @@ WebIM.conn.listen({
     onPictureMessage: message => {
         console.log("onPictureMessage", message)
         store.dispatch(MessageActions.addMessage(message, "img"))
+        store.dispatch(MessageActions.sendRead(message))
         const { type, from, to } = message
         switch (type) {
         case "chat":
@@ -234,6 +244,7 @@ WebIM.conn.listen({
     },
     onFileMessage: message => {
         store.dispatch(MessageActions.addMessage(message, "file"))
+        store.dispatch(MessageActions.sendRead(message))
         const { type, from, to } = message
         switch (type) {
         case "chat":
@@ -251,6 +262,7 @@ WebIM.conn.listen({
     },
     onAudioMessage: message => {
         store.dispatch(MessageActions.addAudioMessage(message, "audio"))
+        store.dispatch(MessageActions.sendRead(message))
         const { type, from, to } = message
         switch (type) {
         case "chat":
@@ -268,6 +280,7 @@ WebIM.conn.listen({
     },
     onVideoMessage: message => {
         store.dispatch(MessageActions.addMessage(message, "video"))
+        store.dispatch(MessageActions.sendRead(message))
         const { type, from, to } = message
         switch (type) {
         case "chat":

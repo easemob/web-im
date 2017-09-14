@@ -424,6 +424,13 @@ const { Types, Creators } = createActions({
 
             })
         }
+    },
+    sendRead: msg => {
+        return (dispatch) => {
+            const msgObj = new WebIM.message("read", WebIM.conn.getUniqueId())
+            msgObj.set({ id: msg.id, to: msg.from, ext: { logo: "easemob" } })
+            WebIM.conn.send(msgObj.body)            
+        }
     }
 })
 
