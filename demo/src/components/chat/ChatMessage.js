@@ -6,7 +6,7 @@ import { I18n } from "react-redux-i18n"
 import { Badge } from "antd"
 import { renderTime } from "@/utils"
 import emoji from "@/config/emoji"
-import { Card } from "antd"
+import { Card, Tag } from "antd"
 import Audio from "@/components/chat/Audio"
 import WebIM from "@/config/WebIM"
 
@@ -47,7 +47,6 @@ export default ({ bySelf, from, time, body, status }) => {
 
     const cls = classNames("x-message-group", bySelf ? "x-message-right" : "")
     const localFormat = renderTime(time)
-    const isMuted = status === "muted" ? true : false
 
     let content = null
     if (body.type == "txt") {
@@ -112,13 +111,29 @@ export default ({ bySelf, from, time, body, status }) => {
         )
     }
 
+    let statusTag
+    switch (status) {
+    case "sent":
+        statusTag = <Tag color="#2db7f5">{I18n.t("unread")}</Tag>
+        break
+    case "muted":
+        statusTag = <Tag color="#f50">{I18n.t("muted")}</Tag>
+        break
+    case "fail":
+        statusTag = <Tag color="#f50">{I18n.t("sentFailed")}</Tag>
+        break
+    default:
+        statusTag = ""
+        break
+    }
+
     return (
         <div className={cls}>
             <div className="x-message-user">
                 {from}
             </div>
             <div className="x-message-content">
-                { isMuted ? <i className="webim webim-j" style={{ color: "red", fontSize: "1.5em", fontWeight: 300 }}></i> : ""} {content}
+                {bySelf ? statusTag : "" } {content}
             </div>
             {bySelf
                 ? <div className="x-message-time">
