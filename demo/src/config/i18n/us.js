@@ -93,5 +93,6 @@ export const us = {
     sentFailed: "sent failed",
     serverSideCloseWebsocketConnection: "server-side close the websocket connection",
     webIMConnectionAuthError: "WebIM connection auth error",
-    offlineByMultiLogin: "offline by multi login"
+    offlineByMultiLogin: "offline by multi login",
+    noMoreMessage: "no more messages"
 }

@@ -101,7 +101,13 @@ let config = {
      * 5 actual logging methods, ordered and available:
      * 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'
      */
-    loglevel: "ERROR"
+
+    loglevel: "ERROR",
+
+    /**
+    * enable localstorage for history messages
+    */
+    enableLocalStorage: true
 }
 
 export default config

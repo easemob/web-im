@@ -401,28 +401,27 @@ const { Types, Creators } = createActions({
         }
     },
 
-    fetchMessage: (id, chatType, offset) => {
+    fetchMessage: (id, chatType, offset, cb) => {
         return (dispatch) => {
-            AppDB.getLatestMessage(id, chatType, offset).then(res => {
-                dispatch({
-                    "type": "FETCH_MESSAGE",
-                    "chatType": chatType,
-                    "id": id,
-                    "messages": res,
-                    "offset": offset
-                })
+            AppDB.fetchMessage(id, chatType, offset).then(res => {
+                if (res.length) {
+                    dispatch({
+                        "type": "FETCH_MESSAGE",
+                        "chatType": chatType,
+                        "id": id,
+                        "messages": res
+                    })
+                }
+                cb && cb(res.length)
             })
         }
     },
 
     clearUnread: (chatType, id) => {
         return (dispatch) => {
+            dispatch({ "type": "CLEAR_UNREAD", "chatType": chatType, "id": id })
             AppDB.readMessage(chatType, id).then(res => {
-                dispatch({
-                    "type": "CLEAR_UNREAD",
-                    "chatType": chatType,
-                    "id": id
-                })
+
             })
         }
     }
@@ -484,11 +483,26 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         status: status
     }
 
-    chatData.push(_message)
+    // 进入chatroom自动拉取的消息可能 state 里面已经有了 
+    // 但是 state 里面的自己消息 id 还是还是 WEBIM 开头的，影响重复检测，通过 mid 替换成本地 id
+    if (_message.type === "chatroom" && bySelf && _message.id.indexOf("WEBIM_") < 0) {
+        const oid = state.getIn([ "byMid", _message.id, "id" ])
+        if (oid) {
+            _message.id = oid
+        }
+    }
+
+    let isPushed = false
+    chatData.forEach(m => {
+        if (m.id === _message.id) {
+            isPushed = true
+        }
+    })
+
+    !isPushed && chatData.push(_message)
 
     // 添加新消息到本地db，并加入未读状态：自己发的/不是来自当前聊天对象记 0，其它记 1
-    const isUnread = !bySelf
-    AppDB.addMessage(_message, isUnread ? 1 : 0)
+    !isPushed && AppDB.addMessage(_message, !bySelf ? 1 : 0)
 
     const maxCacheSize = _.includes([ "group", "chatroom" ], type) ? WebIM.config.groupMessageCacheSize : WebIM.config.p2pMessageCacheSize
     if (chatData.length > maxCacheSize) {
@@ -538,7 +552,6 @@ export const clearUnread = (state, { chatType, id }) => {
     return state.setIn([ "unread", chatType ], data)
 }
 
-
 export const updateMessageMid = (state, { id, mid }) => {
     return state.setIn([ "byMid", mid ], { id })
 }
@@ -564,7 +577,7 @@ export const initUnread = (state, { unreadList }) => {
 
 export const fetchMessage = (state, { id, chatType, messages, offset }) => {
     let data = state[chatType] && state[chatType][id] ? state[chatType][id].asMutable() : []
-    data = data.concat(messages)
+    data = messages.concat(data)
     //-----------------------
     return state.setIn([ chatType, id ], data)
 }

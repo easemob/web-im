@@ -15,6 +15,7 @@ import GroupRequestActions from "@/redux/GroupRequestRedux"
 import { store } from "@/redux"
 import { history } from "@/utils"
 import utils from "@/utils"
+import AppDB from "@/utils/AppDB"
 import { I18n } from "react-redux-i18n"
 
 import { message } from "antd"
@@ -32,7 +33,9 @@ WebIM.conn.listen({
         const path = history.location.pathname.indexOf("login") !== -1 ? "/contact" : history.location.pathname
         const redirectUrl = `${path}?username=${username}`
 
-        
+        // 初始化本地数据库当用户连接到IM
+        AppDB.init(username)
+
         // 获取本地储存的未读消息条目
         store.dispatch(MessageActions.initUnread())
         

@@ -46,7 +46,8 @@ class Chat extends React.Component {
             showWebRTC: false,
             selectTab,
             selectItem,
-            value: ""
+            value: "",
+            isLoaded: false
         }
         this.handleSend = this.handleSend.bind(this)
         this.handleChange = this.handleChange.bind(this)
@@ -68,11 +69,14 @@ class Chat extends React.Component {
     }
 
     scollBottom() {
-        setTimeout(() => {
-            const dom = this.refs["x-chat-content"]
-            if (!ReactDOM.findDOMNode(dom)) return
-            dom.scrollTop = dom.scrollHeight
-        }, 0)
+        if (!this._not_scroll_bottom) {
+            setTimeout(() => {
+                const dom = this.refs["x-chat-content"]
+                if (!ReactDOM.findDOMNode(dom)) return
+                dom.scrollTop = dom.scrollHeight
+            }, 0)
+            this._not_scroll_bottom = false
+        }
     }
 
     pictureChange(e) {
@@ -325,12 +329,26 @@ class Chat extends React.Component {
     }
 
     handleScroll = (e) => {
-        if (e.target.scrollTop == 0) {
-            const { selectItem, selectTab } = _.get(this.props, [ "match", "params" ], {})
-            const chatTypes = { "contact": "chat", "group": "groupchat", "chatroom": "chatroom", "stranger": "stranger" }
-            const chatType = chatTypes[selectTab]
-            // TODO: 暂时移除滚动查看更多消息
-            //this.props.fetchMessage(selectItem, chatType, this.props.messageList.length - 1)
+        const _this = this
+        if (e.target.scrollTop === 0) {
+            // TODO: 要优化
+            setTimeout(function() {
+                console.log(_this.props.messageList)
+                const offset = _this.props.messageList ? _this.props.messageList.length : 0            
+                const { selectItem, selectTab } = _.get(_this.props, [ "match", "params" ], {})
+                const chatTypes = { "contact": "chat", "group": "groupchat", "chatroom": "chatroom", "stranger": "stranger" }
+                const chatType = chatTypes[selectTab]
+                
+                _this.props.fetchMessage(selectItem, chatType, offset, (res) => {
+                    if (res < 20) {
+                        _this.setState({
+                            isLoaded: true
+                        })
+                    }
+                })
+    
+                _this._not_scroll_bottom = true
+            }, 500)
         }
     }
 
@@ -402,6 +420,7 @@ class Chat extends React.Component {
                 </div>
                 <div className="x-chat-content" ref="x-chat-content" onScroll={this.handleScroll}>
                     {/* fixed bug of messageList.map(...) */}
+                    {this.state.isLoaded && <div style={{ width:"150px",height:"30px",lineHeight:"30px",backgroundColor:"#888",color:"#fff",borderRadius:"15px", textAlign:"center", margin:"10px auto" }}>{I18n.t("noMoreMessage")}</div>}
                     {_.map(messageList, message => <ChatMessage key={message.id} {...message} />)}
                 </div>
                 <div className="x-chat-footer">
@@ -486,6 +505,6 @@ export default connect(
         addContact: id => dispatch(RosterActions.addContact(id)),
         deleteStranger: id => dispatch(StrangerActions.deleteStranger(id)),
         doAddBlacklist: id => dispatch(BlacklistActions.doAddBlacklist(id)),
-        fetchMessage: (id, chatType, offset) => dispatch(MessageActions.fetchMessage(id, chatType, offset))
+        fetchMessage: (id, chatType, offset, cb) => dispatch(MessageActions.fetchMessage(id, chatType, offset, cb))
     })
 )(Chat)

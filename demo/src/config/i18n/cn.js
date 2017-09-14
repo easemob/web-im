@@ -93,5 +93,6 @@ export const cn = {
     sentFailed: "未送达",
     serverSideCloseWebsocketConnection: "服务端已关闭 websocket 链接",
     webIMConnectionAuthError: "WebIM 链接鉴权失败",
-    offlineByMultiLogin: "多重登录，已离线"
+    offlineByMultiLogin: "多重登录，已离线",
+    noMoreMessage: "没有更多消息啦~"
 }

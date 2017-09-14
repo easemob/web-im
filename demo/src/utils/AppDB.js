@@ -3,90 +3,114 @@
 // 数据结构
 import Dexie from "dexie"
 import utils from "@/utils"
+import config from "../config/WebIMConfig"
 
-const DB_NAME = utils.getUserName()
+const DB_ENABLE = config.enableLocalStorage
 const DB_VERSION = "2.0"
 
 const TABLE_NAME = "webim_history"
-const TABLE_INDEX_KEYS = [ "id", "[from+to]", "type", "isUnread" ]
+const TABLE_INDEX_KEYS = [ "id", "from", "to", "type", "isUnread", "status" ]
 const PAGE_NUM = 20
 
-// create a database, use username as db name
-const db = new Dexie(DB_NAME)
-
-// create a table, use TABLE_NAME as table name
-db.version(DB_VERSION).stores({
-    [TABLE_NAME] : TABLE_INDEX_KEYS.join(",")
-})
-
-// save the table for quickly visit
-const $_TABLE = db.table(TABLE_NAME)
-
-// API list for redux
-// ----------------------
-// 1. 获取各个类型聊天室下新消记录
-// 2. 获取某个对话的历史聊天记录(id, from, count)
-// 3. 清空某个对话未读消息状态
-// 4. 添加一条（已读/未读）消息
-// 5. 清空某个对话的历史消息
-// ----------------------
-
 const AppDB = {
+
+    // init db
+    init: function(username) {
+
+        if (!DB_ENABLE || this.db) {
+            return
+        }
+
+        // create a database, use username as db name
+        const db = new Dexie(username)
+        
+        // create a table, use TABLE_NAME as table name
+        db.version(DB_VERSION).stores({
+            [TABLE_NAME] : TABLE_INDEX_KEYS.join(",")
+        })
+
+        this.db = db
+        this.$_TABLE = db.table(TABLE_NAME)
+    },
     
-    // get conversaion unread message number
-    getUnreadMessage(id) {
-        return $_TABLE.where({ "from": id, "isUnread": 1 })
+    exec(cb1, cb2) {
+        return new Promise(function(resolve, reject) {
+            if (DB_ENABLE) {
+                cb1(resolve)
+            } else {
+                cb2 && cb2(reject)
+            }
+        })
     },
 
     // get unread messages
     getUnreadList() {
-        return $_TABLE.where("isUnread")
-            .equals(1)
-            .toArray()
+        const $_TABLE = this.$_TABLE
+        return this.exec(resolve => {
+            $_TABLE.where("isUnread").equals(1).toArray().then(res => resolve(res))
+        })
     },
 
     // get lastest mumber of message by start index
-    getLatestMessage(id, chatType = "chat", offset = 0) {
-        return $_TABLE.where("type")
-            .equals(chatType)
-            .filter(item => {
-                if (chatType === "chat") {
-                    return item.from == id || item.to == id
-                } else {
-                    return item.from == id
-                }
-            })
-            .offset(offset)
-            .limit(PAGE_NUM)
-            .sortBy("time")
+    fetchMessage(id, chatType = "chat", offset = 0, limit = PAGE_NUM) {
+        const $_TABLE = this.$_TABLE
+        return this.exec(resolve => {
+            $_TABLE.where("type")
+                .equals(chatType)
+                .filter(item => {
+                    if (item.error) {
+                        return false
+                    }
+                    if (chatType === "chat") {
+                        return item.from == id || item.to == id
+                    } else {
+                        return item.to == id
+                    }
+                })
+                .reverse()
+                .offset(offset)
+                .limit(limit)
+                .sortBy("time")
+                .then(res => {
+                    resolve(res.reverse())
+                })
+        })
     },
 
     // make message unread -> read
     readMessage(chatType, id) {
-        const propName = chatType === "chat" ? "from" : "to"
-        return $_TABLE.where({ "type": chatType, [propName]: id, "isUnread": 1 })
-            .modify({ "isUnread": 0 })
+        const $_TABLE = this.$_TABLE
+        const key = chatType === "chat" ? "from" : "to"
+        return this.exec(resolve => {
+            $_TABLE.where({ "type": chatType, [key]: id, "isUnread": 1 })
+                .modify({ "isUnread": 0 })
+                .then(res => {
+                    resolve(res)
+                })
+        })
     },
 
     // add a message to the database
     addMessage(message, isUnread = 0) {
-        message.isUnread = isUnread
-        if (message.type === "chat") {
-
+        const $_TABLE = this.$_TABLE
+        if (!message.error) {
+            return this.exec(resolve => {
+                $_TABLE.where("id").equals(message.id).count().then(res => {
+                    if (res === 0 ) {
+                        message.isUnread = isUnread
+                        message.status = "send"
+                        $_TABLE.add(message)
+                            .then(res => resolve(res))
+                            .catch(e => console.log("add messaga:", e))
+                    }
+                })
+            })
         }
-        return $_TABLE.add(message)
-    },
-
-    // clear conversation history message
-    clearAllMessage(id) {
-        
     }
 
 }
 
 // in order to test in browser, will be removed
 window.AppDB = AppDB
-window.db = db
-window.$_TABLE = $_TABLE
 
 export default AppDB
