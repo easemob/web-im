@@ -269,7 +269,12 @@ var CryptoJS = require('crypto-js');
                 dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
             }
             if (message.bodyId) {
-                dom.up().c('body').t(message.bodyId);
+                dom = $msg({
+                    type: message.group || 'chat'
+                    , to: message.toJid
+                    , id: message.id
+                    , xmlns: 'jabber:client'
+                }).c('body').t(message.bodyId);
                 var delivery = {
                     xmlns: 'urn:xmpp:receipts'
                     , id: message.bodyId
@@ -277,7 +282,12 @@ var CryptoJS = require('crypto-js');
                 dom.up().c('delivery').t(_utils.stringify(delivery));
             }
             if (message.ackId) {
-                dom.up().c('body').t(message.ackId);
+                dom = $msg({
+                    type: message.group || 'chat'
+                    , to: message.toJid
+                    , id: message.id
+                    , xmlns: 'jabber:client'
+                }).c('body').t(message.ackId);
                 var read = {
                     xmlns: 'urn:xmpp:receipts'
                     , id: message.ackId
