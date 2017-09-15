@@ -553,6 +553,7 @@ export const updateMessageStatus = (state, { message, status = "" }) => {
     const found = _.find(messages, { id })
     const msg = found.setIn([ "status" ], status)
     messages.splice(messages.indexOf(found), 1, msg)
+    AppDB.updateMessageStatus(id, status).then(res => console.log("db status update success"))
     return state.setIn([ type, chatId ], messages)
 }
 

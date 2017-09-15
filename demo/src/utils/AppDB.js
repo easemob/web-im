@@ -77,13 +77,26 @@ const AppDB = {
         })
     },
 
-    // make message unread -> read
+    // read all messages of conversation
     readMessage(chatType, id) {
         const $_TABLE = this.$_TABLE
         const key = chatType === "chat" ? "from" : "to"
         return this.exec(resolve => {
             $_TABLE.where({ "type": chatType, [key]: id, "isUnread": 1 })
                 .modify({ "isUnread": 0 })
+                .then(res => {
+                    resolve(res)
+                })
+        })
+    },
+
+    // update  message status
+    updateMessageStatus(id, status) {
+        const $_TABLE = this.$_TABLE
+        return this.exec(resolve => {
+            $_TABLE.where("id")
+                .equals(id)
+                .modify({ "status": status })
                 .then(res => {
                     resolve(res)
                 })
@@ -98,7 +111,6 @@ const AppDB = {
                 $_TABLE.where("id").equals(message.id).count().then(res => {
                     if (res === 0 ) {
                         message.isUnread = isUnread
-                        message.status = "sent"
                         $_TABLE.add(message)
                             .then(res => resolve(res))
                             .catch(e => console.log("add messaga:", e))
