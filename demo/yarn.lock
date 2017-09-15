@@ -822,9 +822,9 @@ babel-plugin-dynamic-import-node@1.0.2:
     babel-template "^6.24.1"
     babel-types "^6.24.1"
 
-babel-plugin-import@^1.2.1:
+babel-plugin-import@^1.4.0:
   version "1.4.0"
-  resolved "http://r.cnpmjs.org/babel-plugin-import/download/babel-plugin-import-1.4.0.tgz#a9999d9a79fc52a03c17ccfbbeb804038590503f"
+  resolved "http://registry.npm.taobao.org/babel-plugin-import/download/babel-plugin-import-1.4.0.tgz#a9999d9a79fc52a03c17ccfbbeb804038590503f"
 
 babel-plugin-istanbul@^4.0.0:
   version "4.1.4"
