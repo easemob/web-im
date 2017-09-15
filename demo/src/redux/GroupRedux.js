@@ -8,6 +8,8 @@ import _ from "lodash"
 import { config } from "@/config"
 import { store } from "@/redux"
 
+const logger = WebIM.loglevel.getLogger("GroupRedux")
+
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
@@ -28,9 +30,10 @@ const { Types, Creators } = createActions({
     getGroups: () => {
         return (dispatch, getState) => {
             store.dispatch(CommonActions.getGroupAlready())
-            WebIM.conn.listRooms({
-                success: function(rooms) {
-                    dispatch(Creators.updateGroup(rooms))
+            WebIM.conn.getGroup({
+                success: function(response) {
+                    logger.info(response.data)
+                    dispatch(Creators.updateGroup(response.data))
                 },
                 error: function(e) {
                     WebIM.conn.setPresence()
@@ -147,8 +150,8 @@ export const updateGroup = (state, { groups }) => {
     let byId = {}
     let names = []
     groups.forEach(v => {
-        byId[v.roomId] = v
-        names.push(v.name + "_#-#_" + v.roomId)
+        byId[v.groupid] = v
+        names.push(v.groupname + "_#-#_" + v.groupid)
     })
     return state.merge({
         byId,

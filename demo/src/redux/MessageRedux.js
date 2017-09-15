@@ -548,13 +548,17 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
 export const updateMessageStatus = (state, { message, status = "" }) => {
     let { id } = message
     if (_.isEmpty(id)) id = state.getIn([ "byMid", message.mid, "id" ])
-    const { type, chatId } = state.getIn([ "byId", id ])
-    const messages = state.getIn([ type, chatId ]).asMutable()
-    const found = _.find(messages, { id })
-    const msg = found.setIn([ "status" ], status)
-    messages.splice(messages.indexOf(found), 1, msg)
+    const byId = state.getIn([ "byId", id ])
+    if (!_.isEmpty(byId)) {
+        const { type, chatId } = byId
+        const messages = state.getIn([ type, chatId ]).asMutable()
+        const found = _.find(messages, { id })
+        const msg = found.setIn([ "status" ], status)
+        messages.splice(messages.indexOf(found), 1, msg)
     AppDB.updateMessageStatus(id, status).then(res => console.log("db status update success"))
-    return state.setIn([ type, chatId ], messages)
+        state = state.setIn([ type, chatId ], messages)
+    }
+    return state
 }
 
 export const clearMessage = (state, { chatType, id }) => {
