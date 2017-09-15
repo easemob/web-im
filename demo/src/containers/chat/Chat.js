@@ -487,7 +487,7 @@ class Chat extends React.Component {
                         {/*<TextArea rows={2} />*/}
                     </div>
                 </div>
-                <WebRTCModal visible={showWebRTC}/>
+                <WebRTCModal collapsed={collapsed} visible={showWebRTC}/>
             </div>
         )
     }

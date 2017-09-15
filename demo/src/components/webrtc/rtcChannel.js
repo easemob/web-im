@@ -7,9 +7,10 @@ var Drag = require("./drag")
 var Channel = React.createClass({
     getInitialState: function () {
         return {
+            collapsed: this.props.collapsed,
             localFullRemoteCorner: this.props.localFullRemoteCorner,
-            full_width: 400,
-            full_height: 400,
+            full_width: 360,
+            full_height: 360,
             toggle_right: 0,
             toggle_top: 0,
             toggle_display: "none",
@@ -42,7 +43,7 @@ var Channel = React.createClass({
     },
 
     toggle: function () {
-        // console.log('toggle', this.local_width, '*', this.local_height, ',', this.remote_width, '*', this.remote_height);
+        // console.log("toggle", this.local_width, "*", this.local_height, ",", this.remote_width, "*", this.remote_height)
         if (this.state.full_width == this.local_width && this.state.full_height == this.local_height) {
             this.state.full_width = this.remote_width
             this.state.full_height = this.remote_height
@@ -52,8 +53,8 @@ var Channel = React.createClass({
         }
         this.setState({
             localFullRemoteCorner: !this.state.localFullRemoteCorner,
-            full_width: this.state.full_width,
-            full_height: this.state.full_height
+            full_width: this.props.collapsed ? this.state.full_width / 2 : this.state.full_width,
+            full_height: this.props.collapsed ? this.state.full_height / 2 : this.state.full_height
         })
     },
 
@@ -75,13 +76,13 @@ var Channel = React.createClass({
 
 
     componentWillReceiveProps: function (nextProps) {
-        console.log("componentWillReceiveProps", nextProps)
+        // console.log("componentWillReceiveProps", nextProps)
         this.setStream(nextProps)
     },
 
 
     componentDidMount: function () {
-        console.log("did mount", this.props)
+        // console.log("did mount", this.props)
         new Drag(this.refs.onAcceptCallrtc)
         this.resetButtonPosition()
 
@@ -152,7 +153,6 @@ var Channel = React.createClass({
 
 
     loadedmetadataRemoteHandler: function () {
-
         var video = this.refs.remoteVideo
 
         var hasVideo = this.props.remoteStream.getVideoTracks()[0] && this.props.remoteStream.getVideoTracks()[0].enabled
@@ -168,7 +168,7 @@ var Channel = React.createClass({
         }
         if (hasAudio && !hasVideo) { //仅有音频
             this.setState({
-                full_width: 330,
+                full_width: 360,
                 full_height: 90,
             })
             this.setState({
@@ -183,11 +183,11 @@ var Channel = React.createClass({
         var video = this.refs.localVideo
 
         if (this.state.localFullRemoteCorner) {
-            this.local_width = video.videoWidth
-            this.local_height = video.videoHeight
+            this.local_width = this.props.collapsed ? video.videoWidth / 2 : video.videoWidth
+            this.local_height = this.props.collapsed ? video.videoHeight / 2 : video.videoHeight
             this.setState({
-                full_width: video.videoWidth,
-                full_height: video.videoHeight,
+                full_width: this.props.collapsed ? video.videoWidth / 2 : video.videoWidth,
+                full_height: this.props.collapsed ? video.videoHeight / 2 : video.videoHeight,
             })
         }
     },
@@ -200,11 +200,11 @@ var Channel = React.createClass({
             var hasAudio = this.props.remoteStream.getAudioTracks()[0].enabled
 
             if (hasVideo) { //视频 + 音频
-                this.remote_width = video.videoWidth
-                this.remote_height = video.videoHeight
+                this.remote_width = this.props.collapsed ? video.videoWidth / 2 : video.videoWidth
+                this.remote_height = this.props.collapsed ? video.videoHeight / 2 : video.videoHeight
                 this.setState({
-                    full_width: video.videoWidth,
-                    full_height: video.videoHeight,
+                    full_width: this.props.collapsed ? video.videoWidth / 2 : video.videoWidth,
+                    full_height: this.props.collapsed ? video.videoHeight / 2 : video.videoHeight,
                 })
             }
             if (hasAudio && !hasVideo) { //仅有音频
@@ -237,7 +237,10 @@ var Channel = React.createClass({
         var remoteClassName = this.state.localFullRemoteCorner ? "corner" : "full"
         return (
             <div ref='rtc' className='webim-rtc-video'
-                style={{ width: this.state.full_width + "px", height: this.state.full_height + "px" }}>
+                style={{
+                    width: this.state.full_width + "px",
+                    height: this.state.full_height + "px"
+                }}>
                 <video ref='localVideo' className={localClassName} muted autoPlay/>
                 <video ref='remoteVideo' className={remoteClassName} autoPlay/>
                 <span>{this.props.title}</span>
@@ -276,12 +279,11 @@ var Channel = React.createClass({
     }
 })
 
-export default (dom) => {
+export default (dom, collapsed) => {
     this.dom = dom
     var me = this
     return {
         setLocal: function (stream, streamType) {
-            console.log("channel setLocal", "user=", WebIM.conn.context.userId, "caller=", WebIM.call.caller, "callee=", WebIM.call.callee)
             this.localStream = stream
             var title = ""
             var hideAccept = false
@@ -293,13 +295,13 @@ export default (dom) => {
                 title = WebIM.call.callee.split("@")[0].split("_")[1]
             }
             ReactDOM.render(
-                <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
+                <Channel collapsed={collapsed} close={this.close} localStream={this.localStream}
+                    remoteStream={this.remoteStream}
                     title={title} hideAccept={hideAccept} localFullRemoteCorner={localFullRemoteCorner}/>,
                 me.dom
             )
         },
         setRemote: function (stream, streamType) {
-            console.log("channel setRemote", "user=", WebIM.conn.context.userId, "caller=", WebIM.call.caller, "callee=", WebIM.call.callee)
             this.remoteStream = stream
             var title = ""
             var localFullRemoteCorner = false
@@ -309,7 +311,8 @@ export default (dom) => {
                 title = WebIM.call.callee.split("@")[0].split("_")[1] + (streamType == "VOICE" ? " 请求语音通话..." : " 请求视频通话...")
             }
             ReactDOM.render(
-                <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
+                <Channel collapsed={collapsed} close={this.close} localStream={this.localStream}
+                    remoteStream={this.remoteStream}
                     title={title} localFullRemoteCorner={localFullRemoteCorner}/>,
                 me.dom
             )
@@ -323,7 +326,7 @@ export default (dom) => {
                 title = WebIM.call.callee.split("@")[0].split("_")[1] + (streamType == "VOICE" ? " 请求语音通话..." : " 请求视频通话...")
             }
             ReactDOM.render(
-                <Channel close={this.close}
+                <Channel collapsed={collapsed} close={this.close}
                     title={title} localFullRemoteCorner={localFullRemoteCorner}/>,
                 me.dom
             )

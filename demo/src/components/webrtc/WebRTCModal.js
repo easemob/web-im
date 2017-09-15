@@ -12,8 +12,8 @@ class WebRTCModal extends React.Component {
     componentDidMount() {
         // this.setSelectStatus()
         if (WebIM.config.isWebRTC && WebIM.WebRTC) {
-            this.initWebRTC()
-            this.channel = new RTCChannel(this.refs.rtcWrapper)
+            this.initWebRTC(WebRTCModal)
+            this.channel = new RTCChannel(this.refs.rtcWrapper, this.props.collapsed)
         }
     }
 
