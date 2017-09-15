@@ -7,6 +7,7 @@ import ListItem from "@/components/list/ListItem"
 import History from "@/utils/history"
 import WebIM from "@/config/WebIM"
 import WebIMActions from "@/redux/WebIMRedux"
+import CommonActions from "@/redux/CommonRedux"
 import "./style/HeaderOps.less"
 import _ from "lodash"
 
@@ -33,6 +34,7 @@ class HeaderOps extends Component {
         this.onMenuSettingsClick = this.onMenuSettingsClick.bind(this)
         this.onMenuRightClick = this.onMenuRightClick.bind(this)
         this.handleLogout = this.handleLogout.bind(this)
+        this.handleModalClose = this.handleModalClose.bind(this)
     }
 
     handleLogout() {
@@ -75,11 +77,18 @@ class HeaderOps extends Component {
                 modal: "showAddGroupModal"
             })
             break
+        default:
+            break
         }
     }
 
+    handleModalClose(e) {
+        this.setState({ modal: "" })
+        this.props.setShowGroupRequestModal(false)
+    }
+
     render() {
-        const { title, doLogout, subscribes, groupRequests } = this.props
+        const { title, doLogout, subscribes, groupRequests, showGroupRequestModal } = this.props
         const { modal } = this.state
 
         const tabsLeft = [
@@ -160,6 +169,7 @@ class HeaderOps extends Component {
                         title={I18n.t("addAFriend")}
                         visible={modal === "showAddFriendsModal"}
                         component={AddFriendsModal}
+                        onModalClose={this.handleModalClose}
                     />
                 }
                 {
@@ -168,6 +178,7 @@ class HeaderOps extends Component {
                         title={I18n.t("request")}
                         visible={!_.isEmpty(subscribes)}
                         component={FriendsRequestModal}
+                        onModalClose={this.handleModalClose}
                     />
                 }
                 {
@@ -176,6 +187,7 @@ class HeaderOps extends Component {
                         title={I18n.t("createGroup")}
                         visible={modal === "showAddGroupModal"}
                         component={AddGroupModal}
+                        onModalClose={this.handleModalClose}
                     />
                 }
                 {
@@ -184,6 +196,7 @@ class HeaderOps extends Component {
                         title={I18n.t("blacklist")}
                         visible={modal === "showBlacklistModal"}
                         component={BlacklistModal}
+                        onModalClose={this.handleModalClose}
                     />
                 }
                 {
@@ -192,14 +205,16 @@ class HeaderOps extends Component {
                         title={I18n.t("joinGroup")}
                         visible={modal === "showJoinGroupModal"}
                         component={JoinGroupModal}
+                        onModalClose={this.handleModalClose}
                     />
                 }
                 {
                     <ModalComponent
                         width={460}
                         title={I18n.t("joinGroup")}
-                        visible={!_.isEmpty(groupRequests)}
+                        visible={showGroupRequestModal}
                         component={GroupRequestModal}
+                        onModalClose={this.handleModalClose}
                     />
                 }
             </div>
@@ -213,11 +228,13 @@ HeaderOps.propTypes = {
 }
 
 export default connect(
-    ({ entities }) => ({
-        subscribes: entities.subscribe.byFrom,
-        groupRequests: entities.groupRequest.byGid
+    (state) => ({
+        subscribes: state.entities.subscribe.byFrom,
+        groupRequests: state.entities.groupRequest.byGid,
+        showGroupRequestModal: state.common.showGroupRequestModal
     }),
     dispatch => ({
-        doLogout: () => dispatch(WebIMActions.logout())
+        doLogout: () => dispatch(WebIMActions.logout()),
+        setShowGroupRequestModal: (status) => dispatch(CommonActions.setShowGroupRequestModal(status))
     })
 )(HeaderOps)

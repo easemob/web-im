@@ -64,6 +64,7 @@ WebIM.conn.listen({
         switch (msg.type) {
         case "joinGroupNotifications":
             logger.info("joinGroupNotifications")
+            store.dispatch(CommonActions.setShowGroupRequestModal(true))
             store.dispatch(GroupRequestActions.addGroupRequest(msg))
             break
         case "leaveGroup": // dismissed by admin

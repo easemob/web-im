@@ -8,6 +8,7 @@ const { Types, Creators } = createActions({
     fetched: [],
     getGroupAlready: null,
     getChatRoomAlready: null,
+    setShowGroupRequestModal: [ "status" ]
 })
 
 export const CommonTypes = Types
@@ -18,7 +19,8 @@ export default Creators
 export const INITIAL_STATE = Immutable({
     fetching: false,
     isGetGroupAlready: false,
-    isGetChatRoomAlready: false
+    isGetChatRoomAlready: false,
+    showGroupRequestModal: false
 })
 
 /* ------------- Reducers ------------- */
@@ -38,13 +40,19 @@ export const getGroupAlready = state => {
 export const getChatRoomAlready = state => {
     return state.merge({ isGetChatRoomAlready: true })
 }
+
+export const setShowGroupRequestModal = (state, { status }) => {
+    return state.merge({ showGroupRequestModal: status })
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
     [Types.FETCHING]: fetching,
     [Types.FETCHED]: fetched,
     [Types.GET_GROUP_ALREADY]: getGroupAlready,
-    [Types.GET_CHAT_ROOM_ALREADY]: getChatRoomAlready
+    [Types.GET_CHAT_ROOM_ALREADY]: getChatRoomAlready,
+    [Types.SET_SHOW_GROUP_REQUEST_MODAL]: setShowGroupRequestModal
 })
 
 /* ------------- Selectors ------------- */
