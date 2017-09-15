@@ -1,5 +1,6 @@
 import WebIM from "@/config/WebIM"
 import "../common/style/webrtc.less"
+import { I18n } from "react-redux-i18n"
 
 var React = require("react")
 var ReactDOM = require("react-dom")
@@ -289,7 +290,7 @@ export default (dom, collapsed) => {
             var hideAccept = false
             var localFullRemoteCorner = false
             if (WebIM.conn.context.userId == WebIM.call.caller) {
-                title = "等候 " + WebIM.call.callee.split("@")[0].split("_")[1] + (streamType == "VOICE" ? " 语音中..." : " 视频中...")
+                title = I18n.t("waiting") + WebIM.call.callee.split("@")[0].split("_")[1] + (streamType == "VOICE" ? I18n.t("waitingVoice") : I18n.t("waitingVideo") )
                 hideAccept = true
             } else {
                 title = WebIM.call.callee.split("@")[0].split("_")[1]
@@ -308,7 +309,7 @@ export default (dom, collapsed) => {
             if (WebIM.call.caller != "" && WebIM.call.caller == WebIM.conn.context.userId) {
                 title = WebIM.call.callee.split("@")[0].split("_")[1]
             } else {
-                title = WebIM.call.callee.split("@")[0].split("_")[1] + (streamType == "VOICE" ? " 请求语音通话..." : " 请求视频通话...")
+                title = WebIM.call.callee.split("@")[0].split("_")[1] + (streamType == "VOICE" ? I18n.t("requestVoice") : I18n.t("requestVideo"))
             }
             ReactDOM.render(
                 <Channel collapsed={collapsed} close={this.close} localStream={this.localStream}
@@ -323,7 +324,7 @@ export default (dom, collapsed) => {
             if (WebIM.call.caller != "" && WebIM.call.caller == WebIM.conn.context.userId) {
                 title = WebIM.call.callee.split("@")[0].split("_")[1]
             } else {
-                title = WebIM.call.callee.split("@")[0].split("_")[1] + (streamType == "VOICE" ? " 请求语音通话..." : " 请求视频通话...")
+                title = WebIM.call.callee.split("@")[0].split("_")[1] + (streamType == "VOICE" ? I18n.t("requestVoice") : I18n.t("requestVideo"))
             }
             ReactDOM.render(
                 <Channel collapsed={collapsed} close={this.close}

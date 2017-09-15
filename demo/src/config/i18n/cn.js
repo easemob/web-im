@@ -94,5 +94,11 @@ export const cn = {
     serverSideCloseWebsocketConnection: "服务端已关闭 websocket 链接",
     webIMConnectionAuthError: "WebIM 链接鉴权失败",
     offlineByMultiLogin: "多重登录，已离线",
-    noMoreMessage: "没有更多消息啦~"
+    noMoreMessage: "没有更多消息啦~",
+    //webrtc
+    requestVideo: " 请求视频通话...",
+    requestVoice: " 请求语音通话...",
+    waiting: "等候 ",
+    waitingVideo: " 视频中...",
+    waitingVoice: " 语音中...",
 }

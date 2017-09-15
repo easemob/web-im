@@ -94,5 +94,11 @@ export const us = {
     serverSideCloseWebsocketConnection: "server-side close the websocket connection",
     webIMConnectionAuthError: "WebIM connection auth error",
     offlineByMultiLogin: "offline by multi login",
-    noMoreMessage: "no more messages"
+    noMoreMessage: "no more messages",
+    //webrtc
+    requestVideo: " is requesting for video...",
+    requestVoice: " is requesting for voice...",
+    waiting: "waiting ",
+    waitingVideo: " on video...",
+    waitingVoice: " on voice...",
 }
