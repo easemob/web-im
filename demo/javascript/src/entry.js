@@ -143,3 +143,6 @@ Demo.api.render(document.getElementById('demo'));
 if (module.hot) {
     module.hot.accept();
 }
+
+
+console.log('test')
