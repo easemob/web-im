@@ -1,6 +1,5 @@
 
 
-// 数据结构
 import Dexie from "dexie"
 import WebIMConfig from "@/config/WebIMConfig"
 import { config } from "@/config/"

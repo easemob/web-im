@@ -496,8 +496,7 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
         status: status
     }
 
-    // 进入chatroom自动拉取的消息可能 state 里面已经有了 
-    // 但是 state 里面的自己消息 id 还是还是 WEBIM 开头的，影响重复检测，通过 mid 替换成本地 id
+    // the pushed message maybe have exsited in state, ignore
     if (_message.type === "chatroom" && bySelf && _message.id.indexOf("WEBIM_") < 0) {
         const oid = state.getIn([ "byMid", _message.id, "id" ])
         if (oid) {
@@ -514,7 +513,7 @@ export const addMessage = (state, { message, bodyType = "txt" }) => {
 
     !isPushed && chatData.push(_message)
 
-    // 添加新消息到本地db，并加入未读状态：自己发的/不是来自当前聊天对象记 0，其它记 1
+    // add a message to db, if by myselt, isUnread equals 0
     !isPushed && AppDB.addMessage(_message, !bySelf ? 1 : 0)
 
     const maxCacheSize = _.includes([ "group", "chatroom" ], type) ? WebIM.config.groupMessageCacheSize : WebIM.config.p2pMessageCacheSize
@@ -555,7 +554,7 @@ export const updateMessageStatus = (state, { message, status = "" }) => {
         const found = _.find(messages, { id })
         const msg = found.setIn([ "status" ], status)
         messages.splice(messages.indexOf(found), 1, msg)
-    AppDB.updateMessageStatus(id, status).then(res => console.log("db status update success"))
+        AppDB.updateMessageStatus(id, status).then(res => console.log("db status update success"))
         state = state.setIn([ type, chatId ], messages)
     }
     return state

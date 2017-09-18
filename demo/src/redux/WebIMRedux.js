@@ -33,10 +33,10 @@ WebIM.conn.listen({
         const path = history.location.pathname.indexOf("login") !== -1 ? "/contact" : history.location.pathname
         const redirectUrl = `${path}?username=${username}`
 
-        // 初始化本地数据库当用户连接到IM
+        // init local db
         AppDB.init(username)
 
-        // 获取本地储存的未读消息条目
+        // get unread message number from localdb
         store.dispatch(MessageActions.initUnread())
         
         // 出席后才能接受推送消息
