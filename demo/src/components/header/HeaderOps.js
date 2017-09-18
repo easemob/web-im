@@ -46,7 +46,6 @@ class HeaderOps extends Component {
     onMenuSettingsClick({ key }) {
         switch (key) {
         case "0":
-            console.log("好友黑名单")
             this.setState({
                 modal: "showBlacklistModal"
             })
@@ -60,19 +59,16 @@ class HeaderOps extends Component {
     onMenuRightClick({ key }) {
         switch (key) {
         case "0":
-            console.log("添加好友")
             this.setState({
                 modal: "showAddFriendsModal"
             })
             break
         case "1":
-            console.log("申请加入公开群")
             this.setState({
                 modal: "showJoinGroupModal"
             })
             break
         case "2":
-            console.log("创建群组")
             this.setState({
                 modal: "showAddGroupModal"
             })

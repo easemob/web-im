@@ -11,7 +11,6 @@ import Audio from "@/components/chat/Audio"
 import WebIM from "@/config/WebIM"
 
 const renderTxt = txt => {
-    // 替换不能直接用replace，必须以数组组合的方式，因为混合着dom元素
     let rnTxt = []
     let match = null
     const regex = /(\[.*?\])/g
