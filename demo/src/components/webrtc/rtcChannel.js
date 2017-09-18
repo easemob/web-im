@@ -159,7 +159,7 @@ var Channel = React.createClass({
         var hasVideo = this.props.remoteStream.getVideoTracks()[0] && this.props.remoteStream.getVideoTracks()[0].enabled
         var hasAudio = this.props.remoteStream.getAudioTracks()[0].enabled
 
-        if (hasVideo) { //视频 + 音频
+        if (hasVideo) { //video + voice
             this.remote_width = video.videoWidth
             this.remote_height = video.videoHeight
             this.setState({
@@ -167,7 +167,7 @@ var Channel = React.createClass({
                 full_height: video.videoHeight,
             })
         }
-        if (hasAudio && !hasVideo) { //仅有音频
+        if (hasAudio && !hasVideo) { //voice only
             this.setState({
                 full_width: 360,
                 full_height: 90,
@@ -200,7 +200,7 @@ var Channel = React.createClass({
             var hasVideo = this.props.remoteStream.getVideoTracks()[0] && this.props.remoteStream.getVideoTracks()[0].enabled
             var hasAudio = this.props.remoteStream.getAudioTracks()[0].enabled
 
-            if (hasVideo) { //视频 + 音频
+            if (hasVideo) { //video + voice
                 this.remote_width = this.props.collapsed ? video.videoWidth / 2 : video.videoWidth
                 this.remote_height = this.props.collapsed ? video.videoHeight / 2 : video.videoHeight
                 this.setState({
@@ -208,7 +208,7 @@ var Channel = React.createClass({
                     full_height: this.props.collapsed ? video.videoHeight / 2 : video.videoHeight,
                 })
             }
-            if (hasAudio && !hasVideo) { //仅有音频
+            if (hasAudio && !hasVideo) { //voice only
                 this.setState({
                     full_width: 330,
                     full_height: 90,
@@ -348,7 +348,7 @@ export default (dom, collapsed) => {
                 })
             }
 
-            //video 标签 srcObject 不置为 null，firefox 会有点问题
+            // must set video tag's srcObject as null，otherwise firefox will get in trouble.
             var videoObjs = me.dom.getElementsByTagName("video")
             if (videoObjs && videoObjs.length > 0) {
                 for (var i = 0; i < videoObjs.length; i++) {

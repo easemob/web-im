@@ -51,7 +51,7 @@ export const us = {
     admin: "admin",
     dismissed: "had been dismissed",
     muted: "had been muted",
-    // 订阅
+    // subscribe
     refuse: "Refused",
     subscribed: "Subscribed",
     unsubscribed: "Unsubscribed",
@@ -76,10 +76,10 @@ export const us = {
     groupBlockSingle: "Block member to group blacklist",
     removeSingleGroupMember: "Remove member from group",
     description: "description",
-    // 陌生人
+    // stranger
     addFriend: "Add Friend",
     addFriendMessage: "Application send out, please wait for approval",
-    // 搜索
+    // search
     search: "search",
     // system
     apply: "apply to",
