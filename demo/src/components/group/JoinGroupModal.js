@@ -153,7 +153,6 @@ class JoinGroupModal extends React.Component {
                 })
             }.bind(this),
             error: function(e) {
-                if (e.type == 17) message.error("此群组ID不存在！")
                 if (e.type == 17) message.error(`${I18n.t("group")}${I18n.t("ID")}${I18n.t("notExist")}`)
                 this.setState({
                     bodyLoading: false
