@@ -59,7 +59,7 @@ export const cn = {
     unread: "未读",
     // 群组
     createGroup: "创建群组",
-    joinGroup: "申请加入群",
+    joinGroup: "申请入群",
     groupInfo: "群信息",
     groupName: "群组名称",
     inviteToGroup: "邀请群成员",
@@ -75,6 +75,7 @@ export const cn = {
     mute: "禁言",
     groupBlockSingle: "加入群黑名单",
     removeSingleGroupMember: "从本群移除",
+    description: "简介",
     // 陌生人
     addFriend: "加为好友",
     addFriendMessage: "添加好友申请已发出,等待对方同意",
@@ -95,6 +96,13 @@ export const cn = {
     webIMConnectionAuthError: "WebIM 链接鉴权失败",
     offlineByMultiLogin: "多重登录，已离线",
     noMoreMessage: "没有更多消息啦~",
+    already: "已经",
+    in: "在",
+    id: "ID",
+    notExist: "存在",
+    needApproval: "需要审批",
+    empty: "空",
+    back: "后退",
     //webrtc
     requestVideo: " 请求视频通话...",
     requestVoice: " 请求语音通话...",

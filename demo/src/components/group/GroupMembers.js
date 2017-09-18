@@ -115,39 +115,7 @@ class GroupMembers extends React.Component {
                         ? <span className="fr">{record.isAdmin}
 
                             {/* <Dropdown overlay={memberActionMenu} trigger={['click']}><Icon type="info-circle-o" /></Dropdown> */}
-                            {/* <Popconfirm
-                                title={I18n.t("confirm") + " " + I18n.t("setAdmin")}
-                                onConfirm={() => this.setAdmin(roomId, record.name)}
-                            >
-                                <Tooltip title={I18n.t("setAdmin")} placement="left">
-                                    <Icon type="arrow-up" />
-                                </Tooltip>
-                            </Popconfirm>
-                            <Popconfirm
-                                title={I18n.t("confirm") + " " + I18n.t("removeAdmin")}
-                                onConfirm={() => this.removeAdmin(roomId, record.name)}
-                            >
-                                <Tooltip title={I18n.t("removeAdmin")} placement="left">
-                                    <Icon type="arrow-down" />
-                                </Tooltip>
-                            </Popconfirm> */}
                             <AdminIcons record={record} admins={admins} />
-                            {/* <Popconfirm
-                                title={I18n.t("confirm") + " " + I18n.t("mute")}
-                                onConfirm={() => this.mute(roomId, record.name)}
-                            >
-                                <Tooltip title={I18n.t("mute")} placement="left">
-                                    <Icon type="lock" />
-                                </Tooltip>
-                            </Popconfirm>
-                            <Popconfirm
-                                title={I18n.t("confirm") + " " + I18n.t("removeMute")}
-                                onConfirm={() => this.removeMute(roomId, record.name)}
-                            >
-                                <Tooltip title={I18n.t("removeMute")} placement="left">
-                                    <Icon type="unlock" />
-                                </Tooltip>
-                            </Popconfirm> */}
                             <MuteIcons record={record} muted={muted} />
                             <Popconfirm
                                 title={I18n.t("confirm") + " " + I18n.t("groupBlockSingle")}

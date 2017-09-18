@@ -75,6 +75,7 @@ export const us = {
     mute: "Mute",
     groupBlockSingle: "Block member to group blacklist",
     removeSingleGroupMember: "Remove member from group",
+    description: "description",
     // 陌生人
     addFriend: "Add Friend",
     addFriendMessage: "Application send out, please wait for approval",
@@ -95,6 +96,13 @@ export const us = {
     webIMConnectionAuthError: "WebIM connection auth error",
     offlineByMultiLogin: "offline by multi login",
     noMoreMessage: "no more messages",
+    already: "already",
+    in: "in",
+    id: "ID",
+    notExist: "Not exist",
+    needApproval: "Need approval",
+    empty: "Empty",
+    back: "Back",
     //webrtc
     requestVideo: " is requesting for video...",
     requestVoice: " is requesting for voice...",

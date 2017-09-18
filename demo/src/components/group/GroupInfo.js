@@ -28,13 +28,6 @@ const GroupInfoForm = Form.create()(props => {
                         rules: [ { required: true, message: I18n.t("groupName") } ]
                     })(<Input />)}
                 </Form.Item>
-                {/* <Form.Item label="群组简介">
-                    {getFieldDecorator('description', {
-                        rules: [{ required: false, message: '请输入群组简介' }]
-                    })(
-                        <Input />
-                    )}
-                </Form.Item> */}
             </Form>
         </Modal>
     )

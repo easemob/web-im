@@ -43,11 +43,11 @@ class JoinGroupModal extends React.Component {
         var options = {
             groupId: this.state.gid,
             success: function(resp) {
-                message.success("入群申请发送成功!")
+                message.success(`${I18n.t("groupRequest")}${I18n.t("successfully")}`)
             },
             error: function(e) {
                 if (e.type == 17) {
-                    message.error("您已经在这个群组!")
+                    message.error(`${I18n.t("already")}${I18n.t("in")}${I18n.t("group")}`)
                 }
             }
         }
@@ -154,6 +154,7 @@ class JoinGroupModal extends React.Component {
             }.bind(this),
             error: function(e) {
                 if (e.type == 17) message.error("此群组ID不存在！")
+                if (e.type == 17) message.error(`${I18n.t("group")}${I18n.t("ID")}${I18n.t("notExist")}`)
                 this.setState({
                     bodyLoading: false
                 })
@@ -230,27 +231,27 @@ class JoinGroupModal extends React.Component {
                         style={{ overflow: "hidden" }}
                     >
                         <div>
-                            <span className="title">群名称</span>
+                            <span className="title">{I18n.t("groupName")}</span>
                             <span className="content">
-                                {this.state.groupName || "[群名称未设置]"}
+                                {this.state.groupName || `${I18n.t("empty")}` }
                             </span>
                         </div>
                         <div>
-                            <span className="title">群主</span>
+                            <span className="title">{I18n.t("admin")}</span>
                             <span className="content">
-                                {this.state.owner || "[群主未设置]"}
+                                {this.state.owner || `${I18n.t("empty")}`}
                             </span>
                         </div>
                         <div>
-                            <span className="title">群简介</span>
+                            <span className="title">{I18n.t("description")}</span>
                             <span className="content">
-                                {this.state.description || "[群简介未设置]"}
+                                {this.state.description || `${I18n.t("empty")}`}
                             </span>
                         </div>
                         <div>
-                            <span className="title">是否需要审批</span>
+                            <span className="title">{I18n.t("needApproval")}</span>
                             <span className="content">
-                                {this.state.membersOnly ? "[是]" : "否"}
+                                {this.state.membersOnly ? "[Y]" : "N"}
                             </span>
                         </div>
                         <div
@@ -258,7 +259,7 @@ class JoinGroupModal extends React.Component {
                             style={{ cursor: "pointer" }}
                             onClick={this.backToList}
                         >
-                            <i className="iconfont icon-arrow-left" /> back
+                            <i className="iconfont icon-arrow-left" /> {I18n.t("back")}
                         </div>
                         <Button
                             style={{
@@ -270,7 +271,7 @@ class JoinGroupModal extends React.Component {
                             type="primary"
                             onClick={this.joinGroup}
                         >
-                            Join
+                            {I18n.t("joinGroup")}
                         </Button>
                     </div>
                 </div>
