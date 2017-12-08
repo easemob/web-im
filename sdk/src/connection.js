@@ -8,6 +8,7 @@ var Queue = require('./queue').Queue;
 var CryptoJS = require('crypto-js');
 var _ = require('underscore');
 var stropheConn = null;
+var mr_cache = {};
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -471,6 +472,7 @@ var _loginCallback = function (status, msg, conn) {
             conn.handelSendQueue();
         }, 200);
         var handleMessage = function (msginfo) {
+            console.log(msgInfo)
             var delivery = msginfo.getElementsByTagName('delivery');
             var acked = msginfo.getElementsByTagName('acked');
             if (delivery.length) {
@@ -1776,7 +1778,7 @@ connection.prototype.handleIqRoster = function (e) {
 /**
  * @private
  */
-connection.prototype.handleMessage = function (msginfo) {
+connection.prototype.handleMessage = function (msginfo, ignoreCallback) {
     var self = this;
     if (this.isClosed()) {
         return;
@@ -1882,7 +1884,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         msg.error = errorBool;
                         msg.errorText = errorText;
                         msg.errorCode = errorCode;
-                        this.onEmojiMessage(msg);
+                        !ignoreCallback && this.onEmojiMessage(msg);
                     } else {
                         var msg = {
                             id: id
@@ -1898,7 +1900,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         msg.error = errorBool;
                         msg.errorText = errorText;
                         msg.errorCode = errorCode;
-                        this.onTextMessage(msg);
+                        !ignoreCallback && this.onTextMessage(msg);
                     }
                     break;
                 case 'img':
@@ -1931,7 +1933,7 @@ connection.prototype.handleMessage = function (msginfo) {
                     msg.error = errorBool;
                     msg.errorText = errorText;
                     msg.errorCode = errorCode;
-                    this.onPictureMessage(msg);
+                    !ignoreCallback && this.onPictureMessage(msg);
                     break;
                 case 'audio':
                     var msg = {
@@ -1954,7 +1956,7 @@ connection.prototype.handleMessage = function (msginfo) {
                     msg.error = errorBool;
                     msg.errorText = errorText;
                     msg.errorCode = errorCode;
-                    this.onAudioMessage(msg);
+                    !ignoreCallback && this.onAudioMessage(msg);
                     break;
                 case 'file':
                     var msg = {
@@ -1975,7 +1977,7 @@ connection.prototype.handleMessage = function (msginfo) {
                     msg.error = errorBool;
                     msg.errorText = errorText;
                     msg.errorCode = errorCode;
-                    this.onFileMessage(msg);
+                    !ignoreCallback && this.onFileMessage(msg);
                     break;
                 case 'loc':
                     var msg = {
@@ -1993,7 +1995,7 @@ connection.prototype.handleMessage = function (msginfo) {
                     msg.error = errorBool;
                     msg.errorText = errorText;
                     msg.errorCode = errorCode;
-                    this.onLocationMessage(msg);
+                    !ignoreCallback && this.onLocationMessage(msg);
                     break;
                 case 'video':
                     var msg = {
@@ -2014,7 +2016,7 @@ connection.prototype.handleMessage = function (msginfo) {
                     msg.error = errorBool;
                     msg.errorText = errorText;
                     msg.errorCode = errorCode;
-                    this.onVideoMessage(msg);
+                    !ignoreCallback && this.onVideoMessage(msg);
                     break;
                 case 'cmd':
                     var msg = {
@@ -2029,7 +2031,7 @@ connection.prototype.handleMessage = function (msginfo) {
                     msg.error = errorBool;
                     msg.errorText = errorText;
                     msg.errorCode = errorCode;
-                    this.onCmdMessage(msg);
+                    !ignoreCallback && this.onCmdMessage(msg);
                     break;
             }
             ;
@@ -2042,6 +2044,9 @@ connection.prototype.handleMessage = function (msginfo) {
                     , to: msg.from
                 });
                 self.send(deliverMessage.body);
+            }
+            if (ignoreCallback) {
+                return msg
             }
         } catch (e) {
             this.onError({
@@ -2822,6 +2827,122 @@ connection.prototype.clear = function () {
         this.onError(message);
     }
 };
+
+/**
+ * 获取对话历史消息
+ * @param {Object} options
+ * @param {String} options.queue
+ * @param {Function} options.success
+ * @param {Funciton} options.fail
+ */
+connection.prototype.fetchMessages = function(options) {
+    var conn = this,
+        token = options.accessToken || this.context.accessToken
+    
+    if (!_utils.isCanSetRequestHeader) {
+        conn.onError({
+            type: _code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR
+        });
+        return;
+    }
+
+    if (token) {
+        var apiUrl = this.apiUrl;
+        var appName = this.context.appName;
+        var orgName = this.context.orgName;
+
+        if (!appName || !orgName) {
+            conn.onError({
+                type: _code.WEBIM_CONNCTION_AUTH_ERROR
+            });
+            return;
+        }
+
+        if (!options.queue) {
+            conn.onError({
+                type: "",
+                msg: "queue is not specified"
+            });
+            return;
+        }
+
+        var queue = options.queue
+        var _dataQueue = mr_cache[queue] || (mr_cache[queue] = {})
+    
+        var suc = function (res, xhr) {
+            if (res && res.data) {
+                var data = res.data;
+                var msgs = data.msgs, 
+                    length = msgs.length,
+                    msgsParsed = [];
+
+                _dataQueue.is_last = data.is_last;
+                _dataQueue.next_key = data.next_key;
+
+                for (var i = 0; i < length; i++) {
+                    
+                    // 将xml消息字符串转成xml对象
+                    var xmlMsg = Strophe.xmlHtmlNode(msgs[i]).getElementsByTagName("message")[0];
+
+                    // 将xml对象转换成json消息，true参数，只会消息进行处理，不触发事件
+                    msgsParsed.push(conn.handleMessage(xmlMsg, true)); 
+                }
+
+                typeof options.success === 'function' && options.success(msgsParsed);
+            }
+        };
+
+        var error = function (res, xhr, msg) {
+            if (res.error && res.error_description) {
+                conn.onError({
+                    type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,
+                    msg: res.error_description,
+                    data: res,
+                    xhr: xhr
+                });
+            }
+        };
+
+        var userId = this.context.userId;    
+        var start = -1
+        
+        // 无历史消息则不再加载
+        if (_dataQueue && _dataQueue.is_last) {
+            suc([])
+            return;
+        }
+        
+        // 根据上一次拉取返回的last_key 进行本次消息拉取
+        if (_dataQueue && _dataQueue.next_key) {
+            start = _dataQueue.next_key
+        }
+
+        var suffix = options.isGroup ? "@conference.easemob.com" : "@easemob.com";
+        var data = {
+            queue: queue + suffix,
+            start: start,
+            end: -1
+        };
+
+        var opts = {
+            url: apiUrl + '/' + orgName + '/' + appName + '/users/' + userId + '/messageroaming',
+            dataType: 'json',
+            type: 'POST',
+            headers: {'Authorization': 'Bearer ' + token},
+            data: JSON.stringify(data),
+            success: suc || _utils.emptyfn,
+            error: error || _utils.emptyfn
+        };
+
+        _utils.ajax(opts);
+
+    }  else {
+        conn.onError({
+            type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
+        });
+    }
+
+}
 
 /**
  * 获取聊天室列表
