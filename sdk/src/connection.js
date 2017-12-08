@@ -2046,7 +2046,6 @@ connection.prototype.handleMessage = function (msginfo, ignoreCallback) {
                 self.send(deliverMessage.body);
             }
             if (ignoreCallback) {
-                msg.message_type = type
                 return msg
             }
         } catch (e) {
@@ -2829,36 +2828,6 @@ connection.prototype.clear = function () {
     }
 };
 
-connection.prototype.getMessages = function(options) {
-    var conn = this
-    if (!options.queue) {
-        conn.onError({
-            type: "",
-            msg: "queue is not specified"
-        });
-        return;
-    }
-
-    var count = options.count || 20
-
-    function _readCacheMessages() {
-        conn._fetchMessages({
-            count: count,
-            isGroup: options.isGroup ? true: false,
-            queue: options.queue,
-            success: function(data) {
-                var length = data.msgs.length
-                if (length >= count || data.is_last) {
-                    options.success(_utils.reverse(data.msgs.splice(0, count)))
-                } else {
-                    _readCacheMessages()
-                }
-            }
-        })
-    }
-    _readCacheMessages()
-};
-
 /**
  * 获取对话历史消息
  * @param {Object} options
@@ -2866,7 +2835,7 @@ connection.prototype.getMessages = function(options) {
  * @param {Function} options.success
  * @param {Funciton} options.fail
  */
-connection.prototype._fetchMessages = function(options) {
+connection.prototype.fetchMessages = function(options) {
     var conn = this,
         token = options.accessToken || this.context.accessToken
     
@@ -2898,29 +2867,28 @@ connection.prototype._fetchMessages = function(options) {
         }
 
         var queue = options.queue
-        var _dataQueue = mr_cache[queue] || (mr_cache[queue] = {msgs: []})
+        var _dataQueue = mr_cache[queue] || (mr_cache[queue] = {})
     
         var suc = function (res, xhr) {
-            
             if (res && res.data) {
-                var data = res.data,
-                    msgs = data.msgs, 
-                    length = msgs.length;
-                
+                var data = res.data;
+                var msgs = data.msgs, 
+                    length = msgs.length,
+                    msgsParsed = [];
+
                 _dataQueue.is_last = data.is_last;
                 _dataQueue.next_key = data.next_key;
-                
+
                 for (var i = 0; i < length; i++) {
                     
                     // 将xml消息字符串转成xml对象
                     var xmlMsg = Strophe.xmlHtmlNode(msgs[i]).getElementsByTagName("message")[0];
 
                     // 将xml对象转换成json消息，true参数，只会消息进行处理，不触发事件
-                    var msgObj = conn.handleMessage(xmlMsg, true)
-                    msgObj && _dataQueue.msgs.push(msgObj); 
+                    msgsParsed.push(conn.handleMessage(xmlMsg, true)); 
                 }
 
-                typeof options.success === 'function' && options.success(_dataQueue);
+                typeof options.success === 'function' && options.success(msgsParsed);
             }
         };
 
@@ -2938,9 +2906,9 @@ connection.prototype._fetchMessages = function(options) {
         var userId = this.context.userId;    
         var start = -1
         
-        // 无历史消息或者缓存消息足够不再加载
-        if (_dataQueue.msgs.length >= options.count || _dataQueue.is_last) {
-            typeof options.success === 'function' && options.success(_dataQueue);
+        // 无历史消息则不再加载
+        if (_dataQueue && _dataQueue.is_last) {
+            suc([])
             return;
         }
         
