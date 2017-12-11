@@ -936,6 +936,18 @@
                 allCookie[name] = value;
             }
             return allCookie;
+        },
+        
+        reverse: function(array) {
+            var newArray = []
+            if (Array.prototype.reverse) {
+              newArray = array.reverse()
+            } else {
+              for (var i = 0; i < array.length; i++) {
+                newArray.unshift(array[i])
+              }
+            }
+            return newArray
         }
     };
 
