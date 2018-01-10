@@ -1670,7 +1670,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         receiveMsg = decryptedStr;
                     }
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
-                    if (emojibody.isemoji) {
+                    if (emojibody && emojibody.isemoji) {
                         var msg = {
                             id: id
                             , type: chattype
