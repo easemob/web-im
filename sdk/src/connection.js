@@ -4129,6 +4129,36 @@ connection.prototype.listGroupMember = function (opt) {
     options.error = opt.error || _utils.emptyfn;
     WebIM.utils.ajax(options);
 };
+connection.prototype.listRoomMember = function (opt) {
+    if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
+        throw 'The parameter \"pageNum\" should be a positive number';
+        return;
+    } else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
+        throw 'The parameter \"pageSize\" should be a positive number';
+        return;
+    } else if (opt.groupId === null && typeof opt.groupId === 'undefined') {
+        throw 'The parameter \"groupId\" should be added';
+        return;
+    }
+    var requestData = [],
+        groupId = opt.groupId;
+    requestData['pagenum'] = opt.pageNum;
+    requestData['pagesize'] = opt.pageSize;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatrooms'
+        + '/' + groupId + '/users',
+        dataType: 'json',
+        type: 'GET',
+        data: requestData,
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
 
 /**
  * 通过RestFul API禁止群用户发言
