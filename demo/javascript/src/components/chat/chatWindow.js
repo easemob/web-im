@@ -137,7 +137,11 @@ module.exports = React.createClass({
                     error: function (e) {
                     }
                 };
-                Demo.conn.listGroupMember(options);
+                if( me.props.chatType == 'groupChat'){
+                    Demo.conn.listGroupMember(options)
+                }else{
+                    Demo.conn.listRoomMember(options);
+                }
             }
         } else {
             this.setState({members: [], memberShowStatus: false});

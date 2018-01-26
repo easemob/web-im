@@ -1867,7 +1867,7 @@ connection.prototype.handleMessage = function (msginfo) {
                      */
                     receiveMsg = self.decrypt(receiveMsg);
                     var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
-                    if (emojibody.isemoji) {
+                    if (emojibody && emojibody.isemoji) {
                         var msg = {
                             id: id
                             , type: chattype
@@ -4116,6 +4116,36 @@ connection.prototype.listGroupMember = function (opt) {
     requestData['pagesize'] = opt.pageSize;
     var options = {
         url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
+        + '/' + groupId + '/users',
+        dataType: 'json',
+        type: 'GET',
+        data: requestData,
+        headers: {
+            'Authorization': 'Bearer ' + this.token,
+            'Content-Type': 'application/json'
+        }
+    };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+connection.prototype.listRoomMember = function (opt) {
+    if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
+        throw 'The parameter \"pageNum\" should be a positive number';
+        return;
+    } else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
+        throw 'The parameter \"pageSize\" should be a positive number';
+        return;
+    } else if (opt.groupId === null && typeof opt.groupId === 'undefined') {
+        throw 'The parameter \"groupId\" should be added';
+        return;
+    }
+    var requestData = [],
+        groupId = opt.groupId;
+    requestData['pagenum'] = opt.pageNum;
+    requestData['pagesize'] = opt.pageSize;
+    var options = {
+        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatrooms'
         + '/' + groupId + '/users',
         dataType: 'json',
         type: 'GET',
