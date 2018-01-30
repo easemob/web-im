@@ -67,7 +67,6 @@
   "license": "MIT",
   "dependencies": {
     "antd": "^2.1.0",
-    "easemob-websdk": "^1.4.6",
     "es6-promise": "^4.1.0",
     "react": "0.14",
     "react-addons-test-utils": "0.14.8",

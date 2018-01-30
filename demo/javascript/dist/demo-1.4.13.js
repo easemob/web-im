@@ -199,8 +199,6 @@
 	    module.hot.accept();
 	}
 
-	console.log('test');
-
 /***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -22242,10 +22240,10 @@
 	    restUpdateGroutList: function restUpdateGroutList() {},
 
 	    friendRequest: function friendRequest(msg) {
+	        console.log("message", msg);
 	        if (msg && msg.status === '[resp:true]') {
 	            return;
 	        }
-
 	        Subscribe.show(msg);
 	    },
 
@@ -22400,6 +22398,7 @@
 	    },
 
 	    handlePresence: function handlePresence(msg) {
+	        console.log("message", msg);
 	        var me = this;
 
 	        switch (msg.type) {
@@ -29146,6 +29145,7 @@
 	    },
 
 	    reject: function reject(e) {
+	        console.log("reject");
 	        var li = e.target.parentNode,
 	            name = li.getAttribute('id');
 

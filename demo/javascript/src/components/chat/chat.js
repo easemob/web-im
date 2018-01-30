@@ -401,10 +401,10 @@ module.exports = React.createClass({
     },
 
     friendRequest: function (msg) {
+        console.log("message",msg);
         if (msg && msg.status === '[resp:true]') {
             return;
         }
-
         Subscribe.show(msg);
     },
 
@@ -561,6 +561,7 @@ module.exports = React.createClass({
     },
 
     handlePresence: function (msg) {
+        console.log("message",msg);
         var me = this;
 
         switch (msg.type) {
