@@ -3948,6 +3948,7 @@ connection.prototype.createGroup = function (options) {
  */
 connection.prototype.createGroupNew = function (opt) {
     opt.data.owner = this.user;
+    opt.data.invite_need_confirm = false;
     var options = {
         url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups',
         dataType: 'json',
