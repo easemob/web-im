@@ -50,7 +50,6 @@ var Subscribe = React.createClass({
     },
 
     reject: function (e) {
-        console.log("reject")
         var li = e.target.parentNode,
             name = li.getAttribute('id');
 
