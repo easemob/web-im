@@ -1,6 +1,6 @@
 {
   "name": "webim",
-  "version": "1.4.13",
+  "version": "1.4.16",
   "description": "",
   "main": "index.js",
   "devDependencies": {

@@ -9,7 +9,7 @@ module.exports = {
         // "only" prevents reload on syntax errors
         './sdk/dist/websdk-1.4.12': ['./sdk/index', 'webpack/hot/only-dev-server', 'webpack-dev-server/client?http://localhost:3000'],
         // './sdk/dist/websdk-1.1.2': './sdk/src/connection',
-        './demo/javascript/dist/demo-1.4.12': ['./demo/javascript/src/entry', 'webpack/hot/only-dev-server', 'webpack-dev-server/client?http://localhost:3000'],
+        './demo/javascript/dist/demo-1.4.16': ['./demo/javascript/src/entry', 'webpack/hot/only-dev-server', 'webpack-dev-server/client?http://localhost:3000'],
         // './demo/javascript/dist/demo': './demo/javascript/src/entry',
         // WebpackDevServer host and port
         // 'devServerClient': 'webpack-dev-server/client?http://localhost:3000',
