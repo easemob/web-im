@@ -100,7 +100,7 @@ WebIM.config = {
      * true: Store the chat record
      * false: Don't store the chat record 
      */
-    saveLocal: false,
+    saveLocal: true,
 
     /**
      * Will encrypt text message and emoji message
