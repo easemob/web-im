@@ -991,6 +991,8 @@ connection.prototype.listen = function (options) {
     this.onOnline = options.onOnline || _utils.emptyfn;
     this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
     this.onCreateGroup = options.onCreateGroup || _utils.emptyfn;
+    this.onRecallMessage = options.onRecallMessage || _utils.emptyfn;
+
     //for WindowSDK start
     this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
     this.onUpdateMyRoster = options.onUpdateMyRoster || _utils.emptyfn;
@@ -1053,6 +1055,90 @@ connection.prototype.sendReceiptsMessage = function (options) {
     });
     this.sendCommand(dom.tree());
 };
+
+function recallMessage (options) {
+
+    if (!options.mid || !options.to) {
+		  console.error("[mid] or [to] is not specified")
+		  return
+	  }
+	  
+		var appKey = this.context.appKey;
+		var toJid = appKey + '_' + options.to + '@' + this.domain;
+	 
+	  if (options.group) {
+	     toJid = this._getGroupJid(options.to);
+    }
+	 
+	  var dom = $msg({
+		   from: this.context.jid || '',
+		   to: toJid,
+		   id: this.getUniqueId()
+		}).c('recall', {
+		   xmlns: 'urn:xmpp:recall',
+		   id: options.mid || ''
+	   });
+	   
+	   this.sendCommand(dom.tree());
+	   
+	   // 设置回调函数
+	   recallMessage._callbacks[options.mid] = {
+		    success: options.success || function() {},
+		    fail: options.fail || function() {}
+	   };
+
+	   // 300ms如果未返回失败则视为撤回成功
+	   setTimeout(function(){
+			if(recallMessage._callbacks[options.mid]) {
+				options.success();
+				delete recallMessage._callbacks[options.mid];
+			}
+		}, 300);
+		   
+	 }
+
+	recallMessage._callbacks = {};
+
+	connection.prototype.recallMessage = recallMessage;
+	
+	connection.prototype.handleRecallMessage = function(message) {
+
+		// var id = message.id;
+		var body = message.getElementsByTagName('recall')[0];
+		var mid = body.id;
+		var callback = recallMessage._callbacks[mid]
+		var error = message.getElementsByTagName('error')
+
+		// 根据消息格式解析有没有错误信息
+		if (error && error.length) {
+			var text = error[0].getElementsByTagName('text')
+			var errorMsg = ''
+			if (text.length) {
+				errorMsg = text[0].childNodes[0].nodeValue
+			}
+			if (callback && callback.fail) {
+				callback.fail({
+					mid: mid,
+					code: error[0].getAttribute("code"),
+					errorMsg: errorMsg
+				})
+				recallMessage._callbacks[mid] = null;
+				delete recallMessage._callbacks[mid];
+			}
+		} else {
+			// 没有错误，此消息为撤回通知
+			var fromJid = message.getAttribute("from"),
+			    from = _parseNameFromJidFn(fromJid, this.context.domain);
+		  
+		  var recallMsg = {mid: mid, from: from, type: "chat"};
+		  
+		  if (fromJid.indexOf(".conference") > -1) {
+		    recallMsg.type = "groupchat";
+		  }
+		  
+			this.onRecallMessage(recallMsg)
+		}
+	}
 
 /**
  * @private
