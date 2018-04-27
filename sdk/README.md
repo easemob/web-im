@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.16 @ 2018-4-27
+
+###BugFix
+* [sdk]  添加群成员失败问题
+* [demo] 添加群成员失败问题
+
 ## v1.4.15 @ 2017-01-16
 
 ###BugFix
@@ -15,7 +21,7 @@
 
 ###BugFix
 
-* [sdk]  delevered/acked message bug in ios(8.1) webview 
+* [sdk]  delevered/acked message bug in ios(8.1) webview
 * [sdk]  multilogin bugs
 * [demo] multilogin bugs
 
@@ -66,7 +72,7 @@
 * [sdk] Delete a single user in a group from the blacklist of this group through rest api
 * [sdk] Delete multi of users in a group from the blacklist of this group through rest api
 * [demo] Chat record can be deleted
-* [demo] Show status of chat records(Undelivered, delivered, read) 
+* [demo] Show status of chat records(Undelivered, delivered, read)
 * [demo] List members in a chat room
 * [demo] Open a dialog window with friends just through a link
 * [demo] Add the board apply for join in a group
@@ -81,7 +87,7 @@
 
 * [sdk] Add a new friend will create spare subscription information
 * [sdk] Send messages continually will cause the problem of message id repetition
-* [sdk] Adapt size of pictures whild sdk and webim send``__``ing pictures to each other 
+* [sdk] Adapt size of pictures whild sdk and webim send``__``ing pictures to each other
 * [demo] Optimize sdk/demo.html, fix the problem that some of dependent files can't be found
 * [demo] Fix the problem that off-line messages count not right
 
