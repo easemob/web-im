@@ -3187,7 +3187,8 @@ connection.prototype.addToLocal = function (message, type, status) {
     } catch (e) {
         console.log(e.message);
     }
-    msg.data = msg.sourceMsg;
+    // msg.data = msg.sourceMsg;
+    msg.data = message.data;
     if (type == 'txt') {
         if (!message.data && !message.msg) {
             return;
