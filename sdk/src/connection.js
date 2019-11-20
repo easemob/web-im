@@ -367,6 +367,9 @@ var _parseFriend = function (queryTag, conn, from) {
 };
 
 var _login = function (options, conn) {
+    if(!options){
+        return;
+    }
     var accessToken = options.access_token || '';
     if (accessToken == '') {
         var loginfo = _utils.stringify(options);
@@ -469,7 +472,7 @@ var _loginCallback = function (status, msg, conn) {
         conn.autoReconnectNumTotal = 0;
         conn.intervalId = setInterval(function () {
             conn.handelSendQueue();
-        }, 200);
+        }, 100);
         var handleMessage = function (msginfo) {
             var delivery = msginfo.getElementsByTagName('delivery');
             var acked = msginfo.getElementsByTagName('acked');
@@ -587,9 +590,9 @@ var _loginCallback = function (status, msg, conn) {
             conn.onError(error);
         }
     } else if (status == Strophe.Status.DISCONNECTED) {
-        if (conn.isOpened()) {
+        if (!conn.isClosing() || conn.isOpened()) {
             if (conn.autoReconnectNumTotal < conn.autoReconnectNumMax) {
-                conn.reconnect();
+                conn.reconnect(!conn.isClosing());
                 return;
             } else {
                 error = {
@@ -774,7 +777,7 @@ var connection = function (options) {
     this.wait = options.wait || 30;
     this.hold = options.hold || 1;
     this.retry = options.retry || false;
-    this.https = options.https || location.protocol === 'https:';
+    this.https = options.https && location.protocol === 'https:';
     this.url = _getXmppUrl(options.url, this.https);
     this.route = options.route || null;
     this.domain = options.domain || 'easemob.com';
@@ -850,7 +853,7 @@ connection.prototype.testInit = function (options) {
  * @param {Function} options.error - 注册失败
  */
 connection.prototype.registerUser = function (options) {
-    if (location.protocol != 'https:' && this.isHttpDNS) {
+    if (this.isHttpDNS) {
         this.dnsIndex = 0;
         this.getHttpDNS(options, 'signup');
     } else {
@@ -1065,7 +1068,7 @@ connection.prototype.cacheReceiptsMessage = function (options) {
  * @private
  */
 connection.prototype.getStrophe = function () {
-    if (location.protocol != 'https:' && this.isHttpDNS) {
+    if (this.isHttpDNS) {
         //TODO: try this.xmppTotal times on fail
         var url = '';
         var host = this.xmppHosts[this.xmppIndex];
@@ -1160,19 +1163,50 @@ connection.prototype.getHttpDNS = function (options, type) {
     var suc = function (data, xhr) {
         data = new DOMParser().parseFromString(data, "text/xml").documentElement;
         //get rest ips
-        var restHosts = self.getHostsByTag(data, 'rest');
+        var makeArray = function(obj){    //伪数组转为数组
+          return Array.prototype.slice.call(obj,0); 
+        } 
+        try{ 
+            Array.prototype.slice.call(document.documentElement.childNodes, 0)[0].nodeType; 
+        }catch(e){ 
+            makeArray = function(obj){ 
+                var res = []; 
+                for(var i=0,len=obj.length; i<len; i++){
+                   res.push(obj[i]); 
+                } 
+              return res; 
+          } 
+        } 
+        // var restHosts = self.getHostsByTag(data, 'rest');
+        var restHosts = makeArray(self.getHostsByTag(data, 'rest'));
         if (!restHosts) {
             console.log('rest hosts error3');
             return;
+        }
+        for(var i = 0; i< restHosts.length; i++){
+            var httpType = self.https ? 'https' : 'http';
+            if(_utils.getXmlFirstChild(restHosts[i], 'protocol').textContent === httpType ){
+                var currentPost = restHosts[i];
+                restHosts.splice(i,1);
+                restHosts.unshift(currentPost);
+            }
         }
         self.restHosts = restHosts;
         self.restTotal = restHosts.length;
 
         //get xmpp ips
-        var xmppHosts = self.getHostsByTag(data, 'xmpp');
+        var xmppHosts = makeArray(self.getHostsByTag(data, 'xmpp'));
         if (!xmppHosts) {
             console.log('xmpp hosts error3');
             return;
+        }
+        for(var i = 0; i< xmppHosts.length; i++){
+            var httpType = self.https ? 'https' : 'http';
+            if(_utils.getXmlFirstChild(xmppHosts[i], 'protocol').textContent === httpType ){
+                var currentPost = xmppHosts[i];
+                xmppHosts.splice(i,1);
+                xmppHosts.unshift(currentPost);
+            }
         }
         self.xmppHosts = xmppHosts;
         self.xmppTotal = xmppHosts.length;
@@ -1228,7 +1262,7 @@ connection.prototype.signup = function (options) {
     }
 
     var error = function (res, xhr, msg) {
-        if (location.protocol != 'https:' && self.isHttpDNS) {
+        if (self.isHttpDNS) {
             if ((self.restIndex + 1) < self.restTotal) {
                 self.restIndex++;
                 self.getRestFromHttpDNS(options, 'signup');
@@ -1279,7 +1313,7 @@ connection.prototype.open = function (options) {
     if (options.xmppURL) {
         this.url = _getXmppUrl(options.xmppURL, this.https);
     }
-    if (location.protocol != 'https:' && this.isHttpDNS) {
+    if (this.isHttpDNS) {
         this.dnsIndex = 0;
         this.getHttpDNS(options, 'login');
     } else {
@@ -1328,7 +1362,7 @@ connection.prototype.login = function (options) {
         var error = function (res, xhr, msg) {
             if (options.error)
                 options.error();
-            if (location.protocol != 'https:' && conn.isHttpDNS) {
+            if (conn.isHttpDNS) {
                 if ((conn.restIndex + 1) < conn.restTotal) {
                     conn.restIndex++;
                     conn.getRestFromHttpDNS(options, 'login');
@@ -1833,6 +1867,7 @@ connection.prototype.handleMessage = function (msginfo) {
         }
         var msgBody = msg.bodies[0];
         var type = msgBody.type;
+        var isCmdMsg = false;
 
         try {
             switch (type) {
@@ -1914,7 +1949,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , thumb: msgBody.thumb
@@ -1940,7 +1975,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , length: msgBody.length || ''
@@ -1963,7 +1998,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: ( self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , file_length: msgBody.file_length
@@ -2002,7 +2037,7 @@ connection.prototype.handleMessage = function (msginfo) {
                         , from: from
                         , to: too
                         ,
-                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
+                        url: (self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
                         , secret: msgBody.secret
                         , filename: msgBody.filename
                         , file_length: msgBody.file_length
@@ -2029,7 +2064,19 @@ connection.prototype.handleMessage = function (msginfo) {
                     msg.error = errorBool;
                     msg.errorText = errorText;
                     msg.errorCode = errorCode;
-                    this.onCmdMessage(msg);
+                    // this.onCmdMessage(msg);
+                    if(msgBody.action === 'em_retrieve_dns'){
+                        isCmdMsg = true;
+                    }
+                    if(msgBody.action.indexOf("em_") !== 0){
+                        self.onCmdMessage(msg);
+                    }
+                    else{
+                        var ackMessage = new WebIM.message("read", self.getUniqueId())
+                        ackMessage.set({ id: msg.id, to: msg.from, ext: { logo: "easemob" } })
+                        self.send(ackMessage.body)
+                        self.handelSendQueue();        
+                    }
                     break;
             }
             ;
@@ -2043,6 +2090,7 @@ connection.prototype.handleMessage = function (msginfo) {
                 });
                 self.send(deliverMessage.body);
             }
+            isCmdMsg && this.close();       //action==em_retrieve_dns 的cmd消息用于迁集群，退出重新登录以获取config信息
         } catch (e) {
             this.onError({
                 type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
@@ -3146,8 +3194,9 @@ connection.prototype._onUpdateMyRoster = function (options) {
  * @private
  *
  */
-connection.prototype.reconnect = function () {
+connection.prototype.reconnect = function (v) {
     var that = this;
+    v && that.xmppIndex++;       //重连时改变ip地址
     setTimeout(function () {
         _login(that.context.restTokenData, that);
     }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);

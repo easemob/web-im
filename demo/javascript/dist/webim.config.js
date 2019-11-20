@@ -7,6 +7,7 @@
  */
 var WebIM = {};
 WebIM.config = {
+    
     /*
      * XMPP server
      */
@@ -72,7 +73,7 @@ WebIM.config = {
     /**
      * while http access,use ip directly,instead of ServerName,avoiding DNS problem.
      */
-    isHttpDNS: false,
+    isHttpDNS: true,
 
     /**
      * Will show the status of messages in single chat

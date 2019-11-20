@@ -226,10 +226,35 @@ var CryptoJS = require('crypto-js');
      * video message
      */
     Message.video = function (id) {
-
+        this.id = id;
+        this.type = 'video';
+        this.body = {};
     };
     Message.video.prototype.set = function (opt) {
-
+        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+        
+        this.value = opt.file;
+        this.filename = opt.filename || this.value.filename;
+        
+        this.body = {
+        id: this.id
+        , file: this.value
+        , filename: this.filename
+        , apiUrl: opt.apiUrl
+        , to: opt.to
+        , type: this.type
+        , ext: opt.ext || {}
+        , length: opt.length || 0
+        , roomType: opt.roomType
+        , file_length: opt.file_length
+        , onFileUploadError: opt.onFileUploadError
+        , onFileUploadComplete: opt.onFileUploadComplete
+        , success: opt.success
+        , fail: opt.fail
+        , flashUpload: opt.flashUpload
+        , body: opt.body
+        };
+        !opt.roomType && delete this.body.roomType;
     };
 
     var _Message = function (message) {

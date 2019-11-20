@@ -464,6 +464,9 @@
             }
 
             var apiUrl = options.apiUrl;
+            if(this.isHttpDNS){
+                apiUrl = this.apiUrl
+            }
             var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
 
             if (!utils.isCanUploadFileAsync) {

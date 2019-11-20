@@ -1,6 +1,6 @@
 {
   "name": "easemob-websdk",
-  "version": "1.4.16",
+  "version": "1.4.17",
   "description": "Easemob IM websdk",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,7 @@
   "devDependencies": {
     "browserify": "^13.1.1",
     "docdash": "^0.4.0",
+    "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.2.0",
     "gulp-uglify": "^2.0.0",

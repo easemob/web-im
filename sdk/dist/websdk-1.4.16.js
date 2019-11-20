@@ -1,14 +1,4 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else if(typeof exports === 'object')
-		exports["WebIM"] = factory();
-	else
-		root["WebIM"] = factory();
-})(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 
@@ -44,4833 +34,37 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.c = installedModules;
 
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "./";
 
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ 0:
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(1)
+	module.exports = __webpack_require__(247);
 
 
 /***/ }),
-/* 1 */
+
+/***/ 206:
 /***/ (function(module, exports, __webpack_require__) {
 
-	var _version = '1.4.2';
-	var _code = __webpack_require__(2).code;
-	var _utils = __webpack_require__(3).utils;
-	var _msg = __webpack_require__(4);
-	var _message = _msg._msg;
-	var _msgHash = {};
-	var Queue = __webpack_require__(39).Queue;
-	var CryptoJS = __webpack_require__(5);
-	var _ = __webpack_require__(40);
-	var stropheConn = null;
+	'use strict';
 
-	window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
-
-	if (window.XDomainRequest) {
-	    // not support ie8 send is not a function , canot 
-	    // case send is object, doesn't has a attr of call
-	    // XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
-	    // XDomainRequest.prototype.send = function () {
-	    //     XDomainRequest.prototype.oldsend.call(this, arguments);
-	    //     this.readyState = 2;
-	    // };
-	}
-
-	Strophe.Connection.prototype._sasl_auth1_cb = function (elem) {
-	    // save stream:features for future usage
-	    this.features = elem;
-	    var i, child;
-	    for (i = 0; i < elem.childNodes.length; i++) {
-	        child = elem.childNodes[i];
-	        if (child.nodeName == 'bind') {
-	            this.do_bind = true;
-	        }
-
-	        if (child.nodeName == 'session') {
-	            this.do_session = true;
-	        }
-	    }
-
-	    if (!this.do_bind) {
-	        this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
-	        return false;
-	    } else {
-	        this._addSysHandler(this._sasl_bind_cb.bind(this), null, null,
-	            null, "_bind_auth_2");
-
-	        var resource = Strophe.getResourceFromJid(this.jid);
-	        if (resource) {
-	            // this.send($iq({type: "set", id: "_bind_auth_2"})
-	            //     .c('bind', {xmlns: Strophe.NS.BIND})
-	            //     .c('resource', {}).t(resource).tree());
-	            var device_uuid = "device_uuid";
-	            if (this.options.isMultiLoginSessions) {
-	                device_uuid = new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000)
-	            }
-	            try {
-	                this.send(
-	                    $iq({type: "set", id: "_bind_auth_2"})
-	                        .c('bind', {xmlns: Strophe.NS.BIND})
-	                        .c('resource', {}).t(resource)
-	                        .up()
-	                        .c('os').t('webim')
-	                        .up()
-	                        .c('device_uuid').t(device_uuid)
-	                        .up()
-	                        .c('is_manual_login').t('true')
-	                        .tree()
-	                );
-	            } catch (e) {
-	                console.log("Bind Error: ", e.message);
-	            }
-	        } else {
-	            this.send($iq({type: "set", id: "_bind_auth_2"})
-	                .c('bind', {xmlns: Strophe.NS.BIND})
-	                .tree());
-	        }
-	    }
-	    return false;
-	};
-
-	Strophe.Request.prototype._newXHR = function () {
-	    var xhr = _utils.xmlrequest(true);
-	    if (xhr.overrideMimeType) {
-	        xhr.overrideMimeType('text/xml');
-	    }
-	    // use Function.bind() to prepend ourselves as an argument
-	    xhr.onreadystatechange = this.func.bind(null, this);
-	    return xhr;
-	};
-
-	Strophe.Websocket.prototype._closeSocket = function () {
-	    if (this.socket) {
-	        var me = this;
-	        setTimeout(function () {
-	            try {
-	                me.socket.close();
-	            } catch (e) {
-	            }
-	        }, 0);
-	    } else {
-	        this.socket = null;
-	    }
-	};
-
-
-	/**
-	 *
-	 * Strophe.Websocket has a bug while logout:
-	 * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
-	 * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
-	 * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
-	 * 3 "Websocket error [object Event]"
-	 * _changeConnectStatus
-	 * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
-	 *
-	 * this will trigger socket.onError, therefore _doDisconnect again.
-	 * Fix it by overide  _onMessage
-	 */
-	Strophe.Websocket.prototype._onMessage = function (message) {
-	    logMessage(message)
-	    // 获取Resource
-	    var data = message.data;
-	    if (data.indexOf('<jid>') > 0) {
-	        var start = data.indexOf('<jid>'),
-	            end = data.indexOf('</jid>'),
-	            data = data.substring(start + 5, end);
-	        stropheConn.setJid(data);
-	    }
-
-	    var elem, data;
-	    // check for closing stream
-	    // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
-	    // if (message.data === close) {
-	    //     this._conn.rawInput(close);
-	    //     this._conn.xmlInput(message);
-	    //     if (!this._conn.disconnecting) {
-	    //         this._conn._doDisconnect();
-	    //     }
-	    //     return;
-	    //
-	    // send and receive close xml: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/>
-	    // so we can't judge whether message.data equals close by === simply.
-	    if (message.data.indexOf("<close ") === 0) {
-	        elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
-	        var see_uri = elem.getAttribute("see-other-uri");
-	        if (see_uri) {
-	            this._conn._changeConnectStatus(Strophe.Status.REDIRECT, "Received see-other-uri, resetting connection");
-	            this._conn.reset();
-	            this._conn.service = see_uri;
-	            this._connect();
-	        } else {
-	            // if (!this._conn.disconnecting) {
-	            this._conn._doDisconnect("receive <close> from server");
-	            // }
-	        }
-	        return;
-	    } else if (message.data.search("<open ") === 0) {
-	        // This handles stream restarts
-	        elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
-	        if (!this._handleStreamStart(elem)) {
-	            return;
-	        }
-	    } else {
-	        data = this._streamWrap(message.data);
-	        elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
-	    }
-
-	    if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
-	        return;
-	    }
-
-	    //handle unavailable presence stanza before disconnecting
-	    if (this._conn.disconnecting &&
-	        elem.firstChild.nodeName === "presence" &&
-	        elem.firstChild.getAttribute("type") === "unavailable") {
-	        this._conn.xmlInput(elem);
-	        this._conn.rawInput(Strophe.serialize(elem));
-	        // if we are already disconnecting we will ignore the unavailable stanza and
-	        // wait for the </stream:stream> tag before we close the connection
-	        return;
-	    }
-	    this._conn._dataRecv(elem, message.data);
-	};
-
-
-	var _listenNetwork = function (onlineCallback, offlineCallback) {
-
-	    if (window.addEventListener) {
-	        window.addEventListener('online', onlineCallback);
-	        window.addEventListener('offline', offlineCallback);
-
-	    } else if (window.attachEvent) {
-	        if (document.body) {
-	            document.body.attachEvent('ononline', onlineCallback);
-	            document.body.attachEvent('onoffline', offlineCallback);
-	        } else {
-	            window.attachEvent('load', function () {
-	                document.body.attachEvent('ononline', onlineCallback);
-	                document.body.attachEvent('onoffline', offlineCallback);
-	            });
-	        }
-	    } else {
-	        /*var onlineTmp = window.ononline;
-	         var offlineTmp = window.onoffline;
-
-	         window.attachEvent('ononline', function () {
-	         try {
-	         typeof onlineTmp === 'function' && onlineTmp();
-	         } catch ( e ) {}
-	         onlineCallback();
-	         });
-	         window.attachEvent('onoffline', function () {
-	         try {
-	         typeof offlineTmp === 'function' && offlineTmp();
-	         } catch ( e ) {}
-	         offlineCallback();
-	         });*/
-	    }
-	};
-
-	var _parseRoom = function (result) {
-	    var rooms = [];
-	    var items = result.getElementsByTagName('item');
-	    if (items) {
-	        for (var i = 0; i < items.length; i++) {
-	            var item = items[i];
-	            var roomJid = item.getAttribute('jid');
-	            var tmp = roomJid.split('@')[0];
-	            var room = {
-	                jid: roomJid,
-	                name: item.getAttribute('name'),
-	                roomId: tmp.split('_')[1]
-	            };
-	            rooms.push(room);
-	        }
-	    }
-	    return rooms;
-	};
-
-	var _parseRoomOccupants = function (result) {
-	    var occupants = [];
-	    var items = result.getElementsByTagName('item');
-	    if (items) {
-	        for (var i = 0; i < items.length; i++) {
-	            var item = items[i];
-	            var room = {
-	                jid: item.getAttribute('jid'),
-	                name: item.getAttribute('name')
-	            };
-	            occupants.push(room);
-	        }
-	    }
-	    return occupants;
-	};
-
-	var _parseResponseMessage = function (msginfo) {
-	    var parseMsgData = {errorMsg: true, data: []};
-
-	    var msgBodies = msginfo.getElementsByTagName('body');
-	    if (msgBodies) {
-	        for (var i = 0; i < msgBodies.length; i++) {
-	            var msgBody = msgBodies[i];
-	            var childNodes = msgBody.childNodes;
-	            if (childNodes && childNodes.length > 0) {
-	                var childNode = msgBody.childNodes[0];
-	                if (childNode.nodeType == Strophe.ElementType.TEXT) {
-	                    var jsondata = childNode.wholeText || childNode.nodeValue;
-	                    jsondata = jsondata.replace('\n', '<br>');
-	                    try {
-	                        var data = eval('(' + jsondata + ')');
-	                        parseMsgData.errorMsg = false;
-	                        parseMsgData.data = [data];
-	                    } catch (e) {
-	                    }
-	                }
-	            }
-	        }
-
-	        var delayTags = msginfo.getElementsByTagName('delay');
-	        if (delayTags && delayTags.length > 0) {
-	            var delayTag = delayTags[0];
-	            var delayMsgTime = delayTag.getAttribute('stamp');
-	            if (delayMsgTime) {
-	                parseMsgData.delayTimeStamp = delayMsgTime;
-	            }
-	        }
-	    } else {
-	        var childrens = msginfo.childNodes;
-	        if (childrens && childrens.length > 0) {
-	            var child = msginfo.childNodes[0];
-	            if (child.nodeType == Strophe.ElementType.TEXT) {
-	                try {
-	                    var data = eval('(' + child.nodeValue + ')');
-	                    parseMsgData.errorMsg = false;
-	                    parseMsgData.data = [data];
-	                } catch (e) {
-	                }
-	            }
-	        }
-	    }
-	    return parseMsgData;
-	};
-
-	var _parseNameFromJidFn = function (jid, domain) {
-	    domain = domain || '';
-	    var tempstr = jid;
-	    var findex = tempstr.indexOf('_');
-
-	    if (findex !== -1) {
-	        tempstr = tempstr.substring(findex + 1);
-	    }
-	    var atindex = tempstr.indexOf('@' + domain);
-	    if (atindex !== -1) {
-	        tempstr = tempstr.substring(0, atindex);
-	    }
-	    return tempstr;
-	};
-
-	var _parseFriend = function (queryTag, conn, from) {
-	    var rouster = [];
-	    var items = queryTag.getElementsByTagName('item');
-	    if (items) {
-	        for (var i = 0; i < items.length; i++) {
-	            var item = items[i];
-	            var jid = item.getAttribute('jid');
-	            if (!jid) {
-	                continue;
-	            }
-	            var subscription = item.getAttribute('subscription');
-	            var friend = {
-	                subscription: subscription,
-	                jid: jid
-	            };
-	            var ask = item.getAttribute('ask');
-	            if (ask) {
-	                friend.ask = ask;
-	            }
-	            var name = item.getAttribute('name');
-	            if (name) {
-	                friend.name = name;
-	            } else {
-	                var n = _parseNameFromJidFn(jid);
-	                friend.name = n;
-	            }
-	            var groups = [];
-	            Strophe.forEachChild(item, 'group', function (group) {
-	                groups.push(Strophe.getText(group));
-	            });
-	            friend.groups = groups;
-	            rouster.push(friend);
-	            // B同意之后 -> B订阅A
-	            // fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
-	            if (conn && (subscription == 'from') && !ask) {
-	                conn.subscribe({
-	                    toJid: jid,
-	                    message: "[resp:true]"
-	                });
-	            }
-
-	            if (conn && (subscription == 'to')) {
-	                conn.subscribed({
-	                    toJid: jid
-	                });
-	            }
-	        }
-	    }
-	    return rouster;
-	};
-
-	var _login = function (options, conn) {
-	    var accessToken = options.access_token || '';
-	    if (accessToken == '') {
-	        var loginfo = _utils.stringify(options);
-	        conn.onError({
-	            type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
-	            data: options
-	        });
-	        return;
-	    }
-	    conn.context.accessToken = options.access_token;
-	    conn.context.accessTokenExpires = options.expires_in;
-	    if (conn.isOpening() && conn.context.stropheConn) {
-	        stropheConn = conn.getStrophe();
-	    } else if (conn.isOpened() && conn.context.stropheConn) {
-	        // return;
-	        stropheConn = conn.getStrophe();
-	    } else {
-	        stropheConn = conn.getStrophe();
-	    }
-	    var callback = function (status, msg) {
-	        _loginCallback(status, msg, conn);
-	    };
-
-	    conn.context.stropheConn = stropheConn;
-	    if (conn.route) {
-	        stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold, conn.route);
-	    } else {
-	        stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold);
-	    }
-	};
-
-	var _parseMessageType = function (msginfo) {
-	    var receiveinfo = msginfo.getElementsByTagName('received'),
-	        inviteinfo = msginfo.getElementsByTagName('invite'),
-	        deliveryinfo = msginfo.getElementsByTagName('delivery'),
-	        acked = msginfo.getElementsByTagName('acked'),
-	        error = msginfo.getElementsByTagName('error'),
-	        msgtype = 'normal';
-	    if (receiveinfo && receiveinfo.length > 0
-	        &&
-	        receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
-
-	        msgtype = 'received';
-
-	    } else if (inviteinfo && inviteinfo.length > 0) {
-
-	        msgtype = 'invite';
-
-	    } else if (deliveryinfo && deliveryinfo.length > 0) {
-
-	        msgtype = 'delivery';           // 消息送达
-
-	    } else if (acked && acked.length) {
-
-	        msgtype = 'acked';              // 消息已读
-
-	    } else if (error && error.length) {
-
-	        var errorItem = error[0],
-	            userMuted = errorItem.getElementsByTagName('user-muted');
-
-	        if (userMuted && userMuted.length) {
-
-	            msgtype = 'userMuted';
-
-	        }
-
-	    }
-	    return msgtype;
-	};
-
-	var _handleMessageQueue = function (conn) {
-	    for (var i in _msgHash) {
-	        if (_msgHash.hasOwnProperty(i)) {
-	            _msgHash[i].send(conn);
-	        }
-	    }
-	};
-
-	var _loginCallback = function (status, msg, conn) {
-	    var conflict, error;
-
-	    if (msg === 'conflict') {
-	        conflict = true;
-	        conn.close();
-	    }
-
-	    if (status == Strophe.Status.CONNFAIL) {
-	        //client offline, ping/pong timeout, server quit, server offline
-	        error = {
-	            type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
-	            msg: msg,
-	            reconnect: true
-	        };
-
-	        conflict && (error.conflict = true);
-	        conn.onError(error);
-	    } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
-	        // client should limit the speed of sending ack messages  up to 5/s
-	        conn.autoReconnectNumTotal = 0;
-	        conn.intervalId = setInterval(function () {
-	            conn.handelSendQueue();
-	        }, 200);
-	        var handleMessage = function (msginfo) {
-	            var delivery = msginfo.getElementsByTagName('delivery');
-	            var acked = msginfo.getElementsByTagName('acked');
-	            if (delivery.length) {
-	                conn.handleDeliveredMessage(msginfo);
-	                return true;
-	            }
-	            if (acked.length) {
-	                conn.handleAckedMessage(msginfo);
-	                return true;
-	            }
-	            var type = _parseMessageType(msginfo);
-	            switch (type) {
-	                case "received":
-	                    conn.handleReceivedMessage(msginfo);
-	                    return true;
-	                case "invite":
-	                    conn.handleInviteMessage(msginfo);
-	                    return true;
-	                case "delivery":
-	                    conn.handleDeliveredMessage(msginfo);
-	                    return true;
-	                case "acked":
-	                    conn.handleAckedMessage(msginfo);
-	                    return true;
-	                case "userMuted":
-	                    conn.handleMutedMessage(msginfo);
-	                    return true;
-	                default:
-	                    conn.handleMessage(msginfo);
-	                    return true;
-	            }
-	        };
-	        var handlePresence = function (msginfo) {
-	            conn.handlePresence(msginfo);
-	            return true;
-	        };
-	        var handlePing = function (msginfo) {
-	            conn.handlePing(msginfo);
-	            return true;
-	        };
-	        var handleIqRoster = function (msginfo) {
-	            conn.handleIqRoster(msginfo);
-	            return true;
-	        };
-	        var handleIqPrivacy = function (msginfo) {
-	            conn.handleIqPrivacy(msginfo);
-	            return true;
-	        };
-	        var handleIq = function (msginfo) {
-	            conn.handleIq(msginfo);
-	            return true;
-	        };
-
-	        conn.addHandler(handleMessage, null, 'message', null, null, null);
-	        conn.addHandler(handlePresence, null, 'presence', null, null, null);
-	        conn.addHandler(handlePing, 'urn:xmpp:ping', 'iq', 'get', null, null);
-	        conn.addHandler(handleIqRoster, 'jabber:iq:roster', 'iq', 'set', null, null);
-	        conn.addHandler(handleIqPrivacy, 'jabber:iq:privacy', 'iq', 'set', null, null);
-	        conn.addHandler(handleIq, null, 'iq', null, null, null);
-
-	        conn.registerConfrIQHandler && (conn.registerConfrIQHandler());
-
-	        conn.context.status = _code.STATUS_OPENED;
-
-	        var supportRecMessage = [
-	            _code.WEBIM_MESSAGE_REC_TEXT,
-	            _code.WEBIM_MESSAGE_REC_EMOJI];
-
-	        if (_utils.isCanDownLoadFile) {
-	            supportRecMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
-	            supportRecMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
-	        }
-	        var supportSedMessage = [_code.WEBIM_MESSAGE_SED_TEXT];
-	        if (_utils.isCanUploadFile) {
-	            supportSedMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
-	            supportSedMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
-	        }
-	        conn.notifyVersion();
-	        conn.retry && _handleMessageQueue(conn);
-	        conn.heartBeat();
-	        conn.isAutoLogin && conn.setPresence();
-
-	        try {
-	            if (conn.unSendMsgArr.length > 0) {
-	                for (var i in conn.unSendMsgArr) {
-	                    var dom = conn.unSendMsgArr[i];
-	                    conn.sendCommand(dom);
-	                    delete conn.unSendMsgArr[i];
-	                }
-	            }
-	        } catch (e) {
-	            console.error(e.message);
-	        }
-	        conn.offLineSendConnecting = false;
-	        conn.logOut = false;
-
-	        conn.onOpened({
-	            canReceive: supportRecMessage,
-	            canSend: supportSedMessage,
-	            accessToken: conn.context.accessToken
-	        });
-	    } else if (status == Strophe.Status.DISCONNECTING) {
-	        if (conn.isOpened()) {
-	            conn.stopHeartBeat();
-	            conn.context.status = _code.STATUS_CLOSING;
-
-	            error = {
-	                type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
-	                msg: msg,
-	                reconnect: true
-	            };
-
-	            conflict && (error.conflict = true);
-	            conn.onError(error);
-	        }
-	    } else if (status == Strophe.Status.DISCONNECTED) {
-	        if (conn.isOpened()) {
-	            if (conn.autoReconnectNumTotal < conn.autoReconnectNumMax) {
-	                conn.reconnect();
-	                return;
-	            } else {
-	                error = {
-	                    type: _code.WEBIM_CONNCTION_DISCONNECTED
-	                };
-	                conn.onError(error);
-	            }
-	        }
-	        conn.context.status = _code.STATUS_CLOSED;
-	        conn.clear();
-	        conn.onClosed();
-	    } else if (status == Strophe.Status.AUTHFAIL) {
-	        error = {
-	            type: _code.WEBIM_CONNCTION_AUTH_ERROR
-	        };
-
-	        conflict && (error.conflict = true);
-	        conn.onError(error);
-	        conn.clear();
-	    } else if (status == Strophe.Status.ERROR) {
-	        conn.context.status = _code.STATUS_ERROR;
-	        error = {
-	            type: _code.WEBIM_CONNCTION_SERVER_ERROR
-	        };
-
-	        conflict && (error.conflict = true);
-	        conn.onError(error);
-	    }
-	    conn.context.status_now = status;
-	};
-
-	var _getJid = function (options, conn) {
-	    var jid = options.toJid || '';
-
-	    if (jid === '') {
-	        var appKey = conn.context.appKey || '';
-	        var toJid = appKey + '_' + options.to + '@' + conn.domain;
-
-	        if (options.resource) {
-	            toJid = toJid + '/' + options.resource;
-	        }
-	        jid = toJid;
-	    }
-	    return jid;
-	};
-
-	var _getJidByName = function (name, conn) {
-	    var options = {
-	        to: name
-	    };
-	    return _getJid(options, conn);
-	};
-
-	var _validCheck = function (options, conn) {
-	    options = options || {};
-
-	    if (options.user == '') {
-	        conn.onError({
-	            type: _code.WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR
-	        });
-	        return false;
-	    }
-
-	    var user = (options.user + '') || '';
-	    var appKey = options.appKey || '';
-	    var devInfos = appKey.split('#');
-
-	    if (devInfos.length !== 2) {
-	        conn.onError({
-	            type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
-	        });
-	        return false;
-	    }
-	    var orgName = devInfos[0];
-	    var appName = devInfos[1];
-
-	    if (!orgName) {
-	        conn.onError({
-	            type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
-	        });
-	        return false;
-	    }
-	    if (!appName) {
-	        conn.onError({
-	            type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
-	        });
-	        return false;
-	    }
-
-	    var jid = appKey + '_' + user.toLowerCase() + '@' + conn.domain,
-	        resource = options.resource || 'webim';
-
-
-	    conn.context.jid = jid + '/' + resource;
-	    conn.context.userId = user;
-	    conn.context.appKey = appKey;
-	    conn.context.appName = appName;
-	    conn.context.orgName = orgName;
-
-	    return true;
-	};
-
-	var _getXmppUrl = function (baseUrl, https) {
-	    if (/^(ws|http)s?:\/\/?/.test(baseUrl)) {
-	        return baseUrl;
-	    }
-
-	    var url = {
-	        prefix: 'http',
-	        base: '://' + baseUrl,
-	        suffix: '/http-bind/'
-	    };
-
-	    if (https && _utils.isSupportWss) {
-	        url.prefix = 'wss';
-	        url.suffix = '/ws/';
-	    } else {
-	        if (https) {
-	            url.prefix = 'https';
-	        } else if (window.WebSocket) {
-	            url.prefix = 'ws';
-	            url.suffix = '/ws/';
-	        }
-	    }
-
-	    return url.prefix + url.base + url.suffix;
-	};
-
-	function _deepClone(data) {
-	    var t = typeof data, o, i, ni;
-
-	    if (t === 'array') {
-	        o = [];
-	    } else if (t === 'object') {
-	        o = {};
-	    } else {
-	        return data;
-	    }
-
-	    if (t === 'array') {
-	        for (i = 0, ni = data.length; i < ni; i++) {
-	            o.push(_deepClone(data[i]));
-	        }
-	        return o;
-	    } else if (t === 'object') {
-	        for (i in data) {
-	            o[i] = _deepClone(data[i]);
-	        }
-	        return o;
-	    }
-	}
-
-
-	/**
-	 * The connection class.
-	 * @constructor
-	 * @param {Object} options - 创建连接的初始化参数
-	 * @param {String} options.url - xmpp服务器的URL
-	 * @param {String} options.apiUrl - API服务器的URL
-	 * @param {Boolean} options.isHttpDNS - 防止域名劫持
-	 * @param {Boolean} options.isMultiLoginSessions - 为true时同一账户可以同时在多个Web页面登录（多标签登录，默认不开启，如有需要请联系商务），为false时同一账号只能在一个Web页面登录
-	 * @param {Boolean} options.https - 是否启用wss.
-	 * @param {Number} options.heartBeatWait - 发送心跳包的时间间隔（毫秒）
-	 * @param {Boolean} options.isAutoLogin - 登录成功后是否自动出席
-	 * @param {Number} options.autoReconnectNumMax - 掉线后重连的最大次数
-	 * @param {Number} options.autoReconnectInterval -  掉线后重连的间隔时间（毫秒）
-	 * @param {Boolean} options.isWindowSDK - 是否运行在WindowsSDK上
-	 * @param {Boolean} options.encrypt - 是否加密文本消息
-	 * @param {Boolean} options.delivery - 是否发送delivered ack
-	 * @returns {Class}  连接实例
-	 */
-
-	var connection = function (options) {
-	    if (!this instanceof connection) {
-	        return new connection(options);
-	    }
-
-	    var options = options || {};
-
-	    this.isHttpDNS = options.isHttpDNS || false;
-	    this.isMultiLoginSessions = options.isMultiLoginSessions || false;
-	    this.wait = options.wait || 30;
-	    this.hold = options.hold || 1;
-	    this.retry = options.retry || false;
-	    this.https = options.https || location.protocol === 'https:';
-	    this.url = _getXmppUrl(options.url, this.https);
-	    this.route = options.route || null;
-	    this.domain = options.domain || 'easemob.com';
-	    this.inactivity = options.inactivity || 30;
-	    this.heartBeatWait = options.heartBeatWait || 4500;
-	    this.maxRetries = options.maxRetries || 5;
-	    this.isAutoLogin = options.isAutoLogin === false ? false : true;
-	    this.pollingTime = options.pollingTime || 800;
-	    this.stropheConn = false;
-	    this.autoReconnectNumMax = options.autoReconnectNumMax || 0;
-	    this.autoReconnectNumTotal = 0;
-	    this.autoReconnectInterval = options.autoReconnectInterval || 0;
-	    this.context = {status: _code.STATUS_INIT};
-	    this.sendQueue = new Queue();  //instead of sending message immediately,cache them in this queue
-	    this.intervalId = null;   //clearInterval return value
-	    this.apiUrl = options.apiUrl || '';
-	    this.isWindowSDK = options.isWindowSDK || false;
-	    this.encrypt = options.encrypt || {encrypt: {type: 'none'}};
-	    this.delivery = options.delivery || false;
-	    this.saveLocal = options.saveLocal || false;
-	    this.user = '';
-	    this.orgName = '';
-	    this.appName = '';
-	    this.token = '';
-	    this.unSendMsgArr = [];
-	    this.offLineSendConnecting = false;
-	    this.logOut = false;
-
-	    this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
-	    this.dnsIndex = 0;   //the dns ip used in dnsArr currently
-	    this.dnsTotal = this.dnsArr.length;  //max number of getting dns retries
-	    this.restHosts = null; //rest server ips
-	    this.restIndex = 0;    //the rest ip used in restHosts currently
-	    this.restTotal = 0;    //max number of getting rest token retries
-	    this.xmppHosts = null; //xmpp server ips
-	    this.xmppIndex = 0;    //the xmpp ip used in xmppHosts currently
-	    this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
-
-	    this.groupOption = {};
-
-	    /*
-	     Demo.chatRecord = {
-	     targetId: {
-	     messages: [
-	     {
-	     msg: 'msg',
-	     type: 'type'
-	     },
-	     {
-	     msg: 'msg',
-	     type: 'type'
-	     }],
-	     brief: 'brief'
-	     }
-	     }
-	     */
-	};
-
-	connection.prototype.testInit = function (options) {
-	    this.orgName = options.orgName;
-	    this.appName = options.appName;
-	    this.user = options.user;
-	    this.token = options.token;
-	};
-
-	/**
-	 * 注册新用户
-	 * @param {Object} options - 用户信息
-	 * @param {String} options.username - 用户名
-	 * @param {String} options.password - 密码
-	 * @param {String} options.nickname - 用户昵称
-	 * @param {Function} options.success - 注册成功回调
-	 * @param {Function} options.error - 注册失败
-	 */
-	connection.prototype.registerUser = function (options) {
-	    if (location.protocol != 'https:' && this.isHttpDNS) {
-	        this.dnsIndex = 0;
-	        this.getHttpDNS(options, 'signup');
-	    } else {
-	        this.signup(options);
-	    }
-	}
-
-	/**
-	 * 处理发送队列
-	 * @private
-	 */
-	connection.prototype.handelSendQueue = function () {
-	    var options = this.sendQueue.pop();
-	    if (options !== null) {
-	        this.sendReceiptsMessage(options);
-	    }
-	};
-
-	/**
-	 * 注册监听函数
-	 * @param {Object} options - 回调函数集合
-	 * @param {connection~onOpened} options.onOpened - 处理登录的回调
-	 * @param {connection~onTextMessage} options.onTextMessage - 处理文本消息的回调
-	 * @param {connection~onEmojiMessage} options.onEmojiMessage - 处理表情消息的回调
-	 * @param {connection~onPictureMessage} options.onPictureMessage - 处理图片消息的回调
-	 * @param {connection~onAudioMessage} options.onAudioMessage - 处理音频消息的回调
-	 * @param {connection~onVideoMessage} options.onVideoMessage - 处理视频消息的回调
-	 * @param {connection~onFileMessage} options.onFileMessage - 处理文件消息的回调
-	 * @param {connection~onLocationMessage} options.onLocationMessage - 处理位置消息的回调
-	 * @param {connection~onCmdMessage} options.onCmdMessage - 处理命令消息的回调
-	 * @param {connection~onPresence} options.onPresence - 处理Presence消息的回调
-	 * @param {connection~onError} options.onError - 处理错误消息的回调
-	 * @param {connection~onReceivedMessage} options.onReceivedMessage - 处理Received消息的回调
-	 * @param {connection~onInviteMessage} options.onInviteMessage - 处理邀请消息的回调
-	 * @param {connection~onDeliverdMessage} options.onDeliverdMessage - 处理Delivered ACK消息的回调
-	 * @param {connection~onReadMessage} options.onReadMessage - 处理Read ACK消息的回调
-	 * @param {connection~onMutedMessage} options.onMutedMessage - 处理禁言消息的回调
-	 * @param {connection~onOffline} options.onOffline - 处理断网的回调
-	 * @param {connection~onOnline} options.onOnline - 处理联网的回调
-	 * @param {connection~onCreateGroup} options.onCreateGroup - 处理创建群组的回调
-	 */
-	connection.prototype.listen = function (options) {
-	    /**
-	     * 登录成功后调用
-	     * @callback connection~onOpened
-	     */
-	    /**
-	     * 收到文本消息
-	     * @callback connection~onTextMessage
-	     */
-	    /**
-	     * 收到表情消息
-	     * @callback connection~onEmojiMessage
-	     */
-	    /**
-	     * 收到图片消息
-	     * @callback connection~onPictureMessage
-	     */
-	    /**
-	     * 收到音频消息
-	     * @callback connection~onAudioMessage
-	     */
-	    /**
-	     * 收到视频消息
-	     * @callback connection~onVideoMessage
-	     */
-	    /**
-	     * 收到文件消息
-	     * @callback connection~onFileMessage
-	     */
-	    /**
-	     * 收到位置消息
-	     * @callback connection~onLocationMessage
-	     */
-	    /**
-	     * 收到命令消息
-	     * @callback connection~onCmdMessage
-	     */
-	    /**
-	     * 收到错误消息
-	     * @callback connection~onError
-	     */
-	    /**
-	     * 收到Presence消息
-	     * @callback connection~onPresence
-	     */
-	    /**
-	     * 收到Received消息
-	     * @callback connection~onReceivedMessage
-	     */
-	    /**
-	     * 被邀请进群
-	     * @callback connection~onInviteMessage
-	     */
-	    /**
-	     * 收到已送达回执
-	     * @callback connection~onDeliverdMessage
-	     */
-	    /**
-	     * 收到已读回执
-	     * @callback connection~onReadMessage
-	     */
-	    /**
-	     * 被群管理员禁言
-	     * @callback connection~onMutedMessage
-	     */
-	    /**
-	     * 浏览器被断网时调用
-	     * @callback connection~onOffline
-	     */
-	    /**
-	     * 浏览器联网时调用
-	     * @callback connection~onOnline
-	     */
-	    /**
-	     * 建群成功后调用
-	     * @callback connection~onCreateGroup
-	     */
-	    this.onOpened = options.onOpened || _utils.emptyfn;
-	    this.onClosed = options.onClosed || _utils.emptyfn;
-	    this.onTextMessage = options.onTextMessage || _utils.emptyfn;
-	    this.onEmojiMessage = options.onEmojiMessage || _utils.emptyfn;
-	    this.onPictureMessage = options.onPictureMessage || _utils.emptyfn;
-	    this.onAudioMessage = options.onAudioMessage || _utils.emptyfn;
-	    this.onVideoMessage = options.onVideoMessage || _utils.emptyfn;
-	    this.onFileMessage = options.onFileMessage || _utils.emptyfn;
-	    this.onLocationMessage = options.onLocationMessage || _utils.emptyfn;
-	    this.onCmdMessage = options.onCmdMessage || _utils.emptyfn;
-	    this.onPresence = options.onPresence || _utils.emptyfn;
-	    this.onRoster = options.onRoster || _utils.emptyfn;
-	    this.onError = options.onError || _utils.emptyfn;
-	    this.onReceivedMessage = options.onReceivedMessage || _utils.emptyfn;
-	    this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
-	    this.onDeliverdMessage = options.onDeliveredMessage || _utils.emptyfn;
-	    this.onReadMessage = options.onReadMessage || _utils.emptyfn;
-	    this.onMutedMessage = options.onMutedMessage || _utils.emptyfn;
-	    this.onOffline = options.onOffline || _utils.emptyfn;
-	    this.onOnline = options.onOnline || _utils.emptyfn;
-	    this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
-	    this.onCreateGroup = options.onCreateGroup || _utils.emptyfn;
-	    //for WindowSDK start
-	    this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
-	    this.onUpdateMyRoster = options.onUpdateMyRoster || _utils.emptyfn;
-	    //for WindowSDK end
-	    this.onBlacklistUpdate = options.onBlacklistUpdate || _utils.emptyfn;
-
-	    _listenNetwork(this.onOnline, this.onOffline);
-	};
-
-	/**
-	 * 发送心跳
-	 * webrtc需要强制心跳，加个默认为false的参数 向下兼容
-	 * @param {Boolean} forcing - 是否强制发送
-	 * @private
-	 */
-	connection.prototype.heartBeat = function (forcing) {
-	    if (forcing !== true) {
-	        forcing = false;
-	    }
-	    var me = this;
-	    //IE8: strophe auto switch from ws to BOSH, need heartbeat
-	    var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
-
-	    if (this.heartBeatID || (!forcing && !isNeed)) {
-	        return;
-	    }
-
-	    var options = {
-	        toJid: this.domain,
-	        type: 'normal'
-	    };
-	    this.heartBeatID = setInterval(function () {
-	        // fix: do heartbeat only when websocket 
-	        _utils.isSupportWss && me.ping(options);
-	    }, this.heartBeatWait);
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.stopHeartBeat = function () {
-	    if (typeof this.heartBeatID == "number") {
-	        this.heartBeatID = clearInterval(this.heartBeatID);
-	    }
-	};
-
-	/**
-	 * 发送接收消息回执
-	 * @param {Object} options -
-	 * @private
-	 */
-	connection.prototype.sendReceiptsMessage = function (options) {
-	    var dom = $msg({
-	        from: this.context.jid || '',
-	        to: this.domain,
-	        id: options.id || ''
-	    }).c('received', {
-	        xmlns: 'urn:xmpp:receipts',
-	        id: options.id || ''
-	    });
-	    this.sendCommand(dom.tree());
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.cacheReceiptsMessage = function (options) {
-	    this.sendQueue.push(options);
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.getStrophe = function () {
-	    if (location.protocol != 'https:' && this.isHttpDNS) {
-	        //TODO: try this.xmppTotal times on fail
-	        var url = '';
-	        var host = this.xmppHosts[this.xmppIndex];
-	        var domain = _utils.getXmlFirstChild(host, 'domain');
-	        var ip = _utils.getXmlFirstChild(host, 'ip');
-	        if (ip) {
-	            url = ip.textContent;
-	            var port = _utils.getXmlFirstChild(host, 'port');
-	            if (port.textContent != '80') {
-	                url += ':' + port.textContent;
-	            }
-	        } else {
-	            url = domain.textContent;
-	        }
-
-	        if (url != '') {
-	            var parter = /(.+\/\/).+(\/.+)/;
-	            this.url = this.url.replace(parter, "$1" + url + "$2");
-	        }
-	    }
-
-	    var stropheConn = new Strophe.Connection(this.url, {
-	        isMultiLoginSessions: this.isMultiLoginSessions,
-	        inactivity: this.inactivity,
-	        maxRetries: this.maxRetries,
-	        pollingTime: this.pollingTime
-	    });
-	    return stropheConn;
-	};
-
-	/**
-	 *
-	 * @param data
-	 * @param tagName
-	 * @private
-	 */
-	connection.prototype.getHostsByTag = function (data, tagName) {
-	    var tag = _utils.getXmlFirstChild(data, tagName);
-	    if (!tag) {
-	        console.log(tagName + ' hosts error');
-	        return null;
-	    }
-	    var hosts = tag.getElementsByTagName('hosts');
-	    if (hosts.length == 0) {
-	        console.log(tagName + ' hosts error2');
-	        return null;
-	    }
-	    return hosts[0].getElementsByTagName('host');
-
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.getRestFromHttpDNS = function (options, type) {
-	    if (this.restIndex > this.restTotal) {
-	        console.log('rest hosts all tried,quit');
-	        return;
-	    }
-	    var url = '';
-	    var host = this.restHosts[this.restIndex];
-	    var domain = _utils.getXmlFirstChild(host, 'domain');
-	    var ip = _utils.getXmlFirstChild(host, 'ip');
-	    if (ip) {
-	        var port = _utils.getXmlFirstChild(host, 'port');
-	        url = (location.protocol === 'https:' ? 'https:' : 'http:') + '//' + ip.textContent + ':' + port.textContent;
-	    } else {
-	        url = (location.protocol === 'https:' ? 'https:' : 'http:') + '//' + domain.textContent;
-	    }
-
-	    if (url != '') {
-	        this.apiUrl = url;
-	        options.apiUrl = url;
-	    }
-
-	    if (type == 'login') {
-	        this.login(options);
-	    } else {
-	        this.signup(options);
-	    }
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.getHttpDNS = function (options, type) {
-	    if (this.restHosts) {
-	        this.getRestFromHttpDNS(options, type);
-	        return;
-	    }
-	    var self = this;
-	    var suc = function (data, xhr) {
-	        data = new DOMParser().parseFromString(data, "text/xml").documentElement;
-	        //get rest ips
-	        var restHosts = self.getHostsByTag(data, 'rest');
-	        if (!restHosts) {
-	            console.log('rest hosts error3');
-	            return;
-	        }
-	        self.restHosts = restHosts;
-	        self.restTotal = restHosts.length;
-
-	        //get xmpp ips
-	        var xmppHosts = self.getHostsByTag(data, 'xmpp');
-	        if (!xmppHosts) {
-	            console.log('xmpp hosts error3');
-	            return;
-	        }
-	        self.xmppHosts = xmppHosts;
-	        self.xmppTotal = xmppHosts.length;
-
-	        self.getRestFromHttpDNS(options, type);
-	    };
-	    var error = function (res, xhr, msg) {
-
-	        console.log('getHttpDNS error', res, msg);
-	        self.dnsIndex++;
-	        if (self.dnsIndex < self.dnsTotal) {
-	            self.getHttpDNS(options, type);
-	        }
-
-	    };
-	    var options2 = {
-	        url: this.dnsArr[this.dnsIndex] + '/easemob/server.xml',
-	        dataType: 'text',
-	        type: 'GET',
-
-	        // url: 'http://www.easemob.com/easemob/server.xml',
-	        // dataType: 'xml',
-	        data: {app_key: encodeURIComponent(options.appKey)},
-	        success: suc || _utils.emptyfn,
-	        error: error || _utils.emptyfn
-	    };
-	    _utils.ajax(options2);
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.signup = function (options) {
-	    var self = this;
-	    var orgName = options.orgName || '';
-	    var appName = options.appName || '';
-	    var appKey = options.appKey || '';
-	    var suc = options.success || EMPTYFN;
-	    var err = options.error || EMPTYFN;
-
-	    if (!orgName && !appName && appKey) {
-	        var devInfos = appKey.split('#');
-	        if (devInfos.length === 2) {
-	            orgName = devInfos[0];
-	            appName = devInfos[1];
-	        }
-	    }
-	    if (!orgName && !appName) {
-	        err({
-	            type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
-	        });
-	        return;
-	    }
-
-	    var error = function (res, xhr, msg) {
-	        if (location.protocol != 'https:' && self.isHttpDNS) {
-	            if ((self.restIndex + 1) < self.restTotal) {
-	                self.restIndex++;
-	                self.getRestFromHttpDNS(options, 'signup');
-	                return;
-	            }
-	        }
-	        self.clear();
-	        err(res);
-	    };
-	    var https = options.https || https;
-	    var apiUrl = options.apiUrl;
-	    var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
-
-	    var userjson = {
-	        username: options.username,
-	        password: options.password,
-	        nickname: options.nickname || ''
-	    };
-
-	    var userinfo = _utils.stringify(userjson);
-	    var options2 = {
-	        url: restUrl,
-	        dataType: 'json',
-	        data: userinfo,
-	        success: suc,
-	        error: error
-	    };
-	    _utils.ajax(options2);
-	};
-
-	/**
-	 * 登录
-	 * @param {Object} options - 用户信息
-	 * @param {String} options.user - 用户名
-	 * @param {String} options.pwd - 用户密码，跟token二选一
-	 * @param {String} options.accessToken - token，跟密码二选一
-	 * @param {String} options.appKey - Appkey
-	 */
-	connection.prototype.open = function (options) {
-	    var appkey = options.appKey,
-	        orgName = appkey.split('#')[0],
-	        appName = appkey.split('#')[1];
-	    this.orgName = orgName;
-	    this.appName = appName;
-	    if (options.accessToken) {
-	        this.token = options.accessToken;
-	    }
-	    if (options.xmppURL) {
-	        this.url = _getXmppUrl(options.xmppURL, this.https);
-	    }
-	    if (location.protocol != 'https:' && this.isHttpDNS) {
-	        this.dnsIndex = 0;
-	        this.getHttpDNS(options, 'login');
-	    } else {
-	        this.login(options);
-	    }
-	};
-
-	/**
-	 *
-	 * @param options
-	 * @private
-	 */
-	connection.prototype.login = function (options) {
-	    this.user = options.user;
-	    var pass = _validCheck(options, this);
-
-	    if (!pass) {
-	        return;
-	    }
-
-	    var conn = this;
-
-	    if (conn.isOpened()) {
-	        return;
-	    }
-
-	    if (options.accessToken) {
-	        options.access_token = options.accessToken;
-	        conn.context.restTokenData = options;
-	        _login(options, conn);
-	    } else {
-	        var apiUrl = this.apiUrl;
-	        var userId = this.context.userId;
-	        var pwd = options.pwd || '';
-	        var appName = this.context.appName;
-	        var orgName = this.context.orgName;
-
-	        var suc = function (data, xhr) {
-	            conn.context.status = _code.STATUS_DOLOGIN_IM;
-	            conn.context.restTokenData = data;
-	            if (options.success)
-	                options.success(data);
-	            conn.token = data.access_token;
-	            _login(data, conn);
-	        };
-	        var error = function (res, xhr, msg) {
-	            if (options.error)
-	                options.error();
-	            if (location.protocol != 'https:' && conn.isHttpDNS) {
-	                if ((conn.restIndex + 1) < conn.restTotal) {
-	                    conn.restIndex++;
-	                    conn.getRestFromHttpDNS(options, 'login');
-	                    return;
-	                }
-	            }
-	            conn.clear();
-	            if (res.error && res.error_description) {
-	                conn.onError({
-	                    type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
-	                    data: res,
-	                    xhr: xhr
-	                });
-	            } else {
-	                conn.onError({
-	                    type: _code.WEBIM_CONNCTION_OPEN_ERROR,
-	                    data: res,
-	                    xhr: xhr
-	                });
-	            }
-	        };
-
-	        this.context.status = _code.STATUS_DOLOGIN_USERGRID;
-
-	        var loginJson = {
-	            grant_type: 'password',
-	            username: userId,
-	            password: pwd,
-	            timestamp: +new Date()
-	        };
-	        var loginfo = _utils.stringify(loginJson);
-
-	        var options2 = {
-	            url: apiUrl + '/' + orgName + '/' + appName + '/token',
-	            dataType: 'json',
-	            data: loginfo,
-	            success: suc || _utils.emptyfn,
-	            error: error || _utils.emptyfn
-	        };
-	        _utils.ajax(options2);
-	    }
-	};
-
-	/**
-	 * attach to xmpp server for BOSH
-	 * @private
-	 */
-	connection.prototype.attach = function (options) {
-	    var pass = _validCheck(options, this);
-
-	    if (!pass) {
-	        return;
-	    }
-
-	    options = options || {};
-
-	    var accessToken = options.accessToken || '';
-	    if (accessToken == '') {
-	        this.onError({
-	            type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
-	        });
-	        return;
-	    }
-
-	    var sid = options.sid || '';
-	    if (sid === '') {
-	        this.onError({
-	            type: _code.WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR
-	        });
-	        return;
-	    }
-
-	    var rid = options.rid || '';
-	    if (rid === '') {
-	        this.onError({
-	            type: _code.WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR
-	        });
-	        return;
-	    }
-
-	    stropheConn = this.getStrophe();
-
-	    this.context.accessToken = accessToken;
-	    this.context.stropheConn = stropheConn;
-	    this.context.status = _code.STATUS_DOLOGIN_IM;
-
-	    var conn = this;
-	    var callback = function (status, msg) {
-	        _loginCallback(status, msg, conn);
-	    };
-
-	    var jid = this.context.jid;
-	    var wait = this.wait;
-	    var hold = this.hold;
-	    var wind = this.wind || 5;
-	    stropheConn.attach(jid, sid, rid, callback, wait, hold, wind);
-	};
-
-	/**
-	 * 关闭连接
-	 * @param {String} reason
-	 */
-	connection.prototype.close = function (reason) {
-	    this.logOut = true;
-	    this.stopHeartBeat();
-
-	    var status = this.context.status;
-	    if (status == _code.STATUS_INIT) {
-	        return;
-	    }
-
-	    if (this.isClosed() || this.isClosing()) {
-	        return;
-	    }
-
-	    this.context.status = _code.STATUS_CLOSING;
-	    this.context.stropheConn.disconnect(reason);
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.addHandler = function (handler, ns, name, type, id, from, options) {
-	    this.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.notifyVersion = function (suc, fail) {
-	    var jid = stropheConn.getJid();
-	    this.context.jid = jid;
-	    var dom = $iq({
-	        from: jid || ''
-	        , to: this.domain
-	        , type: 'result'
-	    })
-	        .c('query', {xmlns: 'jabber:iq:version'})
-	        .c('name')
-	        .t('easemob')
-	        .up()
-	        .c('version')
-	        .t(_version)
-	        .up()
-	        .c('os')
-	        .t('webim');
-
-	    var suc = suc || _utils.emptyfn;
-	    var error = fail || this.onError;
-	    var failFn = function (ele) {
-	        error({
-	            type: _code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR
-	            , data: ele
-	        });
-	    };
-	    this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
-	    return;
-	};
-
-	/**
-	 * handle all types of presence message
-	 * @private
-	 */
-	connection.prototype.handlePresence = function (msginfo) {
-	    if (this.isClosed()) {
-	        return;
-	    }
-	    var from = msginfo.getAttribute('from') || '';
-	    var to = msginfo.getAttribute('to') || '';
-	    var type = msginfo.getAttribute('type') || '';
-	    var presence_type = msginfo.getAttribute('presence_type') || '';
-	    var fromUser = _parseNameFromJidFn(from);
-	    var toUser = _parseNameFromJidFn(to);
-	    var isCreate = false;
-	    var isMemberJoin = false;
-	    var isDecline = false;
-	    var isApply = false;
-	    var info = {
-	        from: fromUser,
-	        to: toUser,
-	        fromJid: from,
-	        toJid: to,
-	        type: type,
-	        chatroom: msginfo.getElementsByTagName('roomtype').length ? true : false
-	    };
-
-	    var showTags = msginfo.getElementsByTagName('show');
-	    if (showTags && showTags.length > 0) {
-	        var showTag = showTags[0];
-	        info.show = Strophe.getText(showTag);
-	    }
-	    var statusTags = msginfo.getElementsByTagName('status');
-	    if (statusTags && statusTags.length > 0) {
-	        var statusTag = statusTags[0];
-	        info.status = Strophe.getText(statusTag);
-	        info.code = statusTag.getAttribute('code');
-	    }
-
-	    var priorityTags = msginfo.getElementsByTagName('priority');
-	    if (priorityTags && priorityTags.length > 0) {
-	        var priorityTag = priorityTags[0];
-	        info.priority = Strophe.getText(priorityTag);
-	    }
-
-	    var error = msginfo.getElementsByTagName('error');
-	    if (error && error.length > 0) {
-	        var error = error[0];
-	        info.error = {
-	            code: error.getAttribute('code')
-	        };
-	    }
-
-	    var destroy = msginfo.getElementsByTagName('destroy');
-	    if (destroy && destroy.length > 0) {
-	        var destroy = destroy[0];
-	        info.destroy = true;
-
-	        var reason = destroy.getElementsByTagName('reason');
-	        if (reason && reason.length > 0) {
-	            info.reason = Strophe.getText(reason[0]);
-	        }
-	    }
-
-	    var members = msginfo.getElementsByTagName('item');
-	    if (members && members.length > 0) {
-	        var member = members[0];
-	        var role = member.getAttribute('role');
-	        var jid = member.getAttribute('jid');
-	        var affiliation = member.getAttribute('affiliation');
-	        // dismissed by group
-	        if (role == 'none' && jid) {
-	            var kickedMember = _parseNameFromJidFn(jid);
-	            var actor = member.getElementsByTagName('actor')[0];
-	            var actorNick = actor.getAttribute('nick');
-	            info.actor = actorNick;
-	            info.kicked = kickedMember;
-	        }
-	        // Service Acknowledges Room Creation `createGroupACK`
-	        if (role == 'moderator' && info.code == '201') {
-	            if (affiliation === 'owner') {
-	                info.type = 'createGroupACK';
-	                isCreate = true;
-	            }
-	            // else
-	            //     info.type = 'joinPublicGroupSuccess';
-	        }
-	    }
-
-	    var x = msginfo.getElementsByTagName('x');
-	    if (x && x.length > 0) {
-	        // 加群申请
-	        var apply = x[0].getElementsByTagName('apply');
-	        // 加群成功
-	        var accept = x[0].getElementsByTagName('accept');
-	        // 同意加群后用户进群通知
-	        var item = x[0].getElementsByTagName('item');
-	        // 加群被拒绝
-	        var decline = x[0].getElementsByTagName('decline');
-	        // 被设为管理员
-	        var addAdmin = x[0].getElementsByTagName('add_admin');
-	        // 被取消管理员
-	        var removeAdmin = x[0].getElementsByTagName('remove_admin');
-	        // 被禁言
-	        var addMute = x[0].getElementsByTagName('add_mute');
-	        // 取消禁言
-	        var removeMute = x[0].getElementsByTagName('remove_mute');
-
-	        if (apply && apply.length > 0) {
-	            isApply = true;
-	            info.toNick = apply[0].getAttribute('toNick');
-	            info.type = 'joinGroupNotifications';
-	            var groupJid = apply[0].getAttribute('to');
-	            var gid = groupJid.split('@')[0].split('_');
-	            gid = gid[gid.length - 1];
-	            info.gid = gid;
-	        } else if (accept && accept.length > 0) {
-	            info.type = 'joinPublicGroupSuccess';
-	        } else if (item && item.length > 0) {
-	            var affiliation = item[0].getAttribute('affiliation'),
-	                role = item[0].getAttribute('role');
-	            if (affiliation == 'member'
-	                ||
-	                role == 'participant') {
-	                isMemberJoin = true;
-	                info.mid = info.fromJid.split('/');
-	                info.mid = info.mid[info.mid.length - 1];
-	                info.type = 'memberJoinPublicGroupSuccess';
-	                var roomtype = msginfo.getElementsByTagName('roomtype');
-	                if (roomtype && roomtype.length > 0) {
-	                    var type = roomtype[0].getAttribute('type');
-	                    if (type == 'chatroom') {
-	                        info.type = 'memberJoinChatRoomSuccess';
-	                    }
-	                }
-	            }
-	        } else if (decline && decline.length) {
-	            isDecline = true;
-	            var gid = decline[0].getAttribute("fromNick");
-	            var owner = _parseNameFromJidFn(decline[0].getAttribute("from"));
-	            info.type = "joinPublicGroupDeclined";
-	            info.owner = owner;
-	            info.gid = gid;
-	        } else if (addAdmin && addAdmin.length > 0) {
-	            var gid = _parseNameFromJidFn(addAdmin[0].getAttribute('mucjid'));
-	            var owner = _parseNameFromJidFn(addAdmin[0].getAttribute('from'));
-	            info.owner = owner;
-	            info.gid = gid;
-	            info.type = "addAdmin";
-	        } else if (removeAdmin && removeAdmin.length > 0) {
-	            var gid = _parseNameFromJidFn(removeAdmin[0].getAttribute('mucjid'));
-	            var owner = _parseNameFromJidFn(removeAdmin[0].getAttribute('from'));
-	            info.owner = owner;
-	            info.gid = gid;
-	            info.type = "removeAdmin";
-	        } else if (addMute && addMute.length > 0) {
-	            var gid = _parseNameFromJidFn(addMute[0].getAttribute('mucjid'));
-	            var owner = _parseNameFromJidFn(addMute[0].getAttribute('from'));
-	            info.owner = owner;
-	            info.gid = gid;
-	            info.type = "addMute";
-	        } else if (removeMute && removeMute.length > 0) {
-	            var gid = _parseNameFromJidFn(removeMute[0].getAttribute('mucjid'));
-	            var owner = _parseNameFromJidFn(removeMute[0].getAttribute('from'));
-	            info.owner = owner;
-	            info.gid = gid;
-	            info.type = "removeMute";
-	        }
-	    }
-
-
-	    if (info.chatroom) {
-	        // diff the
-	        info.presence_type = presence_type;
-	        info.original_type = info.type;
-	        var reflectUser = from.slice(from.lastIndexOf('/') + 1);
-
-	        if (reflectUser === this.context.userId) {
-	            if (info.type === '' && !info.code) {
-	                info.type = 'joinChatRoomSuccess';
-	            } else if (presence_type === 'unavailable' || info.type === 'unavailable') {
-	                if (!info.status) {// logout successfully.
-	                    info.type = 'leaveChatRoom';
-	                } else if (info.code == 110) {// logout or dismissied by admin.
-	                    info.type = 'leaveChatRoom';
-	                } else if (info.error && info.error.code == 406) {// The chat room is full.
-	                    info.type = 'reachChatRoomCapacity';
-	                }
-	            }
-	        }
-	    } else {
-	        info.presence_type = presence_type;
-	        info.original_type = type;
-
-	        if (/subscribe/.test(info.type)) {
-	            //subscribe | subscribed | unsubscribe | unsubscribed
-	        } else if (type == ""
-	            &&
-	            !info.status
-	            &&
-	            !info.error
-	            &&
-	            !isCreate
-	            &&
-	            !isApply
-	            &&
-	            !isMemberJoin
-	            &&
-	            !isDecline
-	        ) {
-	            // info.type = 'joinPublicGroupSuccess';
-	        } else if (presence_type === 'unavailable' || type === 'unavailable') {// There is no roomtype when a chat room is deleted.
-	            if (info.destroy) {// Group or Chat room Deleted.
-	                info.type = 'deleteGroupChat';
-	            } else if (info.code == 307 || info.code == 321) {// Dismissed by group.
-	                var nick = msginfo.getAttribute('nick');
-	                if (!nick)
-	                    info.type = 'leaveGroup';
-	                else
-	                    info.type = 'removedFromGroup';
-	            }
-	        }
-	    }
-	    this.onPresence(info, msginfo);
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.handlePing = function (e) {
-	    if (this.isClosed()) {
-	        return;
-	    }
-	    var id = e.getAttribute('id');
-	    var from = e.getAttribute('from');
-	    var to = e.getAttribute('to');
-	    var dom = $iq({
-	        from: to
-	        , to: from
-	        , id: id
-	        , type: 'result'
-	    });
-	    this.sendCommand(dom.tree());
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.handleIq = function (iq) {
-	    return true;
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.handleIqPrivacy = function (msginfo) {
-	    var list = msginfo.getElementsByTagName('list');
-	    if (list.length == 0) {
-	        return;
-	    }
-	    this.getBlacklist();
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.handleIqRoster = function (e) {
-	    var id = e.getAttribute('id');
-	    var from = e.getAttribute('from') || '';
-	    var name = _parseNameFromJidFn(from);
-	    var curJid = this.context.jid;
-	    var curUser = this.context.userId;
-
-	    var iqresult = $iq({type: 'result', id: id, from: curJid});
-	    this.sendCommand(iqresult.tree());
-
-	    var msgBodies = e.getElementsByTagName('query');
-	    if (msgBodies && msgBodies.length > 0) {
-	        var queryTag = msgBodies[0];
-	        var rouster = _parseFriend(queryTag, this, from);
-	        this.onRoster(rouster);
-	    }
-	    return true;
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.handleMessage = function (msginfo) {
-	    var self = this;
-	    if (this.isClosed()) {
-	        return;
-	    }
-
-	    var id = msginfo.getAttribute('id') || '';
-
-
-	    // cache ack into sendQueue first , handelSendQueue will do the send thing with the speed of  5/s
-	    this.cacheReceiptsMessage({
-	        id: id
-	    });
-	    var parseMsgData = _parseResponseMessage(msginfo);
-	    if (parseMsgData.errorMsg) {
-	        this.handlePresence(msginfo);
-	        return;
-	    }
-	    // send error
-	    var error = msginfo.getElementsByTagName('error');
-	    var errorCode = '';
-	    var errorText = '';
-	    var errorBool = false;
-	    if (error.length > 0) {
-	        errorBool = true;
-	        errorCode = error[0].getAttribute('code');
-	        var textDOM = error[0].getElementsByTagName('text');
-	        errorText = textDOM[0].textContent || textDOM[0].text;
-	    }
-
-	    var msgDatas = parseMsgData.data;
-	    for (var i in msgDatas) {
-	        if (!msgDatas.hasOwnProperty(i)) {
-	            continue;
-	        }
-	        var msg = msgDatas[i];
-	        if (!msg.from || !msg.to) {
-	            continue;
-	        }
-
-	        var from = (msg.from + '').toLowerCase();
-	        var too = (msg.to + '').toLowerCase();
-	        var extmsg = msg.ext || {};
-	        var chattype = '';
-	        var typeEl = msginfo.getElementsByTagName('roomtype');
-	        if (typeEl.length) {
-	            chattype = typeEl[0].getAttribute('type') || 'chat';
-	        } else {
-	            chattype = msginfo.getAttribute('type') || 'chat';
-	        }
-
-	        var msgBodies = msg.bodies;
-	        if (!msgBodies || msgBodies.length == 0) {
-	            continue;
-	        }
-	        var msgBody = msg.bodies[0];
-	        var type = msgBody.type;
-
-	        try {
-	            switch (type) {
-	                case 'txt':
-	                    var receiveMsg = msgBody.msg;
-	                    var sourceMsg = _.clone(receiveMsg);
-	                    /*
-	                     if (self.encrypt.type === 'base64') {
-	                     receiveMsg = atob(receiveMsg);
-	                     } else if (self.encrypt.type === 'aes') {
-	                     var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
-	                     var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
-	                     var mode = self.encrypt.mode.toLowerCase();
-	                     var option = {};
-	                     if (mode === 'cbc') {
-	                     option = {
-	                     iv: iv,
-	                     mode: CryptoJS.mode.CBC,
-	                     padding: CryptoJS.pad.Pkcs7
-	                     };
-	                     } else if (mode === 'ebc') {
-	                     option = {
-	                     mode: CryptoJS.mode.ECB,
-	                     padding: CryptoJS.pad.Pkcs7
-	                     }
-	                     }
-	                     var encryptedBase64Str = receiveMsg;
-	                     var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
-	                     var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
-	                     receiveMsg = decryptedStr;
-	                     }
-	                     */
-	                    receiveMsg = self.decrypt(receiveMsg);
-	                    var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
-	                    if (emojibody && emojibody.isemoji) {
-	                        var msg = {
-	                            id: id
-	                            , type: chattype
-	                            , from: from
-	                            , to: too
-	                            , delay: parseMsgData.delayTimeStamp
-	                            , data: emojibody.body
-	                            , ext: extmsg
-	                            , sourceMsg: sourceMsg
-	                        };
-	                        !msg.delay && delete msg.delay;
-	                        msg.error = errorBool;
-	                        msg.errorText = errorText;
-	                        msg.errorCode = errorCode;
-	                        this.onEmojiMessage(msg);
-	                    } else {
-	                        var msg = {
-	                            id: id
-	                            , type: chattype
-	                            , from: from
-	                            , to: too
-	                            , delay: parseMsgData.delayTimeStamp
-	                            , data: receiveMsg
-	                            , ext: extmsg
-	                            , sourceMsg: sourceMsg
-	                        };
-	                        !msg.delay && delete msg.delay;
-	                        msg.error = errorBool;
-	                        msg.errorText = errorText;
-	                        msg.errorCode = errorCode;
-	                        this.onTextMessage(msg);
-	                    }
-	                    break;
-	                case 'img':
-	                    var rwidth = 0;
-	                    var rheight = 0;
-	                    if (msgBody.size) {
-	                        rwidth = msgBody.size.width;
-	                        rheight = msgBody.size.height;
-	                    }
-	                    var msg = {
-	                        id: id
-	                        , type: chattype
-	                        , from: from
-	                        , to: too
-	                        ,
-	                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
-	                        , secret: msgBody.secret
-	                        , filename: msgBody.filename
-	                        , thumb: msgBody.thumb
-	                        , thumb_secret: msgBody.thumb_secret
-	                        , file_length: msgBody.file_length || ''
-	                        , width: rwidth
-	                        , height: rheight
-	                        , filetype: msgBody.filetype || ''
-	                        , accessToken: this.context.accessToken || ''
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
-	                    };
-	                    !msg.delay && delete msg.delay;
-	                    msg.error = errorBool;
-	                    msg.errorText = errorText;
-	                    msg.errorCode = errorCode;
-	                    this.onPictureMessage(msg);
-	                    break;
-	                case 'audio':
-	                    var msg = {
-	                        id: id
-	                        , type: chattype
-	                        , from: from
-	                        , to: too
-	                        ,
-	                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
-	                        , secret: msgBody.secret
-	                        , filename: msgBody.filename
-	                        , length: msgBody.length || ''
-	                        , file_length: msgBody.file_length || ''
-	                        , filetype: msgBody.filetype || ''
-	                        , accessToken: this.context.accessToken || ''
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
-	                    };
-	                    !msg.delay && delete msg.delay;
-	                    msg.error = errorBool;
-	                    msg.errorText = errorText;
-	                    msg.errorCode = errorCode;
-	                    this.onAudioMessage(msg);
-	                    break;
-	                case 'file':
-	                    var msg = {
-	                        id: id
-	                        , type: chattype
-	                        , from: from
-	                        , to: too
-	                        ,
-	                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
-	                        , secret: msgBody.secret
-	                        , filename: msgBody.filename
-	                        , file_length: msgBody.file_length
-	                        , accessToken: this.context.accessToken || ''
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
-	                    };
-	                    !msg.delay && delete msg.delay;
-	                    msg.error = errorBool;
-	                    msg.errorText = errorText;
-	                    msg.errorCode = errorCode;
-	                    this.onFileMessage(msg);
-	                    break;
-	                case 'loc':
-	                    var msg = {
-	                        id: id
-	                        , type: chattype
-	                        , from: from
-	                        , to: too
-	                        , addr: msgBody.addr
-	                        , lat: msgBody.lat
-	                        , lng: msgBody.lng
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
-	                    };
-	                    !msg.delay && delete msg.delay;
-	                    msg.error = errorBool;
-	                    msg.errorText = errorText;
-	                    msg.errorCode = errorCode;
-	                    this.onLocationMessage(msg);
-	                    break;
-	                case 'video':
-	                    var msg = {
-	                        id: id
-	                        , type: chattype
-	                        , from: from
-	                        , to: too
-	                        ,
-	                        url: (location.protocol != 'https:' && self.isHttpDNS) ? (self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9))) : msgBody.url
-	                        , secret: msgBody.secret
-	                        , filename: msgBody.filename
-	                        , file_length: msgBody.file_length
-	                        , accessToken: this.context.accessToken || ''
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
-	                    };
-	                    !msg.delay && delete msg.delay;
-	                    msg.error = errorBool;
-	                    msg.errorText = errorText;
-	                    msg.errorCode = errorCode;
-	                    this.onVideoMessage(msg);
-	                    break;
-	                case 'cmd':
-	                    var msg = {
-	                        id: id
-	                        , from: from
-	                        , to: too
-	                        , action: msgBody.action
-	                        , ext: extmsg
-	                        , delay: parseMsgData.delayTimeStamp
-	                    };
-	                    !msg.delay && delete msg.delay;
-	                    msg.error = errorBool;
-	                    msg.errorText = errorText;
-	                    msg.errorCode = errorCode;
-	                    this.onCmdMessage(msg);
-	                    break;
-	            }
-	            ;
-	            if (self.delivery) {
-	                var msgId = self.getUniqueId();
-	                var bodyId = msg.id;
-	                var deliverMessage = new WebIM.message('delivery', msgId);
-	                deliverMessage.set({
-	                    id: bodyId
-	                    , to: msg.from
-	                });
-	                self.send(deliverMessage.body);
-	            }
-	        } catch (e) {
-	            this.onError({
-	                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-	                , data: e
-	            });
-	        }
-	    }
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.handleDeliveredMessage = function (message) {
-	    var id = message.id;
-	    var body = message.getElementsByTagName('body');
-	    var mid = 0;
-	    mid = body[0].innerHTML;
-	    var msg = {
-	        mid: mid
-	    };
-	    this.onDeliverdMessage(msg);
-	    this.sendReceiptsMessage({
-	        id: id
-	    });
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.handleAckedMessage = function (message) {
-	    var id = message.id;
-	    var body = message.getElementsByTagName('body');
-	    var mid = 0;
-	    mid = body[0].innerHTML;
-	    var msg = {
-	        mid: mid
-	    };
-	    this.onReadMessage(msg);
-	    this.sendReceiptsMessage({
-	        id: id
-	    });
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.handleReceivedMessage = function (message) {
-	    try {
-	        var received = message.getElementsByTagName("received");
-	        var mid = received[0].getAttribute('mid');
-	        var body = message.getElementsByTagName("body");
-	        var id = body[0].innerHTML;
-	        var msg = {
-	            mid: mid,
-	            id: id
-	        };
-	        this.onReceivedMessage(msg);
-	    } catch (e) {
-	        this.onError({
-	            type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-	            , data: e
-	        });
-	    }
-
-	    var rcv = message.getElementsByTagName('received'),
-	        id,
-	        mid;
-
-	    if (rcv.length > 0) {
-	        if (rcv[0].childNodes && rcv[0].childNodes.length > 0) {
-	            id = rcv[0].childNodes[0].nodeValue;
-	        } else {
-	            id = rcv[0].innerHTML || rcv[0].innerText;
-	        }
-	        mid = rcv[0].getAttribute('mid');
-	    }
-
-	    if (_msgHash[id]) {
-	        try {
-	            _msgHash[id].msg.success instanceof Function && _msgHash[id].msg.success(id, mid);
-	        } catch (e) {
-	            this.onError({
-	                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-	                , data: e
-	            });
-	        }
-	        delete _msgHash[id];
-	    }
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.handleInviteMessage = function (message) {
-	    var form = null;
-	    var invitemsg = message.getElementsByTagName('invite');
-	    var reasonDom = message.getElementsByTagName('reason')[0];
-	    var reasonMsg = reasonDom.textContent;
-	    var id = message.getAttribute('id') || '';
-	    this.sendReceiptsMessage({
-	        id: id
-	    });
-
-	    if (invitemsg && invitemsg.length > 0) {
-	        var fromJid = invitemsg[0].getAttribute('from');
-	        form = _parseNameFromJidFn(fromJid);
-	    }
-	    var xmsg = message.getElementsByTagName('x');
-	    var roomid = null;
-	    if (xmsg && xmsg.length > 0) {
-	        for (var i = 0; i < xmsg.length; i++) {
-	            if ('jabber:x:conference' === xmsg[i].namespaceURI) {
-	                var roomjid = xmsg[i].getAttribute('jid');
-	                roomid = _parseNameFromJidFn(roomjid);
-	            }
-	        }
-	    }
-	    this.onInviteMessage({
-	        type: 'invite',
-	        from: form,
-	        roomid: roomid,
-	        reason: reasonMsg
-	    });
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.handleMutedMessage = function (message) {
-	    var id = message.id;
-	    this.onMutedMessage({
-	        mid: id
-	    });
-	};
-
-	/**
-	 * @private
-	 */
-	connection.prototype.sendCommand = function (dom, id) {
-	    if (this.isOpened()) {
-	        this.context.stropheConn.send(dom);
-	    } else {
-	        this.unSendMsgArr.push(dom);
-	        if (!this.offLineSendConnecting && !this.logOut) {
-	            this.offLineSendConnecting = true;
-	            this.reconnect();
-	        }
-	        this.onError({
-	            type: _code.WEBIM_CONNCTION_DISCONNECTED,
-	            reconnect: true
-	        });
-	    }
-	};
-
-	/**
-	 * 随机生成一个id用于消息id
-	 * @param {String} [prefix=WEBIM_] - 前缀
-	 * @returns {String} 唯一的id
-	 */
-	connection.prototype.getUniqueId = function (prefix) {
-	    // fix: too frequently msg sending will make same id
-	    if (this.autoIncrement) {
-	        this.autoIncrement++
-	    } else {
-	        this.autoIncrement = 1
-	    }
-	    var cdate = new Date();
-	    var offdate = new Date(2010, 1, 1);
-	    var offset = cdate.getTime() - offdate.getTime();
-	    var hexd = parseFloat(offset).toString(16) + this.autoIncrement;
-
-	    if (typeof prefix === 'string' || typeof prefix === 'number') {
-	        return prefix + '_' + hexd;
-	    } else {
-	        return 'WEBIM_' + hexd;
-	    }
-	};
-
-	/**
-	 * send message
-	 * @param {Object} messageSource - 由 Class Message 生成
-	 */
-	connection.prototype.send = function (messageSource) {
-	    var self = this;
-	    var message = messageSource;
-	    if (message.type === 'txt') {
-	        if (this.encrypt.type === 'base64') {
-	            message = _.clone(messageSource);
-	            message.msg = btoa(message.msg);
-	        } else if (this.encrypt.type === 'aes') {
-	            message = _.clone(messageSource);
-	            var key = CryptoJS.enc.Utf8.parse(this.encrypt.key);
-	            var iv = CryptoJS.enc.Utf8.parse(this.encrypt.iv);
-	            var mode = this.encrypt.mode.toLowerCase();
-	            var option = {};
-	            if (mode === 'cbc') {
-	                option = {
-	                    iv: iv,
-	                    mode: CryptoJS.mode.CBC,
-	                    padding: CryptoJS.pad.Pkcs7
-	                };
-	            } else if (mode === 'ebc') {
-	                option = {
-	                    mode: CryptoJS.mode.ECB,
-	                    padding: CryptoJS.pad.Pkcs7
-	                }
-	            }
-	            var encryptedData = CryptoJS.AES.encrypt(message.msg, key, option);
-
-	            message.msg = encryptedData.toString();
-	        }
-	    }
-	    if (this.isWindowSDK) {
-	        WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}',
-	            function (response) {
-	            },
-	            function (code, msg) {
-	                var message = {
-	                    data: {
-	                        data: "send"
-	                    },
-	                    type: _code.WEBIM_MESSAGE_SED_ERROR
-	                };
-	                self.onError(message);
-	            });
-	    } else {
-	        if (Object.prototype.toString.call(message) === '[object Object]') {
-	            var appKey = this.context.appKey || '';
-	            var toJid = appKey + '_' + message.to + '@' + this.domain;
-
-	            if (message.group) {
-	                toJid = appKey + '_' + message.to + '@conference.' + this.domain;
-	            }
-	            if (message.resource) {
-	                toJid = toJid + '/' + message.resource;
-	            }
-
-	            message.toJid = toJid;
-	            message.id = message.id || this.getUniqueId();
-	            _msgHash[message.id] = new _message(message);
-	            _msgHash[message.id].send(this);
-	        } else if (typeof message === 'string') {
-	            _msgHash[message] && _msgHash[message].send(this);
-	        }
-	    }
-	};
-
-	/**
-	 * 添加联系人，已废弃不用
-	 * @param {Object} options
-	 * @deprecated
-	 */
-	connection.prototype.addRoster = function (options) {
-	    var jid = _getJid(options, this);
-	    var name = options.name || '';
-	    var groups = options.groups || '';
-
-	    var iq = $iq({type: 'set'});
-	    iq.c('query', {xmlns: 'jabber:iq:roster'});
-	    iq.c('item', {jid: jid, name: name});
-
-	    if (groups) {
-	        for (var i = 0; i < groups.length; i++) {
-	            iq.c('group').t(groups[i]).up();
-	        }
-	    }
-	    var suc = options.success || _utils.emptyfn;
-	    var error = options.error || _utils.emptyfn;
-	    this.context.stropheConn.sendIQ(iq.tree(), suc, error);
-	};
-
-	/**
-	 * 删除联系人
-	 *
-	 * @param {Object} options
-	 * @param {String} options.to - 想要删除的联系人ID
-	 * @param {Function} options.success - 成功回调，在这里面调用connection.unsubscribed才能真正删除联系人
-	 * @fires connection#unsubscribed
-	 */
-	connection.prototype.removeRoster = function (options) {
-	    var jid = _getJid(options, this);
-	    var iq = $iq({type: 'set'}).c('query', {xmlns: 'jabber:iq:roster'}).c('item', {
-	        jid: jid,
-	        subscription: 'remove'
-	    });
-
-	    var suc = options.success || _utils.emptyfn;
-	    var error = options.error || _utils.emptyfn;
-	    this.context.stropheConn.sendIQ(iq, suc, error);
-	};
-
-	/**
-	 * 获取联系人
-	 * @param {Object} options
-	 * @param {Function} options.success - 获取好友列表成功
-	 */
-	connection.prototype.getRoster = function (options) {
-	    var dom = $iq({
-	        type: 'get'
-	    }).c('query', {xmlns: 'jabber:iq:roster'});
-
-	    var options = options || {};
-	    var suc = options.success || this.onRoster;
-	    var completeFn = function (ele) {
-	        var rouster = [];
-	        var msgBodies = ele.getElementsByTagName('query');
-	        if (msgBodies && msgBodies.length > 0) {
-	            var queryTag = msgBodies[0];
-	            rouster = _parseFriend(queryTag);
-	        }
-	        suc(rouster, ele);
-	    };
-	    var error = options.error || this.onError;
-	    var failFn = function (ele) {
-	        error({
-	            type: _code.WEBIM_CONNCTION_GETROSTER_ERROR
-	            , data: ele
-	        });
-	    };
-	    if (this.isOpened()) {
-	        this.context.stropheConn.sendIQ(dom.tree(), completeFn, failFn);
-	    } else {
-	        error({
-	            type: _code.WEBIM_CONNCTION_DISCONNECTED
-	        });
-	    }
-	};
-
-	/**
-	 * 订阅和反向订阅
-	 * @example
-	 *
-	 * A订阅B（A添加B为好友）
-	 * A执行：
-	 *  conn.subscribe({
-	                to: 'B',
-	                message: 'Hello~'
-	            });
-	 B的监听函数onPresence参数message.type == subscribe监听到有人订阅他
-	 B执行：
-	 conn.subscribed({
-	                to: 'A',
-	                message: '[resp:true]'
-	          });
-	 同意A的订阅请求
-	 B继续执行：
-	 conn.subscribe({
-	                to: 'A',
-	                message: '[resp:true]'
-	            });
-	 反向订阅A，这样才算双方添加好友成功。
-	 若B拒绝A的订阅请求，只需执行：
-	 conn.unsubscribed({
-	                        to: 'A',
-	                        message: 'I don't want to be subscribed'
-	                    });
-	 另外，在监听函数onPresence参数message.type == "subscribe"这个case中，加一句
-	 if (message && message.status === '[resp:true]') {
-	            return;
-	        }
-	 否则会进入死循环
-	 *
-	 * @param {Object} options - 想要订阅的联系人信息
-	 * @param {String} options.to - 想要订阅的联系人ID
-	 * @param {String} options.message - 发送给想要订阅的联系人的验证消息
-	 */
-	connection.prototype.subscribe = function (options) {
-	    var jid = _getJid(options, this);
-	    var pres = $pres({to: jid, type: 'subscribe'});
-	    if (options.message) {
-	        pres.c('status').t(options.message).up();
-	    }
-	    if (options.nick) {
-	        pres.c('nick', {'xmlns': 'http://jabber.org/protocol/nick'}).t(options.nick);
-	    }
-	    this.sendCommand(pres.tree());
-	};
-
-	/**
-	 * 被订阅后确认同意被订阅
-	 * @param {Object} options - 订阅人的信息
-	 * @param {String} options.to - 订阅人的ID
-	 * @param {String} options.message=[resp:true] - 默认为[resp:true]，后续将去掉该参数
-	 */
-	connection.prototype.subscribed = function (options) {
-	    var message = '[resp:true]';
-	    var jid = _getJid(options, this);
-	    var pres = $pres({to: jid, type: 'subscribed'});
-
-	    if (options.message) {
-	        pres.c('status').t(options.message).up();
-	    }
-	    this.sendCommand(pres.tree());
-	};
-
-	/**
-	 * 取消订阅成功，废弃不用
-	 * @param {Object} options
-	 * @deprecated
-	 */
-	connection.prototype.unsubscribe = function (options) {
-	    var jid = _getJid(options, this);
-	    var pres = $pres({to: jid, type: 'unsubscribe'});
-
-	    if (options.message) {
-	        pres.c('status').t(options.message);
-	    }
-	    this.sendCommand(pres.tree());
-	};
-
-	/**
-	 * 拒绝对方的订阅请求
-	 * @function connection#event:unsubscribed
-	 * @param {Object} options -
-	 * @param {String} options.to - 订阅人的ID
-	 */
-	connection.prototype.unsubscribed = function (options) {
-	    var jid = _getJid(options, this);
-	    var pres = $pres({to: jid, type: 'unsubscribed'});
-
-	    if (options.message) {
-	        pres.c('status').t(options.message).up();
-	    }
-	    this.sendCommand(pres.tree());
-	};
-
-	/**
-	 * 加入公开群组
-	 * @param {Object} options
-	 * @deprecated
-	 */
-	connection.prototype.joinPublicGroup = function (options) {
-	    var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
-	    var room_nick = roomJid + '/' + this.context.userId;
-	    var suc = options.success || _utils.emptyfn;
-	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
-	        err({
-	            type: _code.WEBIM_CONNCTION_JOINROOM_ERROR,
-	            data: ele
-	        });
-	    };
-	    var iq = $pres({
-	        from: this.context.jid,
-	        to: room_nick
-	    })
-	        .c('x', {xmlns: Strophe.NS.MUC});
-
-	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
-	};
-
-	/**
-	 * 获取聊天室列表
-	 * @param {Object} options
-	 * @deprecated
-	 */
-	connection.prototype.listRooms = function (options) {
-	    var iq = $iq({
-	        to: options.server || 'conference.' + this.domain,
-	        from: this.context.jid,
-	        type: 'get'
-	    })
-	        .c('query', {xmlns: Strophe.NS.DISCO_ITEMS});
-
-	    var suc = options.success || _utils.emptyfn;
-	    var error = options.error || this.onError;
-	    var completeFn = function (result) {
-	        var rooms = [];
-	        rooms = _parseRoom(result);
-	        try {
-	            suc(rooms);
-	        } catch (e) {
-	            error({
-	                type: _code.WEBIM_CONNCTION_GETROOM_ERROR,
-	                data: e
-	            });
-	        }
-	    };
-	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
-	        err({
-	            type: _code.WEBIM_CONNCTION_GETROOM_ERROR
-	            , data: ele
-	        });
-	    };
-	    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
-	};
-
-	/**
-	 * 获取群组成员列表
-	 * @param {Object} options
-	 * @deprecated
-	 */
-	connection.prototype.queryRoomMember = function (options) {
-	    var domain = this.domain;
-	    var members = [];
-	    var iq = $iq({
-	        to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain
-	        , type: 'get'
-	    })
-	        .c('query', {xmlns: Strophe.NS.MUC + '#admin'})
-	        .c('item', {affiliation: 'member'});
-
-	    var suc = options.success || _utils.emptyfn;
-	    var completeFn = function (result) {
-	        var items = result.getElementsByTagName('item');
-
-	        if (items) {
-	            for (var i = 0; i < items.length; i++) {
-	                var item = items[i];
-	                var mem = {
-	                    jid: item.getAttribute('jid')
-	                    , affiliation: 'member'
-	                };
-	                members.push(mem);
-	            }
-	        }
-	        suc(members);
-	    };
-	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
-	        err({
-	            type: _code.WEBIM_CONNCTION_GETROOMMEMBER_ERROR
-	            , data: ele
-	        });
-	    };
-	    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
-	};
-
-	/**
-	 * 获取群组信息
-	 * @param {Object} options
-	 * @deprecated
-	 */
-	connection.prototype.queryRoomInfo = function (options) {
-	    console.log('QueryRoomInfo');
-	    var domain = this.domain;
-	    var iq = $iq({
-	        to: this.context.appKey + '_' + options.roomId + '@conference.' + domain,
-	        type: 'get'
-	    }).c('query', {xmlns: Strophe.NS.DISCO_INFO});
-
-	    var suc = options.success || _utils.emptyfn;
-	    var members = [];
-
-	    var completeFn = function (result) {
-	        var settings = '';
-	        var features = result.getElementsByTagName('feature');
-	        if (features) {
-	            settings = features[1].getAttribute('var') + '|' + features[3].getAttribute('var') + '|' + features[4].getAttribute('var');
-	        }
-	        switch (settings) {
-	            case 'muc_public|muc_membersonly|muc_notallowinvites':
-	                settings = 'PUBLIC_JOIN_APPROVAL';
-	                break;
-	            case 'muc_public|muc_open|muc_notallowinvites':
-	                settings = 'PUBLIC_JOIN_OPEN';
-	                break;
-	            case 'muc_hidden|muc_membersonly|muc_allowinvites':
-	                settings = 'PRIVATE_MEMBER_INVITE';
-	                break;
-	            case 'muc_hidden|muc_membersonly|muc_notallowinvites':
-	                settings = 'PRIVATE_OWNER_INVITE';
-	                break;
-	        }
-	        var owner = '';
-	        var fields = result.getElementsByTagName('field');
-	        var fieldValues = {};
-	        if (fields) {
-	            for (var i = 0; i < fields.length; i++) {
-	                var field = fields[i];
-	                var fieldVar = field.getAttribute('var');
-	                var fieldSimplify = fieldVar.split('_')[1];
-	                switch (fieldVar) {
-	                    case 'muc#roominfo_occupants':
-	                    case 'muc#roominfo_maxusers':
-	                    case 'muc#roominfo_affiliations':
-	                    case 'muc#roominfo_description':
-	                        fieldValues[fieldSimplify] = (field.textContent || field.text || '');
-	                        break;
-	                    case 'muc#roominfo_owner':
-	                        var mem = {
-	                            jid: (field.textContent || field.text) + '@' + domain
-	                            , affiliation: 'owner'
-	                        };
-	                        members.push(mem);
-	                        fieldValues[fieldSimplify] = (field.textContent || field.text);
-	                        break;
-	                }
-
-	                // if (field.getAttribute('label') === 'owner') {
-	                //     var mem = {
-	                //         jid: (field.textContent || field.text) + '@' + domain
-	                //         , affiliation: 'owner'
-	                //     };
-	                //     members.push(mem);
-	                //     break;
-	                // }
-	            }
-	            fieldValues['name'] = (result.getElementsByTagName('identity')[0]).getAttribute('name');
-	        }
-	        suc(settings, members, fieldValues);
-	    };
-	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
-	        err({
-	            type: _code.WEBIM_CONNCTION_GETROOMINFO_ERROR
-	            , data: ele
-	        });
-	    };
-	    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
-	};
-
-	/**
-	 * 获取聊天室管理员
-	 * @param {Object} options
-	 * @deprecated
-	 */
-	connection.prototype.queryRoomOccupants = function (options) {
-	    var suc = options.success || _utils.emptyfn;
-	    var completeFn = function (result) {
-	        var occupants = [];
-	        occupants = _parseRoomOccupants(result);
-	        suc(occupants);
-	    }
-	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
-	        err({
-	            type: _code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR
-	            , data: ele
-	        });
-	    };
-	    var attrs = {
-	        xmlns: Strophe.NS.DISCO_ITEMS
-	    };
-	    var info = $iq({
-	        from: this.context.jid
-	        , to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain
-	        , type: 'get'
-	    }).c('query', attrs);
-	    this.context.stropheConn.sendIQ(info.tree(), completeFn, errorFn);
-	};
-
-	/**
-	 *
-	 * @deprecated
-	 * @private
-	 */
-	connection.prototype.setUserSig = function (desc) {
-	    var dom = $pres({xmlns: 'jabber:client'});
-	    desc = desc || '';
-	    dom.c('status').t(desc);
-	    this.sendCommand(dom.tree());
-	};
-
-	/**
-	 *
-	 * @private
-	 */
-	connection.prototype.setPresence = function (type, status) {
-	    var dom = $pres({xmlns: 'jabber:client'});
-	    if (type) {
-	        if (status) {
-	            dom.c('show').t(type);
-	            dom.up().c('status').t(status);
-	        } else {
-	            dom.c('show').t(type);
-	        }
-	    }
-	    this.sendCommand(dom.tree());
-	};
-
-	/**
-	 * @private
-	 *
-	 */
-	connection.prototype.getPresence = function () {
-	    var dom = $pres({xmlns: 'jabber:client'});
-	    var conn = this;
-	    this.sendCommand(dom.tree());
-	};
-
-	/**
-	 * @private
-	 *
-	 */
-	connection.prototype.ping = function (options) {
-	    var options = options || {};
-	    var jid = _getJid(options, this);
-
-	    var dom = $iq({
-	        from: this.context.jid || ''
-	        , to: jid
-	        , type: 'get'
-	    }).c('ping', {xmlns: 'urn:xmpp:ping'});
-
-	    var suc = options.success || _utils.emptyfn;
-	    var error = options.error || this.onError;
-	    var failFn = function (ele) {
-	        error({
-	            type: _code.WEBIM_CONNCTION_PING_ERROR
-	            , data: ele
-	        });
-	    };
-	    if (this.isOpened()) {
-	        this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
-	    } else {
-	        error({
-	            type: _code.WEBIM_CONNCTION_DISCONNECTED
-	        });
-	    }
-	    return;
-	};
-
-	/**
-	 * @private
-	 *
-	 */
-	connection.prototype.isOpened = function () {
-	    return this.context.status == _code.STATUS_OPENED;
-	};
-
-	/**
-	 * @private
-	 *
-	 */
-	connection.prototype.isOpening = function () {
-	    var status = this.context.status;
-	    return status == _code.STATUS_DOLOGIN_USERGRID || status == _code.STATUS_DOLOGIN_IM;
-	};
-
-	/**
-	 * @private
-	 *
-	 */
-	connection.prototype.isClosing = function () {
-	    return this.context.status == _code.STATUS_CLOSING;
-	};
-
-	/**
-	 * @private
-	 *
-	 */
-	connection.prototype.isClosed = function () {
-	    return this.context.status == _code.STATUS_CLOSED;
-	};
-
-	/**
-	 * @private
-	 *
-	 */
-	connection.prototype.clear = function () {
-	    var key = this.context.appKey;
-	    if (this.errorType != _code.WEBIM_CONNCTION_DISCONNECTED) {
-	        if (this.logOut) {
-	            this.unSendMsgArr = [];
-	            this.offLineSendConnecting = false;
-	            this.context = {
-	                status: _code.STATUS_INIT,
-	                appKey: key
-	            };
-	        }
-	    }
-	    if (this.intervalId) {
-	        clearInterval(this.intervalId);
-	    }
-	    this.restIndex = 0;
-	    this.xmppIndex = 0;
-
-	    if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
-	        var message = {
-	            data: {
-	                data: "logout"
-	            },
-	            type: _code.WEBIM_CONNCTION_CLIENT_LOGOUT
-	        };
-	        this.onError(message);
-	    }
-	};
-
-	/**
-	 * 获取聊天室列表
-	 * @param {Object} options
-	 * @param {String} options.pagenum
-	 * @param {String} options.pagesize
-	 */
-	connection.prototype.getChatRooms = function (options) {
-
-	    var conn = this,
-	        token = options.accessToken || this.context.accessToken;
-
-	    if (!_utils.isCanSetRequestHeader) {
-	        conn.onError({
-	            type: _code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR
-	        });
-	        return;
-	    }
-
-	    if (token) {
-	        var apiUrl = this.apiUrl;
-	        var appName = this.context.appName;
-	        var orgName = this.context.orgName;
-
-	        if (!appName || !orgName) {
-	            conn.onError({
-	                type: _code.WEBIM_CONNCTION_AUTH_ERROR
-	            });
-	            return;
-	        }
-
-	        var suc = function (data, xhr) {
-	            typeof options.success === 'function' && options.success(data);
-	        };
-
-	        var error = function (res, xhr, msg) {
-	            if (res.error && res.error_description) {
-	                conn.onError({
-	                    type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,
-	                    msg: res.error_description,
-	                    data: res,
-	                    xhr: xhr
-	                });
-	            }
-	        };
-
-	        var pageInfo = {
-	            pagenum: parseInt(options.pagenum) || 1,
-	            pagesize: parseInt(options.pagesize) || 20
-	        };
-
-	        var opts = {
-	            url: apiUrl + '/' + orgName + '/' + appName + '/chatrooms',
-	            dataType: 'json',
-	            type: 'GET',
-	            headers: {'Authorization': 'Bearer ' + token},
-	            data: pageInfo,
-	            success: suc || _utils.emptyfn,
-	            error: error || _utils.emptyfn
-	        };
-	        _utils.ajax(opts);
-	    } else {
-	        conn.onError({
-	            type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
-	        });
-	    }
-
-	};
-
-	/**
-	 * 加入聊天室
-	 * @param {Object} options
-	 * @param {String} options.roomId
-	 */
-	connection.prototype.joinChatRoom = function (options) {
-	    var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
-	    var room_nick = roomJid + '/' + this.context.userId;
-	    var suc = options.success || _utils.emptyfn;
-	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
-	        err({
-	            type: _code.WEBIM_CONNCTION_JOINCHATROOM_ERROR
-	            , data: ele
-	        });
-	    };
-
-	    var iq = $pres({
-	        from: this.context.jid,
-	        to: room_nick
-	    })
-	        .c('x', {xmlns: Strophe.NS.MUC + '#user'})
-	        .c('item', {affiliation: 'member', role: 'participant'})
-	        .up().up()
-	        .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
-
-	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
-	};
-
-	/**
-	 * 退出聊天室
-	 * @param {Object} options
-	 * @param {String} options.roomId
-	 */
-	connection.prototype.quitChatRoom = function (options) {
-	    var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
-	    var room_nick = roomJid + '/' + this.context.userId;
-	    var suc = options.success || _utils.emptyfn;
-	    var err = options.error || _utils.emptyfn;
-	    var errorFn = function (ele) {
-	        err({
-	            type: _code.WEBIM_CONNCTION_QUITCHATROOM_ERROR
-	            , data: ele
-	        });
-	    };
-	    var iq = $pres({
-	        from: this.context.jid,
-	        to: room_nick,
-	        type: 'unavailable'
-	    })
-	        .c('x', {xmlns: Strophe.NS.MUC + '#user'})
-	        .c('item', {affiliation: 'none', role: 'none'})
-	        .up().up()
-	        .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
-
-	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
-	};
-
-	/**
-	 * for windowSDK
-	 * @private
-	 *
-	 */
-	connection.prototype._onReceiveInviteFromGroup = function (info) {
-	    info = eval('(' + info + ')');
-	    var self = this;
-	    var options = {
-	        title: "Group invitation",
-	        msg: info.user + " invites you to join into group:" + info.group_id,
-	        agree: function agree() {
-	            WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-	            }, function (code, msg) {
-	                var message = {
-	                    data: {
-	                        data: "acceptInvitationFromGroup error:" + msg
-	                    },
-	                    type: _code.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
-	                };
-	                self.onError(message);
-	            });
-	        },
-	        reject: function reject() {
-	            WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-	            }, function (code, msg) {
-	                var message = {
-	                    data: {
-	                        data: "declineInvitationFromGroup error:" + msg
-	                    },
-	                    type: _code.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
-	                };
-	                self.onError(message);
-	            });
-	        }
-	    };
-
-	    this.onConfirmPop(options);
-	};
-
-	/**
-	 * for windowSDK
-	 * @private
-	 *
-	 */
-	connection.prototype._onReceiveInviteAcceptionFromGroup = function (info) {
-	    info = eval('(' + info + ')');
-	    var options = {
-	        title: "Group invitation response",
-	        msg: info.user + " agreed to join into group:" + info.group_id,
-	        agree: function agree() {
-	        }
-	    };
-	    this.onConfirmPop(options);
-	};
-
-	/**
-	 * for windowSDK
-	 * @private
-	 *
-	 */
-	connection.prototype._onReceiveInviteDeclineFromGroup = function (info) {
-	    info = eval('(' + info + ')');
-	    var options = {
-	        title: "Group invitation response",
-	        msg: info.user + " rejected to join into group:" + info.group_id,
-	        agree: function agree() {
-	        }
-	    };
-	    this.onConfirmPop(options);
-	};
-
-	/**
-	 * for windowSDK
-	 * @private
-	 *
-	 */
-	connection.prototype._onAutoAcceptInvitationFromGroup = function (info) {
-	    info = eval('(' + info + ')');
-	    var options = {
-	        title: "Group invitation",
-	        msg: "You had joined into the group:" + info.group_name + " automatically.Inviter:" + info.user,
-	        agree: function agree() {
-	        }
-	    };
-	    this.onConfirmPop(options);
-	};
-
-	/**
-	 * for windowSDK
-	 * @private
-	 *
-	 */
-	connection.prototype._onLeaveGroup = function (info) {
-	    info = eval('(' + info + ')');
-	    var options = {
-	        title: "Group notification",
-	        msg: "You have been out of the group:" + info.group_id + ".Reason:" + info.msg,
-	        agree: function agree() {
-	        }
-	    };
-	    this.onConfirmPop(options);
-	};
-
-	/**
-	 * for windowSDK
-	 * @private
-	 *
-	 */
-	connection.prototype._onReceiveJoinGroupApplication = function (info) {
-	    info = eval('(' + info + ')');
-	    var self = this;
-	    var options = {
-	        title: "Group join application",
-	        msg: info.user + " applys to join into group:" + info.group_id,
-	        agree: function agree() {
-	            WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-	            }, function (code, msg) {
-	                var message = {
-	                    data: {
-	                        data: "acceptJoinGroupApplication error:" + msg
-	                    },
-	                    type: _code.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
-	                };
-	                self.onError(message);
-	            });
-	        },
-	        reject: function reject() {
-	            WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {
-	            }, function (code, msg) {
-	                var message = {
-	                    data: {
-	                        data: "declineJoinGroupApplication error:" + msg
-	                    },
-	                    type: _code.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
-	                };
-	                self.onError(message);
-	            });
-	        }
-	    };
-	    this.onConfirmPop(options);
-	};
-
-	/**
-	 * for windowSDK
-	 * @private
-	 *
-	 */
-	connection.prototype._onReceiveAcceptionFromGroup = function (info) {
-	    info = eval('(' + info + ')');
-	    var options = {
-	        title: "Group notification",
-	        msg: "You had joined into the group:" + info.group_name + ".",
-	        agree: function agree() {
-	        }
-	    };
-	    this.onConfirmPop(options);
-	};
-
-	/**
-	 * for windowSDK
-	 * @private
-	 *
-	 */
-	connection.prototype._onReceiveRejectionFromGroup = function () {
-	    info = eval('(' + info + ')');
-	    var options = {
-	        title: "Group notification",
-	        msg: "You have been rejected to join into the group:" + info.group_name + ".",
-	        agree: function agree() {
-	        }
-	    };
-	    this.onConfirmPop(options);
-	};
-
-	/**
-	 * for windowSDK
-	 * @private
-	 *
-	 */
-	connection.prototype._onUpdateMyGroupList = function (options) {
-	    this.onUpdateMyGroupList(options);
-	};
-
-	/**
-	 * for windowSDK
-	 * @private
-	 *
-	 */
-	connection.prototype._onUpdateMyRoster = function (options) {
-	    this.onUpdateMyRoster(options);
-	};
-
-	/**
-	 * @private
-	 *
-	 */
-	connection.prototype.reconnect = function () {
-	    var that = this;
-	    setTimeout(function () {
-	        _login(that.context.restTokenData, that);
-	    }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
-	    this.autoReconnectNumTotal++;
-	};
-
-	/**
-	 *
-	 * @private
-	 * @deprecated
-	 */
-	connection.prototype.closed = function () {
-	    var message = {
-	        data: {
-	            data: "Closed error"
-	        },
-	        type: _code.WEBIM_CONNECTION_CLOSED
-	    };
-	    this.onError(message);
-	};
-
-	/**
-	 * 将消息序列化后存入localStorage
-	 * @param message {Object} 消息实体
-	 * @param type {String} 消息类型
-	 * @param status {String} 消息状态
-	 */
-	connection.prototype.addToLocal = function (message, type, status) {
-	    if(!this.saveLocal){
-	        return;
-	    }
-	    var sendByMe = (typeof message.msg == 'string');
-	    if (!window.localStorage)
-	        return;
-	    try {
-	        var msg = _deepClone(message);
-	    } catch (e) {
-	        console.log(e.message);
-	    }
-	    msg.data = msg.sourceMsg;
-	    if (type == 'txt') {
-	        if (!message.data && !message.msg) {
-	            return;
-	        }
-	        if (sendByMe) {
-	            msg.data = this.enc(msg.msg);
-	            delete msg.msg;
-	        } else {
-	            msg.data = msg.sourceMsg;
-	        }
-	    }
-	    msg.msgType = type;
-	    msg.msgStatus = status;
-	    var oldRecord = window.localStorage.getItem(this.user);
-	    var serializedChatRecord = JSON.stringify(msg);
-	    if (oldRecord && (oldRecord.indexOf(message.id) >= 0
-	        || oldRecord.indexOf(serializedChatRecord) >= 0)) {
-	        return;
-	    }
-	    var record = "";
-	    if (!oldRecord || oldRecord == "") {
-	        record = serializedChatRecord;
-	    } else {
-	        record = oldRecord + '\n' + serializedChatRecord;
-	    }
-	    window.localStorage.setItem(this.user, record);
-	};
-
-	/**
-	 * 将文本消息加密
-	 * @param messageSource {Object} 消息实体
-	 */
-
-	connection.prototype.enc = function (messageSource) {
-	    var message = _.clone(messageSource);
-	    if (this.encrypt.type === 'base64') {
-	        message = btoa(messageSource);
-	    } else if (this.encrypt.type === 'aes') {
-	        var key = CryptoJS.enc.Utf8.parse(this.encrypt.key);
-	        var iv = CryptoJS.enc.Utf8.parse(this.encrypt.iv);
-	        var mode = this.encrypt.mode.toLowerCase();
-	        var option = {};
-	        if (mode === 'cbc') {
-	            option = {
-	                iv: iv,
-	                mode: CryptoJS.mode.CBC,
-	                padding: CryptoJS.pad.Pkcs7
-	            };
-	        } else if (mode === 'ebc') {
-	            option = {
-	                mode: CryptoJS.mode.ECB,
-	                padding: CryptoJS.pad.Pkcs7
-	            }
-	        }
-	        var encryptedData = CryptoJS.AES.encrypt(message, key, option);
-
-	        message = encryptedData.toString();
-	    }
-	    return message;
-	};
-
-	/**
-	 * 将文本消息解密
-	 * @param source {Object} 消息实体
-	 * @returns {Object} 解密后的消息
-	 */
-	connection.prototype.decrypt = function (source) {
-	    var receiveMsg = source, self = this;
-	    if (self.encrypt.type === 'base64') {
-	        receiveMsg = atob(receiveMsg);
-	    } else if (self.encrypt.type === 'aes') {
-	        var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
-	        var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
-	        var mode = self.encrypt.mode.toLowerCase();
-	        var option = {};
-	        if (mode === 'cbc') {
-	            option = {
-	                iv: iv,
-	                mode: CryptoJS.mode.CBC,
-	                padding: CryptoJS.pad.Pkcs7
-	            };
-	        } else if (mode === 'ebc') {
-	            option = {
-	                mode: CryptoJS.mode.ECB,
-	                padding: CryptoJS.pad.Pkcs7
-	            }
-	        }
-	        var encryptedBase64Str = receiveMsg;
-	        var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
-	        var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
-	        receiveMsg = decryptedStr;
-	    }
-	    return receiveMsg;
-	};
-
-	/**
-	 * 从localStorage获取消息并反序列化
-	 * @returns {Array|*} 所有消息组成的数组
-	 */
-	connection.prototype.getLocal = function () {
-	    if (!window.localStorage || !this.saveLocal)
-	        return;
-	    var user = this.user;
-	    var record = window.localStorage.getItem(user);
-
-	    if (!record || record == '')
-	        return;
-
-	    var recordArr = record.split('\n');
-	    for (var i in recordArr) {
-	        var recordItem = recordArr[i];
-	        recordItem = JSON.parse(recordItem);
-	        recordItem.data = this.decrypt(recordItem.data);
-	        recordArr[i] = recordItem;
-	    }
-	    return recordArr;
-	};
-
-	/**
-	 * used for blacklist
-	 * @private
-	 *
-	 */
-	function _parsePrivacy(iq) {
-	    var list = [];
-	    var items = iq.getElementsByTagName('item');
-
-	    if (items) {
-	        for (var i = 0; i < items.length; i++) {
-	            var item = items[i];
-	            var jid = item.getAttribute('value');
-	            var order = item.getAttribute('order');
-	            var type = item.getAttribute('type');
-	            if (!jid) {
-	                continue;
-	            }
-	            var n = _parseNameFromJidFn(jid);
-	            list[n] = {
-	                type: type,
-	                order: order,
-	                jid: jid,
-	                name: n
-	            };
-	        }
-	    }
-	    return list;
-	};
-
-	/**
-	 * 获取好友黑名单
-	 *
-	 * @returns {Object} 好友列表
-	 */
-	connection.prototype.getBlacklist = function (options) {
-	    options = (options || {});
-	    var iq = $iq({type: 'get'});
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-	    var me = this;
-
-	    iq.c('query', {xmlns: 'jabber:iq:privacy'})
-	        .c('list', {name: 'special'});
-
-	    this.context.stropheConn.sendIQ(iq.tree(), function (iq) {
-	        me.onBlacklistUpdate(_parsePrivacy(iq));
-	        sucFn();
-	    }, function () {
-	        me.onBlacklistUpdate([]);
-	        errFn();
-	    });
-	};
-
-	/**
-	 * 将好友加入到黑名单
-	 * @param {Object} options
-	 * @param {Object[]} options.list - 调用这个函数后黑名单的所有名单列表，key值为好友的ID
-	 * @param {Object} options.list[].type=jid - 要加到黑名单的好友对象的type，默认是jid
-	 * @param {Number} options.list[].order - 要加到黑名单的好友对象的order，所有order不重复
-	 * @param {string} options.list[].jid - 要加到黑名单的好友的jid
-	 * @param {string} options.list[].name - 要加到黑名单的好友的ID
-	 */
-	connection.prototype.addToBlackList = function (options) {
-	    var iq = $iq({type: 'set'});
-	    var blacklist = options.list || {};
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-	    var piece = iq.c('query', {xmlns: 'jabber:iq:privacy'})
-	        .c('list', {name: 'special'});
-
-	    var keys = Object.keys(blacklist);
-	    var len = keys.length;
-	    var order = 2;
-
-	    for (var i = 0; i < len; i++) {
-	        var item = blacklist[keys[i]];
-	        var type = item.type || 'jid';
-	        var jid = item.jid;
-
-	        piece = piece.c('item', {action: 'deny', order: order++, type: type, value: jid})
-	            .c('message');
-	        if (i !== len - 1) {
-	            piece = piece.up().up();
-	        }
-	    }
-
-	    this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
-	};
-
-	/**
-	 * 将好友从黑名单移除
-	 * @param {Object} options
-	 * @param {Object[]} options.list - 调用这个函数后黑名单的所有名单列表，key值为好友的ID
-	 * @param {Object} options.list[].type=jid - 要加到黑名单的好友对象的type，默认是jid
-	 * @param {Number} options.list[].order - 要加到黑名单的好友对象的order，所有order不重复
-	 * @param {string} options.list[].jid - 要加到黑名单的好友的jid
-	 * @param {string} options.list[].name - 要加到黑名单的好友的ID
-	 */
-	connection.prototype.removeFromBlackList = function (options) {
-	    console.log('removeFromBlackList: ', options);
-	    var iq = $iq({type: 'set'});
-	    var blacklist = options.list || {};
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-	    var piece = iq.c('query', {xmlns: 'jabber:iq:privacy'})
-	        .c('list', {name: 'special'});
-
-	    var keys = Object.keys(blacklist);
-	    var len = keys.length;
-
-	    for (var i = 0; i < len; i++) {
-	        var item = blacklist[keys[i]];
-	        var type = item.type || 'jid';
-	        var jid = item.jid;
-	        var order = item.order;
-
-	        piece = piece.c('item', {action: 'deny', order: order, type: type, value: jid})
-	            .c('message');
-	        if (i !== len - 1) {
-	            piece = piece.up().up();
-	        }
-	    }
-
-	    this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
-	};
-
-	/**
-	 *
-	 * @private
-	 */
-	connection.prototype._getGroupJid = function (to) {
-	    var appKey = this.context.appKey || '';
-	    return appKey + '_' + to + '@conference.' + this.domain;
-	};
-
-	/**
-	 * 加入群组黑名单
-	 * @param {Object} options
-	 * @deprecated
-	 */
-	connection.prototype.addToGroupBlackList = function (options) {
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-	    var jid = _getJid(options, this);
-	    var affiliation = 'admin';//options.affiliation || 'admin';
-	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
-
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('item', {
-	            affiliation: 'outcast',
-	            jid: jid
-	        });
-
-	    this.context.stropheConn.sendIQ(iq.tree(), sucFn, errFn);
-	};
-
-	/**
-	 *
-	 * @private
-	 */
-	function _parseGroupBlacklist(iq) {
-	    var list = {};
-	    var items = iq.getElementsByTagName('item');
-
-	    if (items) {
-	        for (var i = 0; i < items.length; i++) {
-	            var item = items[i];
-	            var jid = item.getAttribute('jid');
-	            var affiliation = item.getAttribute('affiliation');
-	            var nick = item.getAttribute('nick');
-	            if (!jid) {
-	                continue;
-	            }
-	            var n = _parseNameFromJidFn(jid);
-	            list[n] = {
-	                jid: jid,
-	                affiliation: affiliation,
-	                nick: nick,
-	                name: n
-	            };
-	        }
-	    }
-	    return list;
-	}
-
-	/**
-	 * 获取群组黑名单
-	 * @param {Object} options
-	 * @deprecated
-	 */
-	connection.prototype.getGroupBlacklist = function (options) {
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-
-	    // var jid = _getJid(options, this);
-	    var affiliation = 'admin';//options.affiliation || 'admin';
-	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'get', to: to});
-
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('item', {
-	            affiliation: 'outcast',
-	        });
-
-	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
-	        sucFn(_parseGroupBlacklist(msginfo));
-	    }, function () {
-	        errFn();
-	    });
-	};
-
-	/**
-	 * 从群组黑名单删除
-	 * @param {Object} options
-	 * @deprecated
-	 */
-	connection.prototype.removeGroupMemberFromBlacklist = function (options) {
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-
-	    var jid = _getJid(options, this);
-	    var affiliation = 'admin';//options.affiliation || 'admin';
-	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
-
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('item', {
-	            affiliation: 'none',
-	            jid: jid
-	        });
-
-	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
-	        sucFn();
-	    }, function () {
-	        errFn();
-	    });
-	};
-
-	/**
-	 * 修改群名称
-	 * @param {Object} options -
-	 * @deprecated
-	 */
-	connection.prototype.changeGroupSubject = function (options) {
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-
-	    // must be `owner`
-	    var affiliation = 'owner';
-	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
-
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('x', {type: 'submit', xmlns: 'jabber:x:data'})
-	        .c('field', {'var': 'FORM_TYPE'})
-	        .c('value')
-	        .t('http://jabber.org/protocol/muc#roomconfig')
-	        .up().up()
-	        .c('field', {'var': 'muc#roomconfig_roomname'})
-	        .c('value')
-	        .t(options.subject)
-	        .up().up()
-	        .c('field', {'var': 'muc#roomconfig_roomdesc'})
-	        .c('value')
-	        .t(options.description);
-
-
-	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
-	        sucFn();
-	    }, function () {
-	        errFn();
-	    });
-	};
-
-	/**
-	 * 删除群组
-	 *
-	 * @param {Object} options -
-	 * @example
-	 <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
-	 <query xmlns="http://jabber.org/protocol/muc#owner">
-	 <destroy>
-	 <reason>xxx destory group yyy</reason>
-	 </destroy>
-	 </query>
-	 </iq>
-	 * @deprecated
-	 */
-	connection.prototype.destroyGroup = function (options) {
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-
-	    // must be `owner`
-	    var affiliation = 'owner';
-	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
-
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('destroy')
-	        .c('reason').t(options.reason || '');
-
-	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
-	        sucFn();
-	    }, function () {
-	        errFn();
-	    });
-	};
-
-	/**
-	 * 主动离开群组
-	 *
-	 * @param {Object} options -
-	 * @example
-	 <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
-	 <query xmlns="http://jabber.org/protocol/muc#admin">
-	 <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
-	 </query>
-	 </iq>
-	 <presence to="easemob-demo#chatdemoui_1479811172349@conference.easemob.com/mt002" type="unavailable"/>
-	 * @deprecated
-	 */
-	connection.prototype.leaveGroupBySelf = function (options) {
-	    var self = this;
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-
-	    // must be `owner`
-	    var jid = _getJid(options, this);
-	    var affiliation = 'admin';
-	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
-
-	    iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation})
-	        .c('item', {
-	            affiliation: 'none',
-	            jid: jid
-	        });
-
-	    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-	        sucFn(msgInfo);
-	        var pres = $pres({type: 'unavailable', to: to + '/' + self.context.userId});
-	        self.sendCommand(pres.tree());
-	    }, function (errInfo) {
-	        errFn(errInfo);
-	    });
-	};
-
-	/**
-	 * 群主从群组中踢人，后续会改为调用RestFul API
-	 *
-	 * @param {Object} options -
-	 * @param {string[]} options.list - 需要从群组移除的好友ID组成的数组
-	 * @param {string} options.roomId - 群组ID
-	 * @deprecated
-	 * @example
-	 <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
-	 <query xmlns="http://jabber.org/protocol/muc#admin">
-	 <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
-	 <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
-	 <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
-	 <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
-	 </query>
-	 </iq>
-	 */
-	connection.prototype.leaveGroup = function (options) {
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-	    var list = options.list || [];
-	    var affiliation = 'admin';
-	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
-	    var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation});
-	    var keys = Object.keys(list);
-	    var len = keys.length;
-
-	    for (var i = 0; i < len; i++) {
-	        var name = list[keys[i]];
-	        var jid = _getJidByName(name, this);
-
-	        piece = piece.c('item', {
-	            affiliation: 'none',
-	            jid: jid
-	        }).up().c('item', {
-	            role: 'none',
-	            jid: jid,
-	        }).up();
-	    }
-
-	    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-	        sucFn(msgInfo);
-	    }, function (errInfo) {
-	        errFn(errInfo);
-	    });
-	};
-
-	/**
-	 * 添加群组成员
-	 *
-	 * @param {Object} options -
-	 * @deprecated
-	 * @example
-	 Attention the sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
-	 <!-- 添加成员通知：send -->
-	 <message to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com'>
-	 <x xmlns='http://jabber.org/protocol/muc#user'>
-	 <invite to='easemob-demo#chatdemoui_lwz2@easemob.com'>
-	 <reason>liuwz invite you to join group '谢谢'</reason>
-	 </invite>
-	 </x>
-	 </message>
-	 <!-- 添加成员：send -->
-	 <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation' to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com' type='set'>
-	 <query xmlns='http://jabber.org/protocol/muc#admin'>
-	 <item affiliation='member' jid='easemob-demo#chatdemoui_lwz2@easemob.com'/>
-	 </query>
-	 </iq>
-	 */
-	connection.prototype.addGroupMembers = function (options) {
-	    var sucFn = options.success || _utils.emptyfn;
-	    var errFn = options.error || _utils.emptyfn;
-	    var list = options.list || [];
-	    var affiliation = 'admin';
-	    var to = this._getGroupJid(options.roomId);
-	    var iq = $iq({type: 'set', to: to});
-	    var piece = iq.c('query', {xmlns: 'http://jabber.org/protocol/muc#' + affiliation});
-	    var len = list.length;
-
-	    for (var i = 0; i < len; i++) {
-
-	        var name = list[i];
-	        var jid = _getJidByName(name, this);
-
-	        piece = piece.c('item', {
-	            affiliation: 'member',
-	            jid: jid
-	        }).up();
-
-	        var dom = $msg({
-	            to: to
-	        }).c('x', {
-	            xmlns: 'http://jabber.org/protocol/muc#user'
-	        }).c('invite', {
-	            to: jid
-	        }).c('reason').t(options.reason || '');
-
-	        this.sendCommand(dom.tree());
-
-	    }
-
-	    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-	        sucFn(msgInfo);
-	    }, function (errInfo) {
-	        errFn(errInfo);
-	    });
-	};
-
-	/**
-	 * 接受加入申请
-	 *
-	 * @param {Object} options -
-	 * @deprecated
-	 */
-	connection.prototype.acceptInviteFromGroup = function (options) {
-	    options.success = function () {
-	        // then send sendAcceptInviteMessage
-	        // connection.prototype.sendAcceptInviteMessage(optoins);
-	    };
-	    this.addGroupMembers(options);
-	};
-
-	/**
-	 * 拒绝入群申请
-	 * @param {Object} options -
-	 * @example
-	 throw request for now 暂时不处理，直接丢弃
-
-	 <message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
-	 <x xmlns='http://jabber.org/protocol/muc#user'>
-	 <apply to='easemob-demo#chatdemoui_groupid1@conference.easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' toNick='llllll'>
-	 <reason>reject</reason>
-	 </apply>
-	 </x>
-	 </message>
-	 * @deprecated
-	 */
-	connection.prototype.rejectInviteFromGroup = function (options) {
-	    // var from = _getJidByName(options.from, this);
-	    // var dom = $msg({
-	    //     from: from,
-	    //     to: _getJidByName(options.to, this)
-	    // }).c('x', {
-	    //     xmlns: 'http://jabber.org/protocol/muc#user'
-	    // }).c('apply', {
-	    //     from: from,
-	    //     to: this._getGroupJid(options.groupId),
-	    //     toNick: options.groupName
-	    // }).c('reason').t(options.reason || '');
-	    //
-	    // this.sendCommand(dom.tree());
-	};
-
-	/**
-	 * 创建群组-异步
-	 * @param {Object} p -
-	 * @deprecated
-	 */
-	connection.prototype.createGroupAsync = function (p) {
-	    var roomId = p.from
-	    var me = this;
-	    var toRoom = this._getGroupJid(roomId);
-	    var to = toRoom + '/' + this.context.userId;
-	    var options = this.groupOption;
-	    var suc = p.success || _utils.emptyfn;
-
-	    // Creating a Reserved Room
-	    var iq = $iq({type: 'get', to: toRoom})
-	        .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'});
-
-	    // Strophe.info('step 1 ----------');
-	    // Strophe.info(options);
-	    me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-	        // console.log(msgInfo);
-
-	        // for ie hack
-	        if ('setAttribute' in msgInfo) {
-	            // Strophe.info('step 3 ----------');
-	            var x = msgInfo.getElementsByTagName('x')[0];
-	            x.setAttribute('type', 'submit');
-	        } else {
-	            // Strophe.info('step 4 ----------');
-	            Strophe.forEachChild(msgInfo, 'x', function (field) {
-	                field.setAttribute('type', 'submit');
-	            });
-	        }
-
-	        Strophe.info('step 5 ----------');
-	        Strophe.forEachChild(x, 'field', function (field) {
-	            var fieldVar = field.getAttribute('var');
-	            var valueDom = field.getElementsByTagName('value')[0];
-	            Strophe.info(fieldVar);
-	            switch (fieldVar) {
-	                case 'muc#roomconfig_maxusers':
-	                    _setText(valueDom, options.optionsMaxUsers || 200);
-	                    break;
-	                case 'muc#roomconfig_roomname':
-	                    _setText(valueDom, options.subject || '');
-	                    break;
-	                case 'muc#roomconfig_roomdesc':
-	                    _setText(valueDom, options.description || '');
-	                    break;
-	                case 'muc#roomconfig_publicroom': // public 1
-	                    _setText(valueDom, +options.optionsPublic);
-	                    break;
-	                case 'muc#roomconfig_membersonly':
-	                    _setText(valueDom, +options.optionsMembersOnly);
-	                    break;
-	                case 'muc#roomconfig_moderatedroom':
-	                    _setText(valueDom, +options.optionsModerate);
-	                    break;
-	                case 'muc#roomconfig_persistentroom':
-	                    _setText(valueDom, 1);
-	                    break;
-	                case 'muc#roomconfig_allowinvites':
-	                    _setText(valueDom, +options.optionsAllowInvites);
-	                    break;
-	                case 'muc#roomconfig_allowvisitornickchange':
-	                    _setText(valueDom, 0);
-	                    break;
-	                case 'muc#roomconfig_allowvisitorstatus':
-	                    _setText(valueDom, 0);
-	                    break;
-	                case 'allow_private_messages':
-	                    _setText(valueDom, 0);
-	                    break;
-	                case 'allow_private_messages_from_visitors':
-	                    _setText(valueDom, 'nobody');
-	                    break;
-	                default:
-	                    break;
-	            }
-	        });
-
-	        var iq = $iq({to: toRoom, type: 'set'})
-	            .c('query', {xmlns: 'http://jabber.org/protocol/muc#owner'})
-	            .cnode(x);
-
-	        me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-	            me.addGroupMembers({
-	                list: options.members,
-	                roomId: roomId
-	            });
-
-	            suc(options);
-	        }, function (errInfo) {
-	            // errFn(errInfo);
-	        });
-	        // sucFn(msgInfo);
-	    }, function (errInfo) {
-	        // errFn(errInfo);
-	    });
-	};
-
-	/**
-	 * 创建群组
-	 * @param {Object} options -
-	 * @deprecated
-	 * @example
-	 * 1. 创建申请 -> 得到房主身份
-	 * 2. 获取房主信息 -> 得到房间form
-	 * 3. 完善房间form -> 创建成功
-	 * 4. 添加房间成员
-	 * 5. 消息通知成员
-	 */
-	connection.prototype.createGroup = function (options) {
-	    this.groupOption = options;
-	    var roomId = +new Date();
-	    var toRoom = this._getGroupJid(roomId);
-	    var to = toRoom + '/' + this.context.userId;
-
-	    var pres = $pres({to: to})
-	        .c('x', {xmlns: 'http://jabber.org/protocol/muc'}).up()
-	        .c('create', {xmlns: 'http://jabber.org/protocol/muc'}).up();
-
-	    // createGroupACK
-	    this.sendCommand(pres.tree());
-	};
-
-	/**
-	 * 通过RestFul API接口创建群组
-	 * @param opt {Object} - 群组信息
-	 * @param opt.data.groupname {string} - 群组名
-	 * @param opt.data.desc {string} - 群组描述
-	 * @param opt.data.members {string[]} - 群好友列表
-	 * @param opt.data.public {Boolean} - true: 公开群，false: 私有群
-	 * @param opt.data.approval {Boolean} - 前提：opt.data.public=true, true: 加群需要审批，false: 加群无需审批
-	 * @param opt.data.allowinvites {Boolean} - 前提：opt.data.public=false, true: 允许成员邀请入群，false: 不允许成员邀请入群
-	 * @since 1.4.11
-	 */
-	connection.prototype.createGroupNew = function (opt) {
-	    opt.data.owner = this.user;
-	    opt.data.invite_need_confirm = false;
-	    var options = {
-	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups',
-	        dataType: 'json',
-	        type: 'POST',
-	        data: JSON.stringify(opt.data),
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = function (respData) {
-	        opt.success(respData);
-	        this.onCreateGroup(respData);
-	    }.bind(this);
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API屏蔽群组，只对移动端有效
-	 * @param {Object} options -
-	 * @param {string} options.groupId - 需要屏蔽的群组ID
-	 * @since 1.4.11
-	 */
-	connection.prototype.blockGroup = function (opt) {
-	    var groupId = opt.groupId;
-	    groupId = 'notification_ignore_' + groupId;
-	    var data = {
-	        entities: []
-	    };
-	    data.entities[0] = {};
-	    data.entities[0][groupId] = true;
-	    var options = {
-	        type: 'PUT',
-	        url: this.apiUrl + '/' + this.orgName + '/'
-	        + this.appName + '/' + 'users' + '/' + this.user,
-	        data: JSON.stringify(data),
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API发出入群申请
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 * @since 1.4.11
-	 */
-	connection.prototype.joinGroup = function (opt) {
-	    var options = {
-	        url: this.apiUrl + '/' + this.orgName + '/'
-	        + this.appName + '/' + 'chatgroups' + '/' + opt.groupId + '/' + 'apply',
-	        type: 'POST',
-	        dataType: 'json',
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API分页获取群组列表
-	 * @param {Object} opt -
-	 * @param {Number} opt.limit - 每一页群组的最大数目
-	 * @param {string} opt.cursor=null - 游标，如果数据还有下一页，API 返回值会包含此字段，传递此字段可获取下一页的数据，为null时获取第一页数据
-	 * @since 1.4.11
-	 */
-	connection.prototype.listGroups = function (opt) {
-	    var requestData = [];
-	    requestData['limit'] = opt.limit;
-	    requestData['cursor'] = opt.cursor;
-	    if (!requestData['cursor'])
-	        delete requestData['cursor'];
-	    if (isNaN(opt.limit)) {
-	        throw 'The parameter \"limit\" should be a number';
-	        return;
-	    }
-	    var options = {
-	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/publicchatgroups',
-	        type: 'GET',
-	        dataType: 'json',
-	        data: requestData,
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API根据groupId获取群组详情
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 * @since 1.4.11
-	 */
-	connection.prototype.getGroupInfo = function (opt) {
-	    var options = {
-	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups/' + opt.groupId,
-	        type: 'GET',
-	        dataType: 'json',
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API列出某用户所加入的所有群组
-	 * @param {Object} opt - 加入两个回调函数即可，success, error
-	 * @since 1.4.11
-	 */
-	connection.prototype.getGroup = function (opt) {
-	    var options = {
-	        url: this.apiUrl + '/' + this.orgName +
-	        '/' + this.appName + '/' + 'users' + '/' +
-	        this.user + '/' + 'joined_chatgroups',
-	        dataType: 'json',
-	        type: 'GET',
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API分页列出群组的所有成员
-	 * @param {Object} opt -
-	 * @param {Number} opt.pageNum - 页码
-	 * @param {Number} opt.pageSize - 每一页的最大群成员数目
-	 * @param {string} opt.groupId - 群ID
-	 */
-	connection.prototype.listGroupMember = function (opt) {
-	    if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
-	        throw 'The parameter \"pageNum\" should be a positive number';
-	        return;
-	    } else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
-	        throw 'The parameter \"pageSize\" should be a positive number';
-	        return;
-	    } else if (opt.groupId === null && typeof opt.groupId === 'undefined') {
-	        throw 'The parameter \"groupId\" should be added';
-	        return;
-	    }
-	    var requestData = [],
-	        groupId = opt.groupId;
-	    requestData['pagenum'] = opt.pageNum;
-	    requestData['pagesize'] = opt.pageSize;
-	    var options = {
-	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
-	        + '/' + groupId + '/users',
-	        dataType: 'json',
-	        type: 'GET',
-	        data: requestData,
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-	connection.prototype.listRoomMember = function (opt) {
-	    if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
-	        throw 'The parameter \"pageNum\" should be a positive number';
-	        return;
-	    } else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
-	        throw 'The parameter \"pageSize\" should be a positive number';
-	        return;
-	    } else if (opt.groupId === null && typeof opt.groupId === 'undefined') {
-	        throw 'The parameter \"groupId\" should be added';
-	        return;
-	    }
-	    var requestData = [],
-	        groupId = opt.groupId;
-	    requestData['pagenum'] = opt.pageNum;
-	    requestData['pagesize'] = opt.pageSize;
-	    var options = {
-	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatrooms'
-	        + '/' + groupId + '/users',
-	        dataType: 'json',
-	        type: 'GET',
-	        data: requestData,
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API禁止群用户发言
-	 * @param {Object} opt -
-	 * @param {string} opt.username - 被禁言的群成员的ID
-	 * @param {Number} opt.muteDuration - 被禁言的时长
-	 * @param {string} opt.groupId - 群ID
-	 * @since 1.4.11
-	 */
-	connection.prototype.mute = function (opt) {
-	    var groupId = opt.groupId,
-	        requestData = {
-	            "usernames": [opt.username],
-	            "mute_duration": opt.muteDuration
-	        },
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
-	            + '/' + groupId + '/' + 'mute',
-	            dataType: 'json',
-	            type: 'POST',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            },
-	            data: JSON.stringify(requestData)
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API取消对用户禁言
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群ID
-	 * @param {string} opt.username - 被取消禁言的群用户ID
-	 * @since 1.4.11
-	 */
-	connection.prototype.removeMute = function (opt) {
-	    var groupId = opt.groupId,
-	        username = opt.username;
-	    var options = {
-	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
-	        + '/' + groupId + '/' + 'mute' + '/' + username,
-	        dataType: 'json',
-	        type: 'DELETE',
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API获取群组下所有管理员
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 * @since 1.4.11
-	 */
-	connection.prototype.getGroupAdmin = function (opt) {
-	    var groupId = opt.groupId;
-	    var options = {
-	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
-	        + '/' + groupId + '/admin',
-	        dataType: 'json',
-	        type: 'GET',
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API获取群组下所有被禁言成员
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 */
-	connection.prototype.getMuted = function (opt) {
-	    var groupId = opt.groupId;
-	    var options = {
-	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups'
-	        + '/' + groupId + '/mute',
-	        dataType: 'json',
-	        type: 'GET',
-	        headers: {
-	            'Authorization': 'Bearer ' + this.token,
-	            'Content-Type': 'application/json'
-	        }
-	    };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API设置群管理员
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 * @param {string} opt.username - 用户ID
-	 */
-	connection.prototype.setAdmin = function (opt) {
-	    var groupId = opt.groupId,
-	        requestData = {
-	            newadmin: opt.username
-	        },
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
-	            + '/' + groupId + '/' + 'admin',
-	            type: "POST",
-	            dataType: 'json',
-	            data: JSON.stringify(requestData),
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API取消群管理员
-	 * @param {Object} opt -
-	 * @param {string} opt.gorupId - 群组ID
-	 * @param {string} opt.username - 用户ID
-	 */
-	connection.prototype.removeAdmin = function (opt) {
-	    var groupId = opt.groupId,
-	        username = opt.username,
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups'
-	            + '/' + groupId + '/' + 'admin' + '/' + username,
-	            type: 'DELETE',
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API同意用户加入群
-	 * @param {Object} opt -
-	 * @param {string} opt.applicant - 申请加群的用户名
-	 * @param {Object} opt.groupId - 群组ID
-	 */
-	connection.prototype.agreeJoinGroup = function (opt) {
-	    var groupId = opt.groupId,
-	        requestData = {
-	            "applicant": opt.applicant,
-	            "verifyResult": true,
-	            "reason": "no clue"
-	        },
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'apply_verify',
-	            type: 'POST',
-	            dataType: "json",
-	            data: JSON.stringify(requestData),
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API拒绝用户加入群
-	 * @param {Object} opt -
-	 * @param {string} opt.applicant - 申请加群的用户名
-	 * @param {Object} opt.groupId - 群组ID
-	 */
-	connection.prototype.rejectJoinGroup = function (opt) {
-	    var groupId = opt.groupId,
-	        requestData = {
-	            "applicant": opt.applicant,
-	            "verifyResult": false,
-	            "reason": "no clue"
-	        },
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'apply_verify',
-	            type: 'POST',
-	            dataType: "json",
-	            data: JSON.stringify(requestData),
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API添加用户至群组黑名单(单个)
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 * @param {stirng} opt.username - 用户ID
-	 */
-	connection.prototype.groupBlockSingle = function (opt) {
-	    var groupId = opt.groupId,
-	        username = opt.username,
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
-	            + 'users' + '/' + username,
-	            type: 'POST',
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API添加用户至群组黑名单(批量)
-	 * @param {Object} opt -
-	 * @param {string[]} opt.username - 用户ID数组
-	 * @param {string} opt.groupId - 群组ID
-	 */
-	connection.prototype.groupBlockMulti = function (opt) {
-	    var groupId = opt.groupId,
-	        usernames = opt.usernames,
-	        requestData = {
-	            usernames: usernames
-	        },
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
-	            + 'users',
-	            data: JSON.stringify(requestData),
-	            type: 'POST',
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API将用户从群黑名单移除（单个）
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 * @param {string} opt.username - 用户名
-	 */
-	connection.prototype.removeGroupBlockSingle = function (opt) {
-	    var groupId = opt.groupId,
-	        username = opt.username,
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
-	            + 'users' + '/' + username,
-	            type: 'DELETE',
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API将用户从群黑名单移除（批量）
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组名
-	 * @param {string[]} opt.username - 用户ID数组
-	 */
-	connection.prototype.removeGroupBlockMulti = function (opt) {
-	    var groupId = opt.groupId,
-	        username = opt.username.join(','),
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/'
-	            + 'users' + '/' + username,
-	            type: 'DELETE',
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API解散群组
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 */
-	connection.prototype.dissolveGroup = function (opt) {
-	    var groupId = opt.groupId,
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '?version=v3',
-	            type: 'DELETE',
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API获取群组黑名单
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 */
-	connection.prototype.getGroupBlacklistNew = function (opt) {
-	    var groupId = opt.groupId,
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users',
-	            type: 'GET',
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API离开群组
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 */
-	connection.prototype.quitGroup = function (opt) {
-	    var groupId = opt.groupId,
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'quit',
-	            type: 'DELETE',
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API修改群信息
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 * @param {string} opt.groupName - 群组名
-	 * @param {string} opt.description - 群组简介
-	 */
-	connection.prototype.modifyGroup = function (opt) {
-	    var groupId = opt.groupId,
-	        requestData = {
-	            groupname: opt.groupName,
-	            description: opt.description
-	        },
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId,
-	            type: 'PUT',
-	            data: JSON.stringify(requestData),
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API删除单个群成员
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 * @param {string} opt.username - 用户名
-	 */
-	connection.prototype.removeSingleGroupMember = function (opt) {
-	    var groupId = opt.groupId,
-	        username = opt.username,
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'users' + '/'
-	            + username,
-	            type: 'DELETE',
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API删除多个群成员
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组ID
-	 * @param {string[]} opt.users - 用户ID数组
-	 */
-	connection.prototype.removeMultiGroupMember = function (opt) {
-	    var groupId = opt.groupId,
-	        users = opt.users.join(','),
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'users' + '/'
-	            + users,
-	            type: 'DELETE',
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	/**
-	 * 通过RestFul API邀请群成员
-	 * @param {Object} opt -
-	 * @param {string} opt.groupId - 群组名
-	 * @param {string[]} opt.users - 用户名ID数组
-	 */
-	connection.prototype.inviteToGroup = function (opt) {
-	    var groupId = opt.groupId,
-	        users = opt.users,
-	        requestData = {
-	            usernames: users
-	        },
-	        options = {
-	            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
-	            + '/' + 'chatgroups' + '/' + groupId + '/' + 'invite',
-	            type: 'POST',
-	            data: JSON.stringify(requestData),
-	            dataType: 'json',
-	            headers: {
-	                'Authorization': 'Bearer ' + this.token,
-	                'Content-Type': 'application/json'
-	            }
-	        };
-	    options.success = opt.success || _utils.emptyfn;
-	    options.error = opt.error || _utils.emptyfn;
-	    WebIM.utils.ajax(options);
-	};
-
-	function _setText(valueDom, v) {
-	    if ('textContent' in valueDom) {
-	        valueDom.textContent = v;
-	    } else if ('text' in valueDom) {
-	        valueDom.text = v;
-	    } else {
-	        // Strophe.info('_setText 4 ----------');
-	        // valueDom.innerHTML = v;
-	    }
-	}
-
-
-	var WebIM = window.WebIM || {};
-	WebIM.connection = connection;
-	WebIM.utils = _utils;
-	WebIM.statusCode = _code;
-	WebIM.message = _msg.message;
-	WebIM.doQuery = function (str, suc, fail) {
-	    if (typeof window.cefQuery === 'undefined') {
-	        return;
-	    }
-	    window.cefQuery({
-	            request: str,
-	            persistent: false,
-	            onSuccess: suc,
-	            onFailure: fail
-	        }
-	    );
-	};
-
-	/**************************** debug ****************************/
-	function logMessage(message) {
-	    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
-	}
-
-	if (WebIM && WebIM.config.isDebug) {
-	    Strophe.Connection.prototype.rawOutput = function (data) {
-	        console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
-	    }
-	}
-
-	if (WebIM && WebIM.config && WebIM.config.isSandBox) {
-	    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '-sandbox.easemob.');
-	    WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
-	}
-
-
-	module.exports = WebIM;
-
-	if (false) {
-	    module.hot.accept();
-	}
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	;
 	(function () {
 
-	    exports.code = {
-	        WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: 0,
-	        WEBIM_CONNCTION_OPEN_ERROR: 1,
-	        WEBIM_CONNCTION_AUTH_ERROR: 2,
-	        WEBIM_CONNCTION_OPEN_USERGRID_ERROR: 3,
-	        WEBIM_CONNCTION_ATTACH_ERROR: 4,
-	        WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: 5,
-	        WEBIM_CONNCTION_REOPEN_ERROR: 6,
-	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7,  //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
-	        WEBIM_CONNCTION_SERVER_ERROR: 8,        //8: offline by multi login
-	        WEBIM_CONNCTION_IQ_ERROR: 9,
-
-	        WEBIM_CONNCTION_PING_ERROR: 10,
-	        WEBIM_CONNCTION_NOTIFYVERSION_ERROR: 11,
-	        WEBIM_CONNCTION_GETROSTER_ERROR: 12,
-	        WEBIM_CONNCTION_CROSSDOMAIN_ERROR: 13,
-	        WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: 14,
-	        WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: 15,
-	        WEBIM_CONNCTION_DISCONNECTED: 16,    //16: server-side close the websocket connection
-	        WEBIM_CONNCTION_AJAX_ERROR: 17,
-	        WEBIM_CONNCTION_JOINROOM_ERROR: 18,
-	        WEBIM_CONNCTION_GETROOM_ERROR: 19,
-
-	        WEBIM_CONNCTION_GETROOMINFO_ERROR: 20,
-	        WEBIM_CONNCTION_GETROOMMEMBER_ERROR: 21,
-	        WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR: 22,
-	        WEBIM_CONNCTION_LOAD_CHATROOM_ERROR: 23,
-	        WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR: 24,
-	        WEBIM_CONNCTION_JOINCHATROOM_ERROR: 25,
-	        WEBIM_CONNCTION_QUITCHATROOM_ERROR: 26,
-	        WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR: 27,
-	        WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR: 28,
-	        WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: 29,
-
-	        WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: 30,
-	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,  //31: 处理下行消息出错 try/catch抛出异常
-	        WEBIM_CONNCTION_CLIENT_OFFLINE: 32,        //32: client offline
-	        WEBIM_CONNCTION_CLIENT_LOGOUT: 33,        //33: client logout
-	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34, // 34: Over amount of the tabs a user opened in the same browser
-	        WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP: 35,
-	        WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP: 36,
-	        WEBIM_CONNECTION_ACCEPT_JOIN_GROUP: 37,
-	        WEBIM_CONNECTION_DECLINE_JOIN_GROUP: 38,
-	        WEBIM_CONNECTION_CLOSED: 39,
-
-
-	        WEBIM_UPLOADFILE_BROWSER_ERROR: 100,
-	        WEBIM_UPLOADFILE_ERROR: 101,
-	        WEBIM_UPLOADFILE_NO_LOGIN: 102,
-	        WEBIM_UPLOADFILE_NO_FILE: 103,
-
-
-	        WEBIM_DOWNLOADFILE_ERROR: 200,
-	        WEBIM_DOWNLOADFILE_NO_LOGIN: 201,
-	        WEBIM_DOWNLOADFILE_BROWSER_ERROR: 202,
-
-
-	        WEBIM_MESSAGE_REC_TEXT: 300,
-	        WEBIM_MESSAGE_REC_TEXT_ERROR: 301,
-	        WEBIM_MESSAGE_REC_EMOTION: 302,
-	        WEBIM_MESSAGE_REC_PHOTO: 303,
-	        WEBIM_MESSAGE_REC_AUDIO: 304,
-	        WEBIM_MESSAGE_REC_AUDIO_FILE: 305,
-	        WEBIM_MESSAGE_REC_VEDIO: 306,
-	        WEBIM_MESSAGE_REC_VEDIO_FILE: 307,
-	        WEBIM_MESSAGE_REC_FILE: 308,
-	        WEBIM_MESSAGE_SED_TEXT: 309,
-	        WEBIM_MESSAGE_SED_EMOTION: 310,
-	        WEBIM_MESSAGE_SED_PHOTO: 311,
-	        WEBIM_MESSAGE_SED_AUDIO: 312,
-	        WEBIM_MESSAGE_SED_AUDIO_FILE: 313,
-	        WEBIM_MESSAGE_SED_VEDIO: 314,
-	        WEBIM_MESSAGE_SED_VEDIO_FILE: 315,
-	        WEBIM_MESSAGE_SED_FILE: 316,
-	        WEBIM_MESSAGE_SED_ERROR: 317,
-
-
-	        STATUS_INIT: 400,
-	        STATUS_DOLOGIN_USERGRID: 401,
-	        STATUS_DOLOGIN_IM: 402,
-	        STATUS_OPENED: 403,
-	        STATUS_CLOSING: 404,
-	        STATUS_CLOSED: 405,
-	        STATUS_ERROR: 406
-	    };
-	}());
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	;
-	(function () {
-
-	    var EMPTYFN = function () {
-	    };
-	    var _code = __webpack_require__(2).code;
+	    var EMPTYFN = function EMPTYFN() {};
+	    var _code = __webpack_require__(207).code;
 	    var WEBIM_FILESIZE_LIMIT = 10485760;
 
-	    var _createStandardXHR = function () {
+	    var _createStandardXHR = function _createStandardXHR() {
 	        try {
 	            return new window.XMLHttpRequest();
 	        } catch (e) {
@@ -4878,7 +72,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
-	    var _createActiveXHR = function () {
+	    var _createActiveXHR = function _createActiveXHR() {
 	        try {
 	            return new window.ActiveXObject('Microsoft.XMLHTTP');
 	        } catch (e) {
@@ -4886,7 +80,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
-	    var _xmlrequest = function (crossDomain) {
+	    var _xmlrequest = function _xmlrequest(crossDomain) {
 	        crossDomain = crossDomain || true;
 	        var temp = _createStandardXHR() || _createActiveXHR();
 
@@ -4922,7 +116,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return xhr;
 	    };
 
-	    var _hasFlash = (function () {
+	    var _hasFlash = function () {
 	        if ('ActiveXObject' in window) {
 	            try {
 	                return new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
@@ -4935,7 +129,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	        return 0;
-	    }());
+	    }();
 
 	    var _tmpUtilXHR = _xmlrequest(),
 	        _hasFormData = typeof FormData !== 'undefined',
@@ -4947,27 +141,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _isCanDownLoadFile = _isCanSetRequestHeader && (_hasBlob || _hasOverrideMimeType);
 
 	    if (!Object.keys) {
-	        Object.keys = (function () {
+	        Object.keys = function () {
 	            'use strict';
+
 	            var hasOwnProperty = Object.prototype.hasOwnProperty,
-	                hasDontEnumBug = !({toString: null}).propertyIsEnumerable('toString'),
-	                dontEnums = [
-	                    'toString',
-	                    'toLocaleString',
-	                    'valueOf',
-	                    'hasOwnProperty',
-	                    'isPrototypeOf',
-	                    'propertyIsEnumerable',
-	                    'constructor'
-	                ],
+	                hasDontEnumBug = !{ toString: null }.propertyIsEnumerable('toString'),
+	                dontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'],
 	                dontEnumsLength = dontEnums.length;
 
 	            return function (obj) {
-	                if (typeof obj !== 'object' && (typeof obj !== 'function' || obj === null)) {
+	                if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) !== 'object' && (typeof obj !== 'function' || obj === null)) {
 	                    throw new TypeError('Object.keys called on non-object');
 	                }
 
-	                var result = [], prop, i;
+	                var result = [],
+	                    prop,
+	                    i;
 
 	                for (prop in obj) {
 	                    if (hasOwnProperty.call(obj, prop)) {
@@ -4984,7 +173,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	                return result;
 	            };
-	        }());
+	        }();
 	    }
 
 	    var utils = {
@@ -5004,13 +193,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        isCanDownLoadFile: _isCanDownLoadFile,
 
-	        isSupportWss: (function () {
+	        isSupportWss: function () {
 	            var notSupportList = [
-	                //1: QQ browser X5 core
-	                /MQQBrowser[\/]5([.]\d+)?\sTBS/
+	            //1: QQ browser X5 core
+	            /MQQBrowser[\/]5([.]\d+)?\sTBS/
 
-	                //2: etc.
-	                //...
+	            //2: etc.
+	            //...
 	            ];
 
 	            if (!window.WebSocket) {
@@ -5024,10 +213,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 	            return true;
-	        }()),
+	        }(),
 
-	        getIEVersion: (function () {
-	            var ua = navigator.userAgent, matches, tridentMap = {'4': 8, '5': 9, '6': 10, '7': 11};
+	        getIEVersion: function () {
+	            var ua = navigator.userAgent,
+	                matches,
+	                tridentMap = { '4': 8, '5': 9, '6': 10, '7': 11 };
 
 	            matches = ua.match(/MSIE (\d+)/i);
 
@@ -5039,17 +230,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return tridentMap[matches[1]] || null;
 	            }
 	            return null;
-	        }()),
+	        }(),
 
-
-	        stringify: function (json) {
+	        stringify: function stringify(json) {
 	            if (typeof JSON !== 'undefined' && JSON.stringify) {
 	                return JSON.stringify(json);
 	            } else {
 	                var s = '',
 	                    arr = [];
 
-	                var iterate = function (json) {
+	                var iterate = function iterate(json) {
 	                    var isArr = false;
 
 	                    if (Object.prototype.toString.call(json) === '[object Array]') {
@@ -5066,7 +256,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            json[o] = 'undefined';
 	                        }
 
-	                        if (json[o] && typeof json[o] === 'object') {
+	                        if (json[o] && _typeof(json[o]) === 'object') {
 	                            s += ',' + (isArr ? '' : '"' + o + '":' + (isArr ? '"' : '')) + iterate(json[o]) + '';
 	                        } else {
 	                            s += ',"' + (isArr ? '' : o + '":"') + json[o] + '"';
@@ -5082,7 +272,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return iterate(json);
 	            }
 	        },
-	        login: function (options) {
+	        login: function login(options) {
 	            var options = options || {};
 	            var suc = options.success || EMPTYFN;
 	            var err = options.error || EMPTYFN;
@@ -5122,7 +312,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return utils.ajax(options);
 	        },
 
-	        getFileUrl: function (fileInputId) {
+	        getFileUrl: function getFileUrl(fileInputId) {
 	            var uri = {
 	                url: '',
 	                filename: '',
@@ -5144,29 +334,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        uri.url = window.URL.createObjectURL(u);
 	                        uri.filename = u.name || '';
 	                    }
-	                } else { // IE
+	                } else {
+	                    // IE
 	                    var u = document.getElementById(fileInputId).value;
 	                    uri.url = u;
 	                    var pos1 = u.lastIndexOf('/');
 	                    var pos2 = u.lastIndexOf('\\');
 	                    var pos = Math.max(pos1, pos2);
-	                    if (pos < 0)
-	                        uri.filename = u;
-	                    else
-	                        uri.filename = u.substring(pos + 1);
+	                    if (pos < 0) uri.filename = u;else uri.filename = u.substring(pos + 1);
 	                }
 	                var index = uri.filename.lastIndexOf('.');
 	                if (index != -1) {
 	                    uri.filetype = uri.filename.substring(index + 1).toLowerCase();
 	                }
 	                return uri;
-
 	            } catch (e) {
 	                throw e;
 	            }
 	        },
 
-	        getFileSize: function (file) {
+	        getFileSize: function getFileSize(file) {
 	            var fileSize = this.getFileLength(file);
 	            if (fileSize > 10000000) {
 	                return false;
@@ -5186,7 +373,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return fileSize;
 	        },
 
-	        getFileLength: function (file) {
+	        getFileLength: function getFileLength(file) {
 	            var fileLength = 0;
 	            if (file) {
 	                if (file.files) {
@@ -5205,16 +392,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        hasFlash: _hasFlash,
 
-	        trim: function (str) {
+	        trim: function trim(str) {
 
 	            str = typeof str === 'string' ? str : '';
 
-	            return str.trim
-	                ? str.trim()
-	                : str.replace(/^\s|\s$/g, '');
+	            return str.trim ? str.trim() : str.replace(/^\s|\s$/g, '');
 	        },
 
-	        parseEmoji: function (msg) {
+	        parseEmoji: function parseEmoji(msg) {
 	            if (typeof WebIM.Emoji === 'undefined' || typeof WebIM.Emoji.map === 'undefined') {
 	                return msg;
 	            } else {
@@ -5232,7 +417,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        },
 
-	        parseLink: function (msg) {
+	        parseLink: function parseLink(msg) {
 
 	            var reg = /(https?\:\/\/|www\.)([a-zA-Z0-9-]+(\.[a-zA-Z0-9]+)+)(\:[0-9]{2,4})?\/?((\.[:_0-9a-zA-Z-]+)|[:_0-9a-zA-Z-]*\/?)*\??[:_#@*&%0-9a-zA-Z-/=]*/gm;
 
@@ -5240,19 +425,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	                var prefix = /^https?/gm.test(v);
 
-	                return "<a href='"
-	                    + (prefix ? v : '//' + v)
-	                    + "' target='_blank'>"
-	                    + v
-	                    + "</a>";
-
+	                return "<a href='" + (prefix ? v : '//' + v) + "' target='_blank'>" + v + "</a>";
 	            });
 
 	            return msg;
-
 	        },
 
-	        parseJSON: function (data) {
+	        parseJSON: function parseJSON(data) {
 
 	            if (window.JSON && window.JSON.parse) {
 	                return window.JSON.parse(data + '');
@@ -5262,39 +441,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	                depth = null,
 	                str = utils.trim(data + '');
 
-	            return str && !utils.trim(
-	                str.replace(/(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g
-	                    , function (token, comma, open, close) {
+	            return str && !utils.trim(str.replace(/(,)|(\[|{)|(}|])|"(?:[^"\\\r\n]|\\["\\\/bfnrt]|\\u[\da-fA-F]{4})*"\s*:?|true|false|null|-?(?!0\d)\d+(?:\.\d+|)(?:[eE][+-]?\d+|)/g, function (token, comma, open, close) {
 
-	                        if (requireNonComma && comma) {
-	                            depth = 0;
-	                        }
+	                if (requireNonComma && comma) {
+	                    depth = 0;
+	                }
 
-	                        if (depth === 0) {
-	                            return token;
-	                        }
+	                if (depth === 0) {
+	                    return token;
+	                }
 
-	                        requireNonComma = open || comma;
-	                        depth += !close - !open;
-	                        return '';
-	                    })
-	            )
-	                ? (Function('return ' + str))()
-	                : (Function('Invalid JSON: ' + data))();
+	                requireNonComma = open || comma;
+	                depth += !close - !open;
+	                return '';
+	            })) ? Function('return ' + str)() : Function('Invalid JSON: ' + data)();
 	        },
 
-	        parseUploadResponse: function (response) {
+	        parseUploadResponse: function parseUploadResponse(response) {
 	            return response.indexOf('callback') > -1 ? //lte ie9
-	                response.slice(9, -1) : response;
+	            response.slice(9, -1) : response;
 	        },
 
-	        parseDownloadResponse: function (response) {
-	            return ((response && response.type && response.type === 'application/json')
-	            || 0 > Object.prototype.toString.call(response).indexOf('Blob'))
-	                ? this.url + '?token=' : window.URL.createObjectURL(response);
+	        parseDownloadResponse: function parseDownloadResponse(response) {
+	            return response && response.type && response.type === 'application/json' || 0 > Object.prototype.toString.call(response).indexOf('Blob') ? this.url + '?token=' : window.URL.createObjectURL(response);
 	        },
 
-	        uploadFile: function (options) {
+	        uploadFile: function uploadFile(options) {
 	            var options = options || {};
 	            options.onFileUploadProgress = options.onFileUploadProgress || EMPTYFN;
 	            options.onFileUploadComplete = options.onFileUploadComplete || EMPTYFN;
@@ -5304,8 +476,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var acc = options.accessToken || this.context.accessToken;
 	            if (!acc) {
 	                options.onFileUploadError({
-	                    type: _code.WEBIM_UPLOADFILE_NO_LOGIN
-	                    , id: options.id
+	                    type: _code.WEBIM_UPLOADFILE_NO_LOGIN,
+	                    id: options.id
 	                });
 	                return;
 	            }
@@ -5321,8 +493,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            if (!orgName && !appName) {
 	                options.onFileUploadError({
-	                    type: _code.WEBIM_UPLOADFILE_ERROR
-	                    , id: options.id
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
 	                });
 	                return;
 	            }
@@ -5335,8 +507,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    options.flashUpload && options.flashUpload(uploadUrl, options);
 	                } else {
 	                    options.onFileUploadError({
-	                        type: _code.WEBIM_UPLOADFILE_BROWSER_ERROR
-	                        , id: options.id
+	                        type: _code.WEBIM_UPLOADFILE_BROWSER_ERROR,
+	                        id: options.id
 	                    });
 	                }
 	                return;
@@ -5345,20 +517,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var fileSize = options.file.data ? options.file.data.size : undefined;
 	            if (fileSize > WEBIM_FILESIZE_LIMIT) {
 	                options.onFileUploadError({
-	                    type: _code.WEBIM_UPLOADFILE_ERROR
-	                    , id: options.id
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
 	                });
 	                return;
 	            } else if (fileSize <= 0) {
 	                options.onFileUploadError({
-	                    type: _code.WEBIM_UPLOADFILE_ERROR
-	                    , id: options.id
+	                    type: _code.WEBIM_UPLOADFILE_ERROR,
+	                    id: options.id
 	                });
 	                return;
 	            }
 
 	            var xhr = utils.xmlrequest();
-	            var onError = function (e) {
+	            var onError = function onError(e) {
 	                options.onFileUploadError({
 	                    type: _code.WEBIM_UPLOADFILE_ERROR,
 	                    id: options.id,
@@ -5377,8 +549,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            options.onFileUploadComplete(json);
 	                        } catch (e) {
 	                            options.onFileUploadError({
-	                                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR
-	                                , data: e
+	                                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                                data: e
 	                            });
 	                        }
 	                    } catch (e) {
@@ -5418,24 +590,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        xhr.abort();
 	                        options.onFileUploadCanceled();
 	                    }
-	                }
+	                };
 	            }
 
 	            xhr.open('POST', uploadUrl);
 
 	            xhr.setRequestHeader('restrict-access', 'true');
-	            xhr.setRequestHeader('Accept', '*/*');// Android QQ browser has some problem with this attribute.
+	            xhr.setRequestHeader('Accept', '*/*'); // Android QQ browser has some problem with this attribute.
 	            xhr.setRequestHeader('Authorization', 'Bearer ' + acc);
 
 	            var formData = new FormData();
 	            formData.append('file', options.file.data);
 	            // fix: ie8 status error
-	            window.XDomainRequest && (xhr.readyState = 2)
+	            window.XDomainRequest && (xhr.readyState = 2);
 	            xhr.send(formData);
 	        },
 
-
-	        download: function (options) {
+	        download: function download(options) {
 	            options.onFileDownloadComplete = options.onFileDownloadComplete || EMPTYFN;
 	            options.onFileDownloadError = options.onFileDownloadError || EMPTYFN;
 
@@ -5448,7 +619,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return;
 	            }
 
-	            var onError = function (e) {
+	            var onError = function onError(e) {
 	                options.onFileDownloadError({
 	                    type: _code.WEBIM_DOWNLOADFILE_ERROR,
 	                    id: options.id,
@@ -5486,7 +657,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                            xhr: xhr
 	                        });
 	                    }
-	                }
+	                };
 	            }
 
 	            var method = options.method || 'GET';
@@ -5515,11 +686,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 	            // fix: ie8 status error
-	            window.XDomainRequest && (xhr.readyState = 2)
+	            window.XDomainRequest && (xhr.readyState = 2);
 	            xhr.send(null);
 	        },
 
-	        parseTextMessage: function (message, faces) {
+	        parseTextMessage: function parseTextMessage(message, faces) {
 	            if (typeof message !== 'string') {
 	                return;
 	            }
@@ -5527,12 +698,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (Object.prototype.toString.call(faces) !== '[object Object]') {
 	                return {
 	                    isemoji: false,
-	                    body: [
-	                        {
-	                            type: 'txt',
-	                            data: message
-	                        }
-	                    ]
+	                    body: [{
+	                        type: 'txt',
+	                        data: message
+	                    }]
 	                };
 	            }
 
@@ -5544,12 +713,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!emoji || emoji.length < 1) {
 	                return {
 	                    isemoji: false,
-	                    body: [
-	                        {
-	                            type: 'txt',
-	                            data: message
-	                        }
-	                    ]
+	                    body: [{
+	                        type: 'txt',
+	                        data: message
+	                    }]
 	                };
 	            }
 	            var isemoji = false;
@@ -5601,16 +768,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            return {
 	                isemoji: false,
-	                body: [
-	                    {
-	                        type: 'txt',
-	                        data: message
-	                    }
-	                ]
+	                body: [{
+	                    type: 'txt',
+	                    data: message
+	                }]
 	            };
 	        },
 
-	        parseUri: function () {
+	        parseUri: function parseUri() {
 	            var pattern = /([^\?|&])\w+=([^&]+)/g;
 	            var uri = {};
 	            if (window.location.search) {
@@ -5626,7 +791,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return uri;
 	        },
 
-	        parseHrefHash: function () {
+	        parseHrefHash: function parseHrefHash() {
 	            var pattern = /([^\#|&])\w+=([^&]+)/g;
 	            var uri = {};
 	            if (window.location.hash) {
@@ -5644,8 +809,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        xmlrequest: _xmlrequest,
 
-
-	        getXmlFirstChild: function (data, tagName) {
+	        getXmlFirstChild: function getXmlFirstChild(data, tagName) {
 	            var children = data.getElementsByTagName(tagName);
 	            if (children.length == 0) {
 	                return null;
@@ -5653,7 +817,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return children[0];
 	            }
 	        },
-	        ajax: function (options) {
+	        ajax: function ajax(options) {
 	            var dataType = options.dataType || 'text';
 	            var suc = options.success || EMPTYFN;
 	            var error = options.error || EMPTYFN;
@@ -5744,11 +908,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	            }
 	            // fix: ie8 status error
-	            window.XDomainRequest && (xhr.readyState = 2)
+	            window.XDomainRequest && (xhr.readyState = 2);
 	            xhr.send(data);
 	            return xhr;
 	        },
-	        ts: function () {
+	        ts: function ts() {
 	            var d = new Date();
 	            var Hours = d.getHours(); //获取当前小时数(0-23)
 	            var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
@@ -5757,7 +921,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
 	        },
 
-	        getObjectKey: function (obj, val) {
+	        getObjectKey: function getObjectKey(obj, val) {
 	            for (var key in obj) {
 	                if (obj[key] == val) {
 	                    return key;
@@ -5766,25 +930,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return '';
 	        },
 
-	        sprintf: function () {
+	        sprintf: function sprintf() {
 	            var arg = arguments,
 	                str = arg[0] || '',
-	                i, len;
+	                i,
+	                len;
 	            for (i = 1, len = arg.length; i < len; i++) {
 	                str = str.replace(/%s/, arg[i]);
 	            }
 	            return str;
 	        },
 
-	        setCookie: function (name, value, days) {
+	        setCookie: function setCookie(name, value, days) {
 	            var cookie = name + '=' + encodeURIComponent(value);
 	            if (typeof days == 'number') {
-	                cookie += '; max-age: ' + (days * 60 * 60 * 24);
+	                cookie += '; max-age: ' + days * 60 * 60 * 24;
 	            }
 	            document.cookie = cookie;
 	        },
 
-	        getCookie: function () {
+	        getCookie: function getCookie() {
 	            var allCookie = {};
 	            var all = document.cookie;
 	            if (all === "") {
@@ -5803,391 +968,111 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 
-
 	    exports.utils = utils;
-	}());
+	})();
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
 
-	var CryptoJS = __webpack_require__(5);
-	;(function () {
-	    'use strict';
+/***/ 207:
+/***/ (function(module, exports) {
 
-	    var _utils = __webpack_require__(3).utils;
-	    var Message = function (type, id) {
-	        if (!this instanceof Message) {
-	            return new Message(type);
-	        }
+	"use strict";
 
-	        this._msg = {};
+	;
+	(function () {
 
-	        if (typeof Message[type] === 'function') {
-	            Message[type].prototype.setGroup = this.setGroup;
-	            this._msg = new Message[type](id);
-	        }
-	        return this._msg;
-	    }
-	    Message.prototype.setGroup = function (group) {
-	        this.body.group = group;
-	    }
+	    exports.code = {
+	        WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: 0,
+	        WEBIM_CONNCTION_OPEN_ERROR: 1,
+	        WEBIM_CONNCTION_AUTH_ERROR: 2,
+	        WEBIM_CONNCTION_OPEN_USERGRID_ERROR: 3,
+	        WEBIM_CONNCTION_ATTACH_ERROR: 4,
+	        WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: 5,
+	        WEBIM_CONNCTION_REOPEN_ERROR: 6,
+	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7, //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+	        WEBIM_CONNCTION_SERVER_ERROR: 8, //8: offline by multi login
+	        WEBIM_CONNCTION_IQ_ERROR: 9,
 
-	    /*
-	     * Read Message
-	     */
-	    Message.read = function (id) {
-	        this.id = id;
-	        this.type = 'read';
+	        WEBIM_CONNCTION_PING_ERROR: 10,
+	        WEBIM_CONNCTION_NOTIFYVERSION_ERROR: 11,
+	        WEBIM_CONNCTION_GETROSTER_ERROR: 12,
+	        WEBIM_CONNCTION_CROSSDOMAIN_ERROR: 13,
+	        WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: 14,
+	        WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: 15,
+	        WEBIM_CONNCTION_DISCONNECTED: 16, //16: server-side close the websocket connection
+	        WEBIM_CONNCTION_AJAX_ERROR: 17,
+	        WEBIM_CONNCTION_JOINROOM_ERROR: 18,
+	        WEBIM_CONNCTION_GETROOM_ERROR: 19,
+
+	        WEBIM_CONNCTION_GETROOMINFO_ERROR: 20,
+	        WEBIM_CONNCTION_GETROOMMEMBER_ERROR: 21,
+	        WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR: 22,
+	        WEBIM_CONNCTION_LOAD_CHATROOM_ERROR: 23,
+	        WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR: 24,
+	        WEBIM_CONNCTION_JOINCHATROOM_ERROR: 25,
+	        WEBIM_CONNCTION_QUITCHATROOM_ERROR: 26,
+	        WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR: 27,
+	        WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR: 28,
+	        WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: 29,
+
+	        WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: 30,
+	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31, //31: 处理下行消息出错 try/catch抛出异常
+	        WEBIM_CONNCTION_CLIENT_OFFLINE: 32, //32: client offline
+	        WEBIM_CONNCTION_CLIENT_LOGOUT: 33, //33: client logout
+	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34, // 34: Over amount of the tabs a user opened in the same browser
+	        WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP: 35,
+	        WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP: 36,
+	        WEBIM_CONNECTION_ACCEPT_JOIN_GROUP: 37,
+	        WEBIM_CONNECTION_DECLINE_JOIN_GROUP: 38,
+	        WEBIM_CONNECTION_CLOSED: 39,
+
+	        WEBIM_UPLOADFILE_BROWSER_ERROR: 100,
+	        WEBIM_UPLOADFILE_ERROR: 101,
+	        WEBIM_UPLOADFILE_NO_LOGIN: 102,
+	        WEBIM_UPLOADFILE_NO_FILE: 103,
+
+	        WEBIM_DOWNLOADFILE_ERROR: 200,
+	        WEBIM_DOWNLOADFILE_NO_LOGIN: 201,
+	        WEBIM_DOWNLOADFILE_BROWSER_ERROR: 202,
+
+	        WEBIM_MESSAGE_REC_TEXT: 300,
+	        WEBIM_MESSAGE_REC_TEXT_ERROR: 301,
+	        WEBIM_MESSAGE_REC_EMOTION: 302,
+	        WEBIM_MESSAGE_REC_PHOTO: 303,
+	        WEBIM_MESSAGE_REC_AUDIO: 304,
+	        WEBIM_MESSAGE_REC_AUDIO_FILE: 305,
+	        WEBIM_MESSAGE_REC_VEDIO: 306,
+	        WEBIM_MESSAGE_REC_VEDIO_FILE: 307,
+	        WEBIM_MESSAGE_REC_FILE: 308,
+	        WEBIM_MESSAGE_SED_TEXT: 309,
+	        WEBIM_MESSAGE_SED_EMOTION: 310,
+	        WEBIM_MESSAGE_SED_PHOTO: 311,
+	        WEBIM_MESSAGE_SED_AUDIO: 312,
+	        WEBIM_MESSAGE_SED_AUDIO_FILE: 313,
+	        WEBIM_MESSAGE_SED_VEDIO: 314,
+	        WEBIM_MESSAGE_SED_VEDIO_FILE: 315,
+	        WEBIM_MESSAGE_SED_FILE: 316,
+	        WEBIM_MESSAGE_SED_ERROR: 317,
+
+	        STATUS_INIT: 400,
+	        STATUS_DOLOGIN_USERGRID: 401,
+	        STATUS_DOLOGIN_IM: 402,
+	        STATUS_OPENED: 403,
+	        STATUS_CLOSING: 404,
+	        STATUS_CLOSED: 405,
+	        STATUS_ERROR: 406
 	    };
-
-	    Message.read.prototype.set = function (opt) {
-	        this.body = {
-	            ackId: opt.id
-	            , to: opt.to
-	        }
-	    };
-
-	    /*
-	     * deliver message
-	     */
-	    Message.delivery = function (id) {
-	        this.id = id;
-	        this.type = 'delivery';
-	    };
-
-	    Message.delivery.prototype.set = function (opt) {
-	        this.body = {
-	            bodyId: opt.id
-	            , to: opt.to
-	        };
-	    };
-
-	    /*
-	     * text message
-	     */
-	    Message.txt = function (id) {
-	        this.id = id;
-	        this.type = 'txt';
-	        this.body = {};
-	    };
-	    Message.txt.prototype.set = function (opt) {
-	        this.value = opt.msg;
-	        this.body = {
-	            id: this.id
-	            , to: opt.to
-	            , msg: this.value
-	            , type: this.type
-	            , roomType: opt.roomType
-	            , ext: opt.ext || {}
-	            , success: opt.success
-	            , fail: opt.fail
-	        };
-
-	        !opt.roomType && delete this.body.roomType;
-
-	    };
-
-	    /*
-	     * cmd message
-	     */
-	    Message.cmd = function (id) {
-	        this.id = id;
-	        this.type = 'cmd';
-	        this.body = {};
-	    };
-	    Message.cmd.prototype.set = function (opt) {
-	        this.value = '';
-
-	        this.body = {
-	            to: opt.to
-	            , action: opt.action
-	            , msg: this.value
-	            , type: this.type
-	            , roomType: opt.roomType
-	            , ext: opt.ext || {}
-	            , success: opt.success
-	        };
-	        !opt.roomType && delete this.body.roomType;
-	    };
-
-	    /*
-	     * loc message
-	     */
-	    Message.location = function (id) {
-	        this.id = id;
-	        this.type = 'loc';
-	        this.body = {};
-	    };
-	    Message.location.prototype.set = function (opt) {
-	        this.body = {
-	            to: opt.to
-	            , type: this.type
-	            , roomType: opt.roomType
-	            , addr: opt.addr
-	            , lat: opt.lat
-	            , lng: opt.lng
-	            , ext: opt.ext || {}
-	        };
-	    };
-
-	    /*
-	     * img message
-	     */
-	    Message.img = function (id) {
-	        this.id = id;
-	        this.type = 'img';
-	        this.body = {};
-	    };
-	    Message.img.prototype.set = function (opt) {
-	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
-
-	        this.value = opt.file;
-
-	        this.body = {
-	            id: this.id,
-	            file: this.value,
-	            apiUrl: opt.apiUrl,
-	            to: opt.to,
-	            type: this.type,
-	            ext: opt.ext || {},
-	            roomType: opt.roomType,
-	            onFileUploadError: opt.onFileUploadError,
-	            onFileUploadComplete: opt.onFileUploadComplete,
-	            success: opt.success,
-	            fail: opt.fail,
-	            flashUpload: opt.flashUpload,
-	            width: opt.width,
-	            height: opt.height,
-	            body: opt.body,
-	            uploadError: opt.uploadError,
-	            uploadComplete: opt.uploadComplete
-	        };
-
-	        !opt.roomType && delete this.body.roomType;
-	    };
-
-	    /*
-	     * audio message
-	     */
-	    Message.audio = function (id) {
-	        this.id = id;
-	        this.type = 'audio';
-	        this.body = {};
-	    };
-	    Message.audio.prototype.set = function (opt) {
-	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
-
-	        this.value = opt.file;
-	        this.filename = opt.filename || this.value.filename;
-
-	        this.body = {
-	            id: this.id
-	            , file: this.value
-	            , filename: this.filename
-	            , apiUrl: opt.apiUrl
-	            , to: opt.to
-	            , type: this.type
-	            , ext: opt.ext || {}
-	            , length: opt.length || 0
-	            , roomType: opt.roomType
-	            , file_length: opt.file_length
-	            , onFileUploadError: opt.onFileUploadError
-	            , onFileUploadComplete: opt.onFileUploadComplete
-	            , success: opt.success
-	            , fail: opt.fail
-	            , flashUpload: opt.flashUpload
-	            , body: opt.body
-	        };
-	        !opt.roomType && delete this.body.roomType;
-	    };
-
-	    /*
-	     * file message
-	     */
-	    Message.file = function (id) {
-	        this.id = id;
-	        this.type = 'file';
-	        this.body = {};
-	    };
-	    Message.file.prototype.set = function (opt) {
-	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
-
-	        this.value = opt.file;
-	        this.filename = opt.filename || this.value.filename;
-
-	        this.body = {
-	            id: this.id
-	            , file: this.value
-	            , filename: this.filename
-	            , apiUrl: opt.apiUrl
-	            , to: opt.to
-	            , type: this.type
-	            , ext: opt.ext || {}
-	            , roomType: opt.roomType
-	            , onFileUploadError: opt.onFileUploadError
-	            , onFileUploadComplete: opt.onFileUploadComplete
-	            , success: opt.success
-	            , fail: opt.fail
-	            , flashUpload: opt.flashUpload
-	            , body: opt.body
-	        };
-	        !opt.roomType && delete this.body.roomType;
-	    };
-
-	    /*
-	     * video message
-	     */
-	    Message.video = function (id) {
-
-	    };
-	    Message.video.prototype.set = function (opt) {
-
-	    };
-
-	    var _Message = function (message) {
-
-	        if (!this instanceof _Message) {
-	            return new _Message(message, conn);
-	        }
-
-	        this.msg = message;
-	    };
-
-	    _Message.prototype.send = function (conn) {
-	        var me = this;
-
-	        var _send = function (message) {
-
-	            message.ext = message.ext || {};
-	            message.ext.weichat = message.ext.weichat || {};
-	            message.ext.weichat.originType = message.ext.weichat.originType || 'webim';
-
-	            var dom;
-	            var json = {
-	                from: conn.context.userId || ''
-	                , to: message.to
-	                , bodies: [message.body]
-	                , ext: message.ext || {}
-	            };
-	            var jsonstr = _utils.stringify(json);
-	            dom = $msg({
-	                type: message.group || 'chat'
-	                , to: message.toJid
-	                , id: message.id
-	                , xmlns: 'jabber:client'
-	            }).c('body').t(jsonstr);
-
-	            if (message.roomType) {
-	                dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
-	            }
-	            if (message.bodyId) {
-	                dom = $msg({
-	                    from: conn.context.jid || ''
-	                    , to: message.toJid
-	                    , id: message.id
-	                    , xmlns: 'jabber:client'
-	                }).c('body').t(message.bodyId);
-	                var delivery = {
-	                    xmlns: 'urn:xmpp:receipts'
-	                    , id: message.bodyId
-	                };
-	                dom.up().c('delivery', delivery);
-	            }
-	            if (message.ackId) {
-
-	                if (conn.context.jid.indexOf(message.toJid) >= 0) {
-	                    return;
-	                }
-	                dom = $msg({
-	                    from: conn.context.jid || ''
-	                    , to: message.toJid
-	                    , id: message.id
-	                    , xmlns: 'jabber:client'
-	                }).c('body').t(message.ackId);
-	                var read = {
-	                    xmlns: 'urn:xmpp:receipts'
-	                    , id: message.ackId
-	                };
-	                dom.up().c('acked', read);
-	            }
-
-	            setTimeout(function () {
-	                if (typeof _msgHash !== 'undefined' && _msgHash[message.id]) {
-	                    _msgHash[message.id].msg.fail instanceof Function
-	                    && _msgHash[message.id].msg.fail(message.id);
-	                }
-	            }, 60000);
-	            conn.sendCommand(dom.tree(), message.id);
-	        };
-
-
-	        if (me.msg.file) {
-	            if (me.msg.body && me.msg.body.url) {// Only send msg
-	                _send(me.msg);
-	                return;
-	            }
-	            var _tmpComplete = me.msg.onFileUploadComplete;
-	            var _complete = function (data) {
-	                if (data.entities[0]['file-metadata']) {
-	                    var file_len = data.entities[0]['file-metadata']['content-length'];
-	                    // me.msg.file_length = file_len;
-	                    me.msg.filetype = data.entities[0]['file-metadata']['content-type'];
-	                    if (file_len > 204800) {
-	                        me.msg.thumbnail = true;
-	                    }
-	                }
-
-	                me.msg.body = {
-	                    type: me.msg.type || 'file'
-	                    ,
-	                    url: ((location.protocol != 'https:' && conn.isHttpDNS) ? (conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0]['uuid']
-	                    , secret: data.entities[0]['share-secret']
-	                    , filename: me.msg.file.filename || me.msg.filename
-	                    , size: {
-	                        width: me.msg.width || 0
-	                        , height: me.msg.height || 0
-	                    }
-	                    , length: me.msg.length || 0
-	                    , file_length: me.msg.ext.file_length || 0
-	                    , filetype: me.msg.filetype
-	                }
-	                _send(me.msg);
-	                _tmpComplete instanceof Function && _tmpComplete(data, me.msg.id);
-	            };
-
-	            me.msg.onFileUploadComplete = _complete;
-	            _utils.uploadFile.call(conn, me.msg);
-	        } else {
-	            me.msg.body = {
-	                type: me.msg.type === 'chat' ? 'txt' : me.msg.type
-	                , msg: me.msg.msg
-	            };
-	            if (me.msg.type === 'cmd') {
-	                me.msg.body.action = me.msg.action;
-	            } else if (me.msg.type === 'loc') {
-	                me.msg.body.addr = me.msg.addr;
-	                me.msg.body.lat = me.msg.lat;
-	                me.msg.body.lng = me.msg.lng;
-	            }
-
-	            _send(me.msg);
-	        }
-	    };
-
-	    exports._msg = _Message;
-	    exports.message = Message;
-	}());
-
+	})();
 
 /***/ }),
-/* 5 */
+
+/***/ 211:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(7), __webpack_require__(8), __webpack_require__(9), __webpack_require__(10), __webpack_require__(11), __webpack_require__(12), __webpack_require__(13), __webpack_require__(14), __webpack_require__(15), __webpack_require__(16), __webpack_require__(17), __webpack_require__(18), __webpack_require__(19), __webpack_require__(20), __webpack_require__(21), __webpack_require__(22), __webpack_require__(23), __webpack_require__(24), __webpack_require__(25), __webpack_require__(26), __webpack_require__(27), __webpack_require__(28), __webpack_require__(29), __webpack_require__(30), __webpack_require__(31), __webpack_require__(32), __webpack_require__(33), __webpack_require__(34), __webpack_require__(35), __webpack_require__(36), __webpack_require__(37), __webpack_require__(38));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(213), __webpack_require__(214), __webpack_require__(215), __webpack_require__(216), __webpack_require__(217), __webpack_require__(218), __webpack_require__(219), __webpack_require__(220), __webpack_require__(221), __webpack_require__(222), __webpack_require__(223), __webpack_require__(224), __webpack_require__(225), __webpack_require__(226), __webpack_require__(227), __webpack_require__(228), __webpack_require__(229), __webpack_require__(230), __webpack_require__(231), __webpack_require__(232), __webpack_require__(233), __webpack_require__(234), __webpack_require__(235), __webpack_require__(236), __webpack_require__(237), __webpack_require__(238), __webpack_require__(239), __webpack_require__(240), __webpack_require__(241), __webpack_require__(242), __webpack_require__(243), __webpack_require__(244));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -6204,7 +1089,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 6 */
+
+/***/ 212:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
@@ -6969,13 +1855,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 7 */
+
+/***/ 213:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7278,13 +2165,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 8 */
+
+/***/ 214:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7359,13 +2247,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 9 */
+
+/***/ 215:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7513,13 +2402,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 10 */
+
+/***/ 216:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7653,13 +2543,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 11 */
+
+/***/ 217:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -7926,13 +2817,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 12 */
+
+/***/ 218:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -8081,13 +2973,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 13 */
+
+/***/ 219:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -8285,13 +3178,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 14 */
+
+/***/ 220:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(13));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(219));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -8370,13 +3264,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 15 */
+
+/***/ 221:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(7));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(213));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -8698,13 +3593,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 16 */
+
+/***/ 222:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(7), __webpack_require__(15));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(213), __webpack_require__(221));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -8786,13 +3682,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 17 */
+
+/***/ 223:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(7));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(213));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -9114,13 +4011,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 18 */
+
+/***/ 224:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -9386,13 +4284,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 19 */
+
+/***/ 225:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6));
+			module.exports = exports = factory(__webpack_require__(212));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -9534,13 +4433,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 20 */
+
+/***/ 226:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(12), __webpack_require__(19));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(218), __webpack_require__(225));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -9684,13 +4584,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 21 */
+
+/***/ 227:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(12), __webpack_require__(19));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(218), __webpack_require__(225));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -9821,13 +4722,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 22 */
+
+/***/ 228:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(21));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(227));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -10706,13 +5608,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 23 */
+
+/***/ 229:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -10789,13 +5692,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 24 */
+
+/***/ 230:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -10852,13 +5756,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 25 */
+
+/***/ 231:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -10973,13 +5878,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 26 */
+
+/***/ 232:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -11032,13 +5938,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 27 */
+
+/***/ 233:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -11077,13 +5984,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 28 */
+
+/***/ 234:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -11131,13 +6039,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 29 */
+
+/***/ 235:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -11180,13 +6089,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 30 */
+
+/***/ 236:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -11225,13 +6135,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 31 */
+
+/***/ 237:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -11275,13 +6186,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 32 */
+
+/***/ 238:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -11310,13 +6222,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 33 */
+
+/***/ 239:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -11381,13 +6294,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 34 */
+
+/***/ 240:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(10), __webpack_require__(11), __webpack_require__(21), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(216), __webpack_require__(217), __webpack_require__(227), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -11618,13 +6532,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 35 */
+
+/***/ 241:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(10), __webpack_require__(11), __webpack_require__(21), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(216), __webpack_require__(217), __webpack_require__(227), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -12393,13 +7308,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 36 */
+
+/***/ 242:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(10), __webpack_require__(11), __webpack_require__(21), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(216), __webpack_require__(217), __webpack_require__(227), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -12537,13 +7453,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 37 */
+
+/***/ 243:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(10), __webpack_require__(11), __webpack_require__(21), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(216), __webpack_require__(217), __webpack_require__(227), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -12734,13 +7651,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 38 */
+
+/***/ 244:
 /***/ (function(module, exports, __webpack_require__) {
 
 	;(function (root, factory, undef) {
 		if (true) {
 			// CommonJS
-			module.exports = exports = factory(__webpack_require__(6), __webpack_require__(10), __webpack_require__(11), __webpack_require__(21), __webpack_require__(22));
+			module.exports = exports = factory(__webpack_require__(212), __webpack_require__(216), __webpack_require__(217), __webpack_require__(227), __webpack_require__(228));
 		}
 		else if (typeof define === "function" && define.amd) {
 			// AMD
@@ -12929,8 +7847,4989 @@ return /******/ (function(modules) { // webpackBootstrap
 	}));
 
 /***/ }),
-/* 39 */
+
+/***/ 247:
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(248);
+
+/***/ }),
+
+/***/ 248:
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	var _version = '1.4.2';
+	var _code = __webpack_require__(207).code;
+	var _utils = __webpack_require__(206).utils;
+	var _msg = __webpack_require__(249);
+	var _message = _msg._msg;
+	var _msgHash = {};
+	var Queue = __webpack_require__(250).Queue;
+	var CryptoJS = __webpack_require__(211);
+	var _ = __webpack_require__(251);
+	var stropheConn = null;
+
+	window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+	if (window.XDomainRequest) {
+	    // not support ie8 send is not a function , canot 
+	    // case send is object, doesn't has a attr of call
+	    // XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
+	    // XDomainRequest.prototype.send = function () {
+	    //     XDomainRequest.prototype.oldsend.call(this, arguments);
+	    //     this.readyState = 2;
+	    // };
+	}
+
+	Strophe.Connection.prototype._sasl_auth1_cb = function (elem) {
+	    // save stream:features for future usage
+	    this.features = elem;
+	    var i, child;
+	    for (i = 0; i < elem.childNodes.length; i++) {
+	        child = elem.childNodes[i];
+	        if (child.nodeName == 'bind') {
+	            this.do_bind = true;
+	        }
+
+	        if (child.nodeName == 'session') {
+	            this.do_session = true;
+	        }
+	    }
+
+	    if (!this.do_bind) {
+	        this._changeConnectStatus(Strophe.Status.AUTHFAIL, null);
+	        return false;
+	    } else {
+	        this._addSysHandler(this._sasl_bind_cb.bind(this), null, null, null, "_bind_auth_2");
+
+	        var resource = Strophe.getResourceFromJid(this.jid);
+	        if (resource) {
+	            // this.send($iq({type: "set", id: "_bind_auth_2"})
+	            //     .c('bind', {xmlns: Strophe.NS.BIND})
+	            //     .c('resource', {}).t(resource).tree());
+	            var device_uuid = "device_uuid";
+	            if (this.options.isMultiLoginSessions) {
+	                device_uuid = new Date().getTime() + Math.floor(Math.random().toFixed(6) * 1000000);
+	            }
+	            try {
+	                this.send($iq({ type: "set", id: "_bind_auth_2" }).c('bind', { xmlns: Strophe.NS.BIND }).c('resource', {}).t(resource).up().c('os').t('webim').up().c('device_uuid').t(device_uuid).up().c('is_manual_login').t('true').tree());
+	            } catch (e) {
+	                console.log("Bind Error: ", e.message);
+	            }
+	        } else {
+	            this.send($iq({ type: "set", id: "_bind_auth_2" }).c('bind', { xmlns: Strophe.NS.BIND }).tree());
+	        }
+	    }
+	    return false;
+	};
+
+	Strophe.Request.prototype._newXHR = function () {
+	    var xhr = _utils.xmlrequest(true);
+	    if (xhr.overrideMimeType) {
+	        xhr.overrideMimeType('text/xml');
+	    }
+	    // use Function.bind() to prepend ourselves as an argument
+	    xhr.onreadystatechange = this.func.bind(null, this);
+	    return xhr;
+	};
+
+	Strophe.Websocket.prototype._closeSocket = function () {
+	    if (this.socket) {
+	        var me = this;
+	        setTimeout(function () {
+	            try {
+	                me.socket.close();
+	            } catch (e) {}
+	        }, 0);
+	    } else {
+	        this.socket = null;
+	    }
+	};
+
+	/**
+	 *
+	 * Strophe.Websocket has a bug while logout:
+	 * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
+	 * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
+	 * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+	 * 3 "Websocket error [object Event]"
+	 * _changeConnectStatus
+	 * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
+	 *
+	 * this will trigger socket.onError, therefore _doDisconnect again.
+	 * Fix it by overide  _onMessage
+	 */
+	Strophe.Websocket.prototype._onMessage = function (message) {
+	    logMessage(message);
+	    // 获取Resource
+	    var data = message.data;
+	    if (data.indexOf('<jid>') > 0) {
+	        var start = data.indexOf('<jid>'),
+	            end = data.indexOf('</jid>'),
+	            data = data.substring(start + 5, end);
+	        stropheConn.setJid(data);
+	    }
+
+	    var elem, data;
+	    // check for closing stream
+	    // var close = '<close xmlns="urn:ietf:params:xml:ns:xmpp-framing" />';
+	    // if (message.data === close) {
+	    //     this._conn.rawInput(close);
+	    //     this._conn.xmlInput(message);
+	    //     if (!this._conn.disconnecting) {
+	    //         this._conn._doDisconnect();
+	    //     }
+	    //     return;
+	    //
+	    // send and receive close xml: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/>
+	    // so we can't judge whether message.data equals close by === simply.
+	    if (message.data.indexOf("<close ") === 0) {
+	        elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
+	        var see_uri = elem.getAttribute("see-other-uri");
+	        if (see_uri) {
+	            this._conn._changeConnectStatus(Strophe.Status.REDIRECT, "Received see-other-uri, resetting connection");
+	            this._conn.reset();
+	            this._conn.service = see_uri;
+	            this._connect();
+	        } else {
+	            // if (!this._conn.disconnecting) {
+	            this._conn._doDisconnect("receive <close> from server");
+	            // }
+	        }
+	        return;
+	    } else if (message.data.search("<open ") === 0) {
+	        // This handles stream restarts
+	        elem = new DOMParser().parseFromString(message.data, "text/xml").documentElement;
+	        if (!this._handleStreamStart(elem)) {
+	            return;
+	        }
+	    } else {
+	        data = this._streamWrap(message.data);
+	        elem = new DOMParser().parseFromString(data, "text/xml").documentElement;
+	    }
+
+	    if (this._check_streamerror(elem, Strophe.Status.ERROR)) {
+	        return;
+	    }
+
+	    //handle unavailable presence stanza before disconnecting
+	    if (this._conn.disconnecting && elem.firstChild.nodeName === "presence" && elem.firstChild.getAttribute("type") === "unavailable") {
+	        this._conn.xmlInput(elem);
+	        this._conn.rawInput(Strophe.serialize(elem));
+	        // if we are already disconnecting we will ignore the unavailable stanza and
+	        // wait for the </stream:stream> tag before we close the connection
+	        return;
+	    }
+	    this._conn._dataRecv(elem, message.data);
+	};
+
+	var _listenNetwork = function _listenNetwork(onlineCallback, offlineCallback) {
+
+	    if (window.addEventListener) {
+	        window.addEventListener('online', onlineCallback);
+	        window.addEventListener('offline', offlineCallback);
+	    } else if (window.attachEvent) {
+	        if (document.body) {
+	            document.body.attachEvent('ononline', onlineCallback);
+	            document.body.attachEvent('onoffline', offlineCallback);
+	        } else {
+	            window.attachEvent('load', function () {
+	                document.body.attachEvent('ononline', onlineCallback);
+	                document.body.attachEvent('onoffline', offlineCallback);
+	            });
+	        }
+	    } else {
+	        /*var onlineTmp = window.ononline;
+	         var offlineTmp = window.onoffline;
+	          window.attachEvent('ononline', function () {
+	         try {
+	         typeof onlineTmp === 'function' && onlineTmp();
+	         } catch ( e ) {}
+	         onlineCallback();
+	         });
+	         window.attachEvent('onoffline', function () {
+	         try {
+	         typeof offlineTmp === 'function' && offlineTmp();
+	         } catch ( e ) {}
+	         offlineCallback();
+	         });*/
+	    }
+	};
+
+	var _parseRoom = function _parseRoom(result) {
+	    var rooms = [];
+	    var items = result.getElementsByTagName('item');
+	    if (items) {
+	        for (var i = 0; i < items.length; i++) {
+	            var item = items[i];
+	            var roomJid = item.getAttribute('jid');
+	            var tmp = roomJid.split('@')[0];
+	            var room = {
+	                jid: roomJid,
+	                name: item.getAttribute('name'),
+	                roomId: tmp.split('_')[1]
+	            };
+	            rooms.push(room);
+	        }
+	    }
+	    return rooms;
+	};
+
+	var _parseRoomOccupants = function _parseRoomOccupants(result) {
+	    var occupants = [];
+	    var items = result.getElementsByTagName('item');
+	    if (items) {
+	        for (var i = 0; i < items.length; i++) {
+	            var item = items[i];
+	            var room = {
+	                jid: item.getAttribute('jid'),
+	                name: item.getAttribute('name')
+	            };
+	            occupants.push(room);
+	        }
+	    }
+	    return occupants;
+	};
+
+	var _parseResponseMessage = function _parseResponseMessage(msginfo) {
+	    var parseMsgData = { errorMsg: true, data: [] };
+
+	    var msgBodies = msginfo.getElementsByTagName('body');
+	    if (msgBodies) {
+	        for (var i = 0; i < msgBodies.length; i++) {
+	            var msgBody = msgBodies[i];
+	            var childNodes = msgBody.childNodes;
+	            if (childNodes && childNodes.length > 0) {
+	                var childNode = msgBody.childNodes[0];
+	                if (childNode.nodeType == Strophe.ElementType.TEXT) {
+	                    var jsondata = childNode.wholeText || childNode.nodeValue;
+	                    jsondata = jsondata.replace('\n', '<br>');
+	                    try {
+	                        var data = eval('(' + jsondata + ')');
+	                        parseMsgData.errorMsg = false;
+	                        parseMsgData.data = [data];
+	                    } catch (e) {}
+	                }
+	            }
+	        }
+
+	        var delayTags = msginfo.getElementsByTagName('delay');
+	        if (delayTags && delayTags.length > 0) {
+	            var delayTag = delayTags[0];
+	            var delayMsgTime = delayTag.getAttribute('stamp');
+	            if (delayMsgTime) {
+	                parseMsgData.delayTimeStamp = delayMsgTime;
+	            }
+	        }
+	    } else {
+	        var childrens = msginfo.childNodes;
+	        if (childrens && childrens.length > 0) {
+	            var child = msginfo.childNodes[0];
+	            if (child.nodeType == Strophe.ElementType.TEXT) {
+	                try {
+	                    var data = eval('(' + child.nodeValue + ')');
+	                    parseMsgData.errorMsg = false;
+	                    parseMsgData.data = [data];
+	                } catch (e) {}
+	            }
+	        }
+	    }
+	    return parseMsgData;
+	};
+
+	var _parseNameFromJidFn = function _parseNameFromJidFn(jid, domain) {
+	    domain = domain || '';
+	    var tempstr = jid;
+	    var findex = tempstr.indexOf('_');
+
+	    if (findex !== -1) {
+	        tempstr = tempstr.substring(findex + 1);
+	    }
+	    var atindex = tempstr.indexOf('@' + domain);
+	    if (atindex !== -1) {
+	        tempstr = tempstr.substring(0, atindex);
+	    }
+	    return tempstr;
+	};
+
+	var _parseFriend = function _parseFriend(queryTag, conn, from) {
+	    var rouster = [];
+	    var items = queryTag.getElementsByTagName('item');
+	    if (items) {
+	        for (var i = 0; i < items.length; i++) {
+	            var item = items[i];
+	            var jid = item.getAttribute('jid');
+	            if (!jid) {
+	                continue;
+	            }
+	            var subscription = item.getAttribute('subscription');
+	            var friend = {
+	                subscription: subscription,
+	                jid: jid
+	            };
+	            var ask = item.getAttribute('ask');
+	            if (ask) {
+	                friend.ask = ask;
+	            }
+	            var name = item.getAttribute('name');
+	            if (name) {
+	                friend.name = name;
+	            } else {
+	                var n = _parseNameFromJidFn(jid);
+	                friend.name = n;
+	            }
+	            var groups = [];
+	            Strophe.forEachChild(item, 'group', function (group) {
+	                groups.push(Strophe.getText(group));
+	            });
+	            friend.groups = groups;
+	            rouster.push(friend);
+	            // B同意之后 -> B订阅A
+	            // fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
+	            if (conn && subscription == 'from' && !ask) {
+	                conn.subscribe({
+	                    toJid: jid,
+	                    message: "[resp:true]"
+	                });
+	            }
+
+	            if (conn && subscription == 'to') {
+	                conn.subscribed({
+	                    toJid: jid
+	                });
+	            }
+	        }
+	    }
+	    return rouster;
+	};
+
+	var _login = function _login(options, conn) {
+	    if (!options) {
+	        return;
+	    }
+	    var accessToken = options.access_token || '';
+	    if (accessToken == '') {
+	        var loginfo = _utils.stringify(options);
+	        conn.onError({
+	            type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
+	            data: options
+	        });
+	        return;
+	    }
+	    conn.context.accessToken = options.access_token;
+	    conn.context.accessTokenExpires = options.expires_in;
+	    if (conn.isOpening() && conn.context.stropheConn) {
+	        stropheConn = conn.getStrophe();
+	    } else if (conn.isOpened() && conn.context.stropheConn) {
+	        // return;
+	        stropheConn = conn.getStrophe();
+	    } else {
+	        stropheConn = conn.getStrophe();
+	    }
+	    var callback = function callback(status, msg) {
+	        _loginCallback(status, msg, conn);
+	    };
+
+	    conn.context.stropheConn = stropheConn;
+	    if (conn.route) {
+	        stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold, conn.route);
+	    } else {
+	        stropheConn.connect(conn.context.jid, '$t$' + accessToken, callback, conn.wait, conn.hold);
+	    }
+	};
+
+	var _parseMessageType = function _parseMessageType(msginfo) {
+	    var receiveinfo = msginfo.getElementsByTagName('received'),
+	        inviteinfo = msginfo.getElementsByTagName('invite'),
+	        deliveryinfo = msginfo.getElementsByTagName('delivery'),
+	        acked = msginfo.getElementsByTagName('acked'),
+	        error = msginfo.getElementsByTagName('error'),
+	        msgtype = 'normal';
+	    if (receiveinfo && receiveinfo.length > 0 && receiveinfo[0].namespaceURI === 'urn:xmpp:receipts') {
+
+	        msgtype = 'received';
+	    } else if (inviteinfo && inviteinfo.length > 0) {
+
+	        msgtype = 'invite';
+	    } else if (deliveryinfo && deliveryinfo.length > 0) {
+
+	        msgtype = 'delivery'; // 消息送达
+	    } else if (acked && acked.length) {
+
+	        msgtype = 'acked'; // 消息已读
+	    } else if (error && error.length) {
+
+	        var errorItem = error[0],
+	            userMuted = errorItem.getElementsByTagName('user-muted');
+
+	        if (userMuted && userMuted.length) {
+
+	            msgtype = 'userMuted';
+	        }
+	    }
+	    return msgtype;
+	};
+
+	var _handleMessageQueue = function _handleMessageQueue(conn) {
+	    for (var i in _msgHash) {
+	        if (_msgHash.hasOwnProperty(i)) {
+	            _msgHash[i].send(conn);
+	        }
+	    }
+	};
+
+	var _loginCallback = function _loginCallback(status, msg, conn) {
+	    var conflict, error;
+
+	    if (msg === 'conflict') {
+	        conflict = true;
+	        conn.close();
+	    }
+
+	    if (status == Strophe.Status.CONNFAIL) {
+	        //client offline, ping/pong timeout, server quit, server offline
+	        error = {
+	            type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
+	            msg: msg,
+	            reconnect: true
+	        };
+
+	        conflict && (error.conflict = true);
+	        conn.onError(error);
+	    } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
+	        // client should limit the speed of sending ack messages  up to 5/s
+	        conn.autoReconnectNumTotal = 0;
+	        conn.intervalId = setInterval(function () {
+	            conn.handelSendQueue();
+	        }, 100);
+	        var handleMessage = function handleMessage(msginfo) {
+	            var delivery = msginfo.getElementsByTagName('delivery');
+	            var acked = msginfo.getElementsByTagName('acked');
+	            if (delivery.length) {
+	                conn.handleDeliveredMessage(msginfo);
+	                return true;
+	            }
+	            if (acked.length) {
+	                conn.handleAckedMessage(msginfo);
+	                return true;
+	            }
+	            var type = _parseMessageType(msginfo);
+	            switch (type) {
+	                case "received":
+	                    conn.handleReceivedMessage(msginfo);
+	                    return true;
+	                case "invite":
+	                    conn.handleInviteMessage(msginfo);
+	                    return true;
+	                case "delivery":
+	                    conn.handleDeliveredMessage(msginfo);
+	                    return true;
+	                case "acked":
+	                    conn.handleAckedMessage(msginfo);
+	                    return true;
+	                case "userMuted":
+	                    conn.handleMutedMessage(msginfo);
+	                    return true;
+	                default:
+	                    conn.handleMessage(msginfo);
+	                    return true;
+	            }
+	        };
+	        var handlePresence = function handlePresence(msginfo) {
+	            conn.handlePresence(msginfo);
+	            return true;
+	        };
+	        var handlePing = function handlePing(msginfo) {
+	            conn.handlePing(msginfo);
+	            return true;
+	        };
+	        var handleIqRoster = function handleIqRoster(msginfo) {
+	            conn.handleIqRoster(msginfo);
+	            return true;
+	        };
+	        var handleIqPrivacy = function handleIqPrivacy(msginfo) {
+	            conn.handleIqPrivacy(msginfo);
+	            return true;
+	        };
+	        var handleIq = function handleIq(msginfo) {
+	            conn.handleIq(msginfo);
+	            return true;
+	        };
+
+	        conn.addHandler(handleMessage, null, 'message', null, null, null);
+	        conn.addHandler(handlePresence, null, 'presence', null, null, null);
+	        conn.addHandler(handlePing, 'urn:xmpp:ping', 'iq', 'get', null, null);
+	        conn.addHandler(handleIqRoster, 'jabber:iq:roster', 'iq', 'set', null, null);
+	        conn.addHandler(handleIqPrivacy, 'jabber:iq:privacy', 'iq', 'set', null, null);
+	        conn.addHandler(handleIq, null, 'iq', null, null, null);
+
+	        conn.registerConfrIQHandler && conn.registerConfrIQHandler();
+
+	        conn.context.status = _code.STATUS_OPENED;
+
+	        var supportRecMessage = [_code.WEBIM_MESSAGE_REC_TEXT, _code.WEBIM_MESSAGE_REC_EMOJI];
+
+	        if (_utils.isCanDownLoadFile) {
+	            supportRecMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
+	            supportRecMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
+	        }
+	        var supportSedMessage = [_code.WEBIM_MESSAGE_SED_TEXT];
+	        if (_utils.isCanUploadFile) {
+	            supportSedMessage.push(_code.WEBIM_MESSAGE_REC_PHOTO);
+	            supportSedMessage.push(_code.WEBIM_MESSAGE_REC_AUDIO_FILE);
+	        }
+	        conn.notifyVersion();
+	        conn.retry && _handleMessageQueue(conn);
+	        conn.heartBeat();
+	        conn.isAutoLogin && conn.setPresence();
+
+	        try {
+	            if (conn.unSendMsgArr.length > 0) {
+	                for (var i in conn.unSendMsgArr) {
+	                    var dom = conn.unSendMsgArr[i];
+	                    conn.sendCommand(dom);
+	                    delete conn.unSendMsgArr[i];
+	                }
+	            }
+	        } catch (e) {
+	            console.error(e.message);
+	        }
+	        conn.offLineSendConnecting = false;
+	        conn.logOut = false;
+
+	        conn.onOpened({
+	            canReceive: supportRecMessage,
+	            canSend: supportSedMessage,
+	            accessToken: conn.context.accessToken
+	        });
+	    } else if (status == Strophe.Status.DISCONNECTING) {
+	        if (conn.isOpened()) {
+	            conn.stopHeartBeat();
+	            conn.context.status = _code.STATUS_CLOSING;
+
+	            error = {
+	                type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
+	                msg: msg,
+	                reconnect: true
+	            };
+
+	            conflict && (error.conflict = true);
+	            conn.onError(error);
+	        }
+	    } else if (status == Strophe.Status.DISCONNECTED) {
+	        if (!conn.isClosing() || conn.isOpened()) {
+	            if (conn.autoReconnectNumTotal < conn.autoReconnectNumMax) {
+	                conn.reconnect(!conn.isClosing());
+	                return;
+	            } else {
+	                error = {
+	                    type: _code.WEBIM_CONNCTION_DISCONNECTED
+	                };
+	                conn.onError(error);
+	            }
+	        }
+	        conn.context.status = _code.STATUS_CLOSED;
+	        conn.clear();
+	        conn.onClosed();
+	    } else if (status == Strophe.Status.AUTHFAIL) {
+	        error = {
+	            type: _code.WEBIM_CONNCTION_AUTH_ERROR
+	        };
+
+	        conflict && (error.conflict = true);
+	        conn.onError(error);
+	        conn.clear();
+	    } else if (status == Strophe.Status.ERROR) {
+	        conn.context.status = _code.STATUS_ERROR;
+	        error = {
+	            type: _code.WEBIM_CONNCTION_SERVER_ERROR
+	        };
+
+	        conflict && (error.conflict = true);
+	        conn.onError(error);
+	    }
+	    conn.context.status_now = status;
+	};
+
+	var _getJid = function _getJid(options, conn) {
+	    var jid = options.toJid || '';
+
+	    if (jid === '') {
+	        var appKey = conn.context.appKey || '';
+	        var toJid = appKey + '_' + options.to + '@' + conn.domain;
+
+	        if (options.resource) {
+	            toJid = toJid + '/' + options.resource;
+	        }
+	        jid = toJid;
+	    }
+	    return jid;
+	};
+
+	var _getJidByName = function _getJidByName(name, conn) {
+	    var options = {
+	        to: name
+	    };
+	    return _getJid(options, conn);
+	};
+
+	var _validCheck = function _validCheck(options, conn) {
+	    options = options || {};
+
+	    if (options.user == '') {
+	        conn.onError({
+	            type: _code.WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR
+	        });
+	        return false;
+	    }
+
+	    var user = options.user + '' || '';
+	    var appKey = options.appKey || '';
+	    var devInfos = appKey.split('#');
+
+	    if (devInfos.length !== 2) {
+	        conn.onError({
+	            type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	        });
+	        return false;
+	    }
+	    var orgName = devInfos[0];
+	    var appName = devInfos[1];
+
+	    if (!orgName) {
+	        conn.onError({
+	            type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	        });
+	        return false;
+	    }
+	    if (!appName) {
+	        conn.onError({
+	            type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	        });
+	        return false;
+	    }
+
+	    var jid = appKey + '_' + user.toLowerCase() + '@' + conn.domain,
+	        resource = options.resource || 'webim';
+
+	    conn.context.jid = jid + '/' + resource;
+	    conn.context.userId = user;
+	    conn.context.appKey = appKey;
+	    conn.context.appName = appName;
+	    conn.context.orgName = orgName;
+
+	    return true;
+	};
+
+	var _getXmppUrl = function _getXmppUrl(baseUrl, https) {
+	    if (/^(ws|http)s?:\/\/?/.test(baseUrl)) {
+	        return baseUrl;
+	    }
+
+	    var url = {
+	        prefix: 'http',
+	        base: '://' + baseUrl,
+	        suffix: '/http-bind/'
+	    };
+
+	    if (https && _utils.isSupportWss) {
+	        url.prefix = 'wss';
+	        url.suffix = '/ws/';
+	    } else {
+	        if (https) {
+	            url.prefix = 'https';
+	        } else if (window.WebSocket) {
+	            url.prefix = 'ws';
+	            url.suffix = '/ws/';
+	        }
+	    }
+
+	    return url.prefix + url.base + url.suffix;
+	};
+
+	function _deepClone(data) {
+	    var t = typeof data === 'undefined' ? 'undefined' : _typeof(data),
+	        o,
+	        i,
+	        ni;
+
+	    if (t === 'array') {
+	        o = [];
+	    } else if (t === 'object') {
+	        o = {};
+	    } else {
+	        return data;
+	    }
+
+	    if (t === 'array') {
+	        for (i = 0, ni = data.length; i < ni; i++) {
+	            o.push(_deepClone(data[i]));
+	        }
+	        return o;
+	    } else if (t === 'object') {
+	        for (i in data) {
+	            o[i] = _deepClone(data[i]);
+	        }
+	        return o;
+	    }
+	}
+
+	/**
+	 * The connection class.
+	 * @constructor
+	 * @param {Object} options - 创建连接的初始化参数
+	 * @param {String} options.url - xmpp服务器的URL
+	 * @param {String} options.apiUrl - API服务器的URL
+	 * @param {Boolean} options.isHttpDNS - 防止域名劫持
+	 * @param {Boolean} options.isMultiLoginSessions - 为true时同一账户可以同时在多个Web页面登录（多标签登录，默认不开启，如有需要请联系商务），为false时同一账号只能在一个Web页面登录
+	 * @param {Boolean} options.https - 是否启用wss.
+	 * @param {Number} options.heartBeatWait - 发送心跳包的时间间隔（毫秒）
+	 * @param {Boolean} options.isAutoLogin - 登录成功后是否自动出席
+	 * @param {Number} options.autoReconnectNumMax - 掉线后重连的最大次数
+	 * @param {Number} options.autoReconnectInterval -  掉线后重连的间隔时间（毫秒）
+	 * @param {Boolean} options.isWindowSDK - 是否运行在WindowsSDK上
+	 * @param {Boolean} options.encrypt - 是否加密文本消息
+	 * @param {Boolean} options.delivery - 是否发送delivered ack
+	 * @returns {Class}  连接实例
+	 */
+
+	var connection = function connection(options) {
+	    if (!this instanceof connection) {
+	        return new connection(options);
+	    }
+
+	    var options = options || {};
+
+	    this.isHttpDNS = options.isHttpDNS || false;
+	    this.isMultiLoginSessions = options.isMultiLoginSessions || false;
+	    this.wait = options.wait || 30;
+	    this.hold = options.hold || 1;
+	    this.retry = options.retry || false;
+	    this.https = options.https && location.protocol === 'https:';
+	    this.url = _getXmppUrl(options.url, this.https);
+	    this.route = options.route || null;
+	    this.domain = options.domain || 'easemob.com';
+	    this.inactivity = options.inactivity || 30;
+	    this.heartBeatWait = options.heartBeatWait || 4500;
+	    this.maxRetries = options.maxRetries || 5;
+	    this.isAutoLogin = options.isAutoLogin === false ? false : true;
+	    this.pollingTime = options.pollingTime || 800;
+	    this.stropheConn = false;
+	    this.autoReconnectNumMax = options.autoReconnectNumMax || 0;
+	    this.autoReconnectNumTotal = 0;
+	    this.autoReconnectInterval = options.autoReconnectInterval || 0;
+	    this.context = { status: _code.STATUS_INIT };
+	    this.sendQueue = new Queue(); //instead of sending message immediately,cache them in this queue
+	    this.intervalId = null; //clearInterval return value
+	    this.apiUrl = options.apiUrl || '';
+	    this.isWindowSDK = options.isWindowSDK || false;
+	    this.encrypt = options.encrypt || { encrypt: { type: 'none' } };
+	    this.delivery = options.delivery || false;
+	    this.saveLocal = options.saveLocal || false;
+	    this.user = '';
+	    this.orgName = '';
+	    this.appName = '';
+	    this.token = '';
+	    this.unSendMsgArr = [];
+	    this.offLineSendConnecting = false;
+	    this.logOut = false;
+
+	    this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
+	    this.dnsIndex = 0; //the dns ip used in dnsArr currently
+	    this.dnsTotal = this.dnsArr.length; //max number of getting dns retries
+	    this.restHosts = null; //rest server ips
+	    this.restIndex = 0; //the rest ip used in restHosts currently
+	    this.restTotal = 0; //max number of getting rest token retries
+	    this.xmppHosts = null; //xmpp server ips
+	    this.xmppIndex = 0; //the xmpp ip used in xmppHosts currently
+	    this.xmppTotal = 0; //max number of creating xmpp server connection(ws/bosh) retries
+
+	    this.groupOption = {};
+
+	    /*
+	     Demo.chatRecord = {
+	     targetId: {
+	     messages: [
+	     {
+	     msg: 'msg',
+	     type: 'type'
+	     },
+	     {
+	     msg: 'msg',
+	     type: 'type'
+	     }],
+	     brief: 'brief'
+	     }
+	     }
+	     */
+	};
+
+	connection.prototype.testInit = function (options) {
+	    this.orgName = options.orgName;
+	    this.appName = options.appName;
+	    this.user = options.user;
+	    this.token = options.token;
+	};
+
+	/**
+	 * 注册新用户
+	 * @param {Object} options - 用户信息
+	 * @param {String} options.username - 用户名
+	 * @param {String} options.password - 密码
+	 * @param {String} options.nickname - 用户昵称
+	 * @param {Function} options.success - 注册成功回调
+	 * @param {Function} options.error - 注册失败
+	 */
+	connection.prototype.registerUser = function (options) {
+	    if (location.protocol != 'https:' && this.isHttpDNS) {
+	        this.dnsIndex = 0;
+	        this.getHttpDNS(options, 'signup');
+	    } else {
+	        this.signup(options);
+	    }
+	};
+
+	/**
+	 * 处理发送队列
+	 * @private
+	 */
+	connection.prototype.handelSendQueue = function () {
+	    var options = this.sendQueue.pop();
+	    if (options !== null) {
+	        this.sendReceiptsMessage(options);
+	    }
+	};
+
+	/**
+	 * 注册监听函数
+	 * @param {Object} options - 回调函数集合
+	 * @param {connection~onOpened} options.onOpened - 处理登录的回调
+	 * @param {connection~onTextMessage} options.onTextMessage - 处理文本消息的回调
+	 * @param {connection~onEmojiMessage} options.onEmojiMessage - 处理表情消息的回调
+	 * @param {connection~onPictureMessage} options.onPictureMessage - 处理图片消息的回调
+	 * @param {connection~onAudioMessage} options.onAudioMessage - 处理音频消息的回调
+	 * @param {connection~onVideoMessage} options.onVideoMessage - 处理视频消息的回调
+	 * @param {connection~onFileMessage} options.onFileMessage - 处理文件消息的回调
+	 * @param {connection~onLocationMessage} options.onLocationMessage - 处理位置消息的回调
+	 * @param {connection~onCmdMessage} options.onCmdMessage - 处理命令消息的回调
+	 * @param {connection~onPresence} options.onPresence - 处理Presence消息的回调
+	 * @param {connection~onError} options.onError - 处理错误消息的回调
+	 * @param {connection~onReceivedMessage} options.onReceivedMessage - 处理Received消息的回调
+	 * @param {connection~onInviteMessage} options.onInviteMessage - 处理邀请消息的回调
+	 * @param {connection~onDeliverdMessage} options.onDeliverdMessage - 处理Delivered ACK消息的回调
+	 * @param {connection~onReadMessage} options.onReadMessage - 处理Read ACK消息的回调
+	 * @param {connection~onMutedMessage} options.onMutedMessage - 处理禁言消息的回调
+	 * @param {connection~onOffline} options.onOffline - 处理断网的回调
+	 * @param {connection~onOnline} options.onOnline - 处理联网的回调
+	 * @param {connection~onCreateGroup} options.onCreateGroup - 处理创建群组的回调
+	 */
+	connection.prototype.listen = function (options) {
+	    /**
+	     * 登录成功后调用
+	     * @callback connection~onOpened
+	     */
+	    /**
+	     * 收到文本消息
+	     * @callback connection~onTextMessage
+	     */
+	    /**
+	     * 收到表情消息
+	     * @callback connection~onEmojiMessage
+	     */
+	    /**
+	     * 收到图片消息
+	     * @callback connection~onPictureMessage
+	     */
+	    /**
+	     * 收到音频消息
+	     * @callback connection~onAudioMessage
+	     */
+	    /**
+	     * 收到视频消息
+	     * @callback connection~onVideoMessage
+	     */
+	    /**
+	     * 收到文件消息
+	     * @callback connection~onFileMessage
+	     */
+	    /**
+	     * 收到位置消息
+	     * @callback connection~onLocationMessage
+	     */
+	    /**
+	     * 收到命令消息
+	     * @callback connection~onCmdMessage
+	     */
+	    /**
+	     * 收到错误消息
+	     * @callback connection~onError
+	     */
+	    /**
+	     * 收到Presence消息
+	     * @callback connection~onPresence
+	     */
+	    /**
+	     * 收到Received消息
+	     * @callback connection~onReceivedMessage
+	     */
+	    /**
+	     * 被邀请进群
+	     * @callback connection~onInviteMessage
+	     */
+	    /**
+	     * 收到已送达回执
+	     * @callback connection~onDeliverdMessage
+	     */
+	    /**
+	     * 收到已读回执
+	     * @callback connection~onReadMessage
+	     */
+	    /**
+	     * 被群管理员禁言
+	     * @callback connection~onMutedMessage
+	     */
+	    /**
+	     * 浏览器被断网时调用
+	     * @callback connection~onOffline
+	     */
+	    /**
+	     * 浏览器联网时调用
+	     * @callback connection~onOnline
+	     */
+	    /**
+	     * 建群成功后调用
+	     * @callback connection~onCreateGroup
+	     */
+	    this.onOpened = options.onOpened || _utils.emptyfn;
+	    this.onClosed = options.onClosed || _utils.emptyfn;
+	    this.onTextMessage = options.onTextMessage || _utils.emptyfn;
+	    this.onEmojiMessage = options.onEmojiMessage || _utils.emptyfn;
+	    this.onPictureMessage = options.onPictureMessage || _utils.emptyfn;
+	    this.onAudioMessage = options.onAudioMessage || _utils.emptyfn;
+	    this.onVideoMessage = options.onVideoMessage || _utils.emptyfn;
+	    this.onFileMessage = options.onFileMessage || _utils.emptyfn;
+	    this.onLocationMessage = options.onLocationMessage || _utils.emptyfn;
+	    this.onCmdMessage = options.onCmdMessage || _utils.emptyfn;
+	    this.onPresence = options.onPresence || _utils.emptyfn;
+	    this.onRoster = options.onRoster || _utils.emptyfn;
+	    this.onError = options.onError || _utils.emptyfn;
+	    this.onReceivedMessage = options.onReceivedMessage || _utils.emptyfn;
+	    this.onInviteMessage = options.onInviteMessage || _utils.emptyfn;
+	    this.onDeliverdMessage = options.onDeliveredMessage || _utils.emptyfn;
+	    this.onReadMessage = options.onReadMessage || _utils.emptyfn;
+	    this.onMutedMessage = options.onMutedMessage || _utils.emptyfn;
+	    this.onOffline = options.onOffline || _utils.emptyfn;
+	    this.onOnline = options.onOnline || _utils.emptyfn;
+	    this.onConfirmPop = options.onConfirmPop || _utils.emptyfn;
+	    this.onCreateGroup = options.onCreateGroup || _utils.emptyfn;
+	    //for WindowSDK start
+	    this.onUpdateMyGroupList = options.onUpdateMyGroupList || _utils.emptyfn;
+	    this.onUpdateMyRoster = options.onUpdateMyRoster || _utils.emptyfn;
+	    //for WindowSDK end
+	    this.onBlacklistUpdate = options.onBlacklistUpdate || _utils.emptyfn;
+
+	    _listenNetwork(this.onOnline, this.onOffline);
+	};
+
+	/**
+	 * 发送心跳
+	 * webrtc需要强制心跳，加个默认为false的参数 向下兼容
+	 * @param {Boolean} forcing - 是否强制发送
+	 * @private
+	 */
+	connection.prototype.heartBeat = function (forcing) {
+	    if (forcing !== true) {
+	        forcing = false;
+	    }
+	    var me = this;
+	    //IE8: strophe auto switch from ws to BOSH, need heartbeat
+	    var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
+
+	    if (this.heartBeatID || !forcing && !isNeed) {
+	        return;
+	    }
+
+	    var options = {
+	        toJid: this.domain,
+	        type: 'normal'
+	    };
+	    this.heartBeatID = setInterval(function () {
+	        // fix: do heartbeat only when websocket 
+	        _utils.isSupportWss && me.ping(options);
+	    }, this.heartBeatWait);
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.stopHeartBeat = function () {
+	    if (typeof this.heartBeatID == "number") {
+	        this.heartBeatID = clearInterval(this.heartBeatID);
+	    }
+	};
+
+	/**
+	 * 发送接收消息回执
+	 * @param {Object} options -
+	 * @private
+	 */
+	connection.prototype.sendReceiptsMessage = function (options) {
+	    var dom = $msg({
+	        from: this.context.jid || '',
+	        to: this.domain,
+	        id: options.id || ''
+	    }).c('received', {
+	        xmlns: 'urn:xmpp:receipts',
+	        id: options.id || ''
+	    });
+	    this.sendCommand(dom.tree());
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.cacheReceiptsMessage = function (options) {
+	    this.sendQueue.push(options);
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.getStrophe = function () {
+	    if (location.protocol != 'https:' && this.isHttpDNS) {
+	        //TODO: try this.xmppTotal times on fail
+	        var url = '';
+	        var host = this.xmppHosts[this.xmppIndex];
+	        var domain = _utils.getXmlFirstChild(host, 'domain');
+	        var ip = _utils.getXmlFirstChild(host, 'ip');
+	        if (ip) {
+	            url = ip.textContent;
+	            var port = _utils.getXmlFirstChild(host, 'port');
+	            if (port.textContent != '80') {
+	                url += ':' + port.textContent;
+	            }
+	        } else {
+	            url = domain.textContent;
+	        }
+
+	        if (url != '') {
+	            var parter = /(.+\/\/).+(\/.+)/;
+	            this.url = this.url.replace(parter, "$1" + url + "$2");
+	        }
+	    }
+
+	    var stropheConn = new Strophe.Connection(this.url, {
+	        isMultiLoginSessions: this.isMultiLoginSessions,
+	        inactivity: this.inactivity,
+	        maxRetries: this.maxRetries,
+	        pollingTime: this.pollingTime
+	    });
+	    return stropheConn;
+	};
+
+	/**
+	 *
+	 * @param data
+	 * @param tagName
+	 * @private
+	 */
+	connection.prototype.getHostsByTag = function (data, tagName) {
+	    var tag = _utils.getXmlFirstChild(data, tagName);
+	    if (!tag) {
+	        console.log(tagName + ' hosts error');
+	        return null;
+	    }
+	    var hosts = tag.getElementsByTagName('hosts');
+	    if (hosts.length == 0) {
+	        console.log(tagName + ' hosts error2');
+	        return null;
+	    }
+	    return hosts[0].getElementsByTagName('host');
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.getRestFromHttpDNS = function (options, type) {
+	    if (this.restIndex > this.restTotal) {
+	        console.log('rest hosts all tried,quit');
+	        return;
+	    }
+	    var url = '';
+	    var host = this.restHosts[this.restIndex];
+	    var domain = _utils.getXmlFirstChild(host, 'domain');
+	    var ip = _utils.getXmlFirstChild(host, 'ip');
+	    if (ip) {
+	        var port = _utils.getXmlFirstChild(host, 'port');
+	        url = (location.protocol === 'https:' ? 'https:' : 'http:') + '//' + ip.textContent + ':' + port.textContent;
+	    } else {
+	        url = (location.protocol === 'https:' ? 'https:' : 'http:') + '//' + domain.textContent;
+	    }
+
+	    if (url != '') {
+	        this.apiUrl = url;
+	        options.apiUrl = url;
+	    }
+
+	    if (type == 'login') {
+	        this.login(options);
+	    } else {
+	        this.signup(options);
+	    }
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.getHttpDNS = function (options, type) {
+	    if (this.restHosts) {
+	        this.getRestFromHttpDNS(options, type);
+	        return;
+	    }
+	    var self = this;
+	    var suc = function suc(data, xhr) {
+	        data = new DOMParser().parseFromString(data, "text/xml").documentElement;
+	        //get rest ips
+	        var restHosts = self.getHostsByTag(data, 'rest');
+	        if (!restHosts) {
+	            console.log('rest hosts error3');
+	            return;
+	        }
+	        self.restHosts = restHosts;
+	        self.restTotal = restHosts.length;
+
+	        //get xmpp ips
+	        var makeArray = function makeArray(obj) {
+	            //伪数组转为数组
+	            return Array.prototype.slice.call(obj, 0);
+	        };
+	        try {
+	            Array.prototype.slice.call(document.documentElement.childNodes, 0)[0].nodeType;
+	        } catch (e) {
+	            makeArray = function makeArray(obj) {
+	                var res = [];
+	                for (var i = 0, len = obj.length; i < len; i++) {
+	                    res.push(obj[i]);
+	                }
+	                return res;
+	            };
+	        }
+	        var xmppHosts = makeArray(self.getHostsByTag(data, 'xmpp'));
+	        if (!xmppHosts) {
+	            console.log('xmpp hosts error3');
+	            return;
+	        }
+	        for (var i = 0; i < xmppHosts.length; i++) {
+	            var httpType = self.https ? 'https' : 'http';
+	            if (_utils.getXmlFirstChild(xmppHosts[i], 'protocol').textContent === httpType) {
+	                var currentPost = xmppHosts[i];
+	                xmppHosts.splice(i, 1);
+	                xmppHosts.unshift(currentPost);
+	            }
+	        }
+	        self.xmppHosts = xmppHosts;
+	        self.xmppTotal = xmppHosts.length;
+
+	        self.getRestFromHttpDNS(options, type);
+	    };
+	    var error = function error(res, xhr, msg) {
+
+	        console.log('getHttpDNS error', res, msg);
+	        self.dnsIndex++;
+	        if (self.dnsIndex < self.dnsTotal) {
+	            self.getHttpDNS(options, type);
+	        }
+	    };
+	    var options2 = {
+	        url: this.dnsArr[this.dnsIndex] + '/easemob/server.xml',
+	        dataType: 'text',
+	        type: 'GET',
+
+	        // url: 'http://www.easemob.com/easemob/server.xml',
+	        // dataType: 'xml',
+	        data: { app_key: encodeURIComponent(options.appKey) },
+	        success: suc || _utils.emptyfn,
+	        error: error || _utils.emptyfn
+	    };
+	    _utils.ajax(options2);
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.signup = function (options) {
+	    var self = this;
+	    var orgName = options.orgName || '';
+	    var appName = options.appName || '';
+	    var appKey = options.appKey || '';
+	    var suc = options.success || EMPTYFN;
+	    var err = options.error || EMPTYFN;
+
+	    if (!orgName && !appName && appKey) {
+	        var devInfos = appKey.split('#');
+	        if (devInfos.length === 2) {
+	            orgName = devInfos[0];
+	            appName = devInfos[1];
+	        }
+	    }
+	    if (!orgName && !appName) {
+	        err({
+	            type: _code.WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR
+	        });
+	        return;
+	    }
+
+	    var error = function error(res, xhr, msg) {
+	        if (location.protocol != 'https:' && self.isHttpDNS) {
+	            if (self.restIndex + 1 < self.restTotal) {
+	                self.restIndex++;
+	                self.getRestFromHttpDNS(options, 'signup');
+	                return;
+	            }
+	        }
+	        self.clear();
+	        err(res);
+	    };
+	    var https = options.https || https;
+	    var apiUrl = options.apiUrl;
+	    var restUrl = apiUrl + '/' + orgName + '/' + appName + '/users';
+
+	    var userjson = {
+	        username: options.username,
+	        password: options.password,
+	        nickname: options.nickname || ''
+	    };
+
+	    var userinfo = _utils.stringify(userjson);
+	    var options2 = {
+	        url: restUrl,
+	        dataType: 'json',
+	        data: userinfo,
+	        success: suc,
+	        error: error
+	    };
+	    _utils.ajax(options2);
+	};
+
+	/**
+	 * 登录
+	 * @param {Object} options - 用户信息
+	 * @param {String} options.user - 用户名
+	 * @param {String} options.pwd - 用户密码，跟token二选一
+	 * @param {String} options.accessToken - token，跟密码二选一
+	 * @param {String} options.appKey - Appkey
+	 */
+	connection.prototype.open = function (options) {
+	    var appkey = options.appKey,
+	        orgName = appkey.split('#')[0],
+	        appName = appkey.split('#')[1];
+	    this.orgName = orgName;
+	    this.appName = appName;
+	    if (options.accessToken) {
+	        this.token = options.accessToken;
+	    }
+	    if (options.xmppURL) {
+	        this.url = _getXmppUrl(options.xmppURL, this.https);
+	    }
+	    if (location.protocol != 'https:' && this.isHttpDNS) {
+	        this.dnsIndex = 0;
+	        this.getHttpDNS(options, 'login');
+	    } else {
+	        this.login(options);
+	    }
+	};
+
+	/**
+	 *
+	 * @param options
+	 * @private
+	 */
+	connection.prototype.login = function (options) {
+	    this.user = options.user;
+	    var pass = _validCheck(options, this);
+
+	    if (!pass) {
+	        return;
+	    }
+
+	    var conn = this;
+
+	    if (conn.isOpened()) {
+	        return;
+	    }
+
+	    if (options.accessToken) {
+	        options.access_token = options.accessToken;
+	        conn.context.restTokenData = options;
+	        _login(options, conn);
+	    } else {
+	        var apiUrl = this.apiUrl;
+	        var userId = this.context.userId;
+	        var pwd = options.pwd || '';
+	        var appName = this.context.appName;
+	        var orgName = this.context.orgName;
+
+	        var suc = function suc(data, xhr) {
+	            conn.context.status = _code.STATUS_DOLOGIN_IM;
+	            conn.context.restTokenData = data;
+	            if (options.success) options.success(data);
+	            conn.token = data.access_token;
+	            _login(data, conn);
+	        };
+	        var error = function error(res, xhr, msg) {
+	            if (options.error) options.error();
+	            if (location.protocol != 'https:' && conn.isHttpDNS) {
+	                if (conn.restIndex + 1 < conn.restTotal) {
+	                    conn.restIndex++;
+	                    conn.getRestFromHttpDNS(options, 'login');
+	                    return;
+	                }
+	            }
+	            conn.clear();
+	            if (res.error && res.error_description) {
+	                conn.onError({
+	                    type: _code.WEBIM_CONNCTION_OPEN_USERGRID_ERROR,
+	                    data: res,
+	                    xhr: xhr
+	                });
+	            } else {
+	                conn.onError({
+	                    type: _code.WEBIM_CONNCTION_OPEN_ERROR,
+	                    data: res,
+	                    xhr: xhr
+	                });
+	            }
+	        };
+
+	        this.context.status = _code.STATUS_DOLOGIN_USERGRID;
+
+	        var loginJson = {
+	            grant_type: 'password',
+	            username: userId,
+	            password: pwd,
+	            timestamp: +new Date()
+	        };
+	        var loginfo = _utils.stringify(loginJson);
+
+	        var options2 = {
+	            url: apiUrl + '/' + orgName + '/' + appName + '/token',
+	            dataType: 'json',
+	            data: loginfo,
+	            success: suc || _utils.emptyfn,
+	            error: error || _utils.emptyfn
+	        };
+	        _utils.ajax(options2);
+	    }
+	};
+
+	/**
+	 * attach to xmpp server for BOSH
+	 * @private
+	 */
+	connection.prototype.attach = function (options) {
+	    var pass = _validCheck(options, this);
+
+	    if (!pass) {
+	        return;
+	    }
+
+	    options = options || {};
+
+	    var accessToken = options.accessToken || '';
+	    if (accessToken == '') {
+	        this.onError({
+	            type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
+	        });
+	        return;
+	    }
+
+	    var sid = options.sid || '';
+	    if (sid === '') {
+	        this.onError({
+	            type: _code.WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR
+	        });
+	        return;
+	    }
+
+	    var rid = options.rid || '';
+	    if (rid === '') {
+	        this.onError({
+	            type: _code.WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR
+	        });
+	        return;
+	    }
+
+	    stropheConn = this.getStrophe();
+
+	    this.context.accessToken = accessToken;
+	    this.context.stropheConn = stropheConn;
+	    this.context.status = _code.STATUS_DOLOGIN_IM;
+
+	    var conn = this;
+	    var callback = function callback(status, msg) {
+	        _loginCallback(status, msg, conn);
+	    };
+
+	    var jid = this.context.jid;
+	    var wait = this.wait;
+	    var hold = this.hold;
+	    var wind = this.wind || 5;
+	    stropheConn.attach(jid, sid, rid, callback, wait, hold, wind);
+	};
+
+	/**
+	 * 关闭连接
+	 * @param {String} reason
+	 */
+	connection.prototype.close = function (reason) {
+	    this.logOut = true;
+	    this.stopHeartBeat();
+
+	    var status = this.context.status;
+	    if (status == _code.STATUS_INIT) {
+	        return;
+	    }
+
+	    if (this.isClosed() || this.isClosing()) {
+	        return;
+	    }
+
+	    this.context.status = _code.STATUS_CLOSING;
+	    this.context.stropheConn.disconnect(reason);
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.addHandler = function (handler, ns, name, type, id, from, options) {
+	    this.context.stropheConn.addHandler(handler, ns, name, type, id, from, options);
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.notifyVersion = function (suc, fail) {
+	    var jid = stropheConn.getJid();
+	    this.context.jid = jid;
+	    var dom = $iq({
+	        from: jid || '',
+	        to: this.domain,
+	        type: 'result'
+	    }).c('query', { xmlns: 'jabber:iq:version' }).c('name').t('easemob').up().c('version').t(_version).up().c('os').t('webim');
+
+	    var suc = suc || _utils.emptyfn;
+	    var error = fail || this.onError;
+	    var failFn = function failFn(ele) {
+	        error({
+	            type: _code.WEBIM_CONNCTION_NOTIFYVERSION_ERROR,
+	            data: ele
+	        });
+	    };
+	    this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
+	    return;
+	};
+
+	/**
+	 * handle all types of presence message
+	 * @private
+	 */
+	connection.prototype.handlePresence = function (msginfo) {
+	    if (this.isClosed()) {
+	        return;
+	    }
+	    var from = msginfo.getAttribute('from') || '';
+	    var to = msginfo.getAttribute('to') || '';
+	    var type = msginfo.getAttribute('type') || '';
+	    var presence_type = msginfo.getAttribute('presence_type') || '';
+	    var fromUser = _parseNameFromJidFn(from);
+	    var toUser = _parseNameFromJidFn(to);
+	    var isCreate = false;
+	    var isMemberJoin = false;
+	    var isDecline = false;
+	    var isApply = false;
+	    var info = {
+	        from: fromUser,
+	        to: toUser,
+	        fromJid: from,
+	        toJid: to,
+	        type: type,
+	        chatroom: msginfo.getElementsByTagName('roomtype').length ? true : false
+	    };
+
+	    var showTags = msginfo.getElementsByTagName('show');
+	    if (showTags && showTags.length > 0) {
+	        var showTag = showTags[0];
+	        info.show = Strophe.getText(showTag);
+	    }
+	    var statusTags = msginfo.getElementsByTagName('status');
+	    if (statusTags && statusTags.length > 0) {
+	        var statusTag = statusTags[0];
+	        info.status = Strophe.getText(statusTag);
+	        info.code = statusTag.getAttribute('code');
+	    }
+
+	    var priorityTags = msginfo.getElementsByTagName('priority');
+	    if (priorityTags && priorityTags.length > 0) {
+	        var priorityTag = priorityTags[0];
+	        info.priority = Strophe.getText(priorityTag);
+	    }
+
+	    var error = msginfo.getElementsByTagName('error');
+	    if (error && error.length > 0) {
+	        var error = error[0];
+	        info.error = {
+	            code: error.getAttribute('code')
+	        };
+	    }
+
+	    var destroy = msginfo.getElementsByTagName('destroy');
+	    if (destroy && destroy.length > 0) {
+	        var destroy = destroy[0];
+	        info.destroy = true;
+
+	        var reason = destroy.getElementsByTagName('reason');
+	        if (reason && reason.length > 0) {
+	            info.reason = Strophe.getText(reason[0]);
+	        }
+	    }
+
+	    var members = msginfo.getElementsByTagName('item');
+	    if (members && members.length > 0) {
+	        var member = members[0];
+	        var role = member.getAttribute('role');
+	        var jid = member.getAttribute('jid');
+	        var affiliation = member.getAttribute('affiliation');
+	        // dismissed by group
+	        if (role == 'none' && jid) {
+	            var kickedMember = _parseNameFromJidFn(jid);
+	            var actor = member.getElementsByTagName('actor')[0];
+	            var actorNick = actor.getAttribute('nick');
+	            info.actor = actorNick;
+	            info.kicked = kickedMember;
+	        }
+	        // Service Acknowledges Room Creation `createGroupACK`
+	        if (role == 'moderator' && info.code == '201') {
+	            if (affiliation === 'owner') {
+	                info.type = 'createGroupACK';
+	                isCreate = true;
+	            }
+	            // else
+	            //     info.type = 'joinPublicGroupSuccess';
+	        }
+	    }
+
+	    var x = msginfo.getElementsByTagName('x');
+	    if (x && x.length > 0) {
+	        // 加群申请
+	        var apply = x[0].getElementsByTagName('apply');
+	        // 加群成功
+	        var accept = x[0].getElementsByTagName('accept');
+	        // 同意加群后用户进群通知
+	        var item = x[0].getElementsByTagName('item');
+	        // 加群被拒绝
+	        var decline = x[0].getElementsByTagName('decline');
+	        // 被设为管理员
+	        var addAdmin = x[0].getElementsByTagName('add_admin');
+	        // 被取消管理员
+	        var removeAdmin = x[0].getElementsByTagName('remove_admin');
+	        // 被禁言
+	        var addMute = x[0].getElementsByTagName('add_mute');
+	        // 取消禁言
+	        var removeMute = x[0].getElementsByTagName('remove_mute');
+
+	        if (apply && apply.length > 0) {
+	            isApply = true;
+	            info.toNick = apply[0].getAttribute('toNick');
+	            info.type = 'joinGroupNotifications';
+	            var groupJid = apply[0].getAttribute('to');
+	            var gid = groupJid.split('@')[0].split('_');
+	            gid = gid[gid.length - 1];
+	            info.gid = gid;
+	        } else if (accept && accept.length > 0) {
+	            info.type = 'joinPublicGroupSuccess';
+	        } else if (item && item.length > 0) {
+	            var affiliation = item[0].getAttribute('affiliation'),
+	                role = item[0].getAttribute('role');
+	            if (affiliation == 'member' || role == 'participant') {
+	                isMemberJoin = true;
+	                info.mid = info.fromJid.split('/');
+	                info.mid = info.mid[info.mid.length - 1];
+	                info.type = 'memberJoinPublicGroupSuccess';
+	                var roomtype = msginfo.getElementsByTagName('roomtype');
+	                if (roomtype && roomtype.length > 0) {
+	                    var type = roomtype[0].getAttribute('type');
+	                    if (type == 'chatroom') {
+	                        info.type = 'memberJoinChatRoomSuccess';
+	                    }
+	                }
+	            }
+	        } else if (decline && decline.length) {
+	            isDecline = true;
+	            var gid = decline[0].getAttribute("fromNick");
+	            var owner = _parseNameFromJidFn(decline[0].getAttribute("from"));
+	            info.type = "joinPublicGroupDeclined";
+	            info.owner = owner;
+	            info.gid = gid;
+	        } else if (addAdmin && addAdmin.length > 0) {
+	            var gid = _parseNameFromJidFn(addAdmin[0].getAttribute('mucjid'));
+	            var owner = _parseNameFromJidFn(addAdmin[0].getAttribute('from'));
+	            info.owner = owner;
+	            info.gid = gid;
+	            info.type = "addAdmin";
+	        } else if (removeAdmin && removeAdmin.length > 0) {
+	            var gid = _parseNameFromJidFn(removeAdmin[0].getAttribute('mucjid'));
+	            var owner = _parseNameFromJidFn(removeAdmin[0].getAttribute('from'));
+	            info.owner = owner;
+	            info.gid = gid;
+	            info.type = "removeAdmin";
+	        } else if (addMute && addMute.length > 0) {
+	            var gid = _parseNameFromJidFn(addMute[0].getAttribute('mucjid'));
+	            var owner = _parseNameFromJidFn(addMute[0].getAttribute('from'));
+	            info.owner = owner;
+	            info.gid = gid;
+	            info.type = "addMute";
+	        } else if (removeMute && removeMute.length > 0) {
+	            var gid = _parseNameFromJidFn(removeMute[0].getAttribute('mucjid'));
+	            var owner = _parseNameFromJidFn(removeMute[0].getAttribute('from'));
+	            info.owner = owner;
+	            info.gid = gid;
+	            info.type = "removeMute";
+	        }
+	    }
+
+	    if (info.chatroom) {
+	        // diff the
+	        info.presence_type = presence_type;
+	        info.original_type = info.type;
+	        var reflectUser = from.slice(from.lastIndexOf('/') + 1);
+
+	        if (reflectUser === this.context.userId) {
+	            if (info.type === '' && !info.code) {
+	                info.type = 'joinChatRoomSuccess';
+	            } else if (presence_type === 'unavailable' || info.type === 'unavailable') {
+	                if (!info.status) {
+	                    // logout successfully.
+	                    info.type = 'leaveChatRoom';
+	                } else if (info.code == 110) {
+	                    // logout or dismissied by admin.
+	                    info.type = 'leaveChatRoom';
+	                } else if (info.error && info.error.code == 406) {
+	                    // The chat room is full.
+	                    info.type = 'reachChatRoomCapacity';
+	                }
+	            }
+	        }
+	    } else {
+	        info.presence_type = presence_type;
+	        info.original_type = type;
+
+	        if (/subscribe/.test(info.type)) {
+	            //subscribe | subscribed | unsubscribe | unsubscribed
+	        } else if (type == "" && !info.status && !info.error && !isCreate && !isApply && !isMemberJoin && !isDecline) {
+	            // info.type = 'joinPublicGroupSuccess';
+	        } else if (presence_type === 'unavailable' || type === 'unavailable') {
+	            // There is no roomtype when a chat room is deleted.
+	            if (info.destroy) {
+	                // Group or Chat room Deleted.
+	                info.type = 'deleteGroupChat';
+	            } else if (info.code == 307 || info.code == 321) {
+	                // Dismissed by group.
+	                var nick = msginfo.getAttribute('nick');
+	                if (!nick) info.type = 'leaveGroup';else info.type = 'removedFromGroup';
+	            }
+	        }
+	    }
+	    this.onPresence(info, msginfo);
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.handlePing = function (e) {
+	    if (this.isClosed()) {
+	        return;
+	    }
+	    var id = e.getAttribute('id');
+	    var from = e.getAttribute('from');
+	    var to = e.getAttribute('to');
+	    var dom = $iq({
+	        from: to,
+	        to: from,
+	        id: id,
+	        type: 'result'
+	    });
+	    this.sendCommand(dom.tree());
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.handleIq = function (iq) {
+	    return true;
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.handleIqPrivacy = function (msginfo) {
+	    var list = msginfo.getElementsByTagName('list');
+	    if (list.length == 0) {
+	        return;
+	    }
+	    this.getBlacklist();
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.handleIqRoster = function (e) {
+	    var id = e.getAttribute('id');
+	    var from = e.getAttribute('from') || '';
+	    var name = _parseNameFromJidFn(from);
+	    var curJid = this.context.jid;
+	    var curUser = this.context.userId;
+
+	    var iqresult = $iq({ type: 'result', id: id, from: curJid });
+	    this.sendCommand(iqresult.tree());
+
+	    var msgBodies = e.getElementsByTagName('query');
+	    if (msgBodies && msgBodies.length > 0) {
+	        var queryTag = msgBodies[0];
+	        var rouster = _parseFriend(queryTag, this, from);
+	        this.onRoster(rouster);
+	    }
+	    return true;
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.handleMessage = function (msginfo) {
+	    var self = this;
+	    if (this.isClosed()) {
+	        return;
+	    }
+
+	    var id = msginfo.getAttribute('id') || '';
+
+	    // cache ack into sendQueue first , handelSendQueue will do the send thing with the speed of  5/s
+	    this.cacheReceiptsMessage({
+	        id: id
+	    });
+	    var parseMsgData = _parseResponseMessage(msginfo);
+	    if (parseMsgData.errorMsg) {
+	        this.handlePresence(msginfo);
+	        return;
+	    }
+	    // send error
+	    var error = msginfo.getElementsByTagName('error');
+	    var errorCode = '';
+	    var errorText = '';
+	    var errorBool = false;
+	    if (error.length > 0) {
+	        errorBool = true;
+	        errorCode = error[0].getAttribute('code');
+	        var textDOM = error[0].getElementsByTagName('text');
+	        errorText = textDOM[0].textContent || textDOM[0].text;
+	    }
+
+	    var msgDatas = parseMsgData.data;
+	    for (var i in msgDatas) {
+	        if (!msgDatas.hasOwnProperty(i)) {
+	            continue;
+	        }
+	        var msg = msgDatas[i];
+	        if (!msg.from || !msg.to) {
+	            continue;
+	        }
+
+	        var from = (msg.from + '').toLowerCase();
+	        var too = (msg.to + '').toLowerCase();
+	        var extmsg = msg.ext || {};
+	        var chattype = '';
+	        var typeEl = msginfo.getElementsByTagName('roomtype');
+	        if (typeEl.length) {
+	            chattype = typeEl[0].getAttribute('type') || 'chat';
+	        } else {
+	            chattype = msginfo.getAttribute('type') || 'chat';
+	        }
+
+	        var msgBodies = msg.bodies;
+	        if (!msgBodies || msgBodies.length == 0) {
+	            continue;
+	        }
+	        var msgBody = msg.bodies[0];
+	        var type = msgBody.type;
+	        var isCmdMsg = false;
+
+	        try {
+	            switch (type) {
+	                case 'txt':
+	                    var receiveMsg = msgBody.msg;
+	                    var sourceMsg = _.clone(receiveMsg);
+	                    /*
+	                     if (self.encrypt.type === 'base64') {
+	                     receiveMsg = atob(receiveMsg);
+	                     } else if (self.encrypt.type === 'aes') {
+	                     var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
+	                     var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
+	                     var mode = self.encrypt.mode.toLowerCase();
+	                     var option = {};
+	                     if (mode === 'cbc') {
+	                     option = {
+	                     iv: iv,
+	                     mode: CryptoJS.mode.CBC,
+	                     padding: CryptoJS.pad.Pkcs7
+	                     };
+	                     } else if (mode === 'ebc') {
+	                     option = {
+	                     mode: CryptoJS.mode.ECB,
+	                     padding: CryptoJS.pad.Pkcs7
+	                     }
+	                     }
+	                     var encryptedBase64Str = receiveMsg;
+	                     var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+	                     var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+	                     receiveMsg = decryptedStr;
+	                     }
+	                     */
+	                    receiveMsg = self.decrypt(receiveMsg);
+	                    var emojibody = _utils.parseTextMessage(receiveMsg, WebIM.Emoji);
+	                    if (emojibody && emojibody.isemoji) {
+	                        var msg = {
+	                            id: id,
+	                            type: chattype,
+	                            from: from,
+	                            to: too,
+	                            delay: parseMsgData.delayTimeStamp,
+	                            data: emojibody.body,
+	                            ext: extmsg,
+	                            sourceMsg: sourceMsg
+	                        };
+	                        !msg.delay && delete msg.delay;
+	                        msg.error = errorBool;
+	                        msg.errorText = errorText;
+	                        msg.errorCode = errorCode;
+	                        this.onEmojiMessage(msg);
+	                    } else {
+	                        var msg = {
+	                            id: id,
+	                            type: chattype,
+	                            from: from,
+	                            to: too,
+	                            delay: parseMsgData.delayTimeStamp,
+	                            data: receiveMsg,
+	                            ext: extmsg,
+	                            sourceMsg: sourceMsg
+	                        };
+	                        !msg.delay && delete msg.delay;
+	                        msg.error = errorBool;
+	                        msg.errorText = errorText;
+	                        msg.errorCode = errorCode;
+	                        this.onTextMessage(msg);
+	                    }
+	                    break;
+	                case 'img':
+	                    var rwidth = 0;
+	                    var rheight = 0;
+	                    if (msgBody.size) {
+	                        rwidth = msgBody.size.width;
+	                        rheight = msgBody.size.height;
+	                    }
+	                    var msg = {
+	                        id: id,
+	                        type: chattype,
+	                        from: from,
+	                        to: too,
+
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        secret: msgBody.secret,
+	                        filename: msgBody.filename,
+	                        thumb: msgBody.thumb,
+	                        thumb_secret: msgBody.thumb_secret,
+	                        file_length: msgBody.file_length || '',
+	                        width: rwidth,
+	                        height: rheight,
+	                        filetype: msgBody.filetype || '',
+	                        accessToken: this.context.accessToken || '',
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
+	                    };
+	                    !msg.delay && delete msg.delay;
+	                    msg.error = errorBool;
+	                    msg.errorText = errorText;
+	                    msg.errorCode = errorCode;
+	                    this.onPictureMessage(msg);
+	                    break;
+	                case 'audio':
+	                    var msg = {
+	                        id: id,
+	                        type: chattype,
+	                        from: from,
+	                        to: too,
+
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        secret: msgBody.secret,
+	                        filename: msgBody.filename,
+	                        length: msgBody.length || '',
+	                        file_length: msgBody.file_length || '',
+	                        filetype: msgBody.filetype || '',
+	                        accessToken: this.context.accessToken || '',
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
+	                    };
+	                    !msg.delay && delete msg.delay;
+	                    msg.error = errorBool;
+	                    msg.errorText = errorText;
+	                    msg.errorCode = errorCode;
+	                    this.onAudioMessage(msg);
+	                    break;
+	                case 'file':
+	                    var msg = {
+	                        id: id,
+	                        type: chattype,
+	                        from: from,
+	                        to: too,
+
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        secret: msgBody.secret,
+	                        filename: msgBody.filename,
+	                        file_length: msgBody.file_length,
+	                        accessToken: this.context.accessToken || '',
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
+	                    };
+	                    !msg.delay && delete msg.delay;
+	                    msg.error = errorBool;
+	                    msg.errorText = errorText;
+	                    msg.errorCode = errorCode;
+	                    this.onFileMessage(msg);
+	                    break;
+	                case 'loc':
+	                    var msg = {
+	                        id: id,
+	                        type: chattype,
+	                        from: from,
+	                        to: too,
+	                        addr: msgBody.addr,
+	                        lat: msgBody.lat,
+	                        lng: msgBody.lng,
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
+	                    };
+	                    !msg.delay && delete msg.delay;
+	                    msg.error = errorBool;
+	                    msg.errorText = errorText;
+	                    msg.errorCode = errorCode;
+	                    this.onLocationMessage(msg);
+	                    break;
+	                case 'video':
+	                    var msg = {
+	                        id: id,
+	                        type: chattype,
+	                        from: from,
+	                        to: too,
+
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        secret: msgBody.secret,
+	                        filename: msgBody.filename,
+	                        file_length: msgBody.file_length,
+	                        accessToken: this.context.accessToken || '',
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
+	                    };
+	                    !msg.delay && delete msg.delay;
+	                    msg.error = errorBool;
+	                    msg.errorText = errorText;
+	                    msg.errorCode = errorCode;
+	                    this.onVideoMessage(msg);
+	                    break;
+	                case 'cmd':
+	                    var msg = {
+	                        id: id,
+	                        from: from,
+	                        to: too,
+	                        action: msgBody.action,
+	                        ext: extmsg,
+	                        delay: parseMsgData.delayTimeStamp
+	                    };
+	                    !msg.delay && delete msg.delay;
+	                    msg.error = errorBool;
+	                    msg.errorText = errorText;
+	                    msg.errorCode = errorCode;
+	                    // this.onCmdMessage(msg);
+	                    if (msgBody.action === 'em_retrieve_dns') {
+	                        isCmdMsg = true;
+	                    }
+	                    if (msgBody.action.indexOf("em_") !== 0) {
+	                        self.onCmdMessage(msg);
+	                    } else {
+	                        var ackMessage = new WebIM.message("read", self.getUniqueId());
+	                        ackMessage.set({ id: msg.id, to: msg.from, ext: { logo: "easemob" } });
+	                        self.send(ackMessage.body);
+	                        self.handelSendQueue();
+	                    }
+	                    break;
+	            }
+	            ;
+	            if (self.delivery) {
+	                var msgId = self.getUniqueId();
+	                var bodyId = msg.id;
+	                var deliverMessage = new WebIM.message('delivery', msgId);
+	                deliverMessage.set({
+	                    id: bodyId,
+	                    to: msg.from
+	                });
+	                self.send(deliverMessage.body);
+	            }
+	            isCmdMsg && this.close(); //action==em_retrieve_dns 的cmd消息用于迁集群，退出重新登录以获取config信息
+	        } catch (e) {
+	            this.onError({
+	                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                data: e
+	            });
+	        }
+	    }
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.handleDeliveredMessage = function (message) {
+	    var id = message.id;
+	    var body = message.getElementsByTagName('body');
+	    var mid = 0;
+	    mid = body[0].innerHTML;
+	    var msg = {
+	        mid: mid
+	    };
+	    this.onDeliverdMessage(msg);
+	    this.sendReceiptsMessage({
+	        id: id
+	    });
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.handleAckedMessage = function (message) {
+	    var id = message.id;
+	    var body = message.getElementsByTagName('body');
+	    var mid = 0;
+	    mid = body[0].innerHTML;
+	    var msg = {
+	        mid: mid
+	    };
+	    this.onReadMessage(msg);
+	    this.sendReceiptsMessage({
+	        id: id
+	    });
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.handleReceivedMessage = function (message) {
+	    try {
+	        var received = message.getElementsByTagName("received");
+	        var mid = received[0].getAttribute('mid');
+	        var body = message.getElementsByTagName("body");
+	        var id = body[0].innerHTML;
+	        var msg = {
+	            mid: mid,
+	            id: id
+	        };
+	        this.onReceivedMessage(msg);
+	    } catch (e) {
+	        this.onError({
+	            type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	            data: e
+	        });
+	    }
+
+	    var rcv = message.getElementsByTagName('received'),
+	        id,
+	        mid;
+
+	    if (rcv.length > 0) {
+	        if (rcv[0].childNodes && rcv[0].childNodes.length > 0) {
+	            id = rcv[0].childNodes[0].nodeValue;
+	        } else {
+	            id = rcv[0].innerHTML || rcv[0].innerText;
+	        }
+	        mid = rcv[0].getAttribute('mid');
+	    }
+
+	    if (_msgHash[id]) {
+	        try {
+	            _msgHash[id].msg.success instanceof Function && _msgHash[id].msg.success(id, mid);
+	        } catch (e) {
+	            this.onError({
+	                type: _code.WEBIM_CONNCTION_CALLBACK_INNER_ERROR,
+	                data: e
+	            });
+	        }
+	        delete _msgHash[id];
+	    }
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.handleInviteMessage = function (message) {
+	    var form = null;
+	    var invitemsg = message.getElementsByTagName('invite');
+	    var reasonDom = message.getElementsByTagName('reason')[0];
+	    var reasonMsg = reasonDom.textContent;
+	    var id = message.getAttribute('id') || '';
+	    this.sendReceiptsMessage({
+	        id: id
+	    });
+
+	    if (invitemsg && invitemsg.length > 0) {
+	        var fromJid = invitemsg[0].getAttribute('from');
+	        form = _parseNameFromJidFn(fromJid);
+	    }
+	    var xmsg = message.getElementsByTagName('x');
+	    var roomid = null;
+	    if (xmsg && xmsg.length > 0) {
+	        for (var i = 0; i < xmsg.length; i++) {
+	            if ('jabber:x:conference' === xmsg[i].namespaceURI) {
+	                var roomjid = xmsg[i].getAttribute('jid');
+	                roomid = _parseNameFromJidFn(roomjid);
+	            }
+	        }
+	    }
+	    this.onInviteMessage({
+	        type: 'invite',
+	        from: form,
+	        roomid: roomid,
+	        reason: reasonMsg
+	    });
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.handleMutedMessage = function (message) {
+	    var id = message.id;
+	    this.onMutedMessage({
+	        mid: id
+	    });
+	};
+
+	/**
+	 * @private
+	 */
+	connection.prototype.sendCommand = function (dom, id) {
+	    if (this.isOpened()) {
+	        this.context.stropheConn.send(dom);
+	    } else {
+	        this.unSendMsgArr.push(dom);
+	        if (!this.offLineSendConnecting && !this.logOut) {
+	            this.offLineSendConnecting = true;
+	            this.reconnect();
+	        }
+	        this.onError({
+	            type: _code.WEBIM_CONNCTION_DISCONNECTED,
+	            reconnect: true
+	        });
+	    }
+	};
+
+	/**
+	 * 随机生成一个id用于消息id
+	 * @param {String} [prefix=WEBIM_] - 前缀
+	 * @returns {String} 唯一的id
+	 */
+	connection.prototype.getUniqueId = function (prefix) {
+	    // fix: too frequently msg sending will make same id
+	    if (this.autoIncrement) {
+	        this.autoIncrement++;
+	    } else {
+	        this.autoIncrement = 1;
+	    }
+	    var cdate = new Date();
+	    var offdate = new Date(2010, 1, 1);
+	    var offset = cdate.getTime() - offdate.getTime();
+	    var hexd = parseFloat(offset).toString(16) + this.autoIncrement;
+
+	    if (typeof prefix === 'string' || typeof prefix === 'number') {
+	        return prefix + '_' + hexd;
+	    } else {
+	        return 'WEBIM_' + hexd;
+	    }
+	};
+
+	/**
+	 * send message
+	 * @param {Object} messageSource - 由 Class Message 生成
+	 */
+	connection.prototype.send = function (messageSource) {
+	    var self = this;
+	    var message = messageSource;
+	    if (message.type === 'txt') {
+	        if (this.encrypt.type === 'base64') {
+	            message = _.clone(messageSource);
+	            message.msg = btoa(message.msg);
+	        } else if (this.encrypt.type === 'aes') {
+	            message = _.clone(messageSource);
+	            var key = CryptoJS.enc.Utf8.parse(this.encrypt.key);
+	            var iv = CryptoJS.enc.Utf8.parse(this.encrypt.iv);
+	            var mode = this.encrypt.mode.toLowerCase();
+	            var option = {};
+	            if (mode === 'cbc') {
+	                option = {
+	                    iv: iv,
+	                    mode: CryptoJS.mode.CBC,
+	                    padding: CryptoJS.pad.Pkcs7
+	                };
+	            } else if (mode === 'ebc') {
+	                option = {
+	                    mode: CryptoJS.mode.ECB,
+	                    padding: CryptoJS.pad.Pkcs7
+	                };
+	            }
+	            var encryptedData = CryptoJS.AES.encrypt(message.msg, key, option);
+
+	            message.msg = encryptedData.toString();
+	        }
+	    }
+	    if (this.isWindowSDK) {
+	        WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}', function (response) {}, function (code, msg) {
+	            var message = {
+	                data: {
+	                    data: "send"
+	                },
+	                type: _code.WEBIM_MESSAGE_SED_ERROR
+	            };
+	            self.onError(message);
+	        });
+	    } else {
+	        if (Object.prototype.toString.call(message) === '[object Object]') {
+	            var appKey = this.context.appKey || '';
+	            var toJid = appKey + '_' + message.to + '@' + this.domain;
+
+	            if (message.group) {
+	                toJid = appKey + '_' + message.to + '@conference.' + this.domain;
+	            }
+	            if (message.resource) {
+	                toJid = toJid + '/' + message.resource;
+	            }
+
+	            message.toJid = toJid;
+	            message.id = message.id || this.getUniqueId();
+	            _msgHash[message.id] = new _message(message);
+	            _msgHash[message.id].send(this);
+	        } else if (typeof message === 'string') {
+	            _msgHash[message] && _msgHash[message].send(this);
+	        }
+	    }
+	};
+
+	/**
+	 * 添加联系人，已废弃不用
+	 * @param {Object} options
+	 * @deprecated
+	 */
+	connection.prototype.addRoster = function (options) {
+	    var jid = _getJid(options, this);
+	    var name = options.name || '';
+	    var groups = options.groups || '';
+
+	    var iq = $iq({ type: 'set' });
+	    iq.c('query', { xmlns: 'jabber:iq:roster' });
+	    iq.c('item', { jid: jid, name: name });
+
+	    if (groups) {
+	        for (var i = 0; i < groups.length; i++) {
+	            iq.c('group').t(groups[i]).up();
+	        }
+	    }
+	    var suc = options.success || _utils.emptyfn;
+	    var error = options.error || _utils.emptyfn;
+	    this.context.stropheConn.sendIQ(iq.tree(), suc, error);
+	};
+
+	/**
+	 * 删除联系人
+	 *
+	 * @param {Object} options
+	 * @param {String} options.to - 想要删除的联系人ID
+	 * @param {Function} options.success - 成功回调，在这里面调用connection.unsubscribed才能真正删除联系人
+	 * @fires connection#unsubscribed
+	 */
+	connection.prototype.removeRoster = function (options) {
+	    var jid = _getJid(options, this);
+	    var iq = $iq({ type: 'set' }).c('query', { xmlns: 'jabber:iq:roster' }).c('item', {
+	        jid: jid,
+	        subscription: 'remove'
+	    });
+
+	    var suc = options.success || _utils.emptyfn;
+	    var error = options.error || _utils.emptyfn;
+	    this.context.stropheConn.sendIQ(iq, suc, error);
+	};
+
+	/**
+	 * 获取联系人
+	 * @param {Object} options
+	 * @param {Function} options.success - 获取好友列表成功
+	 */
+	connection.prototype.getRoster = function (options) {
+	    var dom = $iq({
+	        type: 'get'
+	    }).c('query', { xmlns: 'jabber:iq:roster' });
+
+	    var options = options || {};
+	    var suc = options.success || this.onRoster;
+	    var completeFn = function completeFn(ele) {
+	        var rouster = [];
+	        var msgBodies = ele.getElementsByTagName('query');
+	        if (msgBodies && msgBodies.length > 0) {
+	            var queryTag = msgBodies[0];
+	            rouster = _parseFriend(queryTag);
+	        }
+	        suc(rouster, ele);
+	    };
+	    var error = options.error || this.onError;
+	    var failFn = function failFn(ele) {
+	        error({
+	            type: _code.WEBIM_CONNCTION_GETROSTER_ERROR,
+	            data: ele
+	        });
+	    };
+	    if (this.isOpened()) {
+	        this.context.stropheConn.sendIQ(dom.tree(), completeFn, failFn);
+	    } else {
+	        error({
+	            type: _code.WEBIM_CONNCTION_DISCONNECTED
+	        });
+	    }
+	};
+
+	/**
+	 * 订阅和反向订阅
+	 * @example
+	 *
+	 * A订阅B（A添加B为好友）
+	 * A执行：
+	 *  conn.subscribe({
+	                to: 'B',
+	                message: 'Hello~'
+	            });
+	 B的监听函数onPresence参数message.type == subscribe监听到有人订阅他
+	 B执行：
+	 conn.subscribed({
+	                to: 'A',
+	                message: '[resp:true]'
+	          });
+	 同意A的订阅请求
+	 B继续执行：
+	 conn.subscribe({
+	                to: 'A',
+	                message: '[resp:true]'
+	            });
+	 反向订阅A，这样才算双方添加好友成功。
+	 若B拒绝A的订阅请求，只需执行：
+	 conn.unsubscribed({
+	                        to: 'A',
+	                        message: 'I don't want to be subscribed'
+	                    });
+	 另外，在监听函数onPresence参数message.type == "subscribe"这个case中，加一句
+	 if (message && message.status === '[resp:true]') {
+	            return;
+	        }
+	 否则会进入死循环
+	 *
+	 * @param {Object} options - 想要订阅的联系人信息
+	 * @param {String} options.to - 想要订阅的联系人ID
+	 * @param {String} options.message - 发送给想要订阅的联系人的验证消息
+	 */
+	connection.prototype.subscribe = function (options) {
+	    var jid = _getJid(options, this);
+	    var pres = $pres({ to: jid, type: 'subscribe' });
+	    if (options.message) {
+	        pres.c('status').t(options.message).up();
+	    }
+	    if (options.nick) {
+	        pres.c('nick', { 'xmlns': 'http://jabber.org/protocol/nick' }).t(options.nick);
+	    }
+	    this.sendCommand(pres.tree());
+	};
+
+	/**
+	 * 被订阅后确认同意被订阅
+	 * @param {Object} options - 订阅人的信息
+	 * @param {String} options.to - 订阅人的ID
+	 * @param {String} options.message=[resp:true] - 默认为[resp:true]，后续将去掉该参数
+	 */
+	connection.prototype.subscribed = function (options) {
+	    var message = '[resp:true]';
+	    var jid = _getJid(options, this);
+	    var pres = $pres({ to: jid, type: 'subscribed' });
+
+	    if (options.message) {
+	        pres.c('status').t(options.message).up();
+	    }
+	    this.sendCommand(pres.tree());
+	};
+
+	/**
+	 * 取消订阅成功，废弃不用
+	 * @param {Object} options
+	 * @deprecated
+	 */
+	connection.prototype.unsubscribe = function (options) {
+	    var jid = _getJid(options, this);
+	    var pres = $pres({ to: jid, type: 'unsubscribe' });
+
+	    if (options.message) {
+	        pres.c('status').t(options.message);
+	    }
+	    this.sendCommand(pres.tree());
+	};
+
+	/**
+	 * 拒绝对方的订阅请求
+	 * @function connection#event:unsubscribed
+	 * @param {Object} options -
+	 * @param {String} options.to - 订阅人的ID
+	 */
+	connection.prototype.unsubscribed = function (options) {
+	    var jid = _getJid(options, this);
+	    var pres = $pres({ to: jid, type: 'unsubscribed' });
+
+	    if (options.message) {
+	        pres.c('status').t(options.message).up();
+	    }
+	    this.sendCommand(pres.tree());
+	};
+
+	/**
+	 * 加入公开群组
+	 * @param {Object} options
+	 * @deprecated
+	 */
+	connection.prototype.joinPublicGroup = function (options) {
+	    var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
+	    var room_nick = roomJid + '/' + this.context.userId;
+	    var suc = options.success || _utils.emptyfn;
+	    var err = options.error || _utils.emptyfn;
+	    var errorFn = function errorFn(ele) {
+	        err({
+	            type: _code.WEBIM_CONNCTION_JOINROOM_ERROR,
+	            data: ele
+	        });
+	    };
+	    var iq = $pres({
+	        from: this.context.jid,
+	        to: room_nick
+	    }).c('x', { xmlns: Strophe.NS.MUC });
+
+	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
+	};
+
+	/**
+	 * 获取聊天室列表
+	 * @param {Object} options
+	 * @deprecated
+	 */
+	connection.prototype.listRooms = function (options) {
+	    var iq = $iq({
+	        to: options.server || 'conference.' + this.domain,
+	        from: this.context.jid,
+	        type: 'get'
+	    }).c('query', { xmlns: Strophe.NS.DISCO_ITEMS });
+
+	    var suc = options.success || _utils.emptyfn;
+	    var error = options.error || this.onError;
+	    var completeFn = function completeFn(result) {
+	        var rooms = [];
+	        rooms = _parseRoom(result);
+	        try {
+	            suc(rooms);
+	        } catch (e) {
+	            error({
+	                type: _code.WEBIM_CONNCTION_GETROOM_ERROR,
+	                data: e
+	            });
+	        }
+	    };
+	    var err = options.error || _utils.emptyfn;
+	    var errorFn = function errorFn(ele) {
+	        err({
+	            type: _code.WEBIM_CONNCTION_GETROOM_ERROR,
+	            data: ele
+	        });
+	    };
+	    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
+	};
+
+	/**
+	 * 获取群组成员列表
+	 * @param {Object} options
+	 * @deprecated
+	 */
+	connection.prototype.queryRoomMember = function (options) {
+	    var domain = this.domain;
+	    var members = [];
+	    var iq = $iq({
+	        to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain,
+	        type: 'get'
+	    }).c('query', { xmlns: Strophe.NS.MUC + '#admin' }).c('item', { affiliation: 'member' });
+
+	    var suc = options.success || _utils.emptyfn;
+	    var completeFn = function completeFn(result) {
+	        var items = result.getElementsByTagName('item');
+
+	        if (items) {
+	            for (var i = 0; i < items.length; i++) {
+	                var item = items[i];
+	                var mem = {
+	                    jid: item.getAttribute('jid'),
+	                    affiliation: 'member'
+	                };
+	                members.push(mem);
+	            }
+	        }
+	        suc(members);
+	    };
+	    var err = options.error || _utils.emptyfn;
+	    var errorFn = function errorFn(ele) {
+	        err({
+	            type: _code.WEBIM_CONNCTION_GETROOMMEMBER_ERROR,
+	            data: ele
+	        });
+	    };
+	    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
+	};
+
+	/**
+	 * 获取群组信息
+	 * @param {Object} options
+	 * @deprecated
+	 */
+	connection.prototype.queryRoomInfo = function (options) {
+	    console.log('QueryRoomInfo');
+	    var domain = this.domain;
+	    var iq = $iq({
+	        to: this.context.appKey + '_' + options.roomId + '@conference.' + domain,
+	        type: 'get'
+	    }).c('query', { xmlns: Strophe.NS.DISCO_INFO });
+
+	    var suc = options.success || _utils.emptyfn;
+	    var members = [];
+
+	    var completeFn = function completeFn(result) {
+	        var settings = '';
+	        var features = result.getElementsByTagName('feature');
+	        if (features) {
+	            settings = features[1].getAttribute('var') + '|' + features[3].getAttribute('var') + '|' + features[4].getAttribute('var');
+	        }
+	        switch (settings) {
+	            case 'muc_public|muc_membersonly|muc_notallowinvites':
+	                settings = 'PUBLIC_JOIN_APPROVAL';
+	                break;
+	            case 'muc_public|muc_open|muc_notallowinvites':
+	                settings = 'PUBLIC_JOIN_OPEN';
+	                break;
+	            case 'muc_hidden|muc_membersonly|muc_allowinvites':
+	                settings = 'PRIVATE_MEMBER_INVITE';
+	                break;
+	            case 'muc_hidden|muc_membersonly|muc_notallowinvites':
+	                settings = 'PRIVATE_OWNER_INVITE';
+	                break;
+	        }
+	        var owner = '';
+	        var fields = result.getElementsByTagName('field');
+	        var fieldValues = {};
+	        if (fields) {
+	            for (var i = 0; i < fields.length; i++) {
+	                var field = fields[i];
+	                var fieldVar = field.getAttribute('var');
+	                var fieldSimplify = fieldVar.split('_')[1];
+	                switch (fieldVar) {
+	                    case 'muc#roominfo_occupants':
+	                    case 'muc#roominfo_maxusers':
+	                    case 'muc#roominfo_affiliations':
+	                    case 'muc#roominfo_description':
+	                        fieldValues[fieldSimplify] = field.textContent || field.text || '';
+	                        break;
+	                    case 'muc#roominfo_owner':
+	                        var mem = {
+	                            jid: (field.textContent || field.text) + '@' + domain,
+	                            affiliation: 'owner'
+	                        };
+	                        members.push(mem);
+	                        fieldValues[fieldSimplify] = field.textContent || field.text;
+	                        break;
+	                }
+
+	                // if (field.getAttribute('label') === 'owner') {
+	                //     var mem = {
+	                //         jid: (field.textContent || field.text) + '@' + domain
+	                //         , affiliation: 'owner'
+	                //     };
+	                //     members.push(mem);
+	                //     break;
+	                // }
+	            }
+	            fieldValues['name'] = result.getElementsByTagName('identity')[0].getAttribute('name');
+	        }
+	        suc(settings, members, fieldValues);
+	    };
+	    var err = options.error || _utils.emptyfn;
+	    var errorFn = function errorFn(ele) {
+	        err({
+	            type: _code.WEBIM_CONNCTION_GETROOMINFO_ERROR,
+	            data: ele
+	        });
+	    };
+	    this.context.stropheConn.sendIQ(iq.tree(), completeFn, errorFn);
+	};
+
+	/**
+	 * 获取聊天室管理员
+	 * @param {Object} options
+	 * @deprecated
+	 */
+	connection.prototype.queryRoomOccupants = function (options) {
+	    var suc = options.success || _utils.emptyfn;
+	    var completeFn = function completeFn(result) {
+	        var occupants = [];
+	        occupants = _parseRoomOccupants(result);
+	        suc(occupants);
+	    };
+	    var err = options.error || _utils.emptyfn;
+	    var errorFn = function errorFn(ele) {
+	        err({
+	            type: _code.WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR,
+	            data: ele
+	        });
+	    };
+	    var attrs = {
+	        xmlns: Strophe.NS.DISCO_ITEMS
+	    };
+	    var info = $iq({
+	        from: this.context.jid,
+	        to: this.context.appKey + '_' + options.roomId + '@conference.' + this.domain,
+	        type: 'get'
+	    }).c('query', attrs);
+	    this.context.stropheConn.sendIQ(info.tree(), completeFn, errorFn);
+	};
+
+	/**
+	 *
+	 * @deprecated
+	 * @private
+	 */
+	connection.prototype.setUserSig = function (desc) {
+	    var dom = $pres({ xmlns: 'jabber:client' });
+	    desc = desc || '';
+	    dom.c('status').t(desc);
+	    this.sendCommand(dom.tree());
+	};
+
+	/**
+	 *
+	 * @private
+	 */
+	connection.prototype.setPresence = function (type, status) {
+	    var dom = $pres({ xmlns: 'jabber:client' });
+	    if (type) {
+	        if (status) {
+	            dom.c('show').t(type);
+	            dom.up().c('status').t(status);
+	        } else {
+	            dom.c('show').t(type);
+	        }
+	    }
+	    this.sendCommand(dom.tree());
+	};
+
+	/**
+	 * @private
+	 *
+	 */
+	connection.prototype.getPresence = function () {
+	    var dom = $pres({ xmlns: 'jabber:client' });
+	    var conn = this;
+	    this.sendCommand(dom.tree());
+	};
+
+	/**
+	 * @private
+	 *
+	 */
+	connection.prototype.ping = function (options) {
+	    var options = options || {};
+	    var jid = _getJid(options, this);
+
+	    var dom = $iq({
+	        from: this.context.jid || '',
+	        to: jid,
+	        type: 'get'
+	    }).c('ping', { xmlns: 'urn:xmpp:ping' });
+
+	    var suc = options.success || _utils.emptyfn;
+	    var error = options.error || this.onError;
+	    var failFn = function failFn(ele) {
+	        error({
+	            type: _code.WEBIM_CONNCTION_PING_ERROR,
+	            data: ele
+	        });
+	    };
+	    if (this.isOpened()) {
+	        this.context.stropheConn.sendIQ(dom.tree(), suc, failFn);
+	    } else {
+	        error({
+	            type: _code.WEBIM_CONNCTION_DISCONNECTED
+	        });
+	    }
+	    return;
+	};
+
+	/**
+	 * @private
+	 *
+	 */
+	connection.prototype.isOpened = function () {
+	    return this.context.status == _code.STATUS_OPENED;
+	};
+
+	/**
+	 * @private
+	 *
+	 */
+	connection.prototype.isOpening = function () {
+	    var status = this.context.status;
+	    return status == _code.STATUS_DOLOGIN_USERGRID || status == _code.STATUS_DOLOGIN_IM;
+	};
+
+	/**
+	 * @private
+	 *
+	 */
+	connection.prototype.isClosing = function () {
+	    return this.context.status == _code.STATUS_CLOSING;
+	};
+
+	/**
+	 * @private
+	 *
+	 */
+	connection.prototype.isClosed = function () {
+	    return this.context.status == _code.STATUS_CLOSED;
+	};
+
+	/**
+	 * @private
+	 *
+	 */
+	connection.prototype.clear = function () {
+	    var key = this.context.appKey;
+	    if (this.errorType != _code.WEBIM_CONNCTION_DISCONNECTED) {
+	        if (this.logOut) {
+	            this.unSendMsgArr = [];
+	            this.offLineSendConnecting = false;
+	            this.context = {
+	                status: _code.STATUS_INIT,
+	                appKey: key
+	            };
+	        }
+	    }
+	    if (this.intervalId) {
+	        clearInterval(this.intervalId);
+	    }
+	    this.restIndex = 0;
+	    this.xmppIndex = 0;
+
+	    if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
+	        var message = {
+	            data: {
+	                data: "logout"
+	            },
+	            type: _code.WEBIM_CONNCTION_CLIENT_LOGOUT
+	        };
+	        this.onError(message);
+	    }
+	};
+
+	/**
+	 * 获取聊天室列表
+	 * @param {Object} options
+	 * @param {String} options.pagenum
+	 * @param {String} options.pagesize
+	 */
+	connection.prototype.getChatRooms = function (options) {
+
+	    var conn = this,
+	        token = options.accessToken || this.context.accessToken;
+
+	    if (!_utils.isCanSetRequestHeader) {
+	        conn.onError({
+	            type: _code.WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR
+	        });
+	        return;
+	    }
+
+	    if (token) {
+	        var apiUrl = this.apiUrl;
+	        var appName = this.context.appName;
+	        var orgName = this.context.orgName;
+
+	        if (!appName || !orgName) {
+	            conn.onError({
+	                type: _code.WEBIM_CONNCTION_AUTH_ERROR
+	            });
+	            return;
+	        }
+
+	        var suc = function suc(data, xhr) {
+	            typeof options.success === 'function' && options.success(data);
+	        };
+
+	        var error = function error(res, xhr, msg) {
+	            if (res.error && res.error_description) {
+	                conn.onError({
+	                    type: _code.WEBIM_CONNCTION_LOAD_CHATROOM_ERROR,
+	                    msg: res.error_description,
+	                    data: res,
+	                    xhr: xhr
+	                });
+	            }
+	        };
+
+	        var pageInfo = {
+	            pagenum: parseInt(options.pagenum) || 1,
+	            pagesize: parseInt(options.pagesize) || 20
+	        };
+
+	        var opts = {
+	            url: apiUrl + '/' + orgName + '/' + appName + '/chatrooms',
+	            dataType: 'json',
+	            type: 'GET',
+	            headers: { 'Authorization': 'Bearer ' + token },
+	            data: pageInfo,
+	            success: suc || _utils.emptyfn,
+	            error: error || _utils.emptyfn
+	        };
+	        _utils.ajax(opts);
+	    } else {
+	        conn.onError({
+	            type: _code.WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR
+	        });
+	    }
+	};
+
+	/**
+	 * 加入聊天室
+	 * @param {Object} options
+	 * @param {String} options.roomId
+	 */
+	connection.prototype.joinChatRoom = function (options) {
+	    var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
+	    var room_nick = roomJid + '/' + this.context.userId;
+	    var suc = options.success || _utils.emptyfn;
+	    var err = options.error || _utils.emptyfn;
+	    var errorFn = function errorFn(ele) {
+	        err({
+	            type: _code.WEBIM_CONNCTION_JOINCHATROOM_ERROR,
+	            data: ele
+	        });
+	    };
+
+	    var iq = $pres({
+	        from: this.context.jid,
+	        to: room_nick
+	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'member', role: 'participant' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+
+	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
+	};
+
+	/**
+	 * 退出聊天室
+	 * @param {Object} options
+	 * @param {String} options.roomId
+	 */
+	connection.prototype.quitChatRoom = function (options) {
+	    var roomJid = this.context.appKey + '_' + options.roomId + '@conference.' + this.domain;
+	    var room_nick = roomJid + '/' + this.context.userId;
+	    var suc = options.success || _utils.emptyfn;
+	    var err = options.error || _utils.emptyfn;
+	    var errorFn = function errorFn(ele) {
+	        err({
+	            type: _code.WEBIM_CONNCTION_QUITCHATROOM_ERROR,
+	            data: ele
+	        });
+	    };
+	    var iq = $pres({
+	        from: this.context.jid,
+	        to: room_nick,
+	        type: 'unavailable'
+	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'none', role: 'none' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+
+	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
+	};
+
+	/**
+	 * for windowSDK
+	 * @private
+	 *
+	 */
+	connection.prototype._onReceiveInviteFromGroup = function (info) {
+	    info = eval('(' + info + ')');
+	    var self = this;
+	    var options = {
+	        title: "Group invitation",
+	        msg: info.user + " invites you to join into group:" + info.group_id,
+	        agree: function agree() {
+	            WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
+	                var message = {
+	                    data: {
+	                        data: "acceptInvitationFromGroup error:" + msg
+	                    },
+	                    type: _code.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
+	                };
+	                self.onError(message);
+	            });
+	        },
+	        reject: function reject() {
+	            WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
+	                var message = {
+	                    data: {
+	                        data: "declineInvitationFromGroup error:" + msg
+	                    },
+	                    type: _code.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
+	                };
+	                self.onError(message);
+	            });
+	        }
+	    };
+
+	    this.onConfirmPop(options);
+	};
+
+	/**
+	 * for windowSDK
+	 * @private
+	 *
+	 */
+	connection.prototype._onReceiveInviteAcceptionFromGroup = function (info) {
+	    info = eval('(' + info + ')');
+	    var options = {
+	        title: "Group invitation response",
+	        msg: info.user + " agreed to join into group:" + info.group_id,
+	        agree: function agree() {}
+	    };
+	    this.onConfirmPop(options);
+	};
+
+	/**
+	 * for windowSDK
+	 * @private
+	 *
+	 */
+	connection.prototype._onReceiveInviteDeclineFromGroup = function (info) {
+	    info = eval('(' + info + ')');
+	    var options = {
+	        title: "Group invitation response",
+	        msg: info.user + " rejected to join into group:" + info.group_id,
+	        agree: function agree() {}
+	    };
+	    this.onConfirmPop(options);
+	};
+
+	/**
+	 * for windowSDK
+	 * @private
+	 *
+	 */
+	connection.prototype._onAutoAcceptInvitationFromGroup = function (info) {
+	    info = eval('(' + info + ')');
+	    var options = {
+	        title: "Group invitation",
+	        msg: "You had joined into the group:" + info.group_name + " automatically.Inviter:" + info.user,
+	        agree: function agree() {}
+	    };
+	    this.onConfirmPop(options);
+	};
+
+	/**
+	 * for windowSDK
+	 * @private
+	 *
+	 */
+	connection.prototype._onLeaveGroup = function (info) {
+	    info = eval('(' + info + ')');
+	    var options = {
+	        title: "Group notification",
+	        msg: "You have been out of the group:" + info.group_id + ".Reason:" + info.msg,
+	        agree: function agree() {}
+	    };
+	    this.onConfirmPop(options);
+	};
+
+	/**
+	 * for windowSDK
+	 * @private
+	 *
+	 */
+	connection.prototype._onReceiveJoinGroupApplication = function (info) {
+	    info = eval('(' + info + ')');
+	    var self = this;
+	    var options = {
+	        title: "Group join application",
+	        msg: info.user + " applys to join into group:" + info.group_id,
+	        agree: function agree() {
+	            WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
+	                var message = {
+	                    data: {
+	                        data: "acceptJoinGroupApplication error:" + msg
+	                    },
+	                    type: _code.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
+	                };
+	                self.onError(message);
+	            });
+	        },
+	        reject: function reject() {
+	            WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
+	                var message = {
+	                    data: {
+	                        data: "declineJoinGroupApplication error:" + msg
+	                    },
+	                    type: _code.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
+	                };
+	                self.onError(message);
+	            });
+	        }
+	    };
+	    this.onConfirmPop(options);
+	};
+
+	/**
+	 * for windowSDK
+	 * @private
+	 *
+	 */
+	connection.prototype._onReceiveAcceptionFromGroup = function (info) {
+	    info = eval('(' + info + ')');
+	    var options = {
+	        title: "Group notification",
+	        msg: "You had joined into the group:" + info.group_name + ".",
+	        agree: function agree() {}
+	    };
+	    this.onConfirmPop(options);
+	};
+
+	/**
+	 * for windowSDK
+	 * @private
+	 *
+	 */
+	connection.prototype._onReceiveRejectionFromGroup = function () {
+	    info = eval('(' + info + ')');
+	    var options = {
+	        title: "Group notification",
+	        msg: "You have been rejected to join into the group:" + info.group_name + ".",
+	        agree: function agree() {}
+	    };
+	    this.onConfirmPop(options);
+	};
+
+	/**
+	 * for windowSDK
+	 * @private
+	 *
+	 */
+	connection.prototype._onUpdateMyGroupList = function (options) {
+	    this.onUpdateMyGroupList(options);
+	};
+
+	/**
+	 * for windowSDK
+	 * @private
+	 *
+	 */
+	connection.prototype._onUpdateMyRoster = function (options) {
+	    this.onUpdateMyRoster(options);
+	};
+
+	/**
+	 * @private
+	 *
+	 */
+	connection.prototype.reconnect = function (v) {
+	    var that = this;
+	    v && that.xmppIndex++; //重连时改变ip地址
+	    setTimeout(function () {
+	        _login(that.context.restTokenData, that);
+	    }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
+	    this.autoReconnectNumTotal++;
+	};
+
+	/**
+	 *
+	 * @private
+	 * @deprecated
+	 */
+	connection.prototype.closed = function () {
+	    var message = {
+	        data: {
+	            data: "Closed error"
+	        },
+	        type: _code.WEBIM_CONNECTION_CLOSED
+	    };
+	    this.onError(message);
+	};
+
+	/**
+	 * 将消息序列化后存入localStorage
+	 * @param message {Object} 消息实体
+	 * @param type {String} 消息类型
+	 * @param status {String} 消息状态
+	 */
+	connection.prototype.addToLocal = function (message, type, status) {
+	    if (!this.saveLocal) {
+	        return;
+	    }
+	    var sendByMe = typeof message.msg == 'string';
+	    if (!window.localStorage) return;
+	    try {
+	        var msg = _deepClone(message);
+	    } catch (e) {
+	        console.log(e.message);
+	    }
+	    // msg.data = msg.sourceMsg;
+	    msg.data = message.data;
+	    if (type == 'txt') {
+	        if (!message.data && !message.msg) {
+	            return;
+	        }
+	        if (sendByMe) {
+	            msg.data = this.enc(msg.msg);
+	            delete msg.msg;
+	        } else {
+	            msg.data = msg.sourceMsg;
+	        }
+	    }
+	    msg.msgType = type;
+	    msg.msgStatus = status;
+	    var oldRecord = window.localStorage.getItem(this.user);
+	    var serializedChatRecord = JSON.stringify(msg);
+	    if (oldRecord && (oldRecord.indexOf(message.id) >= 0 || oldRecord.indexOf(serializedChatRecord) >= 0)) {
+	        return;
+	    }
+	    var record = "";
+	    if (!oldRecord || oldRecord == "") {
+	        record = serializedChatRecord;
+	    } else {
+	        record = oldRecord + '\n' + serializedChatRecord;
+	    }
+	    window.localStorage.setItem(this.user, record);
+	};
+
+	/**
+	 * 将文本消息加密
+	 * @param messageSource {Object} 消息实体
+	 */
+
+	connection.prototype.enc = function (messageSource) {
+	    var message = _.clone(messageSource);
+	    if (this.encrypt.type === 'base64') {
+	        message = btoa(messageSource);
+	    } else if (this.encrypt.type === 'aes') {
+	        var key = CryptoJS.enc.Utf8.parse(this.encrypt.key);
+	        var iv = CryptoJS.enc.Utf8.parse(this.encrypt.iv);
+	        var mode = this.encrypt.mode.toLowerCase();
+	        var option = {};
+	        if (mode === 'cbc') {
+	            option = {
+	                iv: iv,
+	                mode: CryptoJS.mode.CBC,
+	                padding: CryptoJS.pad.Pkcs7
+	            };
+	        } else if (mode === 'ebc') {
+	            option = {
+	                mode: CryptoJS.mode.ECB,
+	                padding: CryptoJS.pad.Pkcs7
+	            };
+	        }
+	        var encryptedData = CryptoJS.AES.encrypt(message, key, option);
+
+	        message = encryptedData.toString();
+	    }
+	    return message;
+	};
+
+	/**
+	 * 将文本消息解密
+	 * @param source {Object} 消息实体
+	 * @returns {Object} 解密后的消息
+	 */
+	connection.prototype.decrypt = function (source) {
+	    var receiveMsg = source,
+	        self = this;
+	    if (self.encrypt.type === 'base64') {
+	        receiveMsg = atob(receiveMsg);
+	    } else if (self.encrypt.type === 'aes') {
+	        var key = CryptoJS.enc.Utf8.parse(self.encrypt.key);
+	        var iv = CryptoJS.enc.Utf8.parse(self.encrypt.iv);
+	        var mode = self.encrypt.mode.toLowerCase();
+	        var option = {};
+	        if (mode === 'cbc') {
+	            option = {
+	                iv: iv,
+	                mode: CryptoJS.mode.CBC,
+	                padding: CryptoJS.pad.Pkcs7
+	            };
+	        } else if (mode === 'ebc') {
+	            option = {
+	                mode: CryptoJS.mode.ECB,
+	                padding: CryptoJS.pad.Pkcs7
+	            };
+	        }
+	        var encryptedBase64Str = receiveMsg;
+	        var decryptedData = CryptoJS.AES.decrypt(encryptedBase64Str, key, option);
+	        var decryptedStr = decryptedData.toString(CryptoJS.enc.Utf8);
+	        receiveMsg = decryptedStr;
+	    }
+	    return receiveMsg;
+	};
+
+	/**
+	 * 从localStorage获取消息并反序列化
+	 * @returns {Array|*} 所有消息组成的数组
+	 */
+	connection.prototype.getLocal = function () {
+	    if (!window.localStorage || !this.saveLocal) return;
+	    var user = this.user;
+	    var record = window.localStorage.getItem(user);
+
+	    if (!record || record == '') return;
+
+	    var recordArr = record.split('\n');
+	    for (var i in recordArr) {
+	        var recordItem = recordArr[i];
+	        recordItem = JSON.parse(recordItem);
+	        recordItem.data = this.decrypt(recordItem.data);
+	        recordArr[i] = recordItem;
+	    }
+	    return recordArr;
+	};
+
+	/**
+	 * used for blacklist
+	 * @private
+	 *
+	 */
+	function _parsePrivacy(iq) {
+	    var list = [];
+	    var items = iq.getElementsByTagName('item');
+
+	    if (items) {
+	        for (var i = 0; i < items.length; i++) {
+	            var item = items[i];
+	            var jid = item.getAttribute('value');
+	            var order = item.getAttribute('order');
+	            var type = item.getAttribute('type');
+	            if (!jid) {
+	                continue;
+	            }
+	            var n = _parseNameFromJidFn(jid);
+	            list[n] = {
+	                type: type,
+	                order: order,
+	                jid: jid,
+	                name: n
+	            };
+	        }
+	    }
+	    return list;
+	};
+
+	/**
+	 * 获取好友黑名单
+	 *
+	 * @returns {Object} 好友列表
+	 */
+	connection.prototype.getBlacklist = function (options) {
+	    options = options || {};
+	    var iq = $iq({ type: 'get' });
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+	    var me = this;
+
+	    iq.c('query', { xmlns: 'jabber:iq:privacy' }).c('list', { name: 'special' });
+
+	    this.context.stropheConn.sendIQ(iq.tree(), function (iq) {
+	        me.onBlacklistUpdate(_parsePrivacy(iq));
+	        sucFn();
+	    }, function () {
+	        me.onBlacklistUpdate([]);
+	        errFn();
+	    });
+	};
+
+	/**
+	 * 将好友加入到黑名单
+	 * @param {Object} options
+	 * @param {Object[]} options.list - 调用这个函数后黑名单的所有名单列表，key值为好友的ID
+	 * @param {Object} options.list[].type=jid - 要加到黑名单的好友对象的type，默认是jid
+	 * @param {Number} options.list[].order - 要加到黑名单的好友对象的order，所有order不重复
+	 * @param {string} options.list[].jid - 要加到黑名单的好友的jid
+	 * @param {string} options.list[].name - 要加到黑名单的好友的ID
+	 */
+	connection.prototype.addToBlackList = function (options) {
+	    var iq = $iq({ type: 'set' });
+	    var blacklist = options.list || {};
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+	    var piece = iq.c('query', { xmlns: 'jabber:iq:privacy' }).c('list', { name: 'special' });
+
+	    var keys = Object.keys(blacklist);
+	    var len = keys.length;
+	    var order = 2;
+
+	    for (var i = 0; i < len; i++) {
+	        var item = blacklist[keys[i]];
+	        var type = item.type || 'jid';
+	        var jid = item.jid;
+
+	        piece = piece.c('item', { action: 'deny', order: order++, type: type, value: jid }).c('message');
+	        if (i !== len - 1) {
+	            piece = piece.up().up();
+	        }
+	    }
+
+	    this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
+	};
+
+	/**
+	 * 将好友从黑名单移除
+	 * @param {Object} options
+	 * @param {Object[]} options.list - 调用这个函数后黑名单的所有名单列表，key值为好友的ID
+	 * @param {Object} options.list[].type=jid - 要加到黑名单的好友对象的type，默认是jid
+	 * @param {Number} options.list[].order - 要加到黑名单的好友对象的order，所有order不重复
+	 * @param {string} options.list[].jid - 要加到黑名单的好友的jid
+	 * @param {string} options.list[].name - 要加到黑名单的好友的ID
+	 */
+	connection.prototype.removeFromBlackList = function (options) {
+	    console.log('removeFromBlackList: ', options);
+	    var iq = $iq({ type: 'set' });
+	    var blacklist = options.list || {};
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+	    var piece = iq.c('query', { xmlns: 'jabber:iq:privacy' }).c('list', { name: 'special' });
+
+	    var keys = Object.keys(blacklist);
+	    var len = keys.length;
+
+	    for (var i = 0; i < len; i++) {
+	        var item = blacklist[keys[i]];
+	        var type = item.type || 'jid';
+	        var jid = item.jid;
+	        var order = item.order;
+
+	        piece = piece.c('item', { action: 'deny', order: order, type: type, value: jid }).c('message');
+	        if (i !== len - 1) {
+	            piece = piece.up().up();
+	        }
+	    }
+
+	    this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
+	};
+
+	/**
+	 *
+	 * @private
+	 */
+	connection.prototype._getGroupJid = function (to) {
+	    var appKey = this.context.appKey || '';
+	    return appKey + '_' + to + '@conference.' + this.domain;
+	};
+
+	/**
+	 * 加入群组黑名单
+	 * @param {Object} options
+	 * @deprecated
+	 */
+	connection.prototype.addToGroupBlackList = function (options) {
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+	    var jid = _getJid(options, this);
+	    var affiliation = 'admin'; //options.affiliation || 'admin';
+	    var to = this._getGroupJid(options.roomId);
+	    var iq = $iq({ type: 'set', to: to });
+
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	        affiliation: 'outcast',
+	        jid: jid
+	    });
+
+	    this.context.stropheConn.sendIQ(iq.tree(), sucFn, errFn);
+	};
+
+	/**
+	 *
+	 * @private
+	 */
+	function _parseGroupBlacklist(iq) {
+	    var list = {};
+	    var items = iq.getElementsByTagName('item');
+
+	    if (items) {
+	        for (var i = 0; i < items.length; i++) {
+	            var item = items[i];
+	            var jid = item.getAttribute('jid');
+	            var affiliation = item.getAttribute('affiliation');
+	            var nick = item.getAttribute('nick');
+	            if (!jid) {
+	                continue;
+	            }
+	            var n = _parseNameFromJidFn(jid);
+	            list[n] = {
+	                jid: jid,
+	                affiliation: affiliation,
+	                nick: nick,
+	                name: n
+	            };
+	        }
+	    }
+	    return list;
+	}
+
+	/**
+	 * 获取群组黑名单
+	 * @param {Object} options
+	 * @deprecated
+	 */
+	connection.prototype.getGroupBlacklist = function (options) {
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+
+	    // var jid = _getJid(options, this);
+	    var affiliation = 'admin'; //options.affiliation || 'admin';
+	    var to = this._getGroupJid(options.roomId);
+	    var iq = $iq({ type: 'get', to: to });
+
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	        affiliation: 'outcast'
+	    });
+
+	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+	        sucFn(_parseGroupBlacklist(msginfo));
+	    }, function () {
+	        errFn();
+	    });
+	};
+
+	/**
+	 * 从群组黑名单删除
+	 * @param {Object} options
+	 * @deprecated
+	 */
+	connection.prototype.removeGroupMemberFromBlacklist = function (options) {
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+
+	    var jid = _getJid(options, this);
+	    var affiliation = 'admin'; //options.affiliation || 'admin';
+	    var to = this._getGroupJid(options.roomId);
+	    var iq = $iq({ type: 'set', to: to });
+
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	        affiliation: 'none',
+	        jid: jid
+	    });
+
+	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+	        sucFn();
+	    }, function () {
+	        errFn();
+	    });
+	};
+
+	/**
+	 * 修改群名称
+	 * @param {Object} options -
+	 * @deprecated
+	 */
+	connection.prototype.changeGroupSubject = function (options) {
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+
+	    // must be `owner`
+	    var affiliation = 'owner';
+	    var to = this._getGroupJid(options.roomId);
+	    var iq = $iq({ type: 'set', to: to });
+
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('x', { type: 'submit', xmlns: 'jabber:x:data' }).c('field', { 'var': 'FORM_TYPE' }).c('value').t('http://jabber.org/protocol/muc#roomconfig').up().up().c('field', { 'var': 'muc#roomconfig_roomname' }).c('value').t(options.subject).up().up().c('field', { 'var': 'muc#roomconfig_roomdesc' }).c('value').t(options.description);
+
+	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+	        sucFn();
+	    }, function () {
+	        errFn();
+	    });
+	};
+
+	/**
+	 * 删除群组
+	 *
+	 * @param {Object} options -
+	 * @example
+	 <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
+	 <query xmlns="http://jabber.org/protocol/muc#owner">
+	 <destroy>
+	 <reason>xxx destory group yyy</reason>
+	 </destroy>
+	 </query>
+	 </iq>
+	 * @deprecated
+	 */
+	connection.prototype.destroyGroup = function (options) {
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+
+	    // must be `owner`
+	    var affiliation = 'owner';
+	    var to = this._getGroupJid(options.roomId);
+	    var iq = $iq({ type: 'set', to: to });
+
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('destroy').c('reason').t(options.reason || '');
+
+	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
+	        sucFn();
+	    }, function () {
+	        errFn();
+	    });
+	};
+
+	/**
+	 * 主动离开群组
+	 *
+	 * @param {Object} options -
+	 * @example
+	 <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
+	 <query xmlns="http://jabber.org/protocol/muc#admin">
+	 <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	 </query>
+	 </iq>
+	 <presence to="easemob-demo#chatdemoui_1479811172349@conference.easemob.com/mt002" type="unavailable"/>
+	 * @deprecated
+	 */
+	connection.prototype.leaveGroupBySelf = function (options) {
+	    var self = this;
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+
+	    // must be `owner`
+	    var jid = _getJid(options, this);
+	    var affiliation = 'admin';
+	    var to = this._getGroupJid(options.roomId);
+	    var iq = $iq({ type: 'set', to: to });
+
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
+	        affiliation: 'none',
+	        jid: jid
+	    });
+
+	    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	        sucFn(msgInfo);
+	        var pres = $pres({ type: 'unavailable', to: to + '/' + self.context.userId });
+	        self.sendCommand(pres.tree());
+	    }, function (errInfo) {
+	        errFn(errInfo);
+	    });
+	};
+
+	/**
+	 * 群主从群组中踢人，后续会改为调用RestFul API
+	 *
+	 * @param {Object} options -
+	 * @param {string[]} options.list - 需要从群组移除的好友ID组成的数组
+	 * @param {string} options.roomId - 群组ID
+	 * @deprecated
+	 * @example
+	 <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
+	 <query xmlns="http://jabber.org/protocol/muc#admin">
+	 <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
+	 <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
+	 <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	 <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
+	 </query>
+	 </iq>
+	 */
+	connection.prototype.leaveGroup = function (options) {
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+	    var list = options.list || [];
+	    var affiliation = 'admin';
+	    var to = this._getGroupJid(options.roomId);
+	    var iq = $iq({ type: 'set', to: to });
+	    var piece = iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation });
+	    var keys = Object.keys(list);
+	    var len = keys.length;
+
+	    for (var i = 0; i < len; i++) {
+	        var name = list[keys[i]];
+	        var jid = _getJidByName(name, this);
+
+	        piece = piece.c('item', {
+	            affiliation: 'none',
+	            jid: jid
+	        }).up().c('item', {
+	            role: 'none',
+	            jid: jid
+	        }).up();
+	    }
+
+	    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	        sucFn(msgInfo);
+	    }, function (errInfo) {
+	        errFn(errInfo);
+	    });
+	};
+
+	/**
+	 * 添加群组成员
+	 *
+	 * @param {Object} options -
+	 * @deprecated
+	 * @example
+	 Attention the sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
+	 <!-- 添加成员通知：send -->
+	 <message to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com'>
+	 <x xmlns='http://jabber.org/protocol/muc#user'>
+	 <invite to='easemob-demo#chatdemoui_lwz2@easemob.com'>
+	 <reason>liuwz invite you to join group '谢谢'</reason>
+	 </invite>
+	 </x>
+	 </message>
+	 <!-- 添加成员：send -->
+	 <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation' to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com' type='set'>
+	 <query xmlns='http://jabber.org/protocol/muc#admin'>
+	 <item affiliation='member' jid='easemob-demo#chatdemoui_lwz2@easemob.com'/>
+	 </query>
+	 </iq>
+	 */
+	connection.prototype.addGroupMembers = function (options) {
+	    var sucFn = options.success || _utils.emptyfn;
+	    var errFn = options.error || _utils.emptyfn;
+	    var list = options.list || [];
+	    var affiliation = 'admin';
+	    var to = this._getGroupJid(options.roomId);
+	    var iq = $iq({ type: 'set', to: to });
+	    var piece = iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation });
+	    var len = list.length;
+
+	    for (var i = 0; i < len; i++) {
+
+	        var name = list[i];
+	        var jid = _getJidByName(name, this);
+
+	        piece = piece.c('item', {
+	            affiliation: 'member',
+	            jid: jid
+	        }).up();
+
+	        var dom = $msg({
+	            to: to
+	        }).c('x', {
+	            xmlns: 'http://jabber.org/protocol/muc#user'
+	        }).c('invite', {
+	            to: jid
+	        }).c('reason').t(options.reason || '');
+
+	        this.sendCommand(dom.tree());
+	    }
+
+	    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	        sucFn(msgInfo);
+	    }, function (errInfo) {
+	        errFn(errInfo);
+	    });
+	};
+
+	/**
+	 * 接受加入申请
+	 *
+	 * @param {Object} options -
+	 * @deprecated
+	 */
+	connection.prototype.acceptInviteFromGroup = function (options) {
+	    options.success = function () {
+	        // then send sendAcceptInviteMessage
+	        // connection.prototype.sendAcceptInviteMessage(optoins);
+	    };
+	    this.addGroupMembers(options);
+	};
+
+	/**
+	 * 拒绝入群申请
+	 * @param {Object} options -
+	 * @example
+	 throw request for now 暂时不处理，直接丢弃
+
+	 <message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
+	 <x xmlns='http://jabber.org/protocol/muc#user'>
+	 <apply to='easemob-demo#chatdemoui_groupid1@conference.easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' toNick='llllll'>
+	 <reason>reject</reason>
+	 </apply>
+	 </x>
+	 </message>
+	 * @deprecated
+	 */
+	connection.prototype.rejectInviteFromGroup = function (options) {
+	    // var from = _getJidByName(options.from, this);
+	    // var dom = $msg({
+	    //     from: from,
+	    //     to: _getJidByName(options.to, this)
+	    // }).c('x', {
+	    //     xmlns: 'http://jabber.org/protocol/muc#user'
+	    // }).c('apply', {
+	    //     from: from,
+	    //     to: this._getGroupJid(options.groupId),
+	    //     toNick: options.groupName
+	    // }).c('reason').t(options.reason || '');
+	    //
+	    // this.sendCommand(dom.tree());
+	};
+
+	/**
+	 * 创建群组-异步
+	 * @param {Object} p -
+	 * @deprecated
+	 */
+	connection.prototype.createGroupAsync = function (p) {
+	    var roomId = p.from;
+	    var me = this;
+	    var toRoom = this._getGroupJid(roomId);
+	    var to = toRoom + '/' + this.context.userId;
+	    var options = this.groupOption;
+	    var suc = p.success || _utils.emptyfn;
+
+	    // Creating a Reserved Room
+	    var iq = $iq({ type: 'get', to: toRoom }).c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' });
+
+	    // Strophe.info('step 1 ----------');
+	    // Strophe.info(options);
+	    me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	        // console.log(msgInfo);
+
+	        // for ie hack
+	        if ('setAttribute' in msgInfo) {
+	            // Strophe.info('step 3 ----------');
+	            var x = msgInfo.getElementsByTagName('x')[0];
+	            x.setAttribute('type', 'submit');
+	        } else {
+	            // Strophe.info('step 4 ----------');
+	            Strophe.forEachChild(msgInfo, 'x', function (field) {
+	                field.setAttribute('type', 'submit');
+	            });
+	        }
+
+	        Strophe.info('step 5 ----------');
+	        Strophe.forEachChild(x, 'field', function (field) {
+	            var fieldVar = field.getAttribute('var');
+	            var valueDom = field.getElementsByTagName('value')[0];
+	            Strophe.info(fieldVar);
+	            switch (fieldVar) {
+	                case 'muc#roomconfig_maxusers':
+	                    _setText(valueDom, options.optionsMaxUsers || 200);
+	                    break;
+	                case 'muc#roomconfig_roomname':
+	                    _setText(valueDom, options.subject || '');
+	                    break;
+	                case 'muc#roomconfig_roomdesc':
+	                    _setText(valueDom, options.description || '');
+	                    break;
+	                case 'muc#roomconfig_publicroom':
+	                    // public 1
+	                    _setText(valueDom, +options.optionsPublic);
+	                    break;
+	                case 'muc#roomconfig_membersonly':
+	                    _setText(valueDom, +options.optionsMembersOnly);
+	                    break;
+	                case 'muc#roomconfig_moderatedroom':
+	                    _setText(valueDom, +options.optionsModerate);
+	                    break;
+	                case 'muc#roomconfig_persistentroom':
+	                    _setText(valueDom, 1);
+	                    break;
+	                case 'muc#roomconfig_allowinvites':
+	                    _setText(valueDom, +options.optionsAllowInvites);
+	                    break;
+	                case 'muc#roomconfig_allowvisitornickchange':
+	                    _setText(valueDom, 0);
+	                    break;
+	                case 'muc#roomconfig_allowvisitorstatus':
+	                    _setText(valueDom, 0);
+	                    break;
+	                case 'allow_private_messages':
+	                    _setText(valueDom, 0);
+	                    break;
+	                case 'allow_private_messages_from_visitors':
+	                    _setText(valueDom, 'nobody');
+	                    break;
+	                default:
+	                    break;
+	            }
+	        });
+
+	        var iq = $iq({ to: toRoom, type: 'set' }).c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' }).cnode(x);
+
+	        me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	            me.addGroupMembers({
+	                list: options.members,
+	                roomId: roomId
+	            });
+
+	            suc(options);
+	        }, function (errInfo) {
+	            // errFn(errInfo);
+	        });
+	        // sucFn(msgInfo);
+	    }, function (errInfo) {
+	        // errFn(errInfo);
+	    });
+	};
+
+	/**
+	 * 创建群组
+	 * @param {Object} options -
+	 * @deprecated
+	 * @example
+	 * 1. 创建申请 -> 得到房主身份
+	 * 2. 获取房主信息 -> 得到房间form
+	 * 3. 完善房间form -> 创建成功
+	 * 4. 添加房间成员
+	 * 5. 消息通知成员
+	 */
+	connection.prototype.createGroup = function (options) {
+	    this.groupOption = options;
+	    var roomId = +new Date();
+	    var toRoom = this._getGroupJid(roomId);
+	    var to = toRoom + '/' + this.context.userId;
+
+	    var pres = $pres({ to: to }).c('x', { xmlns: 'http://jabber.org/protocol/muc' }).up().c('create', { xmlns: 'http://jabber.org/protocol/muc' }).up();
+
+	    // createGroupACK
+	    this.sendCommand(pres.tree());
+	};
+
+	/**
+	 * 通过RestFul API接口创建群组
+	 * @param opt {Object} - 群组信息
+	 * @param opt.data.groupname {string} - 群组名
+	 * @param opt.data.desc {string} - 群组描述
+	 * @param opt.data.members {string[]} - 群好友列表
+	 * @param opt.data.public {Boolean} - true: 公开群，false: 私有群
+	 * @param opt.data.approval {Boolean} - 前提：opt.data.public=true, true: 加群需要审批，false: 加群无需审批
+	 * @param opt.data.allowinvites {Boolean} - 前提：opt.data.public=false, true: 允许成员邀请入群，false: 不允许成员邀请入群
+	 * @since 1.4.11
+	 */
+	connection.prototype.createGroupNew = function (opt) {
+	    opt.data.owner = this.user;
+	    opt.data.invite_need_confirm = false;
+	    var options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups',
+	        dataType: 'json',
+	        type: 'POST',
+	        data: JSON.stringify(opt.data),
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = function (respData) {
+	        opt.success(respData);
+	        this.onCreateGroup(respData);
+	    }.bind(this);
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API屏蔽群组，只对移动端有效
+	 * @param {Object} options -
+	 * @param {string} options.groupId - 需要屏蔽的群组ID
+	 * @since 1.4.11
+	 */
+	connection.prototype.blockGroup = function (opt) {
+	    var groupId = opt.groupId;
+	    groupId = 'notification_ignore_' + groupId;
+	    var data = {
+	        entities: []
+	    };
+	    data.entities[0] = {};
+	    data.entities[0][groupId] = true;
+	    var options = {
+	        type: 'PUT',
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'users' + '/' + this.user,
+	        data: JSON.stringify(data),
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API发出入群申请
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 * @since 1.4.11
+	 */
+	connection.prototype.joinGroup = function (opt) {
+	    var options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + opt.groupId + '/' + 'apply',
+	        type: 'POST',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API分页获取群组列表
+	 * @param {Object} opt -
+	 * @param {Number} opt.limit - 每一页群组的最大数目
+	 * @param {string} opt.cursor=null - 游标，如果数据还有下一页，API 返回值会包含此字段，传递此字段可获取下一页的数据，为null时获取第一页数据
+	 * @since 1.4.11
+	 */
+	connection.prototype.listGroups = function (opt) {
+	    var requestData = [];
+	    requestData['limit'] = opt.limit;
+	    requestData['cursor'] = opt.cursor;
+	    if (!requestData['cursor']) delete requestData['cursor'];
+	    if (isNaN(opt.limit)) {
+	        throw 'The parameter \"limit\" should be a number';
+	        return;
+	    }
+	    var options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/publicchatgroups',
+	        type: 'GET',
+	        dataType: 'json',
+	        data: requestData,
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API根据groupId获取群组详情
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 * @since 1.4.11
+	 */
+	connection.prototype.getGroupInfo = function (opt) {
+	    var options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups/' + opt.groupId,
+	        type: 'GET',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API列出某用户所加入的所有群组
+	 * @param {Object} opt - 加入两个回调函数即可，success, error
+	 * @since 1.4.11
+	 */
+	connection.prototype.getGroup = function (opt) {
+	    var options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'users' + '/' + this.user + '/' + 'joined_chatgroups',
+	        dataType: 'json',
+	        type: 'GET',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API分页列出群组的所有成员
+	 * @param {Object} opt -
+	 * @param {Number} opt.pageNum - 页码
+	 * @param {Number} opt.pageSize - 每一页的最大群成员数目
+	 * @param {string} opt.groupId - 群ID
+	 */
+	connection.prototype.listGroupMember = function (opt) {
+	    if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
+	        throw 'The parameter \"pageNum\" should be a positive number';
+	        return;
+	    } else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
+	        throw 'The parameter \"pageSize\" should be a positive number';
+	        return;
+	    } else if (opt.groupId === null && typeof opt.groupId === 'undefined') {
+	        throw 'The parameter \"groupId\" should be added';
+	        return;
+	    }
+	    var requestData = [],
+	        groupId = opt.groupId;
+	    requestData['pagenum'] = opt.pageNum;
+	    requestData['pagesize'] = opt.pageSize;
+	    var options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups' + '/' + groupId + '/users',
+	        dataType: 'json',
+	        type: 'GET',
+	        data: requestData,
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+	connection.prototype.listRoomMember = function (opt) {
+	    if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
+	        throw 'The parameter \"pageNum\" should be a positive number';
+	        return;
+	    } else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
+	        throw 'The parameter \"pageSize\" should be a positive number';
+	        return;
+	    } else if (opt.groupId === null && typeof opt.groupId === 'undefined') {
+	        throw 'The parameter \"groupId\" should be added';
+	        return;
+	    }
+	    var requestData = [],
+	        groupId = opt.groupId;
+	    requestData['pagenum'] = opt.pageNum;
+	    requestData['pagesize'] = opt.pageSize;
+	    var options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatrooms' + '/' + groupId + '/users',
+	        dataType: 'json',
+	        type: 'GET',
+	        data: requestData,
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API禁止群用户发言
+	 * @param {Object} opt -
+	 * @param {string} opt.username - 被禁言的群成员的ID
+	 * @param {Number} opt.muteDuration - 被禁言的时长
+	 * @param {string} opt.groupId - 群ID
+	 * @since 1.4.11
+	 */
+	connection.prototype.mute = function (opt) {
+	    var groupId = opt.groupId,
+	        requestData = {
+	        "usernames": [opt.username],
+	        "mute_duration": opt.muteDuration
+	    },
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'mute',
+	        dataType: 'json',
+	        type: 'POST',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        },
+	        data: JSON.stringify(requestData)
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API取消对用户禁言
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群ID
+	 * @param {string} opt.username - 被取消禁言的群用户ID
+	 * @since 1.4.11
+	 */
+	connection.prototype.removeMute = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username;
+	    var options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'mute' + '/' + username,
+	        dataType: 'json',
+	        type: 'DELETE',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API获取群组下所有管理员
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 * @since 1.4.11
+	 */
+	connection.prototype.getGroupAdmin = function (opt) {
+	    var groupId = opt.groupId;
+	    var options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups' + '/' + groupId + '/admin',
+	        dataType: 'json',
+	        type: 'GET',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API获取群组下所有被禁言成员
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 */
+	connection.prototype.getMuted = function (opt) {
+	    var groupId = opt.groupId;
+	    var options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups' + '/' + groupId + '/mute',
+	        dataType: 'json',
+	        type: 'GET',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API设置群管理员
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 * @param {string} opt.username - 用户ID
+	 */
+	connection.prototype.setAdmin = function (opt) {
+	    var groupId = opt.groupId,
+	        requestData = {
+	        newadmin: opt.username
+	    },
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'admin',
+	        type: "POST",
+	        dataType: 'json',
+	        data: JSON.stringify(requestData),
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API取消群管理员
+	 * @param {Object} opt -
+	 * @param {string} opt.gorupId - 群组ID
+	 * @param {string} opt.username - 用户ID
+	 */
+	connection.prototype.removeAdmin = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'admin' + '/' + username,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API同意用户加入群
+	 * @param {Object} opt -
+	 * @param {string} opt.applicant - 申请加群的用户名
+	 * @param {Object} opt.groupId - 群组ID
+	 */
+	connection.prototype.agreeJoinGroup = function (opt) {
+	    var groupId = opt.groupId,
+	        requestData = {
+	        "applicant": opt.applicant,
+	        "verifyResult": true,
+	        "reason": "no clue"
+	    },
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'apply_verify',
+	        type: 'POST',
+	        dataType: "json",
+	        data: JSON.stringify(requestData),
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API拒绝用户加入群
+	 * @param {Object} opt -
+	 * @param {string} opt.applicant - 申请加群的用户名
+	 * @param {Object} opt.groupId - 群组ID
+	 */
+	connection.prototype.rejectJoinGroup = function (opt) {
+	    var groupId = opt.groupId,
+	        requestData = {
+	        "applicant": opt.applicant,
+	        "verifyResult": false,
+	        "reason": "no clue"
+	    },
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'apply_verify',
+	        type: 'POST',
+	        dataType: "json",
+	        data: JSON.stringify(requestData),
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API添加用户至群组黑名单(单个)
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 * @param {stirng} opt.username - 用户ID
+	 */
+	connection.prototype.groupBlockSingle = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users' + '/' + username,
+	        type: 'POST',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API添加用户至群组黑名单(批量)
+	 * @param {Object} opt -
+	 * @param {string[]} opt.username - 用户ID数组
+	 * @param {string} opt.groupId - 群组ID
+	 */
+	connection.prototype.groupBlockMulti = function (opt) {
+	    var groupId = opt.groupId,
+	        usernames = opt.usernames,
+	        requestData = {
+	        usernames: usernames
+	    },
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users',
+	        data: JSON.stringify(requestData),
+	        type: 'POST',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API将用户从群黑名单移除（单个）
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 * @param {string} opt.username - 用户名
+	 */
+	connection.prototype.removeGroupBlockSingle = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users' + '/' + username,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API将用户从群黑名单移除（批量）
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组名
+	 * @param {string[]} opt.username - 用户ID数组
+	 */
+	connection.prototype.removeGroupBlockMulti = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username.join(','),
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users' + '/' + username,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API解散群组
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 */
+	connection.prototype.dissolveGroup = function (opt) {
+	    var groupId = opt.groupId,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '?version=v3',
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API获取群组黑名单
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 */
+	connection.prototype.getGroupBlacklistNew = function (opt) {
+	    var groupId = opt.groupId,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users',
+	        type: 'GET',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API离开群组
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 */
+	connection.prototype.quitGroup = function (opt) {
+	    var groupId = opt.groupId,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'quit',
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API修改群信息
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 * @param {string} opt.groupName - 群组名
+	 * @param {string} opt.description - 群组简介
+	 */
+	connection.prototype.modifyGroup = function (opt) {
+	    var groupId = opt.groupId,
+	        requestData = {
+	        groupname: opt.groupName,
+	        description: opt.description
+	    },
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId,
+	        type: 'PUT',
+	        data: JSON.stringify(requestData),
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API删除单个群成员
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 * @param {string} opt.username - 用户名
+	 */
+	connection.prototype.removeSingleGroupMember = function (opt) {
+	    var groupId = opt.groupId,
+	        username = opt.username,
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'users' + '/' + username,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API删除多个群成员
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组ID
+	 * @param {string[]} opt.users - 用户ID数组
+	 */
+	connection.prototype.removeMultiGroupMember = function (opt) {
+	    var groupId = opt.groupId,
+	        users = opt.users.join(','),
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'users' + '/' + users,
+	        type: 'DELETE',
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	/**
+	 * 通过RestFul API邀请群成员
+	 * @param {Object} opt -
+	 * @param {string} opt.groupId - 群组名
+	 * @param {string[]} opt.users - 用户名ID数组
+	 */
+	connection.prototype.inviteToGroup = function (opt) {
+	    var groupId = opt.groupId,
+	        users = opt.users,
+	        requestData = {
+	        usernames: users
+	    },
+	        options = {
+	        url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/' + 'chatgroups' + '/' + groupId + '/' + 'invite',
+	        type: 'POST',
+	        data: JSON.stringify(requestData),
+	        dataType: 'json',
+	        headers: {
+	            'Authorization': 'Bearer ' + this.token,
+	            'Content-Type': 'application/json'
+	        }
+	    };
+	    options.success = opt.success || _utils.emptyfn;
+	    options.error = opt.error || _utils.emptyfn;
+	    WebIM.utils.ajax(options);
+	};
+
+	function _setText(valueDom, v) {
+	    if ('textContent' in valueDom) {
+	        valueDom.textContent = v;
+	    } else if ('text' in valueDom) {
+	        valueDom.text = v;
+	    } else {
+	        // Strophe.info('_setText 4 ----------');
+	        // valueDom.innerHTML = v;
+	    }
+	}
+
+	var WebIM = window.WebIM || {};
+	WebIM.connection = connection;
+	WebIM.utils = _utils;
+	WebIM.statusCode = _code;
+	WebIM.message = _msg.message;
+	WebIM.doQuery = function (str, suc, fail) {
+	    if (typeof window.cefQuery === 'undefined') {
+	        return;
+	    }
+	    window.cefQuery({
+	        request: str,
+	        persistent: false,
+	        onSuccess: suc,
+	        onFailure: fail
+	    });
+	};
+
+	/**************************** debug ****************************/
+	function logMessage(message) {
+	    WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
+	}
+
+	if (WebIM && WebIM.config.isDebug) {
+	    Strophe.Connection.prototype.rawOutput = function (data) {
+	        console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
+	    };
+	}
+
+	if (WebIM && WebIM.config && WebIM.config.isSandBox) {
+	    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '-sandbox.easemob.');
+	    WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '-sdb.easemob.');
+	}
+
+	module.exports = WebIM;
+
+	if (false) {
+	    module.hot.accept();
+	}
+
+/***/ }),
+
+/***/ 249:
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var CryptoJS = __webpack_require__(211);
+	;(function () {
+	    'use strict';
+
+	    var _utils = __webpack_require__(206).utils;
+	    var Message = function Message(type, id) {
+	        if (!this instanceof Message) {
+	            return new Message(type);
+	        }
+
+	        this._msg = {};
+
+	        if (typeof Message[type] === 'function') {
+	            Message[type].prototype.setGroup = this.setGroup;
+	            this._msg = new Message[type](id);
+	        }
+	        return this._msg;
+	    };
+	    Message.prototype.setGroup = function (group) {
+	        this.body.group = group;
+	    };
+
+	    /*
+	     * Read Message
+	     */
+	    Message.read = function (id) {
+	        this.id = id;
+	        this.type = 'read';
+	    };
+
+	    Message.read.prototype.set = function (opt) {
+	        this.body = {
+	            ackId: opt.id,
+	            to: opt.to
+	        };
+	    };
+
+	    /*
+	     * deliver message
+	     */
+	    Message.delivery = function (id) {
+	        this.id = id;
+	        this.type = 'delivery';
+	    };
+
+	    Message.delivery.prototype.set = function (opt) {
+	        this.body = {
+	            bodyId: opt.id,
+	            to: opt.to
+	        };
+	    };
+
+	    /*
+	     * text message
+	     */
+	    Message.txt = function (id) {
+	        this.id = id;
+	        this.type = 'txt';
+	        this.body = {};
+	    };
+	    Message.txt.prototype.set = function (opt) {
+	        this.value = opt.msg;
+	        this.body = {
+	            id: this.id,
+	            to: opt.to,
+	            msg: this.value,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            ext: opt.ext || {},
+	            success: opt.success,
+	            fail: opt.fail
+	        };
+
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * cmd message
+	     */
+	    Message.cmd = function (id) {
+	        this.id = id;
+	        this.type = 'cmd';
+	        this.body = {};
+	    };
+	    Message.cmd.prototype.set = function (opt) {
+	        this.value = '';
+
+	        this.body = {
+	            to: opt.to,
+	            action: opt.action,
+	            msg: this.value,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            ext: opt.ext || {},
+	            success: opt.success
+	        };
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * loc message
+	     */
+	    Message.location = function (id) {
+	        this.id = id;
+	        this.type = 'loc';
+	        this.body = {};
+	    };
+	    Message.location.prototype.set = function (opt) {
+	        this.body = {
+	            to: opt.to,
+	            type: this.type,
+	            roomType: opt.roomType,
+	            addr: opt.addr,
+	            lat: opt.lat,
+	            lng: opt.lng,
+	            ext: opt.ext || {}
+	        };
+	    };
+
+	    /*
+	     * img message
+	     */
+	    Message.img = function (id) {
+	        this.id = id;
+	        this.type = 'img';
+	        this.body = {};
+	    };
+	    Message.img.prototype.set = function (opt) {
+	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+
+	        this.value = opt.file;
+
+	        this.body = {
+	            id: this.id,
+	            file: this.value,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            roomType: opt.roomType,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            width: opt.width,
+	            height: opt.height,
+	            body: opt.body,
+	            uploadError: opt.uploadError,
+	            uploadComplete: opt.uploadComplete
+	        };
+
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * audio message
+	     */
+	    Message.audio = function (id) {
+	        this.id = id;
+	        this.type = 'audio';
+	        this.body = {};
+	    };
+	    Message.audio.prototype.set = function (opt) {
+	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+
+	        this.value = opt.file;
+	        this.filename = opt.filename || this.value.filename;
+
+	        this.body = {
+	            id: this.id,
+	            file: this.value,
+	            filename: this.filename,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            length: opt.length || 0,
+	            roomType: opt.roomType,
+	            file_length: opt.file_length,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            body: opt.body
+	        };
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * file message
+	     */
+	    Message.file = function (id) {
+	        this.id = id;
+	        this.type = 'file';
+	        this.body = {};
+	    };
+	    Message.file.prototype.set = function (opt) {
+	        opt.file = opt.file || _utils.getFileUrl(opt.fileInputId);
+
+	        this.value = opt.file;
+	        this.filename = opt.filename || this.value.filename;
+
+	        this.body = {
+	            id: this.id,
+	            file: this.value,
+	            filename: this.filename,
+	            apiUrl: opt.apiUrl,
+	            to: opt.to,
+	            type: this.type,
+	            ext: opt.ext || {},
+	            roomType: opt.roomType,
+	            onFileUploadError: opt.onFileUploadError,
+	            onFileUploadComplete: opt.onFileUploadComplete,
+	            success: opt.success,
+	            fail: opt.fail,
+	            flashUpload: opt.flashUpload,
+	            body: opt.body
+	        };
+	        !opt.roomType && delete this.body.roomType;
+	    };
+
+	    /*
+	     * video message
+	     */
+	    Message.video = function (id) {};
+	    Message.video.prototype.set = function (opt) {};
+
+	    var _Message = function _Message(message) {
+
+	        if (!this instanceof _Message) {
+	            return new _Message(message, conn);
+	        }
+
+	        this.msg = message;
+	    };
+
+	    _Message.prototype.send = function (conn) {
+	        var me = this;
+
+	        var _send = function _send(message) {
+
+	            message.ext = message.ext || {};
+	            message.ext.weichat = message.ext.weichat || {};
+	            message.ext.weichat.originType = message.ext.weichat.originType || 'webim';
+
+	            var dom;
+	            var json = {
+	                from: conn.context.userId || '',
+	                to: message.to,
+	                bodies: [message.body],
+	                ext: message.ext || {}
+	            };
+	            var jsonstr = _utils.stringify(json);
+	            dom = $msg({
+	                type: message.group || 'chat',
+	                to: message.toJid,
+	                id: message.id,
+	                xmlns: 'jabber:client'
+	            }).c('body').t(jsonstr);
+
+	            if (message.roomType) {
+	                dom.up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+	            }
+	            if (message.bodyId) {
+	                dom = $msg({
+	                    from: conn.context.jid || '',
+	                    to: message.toJid,
+	                    id: message.id,
+	                    xmlns: 'jabber:client'
+	                }).c('body').t(message.bodyId);
+	                var delivery = {
+	                    xmlns: 'urn:xmpp:receipts',
+	                    id: message.bodyId
+	                };
+	                dom.up().c('delivery', delivery);
+	            }
+	            if (message.ackId) {
+
+	                if (conn.context.jid.indexOf(message.toJid) >= 0) {
+	                    return;
+	                }
+	                dom = $msg({
+	                    from: conn.context.jid || '',
+	                    to: message.toJid,
+	                    id: message.id,
+	                    xmlns: 'jabber:client'
+	                }).c('body').t(message.ackId);
+	                var read = {
+	                    xmlns: 'urn:xmpp:receipts',
+	                    id: message.ackId
+	                };
+	                dom.up().c('acked', read);
+	            }
+
+	            setTimeout(function () {
+	                if (typeof _msgHash !== 'undefined' && _msgHash[message.id]) {
+	                    _msgHash[message.id].msg.fail instanceof Function && _msgHash[message.id].msg.fail(message.id);
+	                }
+	            }, 60000);
+	            conn.sendCommand(dom.tree(), message.id);
+	        };
+
+	        if (me.msg.file) {
+	            if (me.msg.body && me.msg.body.url) {
+	                // Only send msg
+	                _send(me.msg);
+	                return;
+	            }
+	            var _tmpComplete = me.msg.onFileUploadComplete;
+	            var _complete = function _complete(data) {
+	                if (data.entities[0]['file-metadata']) {
+	                    var file_len = data.entities[0]['file-metadata']['content-length'];
+	                    // me.msg.file_length = file_len;
+	                    me.msg.filetype = data.entities[0]['file-metadata']['content-type'];
+	                    if (file_len > 204800) {
+	                        me.msg.thumbnail = true;
+	                    }
+	                }
+
+	                me.msg.body = {
+	                    type: me.msg.type || 'file',
+
+	                    url: (location.protocol != 'https:' && conn.isHttpDNS ? conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0]['uuid'],
+	                    secret: data.entities[0]['share-secret'],
+	                    filename: me.msg.file.filename || me.msg.filename,
+	                    size: {
+	                        width: me.msg.width || 0,
+	                        height: me.msg.height || 0
+	                    },
+	                    length: me.msg.length || 0,
+	                    file_length: me.msg.ext.file_length || 0,
+	                    filetype: me.msg.filetype
+	                };
+	                _send(me.msg);
+	                _tmpComplete instanceof Function && _tmpComplete(data, me.msg.id);
+	            };
+
+	            me.msg.onFileUploadComplete = _complete;
+	            _utils.uploadFile.call(conn, me.msg);
+	        } else {
+	            me.msg.body = {
+	                type: me.msg.type === 'chat' ? 'txt' : me.msg.type,
+	                msg: me.msg.msg
+	            };
+	            if (me.msg.type === 'cmd') {
+	                me.msg.body.action = me.msg.action;
+	            } else if (me.msg.type === 'loc') {
+	                me.msg.body.addr = me.msg.addr;
+	                me.msg.body.lat = me.msg.lat;
+	                me.msg.body.lng = me.msg.lng;
+	            }
+
+	            _send(me.msg);
+	        }
+	    };
+
+	    exports._msg = _Message;
+	    exports.message = Message;
+	})();
+
+/***/ }),
+
+/***/ 250:
 /***/ (function(module, exports) {
+
+	"use strict";
 
 	;(function () {
 	    function Array_h(length) {
@@ -12943,15 +12842,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Number} length [数组长度]
 	         */
-	        length: function () {
+	        length: function length() {
 	            return this.array.length;
 	        },
 
-	        at: function (index) {
+	        at: function at(index) {
 	            return this.array[index];
 	        },
 
-	        set: function (index, obj) {
+	        set: function set(index, obj) {
 	            this.array[index] = obj;
 	        },
 
@@ -12961,7 +12860,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param  {*} obj [description]
 	         * @return {Number} length [新数组的长度]
 	         */
-	        push: function (obj) {
+	        push: function push(obj) {
 	            return this.array.push(obj);
 	        },
 
@@ -12972,24 +12871,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param  {Number} end [结束索引值]
 	         * @return {Array} newArray  [新的数组]
 	         */
-	        slice: function (start, end) {
+	        slice: function slice(start, end) {
 	            return this.array = this.array.slice(start, end);
 	        },
 
-	        concat: function (array) {
+	        concat: function concat(array) {
 	            this.array = this.array.concat(array);
 	        },
 
-	        remove: function (index, count) {
+	        remove: function remove(index, count) {
 	            count = count === undefined ? 1 : count;
 	            this.array.splice(index, count);
 	        },
 
-	        join: function (separator) {
+	        join: function join(separator) {
 	            return this.array.join(separator);
 	        },
 
-	        clear: function () {
+	        clear: function clear() {
 	            this.array.length = 0;
 	        }
 	    };
@@ -12999,7 +12898,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * 一种先进先出的数据缓存器
 	     */
-	    var Queue = function () {
+	    var Queue = function Queue() {
 	        this._array_h = new Array_h();
 	    };
 
@@ -13012,7 +12911,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @param  {Object} obj [description]
 	         * @return {[type]}     [description]
 	         */
-	        push: function (obj) {
+	        push: function push(obj) {
 	            this._array_h.push(obj);
 	        },
 
@@ -13021,7 +12920,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Object} [description]
 	         */
-	        pop: function () {
+	        pop: function pop() {
 	            var ret = null;
 	            if (this._array_h.length()) {
 	                ret = this._array_h.at(this._index);
@@ -13038,8 +12937,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Object} [description]
 	         */
-	        head: function () {
-	            var ret = null, len = this._array_h.length();
+	        head: function head() {
+	            var ret = null,
+	                len = this._array_h.length();
 	            if (len) {
 	                ret = this._array_h.at(len - 1);
 	            }
@@ -13051,8 +12951,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Object} [description]
 	         */
-	        tail: function () {
-	            var ret = null, len = this._array_h.length();
+	        tail: function tail() {
+	            var ret = null,
+	                len = this._array_h.length();
 	            if (len) {
 	                ret = this._array_h.at(this._index);
 	            }
@@ -13064,7 +12965,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Number} [description]
 	         */
-	        length: function () {
+	        length: function length() {
 	            return this._array_h.length() - this._index;
 	        },
 
@@ -13073,20 +12974,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	         *
 	         * @return {Boolean} [description]
 	         */
-	        empty: function () {
-	            return (this._array_h.length() === 0);
+	        empty: function empty() {
+	            return this._array_h.length() === 0;
 	        },
 
-	        clear: function () {
+	        clear: function clear() {
 	            this._array_h.clear();
 	        }
 	    };
 	    exports.Queue = Queue;
-	}());
-
+	})();
 
 /***/ }),
-/* 40 */
+
+/***/ 251:
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.8.3
@@ -14640,6 +14541,5 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ })
-/******/ ])
-});
-;
+
+/******/ });
