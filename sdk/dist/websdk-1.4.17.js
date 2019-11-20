@@ -4927,7 +4927,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return false;
 	        }
 	    };
-	    
 
 	    var _createActiveXHR = function () {
 	        try {
@@ -5379,7 +5378,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 
 	            var apiUrl = options.apiUrl;
-	            if(location.protocol != 'https:' && this.isHttpDNS){
+	            if(this.isHttpDNS){
 	                apiUrl = this.apiUrl
 	            }
 	            var uploadUrl = apiUrl + '/' + orgName + '/' + appName + '/chatfiles';
