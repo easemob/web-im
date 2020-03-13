@@ -1132,7 +1132,7 @@ connection.prototype.getRestFromHttpDNS = function (options, type) {
     var host = this.restHosts[this.restIndex];
     var domain = _utils.getXmlFirstChild(host, 'domain');
     var ip = _utils.getXmlFirstChild(host, 'ip');
-    if (ip) {
+    if (ip && location.protocol == 'http:') {
         var port = _utils.getXmlFirstChild(host, 'port');
         url = (location.protocol === 'https:' ? 'https:' : 'http:') + '//' + ip.textContent + ':' + port.textContent;
     } else {
